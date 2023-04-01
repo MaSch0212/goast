@@ -1,0 +1,10 @@
+{
+  "editor.formatOnSave": true,
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "package.json": "tsconfig*.json, pnpm-lock.yaml, jest.config.js, .editorconfig, .prettier*",
+    "*.ts": "$(capture).spec.ts",
+    "*.js": "$(capture).js.map"
+  }
+}
