@@ -1,10 +1,8 @@
-import { chdir, cwd } from 'process';
-import { Dref, OpenApiParser } from './parser.js';
 import fs from 'fs-extra';
-import path from 'path';
-import { OpenAPI3, SchemaObject } from 'openapi-typescript';
-import { OpenAPIV3 } from 'openapi-types';
 import { collectOpenApiV3, isOpenApiV3 } from './open-api-v3/collector.js';
+import { OpenApiParser } from './parser.js';
+import { transformOpenApiV3 } from './open-api-v3/transformer.js';
+import * as util from 'util';
 
 //chdir('.openapi');
 
@@ -23,9 +21,16 @@ async function main(): Promise<void> {
   const api2 = await parser.parseApi('.openapi/file2.yml');
   //await fs.writeJson('file2_out.json', api2, { spaces: 2 });
 
-  if (isOpenApiV3(api2)) {
-    const data = collectOpenApiV3(api2);
-    await fs.writeJson('file2_out.json', data, { spaces: 2 });
+  const apis = await Promise.all([
+    parser.parseApi('.openapi/file1.yml'),
+    parser.parseApi('.openapi/file2.yml'),
+  ]);
+
+  if (apis.every(isOpenApiV3)) {
+    const cData = collectOpenApiV3(apis);
+    const data = transformOpenApiV3(cData);
+
+    await fs.writeFile('combined_out.js', util.inspect(data, undefined, 100));
   }
 }
 

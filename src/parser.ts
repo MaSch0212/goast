@@ -4,20 +4,7 @@ import { ReferenceObject } from 'openapi-typescript';
 import path from 'path';
 import { ApiComponent } from './api-types.js';
 import { cwd } from 'process';
-
-type _ReferenceObject =
-  | OpenAPIV2.ReferenceObject
-  | OpenAPIV3.ReferenceObject
-  | OpenAPIV3_1.ReferenceObject
-  | ReferenceObject;
-type Dref2<T> = {
-  [K in keyof T]: Dref<T[K]>;
-};
-export type Dref<T> = T extends object
-  ? T extends (infer A)[]
-    ? (Dref2<Exclude<A, _ReferenceObject>> & ApiComponent<never>)[]
-    : Dref2<Exclude<T, _ReferenceObject>> & ApiComponent<never>
-  : T;
+import { Deref } from './types.js';
 
 export class OpenApiParser {
   private readonly _loadedApis = new Map<string, OpenAPI.Document>();
@@ -26,7 +13,7 @@ export class OpenApiParser {
 
   // }
 
-  public async parseApi(fileName: string): Promise<Dref<OpenAPI.Document>> {
+  public async parseApi(fileName: string): Promise<Deref<OpenAPI.Document>> {
     const absoluteFilePath = path.resolve(cwd(), fileName);
     const api = await SwaggerParser.parse(absoluteFilePath);
     this._loadedApis.set(absoluteFilePath, api);
@@ -37,8 +24,8 @@ export class OpenApiParser {
     file: string,
     path: string,
     value: T
-  ): Promise<Dref<T>> {
-    let result = {} as Dref<any>;
+  ): Promise<Deref<T>> {
+    let result = {} as Deref<any>;
     const keys = Object.keys(value) as (keyof T)[];
     for (const key of keys) {
       const v = value[key];
@@ -63,7 +50,7 @@ export class OpenApiParser {
           result[key] = await this.dereference(file, `${path}/${String(key)}`, v);
         }
       } else {
-        result[key] = v as Dref<any>[keyof any];
+        result[key] = v as Deref<any>[keyof any];
       }
     }
 

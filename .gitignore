@@ -1,5 +1,5 @@
 .openapi
 dist
 node_modules
-*_out.json
+*_out.*
 playground.js
