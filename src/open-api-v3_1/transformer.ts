@@ -1,4 +1,12 @@
-import { OpenAPIV3 } from 'openapi-types';
+import {
+  Deref,
+  IncompleteApiSchema,
+  OpenApiTransformer,
+  OpenApiTransformerContext,
+  OpenApiV3_1CollectorEndpointInfo,
+} from '../types.js';
+import { transformDocument } from '../open-api-v3/transformer.js';
+import { OpenAPIV3_1 } from 'openapi-types';
 import {
   ApiContent,
   ApiEndpoint,
@@ -9,57 +17,29 @@ import {
   ApiRequestBody,
   ApiResponse,
   ApiSchema,
-  ApiSchemaAccessibility,
   ApiSchemaComponent,
   ApiSchemaExtensions,
-  ApiSchemaProperty,
-  ApiService,
-  ApiServiceComponent,
 } from '../api-types.js';
-import { isNullish } from '../helpers.js';
-import {
-  Deref,
-  IncompleteApiSchema,
-  OpenApiTransformer,
-  OpenApiTransformerContext,
-  OpenApiV3CollectorDocument,
-  OpenApiV3CollectorEndpointInfo,
-} from '../types.js';
-import { OpenApiV3SchemaKind } from './types.js';
+import { OpenApiV3_1SchemaKind } from './types.js';
 import {
   determineSchemaKind,
   determineSchemaName,
   determineSchemaAccessibility,
   getCustomFields,
-  determineEndpointName,
   transformAdditionalProperties,
   transformSchemaProperties,
+  determineEndpointName,
 } from '../transformer-helpers.js';
 
-export const openApiV3Transformer: OpenApiTransformer<'3.0'> = {
+export const openApiV3_1Transformer: OpenApiTransformer<'3.1'> = {
   transformDocument: (context, { document }) => transformDocument(context, document),
   transformSchema: (context, { schema }) => transformSchema(context, schema),
   transformEndpoint: transformEndpoint,
 };
 
-export function transformDocument(
-  context: OpenApiTransformerContext,
-  document: Deref<Pick<OpenAPIV3.Document, 'tags'>>
-) {
-  for (const tag of document.tags ?? []) {
-    const service: ApiService = {
-      $src: tag.$src as ApiServiceComponent['$src'],
-      name: tag.name,
-      description: tag.description,
-      endpoints: [],
-    };
-    context.services.set(service.name, service);
-  }
-}
-
 function transformSchema(
   context: OpenApiTransformerContext,
-  schema?: Deref<OpenAPIV3.SchemaObject>
+  schema?: Deref<OpenAPIV3_1.SchemaObject>
 ): ApiSchema {
   if (!schema) return undefined!;
   const schemaSource = `${schema.$src.file}:${schema.$src.path}`;
@@ -67,7 +47,22 @@ function transformSchema(
     context.schemas.get(schemaSource) ?? context.incompleteSchemas.get(schemaSource);
   if (existingSchema) return existingSchema as ApiSchema;
 
-  const kind = determineSchemaKind(schema);
+  let kind = determineSchemaKind(schema);
+  let nullable = false;
+  if (kind === 'multi-type') {
+    const types = schema.type as string[];
+    let isSingleType = types.length === 1;
+    if (types.length === 2 && types.includes('null')) {
+      nullable = true;
+      isSingleType = true;
+    }
+
+    if (isSingleType) {
+      const newType = types.filter((t) => t !== 'null')[0] as OpenAPIV3_1.NonArraySchemaObjectType;
+      kind = newType;
+      schema = { ...schema, type: newType };
+    }
+  }
   const id = context.schemas.size + context.incompleteSchemas.size;
   const result: IncompleteApiSchema = {
     $src: schema.$src as ApiSchemaComponent['$src'],
@@ -80,9 +75,10 @@ function transformSchema(
     enum: schema.enum,
     default: schema.default,
     format: schema.format,
-    nullable: schema.nullable,
+    nullable: nullable,
     custom: getCustomFields(schema),
   };
+  // TODO: Handle "$schema" field
   context.incompleteSchemas.set(schemaSource, result);
 
   const extensions = schemaTransformers[kind](schema, context);
@@ -95,7 +91,7 @@ function transformSchema(
 
 function transformEndpoint(
   context: OpenApiTransformerContext,
-  endpointInfo: OpenApiV3CollectorEndpointInfo
+  endpointInfo: OpenApiV3_1CollectorEndpointInfo
 ) {
   const apiPath = transformApiPath(context, endpointInfo.path, endpointInfo.pathItem);
   const endpoint: ApiEndpoint = {
@@ -139,7 +135,7 @@ function transformEndpoint(
 function transformApiPath(
   context: OpenApiTransformerContext,
   path: string,
-  pathItem: Deref<OpenAPIV3.PathItemObject>
+  pathItem: Deref<OpenAPIV3_1.PathItemObject>
 ): ApiPath {
   const existingPath = context.paths.get(path);
   if (existingPath) return existingPath;
@@ -158,7 +154,7 @@ function transformApiPath(
 
 function transformParameter(
   context: OpenApiTransformerContext,
-  parameter: Deref<OpenAPIV3.ParameterObject>
+  parameter: Deref<OpenAPIV3_1.ParameterObject>
 ): ApiParameter {
   return {
     $src: parameter.$src as ApiParameter['$src'],
@@ -177,7 +173,7 @@ function transformParameter(
 
 function transformRequestBody(
   context: OpenApiTransformerContext,
-  requestBody?: Deref<OpenAPIV3.RequestBodyObject>
+  requestBody?: Deref<OpenAPIV3_1.RequestBodyObject>
 ): ApiRequestBody | undefined {
   if (!requestBody) return undefined;
   return {
@@ -190,7 +186,7 @@ function transformRequestBody(
 
 function transformResponses(
   context: OpenApiTransformerContext,
-  responses?: Deref<OpenAPIV3.ResponsesObject>
+  responses?: Deref<OpenAPIV3_1.ResponsesObject>
 ): ApiResponse[] {
   if (!responses) return [];
   const result: ApiResponse[] = [];
@@ -210,7 +206,7 @@ function transformResponses(
 
 function transformContent(
   context: OpenApiTransformerContext,
-  content?: Deref<{ [media: string]: OpenAPIV3.MediaTypeObject }>
+  content?: Deref<{ [media: string]: OpenAPIV3_1.MediaTypeObject }>
 ): ApiContent[] {
   if (!content) return [];
   const result: ApiContent[] = [];
@@ -244,7 +240,7 @@ function combineParameters(
 
 function transformHeaders(
   context: OpenApiTransformerContext,
-  headers?: Deref<{ [name: string]: OpenAPIV3.HeaderObject }>
+  headers?: Deref<{ [name: string]: OpenAPIV3_1.HeaderObject }>
 ): ApiHeader[] {
   if (!headers) return [];
   const result: ApiHeader[] = [];
@@ -268,8 +264,8 @@ function transformHeaders(
 }
 
 const schemaTransformers: {
-  [K in OpenApiV3SchemaKind]: (
-    schema: Deref<OpenAPIV3.SchemaObject>,
+  [K in OpenApiV3_1SchemaKind]: (
+    schema: Deref<OpenAPIV3_1.SchemaObject>,
     context: OpenApiTransformerContext
   ) => ApiSchemaExtensions<K>;
 } = {
@@ -297,7 +293,7 @@ const schemaTransformers: {
   }),
   array: (schema, context) => ({
     type: 'array',
-    items: transformSchema(context, (schema as Deref<OpenAPIV3.ArraySchemaObject>).items),
+    items: transformSchema(context, (schema as Deref<OpenAPIV3_1.ArraySchemaObject>).items),
     minItems: schema.minItems,
     maxItems: schema.maxItems,
   }),
@@ -305,5 +301,9 @@ const schemaTransformers: {
     allOf: schema.allOf?.map((s) => transformSchema(context, s)) ?? [],
     anyOf: schema.anyOf?.map((s) => transformSchema(context, s)) ?? [],
   }),
+  'multi-type': (schema) => ({
+    type: schema.type as string[],
+  }),
+  null: () => ({ type: 'null' }),
   unknown: () => ({}),
 };

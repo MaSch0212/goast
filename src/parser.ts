@@ -1,23 +1,39 @@
 import SwaggerParser from '@apidevtools/swagger-parser';
-import { OpenAPI, OpenAPIV2, OpenAPIV3, OpenAPIV3_1 } from 'openapi-types';
+import { OpenAPI } from 'openapi-types';
 import { ReferenceObject } from 'openapi-typescript';
 import path from 'path';
-import { ApiComponent } from './api-types.js';
 import { cwd } from 'process';
-import { Deref } from './types.js';
+import { ApiComponent } from './api-types.js';
+import { collectOpenApi } from './collector.js';
+import { transformOpenApi } from './transformer.js';
+import { Deref, OpenApiData } from './types.js';
 
 export class OpenApiParser {
   private readonly _loadedApis = new Map<string, OpenAPI.Document>();
 
-  // public parseApisAndTransform(fileNames: string[]): TransformedApi {
+  public async parseApisAndTransform(fileNames: string[]): Promise<OpenApiData> {
+    console.time('Load OpenAPI files');
+    const apis = await Promise.all(fileNames.map((fileName) => this.parseApi(fileName)));
+    console.timeEnd('Load OpenAPI files');
 
-  // }
+    console.time('Transform OpenAPI');
+    const transformed = this.transformApis(apis);
+    console.timeEnd('Transform OpenAPI');
+
+    return transformed;
+  }
 
   public async parseApi(fileName: string): Promise<Deref<OpenAPI.Document>> {
     const absoluteFilePath = path.resolve(cwd(), fileName);
     const api = await SwaggerParser.parse(absoluteFilePath);
     this._loadedApis.set(absoluteFilePath, api);
     return await this.dereference(absoluteFilePath, '', api);
+  }
+
+  public transformApis(apis: Deref<OpenAPI.Document>[]): OpenApiData {
+    const collectedData = collectOpenApi(apis);
+    const transformedData = transformOpenApi(collectedData);
+    return transformedData;
   }
 
   private async dereference<T extends Record<string, any>>(
