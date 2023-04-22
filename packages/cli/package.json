@@ -1,0 +1,12 @@
+{
+  "name": "@easy-openapi-codegen/cli",
+  "version": "0.0.1",
+  "main": "index.js",
+  "module": "index.mjs",
+  "types": "index.d.ts",
+  "type": "commonjs",
+  "dependencies": {},
+  "peerDependencies": {
+    "tslib": "^2.3.0"
+  }
+}
