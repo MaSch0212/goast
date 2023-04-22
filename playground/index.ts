@@ -1,4 +1,12 @@
-import { main } from './playground.js';
+import { env } from 'process';
 
-console.time('main');
-main().then(() => console.timeEnd('main'));
+async function main() {
+  const hostname = env['COMPUTERNAME'] || env['HOSTNAME'];
+  const playground = await import(`./playground-${hostname}.js`);
+
+  console.time('main');
+  await playground.main();
+  console.timeEnd('main');
+}
+
+main();
