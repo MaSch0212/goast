@@ -5,13 +5,11 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nrwl/js:tsc",
+      "executor": "@nrwl/vite:build",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/cli",
-        "main": "packages/cli/src/index.ts",
-        "tsConfig": "packages/cli/tsconfig.lib.json",
-        "assets": ["packages/cli/*.md"]
+        "configFile": "packages/cli/vite.config.mts"
       }
     },
     "lint": {

@@ -1,1 +1,1 @@
-export * from './lib/cli';
+console.log('Hello World!');

@@ -8,7 +8,8 @@
       "executor": "@nrwl/vite:build",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/packages/core"
+        "outputPath": "dist/packages/core",
+        "configFile": "packages/core/vite.config.mts"
       }
     },
     "lint": {

@@ -4,6 +4,7 @@
   "main": "index.js",
   "module": "index.mjs",
   "types": "index.d.ts",
+  "typings": "index.d.ts",
   "type": "commonjs",
   "dependencies": {
     "@apidevtools/swagger-parser": "^10.1.0",
