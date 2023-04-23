@@ -39,5 +39,8 @@
   "workspaceLayout": {
     "appsDir": "packages",
     "libsDir": "packages"
+  },
+  "cli": {
+    "packageManager": "pnpm"
   }
 }

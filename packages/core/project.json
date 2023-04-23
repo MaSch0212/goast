@@ -5,11 +5,9 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nrwl/vite:build",
-      "outputs": ["{options.outputPath}"],
+      "executor": "@easy-openapi-codegen/local-nx-plugin:tsup",
       "options": {
-        "outputPath": "dist/packages/core",
-        "configFile": "packages/core/vite.config.mts"
+        "additionalEntryPoints": [{ "entryFile": "src/lib/utils/index.ts", "exportName": "utils" }]
       }
     },
     "lint": {

@@ -34,9 +34,17 @@ export function determineSchemaName(
   if (schema.title) return schema.title;
   if (schema.$src.path.startsWith('/components/schemas/')) {
     return schema.$src.path.substring('/components/schemas/'.length);
-  } else {
-    return `Schema${id}`;
   }
+  const responseMatch = schema.$src.path.match(
+    /\/paths\/(?<path>.+)\/(?<method>.+)\/responses\/(?<status>\d+)\//
+  );
+
+  if (responseMatch && responseMatch.groups) {
+    const { path, method, status } = responseMatch.groups;
+    return `${method}_${path.replace(/\//g, '_')}_${status}_Response`;
+  }
+
+  return `Schema_${id}`;
 }
 
 export function determineSchemaAccessibility(schema: {

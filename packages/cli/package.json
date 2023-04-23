@@ -1,8 +1,7 @@
 {
   "name": "@easy-openapi-codegen/cli",
   "version": "0.0.1",
-  "main": "index.js",
-  "type": "commonjs",
+  "type": "module",
   "bin": {
     "easy-openapi-codegen": "index.js"
   },

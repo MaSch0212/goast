@@ -1,296 +1,205 @@
-import { isNullish } from '../helpers.js';
+import { resolve } from 'path';
 import { OpenApiData } from '../types.js';
-import { CodeGenerator, CodeGeneratorResult, Merge } from './types.js';
-
-export interface GeneratorPipe<T extends OpenApiData> {
-  continueWith<A extends CodeGeneratorResult>(
-    g1: CodeGenerator<T, A>
-  ): GeneratorPipe<T & Merge<[A]>>;
-  continueWith<A extends CodeGeneratorResult, B extends CodeGeneratorResult>(
-    g1: CodeGenerator<T, A>,
-    g2: CodeGenerator<T & Merge<[A]>, B>
-  ): GeneratorPipe<T & Merge<[A, B]>>;
-  continueWith<
-    A extends CodeGeneratorResult,
-    B extends CodeGeneratorResult,
-    C extends CodeGeneratorResult
-  >(
-    g1: CodeGenerator<T, A>,
-    g2: CodeGenerator<T & Merge<[A]>, B>,
-    g3: CodeGenerator<T & Merge<[A, B]>, C>
-  ): GeneratorPipe<T & Merge<[A, B, C]>>;
-  continueWith<
-    A extends CodeGeneratorResult,
-    B extends CodeGeneratorResult,
-    C extends CodeGeneratorResult,
-    D extends CodeGeneratorResult
-  >(
-    g1: CodeGenerator<T, A>,
-    g2: CodeGenerator<T & Merge<[A]>, B>,
-    g3: CodeGenerator<T & Merge<[A, B]>, C>,
-    g4: CodeGenerator<T & Merge<[A, B, C]>, D>
-  ): GeneratorPipe<T & Merge<[A, B, C, D]>>;
-  continueWith<
-    A extends CodeGeneratorResult,
-    B extends CodeGeneratorResult,
-    C extends CodeGeneratorResult,
-    D extends CodeGeneratorResult,
-    E extends CodeGeneratorResult
-  >(
-    g1: CodeGenerator<T, A>,
-    g2: CodeGenerator<T & Merge<[A]>, B>,
-    g3: CodeGenerator<T & Merge<[A, B]>, C>,
-    g4: CodeGenerator<T & Merge<[A, B, C]>, D>,
-    g5: CodeGenerator<T & Merge<[A, B, C, D]>, E>
-  ): GeneratorPipe<T & Merge<[A, B, C, D, E]>>;
-  continueWith<
-    A extends CodeGeneratorResult,
-    B extends CodeGeneratorResult,
-    C extends CodeGeneratorResult,
-    D extends CodeGeneratorResult,
-    E extends CodeGeneratorResult,
-    F extends CodeGeneratorResult
-  >(
-    g1: CodeGenerator<T, A>,
-    g2: CodeGenerator<T & Merge<[A]>, B>,
-    g3: CodeGenerator<T & Merge<[A, B]>, C>,
-    g4: CodeGenerator<T & Merge<[A, B, C]>, D>,
-    g5: CodeGenerator<T & Merge<[A, B, C, D]>, E>,
-    g6: CodeGenerator<T & Merge<[A, B, C, D, E]>, F>
-  ): GeneratorPipe<T & Merge<[A, B, C, D, E, F]>>;
-  continueWith<
-    A extends CodeGeneratorResult,
-    B extends CodeGeneratorResult,
-    C extends CodeGeneratorResult,
-    D extends CodeGeneratorResult,
-    E extends CodeGeneratorResult,
-    F extends CodeGeneratorResult,
-    G extends CodeGeneratorResult
-  >(
-    g1: CodeGenerator<T, A>,
-    g2: CodeGenerator<T & Merge<[A]>, B>,
-    g3: CodeGenerator<T & Merge<[A, B]>, C>,
-    g4: CodeGenerator<T & Merge<[A, B, C]>, D>,
-    g5: CodeGenerator<T & Merge<[A, B, C, D]>, E>,
-    g6: CodeGenerator<T & Merge<[A, B, C, D, E]>, F>,
-    g7: CodeGenerator<T & Merge<[A, B, C, D, E, F]>, G>
-  ): GeneratorPipe<T & Merge<[A, B, C, D, E, F, G]>>;
-  continueWith<
-    A extends CodeGeneratorResult,
-    B extends CodeGeneratorResult,
-    C extends CodeGeneratorResult,
-    D extends CodeGeneratorResult,
-    E extends CodeGeneratorResult,
-    F extends CodeGeneratorResult,
-    G extends CodeGeneratorResult,
-    H extends CodeGeneratorResult
-  >(
-    g1: CodeGenerator<T, A>,
-    g2: CodeGenerator<T & Merge<[A]>, B>,
-    g3: CodeGenerator<T & Merge<[A, B]>, C>,
-    g4: CodeGenerator<T & Merge<[A, B, C]>, D>,
-    g5: CodeGenerator<T & Merge<[A, B, C, D]>, E>,
-    g6: CodeGenerator<T & Merge<[A, B, C, D, E]>, F>,
-    g7: CodeGenerator<T & Merge<[A, B, C, D, E, F]>, G>,
-    g8: CodeGenerator<T & Merge<[A, B, C, D, E, F, G]>, H>
-  ): GeneratorPipe<T & Merge<[A, B, C, D, E, F, G, H]>>;
-  continueWith<
-    A extends CodeGeneratorResult,
-    B extends CodeGeneratorResult,
-    C extends CodeGeneratorResult,
-    D extends CodeGeneratorResult,
-    E extends CodeGeneratorResult,
-    F extends CodeGeneratorResult,
-    G extends CodeGeneratorResult,
-    H extends CodeGeneratorResult,
-    I extends CodeGeneratorResult
-  >(
-    g1: CodeGenerator<T, A>,
-    g2: CodeGenerator<T & Merge<[A]>, B>,
-    g3: CodeGenerator<T & Merge<[A, B]>, C>,
-    g4: CodeGenerator<T & Merge<[A, B, C]>, D>,
-    g5: CodeGenerator<T & Merge<[A, B, C, D]>, E>,
-    g6: CodeGenerator<T & Merge<[A, B, C, D, E]>, F>,
-    g7: CodeGenerator<T & Merge<[A, B, C, D, E, F]>, G>,
-    g8: CodeGenerator<T & Merge<[A, B, C, D, E, F, G]>, H>,
-    g9: CodeGenerator<T & Merge<[A, B, C, D, E, F, G, H]>, I>,
-    ...generators: CodeGenerator<any, any>[]
-  ): GeneratorPipe<T & Merge<[A, B, C, D, E, F, G, H, I]>>;
-  continueWith<U extends OpenApiData>(...generators: CodeGenerator<any, any>[]): GeneratorPipe<U>;
-  then(onfulfilled?: ((value: T) => T | PromiseLike<T>) | null | undefined): Promise<T>;
-}
+import { CodeGeneratorConfig, defaultCodeGeneratorConfig } from './config.js';
+import { CodeGeneratorInput, CodeGeneratorOutput, CodeGenerator, GeneratorPipe } from './types.js';
+import { emptyDir, ensureDir } from 'fs-extra';
+import { Merge } from '../type.utils.js';
 
 class _GeneratorPipe<T extends OpenApiData> implements GeneratorPipe<T> {
-  private _pipe: CodeGenerator<any, any>[] = [];
+  private _pipe: CodeGenerator<CodeGeneratorInput, CodeGeneratorOutput>[] = [];
+  private _config: CodeGeneratorConfig;
 
-  constructor(private _data: OpenApiData) {}
+  constructor(private _data: OpenApiData, config?: Partial<CodeGeneratorConfig>) {
+    this._config = Object.assign({}, defaultCodeGeneratorConfig, config);
+  }
 
   public continueWith<U extends OpenApiData>(
-    ...generators: CodeGenerator<any, any>[]
+    ...generators: CodeGenerator<CodeGeneratorInput, CodeGeneratorOutput>[]
   ): _GeneratorPipe<U> {
     this._pipe.push(...generators);
-    return this as any;
+    return this as unknown as _GeneratorPipe<U>;
   }
 
   public async then(
     onfulfilled?: ((value: T) => T | PromiseLike<T>) | null | undefined
   ): Promise<T> {
-    let data = this._data as any;
-    for (const generator of this._pipe) {
-      const result = await generator(data);
-      data = mergeDeep(data, result);
+    const absOutputPath = resolve(this._config.outputDir);
+    if (this._config.clearOutputDir) {
+      await emptyDir(absOutputPath);
+    } else {
+      await ensureDir(absOutputPath);
     }
-    return onfulfilled ? onfulfilled(data) : data;
+
+    let input = {} as T;
+    for (const generator of this._pipe) {
+      const result = await generator.generate({ data: this._data, input, config: this._config });
+      if (result) {
+        input = mergeDeep(input, result);
+      }
+    }
+    return onfulfilled ? onfulfilled(input) : input;
   }
 }
 
-export function generate(data: OpenApiData): GeneratorPipe<OpenApiData>;
-export function generate<A extends CodeGeneratorResult>(
+export function generate(
   data: OpenApiData,
-  g1: CodeGenerator<OpenApiData, A>
-): GeneratorPipe<OpenApiData & Merge<[A]>>;
-export function generate<A extends CodeGeneratorResult, B extends CodeGeneratorResult>(
+  config?: Partial<CodeGeneratorConfig>
+): GeneratorPipe<OpenApiData>;
+export function generate<A extends CodeGeneratorOutput>(
   data: OpenApiData,
-  g1: CodeGenerator<OpenApiData, A>,
-  g2: CodeGenerator<OpenApiData & Merge<[A]>, B>
-): GeneratorPipe<OpenApiData & Merge<[A, B]>>;
+  config: Partial<CodeGeneratorConfig> | undefined,
+  g1: CodeGenerator<{}, A>
+): GeneratorPipe<Merge<[A]>>;
+export function generate<A extends CodeGeneratorOutput, B extends CodeGeneratorOutput>(
+  data: OpenApiData,
+  config: Partial<CodeGeneratorConfig> | undefined,
+  g1: CodeGenerator<{}, A>,
+  g2: CodeGenerator<Merge<[A]>, B>
+): GeneratorPipe<Merge<[A, B]>>;
 export function generate<
-  A extends CodeGeneratorResult,
-  B extends CodeGeneratorResult,
-  C extends CodeGeneratorResult
+  A extends CodeGeneratorOutput,
+  B extends CodeGeneratorOutput,
+  C extends CodeGeneratorOutput
 >(
   data: OpenApiData,
-  g1: CodeGenerator<OpenApiData, A>,
-  g2: CodeGenerator<OpenApiData & Merge<[A]>, B>,
-  g3: CodeGenerator<OpenApiData & Merge<[A, B]>, C>
-): GeneratorPipe<OpenApiData & Merge<[A, B, C]>>;
+  config: Partial<CodeGeneratorConfig> | undefined,
+  g1: CodeGenerator<{}, A>,
+  g2: CodeGenerator<Merge<[A]>, B>,
+  g3: CodeGenerator<Merge<[A, B]>, C>
+): GeneratorPipe<Merge<[A, B, C]>>;
 export function generate<
-  A extends CodeGeneratorResult,
-  B extends CodeGeneratorResult,
-  C extends CodeGeneratorResult,
-  D extends CodeGeneratorResult
+  A extends CodeGeneratorOutput,
+  B extends CodeGeneratorOutput,
+  C extends CodeGeneratorOutput,
+  D extends CodeGeneratorOutput
 >(
   data: OpenApiData,
-  g1: CodeGenerator<OpenApiData, A>,
-  g2: CodeGenerator<OpenApiData & Merge<[A]>, B>,
-  g3: CodeGenerator<OpenApiData & Merge<[A, B]>, C>,
-  g4: CodeGenerator<OpenApiData & Merge<[A, B, C]>, D>
-): GeneratorPipe<OpenApiData & Merge<[A, B, C, D]>>;
+  config: Partial<CodeGeneratorConfig> | undefined,
+  g1: CodeGenerator<{}, A>,
+  g2: CodeGenerator<Merge<[A]>, B>,
+  g3: CodeGenerator<Merge<[A, B]>, C>,
+  g4: CodeGenerator<Merge<[A, B, C]>, D>
+): GeneratorPipe<Merge<[A, B, C, D]>>;
 export function generate<
-  A extends CodeGeneratorResult,
-  B extends CodeGeneratorResult,
-  C extends CodeGeneratorResult,
-  D extends CodeGeneratorResult,
-  E extends CodeGeneratorResult
+  A extends CodeGeneratorOutput,
+  B extends CodeGeneratorOutput,
+  C extends CodeGeneratorOutput,
+  D extends CodeGeneratorOutput,
+  E extends CodeGeneratorOutput
 >(
   data: OpenApiData,
-  g1: CodeGenerator<OpenApiData, A>,
-  g2: CodeGenerator<OpenApiData & Merge<[A]>, B>,
-  g3: CodeGenerator<OpenApiData & Merge<[A, B]>, C>,
-  g4: CodeGenerator<OpenApiData & Merge<[A, B, C]>, D>,
-  g5: CodeGenerator<OpenApiData & Merge<[A, B, C, D]>, E>
-): GeneratorPipe<OpenApiData & Merge<[A, B, C, D, E]>>;
+  config: Partial<CodeGeneratorConfig> | undefined,
+  g1: CodeGenerator<{}, A>,
+  g2: CodeGenerator<Merge<[A]>, B>,
+  g3: CodeGenerator<Merge<[A, B]>, C>,
+  g4: CodeGenerator<Merge<[A, B, C]>, D>,
+  g5: CodeGenerator<Merge<[A, B, C, D]>, E>
+): GeneratorPipe<Merge<[A, B, C, D, E]>>;
 export function generate<
-  A extends CodeGeneratorResult,
-  B extends CodeGeneratorResult,
-  C extends CodeGeneratorResult,
-  D extends CodeGeneratorResult,
-  E extends CodeGeneratorResult,
-  F extends CodeGeneratorResult
+  A extends CodeGeneratorOutput,
+  B extends CodeGeneratorOutput,
+  C extends CodeGeneratorOutput,
+  D extends CodeGeneratorOutput,
+  E extends CodeGeneratorOutput,
+  F extends CodeGeneratorOutput
 >(
   data: OpenApiData,
-  g1: CodeGenerator<OpenApiData, A>,
-  g2: CodeGenerator<OpenApiData & Merge<[A]>, B>,
-  g3: CodeGenerator<OpenApiData & Merge<[A, B]>, C>,
-  g4: CodeGenerator<OpenApiData & Merge<[A, B, C]>, D>,
-  g5: CodeGenerator<OpenApiData & Merge<[A, B, C, D]>, E>,
-  g6: CodeGenerator<OpenApiData & Merge<[A, B, C, D, E]>, F>
-): GeneratorPipe<OpenApiData & Merge<[A, B, C, D, E, F]>>;
+  config: Partial<CodeGeneratorConfig> | undefined,
+  g1: CodeGenerator<{}, A>,
+  g2: CodeGenerator<Merge<[A]>, B>,
+  g3: CodeGenerator<Merge<[A, B]>, C>,
+  g4: CodeGenerator<Merge<[A, B, C]>, D>,
+  g5: CodeGenerator<Merge<[A, B, C, D]>, E>,
+  g6: CodeGenerator<Merge<[A, B, C, D, E]>, F>
+): GeneratorPipe<Merge<[A, B, C, D, E, F]>>;
 export function generate<
-  A extends CodeGeneratorResult,
-  B extends CodeGeneratorResult,
-  C extends CodeGeneratorResult,
-  D extends CodeGeneratorResult,
-  E extends CodeGeneratorResult,
-  F extends CodeGeneratorResult,
-  G extends CodeGeneratorResult
+  A extends CodeGeneratorOutput,
+  B extends CodeGeneratorOutput,
+  C extends CodeGeneratorOutput,
+  D extends CodeGeneratorOutput,
+  E extends CodeGeneratorOutput,
+  F extends CodeGeneratorOutput,
+  G extends CodeGeneratorOutput
 >(
   data: OpenApiData,
-  g1: CodeGenerator<OpenApiData, A>,
-  g2: CodeGenerator<OpenApiData & Merge<[A]>, B>,
-  g3: CodeGenerator<OpenApiData & Merge<[A, B]>, C>,
-  g4: CodeGenerator<OpenApiData & Merge<[A, B, C]>, D>,
-  g5: CodeGenerator<OpenApiData & Merge<[A, B, C, D]>, E>,
-  g6: CodeGenerator<OpenApiData & Merge<[A, B, C, D, E]>, F>,
-  g7: CodeGenerator<OpenApiData & Merge<[A, B, C, D, E, F]>, G>
-): GeneratorPipe<OpenApiData & Merge<[A, B, C, D, E, F, G]>>;
+  config: Partial<CodeGeneratorConfig> | undefined,
+  g1: CodeGenerator<{}, A>,
+  g2: CodeGenerator<Merge<[A]>, B>,
+  g3: CodeGenerator<Merge<[A, B]>, C>,
+  g4: CodeGenerator<Merge<[A, B, C]>, D>,
+  g5: CodeGenerator<Merge<[A, B, C, D]>, E>,
+  g6: CodeGenerator<Merge<[A, B, C, D, E]>, F>,
+  g7: CodeGenerator<Merge<[A, B, C, D, E, F]>, G>
+): GeneratorPipe<Merge<[A, B, C, D, E, F, G]>>;
 export function generate<
-  A extends CodeGeneratorResult,
-  B extends CodeGeneratorResult,
-  C extends CodeGeneratorResult,
-  D extends CodeGeneratorResult,
-  E extends CodeGeneratorResult,
-  F extends CodeGeneratorResult,
-  G extends CodeGeneratorResult,
-  H extends CodeGeneratorResult
+  A extends CodeGeneratorOutput,
+  B extends CodeGeneratorOutput,
+  C extends CodeGeneratorOutput,
+  D extends CodeGeneratorOutput,
+  E extends CodeGeneratorOutput,
+  F extends CodeGeneratorOutput,
+  G extends CodeGeneratorOutput,
+  H extends CodeGeneratorOutput
 >(
   data: OpenApiData,
-  g1: CodeGenerator<OpenApiData, A>,
-  g2: CodeGenerator<OpenApiData & Merge<[A]>, B>,
-  g3: CodeGenerator<OpenApiData & Merge<[A, B]>, C>,
-  g4: CodeGenerator<OpenApiData & Merge<[A, B, C]>, D>,
-  g5: CodeGenerator<OpenApiData & Merge<[A, B, C, D]>, E>,
-  g6: CodeGenerator<OpenApiData & Merge<[A, B, C, D, E]>, F>,
-  g7: CodeGenerator<OpenApiData & Merge<[A, B, C, D, E, F]>, G>,
-  g8: CodeGenerator<OpenApiData & Merge<[A, B, C, D, E, F, G]>, H>
-): GeneratorPipe<OpenApiData & Merge<[A, B, C, D, E, F, G, H]>>;
+  config: Partial<CodeGeneratorConfig> | undefined,
+  g1: CodeGenerator<{}, A>,
+  g2: CodeGenerator<Merge<[A]>, B>,
+  g3: CodeGenerator<Merge<[A, B]>, C>,
+  g4: CodeGenerator<Merge<[A, B, C]>, D>,
+  g5: CodeGenerator<Merge<[A, B, C, D]>, E>,
+  g6: CodeGenerator<Merge<[A, B, C, D, E]>, F>,
+  g7: CodeGenerator<Merge<[A, B, C, D, E, F]>, G>,
+  g8: CodeGenerator<Merge<[A, B, C, D, E, F, G]>, H>
+): GeneratorPipe<Merge<[A, B, C, D, E, F, G, H]>>;
 export function generate<
-  A extends CodeGeneratorResult,
-  B extends CodeGeneratorResult,
-  C extends CodeGeneratorResult,
-  D extends CodeGeneratorResult,
-  E extends CodeGeneratorResult,
-  F extends CodeGeneratorResult,
-  G extends CodeGeneratorResult,
-  H extends CodeGeneratorResult,
-  I extends CodeGeneratorResult
+  A extends CodeGeneratorOutput,
+  B extends CodeGeneratorOutput,
+  C extends CodeGeneratorOutput,
+  D extends CodeGeneratorOutput,
+  E extends CodeGeneratorOutput,
+  F extends CodeGeneratorOutput,
+  G extends CodeGeneratorOutput,
+  H extends CodeGeneratorOutput,
+  I extends CodeGeneratorOutput
 >(
   data: OpenApiData,
-  g1: CodeGenerator<OpenApiData, A>,
-  g2: CodeGenerator<OpenApiData & Merge<[A]>, B>,
-  g3: CodeGenerator<OpenApiData & Merge<[A, B]>, C>,
-  g4: CodeGenerator<OpenApiData & Merge<[A, B, C]>, D>,
-  g5: CodeGenerator<OpenApiData & Merge<[A, B, C, D]>, E>,
-  g6: CodeGenerator<OpenApiData & Merge<[A, B, C, D, E]>, F>,
-  g7: CodeGenerator<OpenApiData & Merge<[A, B, C, D, E, F]>, G>,
-  g8: CodeGenerator<OpenApiData & Merge<[A, B, C, D, E, F, G]>, H>,
-  g9: CodeGenerator<OpenApiData & Merge<[A, B, C, D, E, F, G, H]>, I>,
-  ...generators: CodeGenerator<any, any>[]
-): GeneratorPipe<OpenApiData & Merge<[A, B, C, D, E, F, G, H, I]>>;
-
+  config: Partial<CodeGeneratorConfig> | undefined,
+  g1: CodeGenerator<{}, A>,
+  g2: CodeGenerator<Merge<[A]>, B>,
+  g3: CodeGenerator<Merge<[A, B]>, C>,
+  g4: CodeGenerator<Merge<[A, B, C]>, D>,
+  g5: CodeGenerator<Merge<[A, B, C, D]>, E>,
+  g6: CodeGenerator<Merge<[A, B, C, D, E]>, F>,
+  g7: CodeGenerator<Merge<[A, B, C, D, E, F]>, G>,
+  g8: CodeGenerator<Merge<[A, B, C, D, E, F, G]>, H>,
+  g9: CodeGenerator<Merge<[A, B, C, D, E, F, G, H]>, I>,
+  ...generators: CodeGenerator<CodeGeneratorInput, CodeGeneratorOutput>[]
+): GeneratorPipe<Merge<[A, B, C, D, E, F, G, H, I]>>;
 export function generate<T extends OpenApiData>(
   data: OpenApiData,
-  ...generators: CodeGenerator<any, any>[]
+  config: Partial<CodeGeneratorConfig> | undefined,
+  ...generators: CodeGenerator<CodeGeneratorInput, CodeGeneratorOutput>[]
 ): GeneratorPipe<T> {
-  const pipe = new _GeneratorPipe(data);
+  const pipe = new _GeneratorPipe(data, config);
   return pipe.continueWith<T>(...generators);
 }
 
-function mergeDeep<
-  T extends Record<string | number | symbol, any>,
-  U extends Record<string | number | symbol, any>[]
->(target: T, ...sources: U): T & U[number] {
+function mergeDeep<T extends Record<string, unknown>, U extends Record<string, unknown>[]>(
+  target: T,
+  ...sources: U
+): T & U[number] {
   if (!sources.length) return target;
   const source = sources.shift();
 
   for (const key in source) {
     const value = source[key];
-    if (typeof value === 'object') {
+    if (value && typeof value === 'object') {
       if (!target[key]) Object.assign(target, { [key]: value });
-      else mergeDeep(target[key], value);
+      else mergeDeep(target[key] as Record<string, unknown>, value as Record<string, unknown>);
     } else if (Array.isArray(value)) {
       if (!target[key]) Object.assign(target, { [key]: value });
-      else Object.assign(target, { [key]: [...target[key], ...value] });
+      else Object.assign(target, { [key]: [...(target[key] as Iterable<unknown>), ...value] });
     } else {
       Object.assign(target, { [key]: value });
     }

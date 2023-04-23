@@ -15,6 +15,10 @@
     {
       "name": "📦 CLI",
       "path": "packages/cli/src"
+    },
+    {
+      "name": "📦 TypeScript",
+      "path": "packages/typescript/src"
     }
   ],
   "tasks": {
@@ -61,9 +65,9 @@
     "explorer.fileNesting.enabled": true,
     "explorer.fileNesting.expand": false,
     "explorer.fileNesting.patterns": {
-      "project.json": "package.json, tsconfig*.json, jest.*, .eslint*, vite.*",
-      "package.json": "tsconfig*.json, pnpm-lock.yaml, jest.*, .editorconfig, .prettier*, .npmrc, nx.json, .eslint*, vite.*",
-      "*.ts": "$(capture).spec.ts",
+      "project.json": "package.json, tsconfig*.json, jest.*, .eslint*",
+      "package.json": "tsconfig*.json, pnpm-lock.yaml, jest.*, .editorconfig, .prettier*, .npmrc, nx.json, .eslint*",
+      "*.ts": "$(capture).spec.ts, $(capture).types.ts",
       "*.js": "$(capture).js.map"
     },
     "task.autoDetect": "off",

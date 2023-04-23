@@ -16,7 +16,10 @@
     "baseUrl": ".",
     "paths": {
       "@easy-openapi-codegen/cli": ["packages/cli/src/index.ts"],
-      "@easy-openapi-codegen/core": ["packages/core/src/index.ts"]
+      "@easy-openapi-codegen/core": ["packages/core/src/index.ts"],
+      "@easy-openapi-codegen/core/utils": ["packages/core/src/lib/utils/index.ts"],
+      "@easy-openapi-codegen/local-nx-plugin": ["packages/local-nx-plugin/src/index.ts"],
+      "@easy-openapi-codegen/typescript": ["packages/typescript/src/index.ts"]
     },
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
