@@ -1,3 +1,4 @@
+import { EOL } from 'os';
 import {
   WordCasing,
   StringCasing,
@@ -239,4 +240,25 @@ export function toCustomCase(str: string, options: CustomCaseOptions): string {
             : wordToCasing(word, options.wordCasing);
   const customCase = words.map(wordMapFn).join(options.wordSeparator ?? '');
   return addPrefixAndSuffix(customCase, options);
+}
+
+export class StringBuilder {
+  private readonly _parts: string[] = [];
+
+  public append(...value: string[]): this {
+    if (value.length === 0) return this;
+    for (const part of value) {
+      if (part.length === 0) continue;
+      this._parts.push(part);
+    }
+    return this;
+  }
+
+  public appendLine(...value: string[]): this {
+    return this.append(...value, EOL);
+  }
+
+  public toString(): string {
+    return ''.concat(...this._parts);
+  }
 }

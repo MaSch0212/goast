@@ -5,7 +5,10 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@easy-openapi-codegen/local-nx-plugin:tsup"
+      "executor": "./tools:goast-build",
+      "options": {
+        "assets": ["README.md"]
+      }
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",

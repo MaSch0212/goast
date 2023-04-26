@@ -1,9 +1,9 @@
 {
-  "name": "@easy-openapi-codegen/cli",
+  "name": "@goast/cli",
   "version": "0.0.1",
   "type": "module",
   "bin": {
-    "easy-openapi-codegen": "index.js"
+    "goast": "index.js"
   },
   "dependencies": {},
   "peerDependencies": {

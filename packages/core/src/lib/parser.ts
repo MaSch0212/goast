@@ -1,6 +1,6 @@
 import SwaggerParser from '@apidevtools/swagger-parser';
 import { OpenAPI } from 'openapi-types';
-import path from 'path';
+import * as path from 'path';
 import { cwd } from 'process';
 import { collectOpenApi } from './collect/collector.js';
 import { transformOpenApi } from './transform/transformer.js';

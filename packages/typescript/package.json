@@ -1,5 +1,5 @@
 {
-  "name": "@easy-openapi-codegen/typescript",
+  "name": "@goast/typescript",
   "version": "0.0.1",
   "type": "module"
 }

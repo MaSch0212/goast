@@ -1,7 +1,8 @@
-import { CodeGenerator, CodeGeneratorContext } from '@easy-openapi-codegen/core';
-import { StringCasing, StringCasingWithOptions, toCasing } from '@easy-openapi-codegen/core/utils';
+import { ApiSchema, CodeGenerator, CodeGeneratorContext } from '@goast/core';
+import { StringCasing, StringCasingWithOptions, toCasing } from '@goast/core/utils';
 import fs from 'fs-extra';
 import { dirname, join, resolve } from 'path';
+import ts from 'typescript';
 
 export type TypeScriptModelsGeneratorResult = {
   models: {
@@ -16,6 +17,7 @@ export type TypeScriptModelsGeneratorConfig = {
   modelsPath: string;
   fileNameCasing: StringCasing | StringCasingWithOptions;
   typeNameCasing: StringCasing | StringCasingWithOptions;
+  typeDeclaration: 'type' | 'prefer-interface';
 };
 
 const defaultConfig: TypeScriptModelsGeneratorConfig = {
@@ -23,6 +25,7 @@ const defaultConfig: TypeScriptModelsGeneratorConfig = {
   modelsPath: 'models',
   fileNameCasing: { casing: 'kebab', suffix: '.model' },
   typeNameCasing: 'pascal',
+  typeDeclaration: 'type',
 };
 
 //export type TypeScriptModelsGenerator = CodeGenerator<OpenApiData, TypeScriptModelsGeneratorResult>;
@@ -80,5 +83,9 @@ export class TypeScriptModelsGenerator
     }
 
     return result;
+  }
+
+  public getTypeDeclaration(schema: Partial<ApiSchema>) {
+    return;
   }
 }

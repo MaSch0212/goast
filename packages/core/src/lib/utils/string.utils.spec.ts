@@ -7,7 +7,7 @@ import {
   toPascalCase,
   toSnakeCase,
   toCasing,
-} from './string.utils';
+} from './string.utils.js';
 import {
   WordCasing,
   CamelCaseOptions,
@@ -15,7 +15,7 @@ import {
   KebabCaseOptions,
   SnakeCaseOptions,
   CustomCaseOptions,
-} from './string.utils.types';
+} from './string.utils.types.js';
 
 describe('getWords', () => {
   it('should return an empty array for an empty string', () => {

@@ -13,7 +13,8 @@
             },
             "extendDefaults": true
           }
-        ]
+        ],
+        "@typescript-eslint/no-inferrable-types": "off"
       }
     },
     {

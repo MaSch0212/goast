@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "version": 2,
+  "cli": "nx",
+  "title": "GOAST build executor",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "entryFile": {
+      "type": "string",
+      "description": "Entry point for the package",
+      "default": "src/index.ts"
+    },
+    "additionalEntryPoints": {
+      "type": "object",
+      "description": "Additional entry points to be used for the build",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "tsConfig": {
+      "type": "string",
+      "description": "Path to the tsconfig file",
+      "default": "tsconfig.lib.json"
+    },
+    "assets": {
+      "type": "array",
+      "description": "List of files to be copied to the output directory",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": []
+}

@@ -5,9 +5,12 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@easy-openapi-codegen/local-nx-plugin:tsup",
+      "executor": "./tools:goast-build",
       "options": {
-        "additionalEntryPoints": [{ "entryFile": "src/lib/utils/index.ts", "exportName": "utils" }]
+        "additionalEntryPoints": {
+          "utils": "src/lib/utils/index.ts"
+        },
+        "assets": ["README.md"]
       }
     },
     "lint": {
