@@ -13,9 +13,10 @@ export class OpenApiParser {
   private readonly _loadedApis = new Map<string, OpenAPI.Document>();
   private readonly _loadedApiVersionCache = new Map<string, OpenApiVersion>();
 
-  public async parseApisAndTransform(fileNames: string[]): Promise<OpenApiData> {
+  public async parseApisAndTransform(...fileNames: (string | string[])[]): Promise<OpenApiData> {
     console.time('Load OpenAPI files');
-    const apis = await Promise.all(fileNames.map((fileName) => this.parseApi(fileName)));
+    const flatFileNames = ([] as string[]).concat(...fileNames);
+    const apis = await Promise.all(flatFileNames.map((fileName) => this.parseApi(fileName)));
     console.timeEnd('Load OpenAPI files');
 
     console.time('Transform OpenAPI');

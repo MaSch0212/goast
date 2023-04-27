@@ -1,0 +1,27 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Simple Schemas
+
+paths:
+  /x:
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    MyString:
+      type: string
+    MyInteger:
+      type: integer
+
+    MyNumber:
+      type: number
+    MyBoolean:
+      type: boolean
+    MyArray:
+      type: array
+    MyObject:
+      type: object

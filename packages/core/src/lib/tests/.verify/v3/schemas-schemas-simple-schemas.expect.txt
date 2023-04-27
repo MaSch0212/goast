@@ -1,0 +1,251 @@
+{
+  services: [
+    {
+      id: 'service-1',
+      name: '',
+      endpoints: [
+        <ref *1> {
+          '$src': {
+            file: '<root>\\v3\\schemas\\simple-schemas.yml',
+            path: '/paths//x/get',
+            component: { responses: { '200': { description: '' } } },
+            version: '3.0'
+          },
+          id: 'endpoint-1',
+          name: 'get_x',
+          path: '/x',
+          pathInfo: {
+            '$src': {
+              file: '<root>\\v3\\schemas\\simple-schemas.yml',
+              path: '/paths//x',
+              component: {
+                get: { responses: { '200': { description: '' } } }
+              },
+              version: '3.0'
+            },
+            id: 'path-1',
+            summary: undefined,
+            description: undefined,
+            path: '/x',
+            parameters: [],
+            get: [Circular *1]
+          },
+          method: 'get',
+          summary: undefined,
+          description: undefined,
+          parameters: [],
+          deprecated: false,
+          requestBody: undefined,
+          responses: [
+            {
+              '$src': {
+                file: '<root>\\v3\\schemas\\simple-schemas.yml',
+                path: '/paths//x/get/responses/200',
+                component: { description: '' },
+                version: '3.0'
+              },
+              id: 'response-1',
+              statusCode: 200,
+              description: '',
+              headers: [],
+              contentOptions: []
+            }
+          ],
+          tags: [],
+          custom: {}
+        }
+      ]
+    }
+  ],
+  endpoints: [
+    <ref *1> {
+      '$src': {
+        file: '<root>\\v3\\schemas\\simple-schemas.yml',
+        path: '/paths//x/get',
+        component: { responses: { '200': { description: '' } } },
+        version: '3.0'
+      },
+      id: 'endpoint-1',
+      name: 'get_x',
+      path: '/x',
+      pathInfo: {
+        '$src': {
+          file: '<root>\\v3\\schemas\\simple-schemas.yml',
+          path: '/paths//x',
+          component: {
+            get: { responses: { '200': { description: '' } } }
+          },
+          version: '3.0'
+        },
+        id: 'path-1',
+        summary: undefined,
+        description: undefined,
+        path: '/x',
+        parameters: [],
+        get: [Circular *1]
+      },
+      method: 'get',
+      summary: undefined,
+      description: undefined,
+      parameters: [],
+      deprecated: false,
+      requestBody: undefined,
+      responses: [
+        {
+          '$src': {
+            file: '<root>\\v3\\schemas\\simple-schemas.yml',
+            path: '/paths//x/get/responses/200',
+            component: { description: '' },
+            version: '3.0'
+          },
+          id: 'response-1',
+          statusCode: 200,
+          description: '',
+          headers: [],
+          contentOptions: []
+        }
+      ],
+      tags: [],
+      custom: {}
+    }
+  ],
+  schemas: [
+    {
+      '$src': {
+        file: '<root>\\v3\\schemas\\simple-schemas.yml',
+        path: '/components/schemas/MyString',
+        component: { type: 'string' },
+        version: '3.0'
+      },
+      id: 'schema-1',
+      name: 'MyString',
+      isNameGenerated: false,
+      description: undefined,
+      deprecated: false,
+      accessibility: 'all',
+      kind: 'string',
+      enum: undefined,
+      default: undefined,
+      format: undefined,
+      nullable: undefined,
+      custom: {},
+      type: 'string'
+    },
+    {
+      '$src': {
+        file: '<root>\\v3\\schemas\\simple-schemas.yml',
+        path: '/components/schemas/MyInteger',
+        component: { type: 'integer' },
+        version: '3.0'
+      },
+      id: 'schema-2',
+      name: 'MyInteger',
+      isNameGenerated: false,
+      description: undefined,
+      deprecated: false,
+      accessibility: 'all',
+      kind: 'integer',
+      enum: undefined,
+      default: undefined,
+      format: undefined,
+      nullable: undefined,
+      custom: {},
+      type: 'integer',
+      minimum: undefined,
+      maximum: undefined
+    },
+    {
+      '$src': {
+        file: '<root>\\v3\\schemas\\simple-schemas.yml',
+        path: '/components/schemas/MyNumber',
+        component: { type: 'number' },
+        version: '3.0'
+      },
+      id: 'schema-3',
+      name: 'MyNumber',
+      isNameGenerated: false,
+      description: undefined,
+      deprecated: false,
+      accessibility: 'all',
+      kind: 'number',
+      enum: undefined,
+      default: undefined,
+      format: undefined,
+      nullable: undefined,
+      custom: {},
+      type: 'number',
+      minimum: undefined,
+      maximum: undefined
+    },
+    {
+      '$src': {
+        file: '<root>\\v3\\schemas\\simple-schemas.yml',
+        path: '/components/schemas/MyBoolean',
+        component: { type: 'boolean' },
+        version: '3.0'
+      },
+      id: 'schema-4',
+      name: 'MyBoolean',
+      isNameGenerated: false,
+      description: undefined,
+      deprecated: false,
+      accessibility: 'all',
+      kind: 'boolean',
+      enum: undefined,
+      default: undefined,
+      format: undefined,
+      nullable: undefined,
+      custom: {},
+      type: 'boolean'
+    },
+    {
+      '$src': {
+        file: '<root>\\v3\\schemas\\simple-schemas.yml',
+        path: '/components/schemas/MyArray',
+        component: { type: 'array' },
+        version: '3.0'
+      },
+      id: 'schema-5',
+      name: 'MyArray',
+      isNameGenerated: false,
+      description: undefined,
+      deprecated: false,
+      accessibility: 'all',
+      kind: 'array',
+      enum: undefined,
+      default: undefined,
+      format: undefined,
+      nullable: undefined,
+      custom: {},
+      type: 'array',
+      items: undefined,
+      minItems: undefined,
+      maxItems: undefined
+    },
+    {
+      '$src': {
+        file: '<root>\\v3\\schemas\\simple-schemas.yml',
+        path: '/components/schemas/MyObject',
+        component: { type: 'object' },
+        version: '3.0'
+      },
+      id: 'schema-6',
+      name: 'MyObject',
+      isNameGenerated: false,
+      description: undefined,
+      deprecated: false,
+      accessibility: 'all',
+      kind: 'object',
+      enum: undefined,
+      default: undefined,
+      format: undefined,
+      nullable: undefined,
+      custom: {},
+      type: 'object',
+      properties: [],
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: []
+    }
+  ]
+}

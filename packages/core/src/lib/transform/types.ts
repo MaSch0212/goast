@@ -5,6 +5,7 @@ import {
   OpenApiCollectorSchema,
   OpenApiCollectorEndpointInfo,
 } from '../collect/types.js';
+import { ArrayItem } from '../type.utils.js';
 import {
   ApiSchema,
   ApiSchemaExtensions,
@@ -16,7 +17,6 @@ import {
 import { IdGenerator } from './helpers.js';
 
 export type IncompleteApiSchema = Omit<ApiSchema, keyof ApiSchemaExtensions<ApiSchemaKind>>;
-type ArrayItem<T> = T extends (infer U)[] ? U : never;
 export type OpenApiTransformerContext = {
   idGenerator: IdGenerator;
   input: OpenApiCollectorData;

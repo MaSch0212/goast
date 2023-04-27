@@ -1,23 +1,5 @@
 import { OpenAPIV2, OpenAPIV3, OpenAPIV3_1 } from 'openapi-types';
-import { OptionalProperties } from './type.utils.js';
-
-type CombineTwo<T1, T2> = T1 extends object
-  ? T2 extends object
-    ? {
-        [K in keyof T1 & keyof T2]: T1[K] | T2[K];
-      } & {
-        [K in Exclude<keyof T1, keyof T2>]?: T1[K];
-      } & {
-        [K in Exclude<keyof T2, keyof T1>]?: T2[K];
-      }
-    : T1 | T2
-  : T1 | T2;
-
-type Combine<T extends unknown[]> = T extends [infer A, infer B, ...infer C]
-  ? CombineTwo<CombineTwo<A, B>, Combine<C>>
-  : T extends [infer A]
-  ? A
-  : never;
+import { Combine, OptionalProperties } from './type.utils.js';
 
 export type ReferenceObject = Combine<
   [OpenAPIV2.ReferenceObject, OpenAPIV3.ReferenceObject, OpenAPIV3_1.ReferenceObject]
