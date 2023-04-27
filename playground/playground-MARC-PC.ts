@@ -1,5 +1,5 @@
-import { OpenApiParser, generate } from '@easy-openapi-codegen/core';
-import { TypeScriptModelsGenerator } from '@easy-openapi-codegen/typescript';
+import { OpenApiParser, generate } from '@goast/core';
+import { TypeScriptModelsGenerator } from '@goast/typescript';
 import fs from 'fs-extra';
 import * as util from 'util';
 

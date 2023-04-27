@@ -1,4 +1,5 @@
 import { OpenAPIV2, OpenAPIV3, OpenAPIV3_1 } from 'openapi-types';
+import { OptionalProperties } from './type.utils.js';
 
 type CombineTwo<T1, T2> = T1 extends object
   ? T2 extends object
@@ -40,26 +41,34 @@ export type OpenApiVersion = '2.0' | '3.0' | '3.1';
 export type ApiMethod = 'get' | 'put' | 'post' | 'delete' | 'options' | 'head' | 'patch' | 'trace';
 export type ApiParameterTarget = 'path' | 'query' | 'header' | 'cookie';
 
+type TypeByApiVersion<V extends OpenApiVersion, T2, T3, T3_1> = V extends '2.0'
+  ? T2
+  : V extends '3.0'
+  ? T3
+  : V extends '3.1'
+  ? T3_1
+  : never;
 export type ApiComponentSource<V extends OpenApiVersion, T2, T3, T3_1> = {
   file: string;
   path: string;
   version: V;
-  component: V extends '2.0' ? T2 : V extends '3.0' ? T3 : V extends '3.1' ? T3_1 : never;
-  reference?: V extends '2.0'
-    ? OpenAPIV2.ReferenceObject
-    : V extends '3.0'
-    ? OpenAPIV3.ReferenceObject
-    : V extends '3.1'
-    ? OpenAPIV3_1.ReferenceObject
-    : never;
+  component: TypeByApiVersion<V, T2, T3, T3_1>;
+  reference?: TypeByApiVersion<
+    V,
+    OpenAPIV2.ReferenceObject,
+    OpenAPIV3.ReferenceObject,
+    OpenAPIV3_1.ReferenceObject
+  >;
 };
 
 export type ApiComponent<T2 = unknown, T3 = unknown, T3_1 = unknown> = {
+  id: string;
   $src: ApiComponentSource<OpenApiVersion, T2, T3, T3_1>;
 };
 
-export type ApiServiceComponent = Partial<
-  ApiComponent<OpenAPIV2.TagObject, OpenAPIV3.TagObject, OpenAPIV3_1.TagObject>
+export type ApiServiceComponent = OptionalProperties<
+  ApiComponent<OpenAPIV2.TagObject, OpenAPIV3.TagObject, OpenAPIV3_1.TagObject>,
+  '$src'
 >;
 export type ApiService = ApiServiceComponent & {
   name: string;
@@ -190,8 +199,8 @@ export type ApiSchemaComponent = ApiComponent<
   OpenAPIV3_1.SchemaObject
 >;
 export type ApiSchemaBase = ApiSchemaComponent & {
-  id: number;
   name: string;
+  isNameGenerated: boolean;
   description?: string;
   deprecated: boolean;
   accessibility: ApiSchemaAccessibility;

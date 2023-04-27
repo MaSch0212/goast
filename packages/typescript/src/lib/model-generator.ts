@@ -6,7 +6,7 @@ import ts from 'typescript';
 
 export type TypeScriptModelsGeneratorResult = {
   models: {
-    [schemaId: number]: {
+    [schemaId: string]: {
       typeName: string;
       filePath: string;
     };
@@ -18,6 +18,7 @@ export type TypeScriptModelsGeneratorConfig = {
   fileNameCasing: StringCasing | StringCasingWithOptions;
   typeNameCasing: StringCasing | StringCasingWithOptions;
   typeDeclaration: 'type' | 'prefer-interface';
+  immutableTypes: boolean;
 };
 
 const defaultConfig: TypeScriptModelsGeneratorConfig = {
@@ -26,6 +27,7 @@ const defaultConfig: TypeScriptModelsGeneratorConfig = {
   fileNameCasing: { casing: 'kebab', suffix: '.model' },
   typeNameCasing: 'pascal',
   typeDeclaration: 'type',
+  immutableTypes: false,
 };
 
 //export type TypeScriptModelsGenerator = CodeGenerator<OpenApiData, TypeScriptModelsGeneratorResult>;
@@ -63,7 +65,8 @@ export class TypeScriptModelsGenerator
         schema.kind === 'combined' ||
         schema.kind === 'multi-type' ||
         schema.kind === 'object' ||
-        schema.kind === 'oneOf'
+        schema.kind === 'oneOf' ||
+        !schema.isNameGenerated
       ) {
         const typeName = toCasing(schema.name, this.config.typeNameCasing);
         const filePath = resolve(
@@ -76,6 +79,7 @@ export class TypeScriptModelsGenerator
 
         console.log(`Generating model ${typeName} to ${filePath}...`);
         await fs.ensureDir(dirname(filePath));
+
         await fs.writeFile(filePath, `export type ${typeName} = any;`);
 
         result.models[schema.id] = { typeName, filePath };

@@ -29,11 +29,11 @@ export function determineSchemaName(
     title?: string;
     $src: { path: string };
   },
-  id: number
-): string {
-  if (schema.title) return schema.title;
+  id: string
+): { name: string; isGenerated: boolean } {
+  if (schema.title) return { name: schema.title, isGenerated: false };
   if (schema.$src.path.startsWith('/components/schemas/')) {
-    return schema.$src.path.substring('/components/schemas/'.length);
+    return { name: schema.$src.path.substring('/components/schemas/'.length), isGenerated: false };
   }
   const responseMatch = schema.$src.path.match(
     /\/paths\/(?<path>.+)\/(?<method>.+)\/responses\/(?<status>\d+)\//
@@ -41,10 +41,10 @@ export function determineSchemaName(
 
   if (responseMatch && responseMatch.groups) {
     const { path, method, status } = responseMatch.groups;
-    return `${method}_${path.replace(/\//g, '_')}_${status}_Response`;
+    return { name: `${method}_${path.replace(/\//g, '_')}_${status}_Response`, isGenerated: true };
   }
 
-  return `Schema_${id}`;
+  return { name: id, isGenerated: true };
 }
 
 export function determineSchemaAccessibility(schema: {
@@ -116,4 +116,14 @@ export function transformSchemaProperties<
     });
   }
   return result;
+}
+
+export class IdGenerator {
+  private readonly _idMap = new Map<string, number>();
+
+  public generateId(name: string): string {
+    const id = this._idMap.get(name) ?? 1;
+    this._idMap.set(name, id + 1);
+    return `${name}-${id}`;
+  }
 }

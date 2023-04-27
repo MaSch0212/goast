@@ -3,6 +3,7 @@ import { openApiV2Transformer } from '../open-api-v2/transformer.js';
 import { openApiV3Transformer } from '../open-api-v3/transformer.js';
 import { openApiV3_1Transformer } from '../open-api-v3_1/transformer.js';
 import { OpenApiVersion, OpenApiData } from '../types.js';
+import { IdGenerator } from './helpers.js';
 import { OpenApiTransformer, OpenApiTransformerContext } from './types.js';
 
 type Transformers = {
@@ -16,6 +17,7 @@ const transformers: Transformers = {
 
 export function transformOpenApi(data: OpenApiCollectorData): OpenApiData {
   const context: OpenApiTransformerContext = {
+    idGenerator: new IdGenerator(),
     input: data,
     incompleteSchemas: new Map(),
     paths: new Map(),

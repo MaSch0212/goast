@@ -64,11 +64,13 @@ function transformSchema(
       schema = { ...schema, type: newType };
     }
   }
-  const id = context.schemas.size + context.incompleteSchemas.size;
+  const id = context.idGenerator.generateId('schema');
+  const nameInfo = determineSchemaName(schema, id);
   const result: IncompleteApiSchema = {
     $src: schema.$src as ApiSchemaComponent['$src'],
     id,
-    name: determineSchemaName(schema, id),
+    name: nameInfo.name,
+    isNameGenerated: nameInfo.isGenerated,
     description: schema.description,
     deprecated: schema.deprecated ?? false,
     accessibility: determineSchemaAccessibility(schema),
@@ -100,6 +102,7 @@ function transformEndpoint(
   const apiPath = transformApiPath(context, endpointInfo.path, endpointInfo.pathItem);
   const endpoint: ApiEndpoint = {
     $src: endpointInfo.operation.$src as ApiEndpointComponent['$src'],
+    id: context.idGenerator.generateId('endpoint'),
     name: determineEndpointName(endpointInfo),
     path: endpointInfo.path,
     pathInfo: apiPath,
@@ -122,6 +125,7 @@ function transformEndpoint(
     let service = context.services.get(tag);
     if (!service) {
       service = {
+        id: context.idGenerator.generateId('service'),
         name: tag,
         endpoints: [],
       };
@@ -146,6 +150,7 @@ function transformApiPath(
 
   const apiPath = {
     $src: pathItem.$src as ApiPath['$src'],
+    id: context.idGenerator.generateId('path'),
     summary: pathItem.summary,
     description: pathItem.description,
     path: path,
@@ -162,6 +167,7 @@ function transformParameter(
 ): ApiParameter {
   return {
     $src: parameter.$src as ApiParameter['$src'],
+    id: context.idGenerator.generateId('parameter'),
     name: parameter.name,
     target: parameter.in as any,
     description: parameter.description,
@@ -182,6 +188,7 @@ function transformRequestBody(
   if (!requestBody) return undefined;
   return {
     $src: requestBody.$src as ApiRequestBody['$src'],
+    id: context.idGenerator.generateId('requestBody'),
     description: requestBody.description,
     required: requestBody.required ?? false,
     content: transformContent(context, requestBody.content),
@@ -199,6 +206,7 @@ function transformResponses(
     const response = responses[status];
     result.push({
       $src: response.$src as ApiResponse['$src'],
+      id: context.idGenerator.generateId('response'),
       statusCode: Number(status),
       description: response.description,
       headers: transformHeaders(context, response.headers),
@@ -219,6 +227,7 @@ function transformContent(
     const mediaType = content[media];
     result.push({
       $src: mediaType.$src as ApiContent['$src'],
+      id: context.idGenerator.generateId('content'),
       type: media,
       schema: transformSchema(context, mediaType.schema),
     });
@@ -253,6 +262,7 @@ function transformHeaders(
     const header = headers[name];
     result.push({
       $src: header.$src as ApiHeader['$src'],
+      id: context.idGenerator.generateId('header'),
       name,
       description: header.description,
       required: header.required ?? false,

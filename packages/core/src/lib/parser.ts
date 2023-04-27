@@ -4,10 +4,14 @@ import * as path from 'path';
 import { cwd } from 'process';
 import { collectOpenApi } from './collect/collector.js';
 import { transformOpenApi } from './transform/transformer.js';
-import { ApiComponent, Deref, OpenApiData, ReferenceObject } from './types.js';
+import { ApiComponent, Deref, OpenApiData, OpenApiVersion, ReferenceObject } from './types.js';
+import { isOpenApiV2 } from './open-api-v2/collector.js';
+import { isOpenApiV3 } from './open-api-v3/collector.js';
+import { isOpenApiV3_1 } from './open-api-v3_1/collector.js';
 
 export class OpenApiParser {
   private readonly _loadedApis = new Map<string, OpenAPI.Document>();
+  private readonly _loadedApiVersionCache = new Map<string, OpenApiVersion>();
 
   public async parseApisAndTransform(fileNames: string[]): Promise<OpenApiData> {
     console.time('Load OpenAPI files');
@@ -32,6 +36,29 @@ export class OpenApiParser {
     const collectedData = collectOpenApi(apis);
     const transformedData = transformOpenApi(collectedData);
     return transformedData;
+  }
+
+  private getApiVersion(file: string): OpenApiVersion {
+    const api = this._loadedApis.get(file);
+    if (!api) {
+      throw new Error(`API ${file} not loaded`);
+    }
+
+    let version: OpenApiVersion | undefined = this._loadedApiVersionCache.get(file);
+    if (!version) {
+      if (isOpenApiV2(api)) {
+        version = '2.0';
+      } else if (isOpenApiV3(api)) {
+        version = '3.0';
+      } else if (isOpenApiV3_1(api)) {
+        version = '3.1';
+      } else {
+        throw new Error(`API ${file} is not a valid OpenAPI document`);
+      }
+
+      this._loadedApiVersionCache.set(file, version);
+    }
+    return version;
   }
 
   private async dereference<T extends Record<string, any>>(
@@ -68,10 +95,12 @@ export class OpenApiParser {
       }
     }
 
-    result.$src = <ApiComponent<any>['$src']>{
+    result.$src = {
       file,
       path,
-    };
+      component: value,
+      version: this.getApiVersion(file),
+    } satisfies ApiComponent<any>['$src'];
 
     return result;
   }

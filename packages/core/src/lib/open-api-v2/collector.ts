@@ -3,8 +3,10 @@ import { collect } from '../collect/helpers.js';
 import { OpenApiCollectorData } from '../collect/types.js';
 import { Deref } from '../types.js';
 
-export function isOpenApiV2(api: Deref<OpenAPI.Document>): api is Deref<OpenAPIV2.Document> {
-  return (api as any)['openapi'].startsWith('2.0');
+export function isOpenApiV2(api: OpenAPI.Document): api is OpenAPIV2.Document;
+export function isOpenApiV2(api: Deref<OpenAPI.Document>): api is Deref<OpenAPIV2.Document>;
+export function isOpenApiV2(api: any): boolean {
+  return api['openapi'].startsWith('2.0');
 }
 
 export function collectOpenApiV2(api: Deref<OpenAPIV2.Document>, data: OpenApiCollectorData) {
