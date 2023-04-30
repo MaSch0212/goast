@@ -7,7 +7,7 @@ import { Deref } from '../types.js';
 export function isOpenApiV3_1(api: OpenAPI.Document): api is OpenAPIV3_1.Document;
 export function isOpenApiV3_1(api: Deref<OpenAPI.Document>): api is Deref<OpenAPIV3_1.Document>;
 export function isOpenApiV3_1(api: any): boolean {
-  return api['openapi'].startsWith('3.1');
+  return api['openapi']?.startsWith('3.1') ?? false;
 }
 
 export function collectOpenApiV3_1(api: Deref<OpenAPIV3_1.Document>, data: OpenApiCollectorData) {

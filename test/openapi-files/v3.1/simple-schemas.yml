@@ -1,4 +1,4 @@
-openapi: 3.0.0
+openapi: 3.1.0
 info:
   version: 1.0.0
   title: Simple Schemas
@@ -16,7 +16,6 @@ components:
       type: string
     MyInteger:
       type: integer
-
     MyNumber:
       type: number
     MyBoolean:

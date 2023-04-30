@@ -18,6 +18,7 @@
       "@goast/cli": ["packages/cli/src/index.ts"],
       "@goast/core": ["packages/core/src/index.ts"],
       "@goast/core/utils": ["packages/core/src/lib/utils/index.ts"],
+      "@goast/test/utils": ["test/utils/index.ts"],
       "@goast/typescript": ["packages/typescript/src/index.ts"]
     },
     "esModuleInterop": true,
