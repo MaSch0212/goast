@@ -26,3 +26,5 @@ export type Combine<T extends unknown[]> = T extends [infer A, infer B, ...infer
   : never;
 
 export type ArrayItem<T> = T extends (infer U)[] ? U : never;
+
+export type Nullable<T> = T | null | undefined;

@@ -11,6 +11,8 @@ import {
   BaseCaseOptions,
   StringCasingWithOptions,
 } from './string.utils.types.js';
+import { Nullable } from '../type.utils.js';
+import { isNullish } from '../helpers.js';
 
 /**
  * Gets the words from a string. Words are separated by capital letters. Leading numbers are removed. Non-alphanumerical characters are removed and interpreted as word seperators. Multiple uppercase letters are interpreted as one word.
@@ -23,7 +25,9 @@ import {
  * getWords('123Foo###Bar###') // => ['Foo', 'Bar']
  * getWords('fooBARBaz') // => ['foo', 'BAR', 'Baz']
  */
-export function getWords(str: string): string[] {
+export function getWords(str: Nullable<string>): string[] {
+  if (isNullish(str)) return [];
+
   // Remove non-alphanumerical characters
   str = str.replace(/[^a-zA-Z0-9]+/g, '-');
   str = str.replace(/^[0-9-]+/, '');
@@ -48,7 +52,8 @@ export function getWords(str: string): string[] {
  * toCasing('fooBar', 'first-upper-alternating') // => 'FoObAr'
  * toCasing('FooBar', 'first-lower-alternating') // => 'fOoBaR'
  */
-export function wordToCasing(str: string, casing: WordCasing): string {
+export function wordToCasing(str: Nullable<string>, casing: WordCasing): string {
+  str ??= '';
   switch (casing) {
     case 'unchanged':
       return str;
@@ -78,7 +83,7 @@ export function wordToCasing(str: string, casing: WordCasing): string {
 }
 
 export function toCasing<T extends StringCasing>(
-  str: string,
+  str: Nullable<string>,
   casing: T | StringCasingWithOptions<T>
 ) {
   let options: CaseOptions<T> | undefined;
@@ -128,7 +133,7 @@ function addPrefixAndSuffix(str: string, { prefix, suffix }: BaseCaseOptions): s
  * toCamelCase('Foo bAR', { prefix: 'bar' }) // => 'barfooBar'
  * toCamelCase('Foo bAR', { suffix: 'bar' }) // => 'fooBarbar'
  */
-export function toCamelCase(str: string, options?: Partial<CamelCaseOptions>): string {
+export function toCamelCase(str: Nullable<string>, options?: Partial<CamelCaseOptions>): string {
   const opts: CamelCaseOptions = { keepOriginalCase: false, ...options };
   const words = getWords(str);
   const camelCase = words
@@ -153,7 +158,7 @@ export function toCamelCase(str: string, options?: Partial<CamelCaseOptions>): s
  * toPascalCase('foo bAR', { prefix: 'bar' }) // => 'barFooBar'
  * toPascalCase('foo bAR', { suffix: 'bar' }) // => 'FooBarbar'
  */
-export function toPascalCase(str: string, options?: Partial<PascalCaseOptions>): string {
+export function toPascalCase(str: Nullable<string>, options?: Partial<PascalCaseOptions>): string {
   const opts: PascalCaseOptions = { keepOriginalCase: false, ...options };
   const words = getWords(str);
   const pascalCase = words
@@ -177,7 +182,7 @@ export function toPascalCase(str: string, options?: Partial<PascalCaseOptions>):
  * toKebabCase('Foo bAR', { prefix: 'bar' }) // => 'barfoo-bar'
  * toKebabCase('Foo bAR', { suffix: 'bar' }) // => 'foo-barbar'
  */
-export function toKebabCase(str: string, options?: Partial<KebabCaseOptions>): string {
+export function toKebabCase(str: Nullable<string>, options?: Partial<KebabCaseOptions>): string {
   const opts: KebabCaseOptions = { wordCasing: 'all-lower', ...options };
   const words = getWords(str);
   const kebabCase = words
@@ -203,7 +208,7 @@ export function toKebabCase(str: string, options?: Partial<KebabCaseOptions>): s
  * toSnakeCase('Foo bAR', { prefix: 'bar' }) // => 'barFOO_BAR'
  * toSnakeCase('Foo bAR', { suffix: 'bar' }) // => 'FOO_BARbar'
  */
-export function toSnakeCase(str: string, options?: Partial<SnakeCaseOptions>): string {
+export function toSnakeCase(str: Nullable<string>, options?: Partial<SnakeCaseOptions>): string {
   const opts: SnakeCaseOptions = { wordCasing: 'all-upper', ...options };
   const words = getWords(str);
   const snakeCase = words
@@ -229,7 +234,7 @@ export function toSnakeCase(str: string, options?: Partial<SnakeCaseOptions>): s
  * toCustomCase('Foo bAR', { wordCasing: 'all-upper', firstWordCasing: 'all-lower' }) // => 'fooBAR'
  * toCustomCase('Foo bAR baz', { wordCasing: (wordIndex) => (wordIndex % 2 === 0 ? 'all-upper' : 'all-lower') }) // => 'FOObarBAZ'
  */
-export function toCustomCase(str: string, options: CustomCaseOptions): string {
+export function toCustomCase(str: Nullable<string>, options: CustomCaseOptions): string {
   const words = getWords(str);
   const wordMapFn: (word: string, index: number) => string =
     typeof options.wordCasing === 'function'
@@ -245,16 +250,16 @@ export function toCustomCase(str: string, options: CustomCaseOptions): string {
 export class StringBuilder {
   private readonly _parts: string[] = [];
 
-  public append(...value: string[]): this {
+  public append(...value: Nullable<string>[]): this {
     if (value.length === 0) return this;
     for (const part of value) {
-      if (part.length === 0) continue;
+      if (isNullish(part) || part.length === 0) continue;
       this._parts.push(part);
     }
     return this;
   }
 
-  public appendLine(...value: string[]): this {
+  public appendLine(...value: Nullable<string>[]): this {
     return this.append(...value, EOL);
   }
 

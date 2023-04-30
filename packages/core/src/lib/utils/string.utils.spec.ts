@@ -18,6 +18,11 @@ import {
 } from './string.utils.types.js';
 
 describe('getWords', () => {
+  it('should return an empty array for a nullish string', () => {
+    expect(getWords(null)).toEqual([]);
+    expect(getWords(undefined)).toEqual([]);
+  });
+
   it('should return an empty array for an empty string', () => {
     const inputStr = '';
     const expectedOutput: string[] = [];
@@ -110,7 +115,7 @@ describe('getWords', () => {
   });
 });
 
-describe('toCasing', () => {
+describe('wordToCasing', () => {
   const testCases: Array<[string, WordCasing, string]> = [
     ['helloWorld', 'unchanged', 'helloWorld'],
     ['helloWorld', 'all-lower', 'helloworld'],
@@ -127,6 +132,11 @@ describe('toCasing', () => {
     it(`should convert string to the specified casing: ${casing}`, () => {
       expect(wordToCasing(inputStr, casing)).toBe(expectedOutput);
     });
+  });
+
+  it('should handle nullish string input', () => {
+    expect(wordToCasing(null, 'all-lower')).toBe('');
+    expect(wordToCasing(undefined, 'all-lower')).toBe('');
   });
 
   it('should handle empty string input', () => {
@@ -180,11 +190,27 @@ describe('toCamelCase', () => {
     expect(toCamelCase(inputStr, options)).toBe(expectedOutput);
   });
 
+  it('should handle nullish string input', () => {
+    expect(toCamelCase(null)).toBe('');
+    expect(toCamelCase(undefined)).toBe('');
+  });
+
   it('should handle empty string input', () => {
     const inputStr = '';
     const expectedOutput = '';
 
     expect(toCamelCase(inputStr)).toBe(expectedOutput);
+  });
+
+  it('should handle nullish string input with prefix and suffix', () => {
+    const options: Partial<CamelCaseOptions> = {
+      prefix: 'start-',
+      suffix: '-end',
+    };
+    const expectedOutput = 'start--end';
+
+    expect(toCamelCase(null, options)).toBe(expectedOutput);
+    expect(toCamelCase(undefined, options)).toBe(expectedOutput);
   });
 
   it('should handle empty string input with prefix and suffix', () => {
@@ -241,11 +267,27 @@ describe('toPascalCase', () => {
     expect(toPascalCase(inputStr, options)).toBe(expectedOutput);
   });
 
+  it('should handle nullish string input', () => {
+    expect(toPascalCase(null)).toBe('');
+    expect(toPascalCase(undefined)).toBe('');
+  });
+
   it('should handle empty string input', () => {
     const inputStr = '';
     const expectedOutput = '';
 
     expect(toPascalCase(inputStr)).toBe(expectedOutput);
+  });
+
+  it('should handle nullish string input with prefix and suffix', () => {
+    const options: Partial<PascalCaseOptions> = {
+      prefix: 'start-',
+      suffix: '-end',
+    };
+    const expectedOutput = 'start--end';
+
+    expect(toPascalCase(null, options)).toBe(expectedOutput);
+    expect(toPascalCase(undefined, options)).toBe(expectedOutput);
   });
 
   it('should handle empty string input with prefix and suffix', () => {
@@ -307,11 +349,28 @@ describe('toKebabCase', () => {
     expect(toKebabCase(inputStr, options)).toBe(expectedOutput);
   });
 
+  it('should handle nullish string input', () => {
+    expect(toKebabCase(null)).toBe('');
+    expect(toKebabCase(undefined)).toBe('');
+  });
+
   it('should handle empty string input', () => {
     const inputStr = '';
     const expectedOutput = '';
 
     expect(toKebabCase(inputStr)).toBe(expectedOutput);
+  });
+
+  it('should handle nullish string input with prefix and suffix', () => {
+    const options: Partial<KebabCaseOptions> = {
+      wordCasing: 'all-lower',
+      prefix: 'start-',
+      suffix: '-end',
+    };
+    const expectedOutput = 'start--end';
+
+    expect(toKebabCase(null, options)).toBe(expectedOutput);
+    expect(toKebabCase(undefined, options)).toBe(expectedOutput);
   });
 
   it('should handle empty string input with prefix and suffix', () => {
@@ -363,11 +422,28 @@ describe('toSnakeCase', () => {
     expect(toSnakeCase(inputStr, options)).toBe(expectedOutput);
   });
 
+  it('should handle nullish string input', () => {
+    expect(toSnakeCase(null)).toBe('');
+    expect(toSnakeCase(undefined)).toBe('');
+  });
+
   it('should handle empty string input', () => {
     const inputStr = '';
     const expectedOutput = '';
 
     expect(toSnakeCase(inputStr)).toBe(expectedOutput);
+  });
+
+  it('should handle nullish string input with prefix and suffix', () => {
+    const options: Partial<SnakeCaseOptions> = {
+      wordCasing: 'all-upper',
+      prefix: 'start_',
+      suffix: '_end',
+    };
+    const expectedOutput = 'start__end';
+
+    expect(toSnakeCase(null, options)).toBe(expectedOutput);
+    expect(toSnakeCase(undefined, options)).toBe(expectedOutput);
   });
 
   it('should handle empty string input with prefix and suffix', () => {
@@ -442,6 +518,16 @@ describe('toCustomCase', () => {
     expect(toCustomCase(inputStr, options)).toBe(expectedOutput);
   });
 
+  it('should handle nullish string input', () => {
+    const options: CustomCaseOptions = {
+      wordCasing: 'all-lower',
+      wordSeparator: '-',
+    };
+
+    expect(toCustomCase(null, options)).toBe('');
+    expect(toCustomCase(undefined, options)).toBe('');
+  });
+
   it('should handle empty string input', () => {
     const inputStr = '';
     const options: CustomCaseOptions = {
@@ -451,6 +537,19 @@ describe('toCustomCase', () => {
     const expectedOutput = '';
 
     expect(toCustomCase(inputStr, options)).toBe(expectedOutput);
+  });
+
+  it('should handle nullish string input with prefix and suffix', () => {
+    const options: CustomCaseOptions = {
+      wordCasing: 'all-lower',
+      wordSeparator: '-',
+      prefix: 'start-',
+      suffix: '-end',
+    };
+    const expectedOutput = 'start--end';
+
+    expect(toCustomCase(null, options)).toBe(expectedOutput);
+    expect(toCustomCase(undefined, options)).toBe(expectedOutput);
   });
 
   it('should handle empty string input with prefix and suffix', () => {

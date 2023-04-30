@@ -26,19 +26,18 @@ export async function verify(data: unknown): Promise<void> {
     const expected = (await readFile(expectFile)).toString();
 
     if (text.replace(/\r/g, '') !== expected.replace(/\r/g, '')) {
-      error = 'Verify failed. Check ' + actualFile + ' for actual results.';
+      error = `Verify failed. Check "${actualFile}" for actual results.`;
     }
   } else {
     await writeFile(expectFile, '');
-    error =
-      'Check ' +
-      actualFile +
-      " for actual results and rename to '.expect.txt' if everything is right.";
+    error = `Check "${actualFile}" for actual results and rename to '.expect.txt' if everything is right.`;
   }
 
   if (error) {
     await writeFile(actualFile, text);
-    spawn('code', ['--diff', actualFile, expectFile], { detached: true, shell: true });
+    if (!process.env['CI']) {
+      spawn('code', ['--diff', actualFile, expectFile], { detached: true, shell: true });
+    }
     throw new Error(error);
   } else if (await pathExists(actualFile)) {
     await remove(actualFile);
