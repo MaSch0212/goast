@@ -55,6 +55,14 @@ describe('determineSchemaName', () => {
     });
   });
 
+  test('returns the schema name extracted from $src.path if it starts with "/definitions/"', () => {
+    const schema = { $src: { path: '/definitions/TestSchema' } };
+    expect(determineSchemaName(schema, 'TestId')).toEqual({
+      name: 'TestSchema',
+      isGenerated: false,
+    });
+  });
+
   test('returns a generated name based on the $src.path for response schemas', () => {
     const schema = {
       $src: { path: '/paths/users/{userId}/email-verification/{token}/get/responses/200/' },

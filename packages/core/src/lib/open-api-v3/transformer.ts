@@ -55,10 +55,10 @@ export function transformDocument(
   }
 }
 
-function transformSchema(
+function transformSchema<T extends Deref<OpenAPIV3.SchemaObject> | undefined>(
   context: OpenApiTransformerContext,
-  schema?: Deref<OpenAPIV3.SchemaObject>
-): ApiSchema {
+  schema: T
+): T extends undefined ? ApiSchema | undefined : ApiSchema {
   if (!schema) return undefined!;
   const schemaSource = `${schema.$src.file}:${schema.$src.path}`;
   const existingSchema =

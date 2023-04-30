@@ -9,5 +9,7 @@ export default {
   coverageDirectory: '../../coverage/packages/core',
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.[jt]s$': '$1',
+    '@goast/core/utils': '<rootDir>/src/lib/utils/index.ts',
+    '@goast/test/utils': '<rootDir>/../../test/utils/index.ts',
   },
 };

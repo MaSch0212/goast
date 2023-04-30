@@ -13,6 +13,18 @@ export function collectOpenApiV2(api: Deref<OpenAPIV2.Document>, data: OpenApiCo
   data.documents.push({ version: '2.0', document: api });
 
   collectPaths(data, api.paths);
+  if (api.definitions) {
+    for (const s in api.definitions) {
+      if (s === '$src') continue;
+      collectSchema(data, api.definitions[s]);
+    }
+  }
+  if (api.parameters) {
+    for (const p in api.parameters) {
+      if (p === '$src') continue;
+      collectParameter(data, api.parameters[p] as Deref<OpenAPIV2.Parameter>);
+    }
+  }
 }
 
 function collectPaths(
@@ -38,7 +50,7 @@ function collectPathItem(
       const operation = pathItem[m];
       if (!operation) continue;
       data.endpoints.set(`${operation.$src.file}#${operation.$src.path}`, {
-        version: '3.0',
+        version: '2.0',
         path,
         method: m,
         pathItem: pathItem as any,

@@ -21,7 +21,7 @@ export type OpenApiData = {
 
 export type OpenApiVersion = '2.0' | '3.0' | '3.1';
 export type ApiMethod = 'get' | 'put' | 'post' | 'delete' | 'options' | 'head' | 'patch' | 'trace';
-export type ApiParameterTarget = 'path' | 'query' | 'header' | 'cookie';
+export type ApiParameterTarget = 'path' | 'query' | 'header' | 'cookie' | 'body' | 'form';
 
 type TypeByApiVersion<V extends OpenApiVersion, T2, T3, T3_1> = V extends '2.0'
   ? T2
@@ -105,7 +105,7 @@ export type ApiParameter = ApiParameterComponent & {
   style?: string;
   explode?: boolean;
   allowReserved?: boolean;
-  schema: ApiSchema;
+  schema?: ApiSchema;
 };
 
 export type ApiRequestBodyComponent = ApiComponent<
@@ -126,7 +126,7 @@ export type ApiContentComponent = ApiComponent<
 >;
 export type ApiContent = ApiContentComponent & {
   type: string;
-  schema: ApiSchema;
+  schema?: ApiSchema;
 };
 
 export type ApiExampleComponent = ApiComponent<

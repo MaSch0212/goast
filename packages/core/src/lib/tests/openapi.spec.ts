@@ -24,11 +24,15 @@ for (const [version, path] of Object.entries(filePaths)) {
       ? testFilesAllVersions.concat(testFilesV3x)
       : testFilesAllVersions;
     for (const file of testFiles) {
-      test(toCustomCase(file, { wordCasing: 'all-lower', wordSeparator: ' ' }), async () => {
-        const filePath = join(path, file);
-        const data = await new OpenApiParser().parseApisAndTransform(filePath);
-        await verify(data);
-      });
+      const fileWithoutExt = file.replace(/\.[^/.]+$/, '');
+      test(
+        toCustomCase(fileWithoutExt, { wordCasing: 'all-lower', wordSeparator: ' ' }),
+        async () => {
+          const filePath = join(path, file);
+          const data = await new OpenApiParser().parseApisAndTransform(filePath);
+          await verify(data);
+        }
+      );
     }
   });
 }

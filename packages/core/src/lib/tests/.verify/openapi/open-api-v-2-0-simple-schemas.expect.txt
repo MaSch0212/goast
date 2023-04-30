@@ -24,8 +24,6 @@
               version: '2.0'
             },
             id: 'path-1',
-            summary: undefined,
-            description: undefined,
             path: '/x',
             parameters: [],
             get: [Circular *1]
@@ -78,8 +76,6 @@
           version: '2.0'
         },
         id: 'path-1',
-        summary: undefined,
-        description: undefined,
         path: '/x',
         parameters: [],
         get: [Circular *1]
@@ -126,8 +122,6 @@
       kind: 'string',
       enum: undefined,
       default: undefined,
-      format: undefined,
-      nullable: undefined,
       custom: {},
       type: 'string'
     },
@@ -147,8 +141,6 @@
       kind: 'integer',
       enum: undefined,
       default: undefined,
-      format: undefined,
-      nullable: undefined,
       custom: {},
       type: 'integer',
       minimum: undefined,
@@ -170,8 +162,6 @@
       kind: 'number',
       enum: undefined,
       default: undefined,
-      format: undefined,
-      nullable: undefined,
       custom: {},
       type: 'number',
       minimum: undefined,
@@ -193,8 +183,6 @@
       kind: 'boolean',
       enum: undefined,
       default: undefined,
-      format: undefined,
-      nullable: undefined,
       custom: {},
       type: 'boolean'
     },
@@ -214,8 +202,6 @@
       kind: 'array',
       enum: undefined,
       default: undefined,
-      format: undefined,
-      nullable: undefined,
       custom: {},
       type: 'array',
       items: undefined,
@@ -238,8 +224,6 @@
       kind: 'object',
       enum: undefined,
       default: undefined,
-      format: undefined,
-      nullable: undefined,
       custom: {},
       type: 'object',
       properties: [],

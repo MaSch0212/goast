@@ -35,6 +35,9 @@ export function determineSchemaName(
   if (schema.$src.path.startsWith('/components/schemas/')) {
     return { name: schema.$src.path.substring('/components/schemas/'.length), isGenerated: false };
   }
+  if (schema.$src.path.startsWith('/definitions/')) {
+    return { name: schema.$src.path.substring('/definitions/'.length), isGenerated: false };
+  }
   const responseMatch = schema.$src.path.match(
     /\/paths\/(?<path>.+)\/(?<method>.+)\/responses\/(?<status>\d+)\//
   );
