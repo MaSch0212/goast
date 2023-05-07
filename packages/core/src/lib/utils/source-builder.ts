@@ -2,8 +2,12 @@ import { EOL } from 'os';
 import { StringBuilder, StringBuilderOptions } from './string.utils.js';
 import { Nullable } from '../type.utils.js';
 
+export type IndentOptions =
+  | { readonly type: 'tabs' }
+  | { readonly type: 'spaces'; readonly count: number };
+
 export type SourceBuilderOptions = StringBuilderOptions & {
-  readonly indent: { readonly type: 'tabs' } | { readonly type: 'spaces'; readonly count: number };
+  readonly indent: IndentOptions;
   readonly charsTreatedAsEmptyLine: string[];
 };
 
@@ -26,7 +30,7 @@ export class SourceBuilder extends StringBuilder {
   private _isCurrentLineEmpty: boolean = true;
 
   /**
-   * Gets the current indentation level.
+   * Gets or sets the current indentation level.
    */
   public currentIndentLevel: number = 0;
 

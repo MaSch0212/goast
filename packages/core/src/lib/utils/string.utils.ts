@@ -263,7 +263,7 @@ export type StringBuilderOptions = {
   readonly newLine: string;
 };
 
-const defaultStringBuilderOptions: StringBuilderOptions = {
+export const defaultStringBuilderOptions: StringBuilderOptions = {
   newLine: EOL,
 };
 
