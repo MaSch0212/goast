@@ -320,8 +320,17 @@ const schemaTransformers: {
     allOf: schema.allOf?.map((s) => transformSchema(context, s)) ?? [],
     anyOf: schema.anyOf?.map((s) => transformSchema(context, s)) ?? [],
   }),
-  'multi-type': (schema) => ({
+  'multi-type': (schema, context) => ({
     type: schema.type as string[],
+    items: transformSchema(context, buildOneOfSchema(context, schema, schema.items)),
+    minItems: schema.minItems,
+    maxItems: schema.maxItems,
+    minimum: schema.minimum,
+    maximum: schema.maximum,
+    properties: transformSchemaProperties(context, schema, transformSchema),
+    additionalProperties: transformAdditionalProperties(context, schema, transformSchema),
+    allOf: schema.allOf?.map((s) => transformSchema(context, s)) ?? [],
+    anyOf: schema.anyOf?.map((s) => transformSchema(context, s)) ?? [],
   }),
   null: () => ({ type: 'null' }),
   unknown: () => ({}),

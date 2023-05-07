@@ -196,34 +196,62 @@ export type ApiSchemaBase = ApiSchemaComponent & {
 export type ApiSchema<T extends ApiSchemaKind = ApiSchemaKind> = ApiSchemaBase & {
   kind: T;
 } & ApiSchemaExtensions<T>;
+type AdditionalCombinedSchemaProperties = {
+  allOf: ApiSchema[];
+  anyOf: ApiSchema[];
+};
+type AdditionalArraySchemaProperties = {
+  items?: ApiSchema;
+  minItems?: number;
+  maxItems?: number;
+};
+type AdditionalObjectSchemaProperties = {
+  properties: ApiSchemaProperty[];
+  additionalProperties?: boolean | ApiSchema;
+} & AdditionalCombinedSchemaProperties;
+type AdditionalNumberSchemaProperties = {
+  minimum?: number;
+  maximum?: number;
+};
 export type ApiSchemaExtensions<T extends ApiSchemaKind> = T extends 'oneOf'
   ? { oneOf: ApiSchema[] }
   : T extends 'multi-type'
   ? {
       type: ApiSchemaType[];
-    }
+    } & AdditionalArraySchemaProperties &
+      AdditionalObjectSchemaProperties &
+      AdditionalNumberSchemaProperties
   : T extends 'string' | 'boolean' | 'null'
   ? { type: T }
   : T extends 'number' | 'integer'
-  ? { type: T; minimum?: number; maximum?: number }
+  ? { type: T } & AdditionalNumberSchemaProperties
   : T extends 'array'
   ? {
       type: 'array';
-      items?: ApiSchema;
-      minItems?: number;
-      maxItems?: number;
-    }
+    } & AdditionalArraySchemaProperties
   : T extends 'object'
   ? {
       type: 'object';
-      properties: ApiSchemaProperty[];
-      additionalProperties?: boolean | Record<string, never> | ApiSchema;
-      allOf: ApiSchema[];
-      anyOf: ApiSchema[];
-    }
+    } & AdditionalObjectSchemaProperties
   : T extends 'combined'
   ? {
       allOf: ApiSchema[];
       anyOf: ApiSchema[];
     }
   : {};
+export type CombinedLikeApiSchema = ApiSchemaBase & {
+  kind: 'combined' | 'object' | 'multi-type';
+  type?: 'object' | string[];
+} & AdditionalCombinedSchemaProperties;
+export type NumberLikeApiSchema = ApiSchemaBase & {
+  kind: 'number' | 'integer' | 'multi-type';
+  type: 'number' | 'integer' | string[];
+} & AdditionalNumberSchemaProperties;
+export type ArrayLikeApiSchema = ApiSchemaBase & {
+  kind: 'array' | 'multi-type';
+  type: 'array' | string[];
+} & AdditionalArraySchemaProperties;
+export type ObjectLikeApiSchema = ApiSchemaBase & {
+  kind: 'object' | 'multi-type';
+  type: 'object' | string[];
+} & AdditionalObjectSchemaProperties;
