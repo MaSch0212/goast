@@ -271,8 +271,8 @@ const defaultStringBuilderOptions: StringBuilderOptions = {
  * Represents a mutable string of characters.
  */
 export class StringBuilder {
-  private readonly _parts: string[] = [];
   private readonly _options: StringBuilderOptions;
+  private _str: string = '';
 
   public get options(): StringBuilderOptions {
     return this._options;
@@ -292,10 +292,9 @@ export class StringBuilder {
    * @returns The current StringBuilder.
    */
   public append(...value: Nullable<string>[]): this {
-    if (value.length === 0) return this;
     for (const part of value) {
       if (isNullish(part) || part.length === 0) continue;
-      this._parts.push(part);
+      this._str += part;
     }
     return this;
   }
@@ -314,6 +313,6 @@ export class StringBuilder {
    * @returns A string whose value is the same as this instance.
    */
   public toString(): string {
-    return ''.concat(...this._parts);
+    return this._str;
   }
 }
