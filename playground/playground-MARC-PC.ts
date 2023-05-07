@@ -7,7 +7,13 @@ export async function main(): Promise<void> {
   const parser = new OpenApiParser();
   const data = await parser.parseApisAndTransform(['.openapi/file1.yml', '.openapi/file2.yml']);
 
-  const x = await generate(data, { outputDir: 'out' }, new TypeScriptModelsGenerator());
+  const x = await generate(
+    data,
+    { outputDir: 'out' },
+    new TypeScriptModelsGenerator({
+      immutableTypes: true,
+    })
+  );
   console.log(x);
 
   //await fs.writeFile('combined_out.js', util.inspect(data, undefined, 100));
