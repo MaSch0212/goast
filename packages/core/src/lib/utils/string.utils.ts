@@ -247,9 +247,50 @@ export function toCustomCase(str: Nullable<string>, options: CustomCaseOptions):
   return addPrefixAndSuffix(customCase, options);
 }
 
+/**
+ * Escapes a string to be used in a regular expression.
+ * @param str The string to escape.
+ */
+export function escapeRegExp(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Options for the StringBuilder class.
+ * @default newLine = os.EOL
+ */
+export type StringBuilderOptions = {
+  readonly newLine: string;
+};
+
+const defaultStringBuilderOptions: StringBuilderOptions = {
+  newLine: EOL,
+};
+
+/**
+ * Represents a mutable string of characters.
+ */
 export class StringBuilder {
   private readonly _parts: string[] = [];
+  private readonly _options: StringBuilderOptions;
 
+  public get options(): StringBuilderOptions {
+    return this._options;
+  }
+
+  /**
+   * Initializes a new instance of the StringBuilder class.
+   * @param options The options.
+   */
+  constructor(options?: Partial<StringBuilderOptions>) {
+    this._options = { ...defaultStringBuilderOptions, ...options };
+  }
+
+  /**
+   * Appends one or more strings to the end of the current StringBuilder.
+   * @param value The string(s) to append.
+   * @returns The current StringBuilder.
+   */
   public append(...value: Nullable<string>[]): this {
     if (value.length === 0) return this;
     for (const part of value) {
@@ -259,10 +300,19 @@ export class StringBuilder {
     return this;
   }
 
+  /**
+   * Appends one or more strings to the end of the current StringBuilder, followed by a line terminator.
+   * @param value
+   * @returns
+   */
   public appendLine(...value: Nullable<string>[]): this {
-    return this.append(...value, EOL);
+    return this.append(...value, this._options.newLine);
   }
 
+  /**
+   * Converts the value of this instance to a string.
+   * @returns A string whose value is the same as this instance.
+   */
   public toString(): string {
     return ''.concat(...this._parts);
   }

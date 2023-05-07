@@ -9,6 +9,10 @@
       "path": "playground"
     },
     {
+      "name": "🧪 Test",
+      "path": "test"
+    },
+    {
       "name": "📦 Core",
       "path": "packages/core/src"
     },
@@ -70,12 +74,9 @@
       "*.ts": "$(capture).spec.ts, $(capture).types.ts",
       "*.js": "$(capture).js.map"
     },
-    "task.autoDetect": "off",
+    "task.autoDetect": "off"
   },
   "extensions": {
-    "recommendations": [
-      "esbenp.prettier-vscode",
-      "dbaeumer.vscode-eslint"
-    ]
+    "recommendations": ["esbenp.prettier-vscode", "dbaeumer.vscode-eslint"]
   }
 }
