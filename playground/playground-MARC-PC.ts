@@ -12,6 +12,9 @@ export async function main(): Promise<void> {
     { outputDir: 'out' },
     new TypeScriptModelsGenerator({
       immutableTypes: true,
+      typeDeclaration: 'prefer-interface',
+      importModuleTransformer: 'js-extension',
+      enumGeneration: 'union',
     })
   );
   console.log(x);

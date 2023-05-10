@@ -6,7 +6,15 @@ import {
   CombinedLikeApiSchema,
   ObjectLikeApiSchema,
 } from '@goast/core';
-import { SourceBuilder, StringCasing, StringCasingWithOptions, toCasing } from '@goast/core/utils';
+import {
+  SourceBuilder,
+  StringCasing,
+  StringCasingWithOptions,
+  mergeSchemaProperties,
+  toCasing,
+  toPascalCase,
+  toSnakeCase,
+} from '@goast/core/utils';
 import fs from 'fs-extra';
 import { dirname, join, relative, resolve } from 'path';
 import { ImportCollection } from './import-collection.js';
@@ -27,7 +35,7 @@ export type TypeScriptModelsGeneratorConfig = Readonly<{
   typeNameCasing: StringCasing | StringCasingWithOptions;
   typeDeclaration: 'type' | 'prefer-interface';
   immutableTypes: boolean;
-  useModernModuleResolution: boolean;
+  importModuleTransformer: 'omit-extension' | 'js-extension' | ((module: string) => string);
 }>;
 
 const defaultConfig: TypeScriptModelsGeneratorConfig = {
@@ -38,7 +46,7 @@ const defaultConfig: TypeScriptModelsGeneratorConfig = {
   typeNameCasing: 'pascal',
   typeDeclaration: 'type',
   immutableTypes: false,
-  useModernModuleResolution: true,
+  importModuleTransformer: 'omit-extension',
 };
 
 export type TypeScriptModelGeneratorContext = CodeGeneratorContext<
@@ -79,6 +87,8 @@ export class TypeScriptModelsGenerator
     for (const schema of ctx.data.schemas) {
       ctx.currentImports.clear();
       ctx.currentFilePath = undefined;
+      ctx.state.clear();
+
       if (this.isExistingType(ctx, schema)) {
         const typeName = this.build(ctx, (builder) => this.generateModel(ctx, schema, builder));
         if (typeName) {
@@ -91,17 +101,8 @@ export class TypeScriptModelsGenerator
         await fs.ensureDir(dirname(filePath));
 
         ctx.currentFilePath = filePath;
-        const builder = this.createSourceBuilder(ctx);
-        builder.append('export type ').append(typeName).append(' = ');
-        this.generateModel(ctx, schema, builder);
-        builder.appendLine(';');
 
-        let modelCode = builder.toString();
-        if (ctx.currentImports.hasImports) {
-          modelCode =
-            ctx.currentImports.toString(ctx.config.newLine) + ctx.config.newLine + modelCode;
-        }
-        await fs.writeFile(filePath, modelCode);
+        await fs.writeFile(filePath, this.generateFileContent(ctx, schema));
 
         result.models[schema.id] = { typeName, filePath };
       }
@@ -134,7 +135,8 @@ export class TypeScriptModelsGenerator
       schema.kind !== 'multi-type' &&
       schema.kind !== 'object' &&
       schema.kind !== 'oneOf' &&
-      !schema.isNameGenerated
+      !(schema.kind === 'string' && schema.enum !== undefined && schema.enum.length > 0) &&
+      schema.isNameGenerated
     );
   }
 
@@ -148,10 +150,18 @@ export class TypeScriptModelsGenerator
       dirname(ctx.currentFilePath!),
       this.getFilePath(ctx, schema)
     ).replace('\\', '/');
-    relativePath = relativePath.replace(/\.ts$/, ctx.config.useModernModuleResolution ? '.js' : '');
     if (!relativePath.startsWith('.')) {
       relativePath = `./${relativePath}`;
     }
+
+    if (ctx.config.importModuleTransformer === 'omit-extension') {
+      relativePath = relativePath.replace(/\.[^/.]+$/, '');
+    } else if (ctx.config.importModuleTransformer === 'js-extension') {
+      relativePath = relativePath.replace(/\.[^/.]+$/, '.js');
+    } else if (typeof ctx.config.importModuleTransformer === 'function') {
+      relativePath = ctx.config.importModuleTransformer(relativePath);
+    }
+
     ctx.currentImports.addImport(typeName, relativePath);
     return typeName;
   }
@@ -174,6 +184,69 @@ export class TypeScriptModelsGenerator
     return ctx.config.preferUnknown ? 'unknown' : 'any';
   }
 
+  protected generateFileContent(ctx: TypeScriptModelGeneratorContext, schema: ApiSchema): string {
+    const builder = this.createSourceBuilder(ctx);
+    this.generateTypePrefix(ctx, schema, builder);
+    this.generateModel(
+      ctx,
+      (ctx.state.get('mergedSchema') as ApiSchema<'object'>) ?? schema,
+      builder
+    );
+    this.generateTypeSuffix(ctx, schema, builder);
+
+    if (ctx.currentImports.hasImports) {
+      return (
+        ctx.currentImports.toString(ctx.config.newLine) + ctx.config.newLine + builder.toString()
+      );
+    }
+    return builder.toString();
+  }
+
+  protected generateTypePrefix(
+    ctx: TypeScriptModelGeneratorContext,
+    schema: ApiSchema,
+    builder: SourceBuilder
+  ) {
+    let generateInterface = false;
+    if (
+      ctx.config.typeDeclaration === 'prefer-interface' &&
+      (schema.kind === 'object' || schema.kind === 'combined')
+    ) {
+      const mergedSchema = mergeSchemaProperties(schema, true);
+      if (mergedSchema) {
+        mergedSchema.additionalProperties = undefined;
+        ctx.state.set('mergedSchema', mergedSchema);
+        generateInterface = true;
+      }
+    }
+
+    if (generateInterface) {
+      builder
+        .append('export interface ')
+        .append(this.getDeclarationTypeName(ctx, schema))
+        .append(' ');
+    } else if (
+      ctx.config.enumGeneration !== 'union' &&
+      schema.kind === 'string' &&
+      schema.enum !== undefined &&
+      schema.enum.length > 0
+    ) {
+      builder.append('export enum ').append(this.getDeclarationTypeName(ctx, schema)).append(' ');
+    } else {
+      builder.append('export type ').append(this.getDeclarationTypeName(ctx, schema)).append(' = ');
+    }
+  }
+
+  protected generateTypeSuffix(
+    ctx: TypeScriptModelGeneratorContext,
+    schema: ApiSchema,
+    builder: SourceBuilder
+  ) {
+    if (!ctx.state.has('mergedSchema')) {
+      builder.append(';');
+    }
+  }
+
   protected generateModel(
     ctx: TypeScriptModelGeneratorContext,
     schema: ApiSchema,
@@ -188,7 +261,11 @@ export class TypeScriptModelsGenerator
         builder.append('number');
         break;
       case 'string':
-        builder.append('string');
+        if (schema.enum !== undefined && schema.enum.length > 0) {
+          this.generateEnumModel(ctx, schema as ApiSchema<'string'>, builder);
+        } else {
+          builder.append('string');
+        }
         break;
       case 'null':
         builder.append('null');
@@ -243,23 +320,23 @@ export class TypeScriptModelsGenerator
       return;
     }
 
-    if (schema.allOf.length + schema.anyOf.length > 1) {
-      builder.currentIndentLevel++;
-      builder.appendLine().append('| ');
-    }
+    builder.indent((builder) => {
+      this.generateConcatenatedModel(ctx, schema.allOf, builder, '&', false);
 
-    this.generateConcatenatedModel(ctx, schema.allOf, builder, '&', false);
-
-    if (schema.anyOf.length > 0) {
-      if (schema.allOf.length > 0) {
-        builder.appendLine().append('& ');
+      if (schema.anyOf.length > 0) {
+        if (schema.allOf.length > 0) {
+          builder.appendLine().append('& ');
+        }
+        this.generateConcatenatedModel(
+          ctx,
+          schema.anyOf,
+          builder,
+          '&',
+          false,
+          (typeName) => `Partial<${typeName}>`
+        );
       }
-      this.generateConcatenatedModel(ctx, schema.anyOf, builder, '|', true);
-    }
-
-    if (schema.allOf.length + schema.anyOf.length > 1) {
-      builder.currentIndentLevel--;
-    }
+    });
   }
 
   protected generateOneOfModel(
@@ -272,16 +349,9 @@ export class TypeScriptModelsGenerator
       return;
     }
 
-    if (schema.oneOf.length > 1) {
-      builder.currentIndentLevel++;
-      builder.appendLine().append('| ');
-    }
-
-    this.generateConcatenatedModel(ctx, schema.oneOf, builder, '|', true);
-
-    if (schema.oneOf.length > 1) {
-      builder.currentIndentLevel--;
-    }
+    builder.indent((builder) => {
+      this.generateConcatenatedModel(ctx, schema.oneOf, builder, '|', true);
+    });
   }
 
   protected generateMultiTypeModel(
@@ -344,21 +414,8 @@ export class TypeScriptModelsGenerator
       schema.allOf.length === 0 &&
       schema.anyOf.length === 0
     ) {
-      builder.append(
-        ctx.config.immutableTypes ? 'Readonly<Record<string, unknown>>' : 'Record<string, unknown>'
-      );
+      builder.append('{ }');
       return;
-    }
-
-    const isCombinedType =
-      (schema.properties.length > 0 ? 1 : 0) +
-        (schema.additionalProperties ? 1 : 0) +
-        schema.allOf.length +
-        schema.anyOf.length >
-      1;
-    if (isCombinedType) {
-      builder.currentIndentLevel++;
-      builder.appendLine().append('| ');
     }
 
     // properties
@@ -380,7 +437,7 @@ export class TypeScriptModelsGenerator
         .append('}');
 
       if (schema.additionalProperties || schema.allOf.length > 0 || schema.anyOf.length > 0) {
-        builder.appendLine().append('& ');
+        builder.append(' & ');
       }
     }
 
@@ -405,10 +462,6 @@ export class TypeScriptModelsGenerator
     if (schema.allOf.length > 0 || schema.anyOf.length > 0) {
       this.generateCombinedModel(ctx, schema, builder);
     }
-
-    if (isCombinedType) {
-      builder.currentIndentLevel--;
-    }
   }
 
   protected generateConcatenatedModel(
@@ -416,7 +469,8 @@ export class TypeScriptModelsGenerator
     schemas: ApiSchema[],
     builder: SourceBuilder,
     separator: string,
-    putInParentheses: boolean
+    putInParentheses: boolean,
+    typeTemplate?: (typeName: string) => string
   ): void {
     this.generateInParentheses(
       builder,
@@ -425,12 +479,47 @@ export class TypeScriptModelsGenerator
           if (index > 0) {
             builder.appendLine().append(separator).append(' ');
           }
-          builder.append(this.getTypeName(ctx, schema));
+          const typeName = this.getTypeName(ctx, schema);
+          builder.append(typeTemplate ? typeTemplate(typeName) : typeName);
         }
       },
       putInParentheses && schemas.length > 1,
       '| '
     );
+  }
+
+  protected generateEnumModel(
+    ctx: TypeScriptModelGeneratorContext,
+    schema: ApiSchema<'string'>,
+    builder: SourceBuilder
+  ): void {
+    const stringEnum = schema.enum?.filter((item) => typeof item === 'string') ?? ([] as string[]);
+    if (ctx.config.enumGeneration === 'union') {
+      builder.indent((builder) => {
+        for (const [index, item] of stringEnum.entries()) {
+          if (index > 0) {
+            builder.appendLine().append('| ');
+          }
+          builder.append(`'${item}'`);
+        }
+      });
+    } else if (ctx.config.enumGeneration === 'number-enum') {
+      builder.appendLine('{');
+      builder.indent((builder) => {
+        for (const [index, item] of stringEnum.entries()) {
+          builder.appendLine(`${item} = ${index},`);
+        }
+      });
+      builder.append('}');
+    } else {
+      builder.appendLine('{');
+      builder.indent((builder) => {
+        for (const item of stringEnum) {
+          builder.appendLine(`${toPascalCase(item)} = '${item}',`);
+        }
+      });
+      builder.append('}');
+    }
   }
 
   private generateInParentheses(

@@ -14,7 +14,7 @@ export function determineSchemaKind<
   | Extract<T['type'], string> {
   if (schema.oneOf) {
     return 'oneOf';
-  } else if (schema.allOf || schema.anyOf) {
+  } else if (schema.type !== 'object' && (schema.allOf || schema.anyOf)) {
     return 'combined';
   } else if (schema.type) {
     if (Array.isArray(schema.type)) return 'multi-type' as any;
@@ -32,11 +32,11 @@ export function determineSchemaName(
   id: string
 ): { name: string; isGenerated: boolean } {
   if (schema.title) return { name: schema.title, isGenerated: false };
-  if (schema.$src.path.startsWith('/components/schemas/')) {
-    return { name: schema.$src.path.substring('/components/schemas/'.length), isGenerated: false };
-  }
-  if (schema.$src.path.startsWith('/definitions/')) {
-    return { name: schema.$src.path.substring('/definitions/'.length), isGenerated: false };
+  const schemaNameMatch = schema.$src.path.match(
+    /(?<=\/components\/schemas\/|\/definitions\/)[^/]+$/i
+  );
+  if (schemaNameMatch) {
+    return { name: schemaNameMatch[0], isGenerated: false };
   }
   const responseMatch = schema.$src.path.match(
     /\/paths\/(?<path>.+)\/(?<method>.+)\/responses\/(?<status>\d+)\//

@@ -9,6 +9,7 @@ export type CodeGeneratorContext<TInput extends CodeGeneratorInput, TConfig exte
   data: OpenApiData;
   input: TInput;
   config: CodeGeneratorConfig & TConfig;
+  state: Map<string, unknown>;
 };
 
 export interface CodeGenerator<

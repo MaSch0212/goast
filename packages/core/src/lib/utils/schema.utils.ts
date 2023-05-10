@@ -1,12 +1,15 @@
 import { ApiSchema, ApiSchemaProperty } from '../types.js';
 
-type MergedSchema = Omit<ApiSchema<'object'>, 'anyOf' | 'allOf'>;
-
 export function mergeSchemaProperties(
   schema: ApiSchema<'combined' | 'object'>,
   ignoreNonObjectParts: boolean
-): MergedSchema | undefined {
+): ApiSchema<'object'> | undefined {
   if (!ignoreNonObjectParts && !isSchemaValidForMerge(schema)) {
+    return undefined;
+  }
+
+  const properties = getMergedSchemaProperties(schema);
+  if (properties.length === 0) {
     return undefined;
   }
 
@@ -14,12 +17,15 @@ export function mergeSchemaProperties(
     ...schema,
     kind: 'object',
     type: 'object',
+    anyOf: [],
+    allOf: [],
     properties: getMergedSchemaProperties(schema),
   };
 }
 
 function getMergedSchemaProperties(schema: ApiSchema<'combined' | 'object'>): ApiSchemaProperty[] {
   return [
+    ...(schema.kind === 'object' ? schema.properties : []),
     ...schema.allOf.map((x) => getPropertiesFromSubSchema(x, false)),
     ...schema.anyOf.map((x) => getPropertiesFromSubSchema(x, true)),
   ].flat(1);

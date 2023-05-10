@@ -20,7 +20,14 @@ describe('mergeSchemaProperties', () => {
 
   it('should merge properties from allOf and anyOf', () => {
     const schema = {
-      kind: 'combined',
+      kind: 'object',
+      properties: [
+        {
+          name: 'prop0',
+          required: true,
+          schema: {},
+        },
+      ],
       allOf: [
         {
           kind: 'object',
@@ -47,12 +54,18 @@ describe('mergeSchemaProperties', () => {
           ],
         },
       ],
-    } as ApiSchema<'combined'>;
+    } as ApiSchema<'object'>;
 
     const expectedResult = expect.objectContaining({
       kind: 'object',
       type: 'object',
+      anyOf: [],
+      allOf: [],
       properties: [
+        expect.objectContaining({
+          name: 'prop0',
+          required: true,
+        }),
         expect.objectContaining({
           name: 'prop1',
           required: true,
@@ -120,6 +133,8 @@ describe('mergeSchemaProperties', () => {
     const expectedResult = expect.objectContaining({
       kind: 'object',
       type: 'object',
+      anyOf: [],
+      allOf: [],
       properties: [
         expect.objectContaining({
           name: 'prop1',

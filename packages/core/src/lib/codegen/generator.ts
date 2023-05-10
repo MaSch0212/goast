@@ -45,6 +45,7 @@ class _GeneratorPipe<T extends OpenApiData> implements GeneratorPipe<T> {
           ...this._config,
           ...generator.config,
         },
+        state: new Map(),
       };
       const result = await generator.generate(context);
       if (result) {
