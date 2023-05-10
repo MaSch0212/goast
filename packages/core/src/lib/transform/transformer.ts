@@ -1,10 +1,10 @@
+import { IdGenerator } from './helpers.js';
+import { OpenApiTransformer, OpenApiTransformerContext } from './types.js';
 import { OpenApiCollectorData } from '../collect/types.js';
 import { openApiV2Transformer } from '../open-api-v2/transformer.js';
 import { openApiV3Transformer } from '../open-api-v3/transformer.js';
 import { openApiV3_1Transformer } from '../open-api-v3_1/transformer.js';
 import { OpenApiVersion, OpenApiData } from '../types.js';
-import { IdGenerator } from './helpers.js';
-import { OpenApiTransformer, OpenApiTransformerContext } from './types.js';
 
 type Transformers = {
   [V in OpenApiVersion]: OpenApiTransformer<V>;
@@ -14,6 +14,10 @@ const transformers: Transformers = {
   '3.0': openApiV3Transformer,
   '3.1': openApiV3_1Transformer,
 };
+
+function getTransformer<V extends OpenApiVersion>(version: V): OpenApiTransformer<V> {
+  return transformers[version];
+}
 
 export function transformOpenApi(data: OpenApiCollectorData): OpenApiData {
   const context: OpenApiTransformerContext = {
@@ -27,13 +31,13 @@ export function transformOpenApi(data: OpenApiCollectorData): OpenApiData {
   };
 
   for (const document of data.documents) {
-    transformers[document.version].transformDocument(context, document as any);
+    getTransformer(document.version).transformDocument(context, document);
   }
   for (const schema of context.input.schemas.values()) {
-    transformers[schema.version].transformSchema(context, schema as any);
+    getTransformer(schema.version).transformSchema(context, schema);
   }
   for (const endpoint of context.input.endpoints.values()) {
-    transformers[endpoint.version].transformEndpoint(context, endpoint as any);
+    getTransformer(endpoint.version).transformEndpoint(context, endpoint);
   }
 
   return {

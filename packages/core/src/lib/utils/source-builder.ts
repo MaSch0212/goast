@@ -1,4 +1,5 @@
 import { EOL } from 'os';
+
 import { StringBuilder, StringBuilderOptions } from './string.utils.js';
 import { Nullable } from '../type.utils.js';
 

@@ -1,10 +1,12 @@
 import { IJsonSchema, OpenAPI, OpenAPIV2 } from 'openapi-types';
+
 import { collect } from '../collect/helpers.js';
 import { OpenApiCollectorData } from '../collect/types.js';
 import { Deref } from '../types.js';
 
 export function isOpenApiV2(api: OpenAPI.Document): api is OpenAPIV2.Document;
 export function isOpenApiV2(api: Deref<OpenAPI.Document>): api is Deref<OpenAPIV2.Document>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isOpenApiV2(api: any): boolean {
   return api['swagger']?.startsWith('2.0') ?? false;
 }
@@ -53,8 +55,8 @@ function collectPathItem(
         version: '2.0',
         path,
         method: m,
-        pathItem: pathItem as any,
-        operation: operation as any,
+        pathItem,
+        operation,
       });
       collectParameter(data, pathItem.parameters);
       collectParameter(data, operation.parameters);

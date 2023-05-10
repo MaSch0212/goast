@@ -1,4 +1,5 @@
 import { EOL } from 'os';
+
 import { SourceBuilder } from './source-builder.js';
 
 describe('SourceBuilder', () => {

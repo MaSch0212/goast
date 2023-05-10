@@ -1,4 +1,17 @@
 import { IJsonSchema, OpenAPIV2 } from 'openapi-types';
+
+import { OpenApiV2SchemaKind } from './types.js';
+import { OpenApiV2CollectorEndpointInfo } from '../collect/types.js';
+import { notNullish } from '../helpers.js';
+import {
+  determineSchemaKind,
+  determineSchemaName,
+  determineSchemaAccessibility,
+  getCustomFields,
+  transformSchemaProperties,
+  transformAdditionalProperties,
+  determineEndpointName,
+} from '../transform/helpers.js';
 import {
   IncompleteApiSchema,
   OpenApiTransformer,
@@ -9,6 +22,7 @@ import {
   ApiEndpointComponent,
   ApiHeader,
   ApiParameter,
+  ApiParameterTarget,
   ApiPath,
   ApiRequestBody,
   ApiResponse,
@@ -20,18 +34,6 @@ import {
   ApiServiceComponent,
   Deref,
 } from '../types.js';
-import {
-  determineSchemaKind,
-  determineSchemaName,
-  determineSchemaAccessibility,
-  getCustomFields,
-  transformSchemaProperties,
-  transformAdditionalProperties,
-  determineEndpointName,
-} from '../transform/helpers.js';
-import { OpenApiV2SchemaKind } from './types.js';
-import { OpenApiV2CollectorEndpointInfo } from '../collect/types.js';
-import { notNullish } from '../helpers.js';
 
 export const openApiV2Transformer: OpenApiTransformer<'2.0'> = {
   transformDocument: (context, { document }) => transformDocument(context, document),
@@ -59,6 +61,7 @@ function transformSchema<T extends Deref<IJsonSchema> | undefined>(
   context: OpenApiTransformerContext,
   schema: T
 ): T extends undefined ? ApiSchema | undefined : ApiSchema {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   if (!schema) return undefined!;
   const fullSchema = schema as Deref<Partial<OpenAPIV2.SchemaObject>>;
   const schemaSource = `${schema.$src.file}:${schema.$src.path}`;
@@ -171,7 +174,7 @@ function transformParameter(
     $src: parameter.$src as ApiParameter['$src'],
     id: context.idGenerator.generateId('parameter'),
     name: parameter.name,
-    target: parameter.in as any,
+    target: parameter.in as ApiParameterTarget,
     description: parameter.description,
     required: parameter.required ?? false,
     deprecated: false,
@@ -289,7 +292,7 @@ const schemaTransformers: {
   ) => Omit<ApiSchemaExtensions<K>, 'kind'>;
 } = {
   oneOf: (schema, context) => ({
-    oneOf: schema.oneOf!.map((s) => transformSchema(context, s)),
+    oneOf: schema.oneOf?.map((s) => transformSchema(context, s)) ?? [],
   }),
   string: () => ({ type: 'string' }),
   number: (schema) => ({
@@ -300,7 +303,7 @@ const schemaTransformers: {
   boolean: () => ({ type: 'boolean' }),
   object: (schema, context) => ({
     type: 'object',
-    properties: transformSchemaProperties(context, schema, transformSchema),
+    properties: transformSchemaProperties<Deref<IJsonSchema>>(context, schema, transformSchema),
     additionalProperties: transformAdditionalProperties(context, schema, transformSchema),
     allOf: schema.allOf?.map((s) => transformSchema(context, s)) ?? [],
     anyOf: schema.anyOf?.map((s) => transformSchema(context, s)) ?? [],
@@ -327,7 +330,7 @@ const schemaTransformers: {
     maxItems: schema.maxItems,
     minimum: schema.minimum,
     maximum: schema.maximum,
-    properties: transformSchemaProperties(context, schema, transformSchema),
+    properties: transformSchemaProperties<Deref<IJsonSchema>>(context, schema, transformSchema),
     additionalProperties: transformAdditionalProperties(context, schema, transformSchema),
     allOf: schema.allOf?.map((s) => transformSchema(context, s)) ?? [],
     anyOf: schema.anyOf?.map((s) => transformSchema(context, s)) ?? [],

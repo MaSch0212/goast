@@ -1,3 +1,7 @@
+import { dirname, join, relative, resolve } from 'path';
+
+import fs from 'fs-extra';
+
 import {
   ApiSchema,
   ArrayLikeApiSchema,
@@ -13,10 +17,8 @@ import {
   mergeSchemaProperties,
   toCasing,
   toPascalCase,
-  toSnakeCase,
 } from '@goast/core/utils';
-import fs from 'fs-extra';
-import { dirname, join, relative, resolve } from 'path';
+
 import { ImportCollection } from './import-collection.js';
 
 export type TypeScriptModelsGeneratorResult = {
@@ -146,10 +148,9 @@ export class TypeScriptModelsGenerator
     }
 
     const typeName = this.getDeclarationTypeName(ctx, schema);
-    let relativePath = relative(
-      dirname(ctx.currentFilePath!),
-      this.getFilePath(ctx, schema)
-    ).replace('\\', '/');
+    let relativePath = ctx.currentFilePath
+      ? relative(dirname(ctx.currentFilePath), this.getFilePath(ctx, schema)).replace('\\', '/')
+      : '';
     if (!relativePath.startsWith('.')) {
       relativePath = `./${relativePath}`;
     }
@@ -493,7 +494,7 @@ export class TypeScriptModelsGenerator
     schema: ApiSchema<'string'>,
     builder: SourceBuilder
   ): void {
-    const stringEnum = schema.enum?.filter((item) => typeof item === 'string') ?? ([] as string[]);
+    const stringEnum = (schema.enum?.filter((item) => typeof item === 'string') ?? []) as string[];
     if (ctx.config.enumGeneration === 'union') {
       builder.indent((builder) => {
         for (const [index, item] of stringEnum.entries()) {

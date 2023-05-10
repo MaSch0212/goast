@@ -1,4 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
+
+import { OpenApiV3SchemaKind } from './types.js';
 import { OpenApiV3CollectorEndpointInfo } from '../collect/types.js';
 import {
   determineSchemaKind,
@@ -9,6 +11,11 @@ import {
   transformSchemaProperties,
   transformAdditionalProperties,
 } from '../transform/helpers.js';
+import {
+  OpenApiTransformer,
+  OpenApiTransformerContext,
+  IncompleteApiSchema,
+} from '../transform/types.js';
 import {
   Deref,
   ApiService,
@@ -25,13 +32,8 @@ import {
   ApiResponse,
   ApiContent,
   ApiHeader,
+  ApiParameterTarget,
 } from '../types.js';
-import { OpenApiV3SchemaKind } from './types.js';
-import {
-  OpenApiTransformer,
-  OpenApiTransformerContext,
-  IncompleteApiSchema,
-} from '../transform/types.js';
 
 export const openApiV3Transformer: OpenApiTransformer<'3.0'> = {
   transformDocument: (context, { document }) => transformDocument(context, document),
@@ -59,6 +61,7 @@ function transformSchema<T extends Deref<OpenAPIV3.SchemaObject> | undefined>(
   context: OpenApiTransformerContext,
   schema: T
 ): T extends undefined ? ApiSchema | undefined : ApiSchema {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   if (!schema) return undefined!;
   const schemaSource = `${schema.$src.file}:${schema.$src.path}`;
   const existingSchema =
@@ -170,7 +173,7 @@ function transformParameter(
     $src: parameter.$src as ApiParameter['$src'],
     id: context.idGenerator.generateId('parameter'),
     name: parameter.name,
-    target: parameter.in as any,
+    target: parameter.in as ApiParameterTarget,
     description: parameter.description,
     required: parameter.required ?? false,
     deprecated: parameter.deprecated ?? false,
@@ -285,7 +288,7 @@ const schemaTransformers: {
   ) => Omit<ApiSchemaExtensions<K>, 'kind'>;
 } = {
   oneOf: (schema, context) => ({
-    oneOf: schema.oneOf!.map((s) => transformSchema(context, s)),
+    oneOf: schema.oneOf?.map((s) => transformSchema(context, s)) ?? [],
   }),
   string: () => ({ type: 'string' }),
   number: (schema) => ({
@@ -296,7 +299,11 @@ const schemaTransformers: {
   boolean: () => ({ type: 'boolean' }),
   object: (schema, context) => ({
     type: 'object',
-    properties: transformSchemaProperties(context, schema, transformSchema),
+    properties: transformSchemaProperties<Deref<OpenAPIV3.SchemaObject>>(
+      context,
+      schema,
+      transformSchema
+    ),
     additionalProperties: transformAdditionalProperties(context, schema, transformSchema),
     allOf: schema.allOf?.map((s) => transformSchema(context, s)) ?? [],
     anyOf: schema.anyOf?.map((s) => transformSchema(context, s)) ?? [],

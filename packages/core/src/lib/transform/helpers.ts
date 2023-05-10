@@ -17,7 +17,9 @@ export function determineSchemaKind<
   } else if (schema.type !== 'object' && (schema.allOf || schema.anyOf)) {
     return 'combined';
   } else if (schema.type) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (Array.isArray(schema.type)) return 'multi-type' as any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return schema.type as any;
   }
 
@@ -61,12 +63,16 @@ export function determineSchemaAccessibility(schema: {
   }
 }
 
-export function getCustomFields(schema: Record<string, any>): Record<string, any> {
-  const result: Record<string, any> = {};
+type CustomFields<T extends Record<string, unknown>> = {
+  [K in keyof T as K extends `x-${string}` ? K : never]: T[K];
+};
+
+export function getCustomFields<T extends Record<string, unknown>>(schema: T): CustomFields<T> {
+  const result = {} as CustomFields<T>;
   for (const key in schema) {
     if (key.startsWith('x-')) {
       const name = key.substring(2);
-      result[name] = schema[key];
+      (result as Record<string, unknown>)[name] = schema[key];
     }
   }
   return result;
@@ -81,32 +87,28 @@ export function determineEndpointName(endpointInfo: {
   return endpointInfo.method + endpointInfo.path.replace(/\{([^}]+)\}/g, ':$1').replace(/\//g, '_');
 }
 
-export function transformAdditionalProperties<
-  T extends {
-    additionalProperties?: any;
-  }
->(
+export function transformAdditionalProperties<TAdditionalProperties>(
   context: OpenApiTransformerContext,
-  schema: T,
+  schema: {
+    additionalProperties?: TAdditionalProperties;
+  },
   transformSchema: (
     context: OpenApiTransformerContext,
-    schema: Exclude<T['additionalProperties'], undefined | boolean>
+    schema: Exclude<TAdditionalProperties, undefined | boolean>
   ) => ApiSchema
 ): boolean | ApiSchema | undefined {
   if (isNullish(schema.additionalProperties)) return undefined;
   if (typeof schema.additionalProperties === 'boolean') return schema.additionalProperties;
-  return transformSchema(context, schema.additionalProperties);
+  return transformSchema(
+    context,
+    schema.additionalProperties as Exclude<TAdditionalProperties, undefined | boolean>
+  );
 }
 
-export function transformSchemaProperties<
-  T extends { properties?: Record<string, any>; required?: string[] }
->(
+export function transformSchemaProperties<TProperties>(
   context: OpenApiTransformerContext,
-  schema: T,
-  transformSchema: (
-    context: OpenApiTransformerContext,
-    schema: Exclude<T['properties'], undefined>[string]
-  ) => ApiSchema
+  schema: { properties?: Record<string, TProperties>; required?: string[] },
+  transformSchema: (context: OpenApiTransformerContext, schema: TProperties) => ApiSchema
 ): ApiSchemaProperty[] {
   if (!schema.properties) return [];
   const result: ApiSchemaProperty[] = [];

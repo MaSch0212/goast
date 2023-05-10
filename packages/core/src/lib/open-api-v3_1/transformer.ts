@@ -1,6 +1,8 @@
-import { transformDocument } from '../open-api-v3/transformer.js';
 import { OpenAPIV3_1 } from 'openapi-types';
+
 import { OpenApiV3_1SchemaKind } from './types.js';
+import { OpenApiV3_1CollectorEndpointInfo } from '../collect/types.js';
+import { transformDocument } from '../open-api-v3/transformer.js';
 import {
   determineSchemaKind,
   determineSchemaName,
@@ -10,7 +12,11 @@ import {
   transformSchemaProperties,
   determineEndpointName,
 } from '../transform/helpers.js';
-import { OpenApiV3_1CollectorEndpointInfo } from '../collect/types.js';
+import {
+  OpenApiTransformer,
+  OpenApiTransformerContext,
+  IncompleteApiSchema,
+} from '../transform/types.js';
 import {
   Deref,
   ApiSchema,
@@ -25,12 +31,8 @@ import {
   ApiResponse,
   ApiContent,
   ApiHeader,
+  ApiParameterTarget,
 } from '../types.js';
-import {
-  OpenApiTransformer,
-  OpenApiTransformerContext,
-  IncompleteApiSchema,
-} from '../transform/types.js';
 
 export const openApiV3_1Transformer: OpenApiTransformer<'3.1'> = {
   transformDocument: (context, { document }) => transformDocument(context, document),
@@ -38,17 +40,18 @@ export const openApiV3_1Transformer: OpenApiTransformer<'3.1'> = {
   transformEndpoint: transformEndpoint,
 };
 
-function transformSchema(
+function transformSchema<T extends Deref<OpenAPIV3_1.SchemaObject> | undefined>(
   context: OpenApiTransformerContext,
-  schema?: Deref<OpenAPIV3_1.SchemaObject>
-): ApiSchema {
+  schema: T
+): T extends undefined ? ApiSchema | undefined : ApiSchema {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   if (!schema) return undefined!;
   const schemaSource = `${schema.$src.file}:${schema.$src.path}`;
   const existingSchema =
     context.schemas.get(schemaSource) ?? context.incompleteSchemas.get(schemaSource);
   if (existingSchema) return existingSchema as ApiSchema;
 
-  let kind = determineSchemaKind(schema);
+  let kind = determineSchemaKind(schema as Deref<OpenAPIV3_1.SchemaObject>);
   let nullable = false;
   if (kind === 'multi-type') {
     const types = schema.type as string[];
@@ -61,7 +64,7 @@ function transformSchema(
     if (isSingleType) {
       const newType = types.filter((t) => t !== 'null')[0] as OpenAPIV3_1.NonArraySchemaObjectType;
       kind = newType;
-      schema = { ...schema, type: newType };
+      schema = { ...schema, type: newType } as NonNullable<T>;
     }
   }
   const id = context.idGenerator.generateId('schema');
@@ -169,7 +172,7 @@ function transformParameter(
     $src: parameter.$src as ApiParameter['$src'],
     id: context.idGenerator.generateId('parameter'),
     name: parameter.name,
-    target: parameter.in as any,
+    target: parameter.in as ApiParameterTarget,
     description: parameter.description,
     required: parameter.required ?? false,
     deprecated: parameter.deprecated ?? false,
@@ -284,7 +287,7 @@ const schemaTransformers: {
   ) => Omit<ApiSchemaExtensions<K>, 'kind'>;
 } = {
   oneOf: (schema, context) => ({
-    oneOf: schema.oneOf!.map((s) => transformSchema(context, s)),
+    oneOf: schema.oneOf?.map((s) => transformSchema(context, s)) ?? [],
   }),
   string: () => ({ type: 'string' }),
   number: (schema) => ({
@@ -295,7 +298,11 @@ const schemaTransformers: {
   boolean: () => ({ type: 'boolean' }),
   object: (schema, context) => ({
     type: 'object',
-    properties: transformSchemaProperties(context, schema, transformSchema),
+    properties: transformSchemaProperties<Deref<OpenAPIV3_1.SchemaObject>>(
+      context,
+      schema,
+      transformSchema
+    ),
     additionalProperties: transformAdditionalProperties(context, schema, transformSchema),
     allOf: schema.allOf?.map((s) => transformSchema(context, s)) ?? [],
     anyOf: schema.anyOf?.map((s) => transformSchema(context, s)) ?? [],
@@ -322,7 +329,11 @@ const schemaTransformers: {
     maxItems: schema.maxItems,
     minimum: schema.minimum,
     maximum: schema.maximum,
-    properties: transformSchemaProperties(context, schema, transformSchema),
+    properties: transformSchemaProperties<Deref<OpenAPIV3_1.SchemaObject>>(
+      context,
+      schema,
+      transformSchema
+    ),
     additionalProperties: transformAdditionalProperties(context, schema, transformSchema),
     allOf: schema.allOf?.map((s) => transformSchema(context, s)) ?? [],
     anyOf: schema.anyOf?.map((s) => transformSchema(context, s)) ?? [],

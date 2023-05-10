@@ -1,13 +1,16 @@
-import SwaggerParser from '@apidevtools/swagger-parser';
-import { OpenAPI } from 'openapi-types';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as path from 'path';
 import { cwd } from 'process';
+
+import SwaggerParser from '@apidevtools/swagger-parser';
+import { OpenAPI } from 'openapi-types';
+
 import { collectOpenApi } from './collect/collector.js';
-import { transformOpenApi } from './transform/transformer.js';
-import { ApiComponent, Deref, OpenApiData, OpenApiVersion, ReferenceObject } from './types.js';
 import { isOpenApiV2 } from './open-api-v2/collector.js';
 import { isOpenApiV3 } from './open-api-v3/collector.js';
 import { isOpenApiV3_1 } from './open-api-v3_1/collector.js';
+import { transformOpenApi } from './transform/transformer.js';
+import { ApiComponent, Deref, OpenApiData, OpenApiVersion, ReferenceObject } from './types.js';
 
 export class OpenApiParser {
   private readonly _loadedApis = new Map<string, OpenAPI.Document>();

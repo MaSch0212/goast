@@ -1,4 +1,5 @@
 import { OpenAPI, OpenAPIV3_1 } from 'openapi-types';
+
 import { ContentObject } from './types.js';
 import { collect } from '../collect/helpers.js';
 import { OpenApiCollectorData } from '../collect/types.js';
@@ -6,6 +7,7 @@ import { Deref } from '../types.js';
 
 export function isOpenApiV3_1(api: OpenAPI.Document): api is OpenAPIV3_1.Document;
 export function isOpenApiV3_1(api: Deref<OpenAPI.Document>): api is Deref<OpenAPIV3_1.Document>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isOpenApiV3_1(api: any): boolean {
   return api['openapi']?.startsWith('3.1') ?? false;
 }

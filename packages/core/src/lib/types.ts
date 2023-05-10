@@ -1,4 +1,5 @@
 import { OpenAPIV2, OpenAPIV3, OpenAPIV3_1 } from 'openapi-types';
+
 import { Combine, OptionalProperties } from './type.utils.js';
 
 export type ReferenceObject = Combine<
@@ -87,7 +88,7 @@ export type ApiEndpoint = ApiEndpointComponent & {
   requestBody?: ApiRequestBody;
   responses: ApiResponse[];
   tags: string[];
-  custom: Record<string, any>;
+  custom: Record<string, unknown>;
 };
 
 export type ApiParameterComponent = ApiComponent<
@@ -186,12 +187,12 @@ export type ApiSchemaBase = ApiSchemaComponent & {
   description?: string;
   deprecated: boolean;
   accessibility: ApiSchemaAccessibility;
-  enum?: any[];
-  const?: any;
-  default?: any;
+  enum?: unknown[];
+  const?: unknown;
+  default?: unknown;
   format?: string;
   nullable?: boolean;
-  custom: Record<string, any>;
+  custom: Record<string, unknown>;
 };
 export type ApiSchema<T extends ApiSchemaKind = ApiSchemaKind> = ApiSchemaBase &
   ApiSchemaExtensions<T>;

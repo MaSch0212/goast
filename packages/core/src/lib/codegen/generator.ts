@@ -1,5 +1,7 @@
 import { resolve } from 'path';
-import { OpenApiData } from '../types.js';
+
+import { emptyDir, ensureDir } from 'fs-extra';
+
 import { CodeGeneratorConfig, defaultCodeGeneratorConfig } from './config.js';
 import {
   CodeGeneratorInput,
@@ -8,8 +10,8 @@ import {
   GeneratorPipe,
   AnyConfig,
 } from './types.js';
-import { emptyDir, ensureDir } from 'fs-extra';
 import { Merge } from '../type.utils.js';
+import { OpenApiData } from '../types.js';
 
 class _GeneratorPipe<T extends OpenApiData> implements GeneratorPipe<T> {
   private _pipe: CodeGenerator<CodeGeneratorInput, CodeGeneratorOutput, AnyConfig>[] = [];

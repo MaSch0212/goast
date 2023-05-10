@@ -1,6 +1,6 @@
+import { CodeGeneratorConfig } from './config.js';
 import { Merge } from '../type.utils.js';
 import { OpenApiData } from '../types.js';
-import { CodeGeneratorConfig } from './config.js';
 
 export type AnyConfig = Readonly<Record<string, unknown>>;
 export type CodeGeneratorInput = Record<string, unknown>;

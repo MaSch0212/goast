@@ -1,3 +1,4 @@
+import { IdGenerator } from './helpers.js';
 import {
   OpenApiCollectorData,
   OpenApiCollectorDocument,
@@ -14,7 +15,6 @@ import {
   OpenApiData,
   OpenApiVersion,
 } from '../types.js';
-import { IdGenerator } from './helpers.js';
 
 export type IncompleteApiSchema = Omit<
   ApiSchema,

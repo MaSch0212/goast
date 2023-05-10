@@ -1,4 +1,5 @@
 import { EOL } from 'os';
+
 import { IndentOptions } from '../utils/source-builder.js';
 
 export type CodeGeneratorConfig = Readonly<{
