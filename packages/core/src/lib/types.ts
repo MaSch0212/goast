@@ -193,9 +193,8 @@ export type ApiSchemaBase = ApiSchemaComponent & {
   nullable?: boolean;
   custom: Record<string, any>;
 };
-export type ApiSchema<T extends ApiSchemaKind = ApiSchemaKind> = ApiSchemaBase & {
-  kind: T;
-} & ApiSchemaExtensions<T>;
+export type ApiSchema<T extends ApiSchemaKind = ApiSchemaKind> = ApiSchemaBase &
+  ApiSchemaExtensions<T>;
 type AdditionalCombinedSchemaProperties = {
   allOf: ApiSchema[];
   anyOf: ApiSchema[];
@@ -214,31 +213,35 @@ type AdditionalNumberSchemaProperties = {
   maximum?: number;
 };
 export type ApiSchemaExtensions<T extends ApiSchemaKind> = T extends 'oneOf'
-  ? { oneOf: ApiSchema[] }
+  ? { kind: 'oneOf'; oneOf: ApiSchema[] }
   : T extends 'multi-type'
   ? {
+      kind: 'multi-type';
       type: ApiSchemaType[];
     } & AdditionalArraySchemaProperties &
       AdditionalObjectSchemaProperties &
       AdditionalNumberSchemaProperties
   : T extends 'string' | 'boolean' | 'null'
-  ? { type: T }
+  ? { kind: 'string' | 'boolean' | 'null'; type: T }
   : T extends 'number' | 'integer'
-  ? { type: T } & AdditionalNumberSchemaProperties
+  ? { kind: 'number' | 'integer'; type: T } & AdditionalNumberSchemaProperties
   : T extends 'array'
   ? {
+      kind: 'array';
       type: 'array';
     } & AdditionalArraySchemaProperties
   : T extends 'object'
   ? {
+      kind: 'object';
       type: 'object';
     } & AdditionalObjectSchemaProperties
   : T extends 'combined'
   ? {
+      kind: 'combined';
       allOf: ApiSchema[];
       anyOf: ApiSchema[];
     }
-  : {};
+  : { kind: 'unknown' };
 export type CombinedLikeApiSchema = ApiSchemaBase & {
   kind: 'combined' | 'object' | 'multi-type';
   type?: 'object' | string[];

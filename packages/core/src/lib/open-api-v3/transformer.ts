@@ -282,7 +282,7 @@ const schemaTransformers: {
   [K in OpenApiV3SchemaKind]: (
     schema: Deref<OpenAPIV3.SchemaObject>,
     context: OpenApiTransformerContext
-  ) => ApiSchemaExtensions<K>;
+  ) => Omit<ApiSchemaExtensions<K>, 'kind'>;
 } = {
   oneOf: (schema, context) => ({
     oneOf: schema.oneOf!.map((s) => transformSchema(context, s)),

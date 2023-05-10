@@ -286,7 +286,7 @@ const schemaTransformers: {
   [K in OpenApiV2SchemaKind]: (
     schema: Deref<IJsonSchema>,
     context: OpenApiTransformerContext
-  ) => ApiSchemaExtensions<K>;
+  ) => Omit<ApiSchemaExtensions<K>, 'kind'>;
 } = {
   oneOf: (schema, context) => ({
     oneOf: schema.oneOf!.map((s) => transformSchema(context, s)),

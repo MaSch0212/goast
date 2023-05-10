@@ -16,7 +16,10 @@ import {
 } from '../types.js';
 import { IdGenerator } from './helpers.js';
 
-export type IncompleteApiSchema = Omit<ApiSchema, keyof ApiSchemaExtensions<ApiSchemaKind>>;
+export type IncompleteApiSchema = Omit<
+  ApiSchema,
+  Exclude<keyof ApiSchemaExtensions<ApiSchemaKind>, 'kind'>
+>;
 export type OpenApiTransformerContext = {
   idGenerator: IdGenerator;
   input: OpenApiCollectorData;
