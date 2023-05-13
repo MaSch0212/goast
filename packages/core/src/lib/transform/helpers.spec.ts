@@ -213,7 +213,7 @@ describe('transformSchemaProperties', () => {
   test('returns an empty array if properties is undefined', () => {
     const schema = {};
     const transformSchema = jest.fn(() => ({} as ApiSchema));
-    expect(transformSchemaProperties(context, schema, transformSchema)).toEqual([]);
+    expect(transformSchemaProperties(context, schema, transformSchema).size).toEqual(0);
   });
 
   test('calls transformSchema with each property schema and builds an array of ApiSchemaProperties', () => {
@@ -230,9 +230,10 @@ describe('transformSchemaProperties', () => {
       subSchema.type === 'string' ? transformedSchema1 : transformedSchema2
     );
     const result = transformSchemaProperties(context, schema, transformSchema);
-    expect(result).toHaveLength(2);
-    expect(result[0]).toEqual({ name: 'prop1', required: true, schema: transformedSchema1 });
-    expect(result[1]).toEqual({ name: 'prop2', required: false, schema: transformedSchema2 });
+    expect(Array.from(result.entries())).toEqual([
+      ['prop1', { name: 'prop1', schema: transformedSchema1 }],
+      ['prop2', { name: 'prop2', schema: transformedSchema2 }],
+    ]);
     expect(transformSchema).toHaveBeenCalledTimes(2);
     expect(transformSchema).toHaveBeenCalledWith(context, schema.properties.prop1);
     expect(transformSchema).toHaveBeenCalledWith(context, schema.properties.prop2);
@@ -243,8 +244,9 @@ describe('transformSchemaProperties', () => {
     const transformedSchema1 = { type: 'string' } as ApiSchema;
     const transformSchema = jest.fn(() => transformedSchema1);
     const result = transformSchemaProperties(context, schema, transformSchema);
-    expect(result).toHaveLength(1);
-    expect(result[0]).toEqual({ name: 'prop1', required: false, schema: transformedSchema1 });
+    expect(Array.from(result.entries())).toEqual([
+      ['prop1', { name: 'prop1', schema: transformedSchema1 }],
+    ]);
     expect(transformSchema).toHaveBeenCalledTimes(1);
     expect(transformSchema).toHaveBeenCalledWith(context, schema.properties.prop1);
   });

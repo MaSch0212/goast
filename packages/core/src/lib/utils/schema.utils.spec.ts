@@ -1,157 +1,91 @@
-import { mergeSchemaProperties } from './schema.utils.js';
-import { ApiSchema } from '../types.js';
+import {
+  createCombinedSchema,
+  createStringSchema,
+  createObjectSchema,
+  createUnknownProperty,
+} from '@goast/test/utils';
 
-describe('mergeSchemaProperties', () => {
+import { resolveAnyOfAndAllOf } from './schema.utils.js';
+
+describe('resolveAnyOfAndAllOf', () => {
   it('should return undefined if the schema is not valid for merge and ignoreNonObjectParts is false', () => {
-    const schema = {
-      kind: 'combined',
-      allOf: [],
-      anyOf: [
-        {
-          kind: 'string',
-          type: 'string',
-        },
-      ],
-    } as unknown as ApiSchema<'combined'>;
+    const schema = createCombinedSchema({
+      anyOf: [createStringSchema()],
+    });
 
-    const result = mergeSchemaProperties(schema, false);
+    const result = resolveAnyOfAndAllOf(schema, false);
     expect(result).toBeUndefined();
   });
 
-  it('should merge properties from allOf and anyOf', () => {
-    const schema = {
-      kind: 'object',
-      properties: [
-        {
-          name: 'prop0',
-          required: true,
-          schema: {},
-        },
-      ],
+  it('should resolve schema from allOf and anyOf', () => {
+    const schema = createObjectSchema({
+      name: 'root',
+      properties: [createUnknownProperty('prop0')],
+      required: ['prop0'],
       allOf: [
-        {
-          kind: 'object',
-          type: 'object',
-          properties: [
-            {
-              name: 'prop1',
-              required: true,
-              schema: {},
-            },
-          ],
-        },
+        createObjectSchema({ properties: [createUnknownProperty('prop1')], required: ['prop1'] }),
       ],
       anyOf: [
-        {
-          kind: 'object',
-          type: 'object',
-          properties: [
-            {
-              name: 'prop2',
-              required: true,
-              schema: {},
-            },
-          ],
-        },
-      ],
-    } as ApiSchema<'object'>;
-
-    const expectedResult = expect.objectContaining({
-      kind: 'object',
-      type: 'object',
-      anyOf: [],
-      allOf: [],
-      properties: [
-        expect.objectContaining({
-          name: 'prop0',
-          required: true,
-        }),
-        expect.objectContaining({
-          name: 'prop1',
-          required: true,
-        }),
-        expect.objectContaining({
-          name: 'prop2',
-          required: false,
-        }),
+        createObjectSchema({ properties: [createUnknownProperty('prop2')], required: ['prop2'] }),
       ],
     });
 
-    const result = mergeSchemaProperties(schema, true);
+    const expectedResult = expect.objectContaining(
+      createObjectSchema({
+        name: 'root',
+        properties: [
+          expect.objectContaining(createUnknownProperty('prop0')),
+          expect.objectContaining(createUnknownProperty('prop1')),
+          expect.objectContaining(createUnknownProperty('prop2')),
+        ],
+        required: ['prop0', 'prop1', 'prop2'],
+      })
+    );
+
+    const result = resolveAnyOfAndAllOf(schema, true);
     expect(result).toEqual(expectedResult);
   });
 
   it('should merge properties from allOf and anyOf recursively', () => {
-    const schema = {
-      kind: 'combined',
+    const schema = createCombinedSchema({
+      name: 'root',
       allOf: [
-        {
-          kind: 'object',
-          type: 'object',
-          properties: [
-            {
-              name: 'prop1',
-              required: true,
-              schema: {},
-            },
-          ],
-        },
+        createObjectSchema({
+          properties: [createUnknownProperty('prop1')],
+          required: ['prop1'],
+        }),
       ],
       anyOf: [
-        {
-          kind: 'combined',
+        createCombinedSchema({
           allOf: [
-            {
-              kind: 'object',
-              type: 'object',
-              properties: [
-                {
-                  name: 'prop2',
-                  required: true,
-                  schema: {},
-                },
-              ],
-            },
+            createObjectSchema({
+              properties: [createUnknownProperty('prop2')],
+              required: ['prop2'],
+            }),
           ],
           anyOf: [
-            {
-              kind: 'object',
-              type: 'object',
-              properties: [
-                {
-                  name: 'prop3',
-                  required: true,
-                  schema: {},
-                },
-              ],
-            },
+            createObjectSchema({
+              properties: [createUnknownProperty('prop3')],
+              required: ['prop3'],
+            }),
           ],
-        },
-      ],
-    } as ApiSchema<'combined'>;
-
-    const expectedResult = expect.objectContaining({
-      kind: 'object',
-      type: 'object',
-      anyOf: [],
-      allOf: [],
-      properties: [
-        expect.objectContaining({
-          name: 'prop1',
-          required: true,
-        }),
-        expect.objectContaining({
-          name: 'prop2',
-          required: false,
-        }),
-        expect.objectContaining({
-          name: 'prop3',
-          required: false,
         }),
       ],
     });
 
-    const result = mergeSchemaProperties(schema, true);
+    const expectedResult = expect.objectContaining(
+      createObjectSchema({
+        name: 'root',
+        properties: [
+          expect.objectContaining(createUnknownProperty('prop1')),
+          expect.objectContaining(createUnknownProperty('prop2')),
+          expect.objectContaining(createUnknownProperty('prop3')),
+        ],
+        required: ['prop1'],
+      })
+    );
+
+    const result = resolveAnyOfAndAllOf(schema, true);
     expect(result).toEqual(expectedResult);
   });
 });
