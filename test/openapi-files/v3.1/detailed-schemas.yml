@@ -1,0 +1,41 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: Detailed Schemas
+
+paths:
+  /x:
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    WithTitle:
+      title: My Title
+      type: string
+    WithAllCommon:
+      description: My Description
+      type:
+        - string
+        - null
+      format: email
+      default: john.doe@example.io
+      maxLength: 255
+      minLength: 5
+      pattern: ^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$
+      deprecated: true
+      example: <yours>@example.io
+    MyEnum:
+      type: string
+      enum:
+        - one
+        - two
+        - three
+    WriteOnly:
+      type: string
+      writeOnly: true
+    ReadOnly:
+      type: string
+      readOnly: true

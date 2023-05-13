@@ -160,7 +160,7 @@ export type ApiSchemaBase = ApiSchemaComponent & {
   enum?: unknown[];
   const?: unknown;
   default?: unknown;
-  format?: string;
+  example?: unknown;
   nullable?: boolean;
   required: Set<string>;
   custom: Record<string, unknown>;
@@ -183,6 +183,14 @@ type AdditionalNumberSchemaProperties = {
   minimum?: number;
   maximum?: number;
 };
+type AdditionalStringSchemaProperties = {
+  pattern?: string;
+  minLength?: number;
+  maxLength?: number;
+};
+type AdditionalPrimitiveSchemaProperties = {
+  format?: string;
+};
 export type ApiSchemaExtensions<T extends ApiSchemaKind> = T extends 'oneOf'
   ? { kind: 'oneOf'; oneOf: ApiSchema[] }
   : T extends 'multi-type'
@@ -191,11 +199,17 @@ export type ApiSchemaExtensions<T extends ApiSchemaKind> = T extends 'oneOf'
       type: ApiSchemaType[];
     } & AdditionalArraySchemaProperties &
       AdditionalObjectSchemaProperties &
-      AdditionalNumberSchemaProperties
-  : T extends 'string' | 'boolean' | 'null'
-  ? { kind: 'string' | 'boolean' | 'null'; type: T }
+      AdditionalNumberSchemaProperties &
+      AdditionalStringSchemaProperties &
+      AdditionalPrimitiveSchemaProperties
+  : T extends 'string'
+  ? { kind: 'string'; type: 'string' } & AdditionalStringSchemaProperties & AdditionalPrimitiveSchemaProperties
+  : T extends 'boolean'
+  ? { kind: 'boolean'; type: 'boolean' } & AdditionalPrimitiveSchemaProperties
+  : T extends 'null'
+  ? { kind: 'null'; type: 'null' }
   : T extends 'number' | 'integer'
-  ? { kind: 'number' | 'integer'; type: T } & AdditionalNumberSchemaProperties
+  ? { kind: 'number' | 'integer'; type: T } & AdditionalNumberSchemaProperties & AdditionalPrimitiveSchemaProperties
   : T extends 'array'
   ? {
       kind: 'array';
@@ -227,3 +241,11 @@ export type ObjectLikeApiSchema = ApiSchemaBase & {
   kind: 'object' | 'multi-type';
   type: 'object' | string[];
 } & AdditionalObjectSchemaProperties;
+export type StringLikeApiSchema = ApiSchemaBase & {
+  kind: 'string' | 'multi-type';
+  type: 'string' | string[];
+} & AdditionalStringSchemaProperties;
+export type PrimitiveLikeApiSchema = ApiSchemaBase & {
+  kind: 'string' | 'number' | 'integer' | 'boolean' | 'null' | 'multi-type';
+  type: 'string' | 'number' | 'integer' | 'boolean' | 'null' | string[];
+} & AdditionalPrimitiveSchemaProperties;

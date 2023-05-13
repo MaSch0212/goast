@@ -6,24 +6,26 @@
       endpoints: [
         <ref *1> {
           '$src': {
-            file: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml',
+            file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
             path: '/paths//x/get',
             component: { responses: { '200': { description: '' } } },
-            version: '2.0'
+            version: '3.1'
           },
           id: 'endpoint-1',
           name: 'get_x',
           path: '/x',
           pathInfo: {
             '$src': {
-              file: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml',
+              file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
               path: '/paths//x',
               component: {
                 get: { responses: { '200': { description: '' } } }
               },
-              version: '2.0'
+              version: '3.1'
             },
             id: 'path-1',
+            summary: undefined,
+            description: undefined,
             path: '/x',
             parameters: [],
             get: [Circular *1]
@@ -37,10 +39,10 @@
           responses: [
             {
               '$src': {
-                file: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml',
+                file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
                 path: '/paths//x/get/responses/200',
                 component: { description: '' },
-                version: '2.0'
+                version: '3.1'
               },
               id: 'response-1',
               statusCode: 200,
@@ -58,24 +60,26 @@
   endpoints: [
     <ref *1> {
       '$src': {
-        file: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml',
+        file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
         path: '/paths//x/get',
         component: { responses: { '200': { description: '' } } },
-        version: '2.0'
+        version: '3.1'
       },
       id: 'endpoint-1',
       name: 'get_x',
       path: '/x',
       pathInfo: {
         '$src': {
-          file: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml',
+          file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
           path: '/paths//x',
           component: {
             get: { responses: { '200': { description: '' } } }
           },
-          version: '2.0'
+          version: '3.1'
         },
         id: 'path-1',
+        summary: undefined,
+        description: undefined,
         path: '/x',
         parameters: [],
         get: [Circular *1]
@@ -89,10 +93,10 @@
       responses: [
         {
           '$src': {
-            file: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml',
+            file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
             path: '/paths//x/get/responses/200',
             component: { description: '' },
-            version: '2.0'
+            version: '3.1'
           },
           id: 'response-1',
           statusCode: 200,
@@ -108,13 +112,13 @@
   schemas: [
     {
       '$src': {
-        file: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml',
-        path: '/definitions/MyString',
-        component: { type: 'string' },
-        version: '2.0'
+        file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
+        path: '/components/schemas/WithTitle',
+        component: { title: 'My Title', type: 'string' },
+        version: '3.1'
       },
       id: 'schema-1',
-      name: 'MyString',
+      name: 'My Title',
       isNameGenerated: false,
       description: undefined,
       deprecated: false,
@@ -123,128 +127,128 @@
       enum: undefined,
       default: undefined,
       example: undefined,
+      nullable: false,
       required: Set(0) {},
       custom: {},
       type: 'string',
+      format: undefined,
       pattern: undefined,
       minLength: undefined,
       maxLength: undefined
     },
     {
       '$src': {
-        file: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml',
-        path: '/definitions/MyInteger',
-        component: { type: 'integer' },
-        version: '2.0'
+        file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
+        path: '/components/schemas/WithAllCommon',
+        component: {
+          description: 'My Description',
+          type: [ 'string', null ],
+          format: 'email',
+          default: 'john.doe@example.io',
+          maxLength: 255,
+          minLength: 5,
+          pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$',
+          deprecated: true,
+          example: '<yours>@example.io'
+        },
+        version: '3.1'
       },
       id: 'schema-2',
-      name: 'MyInteger',
+      name: 'WithAllCommon',
       isNameGenerated: false,
-      description: undefined,
-      deprecated: false,
+      description: 'My Description',
+      deprecated: true,
       accessibility: 'all',
-      kind: 'integer',
+      kind: 'string',
       enum: undefined,
-      default: undefined,
-      example: undefined,
+      default: 'john.doe@example.io',
+      example: '<yours>@example.io',
+      nullable: true,
       required: Set(0) {},
       custom: {},
-      type: 'integer',
-      minimum: undefined,
-      maximum: undefined
+      type: 'string',
+      format: 'email',
+      pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$',
+      minLength: 5,
+      maxLength: 255
     },
     {
       '$src': {
-        file: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml',
-        path: '/definitions/MyNumber',
-        component: { type: 'number' },
-        version: '2.0'
+        file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
+        path: '/components/schemas/MyEnum',
+        component: { type: 'string', enum: [ 'one', 'two', 'three' ] },
+        version: '3.1'
       },
       id: 'schema-3',
-      name: 'MyNumber',
+      name: 'MyEnum',
       isNameGenerated: false,
       description: undefined,
       deprecated: false,
       accessibility: 'all',
-      kind: 'number',
-      enum: undefined,
+      kind: 'string',
+      enum: [ 'one', 'two', 'three' ],
       default: undefined,
       example: undefined,
+      nullable: false,
       required: Set(0) {},
       custom: {},
-      type: 'number',
-      minimum: undefined,
-      maximum: undefined
+      type: 'string',
+      format: undefined,
+      pattern: undefined,
+      minLength: undefined,
+      maxLength: undefined
     },
     {
       '$src': {
-        file: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml',
-        path: '/definitions/MyBoolean',
-        component: { type: 'boolean' },
-        version: '2.0'
+        file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
+        path: '/components/schemas/WriteOnly',
+        component: { type: 'string', writeOnly: true },
+        version: '3.1'
       },
       id: 'schema-4',
-      name: 'MyBoolean',
+      name: 'WriteOnly',
       isNameGenerated: false,
       description: undefined,
       deprecated: false,
-      accessibility: 'all',
-      kind: 'boolean',
+      accessibility: 'writeOnly',
+      kind: 'string',
       enum: undefined,
       default: undefined,
       example: undefined,
+      nullable: false,
       required: Set(0) {},
       custom: {},
-      type: 'boolean'
+      type: 'string',
+      format: undefined,
+      pattern: undefined,
+      minLength: undefined,
+      maxLength: undefined
     },
     {
       '$src': {
-        file: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml',
-        path: '/definitions/MyArray',
-        component: { type: 'array' },
-        version: '2.0'
+        file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
+        path: '/components/schemas/ReadOnly',
+        component: { type: 'string', readOnly: true },
+        version: '3.1'
       },
       id: 'schema-5',
-      name: 'MyArray',
+      name: 'ReadOnly',
       isNameGenerated: false,
       description: undefined,
       deprecated: false,
-      accessibility: 'all',
-      kind: 'array',
+      accessibility: 'readOnly',
+      kind: 'string',
       enum: undefined,
       default: undefined,
       example: undefined,
+      nullable: false,
       required: Set(0) {},
       custom: {},
-      type: 'array',
-      items: undefined,
-      minItems: undefined,
-      maxItems: undefined
-    },
-    {
-      '$src': {
-        file: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml',
-        path: '/definitions/MyObject',
-        component: { type: 'object' },
-        version: '2.0'
-      },
-      id: 'schema-6',
-      name: 'MyObject',
-      isNameGenerated: false,
-      description: undefined,
-      deprecated: false,
-      accessibility: 'all',
-      kind: 'object',
-      enum: undefined,
-      default: undefined,
-      example: undefined,
-      required: Set(0) {},
-      custom: {},
-      type: 'object',
-      properties: Map(0) {},
-      additionalProperties: undefined,
-      allOf: [],
-      anyOf: []
+      type: 'string',
+      format: undefined,
+      pattern: undefined,
+      minLength: undefined,
+      maxLength: undefined
     }
   ]
 }

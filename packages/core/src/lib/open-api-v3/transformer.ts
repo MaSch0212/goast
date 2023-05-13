@@ -11,11 +11,7 @@ import {
   transformSchemaProperties,
   transformAdditionalProperties,
 } from '../transform/helpers.js';
-import {
-  OpenApiTransformer,
-  OpenApiTransformerContext,
-  IncompleteApiSchema,
-} from '../transform/types.js';
+import { OpenApiTransformer, OpenApiTransformerContext, IncompleteApiSchema } from '../transform/types.js';
 import {
   Deref,
   ApiService,
@@ -64,8 +60,7 @@ function transformSchema<T extends Deref<OpenAPIV3.SchemaObject> | undefined>(
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   if (!schema) return undefined!;
   const schemaSource = `${schema.$src.file}:${schema.$src.path}`;
-  const existingSchema =
-    context.schemas.get(schemaSource) ?? context.incompleteSchemas.get(schemaSource);
+  const existingSchema = context.schemas.get(schemaSource) ?? context.incompleteSchemas.get(schemaSource);
   if (existingSchema) return existingSchema as ApiSchema;
 
   const kind = determineSchemaKind(schema);
@@ -82,7 +77,7 @@ function transformSchema<T extends Deref<OpenAPIV3.SchemaObject> | undefined>(
     kind,
     enum: schema.enum,
     default: schema.default,
-    format: schema.format,
+    example: schema.example,
     nullable: schema.nullable,
     required: new Set(schema.required),
     custom: getCustomFields(schema),
@@ -93,17 +88,11 @@ function transformSchema<T extends Deref<OpenAPIV3.SchemaObject> | undefined>(
   Object.assign(result, extensions);
 
   context.incompleteSchemas.delete(schemaSource);
-  context.schemas.set(
-    schemaSource,
-    result as IncompleteApiSchema & ApiSchemaExtensions<ApiSchemaKind>
-  );
+  context.schemas.set(schemaSource, result as IncompleteApiSchema & ApiSchemaExtensions<ApiSchemaKind>);
   return result as IncompleteApiSchema & ApiSchemaExtensions<ApiSchemaKind>;
 }
 
-function transformEndpoint(
-  context: OpenApiTransformerContext,
-  endpointInfo: OpenApiV3CollectorEndpointInfo
-) {
+function transformEndpoint(context: OpenApiTransformerContext, endpointInfo: OpenApiV3CollectorEndpointInfo) {
   const apiPath = transformApiPath(context, endpointInfo.path, endpointInfo.pathItem);
   const endpoint: ApiEndpoint = {
     $src: endpointInfo.operation.$src as ApiEndpointComponent['$src'],
@@ -240,10 +229,7 @@ function transformContent(
   return result;
 }
 
-function combineParameters(
-  pathParams: ApiParameter[],
-  operationParams: ApiParameter[]
-): ApiParameter[] {
+function combineParameters(pathParams: ApiParameter[], operationParams: ApiParameter[]): ApiParameter[] {
   const result = [...pathParams];
   for (const opParam of operationParams) {
     const existingParam = result.findIndex((p) => p.name === opParam.name);
@@ -291,26 +277,31 @@ const schemaTransformers: {
   oneOf: (schema, context) => ({
     oneOf: schema.oneOf?.map((s) => transformSchema(context, s)) ?? [],
   }),
-  string: () => ({ type: 'string' }),
+  string: (schema) => ({
+    type: 'string',
+    format: schema.format,
+    pattern: schema.pattern,
+    minLength: schema.minLength,
+    maxLength: schema.maxLength,
+  }),
   number: (schema) => ({
     type: 'number',
+    format: schema.format,
     minimum: schema.minimum,
     maximum: schema.maximum,
   }),
-  boolean: () => ({ type: 'boolean' }),
+  boolean: (schema) => ({ type: 'boolean', format: schema.format }),
   object: (schema, context) => ({
     type: 'object',
-    properties: transformSchemaProperties<Deref<OpenAPIV3.SchemaObject>>(
-      context,
-      schema,
-      transformSchema
-    ),
+    properties: transformSchemaProperties<Deref<OpenAPIV3.SchemaObject>>(context, schema, transformSchema),
+    format: schema.format,
     additionalProperties: transformAdditionalProperties(context, schema, transformSchema),
     allOf: schema.allOf?.map((s) => transformSchema(context, s)) ?? [],
     anyOf: schema.anyOf?.map((s) => transformSchema(context, s)) ?? [],
   }),
   integer: (schema) => ({
     type: 'integer',
+    format: schema.format,
     minimum: schema.minimum,
     maximum: schema.maximum,
   }),

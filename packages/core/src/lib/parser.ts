@@ -69,12 +69,12 @@ export class OpenApiParser {
       if (v && typeof v === 'object') {
         if (Array.isArray(v)) {
           result[key] = await Promise.all(
-            v.map(async (v: any) => {
+            v.map(async (v: any, index: number) => {
               if (v && typeof v === 'object') {
                 if ('$ref' in v) {
                   return await this.resolveReference(file, v);
                 } else {
-                  return await this.dereference(file, `${path}/${String(key)}`, v);
+                  return await this.dereference(file, `${path}/${String(key)}/${index}`, v);
                 }
               } else {
                 return v;
@@ -115,6 +115,7 @@ export class OpenApiParser {
     let api = this._loadedApis.get(absoluteRefFile);
     if (!api) {
       api = await SwaggerParser.parse(absoluteRefFile);
+      this._loadedApis.set(absoluteRefFile, api);
     }
 
     const value = getDeepProperty(api, refPath.replace(/[/]/g, '.'));

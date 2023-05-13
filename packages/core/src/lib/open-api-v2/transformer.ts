@@ -12,11 +12,7 @@ import {
   transformAdditionalProperties,
   determineEndpointName,
 } from '../transform/helpers.js';
-import {
-  IncompleteApiSchema,
-  OpenApiTransformer,
-  OpenApiTransformerContext,
-} from '../transform/types.js';
+import { IncompleteApiSchema, OpenApiTransformer, OpenApiTransformerContext } from '../transform/types.js';
 import {
   ApiEndpoint,
   ApiEndpointComponent,
@@ -41,10 +37,7 @@ export const openApiV2Transformer: OpenApiTransformer<'2.0'> = {
   transformEndpoint: transformEndpoint,
 };
 
-function transformDocument(
-  context: OpenApiTransformerContext,
-  document: Deref<OpenAPIV2.Document>
-) {
+function transformDocument(context: OpenApiTransformerContext, document: Deref<OpenAPIV2.Document>) {
   for (const tag of document.tags ?? []) {
     const service: ApiService = {
       $src: tag.$src as ApiServiceComponent['$src'],
@@ -65,8 +58,7 @@ function transformSchema<T extends Deref<IJsonSchema> | undefined>(
   if (!schema) return undefined!;
   const fullSchema = schema as Deref<Partial<OpenAPIV2.SchemaObject>>;
   const schemaSource = `${schema.$src.file}:${schema.$src.path}`;
-  const existingSchema =
-    context.schemas.get(schemaSource) ?? context.incompleteSchemas.get(schemaSource);
+  const existingSchema = context.schemas.get(schemaSource) ?? context.incompleteSchemas.get(schemaSource);
   if (existingSchema) return existingSchema as ApiSchema;
 
   const kind = determineSchemaKind(schema);
@@ -83,6 +75,7 @@ function transformSchema<T extends Deref<IJsonSchema> | undefined>(
     kind: kind as ApiSchemaKind,
     enum: schema.enum,
     default: fullSchema.default,
+    example: fullSchema.example,
     required: new Set(schema.required),
     custom: getCustomFields(schema),
   };
@@ -92,17 +85,11 @@ function transformSchema<T extends Deref<IJsonSchema> | undefined>(
   Object.assign(result, extensions);
 
   context.incompleteSchemas.delete(schemaSource);
-  context.schemas.set(
-    schemaSource,
-    result as IncompleteApiSchema & ApiSchemaExtensions<ApiSchemaKind>
-  );
+  context.schemas.set(schemaSource, result as IncompleteApiSchema & ApiSchemaExtensions<ApiSchemaKind>);
   return result as IncompleteApiSchema & ApiSchemaExtensions<ApiSchemaKind>;
 }
 
-function transformEndpoint(
-  context: OpenApiTransformerContext,
-  endpointInfo: OpenApiV2CollectorEndpointInfo
-) {
+function transformEndpoint(context: OpenApiTransformerContext, endpointInfo: OpenApiV2CollectorEndpointInfo) {
   const apiPath = transformApiPath(context, endpointInfo.path, endpointInfo.pathItem);
   const endpoint: ApiEndpoint = {
     $src: endpointInfo.operation.$src as ApiEndpointComponent['$src'],
@@ -115,9 +102,7 @@ function transformEndpoint(
     description: endpointInfo.operation.description,
     parameters: combineParameters(
       apiPath.parameters,
-      endpointInfo.operation.parameters
-        ?.map((p) => transformParameter(context, p))
-        .filter(notNullish) ?? []
+      endpointInfo.operation.parameters?.map((p) => transformParameter(context, p)).filter(notNullish) ?? []
     ),
     deprecated: endpointInfo.operation.deprecated ?? false,
     requestBody: transformRequestBody(context, endpointInfo.operation),
@@ -158,8 +143,7 @@ function transformApiPath(
     $src: pathItem.$src as ApiPath['$src'],
     id: context.idGenerator.generateId('path'),
     path: path,
-    parameters:
-      pathItem.parameters?.map((p) => transformParameter(context, p)).filter(notNullish) ?? [],
+    parameters: pathItem.parameters?.map((p) => transformParameter(context, p)).filter(notNullish) ?? [],
   };
 
   context.paths.set(path, apiPath);
@@ -184,10 +168,7 @@ function transformParameter(
   };
 }
 
-function combineParameters(
-  pathParams: ApiParameter[],
-  operationParams: ApiParameter[]
-): ApiParameter[] {
+function combineParameters(pathParams: ApiParameter[], operationParams: ApiParameter[]): ApiParameter[] {
   const result = [...pathParams];
   for (const opParam of operationParams) {
     const existingParam = result.findIndex((p) => p.name === opParam.name);
@@ -295,7 +276,12 @@ const schemaTransformers: {
   oneOf: (schema, context) => ({
     oneOf: schema.oneOf?.map((s) => transformSchema(context, s)) ?? [],
   }),
-  string: () => ({ type: 'string' }),
+  string: (schema) => ({
+    type: 'string',
+    pattern: schema.pattern,
+    minLength: schema.minLength,
+    maxLength: schema.maxLength,
+  }),
   number: (schema) => ({
     type: 'number',
     minimum: schema.minimum,

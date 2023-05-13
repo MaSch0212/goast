@@ -1,0 +1,33 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Detailed Schemas
+
+paths:
+  /x:
+    get:
+      responses:
+        200:
+          description: ''
+
+definitions:
+  WithTitle:
+    title: My Title
+    type: string
+  WithAllCommon:
+    description: My Description
+    type: string
+    default: john.doe@example.io
+    maxLength: 255
+    minLength: 5
+    pattern: ^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$
+    example: <yours>@example.io
+  MyEnum:
+    type: string
+    enum:
+      - one
+      - two
+      - three
+  ReadOnly:
+    type: string
+    readOnly: true

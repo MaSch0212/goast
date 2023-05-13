@@ -1,0 +1,29 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: OneOf Schemas
+
+paths:
+  /x:
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    EmptyOneOf:
+      oneOf: []
+    OneOfSimpleTypes:
+      oneOf:
+        - type: string
+        - type: integer
+    IgnoreType:
+      type: string
+      oneOf: []
+    WithReferences:
+      oneOf:
+        - $ref: '#/components/schemas/EmptyOneOf'
+        - $ref: 'detailed-schemas.yml#/components/schemas/WithTitle'
+        - $ref: 'simple-schemas.yml#/components/schemas/MyString'
+        - type: string

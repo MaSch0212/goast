@@ -126,11 +126,15 @@
       kind: 'string',
       enum: undefined,
       default: undefined,
-      format: undefined,
+      example: undefined,
       nullable: undefined,
       required: Set(0) {},
       custom: {},
-      type: 'string'
+      type: 'string',
+      format: undefined,
+      pattern: undefined,
+      minLength: undefined,
+      maxLength: undefined
     },
     {
       '$src': {
@@ -148,11 +152,12 @@
       kind: 'integer',
       enum: undefined,
       default: undefined,
-      format: undefined,
+      example: undefined,
       nullable: undefined,
       required: Set(0) {},
       custom: {},
       type: 'integer',
+      format: undefined,
       minimum: undefined,
       maximum: undefined
     },
@@ -172,11 +177,12 @@
       kind: 'number',
       enum: undefined,
       default: undefined,
-      format: undefined,
+      example: undefined,
       nullable: undefined,
       required: Set(0) {},
       custom: {},
       type: 'number',
+      format: undefined,
       minimum: undefined,
       maximum: undefined
     },
@@ -196,11 +202,12 @@
       kind: 'boolean',
       enum: undefined,
       default: undefined,
-      format: undefined,
+      example: undefined,
       nullable: undefined,
       required: Set(0) {},
       custom: {},
-      type: 'boolean'
+      type: 'boolean',
+      format: undefined
     },
     {
       '$src': {
@@ -218,7 +225,7 @@
       kind: 'array',
       enum: undefined,
       default: undefined,
-      format: undefined,
+      example: undefined,
       nullable: undefined,
       required: Set(0) {},
       custom: {},
@@ -243,12 +250,13 @@
       kind: 'object',
       enum: undefined,
       default: undefined,
-      format: undefined,
+      example: undefined,
       nullable: undefined,
       required: Set(0) {},
       custom: {},
       type: 'object',
       properties: Map(0) {},
+      format: undefined,
       additionalProperties: undefined,
       allOf: [],
       anyOf: []
