@@ -1,15 +1,21 @@
 import { ApiSchema, ApiSchemaProperty } from '../types.js';
 
-export function mergeSchemaProperties(
+export function resolveAnyOfAndAllOf(
   schema: ApiSchema<'combined' | 'object'>,
   ignoreNonObjectParts: boolean
 ): ApiSchema<'object'> | undefined {
-  if (!ignoreNonObjectParts && !isSchemaValidForMerge(schema)) {
+  if (
+    !ignoreNonObjectParts &&
+    (hasInvalidSubSchema(schema.anyOf) || hasInvalidSubSchema(schema.allOf))
+  ) {
     return undefined;
   }
 
-  const properties = getMergedSchemaProperties(schema);
-  if (properties.length === 0) {
+  const required = new Set(schema.required);
+  const properties = new Map<string, ApiSchemaProperty>();
+  collectSubSchemaProperties(schema.allOf, properties, required);
+  collectSubSchemaProperties(schema.anyOf, properties, required);
+  if (properties.size === 0) {
     return undefined;
   }
 
@@ -19,35 +25,39 @@ export function mergeSchemaProperties(
     type: 'object',
     anyOf: [],
     allOf: [],
-    properties: getMergedSchemaProperties(schema),
+    properties: properties,
+    required: required,
   };
 }
 
-function getMergedSchemaProperties(schema: ApiSchema<'combined' | 'object'>): ApiSchemaProperty[] {
-  return [
-    ...(schema.kind === 'object' ? schema.properties : []),
-    ...schema.allOf.map((x) => getPropertiesFromSubSchema(x, false)),
-    ...schema.anyOf.map((x) => getPropertiesFromSubSchema(x, true)),
-  ].flat(1);
-}
+function collectSubSchemaProperties(
+  subSchemas: ApiSchema[],
+  properties: Map<string, ApiSchemaProperty>,
+  required: Set<string>
+) {
+  for (const subSchema of subSchemas) {
+    if (subSchema.kind === 'object') {
+      for (const prop of subSchema.properties.values()) {
+        if (!properties.has(prop.name)) {
+          properties.set(prop.name, prop);
+        }
+      }
+      for (const prop of subSchema.required) {
+        required.add(prop);
+      }
+    }
 
-function getPropertiesFromSubSchema(schema: ApiSchema, isOptional: boolean): ApiSchemaProperty[] {
-  if (schema.kind !== 'object' && schema.kind !== 'combined') {
-    return [];
-  }
-
-  const props = schema.kind === 'object' ? schema.properties : getMergedSchemaProperties(schema);
-  return isOptional ? props.map((x) => ({ ...x, required: false })) : props;
-}
-
-function isSchemaValidForMerge(schema: ApiSchema<'combined' | 'object'>): boolean {
-  for (const subSchema of [...schema.allOf, ...schema.anyOf]) {
-    const isValid =
-      subSchema.kind === 'object' ||
-      (subSchema.kind === 'combined' && isSchemaValidForMerge(subSchema as ApiSchema<'combined'>));
-    if (!isValid) {
-      return false;
+    if (subSchema.kind === 'object' || subSchema.kind === 'combined') {
+      collectSubSchemaProperties(subSchema.allOf, properties, required);
+      collectSubSchemaProperties(subSchema.anyOf, properties, required);
     }
   }
-  return true;
+}
+
+function hasInvalidSubSchema(subSchemas: ApiSchema[]): boolean {
+  return subSchemas.some(
+    (x) =>
+      x.kind !== 'object' &&
+      (x.kind !== 'combined' || (!hasInvalidSubSchema(x.allOf) && !hasInvalidSubSchema(x.anyOf)))
+  );
 }

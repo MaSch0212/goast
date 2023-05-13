@@ -14,7 +14,7 @@ import {
   SourceBuilder,
   StringCasing,
   StringCasingWithOptions,
-  mergeSchemaProperties,
+  resolveAnyOfAndAllOf,
   toCasing,
   toPascalCase,
 } from '@goast/core/utils';
@@ -190,7 +190,7 @@ export class TypeScriptModelsGenerator
     this.generateTypePrefix(ctx, schema, builder);
     this.generateModel(
       ctx,
-      (ctx.state.get('mergedSchema') as ApiSchema<'object'>) ?? schema,
+      (ctx.state.get('resolvedSchema') as ApiSchema<'object'>) ?? schema,
       builder
     );
     this.generateTypeSuffix(ctx, schema, builder);
@@ -213,10 +213,10 @@ export class TypeScriptModelsGenerator
       ctx.config.typeDeclaration === 'prefer-interface' &&
       (schema.kind === 'object' || schema.kind === 'combined')
     ) {
-      const mergedSchema = mergeSchemaProperties(schema, true);
-      if (mergedSchema) {
-        mergedSchema.additionalProperties = undefined;
-        ctx.state.set('mergedSchema', mergedSchema);
+      const resolvedSchema = resolveAnyOfAndAllOf(schema, true);
+      if (resolvedSchema) {
+        resolvedSchema.additionalProperties = undefined;
+        ctx.state.set('resolvedSchema', resolvedSchema);
         generateInterface = true;
       }
     }
@@ -243,7 +243,7 @@ export class TypeScriptModelsGenerator
     schema: ApiSchema,
     builder: SourceBuilder
   ) {
-    if (!ctx.state.has('mergedSchema')) {
+    if (!ctx.state.has('resolvedSchema')) {
       builder.append(';');
     }
   }
@@ -410,7 +410,7 @@ export class TypeScriptModelsGenerator
     builder: SourceBuilder
   ): void {
     if (
-      schema.properties.length === 0 &&
+      schema.properties.size === 0 &&
       !schema.additionalProperties &&
       schema.allOf.length === 0 &&
       schema.anyOf.length === 0
@@ -420,16 +420,16 @@ export class TypeScriptModelsGenerator
     }
 
     // properties
-    if (schema.properties.length > 0) {
+    if (schema.properties.size > 0) {
       builder
         .indent((builder) => {
           builder.appendLine('{');
-          for (const property of schema.properties) {
+          for (const property of schema.properties.values()) {
             if (ctx.config.immutableTypes) {
               builder.append('readonly ');
             }
             builder.append(property.name);
-            if (property.required) {
+            if (schema.required.has(property.name)) {
               builder.append('?');
             }
             builder.append(': ').append(this.getTypeName(ctx, property.schema)).appendLine(';');

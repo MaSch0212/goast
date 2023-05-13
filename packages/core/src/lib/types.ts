@@ -173,7 +173,6 @@ export type ApiSchemaKind =
 export type ApiSchemaAccessibility = 'all' | 'readOnly' | 'writeOnly' | 'none';
 export type ApiSchemaProperty = {
   name: string;
-  required: boolean;
   schema: ApiSchema;
 };
 export type ApiSchemaComponent = ApiComponent<
@@ -192,6 +191,7 @@ export type ApiSchemaBase = ApiSchemaComponent & {
   default?: unknown;
   format?: string;
   nullable?: boolean;
+  required: Set<string>;
   custom: Record<string, unknown>;
 };
 export type ApiSchema<T extends ApiSchemaKind = ApiSchemaKind> = ApiSchemaBase &
@@ -206,7 +206,7 @@ type AdditionalArraySchemaProperties = {
   maxItems?: number;
 };
 type AdditionalObjectSchemaProperties = {
-  properties: ApiSchemaProperty[];
+  properties: Map<string, ApiSchemaProperty>;
   additionalProperties?: boolean | ApiSchema;
 } & AdditionalCombinedSchemaProperties;
 type AdditionalNumberSchemaProperties = {

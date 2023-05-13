@@ -109,14 +109,13 @@ export function transformSchemaProperties<TProperties>(
   context: OpenApiTransformerContext,
   schema: { properties?: Record<string, TProperties>; required?: string[] },
   transformSchema: (context: OpenApiTransformerContext, schema: TProperties) => ApiSchema
-): ApiSchemaProperty[] {
-  if (!schema.properties) return [];
-  const result: ApiSchemaProperty[] = [];
+): Map<string, ApiSchemaProperty> {
+  const result = new Map<string, ApiSchemaProperty>();
+  if (!schema.properties) return result;
   for (const name of Object.keys(schema.properties)) {
     if (name === '$src') continue;
-    result.push({
+    result.set(name, {
       name,
-      required: schema.required?.includes(name) ?? false,
       schema: transformSchema(context, schema.properties[name]),
     });
   }

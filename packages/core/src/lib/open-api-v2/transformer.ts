@@ -83,6 +83,7 @@ function transformSchema<T extends Deref<IJsonSchema> | undefined>(
     kind: kind as ApiSchemaKind,
     enum: schema.enum,
     default: fullSchema.default,
+    required: new Set(schema.required),
     custom: getCustomFields(schema),
   };
   context.incompleteSchemas.set(schemaSource, result);

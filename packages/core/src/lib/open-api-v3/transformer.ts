@@ -84,6 +84,7 @@ function transformSchema<T extends Deref<OpenAPIV3.SchemaObject> | undefined>(
     default: schema.default,
     format: schema.format,
     nullable: schema.nullable,
+    required: new Set(schema.required),
     custom: getCustomFields(schema),
   };
   context.incompleteSchemas.set(schemaSource, result);

@@ -82,6 +82,7 @@ function transformSchema<T extends Deref<OpenAPIV3_1.SchemaObject> | undefined>(
     default: schema.default,
     format: schema.format,
     nullable: nullable,
+    required: new Set(schema.required),
     custom: getCustomFields(schema),
   };
   // TODO: Handle "$schema" field
