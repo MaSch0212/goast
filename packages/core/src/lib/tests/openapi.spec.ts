@@ -23,7 +23,7 @@ for (const [version, path] of Object.entries(filePaths)) {
       test(toCustomCase(fileWithoutExt, { wordCasing: 'all-lower', wordSeparator: ' ' }), async () => {
         const filePath = join(path, file);
         const data = await new OpenApiParser().parseApisAndTransform(filePath);
-        await verify(data);
+        await verify(data.schemas);
       });
     }
   });

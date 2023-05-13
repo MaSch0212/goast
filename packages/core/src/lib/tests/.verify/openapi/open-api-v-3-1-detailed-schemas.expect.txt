@@ -1,254 +1,142 @@
-{
-  services: [
-    {
-      id: 'service-1',
-      name: '',
-      endpoints: [
-        <ref *1> {
-          '$src': {
-            file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
-            path: '/paths//x/get',
-            component: { responses: { '200': { description: '' } } },
-            version: '3.1'
-          },
-          id: 'endpoint-1',
-          name: 'get_x',
-          path: '/x',
-          pathInfo: {
-            '$src': {
-              file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
-              path: '/paths//x',
-              component: {
-                get: { responses: { '200': { description: '' } } }
-              },
-              version: '3.1'
-            },
-            id: 'path-1',
-            summary: undefined,
-            description: undefined,
-            path: '/x',
-            parameters: [],
-            get: [Circular *1]
-          },
-          method: 'get',
-          summary: undefined,
-          description: undefined,
-          parameters: [],
-          deprecated: false,
-          requestBody: undefined,
-          responses: [
-            {
-              '$src': {
-                file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
-                path: '/paths//x/get/responses/200',
-                component: { description: '' },
-                version: '3.1'
-              },
-              id: 'response-1',
-              statusCode: 200,
-              description: '',
-              headers: [],
-              contentOptions: []
-            }
-          ],
-          tags: [],
-          custom: {}
-        }
-      ]
-    }
-  ],
-  endpoints: [
-    <ref *1> {
-      '$src': {
-        file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
-        path: '/paths//x/get',
-        component: { responses: { '200': { description: '' } } },
-        version: '3.1'
-      },
-      id: 'endpoint-1',
-      name: 'get_x',
-      path: '/x',
-      pathInfo: {
-        '$src': {
-          file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
-          path: '/paths//x',
-          component: {
-            get: { responses: { '200': { description: '' } } }
-          },
-          version: '3.1'
-        },
-        id: 'path-1',
-        summary: undefined,
-        description: undefined,
-        path: '/x',
-        parameters: [],
-        get: [Circular *1]
-      },
-      method: 'get',
-      summary: undefined,
-      description: undefined,
-      parameters: [],
-      deprecated: false,
-      requestBody: undefined,
-      responses: [
-        {
-          '$src': {
-            file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
-            path: '/paths//x/get/responses/200',
-            component: { description: '' },
-            version: '3.1'
-          },
-          id: 'response-1',
-          statusCode: 200,
-          description: '',
-          headers: [],
-          contentOptions: []
-        }
-      ],
-      tags: [],
-      custom: {}
-    }
-  ],
-  schemas: [
-    {
-      '$src': {
-        file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
-        path: '/components/schemas/WithTitle',
-        component: { title: 'My Title', type: 'string' },
-        version: '3.1'
-      },
-      id: 'schema-1',
-      name: 'My Title',
-      isNameGenerated: false,
-      description: undefined,
-      deprecated: false,
-      accessibility: 'all',
-      kind: 'string',
-      enum: undefined,
-      default: undefined,
-      example: undefined,
-      nullable: false,
-      required: Set(0) {},
-      custom: {},
-      type: 'string',
-      format: undefined,
-      pattern: undefined,
-      minLength: undefined,
-      maxLength: undefined
+[
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
+      path: '/components/schemas/WithTitle',
+      component: { title: 'My Title', type: 'string' },
+      version: '3.1'
     },
-    {
-      '$src': {
-        file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
-        path: '/components/schemas/WithAllCommon',
-        component: {
-          description: 'My Description',
-          type: [ 'string', null ],
-          format: 'email',
-          default: 'john.doe@example.io',
-          maxLength: 255,
-          minLength: 5,
-          pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$',
-          deprecated: true,
-          example: '<yours>@example.io'
-        },
-        version: '3.1'
+    id: 'schema-1',
+    name: 'My Title',
+    isNameGenerated: false,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'string',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'string',
+    format: undefined,
+    pattern: undefined,
+    minLength: undefined,
+    maxLength: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
+      path: '/components/schemas/WithAllCommon',
+      component: {
+        description: 'My Description',
+        type: [ 'string', null ],
+        format: 'email',
+        default: 'john.doe@example.io',
+        maxLength: 255,
+        minLength: 5,
+        pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$',
+        deprecated: true,
+        example: '<yours>@example.io'
       },
-      id: 'schema-2',
-      name: 'WithAllCommon',
-      isNameGenerated: false,
-      description: 'My Description',
-      deprecated: true,
-      accessibility: 'all',
-      kind: 'string',
-      enum: undefined,
-      default: 'john.doe@example.io',
-      example: '<yours>@example.io',
-      nullable: true,
-      required: Set(0) {},
-      custom: {},
-      type: 'string',
-      format: 'email',
-      pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$',
-      minLength: 5,
-      maxLength: 255
+      version: '3.1'
     },
-    {
-      '$src': {
-        file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
-        path: '/components/schemas/MyEnum',
-        component: { type: 'string', enum: [ 'one', 'two', 'three' ] },
-        version: '3.1'
-      },
-      id: 'schema-3',
-      name: 'MyEnum',
-      isNameGenerated: false,
-      description: undefined,
-      deprecated: false,
-      accessibility: 'all',
-      kind: 'string',
-      enum: [ 'one', 'two', 'three' ],
-      default: undefined,
-      example: undefined,
-      nullable: false,
-      required: Set(0) {},
-      custom: {},
-      type: 'string',
-      format: undefined,
-      pattern: undefined,
-      minLength: undefined,
-      maxLength: undefined
+    id: 'schema-2',
+    name: 'WithAllCommon',
+    isNameGenerated: false,
+    description: 'My Description',
+    deprecated: true,
+    accessibility: 'all',
+    kind: 'string',
+    enum: undefined,
+    default: 'john.doe@example.io',
+    example: '<yours>@example.io',
+    nullable: true,
+    required: Set(0) {},
+    custom: {},
+    type: 'string',
+    format: 'email',
+    pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$',
+    minLength: 5,
+    maxLength: 255
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
+      path: '/components/schemas/MyEnum',
+      component: { type: 'string', enum: [ 'one', 'two', 'three' ] },
+      version: '3.1'
     },
-    {
-      '$src': {
-        file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
-        path: '/components/schemas/WriteOnly',
-        component: { type: 'string', writeOnly: true },
-        version: '3.1'
-      },
-      id: 'schema-4',
-      name: 'WriteOnly',
-      isNameGenerated: false,
-      description: undefined,
-      deprecated: false,
-      accessibility: 'writeOnly',
-      kind: 'string',
-      enum: undefined,
-      default: undefined,
-      example: undefined,
-      nullable: false,
-      required: Set(0) {},
-      custom: {},
-      type: 'string',
-      format: undefined,
-      pattern: undefined,
-      minLength: undefined,
-      maxLength: undefined
+    id: 'schema-3',
+    name: 'MyEnum',
+    isNameGenerated: false,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'string',
+    enum: [ 'one', 'two', 'three' ],
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'string',
+    format: undefined,
+    pattern: undefined,
+    minLength: undefined,
+    maxLength: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
+      path: '/components/schemas/WriteOnly',
+      component: { type: 'string', writeOnly: true },
+      version: '3.1'
     },
-    {
-      '$src': {
-        file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
-        path: '/components/schemas/ReadOnly',
-        component: { type: 'string', readOnly: true },
-        version: '3.1'
-      },
-      id: 'schema-5',
-      name: 'ReadOnly',
-      isNameGenerated: false,
-      description: undefined,
-      deprecated: false,
-      accessibility: 'readOnly',
-      kind: 'string',
-      enum: undefined,
-      default: undefined,
-      example: undefined,
-      nullable: false,
-      required: Set(0) {},
-      custom: {},
-      type: 'string',
-      format: undefined,
-      pattern: undefined,
-      minLength: undefined,
-      maxLength: undefined
-    }
-  ]
-}
+    id: 'schema-4',
+    name: 'WriteOnly',
+    isNameGenerated: false,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'writeOnly',
+    kind: 'string',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'string',
+    format: undefined,
+    pattern: undefined,
+    minLength: undefined,
+    maxLength: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
+      path: '/components/schemas/ReadOnly',
+      component: { type: 'string', readOnly: true },
+      version: '3.1'
+    },
+    id: 'schema-5',
+    name: 'ReadOnly',
+    isNameGenerated: false,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'readOnly',
+    kind: 'string',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'string',
+    format: undefined,
+    pattern: undefined,
+    minLength: undefined,
+    maxLength: undefined
+  }
+]
