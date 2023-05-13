@@ -1,4 +1,4 @@
-import { dirname, join, relative, resolve } from 'path';
+import { dirname, resolve } from 'path';
 
 import fs from 'fs-extra';
 
@@ -19,7 +19,13 @@ import {
   toPascalCase,
 } from '@goast/core/utils';
 
-import { ImportCollection } from './import-collection.js';
+import { ImportExportCollection } from './import-collection.js';
+import {
+  ImportModuleTransformer,
+  getModulePathRelativeToFile,
+  toTypeScriptPropertyName,
+  toTypeScriptStringLiteral,
+} from './utils.js';
 
 export type TypeScriptModelsGeneratorResult = {
   models: {
@@ -28,44 +34,47 @@ export type TypeScriptModelsGeneratorResult = {
       filePath: string | undefined;
     };
   };
+  modelIndexFilePath: string | undefined;
 };
 export type TypeScriptModelsGeneratorConfig = Readonly<{
-  preferUnknown: boolean;
   enumGeneration: 'union' | 'number-enum' | 'string-enum';
-  modelsPath: string;
   fileNameCasing: StringCasing | StringCasingWithOptions;
-  typeNameCasing: StringCasing | StringCasingWithOptions;
-  typeDeclaration: 'type' | 'prefer-interface';
   immutableTypes: boolean;
-  importModuleTransformer: 'omit-extension' | 'js-extension' | ((module: string) => string);
+  importModuleTransformer: ImportModuleTransformer;
+  indexFilePath: string | null;
+  inlineUnnamedSchemas: boolean;
+  modelsDirPath: string;
+  preferUnknown: boolean;
+  typeDeclaration: 'type' | 'prefer-interface';
+  typeNameCasing: StringCasing | StringCasingWithOptions;
+  useSingleQuotes: boolean;
 }>;
 
 const defaultConfig: TypeScriptModelsGeneratorConfig = {
-  preferUnknown: true,
   enumGeneration: 'union',
-  modelsPath: 'models',
   fileNameCasing: { casing: 'kebab', suffix: '.model' },
-  typeNameCasing: 'pascal',
-  typeDeclaration: 'type',
   immutableTypes: false,
   importModuleTransformer: 'omit-extension',
+  indexFilePath: 'models.ts',
+  inlineUnnamedSchemas: true,
+  modelsDirPath: 'models',
+  preferUnknown: true,
+  typeDeclaration: 'type',
+  typeNameCasing: 'pascal',
+  useSingleQuotes: true,
 };
 
 export type TypeScriptModelGeneratorContext = CodeGeneratorContext<
   Record<string, unknown>,
   TypeScriptModelsGeneratorConfig
 > & {
-  currentImports: ImportCollection;
+  currentImports: ImportExportCollection;
   currentFilePath?: string;
+  currentResult: TypeScriptModelsGeneratorResult;
 };
 
 export class TypeScriptModelsGenerator
-  implements
-    CodeGenerator<
-      Record<string, unknown>,
-      TypeScriptModelsGeneratorResult,
-      TypeScriptModelsGeneratorConfig
-    >
+  implements CodeGenerator<Record<string, unknown>, TypeScriptModelsGeneratorResult, TypeScriptModelsGeneratorConfig>
 {
   private _config: TypeScriptModelsGeneratorConfig;
 
@@ -80,10 +89,10 @@ export class TypeScriptModelsGenerator
   public async generate(
     context: CodeGeneratorContext<Record<string, unknown>, TypeScriptModelsGeneratorConfig>
   ): Promise<TypeScriptModelsGeneratorResult> {
-    const result: TypeScriptModelsGeneratorResult = { models: {} };
     const ctx: TypeScriptModelGeneratorContext = {
       ...context,
-      currentImports: new ImportCollection(),
+      currentImports: new ImportExportCollection(),
+      currentResult: { models: {}, modelIndexFilePath: undefined },
     };
 
     for (const schema of ctx.data.schemas) {
@@ -91,32 +100,50 @@ export class TypeScriptModelsGenerator
       ctx.currentFilePath = undefined;
       ctx.state.clear();
 
-      if (this.isExistingType(ctx, schema)) {
-        const typeName = this.build(ctx, (builder) => this.generateModel(ctx, schema, builder));
-        if (typeName) {
-          result.models[schema.id] = { typeName, filePath: undefined };
-        }
-      } else {
-        const typeName = this.getDeclarationTypeName(ctx, schema);
-        const filePath = this.getFilePath(ctx, schema);
-        console.log(`Generating model ${typeName} to ${filePath}...`);
-        await fs.ensureDir(dirname(filePath));
-
-        ctx.currentFilePath = filePath;
-
-        await fs.writeFile(filePath, this.generateFileContent(ctx, schema));
-
-        result.models[schema.id] = { typeName, filePath };
-      }
+      await this.handleSchema(ctx, schema);
     }
 
-    return result;
+    await this.handleIndexFile(ctx);
+
+    return ctx.currentResult;
   }
 
-  protected build(
-    ctx: TypeScriptModelGeneratorContext,
-    action: (builder: SourceBuilder) => void
-  ): string {
+  protected async handleSchema(ctx: TypeScriptModelGeneratorContext, schema: ApiSchema): Promise<void> {
+    if (this.shouldGenerateTypeDeclaration(ctx, schema)) {
+      const typeName = this.getDeclarationTypeName(ctx, schema);
+      const filePath = this.getModelFilePath(ctx, schema);
+      console.log(`Generating model ${typeName} to ${filePath}...`);
+      await fs.ensureDir(dirname(filePath));
+
+      ctx.currentFilePath = filePath;
+
+      await fs.writeFile(filePath, this.generateModelFileContent(ctx, schema));
+
+      ctx.currentResult.models[schema.id] = {
+        typeName,
+        filePath: filePath,
+      };
+    } else {
+      const typeName = this.buildSource(ctx, (builder) => this.generateModel(ctx, schema, builder));
+      if (typeName) {
+        ctx.currentResult.models[schema.id] = { typeName, filePath: undefined };
+      }
+    }
+  }
+
+  protected async handleIndexFile(ctx: TypeScriptModelGeneratorContext): Promise<void> {
+    if (this.shouldGenerateIndexFile(ctx)) {
+      const filePath = this.getIndexFilePath(ctx);
+      console.log(`Generating index file to ${filePath}...`);
+      await fs.ensureDir(dirname(filePath));
+
+      await fs.writeFile(filePath, this.generateIndexFileContent(ctx));
+
+      ctx.currentResult.modelIndexFilePath = filePath;
+    }
+  }
+
+  protected buildSource(ctx: TypeScriptModelGeneratorContext, action: (builder: SourceBuilder) => void): string {
     const builder = this.createSourceBuilder(ctx);
     action(builder);
     return builder.toString();
@@ -130,40 +157,47 @@ export class TypeScriptModelsGenerator
     });
   }
 
-  protected isExistingType(_: TypeScriptModelGeneratorContext, schema: ApiSchema): boolean {
-    return (
+  protected shouldGenerateTypeDeclaration(ctx: TypeScriptModelGeneratorContext, schema: ApiSchema): boolean {
+    // All named schemas should have its own type declaration
+    if (!schema.isNameGenerated) {
+      return true;
+    }
+
+    // All enum types should have its own type declaration
+    if (schema.kind === 'string' && schema.enum !== undefined && schema.enum.length > 0) {
+      return true;
+    }
+
+    // All primitive types already exist and do not need its own type declaration
+    if (
       schema.kind !== 'array' &&
       schema.kind !== 'combined' &&
       schema.kind !== 'multi-type' &&
       schema.kind !== 'object' &&
-      schema.kind !== 'oneOf' &&
-      !(schema.kind === 'string' && schema.enum !== undefined && schema.enum.length > 0) &&
-      schema.isNameGenerated
-    );
+      schema.kind !== 'oneOf'
+    ) {
+      return false;
+    }
+
+    // For all other types, check if the user has enabled inline unnamed schemas
+    return !ctx.config.inlineUnnamedSchemas;
   }
 
   protected getTypeName(ctx: TypeScriptModelGeneratorContext, schema: ApiSchema): string {
-    if (this.isExistingType(ctx, schema)) {
-      return this.build(ctx, (builder) => this.generateModel(ctx, schema, builder));
+    if (!this.shouldGenerateTypeDeclaration(ctx, schema)) {
+      return this.buildSource(ctx, (builder) => this.generateModel(ctx, schema, builder));
     }
 
     const typeName = this.getDeclarationTypeName(ctx, schema);
-    let relativePath = ctx.currentFilePath
-      ? relative(dirname(ctx.currentFilePath), this.getFilePath(ctx, schema)).replace('\\', '/')
+    const modulePath = ctx.currentFilePath
+      ? getModulePathRelativeToFile(
+          ctx.currentFilePath,
+          this.getModelFilePath(ctx, schema),
+          ctx.config.importModuleTransformer
+        )
       : '';
-    if (!relativePath.startsWith('.')) {
-      relativePath = `./${relativePath}`;
-    }
 
-    if (ctx.config.importModuleTransformer === 'omit-extension') {
-      relativePath = relativePath.replace(/\.[^/.]+$/, '');
-    } else if (ctx.config.importModuleTransformer === 'js-extension') {
-      relativePath = relativePath.replace(/\.[^/.]+$/, '.js');
-    } else if (typeof ctx.config.importModuleTransformer === 'function') {
-      relativePath = ctx.config.importModuleTransformer(relativePath);
-    }
-
-    ctx.currentImports.addImport(typeName, relativePath);
+    ctx.currentImports.addImport(typeName, modulePath);
     return typeName;
   }
 
@@ -171,48 +205,37 @@ export class TypeScriptModelsGenerator
     return toCasing(schema.name, this.config.typeNameCasing);
   }
 
-  protected getFilePath(ctx: TypeScriptModelGeneratorContext, schema: ApiSchema): string {
+  protected getModelFilePath(ctx: TypeScriptModelGeneratorContext, schema: ApiSchema): string {
     return resolve(
-      join(
-        ctx.config.outputDir,
-        this.config.modelsPath,
-        `${toCasing(schema.name, this.config.fileNameCasing)}.ts`
-      )
+      ctx.config.outputDir,
+      this.config.modelsDirPath,
+      `${toCasing(schema.name, this.config.fileNameCasing)}.ts`
     );
+  }
+
+  protected getIndexFilePath(ctx: TypeScriptModelGeneratorContext): string {
+    return resolve(ctx.config.outputDir, this.config.indexFilePath ?? 'models.ts');
   }
 
   protected getAnyType(ctx: TypeScriptModelGeneratorContext): string {
     return ctx.config.preferUnknown ? 'unknown' : 'any';
   }
 
-  protected generateFileContent(ctx: TypeScriptModelGeneratorContext, schema: ApiSchema): string {
+  protected generateModelFileContent(ctx: TypeScriptModelGeneratorContext, schema: ApiSchema): string {
     const builder = this.createSourceBuilder(ctx);
-    this.generateTypePrefix(ctx, schema, builder);
-    this.generateModel(
-      ctx,
-      (ctx.state.get('resolvedSchema') as ApiSchema<'object'>) ?? schema,
-      builder
-    );
-    this.generateTypeSuffix(ctx, schema, builder);
+    this.generateModelTypePrefix(ctx, schema, builder);
+    this.generateModel(ctx, (ctx.state.get('resolvedSchema') as ApiSchema<'object'>) ?? schema, builder);
+    this.generateModelTypeSuffix(ctx, schema, builder);
 
     if (ctx.currentImports.hasImports) {
-      return (
-        ctx.currentImports.toString(ctx.config.newLine) + ctx.config.newLine + builder.toString()
-      );
+      return ctx.currentImports.toString(ctx.config.newLine) + ctx.config.newLine + builder.toString();
     }
     return builder.toString();
   }
 
-  protected generateTypePrefix(
-    ctx: TypeScriptModelGeneratorContext,
-    schema: ApiSchema,
-    builder: SourceBuilder
-  ) {
+  protected generateModelTypePrefix(ctx: TypeScriptModelGeneratorContext, schema: ApiSchema, builder: SourceBuilder) {
     let generateInterface = false;
-    if (
-      ctx.config.typeDeclaration === 'prefer-interface' &&
-      (schema.kind === 'object' || schema.kind === 'combined')
-    ) {
+    if (ctx.config.typeDeclaration === 'prefer-interface' && (schema.kind === 'object' || schema.kind === 'combined')) {
       const resolvedSchema = resolveAnyOfAndAllOf(schema, true);
       if (resolvedSchema) {
         resolvedSchema.additionalProperties = undefined;
@@ -222,10 +245,7 @@ export class TypeScriptModelsGenerator
     }
 
     if (generateInterface) {
-      builder
-        .append('export interface ')
-        .append(this.getDeclarationTypeName(ctx, schema))
-        .append(' ');
+      builder.append('export interface ').append(this.getDeclarationTypeName(ctx, schema)).append(' ');
     } else if (
       ctx.config.enumGeneration !== 'union' &&
       schema.kind === 'string' &&
@@ -238,21 +258,13 @@ export class TypeScriptModelsGenerator
     }
   }
 
-  protected generateTypeSuffix(
-    ctx: TypeScriptModelGeneratorContext,
-    schema: ApiSchema,
-    builder: SourceBuilder
-  ) {
+  protected generateModelTypeSuffix(ctx: TypeScriptModelGeneratorContext, _: ApiSchema, builder: SourceBuilder) {
     if (!ctx.state.has('resolvedSchema')) {
       builder.append(';');
     }
   }
 
-  protected generateModel(
-    ctx: TypeScriptModelGeneratorContext,
-    schema: ApiSchema,
-    builder: SourceBuilder
-  ): void {
+  protected generateModel(ctx: TypeScriptModelGeneratorContext, schema: ApiSchema, builder: SourceBuilder): void {
     switch (schema.kind) {
       case 'boolean':
         builder.append('boolean');
@@ -300,15 +312,11 @@ export class TypeScriptModelsGenerator
     schema: ArrayLikeApiSchema,
     builder: SourceBuilder
   ): void {
-    builder.append(ctx.config.immutableTypes ? 'ReadonlyArray' : 'Array').append('<');
-
-    if (schema.items) {
-      builder.append(this.getTypeName(ctx, schema.items));
-    } else {
-      builder.append(this.getAnyType(ctx));
-    }
-
-    builder.append('>');
+    builder
+      .append(ctx.config.immutableTypes ? 'ReadonlyArray' : 'Array')
+      .parenthesize('<>', (builder) =>
+        builder.append(schema.items ? this.getTypeName(ctx, schema.items) : this.getAnyType(ctx))
+      );
   }
 
   protected generateCombinedModel(
@@ -328,14 +336,7 @@ export class TypeScriptModelsGenerator
         if (schema.allOf.length > 0) {
           builder.appendLine().append('& ');
         }
-        this.generateConcatenatedModel(
-          ctx,
-          schema.anyOf,
-          builder,
-          '&',
-          false,
-          (typeName) => `Partial<${typeName}>`
-        );
+        this.generateConcatenatedModel(ctx, schema.anyOf, builder, '&', false, (typeName) => `Partial<${typeName}>`);
       }
     });
   }
@@ -365,42 +366,40 @@ export class TypeScriptModelsGenerator
       return;
     }
 
-    this.generateInParentheses(
-      builder,
-      (builder) => {
-        for (const [index, type] of schema.type.entries()) {
-          if (index > 0) {
-            builder.appendLine().append('| ');
+    const parenthesize = schema.type.length > 1;
+    builder.parenthesizeIf(parenthesize, '()', (builder) =>
+      builder
+        .if(parenthesize, (builder) => builder.appendLine().append('| '))
+        .forEachSeparated(
+          schema.type,
+          (builder) => builder.appendLine().append('| '),
+          (builder, type) => {
+            switch (type) {
+              case 'string':
+                builder.append('string');
+                break;
+              case 'number':
+              case 'integer':
+                builder.append('number');
+                break;
+              case 'boolean':
+                builder.append('boolean');
+                break;
+              case 'null':
+                builder.append('null');
+                break;
+              case 'array':
+                this.generateArrayModel(ctx, schema, builder);
+                break;
+              case 'object':
+                this.generateObjectModel(ctx, schema, builder);
+                break;
+              default:
+                builder.append('never');
+                break;
+            }
           }
-
-          switch (type) {
-            case 'string':
-              builder.append('string');
-              break;
-            case 'number':
-            case 'integer':
-              builder.append('number');
-              break;
-            case 'boolean':
-              builder.append('boolean');
-              break;
-            case 'null':
-              builder.append('null');
-              break;
-            case 'array':
-              this.generateArrayModel(ctx, schema, builder);
-              break;
-            case 'object':
-              this.generateObjectModel(ctx, schema, builder);
-              break;
-            default:
-              builder.append('never');
-              break;
-          }
-        }
-      },
-      schema.type.length > 1,
-      '| '
+        )
     );
   }
 
@@ -415,41 +414,33 @@ export class TypeScriptModelsGenerator
       schema.allOf.length === 0 &&
       schema.anyOf.length === 0
     ) {
-      builder.append('{ }');
+      builder.append('{}');
       return;
     }
 
     // properties
     if (schema.properties.size > 0) {
       builder
-        .indent((builder) => {
-          builder.appendLine('{');
-          for (const property of schema.properties.values()) {
-            if (ctx.config.immutableTypes) {
-              builder.append('readonly ');
-            }
-            builder.append(property.name);
-            if (schema.required.has(property.name)) {
-              builder.append('?');
-            }
-            builder.append(': ').append(this.getTypeName(ctx, property.schema)).appendLine(';');
-          }
-        })
-        .append('}');
-
-      if (schema.additionalProperties || schema.allOf.length > 0 || schema.anyOf.length > 0) {
-        builder.append(' & ');
-      }
+        .parenthesize('{}', (builder) =>
+          builder
+            .appendLine()
+            .forEach(schema.properties.values(), (builder, property) =>
+              builder
+                .appendIf(ctx.config.immutableTypes, 'readonly ')
+                .append(toTypeScriptPropertyName(property.name, ctx.config.useSingleQuotes))
+                .appendIf(!schema.required.has(property.name), '?')
+                .append(': ')
+                .append(this.getTypeName(ctx, property.schema))
+                .appendLine(';')
+            )
+        )
+        .appendIf(!!schema.additionalProperties || schema.allOf.length > 0 || schema.anyOf.length > 0, ' & ');
     }
 
     // additional properties
     if (schema.additionalProperties) {
       if (schema.additionalProperties === true) {
-        builder.append(
-          ctx.config.immutableTypes
-            ? 'Readonly<Record<string, unknown>>'
-            : 'Record<string, unknown>'
-        );
+        builder.append(ctx.config.immutableTypes ? 'Readonly<Record<string, unknown>>' : 'Record<string, unknown>');
       } else {
         builder.append(this.getTypeName(ctx, schema.additionalProperties));
       }
@@ -473,19 +464,14 @@ export class TypeScriptModelsGenerator
     putInParentheses: boolean,
     typeTemplate?: (typeName: string) => string
   ): void {
-    this.generateInParentheses(
-      builder,
-      (builder) => {
-        for (const [index, schema] of schemas.entries()) {
-          if (index > 0) {
-            builder.appendLine().append(separator).append(' ');
-          }
+    putInParentheses &&= schemas.length > 1;
+    builder.parenthesizeIf(putInParentheses, '()', (builder) =>
+      builder
+        .if(putInParentheses, () => builder.appendLine().append('| '))
+        .forEachSeparated(schemas, `${separator} `, (builder, schema) => {
           const typeName = this.getTypeName(ctx, schema);
           builder.append(typeTemplate ? typeTemplate(typeName) : typeName);
-        }
-      },
-      putInParentheses && schemas.length > 1,
-      '| '
+        })
     );
   }
 
@@ -497,46 +483,46 @@ export class TypeScriptModelsGenerator
     const stringEnum = (schema.enum?.filter((item) => typeof item === 'string') ?? []) as string[];
     if (ctx.config.enumGeneration === 'union') {
       builder.indent((builder) => {
-        for (const [index, item] of stringEnum.entries()) {
-          if (index > 0) {
-            builder.appendLine().append('| ');
-          }
-          builder.append(`'${item}'`);
-        }
+        builder.forEachSeparated(stringEnum, ' | ', (builder, item) =>
+          builder.append(toTypeScriptStringLiteral(item, ctx.config.useSingleQuotes))
+        );
       });
     } else if (ctx.config.enumGeneration === 'number-enum') {
-      builder.appendLine('{');
-      builder.indent((builder) => {
-        for (const [index, item] of stringEnum.entries()) {
-          builder.appendLine(`${item} = ${index},`);
-        }
-      });
-      builder.append('}');
+      builder.parenthesize('{}', (builder) =>
+        builder
+          .appendLine()
+          .forEach(stringEnum, (builder, item, index) => builder.appendLine(`${toPascalCase(item)} = ${index},`))
+      );
     } else {
-      builder.appendLine('{');
-      builder.indent((builder) => {
-        for (const item of stringEnum) {
-          builder.appendLine(`${toPascalCase(item)} = '${item}',`);
-        }
-      });
-      builder.append('}');
+      builder.parenthesize('{}', (builder) =>
+        builder
+          .appendLine()
+          .forEach(stringEnum, (builder, item) =>
+            builder.appendLine(
+              `${toPascalCase(item)} = ${toTypeScriptStringLiteral(item, ctx.config.useSingleQuotes)},`
+            )
+          )
+      );
     }
   }
 
-  private generateInParentheses(
-    builder: SourceBuilder,
-    action: (builder: SourceBuilder) => void,
-    putInParentheses: boolean,
-    firstLinebreakContent: string
-  ): void {
-    if (putInParentheses) {
-      builder.currentIndentLevel++;
-      builder.appendLine('(').append(firstLinebreakContent);
+  protected shouldGenerateIndexFile(ctx: TypeScriptModelGeneratorContext): boolean {
+    return ctx.config.indexFilePath !== null;
+  }
+
+  protected generateIndexFileContent(ctx: TypeScriptModelGeneratorContext): string {
+    const exports = new ImportExportCollection();
+    const absoluteIndexFilePath = this.getIndexFilePath(ctx);
+
+    for (const modelId in ctx.currentResult.models) {
+      const model = ctx.currentResult.models[modelId];
+      if (!model.filePath) continue;
+      exports.addExport(
+        model.typeName,
+        getModulePathRelativeToFile(absoluteIndexFilePath, model.filePath, ctx.config.importModuleTransformer)
+      );
     }
-    action(builder);
-    if (putInParentheses) {
-      builder.currentIndentLevel--;
-      builder.appendLine().append(')');
-    }
+
+    return exports.toString(ctx.config.newLine);
   }
 }

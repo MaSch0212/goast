@@ -4,17 +4,14 @@ export function resolveAnyOfAndAllOf(
   schema: ApiSchema<'combined' | 'object'>,
   ignoreNonObjectParts: boolean
 ): ApiSchema<'object'> | undefined {
-  if (
-    !ignoreNonObjectParts &&
-    (hasInvalidSubSchema(schema.anyOf) || hasInvalidSubSchema(schema.allOf))
-  ) {
+  if (!ignoreNonObjectParts && (hasInvalidSubSchema(schema.anyOf) || hasInvalidSubSchema(schema.allOf))) {
     return undefined;
   }
 
   const required = new Set(schema.required);
   const properties = new Map<string, ApiSchemaProperty>();
-  collectSubSchemaProperties(schema.allOf, properties, required);
-  collectSubSchemaProperties(schema.anyOf, properties, required);
+  collectSubSchemaProperties(schema.allOf, properties, required, false);
+  collectSubSchemaProperties(schema.anyOf, properties, required, true);
   if (properties.size === 0) {
     return undefined;
   }
@@ -33,7 +30,8 @@ export function resolveAnyOfAndAllOf(
 function collectSubSchemaProperties(
   subSchemas: ApiSchema[],
   properties: Map<string, ApiSchemaProperty>,
-  required: Set<string>
+  required: Set<string>,
+  optional: boolean
 ) {
   for (const subSchema of subSchemas) {
     if (subSchema.kind === 'object') {
@@ -42,14 +40,16 @@ function collectSubSchemaProperties(
           properties.set(prop.name, prop);
         }
       }
-      for (const prop of subSchema.required) {
-        required.add(prop);
+      if (!optional) {
+        for (const prop of subSchema.required) {
+          required.add(prop);
+        }
       }
     }
 
     if (subSchema.kind === 'object' || subSchema.kind === 'combined') {
-      collectSubSchemaProperties(subSchema.allOf, properties, required);
-      collectSubSchemaProperties(subSchema.anyOf, properties, required);
+      collectSubSchemaProperties(subSchema.allOf, properties, required, optional);
+      collectSubSchemaProperties(subSchema.anyOf, properties, required, true);
     }
   }
 }
@@ -57,7 +57,6 @@ function collectSubSchemaProperties(
 function hasInvalidSubSchema(subSchemas: ApiSchema[]): boolean {
   return subSchemas.some(
     (x) =>
-      x.kind !== 'object' &&
-      (x.kind !== 'combined' || (!hasInvalidSubSchema(x.allOf) && !hasInvalidSubSchema(x.anyOf)))
+      x.kind !== 'object' && (x.kind !== 'combined' || (!hasInvalidSubSchema(x.allOf) && !hasInvalidSubSchema(x.anyOf)))
   );
 }

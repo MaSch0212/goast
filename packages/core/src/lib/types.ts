@@ -36,12 +36,7 @@ export type ApiComponentSource<V extends OpenApiVersion, T2, T3, T3_1> = {
   path: string;
   version: V;
   component: TypeByApiVersion<V, T2, T3, T3_1>;
-  reference?: TypeByApiVersion<
-    V,
-    OpenAPIV2.ReferenceObject,
-    OpenAPIV3.ReferenceObject,
-    OpenAPIV3_1.ReferenceObject
-  >;
+  reference?: TypeByApiVersion<V, OpenAPIV2.ReferenceObject, OpenAPIV3.ReferenceObject, OpenAPIV3_1.ReferenceObject>;
 };
 
 export type ApiComponent<T2 = unknown, T3 = unknown, T3_1 = unknown> = {
@@ -109,22 +104,14 @@ export type ApiParameter = ApiParameterComponent & {
   schema?: ApiSchema;
 };
 
-export type ApiRequestBodyComponent = ApiComponent<
-  never,
-  OpenAPIV3.RequestBodyObject,
-  OpenAPIV3_1.RequestBodyObject
->;
+export type ApiRequestBodyComponent = ApiComponent<never, OpenAPIV3.RequestBodyObject, OpenAPIV3_1.RequestBodyObject>;
 export type ApiRequestBody = ApiRequestBodyComponent & {
   description?: string;
   content: ApiContent[];
   required: boolean;
 };
 
-export type ApiContentComponent = ApiComponent<
-  never,
-  OpenAPIV3.MediaTypeObject,
-  OpenAPIV3_1.MediaTypeObject
->;
+export type ApiContentComponent = ApiComponent<never, OpenAPIV3.MediaTypeObject, OpenAPIV3_1.MediaTypeObject>;
 export type ApiContent = ApiContentComponent & {
   type: string;
   schema?: ApiSchema;
@@ -142,22 +129,10 @@ export type ApiResponse = ApiExampleComponent & {
   contentOptions: ApiContent[];
 };
 
-export type ApiHeaderComponent = ApiComponent<
-  OpenAPIV2.HeaderObject,
-  OpenAPIV3.HeaderObject,
-  OpenAPIV3_1.HeaderObject
->;
+export type ApiHeaderComponent = ApiComponent<OpenAPIV2.HeaderObject, OpenAPIV3.HeaderObject, OpenAPIV3_1.HeaderObject>;
 export type ApiHeader = ApiHeaderComponent & Omit<ApiParameter, 'target'>;
 
-export type ApiSchemaType =
-  | 'string'
-  | 'number'
-  | 'integer'
-  | 'array'
-  | 'boolean'
-  | 'null'
-  | 'object'
-  | string;
+export type ApiSchemaType = 'string' | 'number' | 'integer' | 'array' | 'boolean' | 'null' | 'object' | string;
 export type ApiSchemaKind =
   | 'oneOf'
   | 'multi-type'
@@ -175,11 +150,7 @@ export type ApiSchemaProperty = {
   name: string;
   schema: ApiSchema;
 };
-export type ApiSchemaComponent = ApiComponent<
-  OpenAPIV2.SchemaObject,
-  OpenAPIV3.SchemaObject,
-  OpenAPIV3_1.SchemaObject
->;
+export type ApiSchemaComponent = ApiComponent<OpenAPIV2.SchemaObject, OpenAPIV3.SchemaObject, OpenAPIV3_1.SchemaObject>;
 export type ApiSchemaBase = ApiSchemaComponent & {
   name: string;
   isNameGenerated: boolean;
@@ -194,8 +165,7 @@ export type ApiSchemaBase = ApiSchemaComponent & {
   required: Set<string>;
   custom: Record<string, unknown>;
 };
-export type ApiSchema<T extends ApiSchemaKind = ApiSchemaKind> = ApiSchemaBase &
-  ApiSchemaExtensions<T>;
+export type ApiSchema<T extends ApiSchemaKind = ApiSchemaKind> = ApiSchemaBase & ApiSchemaExtensions<T>;
 type AdditionalCombinedSchemaProperties = {
   allOf: ApiSchema[];
   anyOf: ApiSchema[];
@@ -239,9 +209,7 @@ export type ApiSchemaExtensions<T extends ApiSchemaKind> = T extends 'oneOf'
   : T extends 'combined'
   ? {
       kind: 'combined';
-      allOf: ApiSchema[];
-      anyOf: ApiSchema[];
-    }
+    } & AdditionalCombinedSchemaProperties
   : { kind: 'unknown' };
 export type CombinedLikeApiSchema = ApiSchemaBase & {
   kind: 'combined' | 'object' | 'multi-type';

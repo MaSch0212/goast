@@ -17,14 +17,10 @@ export class OpenApiParser {
   private readonly _loadedApiVersionCache = new Map<string, OpenApiVersion>();
 
   public async parseApisAndTransform(...fileNames: (string | string[])[]): Promise<OpenApiData> {
-    console.time('Load OpenAPI files');
     const flatFileNames = ([] as string[]).concat(...fileNames);
     const apis = await Promise.all(flatFileNames.map((fileName) => this.parseApi(fileName)));
-    console.timeEnd('Load OpenAPI files');
 
-    console.time('Transform OpenAPI');
     const transformed = this.transformApis(apis);
-    console.timeEnd('Transform OpenAPI');
 
     return transformed;
   }
@@ -65,11 +61,7 @@ export class OpenApiParser {
     return version;
   }
 
-  private async dereference<T extends Record<string, any>>(
-    file: string,
-    path: string,
-    value: T
-  ): Promise<Deref<T>> {
+  private async dereference<T extends Record<string, any>>(file: string, path: string, value: T): Promise<Deref<T>> {
     const result = {} as Deref<any>;
     const keys = Object.keys(value) as (keyof T)[];
     for (const key of keys) {
@@ -116,10 +108,7 @@ export class OpenApiParser {
     const lowerCaseRefFile = refFile.toLowerCase();
     if (!/\S/.test(refFile)) {
       absoluteRefFile = file;
-    } else if (
-      !lowerCaseRefFile.startsWith('http://') &&
-      !lowerCaseRefFile.startsWith('https://')
-    ) {
+    } else if (!lowerCaseRefFile.startsWith('http://') && !lowerCaseRefFile.startsWith('https://')) {
       absoluteRefFile = path.resolve(path.dirname(file), refFile);
     }
 
