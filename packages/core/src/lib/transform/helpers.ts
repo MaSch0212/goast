@@ -34,15 +34,11 @@ export function determineSchemaName(
   id: string
 ): { name: string; isGenerated: boolean } {
   if (schema.title) return { name: schema.title, isGenerated: false };
-  const schemaNameMatch = schema.$src.path.match(
-    /(?<=\/components\/schemas\/|\/definitions\/)[^/]+$/i
-  );
+  const schemaNameMatch = schema.$src.path.match(/(?<=\/components\/schemas\/|\/definitions\/)[^/]+$/i);
   if (schemaNameMatch) {
     return { name: schemaNameMatch[0], isGenerated: false };
   }
-  const responseMatch = schema.$src.path.match(
-    /\/paths\/(?<path>.+)\/(?<method>.+)\/responses\/(?<status>\d+)\//
-  );
+  const responseMatch = schema.$src.path.match(/\/paths\/(?<path>.+)\/(?<method>.+)\/responses\/(?<status>\d+)\//);
 
   if (responseMatch && responseMatch.groups) {
     const { path, method, status } = responseMatch.groups;
@@ -99,10 +95,7 @@ export function transformAdditionalProperties<TAdditionalProperties>(
 ): boolean | ApiSchema | undefined {
   if (isNullish(schema.additionalProperties)) return undefined;
   if (typeof schema.additionalProperties === 'boolean') return schema.additionalProperties;
-  return transformSchema(
-    context,
-    schema.additionalProperties as Exclude<TAdditionalProperties, undefined | boolean>
-  );
+  return transformSchema(context, schema.additionalProperties as Exclude<TAdditionalProperties, undefined | boolean>);
 }
 
 export function transformSchemaProperties<TProperties>(

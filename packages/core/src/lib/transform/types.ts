@@ -7,19 +7,9 @@ import {
   OpenApiCollectorEndpointInfo,
 } from '../collect/types.js';
 import { ArrayItem } from '../type.utils.js';
-import {
-  ApiSchema,
-  ApiSchemaExtensions,
-  ApiSchemaKind,
-  ApiPath,
-  OpenApiData,
-  OpenApiVersion,
-} from '../types.js';
+import { ApiSchema, ApiSchemaExtensions, ApiSchemaKind, ApiPath, OpenApiData, OpenApiVersion } from '../types.js';
 
-export type IncompleteApiSchema = Omit<
-  ApiSchema,
-  Exclude<keyof ApiSchemaExtensions<ApiSchemaKind>, 'kind'>
->;
+export type IncompleteApiSchema = Omit<ApiSchema, Exclude<keyof ApiSchemaExtensions<ApiSchemaKind>, 'kind'>>;
 export type OpenApiTransformerContext = {
   idGenerator: IdGenerator;
   input: OpenApiCollectorData;

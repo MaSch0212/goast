@@ -83,10 +83,7 @@ export function wordToCasing(str: Nullable<string>, casing: WordCasing): string 
   }
 }
 
-export function toCasing<T extends StringCasing>(
-  str: Nullable<string>,
-  casing: T | StringCasingWithOptions<T>
-) {
+export function toCasing<T extends StringCasing>(str: Nullable<string>, casing: T | StringCasingWithOptions<T>) {
   let options: CaseOptions<T> | undefined;
   let casingType: StringCasing;
   if (typeof casing === 'string') {
@@ -163,9 +160,7 @@ export function toPascalCase(str: Nullable<string>, options?: Partial<PascalCase
   const opts: PascalCaseOptions = { keepOriginalCase: false, ...options };
   const words = getWords(str);
   const pascalCase = words
-    .map((word) =>
-      wordToCasing(word, opts.keepOriginalCase ? 'first-upper' : 'first-upper-then-lower')
-    )
+    .map((word) => wordToCasing(word, opts.keepOriginalCase ? 'first-upper' : 'first-upper-then-lower'))
     .join('');
   return addPrefixAndSuffix(pascalCase, opts);
 }
@@ -188,9 +183,7 @@ export function toKebabCase(str: Nullable<string>, options?: Partial<KebabCaseOp
   const words = getWords(str);
   const kebabCase = words
     .map((word, index) =>
-      index === 0
-        ? wordToCasing(word, opts.firstWordCasing ?? opts.wordCasing)
-        : wordToCasing(word, opts.wordCasing)
+      index === 0 ? wordToCasing(word, opts.firstWordCasing ?? opts.wordCasing) : wordToCasing(word, opts.wordCasing)
     )
     .join('-');
   return addPrefixAndSuffix(kebabCase, opts);
@@ -214,9 +207,7 @@ export function toSnakeCase(str: Nullable<string>, options?: Partial<SnakeCaseOp
   const words = getWords(str);
   const snakeCase = words
     .map((word, index) =>
-      index === 0
-        ? wordToCasing(word, opts.firstWordCasing ?? opts.wordCasing)
-        : wordToCasing(word, opts.wordCasing)
+      index === 0 ? wordToCasing(word, opts.firstWordCasing ?? opts.wordCasing) : wordToCasing(word, opts.wordCasing)
     )
     .join('_');
   return addPrefixAndSuffix(snakeCase, opts);

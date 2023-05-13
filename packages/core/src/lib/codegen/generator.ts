@@ -3,13 +3,7 @@ import { resolve } from 'path';
 import { emptyDir, ensureDir } from 'fs-extra';
 
 import { CodeGeneratorConfig, defaultCodeGeneratorConfig } from './config.js';
-import {
-  CodeGeneratorInput,
-  CodeGeneratorOutput,
-  CodeGenerator,
-  GeneratorPipe,
-  AnyConfig,
-} from './types.js';
+import { CodeGeneratorInput, CodeGeneratorOutput, CodeGenerator, GeneratorPipe, AnyConfig } from './types.js';
 import { Merge } from '../type.utils.js';
 import { OpenApiData } from '../types.js';
 
@@ -28,9 +22,7 @@ class _GeneratorPipe<T extends OpenApiData> implements GeneratorPipe<T> {
     return this as unknown as _GeneratorPipe<U>;
   }
 
-  public async then(
-    onfulfilled?: ((value: T) => T | PromiseLike<T>) | null | undefined
-  ): Promise<T> {
+  public async then(onfulfilled?: ((value: T) => T | PromiseLike<T>) | null | undefined): Promise<T> {
     const absOutputPath = resolve(this._config.outputDir);
     if (this._config.clearOutputDir) {
       await emptyDir(absOutputPath);
@@ -58,10 +50,7 @@ class _GeneratorPipe<T extends OpenApiData> implements GeneratorPipe<T> {
   }
 }
 
-export function generate(
-  data: OpenApiData,
-  config?: Partial<CodeGeneratorConfig>
-): GeneratorPipe<OpenApiData>;
+export function generate(data: OpenApiData, config?: Partial<CodeGeneratorConfig>): GeneratorPipe<OpenApiData>;
 export function generate<A extends CodeGeneratorOutput>(
   data: OpenApiData,
   config: Partial<CodeGeneratorConfig> | undefined,
@@ -73,11 +62,7 @@ export function generate<A extends CodeGeneratorOutput, B extends CodeGeneratorO
   g1: CodeGenerator<{}, A, AnyConfig>,
   g2: CodeGenerator<Merge<[A]>, B, AnyConfig>
 ): GeneratorPipe<Merge<[A, B]>>;
-export function generate<
-  A extends CodeGeneratorOutput,
-  B extends CodeGeneratorOutput,
-  C extends CodeGeneratorOutput
->(
+export function generate<A extends CodeGeneratorOutput, B extends CodeGeneratorOutput, C extends CodeGeneratorOutput>(
   data: OpenApiData,
   config: Partial<CodeGeneratorConfig> | undefined,
   g1: CodeGenerator<{}, A, AnyConfig>,

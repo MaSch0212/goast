@@ -22,18 +22,12 @@ export interface CodeGenerator<
 }
 
 export interface GeneratorPipe<T extends object> {
-  continueWith<A extends CodeGeneratorOutput>(
-    g1: CodeGenerator<{}, A, AnyConfig>
-  ): GeneratorPipe<Merge<[A]>>;
+  continueWith<A extends CodeGeneratorOutput>(g1: CodeGenerator<{}, A, AnyConfig>): GeneratorPipe<Merge<[A]>>;
   continueWith<A extends CodeGeneratorOutput, B extends CodeGeneratorOutput>(
     g1: CodeGenerator<{}, A, AnyConfig>,
     g2: CodeGenerator<Merge<[A]>, B, AnyConfig>
   ): GeneratorPipe<Merge<[A, B]>>;
-  continueWith<
-    A extends CodeGeneratorOutput,
-    B extends CodeGeneratorOutput,
-    C extends CodeGeneratorOutput
-  >(
+  continueWith<A extends CodeGeneratorOutput, B extends CodeGeneratorOutput, C extends CodeGeneratorOutput>(
     g1: CodeGenerator<{}, A, AnyConfig>,
     g2: CodeGenerator<Merge<[A]>, B, AnyConfig>,
     g3: CodeGenerator<Merge<[A, B]>, C, AnyConfig>

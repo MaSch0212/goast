@@ -177,12 +177,8 @@ describe('transformAdditionalProperties', () => {
   test('returns undefined if additionalProperties is undefined or null', () => {
     const schema1 = { additionalProperties: undefined };
     const schema2 = { additionalProperties: null };
-    expect(
-      transformAdditionalProperties(context, schema1, () => ({} as ApiSchema))
-    ).toBeUndefined();
-    expect(
-      transformAdditionalProperties(context, schema2, () => ({} as ApiSchema))
-    ).toBeUndefined();
+    expect(transformAdditionalProperties(context, schema1, () => ({} as ApiSchema))).toBeUndefined();
+    expect(transformAdditionalProperties(context, schema2, () => ({} as ApiSchema))).toBeUndefined();
   });
 
   test('returns a boolean value if additionalProperties is a boolean value', () => {
@@ -244,9 +240,7 @@ describe('transformSchemaProperties', () => {
     const transformedSchema1 = { type: 'string' } as ApiSchema;
     const transformSchema = jest.fn(() => transformedSchema1);
     const result = transformSchemaProperties(context, schema, transformSchema);
-    expect(Array.from(result.entries())).toEqual([
-      ['prop1', { name: 'prop1', schema: transformedSchema1 }],
-    ]);
+    expect(Array.from(result.entries())).toEqual([['prop1', { name: 'prop1', schema: transformedSchema1 }]]);
     expect(transformSchema).toHaveBeenCalledTimes(1);
     expect(transformSchema).toHaveBeenCalledWith(context, schema.properties.prop1);
   });

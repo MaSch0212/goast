@@ -61,22 +61,9 @@ function collectPaths(
   });
 }
 
-function collectPathItem(
-  data: OpenApiCollectorData,
-  path: string,
-  pathItem?: Deref<OpenAPIV3_1.PathItemObject>
-) {
+function collectPathItem(data: OpenApiCollectorData, path: string, pathItem?: Deref<OpenAPIV3_1.PathItemObject>) {
   collect(data, pathItem, (data, pathItem) => {
-    for (const m of [
-      'get',
-      'put',
-      'post',
-      'delete',
-      'options',
-      'head',
-      'patch',
-      'trace',
-    ] as const) {
+    for (const m of ['get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace'] as const) {
       const operation = pathItem[m];
       if (!operation) continue;
       data.endpoints.set(`${operation.$src.file}#${operation.$src.path}`, {
@@ -138,10 +125,7 @@ function collectMediaType(
   });
 }
 
-function collectContent(
-  data: OpenApiCollectorData,
-  content?: Deref<ContentObject> | Deref<ContentObject>[]
-) {
+function collectContent(data: OpenApiCollectorData, content?: Deref<ContentObject> | Deref<ContentObject>[]) {
   collect(data, content, (data, content) => {
     for (const c in content) {
       collectMediaType(data, content[c]);

@@ -54,14 +54,13 @@ export type OpenApiV3_1CollectorEndpointInfo = OpenApiVersionMarked<'3.1'> &
     pathItem: Deref<OpenAPIV3_1.PathItemObject>;
     operation: Deref<OpenAPIV3_1.OperationObject>;
   };
-export type OpenApiCollectorEndpointInfo<V extends OpenApiVersion = OpenApiVersion> =
-  V extends '2.0'
-    ? OpenApiV2CollectorEndpointInfo
-    : V extends '3.0'
-    ? OpenApiV3CollectorEndpointInfo
-    : V extends '3.1'
-    ? OpenApiV3_1CollectorEndpointInfo
-    : never;
+export type OpenApiCollectorEndpointInfo<V extends OpenApiVersion = OpenApiVersion> = V extends '2.0'
+  ? OpenApiV2CollectorEndpointInfo
+  : V extends '3.0'
+  ? OpenApiV3CollectorEndpointInfo
+  : V extends '3.1'
+  ? OpenApiV3_1CollectorEndpointInfo
+  : never;
 export type OpenApiCollectorData = {
   documents: OpenApiCollectorDocument[];
   schemas: Map<string, OpenApiCollectorSchema>;

@@ -5,13 +5,7 @@ import { copyFile, emptyDir, readJson, rename, writeJson } from 'fs-extra';
 import { glob } from 'glob';
 import { EOL } from 'os';
 import { join, relative } from 'path';
-import {
-  DiagnosticCategory,
-  EmitResult,
-  ModuleKind,
-  Project,
-  getCompilerOptionsFromTsConfig,
-} from 'ts-morph';
+import { DiagnosticCategory, EmitResult, ModuleKind, Project, getCompilerOptionsFromTsConfig } from 'ts-morph';
 import { EntryPoint, ExecutorOptions } from './schema';
 import { ResolvedModule, resolveModuleName } from 'typescript';
 
@@ -46,12 +40,10 @@ async function prepare(options: ExecutorOptions, context: ExecutorContext): Prom
     throw new Error(`Project ${context.projectName} not found.`);
   }
   const ctx: Omit<Context, keyof ExecutorContext> = {
-    additionalEntryPoints: Object.entries(options.additionalEntryPoints ?? {}).map(
-      ([exportName, entryFile]) => ({
-        exportName,
-        entryFile: join(project.root, entryFile),
-      })
-    ),
+    additionalEntryPoints: Object.entries(options.additionalEntryPoints ?? {}).map(([exportName, entryFile]) => ({
+      exportName,
+      entryFile: join(project.root, entryFile),
+    })),
     assets: options.assets ?? [],
     entryFile: join(project.root, options.entryFile ?? 'src/index.ts'),
     projectRoot: project.root,
@@ -78,11 +70,7 @@ async function buildTypeScript(ctx: Context) {
   console.log(`  - Done (ES2015)${EOL}`);
 }
 
-function createTypeScriptProject(
-  ctx: Context,
-  moduleKind: ModuleKind,
-  declaration: boolean = true
-) {
+function createTypeScriptProject(ctx: Context, moduleKind: ModuleKind, declaration: boolean = true) {
   const project = new Project({
     tsConfigFilePath: ctx.tsConfig,
     compilerOptions: {

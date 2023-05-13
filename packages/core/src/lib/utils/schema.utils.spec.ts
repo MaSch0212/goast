@@ -1,9 +1,4 @@
-import {
-  createCombinedSchema,
-  createStringSchema,
-  createObjectSchema,
-  createUnknownProperty,
-} from '@goast/test/utils';
+import { createCombinedSchema, createStringSchema, createObjectSchema, createUnknownProperty } from '@goast/test/utils';
 
 import { resolveAnyOfAndAllOf } from './schema.utils.js';
 
@@ -22,12 +17,8 @@ describe('resolveAnyOfAndAllOf', () => {
       name: 'root',
       properties: [createUnknownProperty('prop0')],
       required: ['prop0'],
-      allOf: [
-        createObjectSchema({ properties: [createUnknownProperty('prop1')], required: ['prop1'] }),
-      ],
-      anyOf: [
-        createObjectSchema({ properties: [createUnknownProperty('prop2')], required: ['prop2'] }),
-      ],
+      allOf: [createObjectSchema({ properties: [createUnknownProperty('prop1')], required: ['prop1'] })],
+      anyOf: [createObjectSchema({ properties: [createUnknownProperty('prop2')], required: ['prop2'] })],
     });
 
     const expectedResult = expect.objectContaining(

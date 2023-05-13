@@ -42,11 +42,7 @@ function collectPaths(
   });
 }
 
-function collectPathItem(
-  data: OpenApiCollectorData,
-  path: string,
-  pathItem?: Deref<OpenAPIV2.PathItemObject>
-) {
+function collectPathItem(data: OpenApiCollectorData, path: string, pathItem?: Deref<OpenAPIV2.PathItemObject>) {
   collect(data, pathItem, (data, pathItem) => {
     for (const m of ['get', 'put', 'post', 'delete', 'options', 'head', 'patch'] as const) {
       const operation = pathItem[m];

@@ -576,31 +576,25 @@ describe('toCasing', () => {
   test('converts to pascal case', () => {
     expect(toCasing('hello world', 'pascal')).toBe('HelloWorld');
     expect(toCasing('Hello-world_test', 'pascal')).toBe('HelloWorldTest');
-    expect(toCasing('hello-WORLD', { casing: 'pascal', keepOriginalCase: true })).toBe(
-      'HelloWORLD'
-    );
+    expect(toCasing('hello-WORLD', { casing: 'pascal', keepOriginalCase: true })).toBe('HelloWORLD');
   });
 
   test('converts to kebab case', () => {
     expect(toCasing('hello world', 'kebab')).toBe('hello-world');
     expect(toCasing('HelloWorldTest', 'kebab')).toBe('hello-world-test');
-    expect(toCasing('HELLO_WORLD', { casing: 'kebab', wordCasing: 'all-upper' })).toBe(
-      'HELLO-WORLD'
-    );
+    expect(toCasing('HELLO_WORLD', { casing: 'kebab', wordCasing: 'all-upper' })).toBe('HELLO-WORLD');
   });
 
   test('converts to snake case', () => {
     expect(toCasing('hello world', 'snake')).toBe('HELLO_WORLD');
     expect(toCasing('HelloWorldTest', 'snake')).toBe('HELLO_WORLD_TEST');
-    expect(toCasing('hello-world', { casing: 'snake', wordCasing: 'all-lower' })).toBe(
-      'hello_world'
-    );
+    expect(toCasing('hello-world', { casing: 'snake', wordCasing: 'all-lower' })).toBe('hello_world');
   });
 
   test('converts to custom case', () => {
-    expect(
-      toCasing('hello world', { casing: 'custom', wordSeparator: '.', wordCasing: 'first-upper' })
-    ).toBe('Hello.World');
+    expect(toCasing('hello world', { casing: 'custom', wordSeparator: '.', wordCasing: 'first-upper' })).toBe(
+      'Hello.World'
+    );
     expect(
       toCasing('HelloWorldTest', {
         casing: 'custom',
