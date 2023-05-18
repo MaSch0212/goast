@@ -1,0 +1,3767 @@
+[
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/EmptyObject',
+      component: { type: 'object' },
+      version: '2.0'
+    },
+    id: 'schema-1',
+    name: 'EmptyObject',
+    isNameGenerated: false,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'object',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'object',
+    properties: Map(0) {},
+    additionalProperties: undefined,
+    allOf: [],
+    anyOf: []
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithProperties/properties/a',
+      component: { type: 'string' },
+      version: '2.0'
+    },
+    id: 'schema-3',
+    name: 'schema-3',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'string',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'string',
+    pattern: undefined,
+    minLength: undefined,
+    maxLength: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithProperties/properties/b',
+      component: { type: 'integer' },
+      version: '2.0'
+    },
+    id: 'schema-4',
+    name: 'schema-4',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'integer',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'integer',
+    minimum: undefined,
+    maximum: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithProperties/properties/c',
+      component: { type: 'number' },
+      version: '2.0'
+    },
+    id: 'schema-5',
+    name: 'schema-5',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'number',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'number',
+    minimum: undefined,
+    maximum: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithProperties/properties/d',
+      component: { type: 'boolean' },
+      version: '2.0'
+    },
+    id: 'schema-6',
+    name: 'schema-6',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'boolean',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'boolean'
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithProperties/properties/e',
+      component: { type: 'array' },
+      version: '2.0'
+    },
+    id: 'schema-7',
+    name: 'schema-7',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'array',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'array',
+    items: undefined,
+    minItems: undefined,
+    maxItems: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithProperties/properties/f',
+      component: { type: 'object' },
+      version: '2.0'
+    },
+    id: 'schema-8',
+    name: 'schema-8',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'object',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'object',
+    properties: Map(0) {},
+    additionalProperties: undefined,
+    allOf: [],
+    anyOf: []
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithProperties',
+      component: {
+        type: 'object',
+        properties: {
+          a: { type: 'string' },
+          b: { type: 'integer' },
+          c: { type: 'number' },
+          d: { type: 'boolean' },
+          e: { type: 'array' },
+          f: { type: 'object' }
+        }
+      },
+      version: '2.0'
+    },
+    id: 'schema-2',
+    name: 'ObjectWithProperties',
+    isNameGenerated: false,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'object',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'object',
+    properties: Map(6) {
+      'a' => {
+        name: 'a',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithProperties/properties/a',
+            component: { type: 'string' },
+            version: '2.0'
+          },
+          id: 'schema-3',
+          name: 'schema-3',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'string',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'string',
+          pattern: undefined,
+          minLength: undefined,
+          maxLength: undefined
+        }
+      },
+      'b' => {
+        name: 'b',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithProperties/properties/b',
+            component: { type: 'integer' },
+            version: '2.0'
+          },
+          id: 'schema-4',
+          name: 'schema-4',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'integer',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'integer',
+          minimum: undefined,
+          maximum: undefined
+        }
+      },
+      'c' => {
+        name: 'c',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithProperties/properties/c',
+            component: { type: 'number' },
+            version: '2.0'
+          },
+          id: 'schema-5',
+          name: 'schema-5',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'number',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'number',
+          minimum: undefined,
+          maximum: undefined
+        }
+      },
+      'd' => {
+        name: 'd',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithProperties/properties/d',
+            component: { type: 'boolean' },
+            version: '2.0'
+          },
+          id: 'schema-6',
+          name: 'schema-6',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'boolean',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'boolean'
+        }
+      },
+      'e' => {
+        name: 'e',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithProperties/properties/e',
+            component: { type: 'array' },
+            version: '2.0'
+          },
+          id: 'schema-7',
+          name: 'schema-7',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'array',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'array',
+          items: undefined,
+          minItems: undefined,
+          maxItems: undefined
+        }
+      },
+      'f' => {
+        name: 'f',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithProperties/properties/f',
+            component: { type: 'object' },
+            version: '2.0'
+          },
+          id: 'schema-8',
+          name: 'schema-8',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'object',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'object',
+          properties: Map(0) {},
+          additionalProperties: undefined,
+          allOf: [],
+          anyOf: []
+        }
+      }
+    },
+    additionalProperties: undefined,
+    allOf: [],
+    anyOf: []
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithRequiredProperties/properties/a',
+      component: { type: 'string' },
+      version: '2.0'
+    },
+    id: 'schema-10',
+    name: 'schema-10',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'string',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'string',
+    pattern: undefined,
+    minLength: undefined,
+    maxLength: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithRequiredProperties/properties/b',
+      component: { type: 'integer' },
+      version: '2.0'
+    },
+    id: 'schema-11',
+    name: 'schema-11',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'integer',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'integer',
+    minimum: undefined,
+    maximum: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithRequiredProperties/properties/c',
+      component: { type: 'number' },
+      version: '2.0'
+    },
+    id: 'schema-12',
+    name: 'schema-12',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'number',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'number',
+    minimum: undefined,
+    maximum: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithRequiredProperties/properties/d',
+      component: { type: 'boolean' },
+      version: '2.0'
+    },
+    id: 'schema-13',
+    name: 'schema-13',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'boolean',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'boolean'
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithRequiredProperties/properties/e',
+      component: { type: 'array' },
+      version: '2.0'
+    },
+    id: 'schema-14',
+    name: 'schema-14',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'array',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'array',
+    items: undefined,
+    minItems: undefined,
+    maxItems: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithRequiredProperties/properties/f',
+      component: { type: 'object' },
+      version: '2.0'
+    },
+    id: 'schema-15',
+    name: 'schema-15',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'object',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'object',
+    properties: Map(0) {},
+    additionalProperties: undefined,
+    allOf: [],
+    anyOf: []
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithRequiredProperties',
+      component: {
+        type: 'object',
+        properties: {
+          a: { type: 'string' },
+          b: { type: 'integer' },
+          c: { type: 'number' },
+          d: { type: 'boolean' },
+          e: { type: 'array' },
+          f: { type: 'object' }
+        },
+        required: [ 'a', 'b', 'c', 'd', 'e', 'f' ]
+      },
+      version: '2.0'
+    },
+    id: 'schema-9',
+    name: 'ObjectWithRequiredProperties',
+    isNameGenerated: false,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'object',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(6) { 'a', 'b', 'c', 'd', 'e', 'f' },
+    custom: {},
+    type: 'object',
+    properties: Map(6) {
+      'a' => {
+        name: 'a',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithRequiredProperties/properties/a',
+            component: { type: 'string' },
+            version: '2.0'
+          },
+          id: 'schema-10',
+          name: 'schema-10',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'string',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'string',
+          pattern: undefined,
+          minLength: undefined,
+          maxLength: undefined
+        }
+      },
+      'b' => {
+        name: 'b',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithRequiredProperties/properties/b',
+            component: { type: 'integer' },
+            version: '2.0'
+          },
+          id: 'schema-11',
+          name: 'schema-11',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'integer',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'integer',
+          minimum: undefined,
+          maximum: undefined
+        }
+      },
+      'c' => {
+        name: 'c',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithRequiredProperties/properties/c',
+            component: { type: 'number' },
+            version: '2.0'
+          },
+          id: 'schema-12',
+          name: 'schema-12',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'number',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'number',
+          minimum: undefined,
+          maximum: undefined
+        }
+      },
+      'd' => {
+        name: 'd',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithRequiredProperties/properties/d',
+            component: { type: 'boolean' },
+            version: '2.0'
+          },
+          id: 'schema-13',
+          name: 'schema-13',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'boolean',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'boolean'
+        }
+      },
+      'e' => {
+        name: 'e',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithRequiredProperties/properties/e',
+            component: { type: 'array' },
+            version: '2.0'
+          },
+          id: 'schema-14',
+          name: 'schema-14',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'array',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'array',
+          items: undefined,
+          minItems: undefined,
+          maxItems: undefined
+        }
+      },
+      'f' => {
+        name: 'f',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithRequiredProperties/properties/f',
+            component: { type: 'object' },
+            version: '2.0'
+          },
+          id: 'schema-15',
+          name: 'schema-15',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'object',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'object',
+          properties: Map(0) {},
+          additionalProperties: undefined,
+          allOf: [],
+          anyOf: []
+        }
+      }
+    },
+    additionalProperties: undefined,
+    allOf: [],
+    anyOf: []
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithAdditionalProperties/additionalProperties',
+      component: { type: 'string' },
+      version: '2.0'
+    },
+    id: 'schema-17',
+    name: 'schema-17',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'string',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'string',
+    pattern: undefined,
+    minLength: undefined,
+    maxLength: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithAdditionalProperties',
+      component: { type: 'object', additionalProperties: { type: 'string' } },
+      version: '2.0'
+    },
+    id: 'schema-16',
+    name: 'ObjectWithAdditionalProperties',
+    isNameGenerated: false,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'object',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'object',
+    properties: Map(0) {},
+    additionalProperties: {
+      '$src': {
+        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        path: '/definitions/ObjectWithAdditionalProperties/additionalProperties',
+        component: { type: 'string' },
+        version: '2.0'
+      },
+      id: 'schema-17',
+      name: 'schema-17',
+      isNameGenerated: true,
+      description: undefined,
+      deprecated: false,
+      accessibility: 'all',
+      kind: 'string',
+      enum: undefined,
+      default: undefined,
+      example: undefined,
+      nullable: false,
+      required: Set(0) {},
+      custom: {},
+      type: 'string',
+      pattern: undefined,
+      minLength: undefined,
+      maxLength: undefined
+    },
+    allOf: [],
+    anyOf: []
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAndAdditionalProperties/properties/a',
+      component: { type: 'string' },
+      version: '2.0'
+    },
+    id: 'schema-19',
+    name: 'schema-19',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'string',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'string',
+    pattern: undefined,
+    minLength: undefined,
+    maxLength: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAndAdditionalProperties/properties/b',
+      component: { type: 'integer' },
+      version: '2.0'
+    },
+    id: 'schema-20',
+    name: 'schema-20',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'integer',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'integer',
+    minimum: undefined,
+    maximum: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAndAdditionalProperties/properties/c',
+      component: { type: 'number' },
+      version: '2.0'
+    },
+    id: 'schema-21',
+    name: 'schema-21',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'number',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'number',
+    minimum: undefined,
+    maximum: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAndAdditionalProperties/properties/d',
+      component: { type: 'boolean' },
+      version: '2.0'
+    },
+    id: 'schema-22',
+    name: 'schema-22',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'boolean',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'boolean'
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAndAdditionalProperties/properties/e',
+      component: { type: 'array' },
+      version: '2.0'
+    },
+    id: 'schema-23',
+    name: 'schema-23',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'array',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'array',
+    items: undefined,
+    minItems: undefined,
+    maxItems: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAndAdditionalProperties/properties/f',
+      component: { type: 'object' },
+      version: '2.0'
+    },
+    id: 'schema-24',
+    name: 'schema-24',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'object',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'object',
+    properties: Map(0) {},
+    additionalProperties: undefined,
+    allOf: [],
+    anyOf: []
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAndAdditionalProperties/additionalProperties',
+      component: { type: 'string' },
+      version: '2.0'
+    },
+    id: 'schema-25',
+    name: 'schema-25',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'string',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'string',
+    pattern: undefined,
+    minLength: undefined,
+    maxLength: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAndAdditionalProperties',
+      component: {
+        type: 'object',
+        properties: {
+          a: { type: 'string' },
+          b: { type: 'integer' },
+          c: { type: 'number' },
+          d: { type: 'boolean' },
+          e: { type: 'array' },
+          f: { type: 'object' }
+        },
+        additionalProperties: { type: 'string' }
+      },
+      version: '2.0'
+    },
+    id: 'schema-18',
+    name: 'ObjectWithPropertiesAndAdditionalProperties',
+    isNameGenerated: false,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'object',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'object',
+    properties: Map(6) {
+      'a' => {
+        name: 'a',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAndAdditionalProperties/properties/a',
+            component: { type: 'string' },
+            version: '2.0'
+          },
+          id: 'schema-19',
+          name: 'schema-19',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'string',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'string',
+          pattern: undefined,
+          minLength: undefined,
+          maxLength: undefined
+        }
+      },
+      'b' => {
+        name: 'b',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAndAdditionalProperties/properties/b',
+            component: { type: 'integer' },
+            version: '2.0'
+          },
+          id: 'schema-20',
+          name: 'schema-20',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'integer',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'integer',
+          minimum: undefined,
+          maximum: undefined
+        }
+      },
+      'c' => {
+        name: 'c',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAndAdditionalProperties/properties/c',
+            component: { type: 'number' },
+            version: '2.0'
+          },
+          id: 'schema-21',
+          name: 'schema-21',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'number',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'number',
+          minimum: undefined,
+          maximum: undefined
+        }
+      },
+      'd' => {
+        name: 'd',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAndAdditionalProperties/properties/d',
+            component: { type: 'boolean' },
+            version: '2.0'
+          },
+          id: 'schema-22',
+          name: 'schema-22',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'boolean',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'boolean'
+        }
+      },
+      'e' => {
+        name: 'e',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAndAdditionalProperties/properties/e',
+            component: { type: 'array' },
+            version: '2.0'
+          },
+          id: 'schema-23',
+          name: 'schema-23',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'array',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'array',
+          items: undefined,
+          minItems: undefined,
+          maxItems: undefined
+        }
+      },
+      'f' => {
+        name: 'f',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAndAdditionalProperties/properties/f',
+            component: { type: 'object' },
+            version: '2.0'
+          },
+          id: 'schema-24',
+          name: 'schema-24',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'object',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'object',
+          properties: Map(0) {},
+          additionalProperties: undefined,
+          allOf: [],
+          anyOf: []
+        }
+      }
+    },
+    additionalProperties: {
+      '$src': {
+        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        path: '/definitions/ObjectWithPropertiesAndAdditionalProperties/additionalProperties',
+        component: { type: 'string' },
+        version: '2.0'
+      },
+      id: 'schema-25',
+      name: 'schema-25',
+      isNameGenerated: true,
+      description: undefined,
+      deprecated: false,
+      accessibility: 'all',
+      kind: 'string',
+      enum: undefined,
+      default: undefined,
+      example: undefined,
+      nullable: false,
+      required: Set(0) {},
+      custom: {},
+      type: 'string',
+      pattern: undefined,
+      minLength: undefined,
+      maxLength: undefined
+    },
+    allOf: [],
+    anyOf: []
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAllOf/properties/a',
+      component: { type: 'string' },
+      version: '2.0'
+    },
+    id: 'schema-27',
+    name: 'schema-27',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'string',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'string',
+    pattern: undefined,
+    minLength: undefined,
+    maxLength: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAllOf/properties/b',
+      component: { type: 'integer' },
+      version: '2.0'
+    },
+    id: 'schema-28',
+    name: 'schema-28',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'integer',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'integer',
+    minimum: undefined,
+    maximum: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAllOf/properties/c',
+      component: { type: 'number' },
+      version: '2.0'
+    },
+    id: 'schema-29',
+    name: 'schema-29',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'number',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'number',
+    minimum: undefined,
+    maximum: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAllOf/properties/d',
+      component: { type: 'boolean' },
+      version: '2.0'
+    },
+    id: 'schema-30',
+    name: 'schema-30',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'boolean',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'boolean'
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAllOf/properties/e',
+      component: { type: 'array' },
+      version: '2.0'
+    },
+    id: 'schema-31',
+    name: 'schema-31',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'array',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'array',
+    items: undefined,
+    minItems: undefined,
+    maxItems: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAllOf/properties/f',
+      component: { type: 'object' },
+      version: '2.0'
+    },
+    id: 'schema-32',
+    name: 'schema-32',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'object',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'object',
+    properties: Map(0) {},
+    additionalProperties: undefined,
+    allOf: [],
+    anyOf: []
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/g',
+      component: { type: 'string' },
+      version: '2.0'
+    },
+    id: 'schema-34',
+    name: 'schema-34',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'string',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'string',
+    pattern: undefined,
+    minLength: undefined,
+    maxLength: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/h',
+      component: { type: 'integer' },
+      version: '2.0'
+    },
+    id: 'schema-35',
+    name: 'schema-35',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'integer',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'integer',
+    minimum: undefined,
+    maximum: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/i',
+      component: { type: 'number' },
+      version: '2.0'
+    },
+    id: 'schema-36',
+    name: 'schema-36',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'number',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'number',
+    minimum: undefined,
+    maximum: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/j',
+      component: { type: 'boolean' },
+      version: '2.0'
+    },
+    id: 'schema-37',
+    name: 'schema-37',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'boolean',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'boolean'
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/k',
+      component: { type: 'array' },
+      version: '2.0'
+    },
+    id: 'schema-38',
+    name: 'schema-38',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'array',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'array',
+    items: undefined,
+    minItems: undefined,
+    maxItems: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/l',
+      component: { type: 'object' },
+      version: '2.0'
+    },
+    id: 'schema-39',
+    name: 'schema-39',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'object',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'object',
+    properties: Map(0) {},
+    additionalProperties: undefined,
+    allOf: [],
+    anyOf: []
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAllOf/allOf/0',
+      component: {
+        type: 'object',
+        properties: {
+          g: { type: 'string' },
+          h: { type: 'integer' },
+          i: { type: 'number' },
+          j: { type: 'boolean' },
+          k: { type: 'array' },
+          l: { type: 'object' }
+        }
+      },
+      version: '2.0'
+    },
+    id: 'schema-33',
+    name: 'schema-33',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'object',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'object',
+    properties: Map(6) {
+      'g' => {
+        name: 'g',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/g',
+            component: { type: 'string' },
+            version: '2.0'
+          },
+          id: 'schema-34',
+          name: 'schema-34',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'string',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'string',
+          pattern: undefined,
+          minLength: undefined,
+          maxLength: undefined
+        }
+      },
+      'h' => {
+        name: 'h',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/h',
+            component: { type: 'integer' },
+            version: '2.0'
+          },
+          id: 'schema-35',
+          name: 'schema-35',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'integer',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'integer',
+          minimum: undefined,
+          maximum: undefined
+        }
+      },
+      'i' => {
+        name: 'i',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/i',
+            component: { type: 'number' },
+            version: '2.0'
+          },
+          id: 'schema-36',
+          name: 'schema-36',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'number',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'number',
+          minimum: undefined,
+          maximum: undefined
+        }
+      },
+      'j' => {
+        name: 'j',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/j',
+            component: { type: 'boolean' },
+            version: '2.0'
+          },
+          id: 'schema-37',
+          name: 'schema-37',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'boolean',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'boolean'
+        }
+      },
+      'k' => {
+        name: 'k',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/k',
+            component: { type: 'array' },
+            version: '2.0'
+          },
+          id: 'schema-38',
+          name: 'schema-38',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'array',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'array',
+          items: undefined,
+          minItems: undefined,
+          maxItems: undefined
+        }
+      },
+      'l' => {
+        name: 'l',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/l',
+            component: { type: 'object' },
+            version: '2.0'
+          },
+          id: 'schema-39',
+          name: 'schema-39',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'object',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'object',
+          properties: Map(0) {},
+          additionalProperties: undefined,
+          allOf: [],
+          anyOf: []
+        }
+      }
+    },
+    additionalProperties: undefined,
+    allOf: [],
+    anyOf: []
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/m',
+      component: { type: 'string' },
+      version: '2.0'
+    },
+    id: 'schema-41',
+    name: 'schema-41',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'string',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'string',
+    pattern: undefined,
+    minLength: undefined,
+    maxLength: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/n',
+      component: { type: 'integer' },
+      version: '2.0'
+    },
+    id: 'schema-42',
+    name: 'schema-42',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'integer',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'integer',
+    minimum: undefined,
+    maximum: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/o',
+      component: { type: 'number' },
+      version: '2.0'
+    },
+    id: 'schema-43',
+    name: 'schema-43',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'number',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'number',
+    minimum: undefined,
+    maximum: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/p',
+      component: { type: 'boolean' },
+      version: '2.0'
+    },
+    id: 'schema-44',
+    name: 'schema-44',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'boolean',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'boolean'
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/q',
+      component: { type: 'array' },
+      version: '2.0'
+    },
+    id: 'schema-45',
+    name: 'schema-45',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'array',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'array',
+    items: undefined,
+    minItems: undefined,
+    maxItems: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/r',
+      component: { type: 'object' },
+      version: '2.0'
+    },
+    id: 'schema-46',
+    name: 'schema-46',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'object',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'object',
+    properties: Map(0) {},
+    additionalProperties: undefined,
+    allOf: [],
+    anyOf: []
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAllOf/allOf/1',
+      component: {
+        type: 'object',
+        properties: {
+          m: { type: 'string' },
+          n: { type: 'integer' },
+          o: { type: 'number' },
+          p: { type: 'boolean' },
+          q: { type: 'array' },
+          r: { type: 'object' }
+        }
+      },
+      version: '2.0'
+    },
+    id: 'schema-40',
+    name: 'schema-40',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'object',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'object',
+    properties: Map(6) {
+      'm' => {
+        name: 'm',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/m',
+            component: { type: 'string' },
+            version: '2.0'
+          },
+          id: 'schema-41',
+          name: 'schema-41',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'string',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'string',
+          pattern: undefined,
+          minLength: undefined,
+          maxLength: undefined
+        }
+      },
+      'n' => {
+        name: 'n',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/n',
+            component: { type: 'integer' },
+            version: '2.0'
+          },
+          id: 'schema-42',
+          name: 'schema-42',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'integer',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'integer',
+          minimum: undefined,
+          maximum: undefined
+        }
+      },
+      'o' => {
+        name: 'o',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/o',
+            component: { type: 'number' },
+            version: '2.0'
+          },
+          id: 'schema-43',
+          name: 'schema-43',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'number',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'number',
+          minimum: undefined,
+          maximum: undefined
+        }
+      },
+      'p' => {
+        name: 'p',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/p',
+            component: { type: 'boolean' },
+            version: '2.0'
+          },
+          id: 'schema-44',
+          name: 'schema-44',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'boolean',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'boolean'
+        }
+      },
+      'q' => {
+        name: 'q',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/q',
+            component: { type: 'array' },
+            version: '2.0'
+          },
+          id: 'schema-45',
+          name: 'schema-45',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'array',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'array',
+          items: undefined,
+          minItems: undefined,
+          maxItems: undefined
+        }
+      },
+      'r' => {
+        name: 'r',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/r',
+            component: { type: 'object' },
+            version: '2.0'
+          },
+          id: 'schema-46',
+          name: 'schema-46',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'object',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'object',
+          properties: Map(0) {},
+          additionalProperties: undefined,
+          allOf: [],
+          anyOf: []
+        }
+      }
+    },
+    additionalProperties: undefined,
+    allOf: [],
+    anyOf: []
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithPropertiesAllOf',
+      component: {
+        type: 'object',
+        properties: {
+          a: { type: 'string' },
+          b: { type: 'integer' },
+          c: { type: 'number' },
+          d: { type: 'boolean' },
+          e: { type: 'array' },
+          f: { type: 'object' }
+        },
+        allOf: [
+          {
+            type: 'object',
+            properties: {
+              g: { type: 'string' },
+              h: { type: 'integer' },
+              i: { type: 'number' },
+              j: { type: 'boolean' },
+              k: { type: 'array' },
+              l: { type: 'object' }
+            }
+          },
+          {
+            type: 'object',
+            properties: {
+              m: { type: 'string' },
+              n: { type: 'integer' },
+              o: { type: 'number' },
+              p: { type: 'boolean' },
+              q: { type: 'array' },
+              r: { type: 'object' }
+            }
+          }
+        ],
+        required: [
+          'a', 'b', 'c', 'd', 'e',
+          'f', 'g', 'h', 'i', 'j',
+          'k', 'l', 'm', 'n', 'o',
+          'p', 'q', 'r'
+        ]
+      },
+      version: '2.0'
+    },
+    id: 'schema-26',
+    name: 'ObjectWithPropertiesAllOf',
+    isNameGenerated: false,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'object',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(18) {
+      'a',
+      'b',
+      'c',
+      'd',
+      'e',
+      'f',
+      'g',
+      'h',
+      'i',
+      'j',
+      'k',
+      'l',
+      'm',
+      'n',
+      'o',
+      'p',
+      'q',
+      'r'
+    },
+    custom: {},
+    type: 'object',
+    properties: Map(6) {
+      'a' => {
+        name: 'a',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAllOf/properties/a',
+            component: { type: 'string' },
+            version: '2.0'
+          },
+          id: 'schema-27',
+          name: 'schema-27',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'string',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'string',
+          pattern: undefined,
+          minLength: undefined,
+          maxLength: undefined
+        }
+      },
+      'b' => {
+        name: 'b',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAllOf/properties/b',
+            component: { type: 'integer' },
+            version: '2.0'
+          },
+          id: 'schema-28',
+          name: 'schema-28',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'integer',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'integer',
+          minimum: undefined,
+          maximum: undefined
+        }
+      },
+      'c' => {
+        name: 'c',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAllOf/properties/c',
+            component: { type: 'number' },
+            version: '2.0'
+          },
+          id: 'schema-29',
+          name: 'schema-29',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'number',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'number',
+          minimum: undefined,
+          maximum: undefined
+        }
+      },
+      'd' => {
+        name: 'd',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAllOf/properties/d',
+            component: { type: 'boolean' },
+            version: '2.0'
+          },
+          id: 'schema-30',
+          name: 'schema-30',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'boolean',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'boolean'
+        }
+      },
+      'e' => {
+        name: 'e',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAllOf/properties/e',
+            component: { type: 'array' },
+            version: '2.0'
+          },
+          id: 'schema-31',
+          name: 'schema-31',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'array',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'array',
+          items: undefined,
+          minItems: undefined,
+          maxItems: undefined
+        }
+      },
+      'f' => {
+        name: 'f',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithPropertiesAllOf/properties/f',
+            component: { type: 'object' },
+            version: '2.0'
+          },
+          id: 'schema-32',
+          name: 'schema-32',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'object',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'object',
+          properties: Map(0) {},
+          additionalProperties: undefined,
+          allOf: [],
+          anyOf: []
+        }
+      }
+    },
+    additionalProperties: undefined,
+    allOf: [
+      {
+        '$src': {
+          file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+          path: '/definitions/ObjectWithPropertiesAllOf/allOf/0',
+          component: {
+            type: 'object',
+            properties: {
+              g: { type: 'string' },
+              h: { type: 'integer' },
+              i: { type: 'number' },
+              j: { type: 'boolean' },
+              k: { type: 'array' },
+              l: { type: 'object' }
+            }
+          },
+          version: '2.0'
+        },
+        id: 'schema-33',
+        name: 'schema-33',
+        isNameGenerated: true,
+        description: undefined,
+        deprecated: false,
+        accessibility: 'all',
+        kind: 'object',
+        enum: undefined,
+        default: undefined,
+        example: undefined,
+        nullable: false,
+        required: Set(0) {},
+        custom: {},
+        type: 'object',
+        properties: Map(6) {
+          'g' => {
+            name: 'g',
+            schema: {
+              '$src': {
+                file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+                path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/g',
+                component: { type: 'string' },
+                version: '2.0'
+              },
+              id: 'schema-34',
+              name: 'schema-34',
+              isNameGenerated: true,
+              description: undefined,
+              deprecated: false,
+              accessibility: 'all',
+              kind: 'string',
+              enum: undefined,
+              default: undefined,
+              example: undefined,
+              nullable: false,
+              required: Set(0) {},
+              custom: {},
+              type: 'string',
+              pattern: undefined,
+              minLength: undefined,
+              maxLength: undefined
+            }
+          },
+          'h' => {
+            name: 'h',
+            schema: {
+              '$src': {
+                file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+                path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/h',
+                component: { type: 'integer' },
+                version: '2.0'
+              },
+              id: 'schema-35',
+              name: 'schema-35',
+              isNameGenerated: true,
+              description: undefined,
+              deprecated: false,
+              accessibility: 'all',
+              kind: 'integer',
+              enum: undefined,
+              default: undefined,
+              example: undefined,
+              nullable: false,
+              required: Set(0) {},
+              custom: {},
+              type: 'integer',
+              minimum: undefined,
+              maximum: undefined
+            }
+          },
+          'i' => {
+            name: 'i',
+            schema: {
+              '$src': {
+                file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+                path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/i',
+                component: { type: 'number' },
+                version: '2.0'
+              },
+              id: 'schema-36',
+              name: 'schema-36',
+              isNameGenerated: true,
+              description: undefined,
+              deprecated: false,
+              accessibility: 'all',
+              kind: 'number',
+              enum: undefined,
+              default: undefined,
+              example: undefined,
+              nullable: false,
+              required: Set(0) {},
+              custom: {},
+              type: 'number',
+              minimum: undefined,
+              maximum: undefined
+            }
+          },
+          'j' => {
+            name: 'j',
+            schema: {
+              '$src': {
+                file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+                path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/j',
+                component: { type: 'boolean' },
+                version: '2.0'
+              },
+              id: 'schema-37',
+              name: 'schema-37',
+              isNameGenerated: true,
+              description: undefined,
+              deprecated: false,
+              accessibility: 'all',
+              kind: 'boolean',
+              enum: undefined,
+              default: undefined,
+              example: undefined,
+              nullable: false,
+              required: Set(0) {},
+              custom: {},
+              type: 'boolean'
+            }
+          },
+          'k' => {
+            name: 'k',
+            schema: {
+              '$src': {
+                file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+                path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/k',
+                component: { type: 'array' },
+                version: '2.0'
+              },
+              id: 'schema-38',
+              name: 'schema-38',
+              isNameGenerated: true,
+              description: undefined,
+              deprecated: false,
+              accessibility: 'all',
+              kind: 'array',
+              enum: undefined,
+              default: undefined,
+              example: undefined,
+              nullable: false,
+              required: Set(0) {},
+              custom: {},
+              type: 'array',
+              items: undefined,
+              minItems: undefined,
+              maxItems: undefined
+            }
+          },
+          'l' => {
+            name: 'l',
+            schema: {
+              '$src': {
+                file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+                path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/l',
+                component: { type: 'object' },
+                version: '2.0'
+              },
+              id: 'schema-39',
+              name: 'schema-39',
+              isNameGenerated: true,
+              description: undefined,
+              deprecated: false,
+              accessibility: 'all',
+              kind: 'object',
+              enum: undefined,
+              default: undefined,
+              example: undefined,
+              nullable: false,
+              required: Set(0) {},
+              custom: {},
+              type: 'object',
+              properties: Map(0) {},
+              additionalProperties: undefined,
+              allOf: [],
+              anyOf: []
+            }
+          }
+        },
+        additionalProperties: undefined,
+        allOf: [],
+        anyOf: []
+      },
+      {
+        '$src': {
+          file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+          path: '/definitions/ObjectWithPropertiesAllOf/allOf/1',
+          component: {
+            type: 'object',
+            properties: {
+              m: { type: 'string' },
+              n: { type: 'integer' },
+              o: { type: 'number' },
+              p: { type: 'boolean' },
+              q: { type: 'array' },
+              r: { type: 'object' }
+            }
+          },
+          version: '2.0'
+        },
+        id: 'schema-40',
+        name: 'schema-40',
+        isNameGenerated: true,
+        description: undefined,
+        deprecated: false,
+        accessibility: 'all',
+        kind: 'object',
+        enum: undefined,
+        default: undefined,
+        example: undefined,
+        nullable: false,
+        required: Set(0) {},
+        custom: {},
+        type: 'object',
+        properties: Map(6) {
+          'm' => {
+            name: 'm',
+            schema: {
+              '$src': {
+                file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+                path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/m',
+                component: { type: 'string' },
+                version: '2.0'
+              },
+              id: 'schema-41',
+              name: 'schema-41',
+              isNameGenerated: true,
+              description: undefined,
+              deprecated: false,
+              accessibility: 'all',
+              kind: 'string',
+              enum: undefined,
+              default: undefined,
+              example: undefined,
+              nullable: false,
+              required: Set(0) {},
+              custom: {},
+              type: 'string',
+              pattern: undefined,
+              minLength: undefined,
+              maxLength: undefined
+            }
+          },
+          'n' => {
+            name: 'n',
+            schema: {
+              '$src': {
+                file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+                path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/n',
+                component: { type: 'integer' },
+                version: '2.0'
+              },
+              id: 'schema-42',
+              name: 'schema-42',
+              isNameGenerated: true,
+              description: undefined,
+              deprecated: false,
+              accessibility: 'all',
+              kind: 'integer',
+              enum: undefined,
+              default: undefined,
+              example: undefined,
+              nullable: false,
+              required: Set(0) {},
+              custom: {},
+              type: 'integer',
+              minimum: undefined,
+              maximum: undefined
+            }
+          },
+          'o' => {
+            name: 'o',
+            schema: {
+              '$src': {
+                file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+                path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/o',
+                component: { type: 'number' },
+                version: '2.0'
+              },
+              id: 'schema-43',
+              name: 'schema-43',
+              isNameGenerated: true,
+              description: undefined,
+              deprecated: false,
+              accessibility: 'all',
+              kind: 'number',
+              enum: undefined,
+              default: undefined,
+              example: undefined,
+              nullable: false,
+              required: Set(0) {},
+              custom: {},
+              type: 'number',
+              minimum: undefined,
+              maximum: undefined
+            }
+          },
+          'p' => {
+            name: 'p',
+            schema: {
+              '$src': {
+                file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+                path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/p',
+                component: { type: 'boolean' },
+                version: '2.0'
+              },
+              id: 'schema-44',
+              name: 'schema-44',
+              isNameGenerated: true,
+              description: undefined,
+              deprecated: false,
+              accessibility: 'all',
+              kind: 'boolean',
+              enum: undefined,
+              default: undefined,
+              example: undefined,
+              nullable: false,
+              required: Set(0) {},
+              custom: {},
+              type: 'boolean'
+            }
+          },
+          'q' => {
+            name: 'q',
+            schema: {
+              '$src': {
+                file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+                path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/q',
+                component: { type: 'array' },
+                version: '2.0'
+              },
+              id: 'schema-45',
+              name: 'schema-45',
+              isNameGenerated: true,
+              description: undefined,
+              deprecated: false,
+              accessibility: 'all',
+              kind: 'array',
+              enum: undefined,
+              default: undefined,
+              example: undefined,
+              nullable: false,
+              required: Set(0) {},
+              custom: {},
+              type: 'array',
+              items: undefined,
+              minItems: undefined,
+              maxItems: undefined
+            }
+          },
+          'r' => {
+            name: 'r',
+            schema: {
+              '$src': {
+                file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+                path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/r',
+                component: { type: 'object' },
+                version: '2.0'
+              },
+              id: 'schema-46',
+              name: 'schema-46',
+              isNameGenerated: true,
+              description: undefined,
+              deprecated: false,
+              accessibility: 'all',
+              kind: 'object',
+              enum: undefined,
+              default: undefined,
+              example: undefined,
+              nullable: false,
+              required: Set(0) {},
+              custom: {},
+              type: 'object',
+              properties: Map(0) {},
+              additionalProperties: undefined,
+              allOf: [],
+              anyOf: []
+            }
+          }
+        },
+        additionalProperties: undefined,
+        allOf: [],
+        anyOf: []
+      }
+    ],
+    anyOf: []
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithNullableProperties/properties/a',
+      component: { type: [ 'string', 'null' ] },
+      version: '2.0'
+    },
+    id: 'schema-48',
+    name: 'schema-48',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'string',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: true,
+    required: Set(0) {},
+    custom: {},
+    type: 'string',
+    pattern: undefined,
+    minLength: undefined,
+    maxLength: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithNullableProperties/properties/b',
+      component: { type: [ 'integer', 'null' ] },
+      version: '2.0'
+    },
+    id: 'schema-49',
+    name: 'schema-49',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'integer',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: true,
+    required: Set(0) {},
+    custom: {},
+    type: 'integer',
+    minimum: undefined,
+    maximum: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithNullableProperties/properties/c',
+      component: { type: [ 'number', 'null' ] },
+      version: '2.0'
+    },
+    id: 'schema-50',
+    name: 'schema-50',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'number',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: true,
+    required: Set(0) {},
+    custom: {},
+    type: 'number',
+    minimum: undefined,
+    maximum: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithNullableProperties/properties/d',
+      component: { type: [ 'boolean', 'null' ] },
+      version: '2.0'
+    },
+    id: 'schema-51',
+    name: 'schema-51',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'boolean',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: true,
+    required: Set(0) {},
+    custom: {},
+    type: 'boolean'
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithNullableProperties/properties/e',
+      component: { type: [ 'array', 'null' ] },
+      version: '2.0'
+    },
+    id: 'schema-52',
+    name: 'schema-52',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'array',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: true,
+    required: Set(0) {},
+    custom: {},
+    type: 'array',
+    items: undefined,
+    minItems: undefined,
+    maxItems: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithNullableProperties/properties/f',
+      component: { type: [ 'object', 'null' ] },
+      version: '2.0'
+    },
+    id: 'schema-53',
+    name: 'schema-53',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'object',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: true,
+    required: Set(0) {},
+    custom: {},
+    type: 'object',
+    properties: Map(0) {},
+    additionalProperties: undefined,
+    allOf: [],
+    anyOf: []
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithNullableProperties',
+      component: {
+        type: 'object',
+        properties: {
+          a: { type: [ 'string', 'null' ] },
+          b: { type: [ 'integer', 'null' ] },
+          c: { type: [ 'number', 'null' ] },
+          d: { type: [ 'boolean', 'null' ] },
+          e: { type: [ 'array', 'null' ] },
+          f: { type: [ 'object', 'null' ] }
+        }
+      },
+      version: '2.0'
+    },
+    id: 'schema-47',
+    name: 'ObjectWithNullableProperties',
+    isNameGenerated: false,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'object',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'object',
+    properties: Map(6) {
+      'a' => {
+        name: 'a',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithNullableProperties/properties/a',
+            component: { type: [ 'string', 'null' ] },
+            version: '2.0'
+          },
+          id: 'schema-48',
+          name: 'schema-48',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'string',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: true,
+          required: Set(0) {},
+          custom: {},
+          type: 'string',
+          pattern: undefined,
+          minLength: undefined,
+          maxLength: undefined
+        }
+      },
+      'b' => {
+        name: 'b',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithNullableProperties/properties/b',
+            component: { type: [ 'integer', 'null' ] },
+            version: '2.0'
+          },
+          id: 'schema-49',
+          name: 'schema-49',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'integer',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: true,
+          required: Set(0) {},
+          custom: {},
+          type: 'integer',
+          minimum: undefined,
+          maximum: undefined
+        }
+      },
+      'c' => {
+        name: 'c',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithNullableProperties/properties/c',
+            component: { type: [ 'number', 'null' ] },
+            version: '2.0'
+          },
+          id: 'schema-50',
+          name: 'schema-50',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'number',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: true,
+          required: Set(0) {},
+          custom: {},
+          type: 'number',
+          minimum: undefined,
+          maximum: undefined
+        }
+      },
+      'd' => {
+        name: 'd',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithNullableProperties/properties/d',
+            component: { type: [ 'boolean', 'null' ] },
+            version: '2.0'
+          },
+          id: 'schema-51',
+          name: 'schema-51',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'boolean',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: true,
+          required: Set(0) {},
+          custom: {},
+          type: 'boolean'
+        }
+      },
+      'e' => {
+        name: 'e',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithNullableProperties/properties/e',
+            component: { type: [ 'array', 'null' ] },
+            version: '2.0'
+          },
+          id: 'schema-52',
+          name: 'schema-52',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'array',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: true,
+          required: Set(0) {},
+          custom: {},
+          type: 'array',
+          items: undefined,
+          minItems: undefined,
+          maxItems: undefined
+        }
+      },
+      'f' => {
+        name: 'f',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithNullableProperties/properties/f',
+            component: { type: [ 'object', 'null' ] },
+            version: '2.0'
+          },
+          id: 'schema-53',
+          name: 'schema-53',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'object',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: true,
+          required: Set(0) {},
+          custom: {},
+          type: 'object',
+          properties: Map(0) {},
+          additionalProperties: undefined,
+          allOf: [],
+          anyOf: []
+        }
+      }
+    },
+    additionalProperties: undefined,
+    allOf: [],
+    anyOf: []
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithNullablePropertiesAndRequiredProperties/properties/a',
+      component: { type: [ 'string', 'null' ] },
+      version: '2.0'
+    },
+    id: 'schema-55',
+    name: 'schema-55',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'string',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: true,
+    required: Set(0) {},
+    custom: {},
+    type: 'string',
+    pattern: undefined,
+    minLength: undefined,
+    maxLength: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithNullablePropertiesAndRequiredProperties/properties/b',
+      component: { type: [ 'integer', 'null' ] },
+      version: '2.0'
+    },
+    id: 'schema-56',
+    name: 'schema-56',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'integer',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: true,
+    required: Set(0) {},
+    custom: {},
+    type: 'integer',
+    minimum: undefined,
+    maximum: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithNullablePropertiesAndRequiredProperties/properties/c',
+      component: { type: [ 'number', 'null' ] },
+      version: '2.0'
+    },
+    id: 'schema-57',
+    name: 'schema-57',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'number',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: true,
+    required: Set(0) {},
+    custom: {},
+    type: 'number',
+    minimum: undefined,
+    maximum: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithNullablePropertiesAndRequiredProperties/properties/d',
+      component: { type: [ 'boolean', 'null' ] },
+      version: '2.0'
+    },
+    id: 'schema-58',
+    name: 'schema-58',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'boolean',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: true,
+    required: Set(0) {},
+    custom: {},
+    type: 'boolean'
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithNullablePropertiesAndRequiredProperties/properties/e',
+      component: { type: [ 'array', 'null' ] },
+      version: '2.0'
+    },
+    id: 'schema-59',
+    name: 'schema-59',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'array',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: true,
+    required: Set(0) {},
+    custom: {},
+    type: 'array',
+    items: undefined,
+    minItems: undefined,
+    maxItems: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithNullablePropertiesAndRequiredProperties/properties/f',
+      component: { type: [ 'object', 'null' ] },
+      version: '2.0'
+    },
+    id: 'schema-60',
+    name: 'schema-60',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'object',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: true,
+    required: Set(0) {},
+    custom: {},
+    type: 'object',
+    properties: Map(0) {},
+    additionalProperties: undefined,
+    allOf: [],
+    anyOf: []
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithNullablePropertiesAndRequiredProperties',
+      component: {
+        type: 'object',
+        properties: {
+          a: { type: [ 'string', 'null' ] },
+          b: { type: [ 'integer', 'null' ] },
+          c: { type: [ 'number', 'null' ] },
+          d: { type: [ 'boolean', 'null' ] },
+          e: { type: [ 'array', 'null' ] },
+          f: { type: [ 'object', 'null' ] }
+        },
+        required: [ 'a', 'b', 'c', 'd', 'e', 'f' ]
+      },
+      version: '2.0'
+    },
+    id: 'schema-54',
+    name: 'ObjectWithNullablePropertiesAndRequiredProperties',
+    isNameGenerated: false,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'object',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(6) { 'a', 'b', 'c', 'd', 'e', 'f' },
+    custom: {},
+    type: 'object',
+    properties: Map(6) {
+      'a' => {
+        name: 'a',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithNullablePropertiesAndRequiredProperties/properties/a',
+            component: { type: [ 'string', 'null' ] },
+            version: '2.0'
+          },
+          id: 'schema-55',
+          name: 'schema-55',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'string',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: true,
+          required: Set(0) {},
+          custom: {},
+          type: 'string',
+          pattern: undefined,
+          minLength: undefined,
+          maxLength: undefined
+        }
+      },
+      'b' => {
+        name: 'b',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithNullablePropertiesAndRequiredProperties/properties/b',
+            component: { type: [ 'integer', 'null' ] },
+            version: '2.0'
+          },
+          id: 'schema-56',
+          name: 'schema-56',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'integer',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: true,
+          required: Set(0) {},
+          custom: {},
+          type: 'integer',
+          minimum: undefined,
+          maximum: undefined
+        }
+      },
+      'c' => {
+        name: 'c',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithNullablePropertiesAndRequiredProperties/properties/c',
+            component: { type: [ 'number', 'null' ] },
+            version: '2.0'
+          },
+          id: 'schema-57',
+          name: 'schema-57',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'number',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: true,
+          required: Set(0) {},
+          custom: {},
+          type: 'number',
+          minimum: undefined,
+          maximum: undefined
+        }
+      },
+      'd' => {
+        name: 'd',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithNullablePropertiesAndRequiredProperties/properties/d',
+            component: { type: [ 'boolean', 'null' ] },
+            version: '2.0'
+          },
+          id: 'schema-58',
+          name: 'schema-58',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'boolean',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: true,
+          required: Set(0) {},
+          custom: {},
+          type: 'boolean'
+        }
+      },
+      'e' => {
+        name: 'e',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithNullablePropertiesAndRequiredProperties/properties/e',
+            component: { type: [ 'array', 'null' ] },
+            version: '2.0'
+          },
+          id: 'schema-59',
+          name: 'schema-59',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'array',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: true,
+          required: Set(0) {},
+          custom: {},
+          type: 'array',
+          items: undefined,
+          minItems: undefined,
+          maxItems: undefined
+        }
+      },
+      'f' => {
+        name: 'f',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithNullablePropertiesAndRequiredProperties/properties/f',
+            component: { type: [ 'object', 'null' ] },
+            version: '2.0'
+          },
+          id: 'schema-60',
+          name: 'schema-60',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'object',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: true,
+          required: Set(0) {},
+          custom: {},
+          type: 'object',
+          properties: Map(0) {},
+          additionalProperties: undefined,
+          allOf: [],
+          anyOf: []
+        }
+      }
+    },
+    additionalProperties: undefined,
+    allOf: [],
+    anyOf: []
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\detailed-schemas.yml',
+      path: '/definitions/WithTitle',
+      component: { title: 'My Title', type: 'string' },
+      version: '2.0'
+    },
+    id: 'schema-62',
+    name: 'My Title',
+    isNameGenerated: false,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'string',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'string',
+    pattern: undefined,
+    minLength: undefined,
+    maxLength: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml',
+      path: '/definitions/MyString',
+      component: { type: 'string' },
+      version: '2.0'
+    },
+    id: 'schema-63',
+    name: 'MyString',
+    isNameGenerated: false,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'string',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'string',
+    pattern: undefined,
+    minLength: undefined,
+    maxLength: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithReferencesInProperties/properties/d',
+      component: { type: 'string' },
+      version: '2.0'
+    },
+    id: 'schema-64',
+    name: 'schema-64',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'string',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'string',
+    pattern: undefined,
+    minLength: undefined,
+    maxLength: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithReferencesInProperties',
+      component: {
+        type: 'object',
+        properties: {
+          a: { '$ref': '#/definitions/EmptyObject' },
+          b: { '$ref': 'detailed-schemas.yml#/definitions/WithTitle' },
+          c: { '$ref': 'simple-schemas.yml#/definitions/MyString' },
+          d: { type: 'string' }
+        }
+      },
+      version: '2.0'
+    },
+    id: 'schema-61',
+    name: 'ObjectWithReferencesInProperties',
+    isNameGenerated: false,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'object',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'object',
+    properties: Map(4) {
+      'a' => {
+        name: 'a',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/EmptyObject',
+            component: { type: 'object' },
+            version: '2.0'
+          },
+          id: 'schema-1',
+          name: 'EmptyObject',
+          isNameGenerated: false,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'object',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'object',
+          properties: Map(0) {},
+          additionalProperties: undefined,
+          allOf: [],
+          anyOf: []
+        }
+      },
+      'b' => {
+        name: 'b',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\detailed-schemas.yml',
+            path: '/definitions/WithTitle',
+            component: { title: 'My Title', type: 'string' },
+            version: '2.0'
+          },
+          id: 'schema-62',
+          name: 'My Title',
+          isNameGenerated: false,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'string',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'string',
+          pattern: undefined,
+          minLength: undefined,
+          maxLength: undefined
+        }
+      },
+      'c' => {
+        name: 'c',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml',
+            path: '/definitions/MyString',
+            component: { type: 'string' },
+            version: '2.0'
+          },
+          id: 'schema-63',
+          name: 'MyString',
+          isNameGenerated: false,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'string',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'string',
+          pattern: undefined,
+          minLength: undefined,
+          maxLength: undefined
+        }
+      },
+      'd' => {
+        name: 'd',
+        schema: {
+          '$src': {
+            file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+            path: '/definitions/ObjectWithReferencesInProperties/properties/d',
+            component: { type: 'string' },
+            version: '2.0'
+          },
+          id: 'schema-64',
+          name: 'schema-64',
+          isNameGenerated: true,
+          description: undefined,
+          deprecated: false,
+          accessibility: 'all',
+          kind: 'string',
+          enum: undefined,
+          default: undefined,
+          example: undefined,
+          nullable: false,
+          required: Set(0) {},
+          custom: {},
+          type: 'string',
+          pattern: undefined,
+          minLength: undefined,
+          maxLength: undefined
+        }
+      }
+    },
+    additionalProperties: undefined,
+    allOf: [],
+    anyOf: []
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithReferencesInAllOf/allOf/3',
+      component: { type: 'string' },
+      version: '2.0'
+    },
+    id: 'schema-66',
+    name: 'schema-66',
+    isNameGenerated: true,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'string',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'string',
+    pattern: undefined,
+    minLength: undefined,
+    maxLength: undefined
+  },
+  {
+    '$src': {
+      file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+      path: '/definitions/ObjectWithReferencesInAllOf',
+      component: {
+        type: 'object',
+        allOf: [
+          { '$ref': '#/definitions/EmptyObject' },
+          { '$ref': 'detailed-schemas.yml#/definitions/WithTitle' },
+          { '$ref': 'simple-schemas.yml#/definitions/MyString' },
+          { type: 'string' }
+        ]
+      },
+      version: '2.0'
+    },
+    id: 'schema-65',
+    name: 'ObjectWithReferencesInAllOf',
+    isNameGenerated: false,
+    description: undefined,
+    deprecated: false,
+    accessibility: 'all',
+    kind: 'object',
+    enum: undefined,
+    default: undefined,
+    example: undefined,
+    nullable: false,
+    required: Set(0) {},
+    custom: {},
+    type: 'object',
+    properties: Map(0) {},
+    additionalProperties: undefined,
+    allOf: [
+      {
+        '$src': {
+          file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+          path: '/definitions/EmptyObject',
+          component: { type: 'object' },
+          version: '2.0'
+        },
+        id: 'schema-1',
+        name: 'EmptyObject',
+        isNameGenerated: false,
+        description: undefined,
+        deprecated: false,
+        accessibility: 'all',
+        kind: 'object',
+        enum: undefined,
+        default: undefined,
+        example: undefined,
+        nullable: false,
+        required: Set(0) {},
+        custom: {},
+        type: 'object',
+        properties: Map(0) {},
+        additionalProperties: undefined,
+        allOf: [],
+        anyOf: []
+      },
+      {
+        '$src': {
+          file: '<root>\\test\\openapi-files\\v2\\detailed-schemas.yml',
+          path: '/definitions/WithTitle',
+          component: { title: 'My Title', type: 'string' },
+          version: '2.0'
+        },
+        id: 'schema-62',
+        name: 'My Title',
+        isNameGenerated: false,
+        description: undefined,
+        deprecated: false,
+        accessibility: 'all',
+        kind: 'string',
+        enum: undefined,
+        default: undefined,
+        example: undefined,
+        nullable: false,
+        required: Set(0) {},
+        custom: {},
+        type: 'string',
+        pattern: undefined,
+        minLength: undefined,
+        maxLength: undefined
+      },
+      {
+        '$src': {
+          file: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml',
+          path: '/definitions/MyString',
+          component: { type: 'string' },
+          version: '2.0'
+        },
+        id: 'schema-63',
+        name: 'MyString',
+        isNameGenerated: false,
+        description: undefined,
+        deprecated: false,
+        accessibility: 'all',
+        kind: 'string',
+        enum: undefined,
+        default: undefined,
+        example: undefined,
+        nullable: false,
+        required: Set(0) {},
+        custom: {},
+        type: 'string',
+        pattern: undefined,
+        minLength: undefined,
+        maxLength: undefined
+      },
+      {
+        '$src': {
+          file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+          path: '/definitions/ObjectWithReferencesInAllOf/allOf/3',
+          component: { type: 'string' },
+          version: '2.0'
+        },
+        id: 'schema-66',
+        name: 'schema-66',
+        isNameGenerated: true,
+        description: undefined,
+        deprecated: false,
+        accessibility: 'all',
+        kind: 'string',
+        enum: undefined,
+        default: undefined,
+        example: undefined,
+        nullable: false,
+        required: Set(0) {},
+        custom: {},
+        type: 'string',
+        pattern: undefined,
+        minLength: undefined,
+        maxLength: undefined
+      }
+    ],
+    anyOf: []
+  }
+]

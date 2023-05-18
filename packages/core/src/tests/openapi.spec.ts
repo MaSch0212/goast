@@ -2,9 +2,9 @@ import { join } from 'path';
 
 import { openApiV2FilesDir, openApiV3FilesDir, openApiV3_1FilesDir, verify } from '@goast/test/utils';
 
-import { OpenApiParser } from '../parser.js';
-import { OpenApiVersion } from '../types.js';
-import { toCustomCase } from '../utils/string.utils.js';
+import { OpenApiParser } from '../lib/parser.js';
+import { OpenApiVersion } from '../lib/types.js';
+import { toCustomCase } from '../lib/utils/string.utils.js';
 
 const filePaths: { [P in OpenApiVersion]: string } = {
   '2.0': openApiV2FilesDir,
@@ -12,7 +12,7 @@ const filePaths: { [P in OpenApiVersion]: string } = {
   '3.1': openApiV3_1FilesDir,
 };
 
-const testFilesAllVersions: string[] = ['simple-schemas.yml', 'detailed-schemas.yml'];
+const testFilesAllVersions: string[] = ['simple-schemas.yml', 'detailed-schemas.yml', 'object-schemas.yml'];
 const testFilesV3x: string[] = ['oneof-schemas.yml'];
 
 for (const [version, path] of Object.entries(filePaths)) {

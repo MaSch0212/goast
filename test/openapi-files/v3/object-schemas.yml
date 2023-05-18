@@ -1,0 +1,252 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Object Schemas
+
+paths:
+  /x:
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    EmptyObject:
+      type: object
+    ObjectWithProperties:
+      type: object
+      properties:
+        a:
+          type: string
+        b:
+          type: integer
+        c:
+          type: number
+        d:
+          type: boolean
+        e:
+          type: array
+        f:
+          type: object
+    ObjectWithRequiredProperties:
+      type: object
+      properties:
+        a:
+          type: string
+        b:
+          type: integer
+        c:
+          type: number
+        d:
+          type: boolean
+        e:
+          type: array
+        f:
+          type: object
+      required:
+        - a
+        - b
+        - c
+        - d
+        - e
+        - f
+    ObjectWithAdditionalProperties:
+      type: object
+      additionalProperties:
+        type: string
+    ObjectWithPropertiesAndAdditionalProperties:
+      type: object
+      properties:
+        a:
+          type: string
+        b:
+          type: integer
+        c:
+          type: number
+        d:
+          type: boolean
+        e:
+          type: array
+        f:
+          type: object
+      additionalProperties:
+        type: string
+    ObjectWithPropertiesAllOfAndAnyOf:
+      type: object
+      properties:
+        a:
+          type: string
+        b:
+          type: integer
+        c:
+          type: number
+        d:
+          type: boolean
+        e:
+          type: array
+        f:
+          type: object
+      allOf:
+        - type: object
+          properties:
+            g:
+              type: string
+            h:
+              type: integer
+            i:
+              type: number
+            j:
+              type: boolean
+            k:
+              type: array
+            l:
+              type: object
+        - type: object
+          properties:
+            m:
+              type: string
+            n:
+              type: integer
+            o:
+              type: number
+            p:
+              type: boolean
+            q:
+              type: array
+            r:
+              type: object
+      anyOf:
+        - type: object
+          properties:
+            s:
+              type: string
+            t:
+              type: integer
+            u:
+              type: number
+            v:
+              type: boolean
+            w:
+              type: array
+            x:
+              type: object
+        - type: object
+          properties:
+            y:
+              type: string
+            z:
+              type: integer
+            aa:
+              type: number
+            bb:
+              type: boolean
+            cc:
+              type: array
+            dd:
+              type: object
+      required:
+        - a
+        - b
+        - c
+        - d
+        - e
+        - f
+        - g
+        - h
+        - i
+        - j
+        - k
+        - l
+        - m
+        - n
+        - o
+        - p
+        - q
+        - r
+        - s
+        - t
+        - u
+        - v
+        - w
+        - x
+        - y
+        - z
+        - aa
+        - bb
+        - cc
+        - dd
+    ObjectWithNullableProperties:
+      type: object
+      properties:
+        a:
+          type: string
+          nullable: true
+        b:
+          type: integer
+          nullable: true
+        c:
+          type: number
+          nullable: true
+        d:
+          type: boolean
+          nullable: true
+        e:
+          type: array
+          nullable: true
+        f:
+          type: object
+          nullable: true
+    ObjectWithNullablePropertiesAndRequiredProperties:
+      type: object
+      properties:
+        a:
+          type: string
+          nullable: true
+        b:
+          type: integer
+          nullable: true
+        c:
+          type: number
+          nullable: true
+        d:
+          type: boolean
+          nullable: true
+        e:
+          type: array
+          nullable: true
+        f:
+          type: object
+          nullable: true
+      required:
+        - a
+        - b
+        - c
+        - d
+        - e
+        - f
+    ObjectWithReferencesInProperties:
+      type: object
+      properties:
+        a:
+          $ref: '#/components/schemas/EmptyObject'
+        b:
+          $ref: 'detailed-schemas.yml#/components/schemas/WithTitle'
+        c:
+          $ref: 'simple-schemas.yml#/components/schemas/MyString'
+        d:
+          type: string
+    ObjectWithReferencesInAnyOf:
+      type: object
+      anyOf:
+        - $ref: '#/components/schemas/EmptyObject'
+        - $ref: 'detailed-schemas.yml#/components/schemas/WithTitle'
+        - $ref: 'simple-schemas.yml#/components/schemas/MyString'
+        - type: string
+    ObjectWithReferencesInAllOf:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/EmptyObject'
+        - $ref: 'detailed-schemas.yml#/components/schemas/WithTitle'
+        - $ref: 'simple-schemas.yml#/components/schemas/MyString'
+        - type: string
