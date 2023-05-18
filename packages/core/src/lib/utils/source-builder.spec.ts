@@ -25,8 +25,8 @@ describe('SourceBuilder', () => {
     });
 
     it('should handle mixed line breaks', () => {
-      sb.append('line1\r\n', '\n', 'line2\r', '\r', 'line3');
-      expect(sb.toString()).toBe(`line1${EOL}${EOL}line2line3`);
+      sb.append('line1\r\n', '\n', 'line2\r', '\r', 'line3\n', 'line4');
+      expect(sb.toString()).toBe(`line1${EOL}${EOL}line2line3${EOL}line4`);
     });
 
     it('should handle strings with special chars', () => {

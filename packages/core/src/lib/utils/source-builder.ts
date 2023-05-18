@@ -1,7 +1,7 @@
 import { EOL } from 'os';
 
 import { Condition, evalCondition } from './condition.js';
-import { StringBuilder, StringBuilderOptions } from './string.utils.js';
+import { StringBuilder, StringBuilderOptions } from './string.utils';
 import { Nullable } from '../type.utils.js';
 
 export type IndentOptions = { readonly type: 'tabs' } | { readonly type: 'spaces'; readonly count: number };
@@ -94,7 +94,7 @@ export class SourceBuilder extends StringBuilder {
           if (!this._isLineIndented) {
             this.appendIndent();
           }
-          super.append(str.substring(lineStartIndex, i - 1));
+          super.append(str.substring(lineStartIndex, i).replace(/\r/g, ''));
         }
 
         this._isLastLineEmpty = this._isCurrentLineEmpty;
