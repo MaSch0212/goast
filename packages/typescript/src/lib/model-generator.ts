@@ -230,6 +230,8 @@ export class TypeScriptModelsGenerator
     if (ctx.currentImports.hasImports) {
       return ctx.currentImports.toString(ctx.config.newLine) + ctx.config.newLine + builder.toString();
     }
+
+    builder.ensureCurrentLineEmpty();
     return builder.toString();
   }
 
@@ -329,16 +331,14 @@ export class TypeScriptModelsGenerator
       return;
     }
 
-    builder.indent((builder) => {
-      this.generateConcatenatedModel(ctx, schema.allOf, builder, '&', false);
+    this.generateConcatenatedModel(ctx, schema.allOf, builder, '&', false);
 
-      if (schema.anyOf.length > 0) {
-        if (schema.allOf.length > 0) {
-          builder.appendLine().append('& ');
-        }
-        this.generateConcatenatedModel(ctx, schema.anyOf, builder, '&', false, (typeName) => `Partial<${typeName}>`);
+    if (schema.anyOf.length > 0) {
+      if (schema.allOf.length > 0) {
+        builder.append(' & ');
       }
-    });
+      this.generateConcatenatedModel(ctx, schema.anyOf, builder, '&', false, (typeName) => `Partial<${typeName}>`);
+    }
   }
 
   protected generateOneOfModel(
@@ -351,9 +351,7 @@ export class TypeScriptModelsGenerator
       return;
     }
 
-    builder.indent((builder) => {
-      this.generateConcatenatedModel(ctx, schema.oneOf, builder, '|', true);
-    });
+    this.generateConcatenatedModel(ctx, schema.oneOf, builder, '|', true);
   }
 
   protected generateMultiTypeModel(
@@ -422,31 +420,31 @@ export class TypeScriptModelsGenerator
     if (schema.properties.size > 0) {
       builder
         .parenthesize('{}', (builder) =>
-          builder
-            .appendLine()
-            .forEach(schema.properties.values(), (builder, property) =>
-              builder
-                .appendIf(ctx.config.immutableTypes, 'readonly ')
-                .append(toTypeScriptPropertyName(property.name, ctx.config.useSingleQuotes))
-                .appendIf(!schema.required.has(property.name), '?')
-                .append(': ')
-                .append(this.getTypeName(ctx, property.schema))
-                .appendLine(';')
-            )
+          builder.appendLine().forEach(schema.properties.values(), (builder, property) =>
+            builder
+              .appendIf(ctx.config.immutableTypes, 'readonly ')
+              .append(toTypeScriptPropertyName(property.name, ctx.config.useSingleQuotes))
+              .appendIf(!schema.required.has(property.name), '?')
+              .append(': ')
+              .append(this.getTypeName(ctx, property.schema))
+              .appendIf(property.schema.nullable === true, ' | null')
+              .appendLine(';')
+          )
         )
         .appendIf(!!schema.additionalProperties || schema.allOf.length > 0 || schema.anyOf.length > 0, ' & ');
     }
 
     // additional properties
     if (schema.additionalProperties) {
-      if (schema.additionalProperties === true) {
-        builder.append(ctx.config.immutableTypes ? 'Readonly<Record<string, unknown>>' : 'Record<string, unknown>');
-      } else {
-        builder.append(this.getTypeName(ctx, schema.additionalProperties));
-      }
+      builder
+        .appendIf(ctx.config.immutableTypes, 'Readonly<')
+        .append('Record<string, ')
+        .append(schema.additionalProperties === true ? 'unknown' : this.getTypeName(ctx, schema.additionalProperties))
+        .append('>')
+        .appendIf(ctx.config.immutableTypes, '>');
 
       if (schema.allOf.length > 0 || schema.anyOf.length > 0) {
-        builder.appendLine().append('& ');
+        builder.append(' & ');
       }
     }
 
@@ -466,12 +464,10 @@ export class TypeScriptModelsGenerator
   ): void {
     putInParentheses &&= schemas.length > 1;
     builder.parenthesizeIf(putInParentheses, '()', (builder) =>
-      builder
-        .if(putInParentheses, () => builder.appendLine().append('| '))
-        .forEachSeparated(schemas, `${separator} `, (builder, schema) => {
-          const typeName = this.getTypeName(ctx, schema);
-          builder.append(typeTemplate ? typeTemplate(typeName) : typeName);
-        })
+      builder.forEachSeparated(schemas, ` ${separator} `, (builder, schema) => {
+        const typeName = this.getTypeName(ctx, schema);
+        builder.append(typeTemplate ? typeTemplate(typeName) : typeName);
+      })
     );
   }
 
