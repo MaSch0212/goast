@@ -1,12 +1,8 @@
 {
   "name": "@goast/cli",
   "version": "0.0.1",
-  "type": "module",
+  "type": "commonjs",
   "bin": {
     "goast": "index.js"
-  },
-  "dependencies": {},
-  "peerDependencies": {
-    "tslib": "^2.3.0"
   }
 }

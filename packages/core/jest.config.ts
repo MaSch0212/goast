@@ -3,13 +3,8 @@ export default {
   displayName: 'core',
   preset: '../../jest.preset.js',
   transform: {
-    '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json', allowJs: true }],
+    '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }],
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/packages/core',
-  moduleNameMapper: {
-    '^(\\.{1,2}/.*)\\.[jt]s$': '$1',
-    '@goast/core/utils': '<rootDir>/src/lib/utils/index.ts',
-    '@goast/test/utils': '<rootDir>/../../test/utils/index.ts',
-  },
 };
