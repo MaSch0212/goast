@@ -61,7 +61,22 @@ function transformSchema<T extends Deref<IJsonSchema> | undefined>(
   const existingSchema = context.schemas.get(schemaSource) ?? context.incompleteSchemas.get(schemaSource);
   if (existingSchema) return existingSchema as ApiSchema;
 
-  const kind = determineSchemaKind(schema);
+  let kind = determineSchemaKind(schema) as ApiSchemaKind;
+  let nullable = false;
+  if (kind === 'multi-type') {
+    const types = schema.type as string[];
+    let isSingleType = types.length === 1;
+    if (types.length === 2 && (types.includes('null') || types.includes(null!))) {
+      nullable = true;
+      isSingleType = true;
+    }
+
+    if (isSingleType) {
+      const newType = types.filter((t) => t !== 'null' && t !== null)[0];
+      schema = { ...schema, type: newType } as NonNullable<T>;
+      kind = determineSchemaKind(schema) as ApiSchemaKind;
+    }
+  }
   const id = context.idGenerator.generateId('schema');
   const nameInfo = determineSchemaName(schema, id);
   const result: IncompleteApiSchema = {
@@ -76,9 +91,11 @@ function transformSchema<T extends Deref<IJsonSchema> | undefined>(
     enum: schema.enum,
     default: fullSchema.default,
     example: fullSchema.example,
+    nullable,
     required: new Set(schema.required),
     custom: getCustomFields(schema),
   };
+  // TODO: Handle 'not' field
   context.incompleteSchemas.set(schemaSource, result);
 
   const extensions = schemaTransformers[kind](schema, context);

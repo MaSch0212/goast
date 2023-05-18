@@ -76,11 +76,12 @@ function transformSchema<T extends Deref<OpenAPIV3_1.SchemaObject> | undefined>(
     enum: schema.enum,
     default: schema.default,
     example: schema.example,
-    nullable: nullable,
+    nullable,
     required: new Set(schema.required),
     custom: getCustomFields(schema),
   };
-  // TODO: Handle "$schema" field
+  // TODO: Handle '$schema' field
+  // TODO: Handle 'not' field
   context.incompleteSchemas.set(schemaSource, result);
 
   const extensions = schemaTransformers[kind](schema, context);
