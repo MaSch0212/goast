@@ -1,0 +1,31 @@
+Map(6) {
+  '<root>\\out\\models\\my-title.model.ts' => 'export type MyTitle = string;\n',
+  '<root>\\out\\models\\with-all-common.model.ts' => 'export type WithAllCommon = string;\n',
+  '<root>\\out\\models\\my-enum.model.ts' => "export type MyEnum = 'one' | 'two' | 'three';\n",
+  '<root>\\out\\models\\read-only.model.ts' => 'export type ReadOnly = string;\n',
+  '<root>\\out\\models.ts' => "export { MyEnum } from './models/my-enum.model';\n" +
+    "export { MyTitle } from './models/my-title.model';\n" +
+    "export { ReadOnly } from './models/read-only.model';\n" +
+    "export { WithAllCommon } from './models/with-all-common.model';\n",
+  'state' => {
+    models: {
+      'schema-1': {
+        typeName: 'MyTitle',
+        filePath: '<root>\\out\\models\\my-title.model.ts'
+      },
+      'schema-2': {
+        typeName: 'WithAllCommon',
+        filePath: '<root>\\out\\models\\with-all-common.model.ts'
+      },
+      'schema-3': {
+        typeName: 'MyEnum',
+        filePath: '<root>\\out\\models\\my-enum.model.ts'
+      },
+      'schema-4': {
+        typeName: 'ReadOnly',
+        filePath: '<root>\\out\\models\\read-only.model.ts'
+      }
+    },
+    modelIndexFilePath: '<root>\\out\\models.ts'
+  }
+}

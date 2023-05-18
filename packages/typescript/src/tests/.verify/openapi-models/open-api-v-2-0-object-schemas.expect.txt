@@ -1,0 +1,222 @@
+Map(14) {
+  '<root>\\out\\models\\empty-object.model.ts' => 'export type EmptyObject = {};\n',
+  '<root>\\out\\models\\object-with-properties.model.ts' => 'export type ObjectWithProperties = {\n' +
+    '  a?: string;\n' +
+    '  b?: number;\n' +
+    '  c?: number;\n' +
+    '  d?: boolean;\n' +
+    '  e?: Array<unknown>;\n' +
+    '  f?: {};\n' +
+    '};\n',
+  '<root>\\out\\models\\object-with-required-properties.model.ts' => 'export type ObjectWithRequiredProperties = {\n' +
+    '  a: string;\n' +
+    '  b: number;\n' +
+    '  c: number;\n' +
+    '  d: boolean;\n' +
+    '  e: Array<unknown>;\n' +
+    '  f: {};\n' +
+    '};\n',
+  '<root>\\out\\models\\object-with-additional-properties.model.ts' => 'export type ObjectWithAdditionalProperties = Record<string, string>;\n',
+  '<root>\\out\\models\\object-with-properties-and-additional-properties.model.ts' => 'export type ObjectWithPropertiesAndAdditionalProperties = {\n' +
+    '  a?: string;\n' +
+    '  b?: number;\n' +
+    '  c?: number;\n' +
+    '  d?: boolean;\n' +
+    '  e?: Array<unknown>;\n' +
+    '  f?: {};\n' +
+    '} & Record<string, string>;\n',
+  '<root>\\out\\models\\object-with-properties-all-of.model.ts' => 'export type ObjectWithPropertiesAllOf = {\n' +
+    '  a: string;\n' +
+    '  b: number;\n' +
+    '  c: number;\n' +
+    '  d: boolean;\n' +
+    '  e: Array<unknown>;\n' +
+    '  f: {};\n' +
+    '} & {\n' +
+    '  g?: string;\n' +
+    '  h?: number;\n' +
+    '  i?: number;\n' +
+    '  j?: boolean;\n' +
+    '  k?: Array<unknown>;\n' +
+    '  l?: {};\n' +
+    '} & {\n' +
+    '  m?: string;\n' +
+    '  n?: number;\n' +
+    '  o?: number;\n' +
+    '  p?: boolean;\n' +
+    '  q?: Array<unknown>;\n' +
+    '  r?: {};\n' +
+    '};\n',
+  '<root>\\out\\models\\object-with-nullable-properties.model.ts' => 'export type ObjectWithNullableProperties = {\n' +
+    '  a?: string | null;\n' +
+    '  b?: number | null;\n' +
+    '  c?: number | null;\n' +
+    '  d?: boolean | null;\n' +
+    '  e?: Array<unknown> | null;\n' +
+    '  f?: {} | null;\n' +
+    '};\n',
+  '<root>\\out\\models\\object-with-nullable-properties-and-required-properties.model.ts' => 'export type ObjectWithNullablePropertiesAndRequiredProperties = {\n' +
+    '  a: string | null;\n' +
+    '  b: number | null;\n' +
+    '  c: number | null;\n' +
+    '  d: boolean | null;\n' +
+    '  e: Array<unknown> | null;\n' +
+    '  f: {} | null;\n' +
+    '};\n',
+  '<root>\\out\\models\\my-title.model.ts' => 'export type MyTitle = string;\n',
+  '<root>\\out\\models\\my-string.model.ts' => 'export type MyString = string;\n',
+  '<root>\\out\\models\\object-with-references-in-properties.model.ts' => "import { EmptyObject } from './empty-object.model';\n" +
+    "import { MyString } from './my-string.model';\n" +
+    "import { MyTitle } from './my-title.model';\n" +
+    '\n' +
+    'export type ObjectWithReferencesInProperties = {\n' +
+    '  a?: EmptyObject;\n' +
+    '  b?: MyTitle;\n' +
+    '  c?: MyString;\n' +
+    '  d?: string;\n' +
+    '};',
+  '<root>\\out\\models\\object-with-references-in-all-of.model.ts' => "import { EmptyObject } from './empty-object.model';\n" +
+    "import { MyString } from './my-string.model';\n" +
+    "import { MyTitle } from './my-title.model';\n" +
+    '\n' +
+    'export type ObjectWithReferencesInAllOf = EmptyObject & MyTitle & MyString & string;',
+  '<root>\\out\\models.ts' => "export { EmptyObject } from './models/empty-object.model';\n" +
+    "export { MyString } from './models/my-string.model';\n" +
+    "export { MyTitle } from './models/my-title.model';\n" +
+    "export { ObjectWithAdditionalProperties } from './models/object-with-additional-properties.model';\n" +
+    "export { ObjectWithNullablePropertiesAndRequiredProperties } from './models/object-with-nullable-properties-and-required-properties.model';\n" +
+    "export { ObjectWithNullableProperties } from './models/object-with-nullable-properties.model';\n" +
+    "export { ObjectWithPropertiesAllOf } from './models/object-with-properties-all-of.model';\n" +
+    "export { ObjectWithPropertiesAndAdditionalProperties } from './models/object-with-properties-and-additional-properties.model';\n" +
+    "export { ObjectWithProperties } from './models/object-with-properties.model';\n" +
+    "export { ObjectWithReferencesInAllOf } from './models/object-with-references-in-all-of.model';\n" +
+    "export { ObjectWithReferencesInProperties } from './models/object-with-references-in-properties.model';\n" +
+    "export { ObjectWithRequiredProperties } from './models/object-with-required-properties.model';\n",
+  'state' => {
+    models: {
+      'schema-1': {
+        typeName: 'EmptyObject',
+        filePath: '<root>\\out\\models\\empty-object.model.ts'
+      },
+      'schema-3': { typeName: 'string', filePath: undefined },
+      'schema-4': { typeName: 'number', filePath: undefined },
+      'schema-5': { typeName: 'number', filePath: undefined },
+      'schema-6': { typeName: 'boolean', filePath: undefined },
+      'schema-7': { typeName: 'Array<unknown>', filePath: undefined },
+      'schema-8': { typeName: '{}', filePath: undefined },
+      'schema-2': {
+        typeName: 'ObjectWithProperties',
+        filePath: '<root>\\out\\models\\object-with-properties.model.ts'
+      },
+      'schema-10': { typeName: 'string', filePath: undefined },
+      'schema-11': { typeName: 'number', filePath: undefined },
+      'schema-12': { typeName: 'number', filePath: undefined },
+      'schema-13': { typeName: 'boolean', filePath: undefined },
+      'schema-14': { typeName: 'Array<unknown>', filePath: undefined },
+      'schema-15': { typeName: '{}', filePath: undefined },
+      'schema-9': {
+        typeName: 'ObjectWithRequiredProperties',
+        filePath: '<root>\\out\\models\\object-with-required-properties.model.ts'
+      },
+      'schema-17': { typeName: 'string', filePath: undefined },
+      'schema-16': {
+        typeName: 'ObjectWithAdditionalProperties',
+        filePath: '<root>\\out\\models\\object-with-additional-properties.model.ts'
+      },
+      'schema-19': { typeName: 'string', filePath: undefined },
+      'schema-20': { typeName: 'number', filePath: undefined },
+      'schema-21': { typeName: 'number', filePath: undefined },
+      'schema-22': { typeName: 'boolean', filePath: undefined },
+      'schema-23': { typeName: 'Array<unknown>', filePath: undefined },
+      'schema-24': { typeName: '{}', filePath: undefined },
+      'schema-25': { typeName: 'string', filePath: undefined },
+      'schema-18': {
+        typeName: 'ObjectWithPropertiesAndAdditionalProperties',
+        filePath: '<root>\\out\\models\\object-with-properties-and-additional-properties.model.ts'
+      },
+      'schema-27': { typeName: 'string', filePath: undefined },
+      'schema-28': { typeName: 'number', filePath: undefined },
+      'schema-29': { typeName: 'number', filePath: undefined },
+      'schema-30': { typeName: 'boolean', filePath: undefined },
+      'schema-31': { typeName: 'Array<unknown>', filePath: undefined },
+      'schema-32': { typeName: '{}', filePath: undefined },
+      'schema-34': { typeName: 'string', filePath: undefined },
+      'schema-35': { typeName: 'number', filePath: undefined },
+      'schema-36': { typeName: 'number', filePath: undefined },
+      'schema-37': { typeName: 'boolean', filePath: undefined },
+      'schema-38': { typeName: 'Array<unknown>', filePath: undefined },
+      'schema-39': { typeName: '{}', filePath: undefined },
+      'schema-33': {
+        typeName: '{\n' +
+          '  g?: string;\n' +
+          '  h?: number;\n' +
+          '  i?: number;\n' +
+          '  j?: boolean;\n' +
+          '  k?: Array<unknown>;\n' +
+          '  l?: {};\n' +
+          '}',
+        filePath: undefined
+      },
+      'schema-41': { typeName: 'string', filePath: undefined },
+      'schema-42': { typeName: 'number', filePath: undefined },
+      'schema-43': { typeName: 'number', filePath: undefined },
+      'schema-44': { typeName: 'boolean', filePath: undefined },
+      'schema-45': { typeName: 'Array<unknown>', filePath: undefined },
+      'schema-46': { typeName: '{}', filePath: undefined },
+      'schema-40': {
+        typeName: '{\n' +
+          '  m?: string;\n' +
+          '  n?: number;\n' +
+          '  o?: number;\n' +
+          '  p?: boolean;\n' +
+          '  q?: Array<unknown>;\n' +
+          '  r?: {};\n' +
+          '}',
+        filePath: undefined
+      },
+      'schema-26': {
+        typeName: 'ObjectWithPropertiesAllOf',
+        filePath: '<root>\\out\\models\\object-with-properties-all-of.model.ts'
+      },
+      'schema-48': { typeName: 'string', filePath: undefined },
+      'schema-49': { typeName: 'number', filePath: undefined },
+      'schema-50': { typeName: 'number', filePath: undefined },
+      'schema-51': { typeName: 'boolean', filePath: undefined },
+      'schema-52': { typeName: 'Array<unknown>', filePath: undefined },
+      'schema-53': { typeName: '{}', filePath: undefined },
+      'schema-47': {
+        typeName: 'ObjectWithNullableProperties',
+        filePath: '<root>\\out\\models\\object-with-nullable-properties.model.ts'
+      },
+      'schema-55': { typeName: 'string', filePath: undefined },
+      'schema-56': { typeName: 'number', filePath: undefined },
+      'schema-57': { typeName: 'number', filePath: undefined },
+      'schema-58': { typeName: 'boolean', filePath: undefined },
+      'schema-59': { typeName: 'Array<unknown>', filePath: undefined },
+      'schema-60': { typeName: '{}', filePath: undefined },
+      'schema-54': {
+        typeName: 'ObjectWithNullablePropertiesAndRequiredProperties',
+        filePath: '<root>\\out\\models\\object-with-nullable-properties-and-required-properties.model.ts'
+      },
+      'schema-62': {
+        typeName: 'MyTitle',
+        filePath: '<root>\\out\\models\\my-title.model.ts'
+      },
+      'schema-63': {
+        typeName: 'MyString',
+        filePath: '<root>\\out\\models\\my-string.model.ts'
+      },
+      'schema-64': { typeName: 'string', filePath: undefined },
+      'schema-61': {
+        typeName: 'ObjectWithReferencesInProperties',
+        filePath: '<root>\\out\\models\\object-with-references-in-properties.model.ts'
+      },
+      'schema-66': { typeName: 'string', filePath: undefined },
+      'schema-65': {
+        typeName: 'ObjectWithReferencesInAllOf',
+        filePath: '<root>\\out\\models\\object-with-references-in-all-of.model.ts'
+      }
+    },
+    modelIndexFilePath: '<root>\\out\\models.ts'
+  }
+}

@@ -1,0 +1,50 @@
+Map(8) {
+  '<root>\\out\\models\\empty-one-of.model.ts' => 'export type EmptyOneOf = unknown;\n',
+  '<root>\\out\\models\\one-of-simple-types.model.ts' => 'export type OneOfSimpleTypes = (string | number);\n',
+  '<root>\\out\\models\\ignore-type.model.ts' => 'export type IgnoreType = unknown;\n',
+  '<root>\\out\\models\\my-title.model.ts' => 'export type MyTitle = string;\n',
+  '<root>\\out\\models\\my-string.model.ts' => 'export type MyString = string;\n',
+  '<root>\\out\\models\\with-references.model.ts' => "import { EmptyOneOf } from './empty-one-of.model';\n" +
+    "import { MyString } from './my-string.model';\n" +
+    "import { MyTitle } from './my-title.model';\n" +
+    '\n' +
+    'export type WithReferences = (EmptyOneOf | MyTitle | MyString | string);',
+  '<root>\\out\\models.ts' => "export { EmptyOneOf } from './models/empty-one-of.model';\n" +
+    "export { IgnoreType } from './models/ignore-type.model';\n" +
+    "export { MyString } from './models/my-string.model';\n" +
+    "export { MyTitle } from './models/my-title.model';\n" +
+    "export { OneOfSimpleTypes } from './models/one-of-simple-types.model';\n" +
+    "export { WithReferences } from './models/with-references.model';\n",
+  'state' => {
+    models: {
+      'schema-1': {
+        typeName: 'EmptyOneOf',
+        filePath: '<root>\\out\\models\\empty-one-of.model.ts'
+      },
+      'schema-3': { typeName: 'string', filePath: undefined },
+      'schema-4': { typeName: 'number', filePath: undefined },
+      'schema-2': {
+        typeName: 'OneOfSimpleTypes',
+        filePath: '<root>\\out\\models\\one-of-simple-types.model.ts'
+      },
+      'schema-5': {
+        typeName: 'IgnoreType',
+        filePath: '<root>\\out\\models\\ignore-type.model.ts'
+      },
+      'schema-7': {
+        typeName: 'MyTitle',
+        filePath: '<root>\\out\\models\\my-title.model.ts'
+      },
+      'schema-8': {
+        typeName: 'MyString',
+        filePath: '<root>\\out\\models\\my-string.model.ts'
+      },
+      'schema-9': { typeName: 'string', filePath: undefined },
+      'schema-6': {
+        typeName: 'WithReferences',
+        filePath: '<root>\\out\\models\\with-references.model.ts'
+      }
+    },
+    modelIndexFilePath: '<root>\\out\\models.ts'
+  }
+}
