@@ -2,11 +2,11 @@ import { join } from 'path';
 
 import fs from 'fs-extra';
 
-import { OpenApiParser, OpenApiVersion, generate } from '@goast/core';
+import { OpenApiGenerator, OpenApiVersion } from '@goast/core';
+import { toCustomCase } from '@goast/core/utils';
 import { openApiV2FilesDir, openApiV3FilesDir, openApiV3_1FilesDir, verify } from '@goast/test/utils';
 
-import { TypeScriptModelsGenerator } from '../lib/model-generator.js';
-import { toCustomCase } from '@goast/core/utils';
+import { TypeScriptModelsGenerator } from '../lib/generators/models-generator.js';
 
 const filePaths: { [P in OpenApiVersion]: string } = {
   '2.0': openApiV2FilesDir,
@@ -34,8 +34,13 @@ for (const [version, path] of Object.entries(filePaths)) {
             return Promise.resolve();
           });
 
-        const data = await new OpenApiParser().parseApisAndTransform(filePath);
-        const state = await generate(data, { outputDir: 'out', newLine: '\n' }, new TypeScriptModelsGenerator());
+        const generatorOptions = {
+          outputDir: 'out',
+          newLine: '\n',
+        };
+        const state = await new OpenApiGenerator(generatorOptions)
+          .use(TypeScriptModelsGenerator)
+          .parseAndGenerate(filePath);
         writtenFiles.set('state', state);
 
         jest.resetAllMocks();

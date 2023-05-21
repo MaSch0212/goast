@@ -66,6 +66,7 @@ function transformSchema<T extends Deref<IJsonSchema> | undefined>(
   if (kind === 'multi-type') {
     const types = schema.type as string[];
     let isSingleType = types.length === 1;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     if (types.length === 2 && (types.includes('null') || types.includes(null!))) {
       nullable = true;
       isSingleType = true;

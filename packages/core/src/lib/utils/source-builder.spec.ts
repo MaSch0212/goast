@@ -1,6 +1,6 @@
 import { EOL } from 'os';
 
-import { SourceBuilder } from './source-builder.js';
+import { SourceBuilder, SourceBuilderOptions } from './source-builder.js';
 
 describe('SourceBuilder', () => {
   let sb: SourceBuilder;
@@ -15,6 +15,51 @@ describe('SourceBuilder', () => {
       expect(options.indent).toEqual({ type: 'spaces', count: 2 });
       expect(options.newLine).toBe(EOL);
       expect(options.charsTreatedAsEmptyLine).toEqual(['{']);
+    });
+  });
+
+  describe('fromString', () => {
+    it('should create a new instance of SourceBuilder with the given string', () => {
+      const str = 'test string';
+      const sb = SourceBuilder.fromString(str);
+      expect(sb.toString()).toEqual(str);
+    });
+
+    it('should create a new instance of SourceBuilder with the given string and options', () => {
+      const str = 'test string';
+      const options: Partial<SourceBuilderOptions> = {
+        indent: { type: 'tabs' },
+        newLine: '\n-',
+        charsTreatedAsEmptyLine: ['{', '}'],
+      };
+      const sb = SourceBuilder.fromString(str, options);
+      expect(sb.toString()).toEqual(str);
+      expect(sb.options).toEqual(expect.objectContaining(options));
+    });
+  });
+
+  describe('build', () => {
+    it('should build a string using a callback function that receives a `SourceBuilder` instance', () => {
+      const buildAction = (builder: SourceBuilder) => {
+        builder.append('hello');
+        builder.append('world');
+      };
+      const result = SourceBuilder.build(buildAction);
+      expect(result).toEqual('helloworld');
+    });
+
+    it.only('should build a string using a callback function that receives a `SourceBuilder` instance and options', () => {
+      const buildAction = (builder: SourceBuilder) => {
+        builder.appendLine('hello');
+        builder.indent((b) => b.append('world'));
+      };
+      const options: Partial<SourceBuilderOptions> = {
+        indent: { type: 'spaces', count: 4 },
+        newLine: '\r\n\t',
+        charsTreatedAsEmptyLine: ['{', '}'],
+      };
+      const result = SourceBuilder.build(buildAction, options);
+      expect(result).toEqual(`hello${options.newLine}    world`);
     });
   });
 

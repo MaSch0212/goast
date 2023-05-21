@@ -1,17 +1,13 @@
-import { EOL } from 'os';
+import { SourceBuilderOptions } from '../utils/source-builder.js';
 
-import { IndentOptions } from '../utils/source-builder.js';
-
-export type CodeGeneratorConfig = Readonly<{
+type OpenApiGeneratorConfigAdditions = {
   outputDir: string;
   clearOutputDir: boolean;
-  indent: IndentOptions;
-  newLine: string;
-}>;
+};
+export type OpenApiGeneratorConfig = Partial<SourceBuilderOptions> & OpenApiGeneratorConfigAdditions;
+export type OpenApiGeneratorConfigOverrides = Partial<SourceBuilderOptions & OpenApiGeneratorConfigAdditions>;
 
-export const defaultCodeGeneratorConfig: CodeGeneratorConfig = {
+export const defaultOpenApiGeneratorConfig: OpenApiGeneratorConfig = {
   outputDir: 'generated',
   clearOutputDir: true,
-  indent: { type: 'spaces', count: 2 },
-  newLine: EOL,
 };

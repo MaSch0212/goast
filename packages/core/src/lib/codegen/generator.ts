@@ -2,27 +2,84 @@ import { resolve } from 'path';
 
 import { emptyDir, ensureDir } from 'fs-extra';
 
-import { CodeGeneratorConfig, defaultCodeGeneratorConfig } from './config.js';
-import { CodeGeneratorInput, CodeGeneratorOutput, CodeGenerator, GeneratorPipe, AnyConfig } from './types.js';
+import { OpenApiGeneratorConfig, OpenApiGeneratorConfigOverrides, defaultOpenApiGeneratorConfig } from './config.js';
+import {
+  AnyConfig,
+  OpenApiGenerationProvider,
+  OpenApiGenerationProviderFn,
+  OpenApiGenerationProviderType,
+  OpenApiGeneratorInput,
+  OpenApiGeneratorOutput,
+} from './types.js';
+import { OpenApiParser } from '../parser.js';
 import { Merge } from '../type.utils.js';
 import { OpenApiData } from '../types.js';
 
-class _GeneratorPipe<T extends OpenApiData> implements GeneratorPipe<T> {
-  private _pipe: CodeGenerator<CodeGeneratorInput, CodeGeneratorOutput, AnyConfig>[] = [];
-  private _config: CodeGeneratorConfig;
+type OpenApiGenerationProviders = (
+  | {
+      kind: 'providerCtor';
+      generator: OpenApiGenerationProviderType<OpenApiGeneratorInput, OpenApiGeneratorOutput, AnyConfig>;
+      config: AnyConfig | undefined;
+    }
+  | {
+      kind: 'provider';
+      generator: OpenApiGenerationProvider<OpenApiGeneratorInput, OpenApiGeneratorOutput, AnyConfig>;
+      config: AnyConfig | undefined;
+    }
+  | {
+      kind: 'providerFn';
+      generator: OpenApiGenerationProviderFn<OpenApiGeneratorInput, OpenApiGeneratorOutput, AnyConfig>;
+      config: AnyConfig | undefined;
+    }
+)[];
 
-  constructor(private _data: OpenApiData, config?: Partial<CodeGeneratorConfig>) {
-    this._config = Object.assign({}, defaultCodeGeneratorConfig, config);
+class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
+  private _providers: OpenApiGenerationProviders;
+  private _config: OpenApiGeneratorConfig;
+  private _parser: OpenApiParser;
+
+  constructor(config: OpenApiGeneratorConfig, providers: OpenApiGenerationProviders, parser: OpenApiParser) {
+    this._providers = providers;
+    this._config = config;
+    this._parser = parser;
   }
 
-  public continueWith<U extends OpenApiData>(
-    ...generators: CodeGenerator<CodeGeneratorInput, CodeGeneratorOutput, AnyConfig>[]
-  ): _GeneratorPipe<U> {
-    this._pipe.push(...generators);
-    return this as unknown as _GeneratorPipe<U>;
+  public use<PInput extends TOutput, POutput extends OpenApiGeneratorOutput, PConfig extends AnyConfig>(
+    generator:
+      | OpenApiGenerationProviderType<PInput, POutput, PConfig>
+      | OpenApiGenerationProvider<PInput, POutput, PConfig>,
+    config?: Partial<PConfig>
+  ): _OpenApiGenerator<Merge<[TOutput, POutput]>> {
+    if (typeof generator === 'function') {
+      this._providers.push({
+        kind: 'providerCtor',
+        generator,
+        config,
+      });
+    } else {
+      this._providers.push({
+        kind: 'provider',
+        generator,
+        config,
+      });
+    }
+
+    return new _OpenApiGenerator<Merge<[TOutput, POutput]>>(this._config, [...this._providers], this._parser);
   }
 
-  public async then(onfulfilled?: ((value: T) => T | PromiseLike<T>) | null | undefined): Promise<T> {
+  public useFn<PInput extends TOutput, POutput extends OpenApiGeneratorOutput, PConfig extends AnyConfig>(
+    generator: OpenApiGenerationProviderFn<PInput, POutput, PConfig>,
+    config?: Partial<PConfig>
+  ): _OpenApiGenerator<Merge<[TOutput, POutput]>> {
+    this._providers.push({
+      kind: 'providerFn',
+      generator: generator as OpenApiGenerationProviderFn<OpenApiGeneratorInput, OpenApiGeneratorOutput, AnyConfig>,
+      config,
+    });
+    return this as unknown as _OpenApiGenerator<Merge<[TOutput, POutput]>>;
+  }
+
+  public async generate<T extends OpenApiData>(data: T): Promise<TOutput> {
     const absOutputPath = resolve(this._config.outputDir);
     if (this._config.clearOutputDir) {
       await emptyDir(absOutputPath);
@@ -30,161 +87,44 @@ class _GeneratorPipe<T extends OpenApiData> implements GeneratorPipe<T> {
       await ensureDir(absOutputPath);
     }
 
-    let input = {} as T;
-    for (const generator of this._pipe) {
+    let input = {} as TOutput;
+    for (const generator of this._providers) {
       const context = {
-        data: this._data,
+        data,
         input,
-        config: {
-          ...this._config,
-          ...generator.config,
-        },
+        config: this._config,
         state: new Map(),
       };
-      const result = await generator.generate(context);
+
+      let result: OpenApiGeneratorOutput | undefined;
+      if (generator.kind === 'providerCtor') {
+        const provider = new generator.generator();
+        await provider.init(context, generator.config);
+        result = await provider.generate();
+      } else if (generator.kind === 'provider') {
+        await generator.generator.init(context, generator.config);
+        result = await generator.generator.generate();
+      } else {
+        result = await generator.generator(context, generator.config);
+      }
+
       if (result) {
         input = mergeDeep(input, result);
       }
     }
-    return onfulfilled ? onfulfilled(input) : input;
+    return input;
+  }
+
+  public async parseAndGenerate(...fileNames: (string | string[])[]): Promise<TOutput> {
+    const data = await this._parser.parseApisAndTransform(...fileNames);
+    return await this.generate(data);
   }
 }
 
-export function generate(data: OpenApiData, config?: Partial<CodeGeneratorConfig>): GeneratorPipe<OpenApiData>;
-export function generate<A extends CodeGeneratorOutput>(
-  data: OpenApiData,
-  config: Partial<CodeGeneratorConfig> | undefined,
-  g1: CodeGenerator<{}, A, AnyConfig>
-): GeneratorPipe<Merge<[A]>>;
-export function generate<A extends CodeGeneratorOutput, B extends CodeGeneratorOutput>(
-  data: OpenApiData,
-  config: Partial<CodeGeneratorConfig> | undefined,
-  g1: CodeGenerator<{}, A, AnyConfig>,
-  g2: CodeGenerator<Merge<[A]>, B, AnyConfig>
-): GeneratorPipe<Merge<[A, B]>>;
-export function generate<A extends CodeGeneratorOutput, B extends CodeGeneratorOutput, C extends CodeGeneratorOutput>(
-  data: OpenApiData,
-  config: Partial<CodeGeneratorConfig> | undefined,
-  g1: CodeGenerator<{}, A, AnyConfig>,
-  g2: CodeGenerator<Merge<[A]>, B, AnyConfig>,
-  g3: CodeGenerator<Merge<[A, B]>, C, AnyConfig>
-): GeneratorPipe<Merge<[A, B, C]>>;
-export function generate<
-  A extends CodeGeneratorOutput,
-  B extends CodeGeneratorOutput,
-  C extends CodeGeneratorOutput,
-  D extends CodeGeneratorOutput
->(
-  data: OpenApiData,
-  config: Partial<CodeGeneratorConfig> | undefined,
-  g1: CodeGenerator<{}, A, AnyConfig>,
-  g2: CodeGenerator<Merge<[A]>, B, AnyConfig>,
-  g3: CodeGenerator<Merge<[A, B]>, C, AnyConfig>,
-  g4: CodeGenerator<Merge<[A, B, C]>, D, AnyConfig>
-): GeneratorPipe<Merge<[A, B, C, D]>>;
-export function generate<
-  A extends CodeGeneratorOutput,
-  B extends CodeGeneratorOutput,
-  C extends CodeGeneratorOutput,
-  D extends CodeGeneratorOutput,
-  E extends CodeGeneratorOutput
->(
-  data: OpenApiData,
-  config: Partial<CodeGeneratorConfig> | undefined,
-  g1: CodeGenerator<{}, A, AnyConfig>,
-  g2: CodeGenerator<Merge<[A]>, B, AnyConfig>,
-  g3: CodeGenerator<Merge<[A, B]>, C, AnyConfig>,
-  g4: CodeGenerator<Merge<[A, B, C]>, D, AnyConfig>,
-  g5: CodeGenerator<Merge<[A, B, C, D]>, E, AnyConfig>
-): GeneratorPipe<Merge<[A, B, C, D, E]>>;
-export function generate<
-  A extends CodeGeneratorOutput,
-  B extends CodeGeneratorOutput,
-  C extends CodeGeneratorOutput,
-  D extends CodeGeneratorOutput,
-  E extends CodeGeneratorOutput,
-  F extends CodeGeneratorOutput
->(
-  data: OpenApiData,
-  config: Partial<CodeGeneratorConfig> | undefined,
-  g1: CodeGenerator<{}, A, AnyConfig>,
-  g2: CodeGenerator<Merge<[A]>, B, AnyConfig>,
-  g3: CodeGenerator<Merge<[A, B]>, C, AnyConfig>,
-  g4: CodeGenerator<Merge<[A, B, C]>, D, AnyConfig>,
-  g5: CodeGenerator<Merge<[A, B, C, D]>, E, AnyConfig>,
-  g6: CodeGenerator<Merge<[A, B, C, D, E]>, F, AnyConfig>
-): GeneratorPipe<Merge<[A, B, C, D, E, F]>>;
-export function generate<
-  A extends CodeGeneratorOutput,
-  B extends CodeGeneratorOutput,
-  C extends CodeGeneratorOutput,
-  D extends CodeGeneratorOutput,
-  E extends CodeGeneratorOutput,
-  F extends CodeGeneratorOutput,
-  G extends CodeGeneratorOutput
->(
-  data: OpenApiData,
-  config: Partial<CodeGeneratorConfig> | undefined,
-  g1: CodeGenerator<{}, A, AnyConfig>,
-  g2: CodeGenerator<Merge<[A]>, B, AnyConfig>,
-  g3: CodeGenerator<Merge<[A, B]>, C, AnyConfig>,
-  g4: CodeGenerator<Merge<[A, B, C]>, D, AnyConfig>,
-  g5: CodeGenerator<Merge<[A, B, C, D]>, E, AnyConfig>,
-  g6: CodeGenerator<Merge<[A, B, C, D, E]>, F, AnyConfig>,
-  g7: CodeGenerator<Merge<[A, B, C, D, E, F]>, G, AnyConfig>
-): GeneratorPipe<Merge<[A, B, C, D, E, F, G]>>;
-export function generate<
-  A extends CodeGeneratorOutput,
-  B extends CodeGeneratorOutput,
-  C extends CodeGeneratorOutput,
-  D extends CodeGeneratorOutput,
-  E extends CodeGeneratorOutput,
-  F extends CodeGeneratorOutput,
-  G extends CodeGeneratorOutput,
-  H extends CodeGeneratorOutput
->(
-  data: OpenApiData,
-  config: Partial<CodeGeneratorConfig> | undefined,
-  g1: CodeGenerator<{}, A, AnyConfig>,
-  g2: CodeGenerator<Merge<[A]>, B, AnyConfig>,
-  g3: CodeGenerator<Merge<[A, B]>, C, AnyConfig>,
-  g4: CodeGenerator<Merge<[A, B, C]>, D, AnyConfig>,
-  g5: CodeGenerator<Merge<[A, B, C, D]>, E, AnyConfig>,
-  g6: CodeGenerator<Merge<[A, B, C, D, E]>, F, AnyConfig>,
-  g7: CodeGenerator<Merge<[A, B, C, D, E, F]>, G, AnyConfig>,
-  g8: CodeGenerator<Merge<[A, B, C, D, E, F, G]>, H, AnyConfig>
-): GeneratorPipe<Merge<[A, B, C, D, E, F, G, H]>>;
-export function generate<
-  A extends CodeGeneratorOutput,
-  B extends CodeGeneratorOutput,
-  C extends CodeGeneratorOutput,
-  D extends CodeGeneratorOutput,
-  E extends CodeGeneratorOutput,
-  F extends CodeGeneratorOutput,
-  G extends CodeGeneratorOutput,
-  H extends CodeGeneratorOutput,
-  I extends CodeGeneratorOutput
->(
-  data: OpenApiData,
-  config: Partial<CodeGeneratorConfig> | undefined,
-  g1: CodeGenerator<{}, A, AnyConfig>,
-  g2: CodeGenerator<Merge<[A]>, B, AnyConfig>,
-  g3: CodeGenerator<Merge<[A, B]>, C, AnyConfig>,
-  g4: CodeGenerator<Merge<[A, B, C]>, D, AnyConfig>,
-  g5: CodeGenerator<Merge<[A, B, C, D]>, E, AnyConfig>,
-  g6: CodeGenerator<Merge<[A, B, C, D, E]>, F, AnyConfig>,
-  g7: CodeGenerator<Merge<[A, B, C, D, E, F]>, G, AnyConfig>,
-  g8: CodeGenerator<Merge<[A, B, C, D, E, F, G]>, H, AnyConfig>,
-  g9: CodeGenerator<Merge<[A, B, C, D, E, F, G, H]>, I, AnyConfig>,
-  ...generators: CodeGenerator<CodeGeneratorInput, CodeGeneratorOutput, AnyConfig>[]
-): GeneratorPipe<Merge<[A, B, C, D, E, F, G, H, I]>>;
-export function generate<T extends OpenApiData>(
-  data: OpenApiData,
-  config: Partial<CodeGeneratorConfig> | undefined,
-  ...generators: CodeGenerator<CodeGeneratorInput, CodeGeneratorOutput, AnyConfig>[]
-): GeneratorPipe<T> {
-  const pipe = new _GeneratorPipe(data, config);
-  return pipe.continueWith<T>(...generators);
+export class OpenApiGenerator extends _OpenApiGenerator<{}> {
+  constructor(config?: OpenApiGeneratorConfigOverrides) {
+    super({ ...defaultOpenApiGeneratorConfig, ...config }, [], new OpenApiParser());
+  }
 }
 
 function mergeDeep<T extends Record<string, unknown>, U extends Record<string, unknown>[]>(

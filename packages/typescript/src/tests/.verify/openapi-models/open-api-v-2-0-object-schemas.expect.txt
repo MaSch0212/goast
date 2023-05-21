@@ -74,12 +74,12 @@ Map(14) {
     '  b?: MyTitle;\n' +
     '  c?: MyString;\n' +
     '  d?: string;\n' +
-    '};',
+    '};\n',
   '<root>\\out\\models\\object-with-references-in-all-of.model.ts' => "import { EmptyObject } from './empty-object.model';\n" +
     "import { MyString } from './my-string.model';\n" +
     "import { MyTitle } from './my-title.model';\n" +
     '\n' +
-    'export type ObjectWithReferencesInAllOf = EmptyObject & MyTitle & MyString & string;',
+    'export type ObjectWithReferencesInAllOf = EmptyObject & MyTitle & MyString & string;\n',
   '<root>\\out\\models.ts' => "export { EmptyObject } from './models/empty-object.model';\n" +
     "export { MyString } from './models/my-string.model';\n" +
     "export { MyTitle } from './models/my-title.model';\n" +

@@ -1,3 +1,5 @@
+import { StringBuilder } from '@goast/core/utils';
+
 export class ImportExportCollection {
   private readonly _imports: Map<string, Set<string>> = new Map();
   private readonly _exports: Map<string, Set<string>> = new Map();
@@ -34,20 +36,24 @@ export class ImportExportCollection {
   }
 
   public toString(newLineChar: string): string {
-    let output = '';
+    const builder = new StringBuilder({ newLine: newLineChar });
+    this.writeTo(builder);
+    return builder.toString();
+  }
 
+  public writeTo(builder: StringBuilder) {
     if (this._imports.size > 0) {
       const sortedImports = Array.from(this._imports.entries()).sort(([fromModuleA], [fromModuleB]) =>
         fromModuleA.localeCompare(fromModuleB)
       );
       for (const [fromModule, importNames] of sortedImports) {
         const sortedImportNames = Array.from(importNames).sort();
-        output += `import { ${sortedImportNames.join(', ')} } from '${fromModule}';${newLineChar}`;
+        builder.appendLine(`import { ${sortedImportNames.join(', ')} } from '${fromModule}';`);
       }
     }
 
     if (this._imports.size > 0 && this._exports.size > 0) {
-      output += newLineChar;
+      builder.appendLine();
     }
 
     if (this._exports.size > 0) {
@@ -56,10 +62,8 @@ export class ImportExportCollection {
       );
       for (const [fromModule, exportNames] of sortedExports) {
         const sortedExportNames = Array.from(exportNames).sort();
-        output += `export { ${sortedExportNames.join(', ')} } from '${fromModule}';${newLineChar}`;
+        builder.appendLine(`export { ${sortedExportNames.join(', ')} } from '${fromModule}';`);
       }
     }
-
-    return output;
   }
 }

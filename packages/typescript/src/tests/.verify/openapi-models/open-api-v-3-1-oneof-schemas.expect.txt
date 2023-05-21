@@ -8,7 +8,7 @@ Map(8) {
     "import { MyString } from './my-string.model';\n" +
     "import { MyTitle } from './my-title.model';\n" +
     '\n' +
-    'export type WithReferences = (EmptyOneOf | MyTitle | MyString | string);',
+    'export type WithReferences = (EmptyOneOf | MyTitle | MyString | string);\n',
   '<root>\\out\\models.ts' => "export { EmptyOneOf } from './models/empty-one-of.model';\n" +
     "export { IgnoreType } from './models/ignore-type.model';\n" +
     "export { MyString } from './models/my-string.model';\n" +

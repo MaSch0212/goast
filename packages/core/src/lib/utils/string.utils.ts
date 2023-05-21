@@ -279,6 +279,30 @@ export class StringBuilder {
   }
 
   /**
+   * Creates a new StringBuilder instance and appends the specified string to it.
+   * @param str The string to append.
+   * @param options The options.
+   * @returns A new StringBuilder instance.
+   */
+  public static fromString(str: string, options?: Partial<StringBuilderOptions>): StringBuilder {
+    const builder = new StringBuilder(options);
+    builder.append(str);
+    return builder;
+  }
+
+  /**
+   * Builds a string using a StringBuilder build action.
+   * @param buildAction The build action to perform on the StringBuilder instance.
+   * @param options The options for the StringBuilder instance.
+   * @returns The built string.
+   */
+  public static build(buildAction: (builder: StringBuilder) => void, options?: Partial<StringBuilderOptions>): string {
+    const builder = new StringBuilder(options);
+    buildAction(builder);
+    return builder.toString();
+  }
+
+  /**
    * Appends one or more strings to the end of the current StringBuilder.
    * @param value The string(s) to append.
    * @returns The current StringBuilder.
@@ -298,6 +322,34 @@ export class StringBuilder {
    */
   public appendLine(...value: Nullable<string>[]): this {
     return this.append(...value, this._options.newLine);
+  }
+
+  /**
+   * Prepends one or more strings to the beginning of the current StringBuilder.
+   * @param value The string(s) to prepend.
+   * @returns The current StringBuilder.
+   */
+  public prepend(...value: Nullable<string | ((builder: StringBuilder) => void)>[]): this {
+    for (const part of value.reverse()) {
+      if (isNullish(part)) continue;
+      if (typeof part === 'function') {
+        const builder = new StringBuilder(this.options);
+        part(builder);
+        this._str = builder.toString() + this._str;
+      } else if (part.length > 0) {
+        this._str = part + this._str;
+      }
+    }
+    return this;
+  }
+
+  /**
+   * Prepends one or more strings to the beginning of the current StringBuilder, followed by a line terminator.
+   * @param value The string(s) to prepend.
+   * @returns The current StringBuilder.
+   */
+  public prependLine(...value: Nullable<string | ((builder: StringBuilder) => void)>[]): this {
+    return this.prepend(...value, this._options.newLine);
   }
 
   /**

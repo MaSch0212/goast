@@ -7,11 +7,11 @@ import { Nullable } from '../type.utils.js';
 export type IndentOptions = { readonly type: 'tabs' } | { readonly type: 'spaces'; readonly count: number };
 
 export type SourceBuilderOptions = StringBuilderOptions & {
-  readonly indent: IndentOptions;
-  readonly charsTreatedAsEmptyLine: string[];
+  indent: IndentOptions;
+  charsTreatedAsEmptyLine: string[];
 };
 
-const defaultOptions: SourceBuilderOptions = {
+export const defaultSourceBuilderOptions: SourceBuilderOptions = {
   indent: { type: 'spaces', count: 2 },
   newLine: EOL,
   charsTreatedAsEmptyLine: ['{'],
@@ -63,15 +63,42 @@ export class SourceBuilder extends StringBuilder {
    */
   constructor(options?: Partial<SourceBuilderOptions>) {
     super(options);
-    this.__options = { ...defaultOptions, ...options };
+    this.__options = { ...defaultSourceBuilderOptions, ...options };
     this._emptyLineCharRegex = new RegExp(`[\\s${this.__options.charsTreatedAsEmptyLine.join('')}]`);
     this._indentString = this.__options.indent.type === 'tabs' ? '\t' : ' '.repeat(this.__options.indent.count);
   }
 
   /**
-   * Appends one or more strings to the end of the current StringBuilder.
+   * Creates a new instance of the SourceBuilder class from a string.
+   * @param str The string to use as the initial content of the builder.
+   * @param options The options to use for this instance.
+   * @returns A new instance of the SourceBuilder class.
+   */
+  public static override fromString(str: string, options?: Partial<SourceBuilderOptions>): SourceBuilder {
+    const builder = new SourceBuilder(options);
+    builder.append(str);
+    return builder;
+  }
+
+  /**
+   * Builds a string using a callback function that receives a `SourceBuilder` instance.
+   * @param buildAction The callback function that receives a `SourceBuilder` instance to build the string.
+   * @param options The options to use for the `SourceBuilder` instance.
+   * @returns The string built by the `SourceBuilder` instance.
+   */
+  public static override build(
+    buildAction: (builder: SourceBuilder) => void,
+    options?: Partial<SourceBuilderOptions>
+  ): string {
+    const builder = new SourceBuilder(options);
+    buildAction(builder);
+    return builder.toString();
+  }
+
+  /**
+   * Appends one or more strings to the end of the current SourceBuilder.
    * @param value The string(s) to append.
-   * @returns The current StringBuilder.
+   * @returns The current SourceBuilder.
    */
   public override append(...value: Nullable<string>[]): this {
     if (value.length === 0 || !value.some((v) => v && v.length > 0)) {
@@ -120,20 +147,29 @@ export class SourceBuilder extends StringBuilder {
   }
 
   /**
-   * Appends one or more strings to the end of the current StringBuilder if the specified condition is true.
+   * Appends one or more strings to the end of the current SourceBuilder, followed by a line terminator.
+   * @param value The string(s) to append.
+   * @returns The current SourceBuilder.
+   */
+  public override appendLine(...value: Nullable<string>[]): this {
+    return this.append(...value, '\n');
+  }
+
+  /**
+   * Appends one or more strings to the end of the current SourceBuilder if the specified condition is true.
    * @param condition The condition to check before appending the specified value.
    * @param value The string(s) to append.
-   * @returns The current StringBuilder.
+   * @returns The current SourceBuilder.
    */
   public appendIf(condition: Condition, ...value: Nullable<string>[]): this {
     return evalCondition(condition) ? this.append(...value) : this;
   }
 
   /**
-   * Appends one or more strings to the end of the current StringBuilder, followed by a line terminator, if the specified condition is true.
+   * Appends one or more strings to the end of the current SourceBuilder, followed by a line terminator, if the specified condition is true.
    * @param condition The condition to check before appending the specified value.
    * @param value The string(s) to append.
-   * @returns The current StringBuilder.
+   * @returns The current SourceBuilder.
    */
   public appendLineIf(condition: Condition, ...value: Nullable<string>[]): this {
     return evalCondition(condition) ? this.appendLine(...value) : this;
