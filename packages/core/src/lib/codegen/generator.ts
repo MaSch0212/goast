@@ -2,7 +2,7 @@ import { resolve } from 'path';
 
 import { emptyDir, ensureDir } from 'fs-extra';
 
-import { OpenApiGeneratorConfig, OpenApiGeneratorConfigOverrides, defaultOpenApiGeneratorConfig } from './config.js';
+import { OpenApiGeneratorConfig, OpenApiGeneratorConfigOverrides, defaultOpenApiGeneratorConfig } from './config';
 import {
   AnyConfig,
   OpenApiGenerationProvider,
@@ -11,9 +11,9 @@ import {
   OpenApiGeneratorInput,
   OpenApiGeneratorOutput,
 } from './types.js';
-import { OpenApiParser } from '../parser.js';
-import { Merge } from '../type.utils.js';
-import { OpenApiData } from '../types.js';
+import { OpenApiParser } from '../parse/parser';
+import { ApiData } from '../transform';
+import { Merge } from '../utils/type.utils';
 
 type OpenApiGenerationProviders = (
   | {
@@ -79,7 +79,7 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
     return this as unknown as _OpenApiGenerator<Merge<[TOutput, POutput]>>;
   }
 
-  public async generate<T extends OpenApiData>(data: T): Promise<TOutput> {
+  public async generate<T extends ApiData>(data: T): Promise<TOutput> {
     const absOutputPath = resolve(this._config.outputDir);
     if (this._config.clearOutputDir) {
       await emptyDir(absOutputPath);

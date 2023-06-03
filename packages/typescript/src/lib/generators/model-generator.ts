@@ -2,8 +2,15 @@ import { dirname, resolve } from 'path';
 
 import fs from 'fs-extra';
 
-import { ApiSchema, ArrayLikeApiSchema, CombinedLikeApiSchema, ObjectLikeApiSchema, OpenApiData } from '@goast/core';
-import { SourceBuilder, getInitializedValue, resolveAnyOfAndAllOf, toCasing, toPascalCase } from '@goast/core/utils';
+import { ApiSchema, ArrayLikeApiSchema, CombinedLikeApiSchema, ObjectLikeApiSchema, ApiData } from '@goast/core';
+import {
+  SourceBuilder,
+  getInitializedValue,
+  resolveAnyOfAndAllOf,
+  selectFirstReferenceWithImpactfulChanges,
+  toCasing,
+  toPascalCase,
+} from '@goast/core/utils';
 
 import { TypeScriptModelGeneratorConfig } from './config';
 import { ImportExportCollection } from '../import-collection';
@@ -21,13 +28,14 @@ export interface TypeScriptModelGeneratorType extends Function {
 export interface TypeScriptModelGenerator<
   TOutput extends TypeScriptModelGeneratorResult = TypeScriptModelGeneratorResult
 > {
-  init(config: TypeScriptModelGeneratorConfig, data: OpenApiData, schema: ApiSchema): PromiseLike<void> | void;
+  init(config: TypeScriptModelGeneratorConfig, data: ApiData, schema: ApiSchema): PromiseLike<void> | void;
   generate(): PromiseLike<TOutput> | TOutput;
 }
 
 export class DefaultTypeScriptModelGenerator implements TypeScriptModelGenerator {
+  private _usesReferencedSchema: boolean = false;
   private _config?: TypeScriptModelGeneratorConfig;
-  private _data?: OpenApiData;
+  private _data?: ApiData;
   private _schema?: ApiSchema;
   private _builder?: SourceBuilder;
 
@@ -39,7 +47,7 @@ export class DefaultTypeScriptModelGenerator implements TypeScriptModelGenerator
     return getInitializedValue(this._config);
   }
 
-  protected get data(): OpenApiData {
+  protected get data(): ApiData {
     return getInitializedValue(this._data);
   }
 
@@ -51,10 +59,12 @@ export class DefaultTypeScriptModelGenerator implements TypeScriptModelGenerator
     return getInitializedValue(this._builder);
   }
 
-  public init(config: TypeScriptModelGeneratorConfig, data: OpenApiData, schema: ApiSchema): void {
+  public init(config: TypeScriptModelGeneratorConfig, data: ApiData, schema: ApiSchema): void {
+    const actualSchema = selectFirstReferenceWithImpactfulChanges(schema);
+    this._usesReferencedSchema = actualSchema !== schema;
     this._config = config;
     this._data = data;
-    this._schema = schema;
+    this._schema = actualSchema;
     this._builder = new SourceBuilder(config);
 
     this.filePath = undefined;
@@ -99,6 +109,10 @@ export class DefaultTypeScriptModelGenerator implements TypeScriptModelGenerator
   }
 
   protected shouldGenerateTypeDeclaration(schema: ApiSchema): boolean {
+    if (this._usesReferencedSchema) {
+      return false;
+    }
+
     // All named schemas should have its own type declaration
     if (!schema.isNameGenerated) {
       return true;
@@ -167,6 +181,7 @@ export class DefaultTypeScriptModelGenerator implements TypeScriptModelGenerator
   }
 
   protected generateModelTypePrefix() {
+    this.generateDocumentation(this.schema, this.builder);
     if (this.interfaceSchema) {
       this.builder.append('export interface ').append(this.getDeclarationTypeName(this.schema)).append(' ');
     } else if (
@@ -321,7 +336,8 @@ export class DefaultTypeScriptModelGenerator implements TypeScriptModelGenerator
     if (schema.properties.size > 0) {
       builder
         .parenthesize('{}', (builder) =>
-          builder.appendLine().forEach(schema.properties.values(), (builder, property) =>
+          builder.appendLine().forEach(schema.properties.values(), (builder, property) => {
+            this.generateDocumentation(property.schema, builder);
             builder
               .appendIf(this.config.immutableTypes, 'readonly ')
               .append(toTypeScriptPropertyName(property.name, this.config.useSingleQuotes))
@@ -329,8 +345,8 @@ export class DefaultTypeScriptModelGenerator implements TypeScriptModelGenerator
               .append(': ')
               .append(this.getTypeName(property.schema))
               .appendIf(property.schema.nullable === true, ' | null')
-              .appendLine(';')
-          )
+              .appendLine(';');
+          })
         )
         .appendIf(!!schema.additionalProperties || schema.allOf.length > 0 || schema.anyOf.length > 0, ' & ');
     }
@@ -389,6 +405,15 @@ export class DefaultTypeScriptModelGenerator implements TypeScriptModelGenerator
             )
           )
       );
+    }
+  }
+
+  protected generateDocumentation(schema: ApiSchema, builder: SourceBuilder): void {
+    if (schema.description) {
+      builder
+        .appendLine('/**')
+        .appendLine(` * ${schema.description.trim().replace('\r', '').split('\n').join('\n * ')}`)
+        .appendLine(' */');
     }
   }
 }

@@ -1,6 +1,6 @@
 import { ExecutorContext, normalizePath } from '@nx/devkit';
 import { HelperDependency, getHelperDependency, updatePackageJson } from '@nx/js';
-import { checkDependencies } from '@nx/js/src/utils/check-dependencies.js';
+import { checkDependencies } from '@nx/js/src/utils/check-dependencies';
 import { copyFile, emptyDir, readJson, rename, writeJson } from 'fs-extra';
 import { glob } from 'glob';
 import { EOL } from 'os';

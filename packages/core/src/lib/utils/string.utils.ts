@@ -1,5 +1,6 @@
 import { EOL } from 'os';
 
+import { isNullish } from './common.utils';
 import {
   WordCasing,
   StringCasing,
@@ -12,8 +13,7 @@ import {
   BaseCaseOptions,
   StringCasingWithOptions,
 } from './string.utils.types.js';
-import { isNullish } from '../helpers.js';
-import { Nullable } from '../type.utils.js';
+import { Nullable } from './type.utils';
 
 /**
  * Gets the words from a string. Words are separated by capital letters. Leading numbers are removed. Non-alphanumerical characters are removed and interpreted as word seperators. Multiple uppercase letters are interpreted as one word.

@@ -1,6 +1,6 @@
 import { EOL } from 'os';
 
-import { SourceBuilder, SourceBuilderOptions } from './source-builder.js';
+import { SourceBuilder, SourceBuilderOptions } from './source-builder';
 
 describe('SourceBuilder', () => {
   let sb: SourceBuilder;

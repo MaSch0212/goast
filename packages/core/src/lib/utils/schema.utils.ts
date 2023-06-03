@@ -1,4 +1,5 @@
-import { ApiSchema, ApiSchemaProperty } from '../types.js';
+import { OpenApiSchema } from '../parse';
+import { ApiSchema, ApiSchemaProperty } from '../transform';
 
 export function resolveAnyOfAndAllOf(
   schema: ApiSchema<'combined' | 'object'>,
@@ -24,6 +25,7 @@ export function resolveAnyOfAndAllOf(
     allOf: [],
     properties: properties,
     required: required,
+    additionalProperties: false, // TODO: check whether any of the sub-schemas has additionalProperties set to true or a schema and combine that
   };
 }
 
@@ -59,4 +61,102 @@ function hasInvalidSubSchema(subSchemas: ApiSchema[]): boolean {
     (x) =>
       x.kind !== 'object' && (x.kind !== 'combined' || (!hasInvalidSubSchema(x.allOf) && !hasInvalidSubSchema(x.anyOf)))
   );
+}
+
+export const openaApiSchemaProperties: (keyof OpenApiSchema)[] = [
+  'type',
+  'properties',
+  'items',
+  'required',
+  'enum',
+  'format',
+  'additionalProperties',
+  'anyOf',
+  'oneOf',
+  'allOf',
+  'not',
+  'minLength',
+  'maxLength',
+  'minimum',
+  'maximum',
+  'exclusiveMinimum',
+  'exclusiveMaximum',
+  'pattern',
+  'default',
+  'title',
+  'description',
+  'multipleOf',
+  'additionalItems',
+  'maxItems',
+  'minItems',
+  'uniqueItems',
+  'maxProperties',
+  'minProperties',
+  'definitions',
+  'patternProperties',
+  'dependencies',
+  'nullable',
+  'discriminator',
+  'readOnly',
+  'writeOnly',
+  'externalDocs',
+  'example',
+  'examples',
+  'xml',
+  'contentMediaType',
+  'const',
+  'deprecated',
+];
+export const defaultUnimpactfulProperties: (keyof OpenApiSchema)[] = [
+  'required',
+  'minLength',
+  'maxLength',
+  'minimum',
+  'maximum',
+  'exclusiveMinimum',
+  'exclusiveMaximum',
+  'pattern',
+  'default',
+  'description',
+  'multipleOf',
+  'maxItems',
+  'minItems',
+  'uniqueItems',
+  'maxProperties',
+  'minProperties',
+  'definitions',
+  'patternProperties',
+  'dependencies',
+  'externalDocs',
+  'example',
+  'examples',
+  'xml',
+  'contentMediaType',
+  'deprecated',
+];
+
+export function selectFirstReferenceWithImpactfulChanges(
+  schema: ApiSchema,
+  additionalUnimpactfulProperties: (keyof OpenApiSchema)[] = [],
+  additionalImpactfulProperties: (keyof OpenApiSchema)[] = []
+): ApiSchema {
+  const unimpactfulProperties = defaultUnimpactfulProperties.concat(additionalUnimpactfulProperties);
+  const impactfulProperties = openaApiSchemaProperties
+    .filter((x) => !unimpactfulProperties.includes(x))
+    .concat(additionalImpactfulProperties);
+  return selectFirstReferenceWithImpactfulChangesImpl(schema, impactfulProperties);
+}
+
+function selectFirstReferenceWithImpactfulChangesImpl(
+  schema: ApiSchema,
+  impactfulProperties: (keyof OpenApiSchema)[]
+): ApiSchema {
+  if (!schema.$ref) return schema;
+  const hasImpactfulChange = hasAnyProperty(schema.$src.originalComponent, impactfulProperties);
+  if (hasImpactfulChange) return schema;
+  return selectFirstReferenceWithImpactfulChangesImpl(schema.$ref, impactfulProperties);
+}
+
+function hasAnyProperty<T extends object>(obj: T, props: (keyof T)[]): boolean {
+  return props.some((x) => x in obj);
 }

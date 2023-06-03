@@ -1,4 +1,4 @@
-import { Condition, evalCondition } from './condition.js';
+import { Condition, evalCondition } from './condition';
 
 describe('evalCondition', () => {
   it('should return the correct boolean value when condition is true', () => {

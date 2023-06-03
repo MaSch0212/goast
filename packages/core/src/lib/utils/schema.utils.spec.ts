@@ -1,6 +1,6 @@
 import { createCombinedSchema, createStringSchema, createObjectSchema, createUnknownProperty } from '@goast/test/utils';
 
-import { resolveAnyOfAndAllOf } from './schema.utils.js';
+import { resolveAnyOfAndAllOf } from './schema.utils';
 
 describe('resolveAnyOfAndAllOf', () => {
   it('should return undefined if the schema is not valid for merge and ignoreNonObjectParts is false', () => {

@@ -3,7 +3,7 @@ import { ensureDir, pathExists, readFile, remove, writeFile } from 'fs-extra';
 import * as util from 'util';
 import { spawn } from 'child_process';
 import { toCasing } from '@goast/core/utils';
-import { nxRootDir } from './paths.js';
+import { nxRootDir } from './paths';
 
 type VerifyError = 'no-expect-file' | 'verify-failed';
 
@@ -31,7 +31,7 @@ function cutString(text: string, length: number) {
 }
 
 function dataToText(data: unknown, depth: number = 100): string {
-  let text = typeof data === 'string' ? data : util.inspect(data, undefined, depth);
+  let text = typeof data === 'string' ? data : util.inspect(data, { depth });
   text = text.replace(new RegExp(escapeRegExp(nxRootDir.replace(/\\/g, '\\\\')), 'g'), '<root>');
   return text;
 }

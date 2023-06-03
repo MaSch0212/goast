@@ -1,8 +1,9 @@
-import { OpenApiCollectorData } from './types.js';
+import { OpenApiCollectorData } from './types';
+import { isOpenApiObjectProperty } from '../internal-utils';
 
 export function collect<T>(
   data: OpenApiCollectorData,
-  obj: T | T[],
+  obj: T | T[] | undefined,
   func: (data: OpenApiCollectorData, obj: NonNullable<T>) => void
 ) {
   if (!obj) return;
@@ -13,5 +14,19 @@ export function collect<T>(
     }
   } else {
     func(data, obj);
+  }
+}
+
+export function collectRecord<T>(
+  data: OpenApiCollectorData,
+  obj: Record<string, T> | undefined,
+  func: (data: OpenApiCollectorData, obj: NonNullable<T>, key: string) => void
+) {
+  if (!obj) return;
+  for (const key in obj) {
+    if (!isOpenApiObjectProperty(key)) continue;
+    const value = obj[key];
+    if (!value) continue;
+    func(data, value, key);
   }
 }

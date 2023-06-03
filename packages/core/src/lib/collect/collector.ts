@@ -1,29 +1,133 @@
-import { OpenAPI } from 'openapi-types';
+import { collect, collectRecord } from './helpers';
+import { OpenApiCollectorData } from './types';
+import {
+  Deref,
+  OpenApiDocument,
+  OpenApiHeader,
+  OpenApiMediaType,
+  OpenApiParameter,
+  OpenApiPathItem,
+  OpenApiRequestBody,
+  OpenApiResponse,
+  OpenApiSchema,
+} from '../parse';
 
-import { OpenApiCollectorData } from './types.js';
-import { isOpenApiV2, collectOpenApiV2 } from '../open-api-v2/collector.js';
-import { collectOpenApiV3, isOpenApiV3 } from '../open-api-v3/collector.js';
-import { collectOpenApiV3_1, isOpenApiV3_1 } from '../open-api-v3_1/collector.js';
-import { Deref } from '../types.js';
+type Collect<T> = Deref<T> | Deref<T>[] | undefined;
 
-export function collectOpenApi(apis: Deref<OpenAPI.Document>[]): OpenApiCollectorData {
+export function collectOpenApi(apis: Deref<OpenApiDocument>[]): OpenApiCollectorData {
   const data: OpenApiCollectorData = {
     documents: [],
     schemas: new Map(),
     endpoints: new Map(),
   };
 
-  for (const api of apis) {
-    if (isOpenApiV3_1(api)) {
-      collectOpenApiV3_1(api, data);
-    } else if (isOpenApiV3(api)) {
-      collectOpenApiV3(api, data);
-    } else if (isOpenApiV2(api)) {
-      collectOpenApiV2(api, data);
-    } else {
-      throw new Error('Unsupported OpenAPI version');
-    }
-  }
+  collectDocument(data, apis);
 
   return data;
+}
+
+function collectDocument(data: OpenApiCollectorData, documents: Collect<OpenApiDocument>) {
+  collect(data, documents, (data, document) => {
+    data.documents.push(document);
+    collectPaths(data, document.paths);
+    collectRecord<Deref<OpenApiSchema>>(data, document.components?.schemas, collectSchema);
+    collectRecord<Deref<OpenApiSchema>>(data, document.definitions, collectSchema);
+    collectRecord<Deref<OpenApiParameter>>(data, document.components?.parameters, collectParameter);
+    collectRecord<Deref<OpenApiParameter>>(data, document.parameters, collectParameter);
+    collectRecord<Deref<OpenApiRequestBody>>(data, document.components?.requestBodies, collectRequestBody);
+    collectRecord<Deref<OpenApiResponse>>(data, document.components?.responses, collectResponse);
+    collectRecord<Deref<OpenApiResponse>>(data, document.responses, collectResponse);
+    collectRecord<Deref<OpenApiHeader>>(data, document.components?.headers, collectHeader);
+  });
+}
+
+function collectPaths(data: OpenApiCollectorData, paths: Collect<Record<string, OpenApiPathItem>>) {
+  collect(data, paths, (data, path) => {
+    collectRecord<Deref<OpenApiPathItem>>(data, path, collectPathItem);
+  });
+}
+
+function collectPathItem(data: OpenApiCollectorData, pathItems: Collect<OpenApiPathItem>, path: string) {
+  collect(data, pathItems, (data, pathItem) => {
+    collectParameter(data, pathItem.parameters);
+    for (const m of ['get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace'] as const) {
+      const operation = pathItem[m];
+      if (!operation) continue;
+      const key = `${operation.$src.file}#${operation.$src.path}`;
+      if (data.endpoints.has(key)) continue;
+      data.endpoints.set(key, {
+        path,
+        method: m,
+        pathItem,
+        operation,
+      });
+      collectParameter(data, operation.parameters);
+      collectRequestBody(data, operation.requestBody);
+      collectRecord<Deref<OpenApiResponse>>(data, operation.responses, collectResponse);
+    }
+  });
+}
+
+function collectSchema(data: OpenApiCollectorData, schemas: Collect<OpenApiSchema>) {
+  collect(data, schemas, (data, schema) => {
+    const key = `${schema.$src.file}#${schema.$src.path}`;
+    if (data.schemas.has(key)) return;
+    data.schemas.set(key, schema);
+    collectSchema(data, schema.allOf);
+    collectSchema(data, schema.anyOf);
+    collectSchema(data, schema.oneOf);
+    collectSchema(data, schema.items);
+    collectSchema(data, schema.not);
+    collectRecord<Deref<OpenApiSchema>>(data, schema.properties, collectSchema);
+    collectRecord<Deref<OpenApiSchema>>(data, schema.patternProperties, collectSchema);
+    collectRecord<Deref<OpenApiSchema>>(data, schema.dependencies, collectSchema);
+    collectRecord<Deref<OpenApiSchema>>(data, schema.definitions, collectSchema);
+    if (typeof schema.additionalProperties === 'object') {
+      collectSchema(data, schema.additionalProperties);
+    }
+    if (typeof schema.additionalItems === 'object') {
+      collectSchema(data, schema.additionalItems);
+    }
+  });
+}
+
+function collectParameter(data: OpenApiCollectorData, parameters: Collect<OpenApiParameter>) {
+  collect(data, parameters, (data, parameter) => {
+    collectSchema(data, parameter.schema);
+  });
+}
+
+function collectMediaType(data: OpenApiCollectorData, mediaTypes: Collect<OpenApiMediaType>) {
+  collect(data, mediaTypes, (data, mediaType) => {
+    collectSchema(data, mediaType.schema);
+  });
+}
+
+function collectRequestBody(data: OpenApiCollectorData, requestBody: Collect<OpenApiRequestBody>) {
+  collect(data, requestBody, (data, requestBody) => {
+    collectRecord<Deref<OpenApiMediaType>>(data, requestBody.content, collectMediaType);
+  });
+}
+
+function isSchema(obj: Record<string, unknown>): obj is Deref<OpenApiSchema> {
+  return obj && typeof obj === 'object' && obj['type'] !== undefined;
+}
+
+function collectResponse(data: OpenApiCollectorData, responses: Collect<OpenApiResponse>) {
+  collect(data, responses, (data, responses) => {
+    collectRecord<Deref<OpenApiMediaType>>(data, responses.content, collectMediaType);
+    collect(data, responses.headers, (data, header) => {
+      if (isSchema(header)) {
+        collectSchema(data, header);
+      } else {
+        collectHeader(data, header);
+      }
+    });
+  });
+}
+
+function collectHeader(data: OpenApiCollectorData, headers: Collect<OpenApiHeader>) {
+  collect(data, headers, (data, headers) => {
+    collectSchema(data, headers.schema);
+  });
 }

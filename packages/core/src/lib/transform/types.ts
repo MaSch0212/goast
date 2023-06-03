@@ -1,13 +1,19 @@
-import { IdGenerator } from './helpers.js';
 import {
-  OpenApiCollectorData,
-  OpenApiCollectorDocument,
-  OpenApiVersionMarked,
-  OpenApiCollectorSchema,
-  OpenApiCollectorEndpointInfo,
-} from '../collect/types.js';
-import { ArrayItem } from '../type.utils.js';
-import { ApiSchema, ApiSchemaExtensions, ApiSchemaKind, ApiPath, OpenApiData, OpenApiVersion } from '../types.js';
+  ApiSchema,
+  ApiSchemaExtensions,
+  ApiSchemaKind,
+  ApiPath,
+  ApiData,
+  ApiService,
+  ApiParameter,
+  ApiRequestBody,
+  ApiResponse,
+  ApiContent,
+  ApiHeader,
+} from './api-types';
+import { IdGenerator } from './helpers';
+import { OpenApiCollectorData } from '../collect/types';
+import { ArrayItem } from '../utils/type.utils';
 
 export type IncompleteApiSchema = Omit<ApiSchema, Exclude<keyof ApiSchemaExtensions<ApiSchemaKind>, 'kind'>>;
 export type OpenApiTransformerContext = {
@@ -15,18 +21,15 @@ export type OpenApiTransformerContext = {
   input: OpenApiCollectorData;
   incompleteSchemas: Map<string, IncompleteApiSchema>;
   paths: Map<string, ApiPath>;
-} & { [K in keyof OpenApiData]: Map<string, ArrayItem<OpenApiData[K]>> };
-export type OpenApiTransformer<V extends OpenApiVersion> = {
-  transformDocument: (
-    context: OpenApiTransformerContext,
-    document: OpenApiCollectorDocument & OpenApiVersionMarked<V>
-  ) => void;
-  transformSchema: (
-    context: OpenApiTransformerContext,
-    schema: OpenApiCollectorSchema & OpenApiVersionMarked<V>
-  ) => void;
-  transformEndpoint: (
-    context: OpenApiTransformerContext,
-    endpoint: OpenApiCollectorEndpointInfo & OpenApiVersionMarked<V>
-  ) => void;
-};
+
+  transformed: {
+    services: Map<string, ApiService>;
+    paths: Map<string, ApiPath>;
+    parameters: Map<string, ApiParameter>;
+    requestBodies: Map<string, ApiRequestBody>;
+    responses: Map<string, ApiResponse>;
+    content: Map<string, ApiContent>;
+    headers: Map<string, ApiHeader>;
+    schemas: Map<string, ApiSchema>;
+  };
+} & { [K in keyof ApiData]: Map<string, ArrayItem<ApiData[K]>> };

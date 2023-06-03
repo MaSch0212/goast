@@ -2,7 +2,8 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "types": ["node"],
-    "outDir": "../dist/playground"
+    "outDir": "../dist/playground",
+    "module": "commonjs"
   },
   "include": ["**/*.ts"]
 }

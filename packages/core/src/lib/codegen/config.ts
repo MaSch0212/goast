@@ -1,4 +1,4 @@
-import { SourceBuilderOptions } from '../utils/source-builder.js';
+import { SourceBuilderOptions } from '../utils/source-builder';
 
 type OpenApiGeneratorConfigAdditions = {
   outputDir: string;

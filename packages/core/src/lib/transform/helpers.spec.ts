@@ -1,3 +1,4 @@
+import { ApiSchema } from './api-types';
 import {
   IdGenerator,
   determineEndpointName,
@@ -8,8 +9,7 @@ import {
   transformAdditionalProperties,
   transformSchemaProperties,
 } from './helpers.js';
-import { OpenApiTransformerContext } from './types.js';
-import { ApiSchema } from '../types.js';
+import { OpenApiTransformerContext } from './types';
 
 describe('determineSchemaKind', () => {
   test('returns "oneOf" if schema has "oneOf" property', () => {

@@ -1,26 +1,28 @@
-import { OpenApiTransformerContext } from './types.js';
-import { isNullish } from '../helpers.js';
-import { ApiSchemaAccessibility, ApiSchema, ApiSchemaProperty } from '../types.js';
+import { ApiSchemaKind, ApiSchemaAccessibility, ApiSchema, ApiSchemaProperty } from './api-types';
+import { OpenApiTransformerContext } from './types';
+import { isOpenApiObjectProperty } from '../internal-utils';
+import { Deref, OpenApiObject } from '../parse';
+import { isNullish } from '../utils/common.utils';
 
 export function determineSchemaKind<
   T extends { oneOf?: unknown; allOf?: unknown; anyOf?: unknown; type?: string | string[] }
->(
-  schema: T
-):
-  | 'oneOf'
-  | 'combined'
-  | (Extract<T['type'], string[]> extends never ? never : 'multi-type')
-  | 'unknown'
-  | Extract<T['type'], string> {
+>(schema: T): ApiSchemaKind {
   if (schema.oneOf) {
     return 'oneOf';
   } else if (schema.type !== 'object' && (schema.allOf || schema.anyOf)) {
     return 'combined';
-  } else if (schema.type) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (Array.isArray(schema.type)) return 'multi-type' as any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return schema.type as any;
+  } else if (Array.isArray(schema.type)) {
+    return 'multi-type';
+  } else if (
+    schema.type === 'object' ||
+    schema.type === 'string' ||
+    schema.type === 'boolean' ||
+    schema.type === 'null' ||
+    schema.type === 'number' ||
+    schema.type === 'integer' ||
+    schema.type === 'array'
+  ) {
+    return schema.type;
   }
 
   return 'unknown';
@@ -34,6 +36,9 @@ export function determineSchemaName(
   id: string
 ): { name: string; isGenerated: boolean } {
   if (schema.title) return { name: schema.title, isGenerated: false };
+  if (!schema.$src) {
+    console.log('woot?');
+  }
   const schemaNameMatch = schema.$src.path.match(/(?<=\/components\/schemas\/|\/definitions\/)[^/]+$/i);
   if (schemaNameMatch) {
     return { name: schemaNameMatch[0], isGenerated: false };
@@ -57,6 +62,19 @@ export function determineSchemaAccessibility(schema: {
   } else {
     return schema.writeOnly === true ? 'writeOnly' : 'all';
   }
+}
+
+export function updateSchemaAccessibility(
+  accessibility: ApiSchemaAccessibility,
+  schema: {
+    readOnly?: boolean;
+    writeOnly?: boolean;
+  }
+): ApiSchemaAccessibility {
+  if (accessibility === 'none') return 'none';
+  if (accessibility === 'readOnly') return schema.writeOnly === true ? 'none' : 'readOnly';
+  if (accessibility === 'writeOnly') return schema.readOnly === true ? 'none' : 'writeOnly';
+  return determineSchemaAccessibility(schema);
 }
 
 type CustomFields<T extends Record<string, unknown>> = {
@@ -106,7 +124,7 @@ export function transformSchemaProperties<TProperties>(
   const result = new Map<string, ApiSchemaProperty>();
   if (!schema.properties) return result;
   for (const name of Object.keys(schema.properties)) {
-    if (name === '$src') continue;
+    if (!isOpenApiObjectProperty(name)) continue;
     result.set(name, {
       name,
       schema: transformSchema(context, schema.properties[name]),
@@ -123,4 +141,8 @@ export class IdGenerator {
     this._idMap.set(name, id + 1);
     return `${name}-${id}`;
   }
+}
+
+export function getOpenApiObjectIdentifier(obj: Deref<OpenApiObject<string>>) {
+  return obj.$src.file + '#' + obj.$src.path;
 }

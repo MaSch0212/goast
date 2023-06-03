@@ -4,7 +4,7 @@ import fs from 'fs-extra';
 
 import {
   ApiSchema,
-  OpenApiData,
+  ApiData,
   OpenApiGenerationProvider,
   OpenApiGeneratorConfig,
   OpenApiGeneratorContext,
@@ -22,8 +22,8 @@ import {
   TypeScriptModelGeneratorResult,
   TypeScriptModelGeneratorType,
 } from './model-generator.js';
-import { ImportExportCollection } from '../import-collection.js';
-import { getModulePathRelativeToFile } from '../utils.js';
+import { ImportExportCollection } from '../import-collection';
+import { getModulePathRelativeToFile } from '../utils';
 
 export type TypeScriptModelsGeneratorResult = {
   models: {
@@ -37,7 +37,7 @@ export class TypeScriptModelsGenerator
 {
   private readonly _modelGenerator: TypeScriptModelGeneratorType | TypeScriptModelGenerator;
   private _config?: OpenApiGeneratorConfig & TypeScriptModelsGeneratorConfig;
-  private _data?: OpenApiData;
+  private _data?: ApiData;
 
   constructor(modelGenerator?: TypeScriptModelGeneratorType | TypeScriptModelGenerator) {
     this._modelGenerator = modelGenerator ?? new DefaultTypeScriptModelGenerator();
@@ -47,7 +47,7 @@ export class TypeScriptModelsGenerator
     return getInitializedValue(this._config);
   }
 
-  protected get data(): OpenApiData {
+  protected get data(): ApiData {
     return getInitializedValue(this._data);
   }
 

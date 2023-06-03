@@ -80,10 +80,31 @@ Map(14) {
     "import { MyTitle } from './my-title.model';\n" +
     '\n' +
     'export type ObjectWithReferencesInAllOf = EmptyObject & MyTitle & MyString & string;\n',
+  '<root>\\out\\models\\object-with-description.model.ts' => '/**\n' +
+    ' * My Object Description\n' +
+    ' */\n' +
+    'export type ObjectWithDescription = {\n' +
+    '  /**\n' +
+    '   * My Property Description\n' +
+    '   */\n' +
+    '  a?: string;\n' +
+    '  /**\n' +
+    '   * My Property Description\n' +
+    '   * With Multiple Lines\n' +
+    '   */\n' +
+    '  b?: number;\n' +
+    '};\n',
+  '<root>\\out\\models\\object-with-multiline-description.model.ts' => '/**\n' +
+    ' * My Object Description\n' +
+    ' * With Multiple Lines\n' +
+    ' */\n' +
+    'export type ObjectWithMultilineDescription = {};\n',
   '<root>\\out\\models.ts' => "export { EmptyObject } from './models/empty-object.model';\n" +
     "export { MyString } from './models/my-string.model';\n" +
     "export { MyTitle } from './models/my-title.model';\n" +
     "export { ObjectWithAdditionalProperties } from './models/object-with-additional-properties.model';\n" +
+    "export { ObjectWithDescription } from './models/object-with-description.model';\n" +
+    "export { ObjectWithMultilineDescription } from './models/object-with-multiline-description.model';\n" +
     "export { ObjectWithNullablePropertiesAndRequiredProperties } from './models/object-with-nullable-properties-and-required-properties.model';\n" +
     "export { ObjectWithNullableProperties } from './models/object-with-nullable-properties.model';\n" +
     "export { ObjectWithPropertiesAllOf } from './models/object-with-properties-all-of.model';\n" +
@@ -215,6 +236,16 @@ Map(14) {
       'schema-65': {
         typeName: 'ObjectWithReferencesInAllOf',
         filePath: '<root>\\out\\models\\object-with-references-in-all-of.model.ts'
+      },
+      'schema-68': { typeName: 'string', filePath: undefined },
+      'schema-69': { typeName: 'number', filePath: undefined },
+      'schema-67': {
+        typeName: 'ObjectWithDescription',
+        filePath: '<root>\\out\\models\\object-with-description.model.ts'
+      },
+      'schema-70': {
+        typeName: 'ObjectWithMultilineDescription',
+        filePath: '<root>\\out\\models\\object-with-multiline-description.model.ts'
       }
     },
     modelIndexFilePath: '<root>\\out\\models.ts'

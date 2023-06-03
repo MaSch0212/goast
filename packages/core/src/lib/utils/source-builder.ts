@@ -1,8 +1,8 @@
 import { EOL } from 'os';
 
-import { Condition, evalCondition } from './condition.js';
+import { Condition, evalCondition } from './condition';
 import { StringBuilder, StringBuilderOptions } from './string.utils';
-import { Nullable } from '../type.utils.js';
+import { Nullable } from './type.utils';
 
 export type IndentOptions = { readonly type: 'tabs' } | { readonly type: 'spaces'; readonly count: number };
 

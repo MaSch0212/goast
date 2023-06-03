@@ -213,3 +213,20 @@ definitions:
       - $ref: 'detailed-schemas.yml#/definitions/WithTitle'
       - $ref: 'simple-schemas.yml#/definitions/MyString'
       - type: string
+  ObjectWithDescription:
+    type: object
+    description: My Object Description
+    properties:
+      a:
+        type: string
+        description: My Property Description
+      b:
+        type: integer
+        description: |
+          My Property Description
+          With Multiple Lines
+  ObjectWithMultilineDescription:
+    type: object
+    description: |
+      My Object Description
+      With Multiple Lines

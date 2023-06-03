@@ -24,7 +24,7 @@ export type TestUnknownSchema = TestSchema & Partial<Omit<ApiSchemaExtensions<'u
 
 let nextId = 0;
 
-function createSchemaBase<T extends TestSchema>(schema: T): ApiSchemaBase & Omit<T, keyof ApiSchemaBase> {
+function createSchemaBase<T extends TestSchema>(schema: T) {
   const name = schema.name ?? `schema-${nextId++}`;
   return {
     ...schema,
@@ -36,18 +36,18 @@ function createSchemaBase<T extends TestSchema>(schema: T): ApiSchemaBase & Omit
     accessibility: schema.accessibility ?? 'all',
     required: new Set(schema.required ?? []),
     custom: {},
-  };
+  } as ApiSchemaBase & Omit<T, keyof ApiSchemaBase>;
 }
 
-export function createOneOfSchema(schema: TestOneofSchema = {}): ApiSchema<'oneOf'> {
+export function createOneOfSchema(schema: TestOneofSchema = {}) {
   return {
     ...createSchemaBase(schema),
     kind: 'oneOf',
     oneOf: schema.oneOf ?? [],
-  };
+  } as ApiSchema<'oneOf'>;
 }
 
-export function createMultiTypeSchema(schema: TestMultiTypeSchema = {}): ApiSchema<'multi-type'> {
+export function createMultiTypeSchema(schema: TestMultiTypeSchema = {}) {
   return {
     ...createSchemaBase(schema),
     kind: 'multi-type',
@@ -55,59 +55,59 @@ export function createMultiTypeSchema(schema: TestMultiTypeSchema = {}): ApiSche
     properties: new Map<string, ApiSchemaProperty>((schema.properties ?? []).map((p) => [p.name, p])),
     allOf: schema.allOf ?? [],
     anyOf: schema.anyOf ?? [],
-  };
+  } as ApiSchema<'multi-type'>;
 }
 
-export function createStringSchema(schema: TestStringSchema = {}): ApiSchema<'string'> {
+export function createStringSchema(schema: TestStringSchema = {}) {
   return {
     ...createSchemaBase(schema),
     kind: 'string',
     type: 'string',
-  };
+  } as ApiSchema<'string'>;
 }
 
-export function createBooleanSchema(schema: TestBooleanSchema = {}): ApiSchema<'boolean'> {
+export function createBooleanSchema(schema: TestBooleanSchema = {}) {
   return {
     ...createSchemaBase(schema),
     kind: 'boolean',
     type: 'boolean',
-  };
+  } as ApiSchema<'boolean'>;
 }
 
-export function createNullSchema(schema: TestNullSchema = {}): ApiSchema<'null'> {
+export function createNullSchema(schema: TestNullSchema = {}) {
   return {
     ...createSchemaBase(schema),
     kind: 'null',
     type: 'null',
-  };
+  } as ApiSchema<'null'>;
 }
 
-export function createNumberSchema(schema: TestNumberSchema = {}): ApiSchema<'number'> {
+export function createNumberSchema(schema: TestNumberSchema = {}) {
   return {
     ...createSchemaBase(schema),
     kind: 'number',
     type: 'number',
-  };
+  } as ApiSchema<'number'>;
 }
 
-export function createIntegerSchema(schema: TestIntegerSchema = {}): ApiSchema<'integer'> {
+export function createIntegerSchema(schema: TestIntegerSchema = {}) {
   return {
     ...createSchemaBase(schema),
     kind: 'integer',
     type: 'integer',
-  };
+  } as ApiSchema<'integer'>;
 }
 
-export function createArraySchema(schema: TestArraySchema = {}): ApiSchema<'array'> {
+export function createArraySchema(schema: TestArraySchema = {}) {
   return {
     ...createSchemaBase(schema),
     kind: 'array',
     type: 'array',
     items: schema.items ?? undefined,
-  };
+  } as ApiSchema<'array'>;
 }
 
-export function createObjectSchema(schema: TestObjectSchema = {}): ApiSchema<'object'> {
+export function createObjectSchema(schema: TestObjectSchema = {}) {
   return {
     ...createSchemaBase(schema),
     kind: 'object',
@@ -115,23 +115,23 @@ export function createObjectSchema(schema: TestObjectSchema = {}): ApiSchema<'ob
     properties: new Map<string, ApiSchemaProperty>((schema.properties ?? []).map((p) => [p.name, p])),
     allOf: schema.allOf ?? [],
     anyOf: schema.anyOf ?? [],
-  };
+  } as ApiSchema<'object'>;
 }
 
-export function createCombinedSchema(schema: TestCombinedSchema = {}): ApiSchema<'combined'> {
+export function createCombinedSchema(schema: TestCombinedSchema = {}) {
   return {
     ...createSchemaBase(schema),
     kind: 'combined',
     allOf: schema.allOf ?? [],
     anyOf: schema.anyOf ?? [],
-  };
+  } as ApiSchema<'combined'>;
 }
 
-export function createUnknownSchema(schema: TestUnknownSchema = {}): ApiSchema<'unknown'> {
+export function createUnknownSchema(schema: TestUnknownSchema = {}) {
   return {
     ...createSchemaBase(schema),
     kind: 'unknown',
-  };
+  } as ApiSchema<'unknown'>;
 }
 
 export function createOneOfProperty(name: string, schema: TestOneofSchema = {}): ApiSchemaProperty {

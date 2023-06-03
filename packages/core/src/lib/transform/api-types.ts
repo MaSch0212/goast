@@ -1,135 +1,126 @@
-import { OpenAPIV2, OpenAPIV3, OpenAPIV3_1 } from 'openapi-types';
+import {
+  DerefSource,
+  Deref,
+  OpenApiHttpMethod,
+  KnownOpenApiParameterTarget,
+  OpenApiTag,
+  OpenApiPathItem,
+  OpenApiOperation,
+  OpenApiParameter,
+  OpenApiRequestBody,
+  OpenApiMediaType,
+  OpenApiResponse,
+  OpenApiHeader,
+  OpenApiSchema,
+} from '../parse';
+import { OptionalProperties } from '../utils';
 
-import { Combine, OptionalProperties } from './type.utils.js';
-
-export type ReferenceObject = Combine<
-  [OpenAPIV2.ReferenceObject, OpenAPIV3.ReferenceObject, OpenAPIV3_1.ReferenceObject]
->;
-type _Deref<T> = {
-  [K in keyof T]: Deref<T[K]>;
-};
-export type Deref<T> = T extends object
-  ? T extends (infer A)[]
-    ? Deref<A>[]
-    : _Deref<Exclude<T, ReferenceObject>> & ApiComponent
-  : T;
-
-export type OpenApiData = {
+export type ApiData = {
   services: ApiService[];
   endpoints: ApiEndpoint[];
   schemas: ApiSchema[];
 };
 
-export type OpenApiVersion = '2.0' | '3.0' | '3.1';
-export type ApiMethod = 'get' | 'put' | 'post' | 'delete' | 'options' | 'head' | 'patch' | 'trace';
-export type ApiParameterTarget = 'path' | 'query' | 'header' | 'cookie' | 'body' | 'form';
+export type ApiComponentSource<T> = DerefSource<T> & {
+  component: Deref<T>;
+};
 
-type TypeByApiVersion<V extends OpenApiVersion, T2, T3, T3_1> = V extends '2.0'
-  ? T2
-  : V extends '3.0'
-  ? T3
-  : V extends '3.1'
-  ? T3_1
+export type Transformed<T> = T extends OpenApiTag
+  ? ApiService
+  : T extends OpenApiPathItem
+  ? ApiPath
+  : T extends OpenApiParameter
+  ? ApiParameter
+  : T extends OpenApiRequestBody
+  ? ApiRequestBody
+  : T extends OpenApiResponse
+  ? ApiResponse
+  : T extends OpenApiMediaType
+  ? ApiContent
+  : T extends OpenApiHeader
+  ? ApiHeader
+  : T extends OpenApiSchema
+  ? ApiSchema
   : never;
-export type ApiComponentSource<V extends OpenApiVersion, T2, T3, T3_1> = {
-  file: string;
-  path: string;
-  version: V;
-  component: TypeByApiVersion<V, T2, T3, T3_1>;
-  reference?: TypeByApiVersion<V, OpenAPIV2.ReferenceObject, OpenAPIV3.ReferenceObject, OpenAPIV3_1.ReferenceObject>;
-};
 
-export type ApiComponent<T2 = unknown, T3 = unknown, T3_1 = unknown> = {
+export type ApiComponent<T> = {
   id: string;
-  $src: ApiComponentSource<OpenApiVersion, T2, T3, T3_1>;
+  $src: ApiComponentSource<T>;
+  $ref: Transformed<T> | undefined;
 };
 
-export type ApiServiceComponent = OptionalProperties<
-  ApiComponent<OpenAPIV2.TagObject, OpenAPIV3.TagObject, OpenAPIV3_1.TagObject>,
-  '$src'
->;
+export type ApiMethod = OpenApiHttpMethod;
+export type ApiParameterTarget = KnownOpenApiParameterTarget;
+
+export type ApiServiceComponent = OptionalProperties<ApiComponent<OpenApiTag>, '$src'>;
 export type ApiService = ApiServiceComponent & {
   name: string;
-  description?: string;
+  description: string | undefined;
   endpoints: ApiEndpoint[];
 };
 
-export type ApiPathComponent = ApiComponent<
-  OpenAPIV2.PathItemObject,
-  OpenAPIV3.PathItemObject,
-  OpenAPIV3_1.PathItemObject
->;
+export type ApiPathComponent = ApiComponent<OpenApiPathItem>;
 export type ApiPath = ApiPathComponent & {
-  summary?: string;
-  description?: string;
+  summary: string | undefined;
+  description: string | undefined;
   path: string;
   parameters: ApiParameter[];
-} & { [K in ApiMethod]?: ApiEndpoint };
+} & { [K in ApiMethod]: ApiEndpoint | undefined };
 
-export type ApiEndpointComponent = ApiComponent<
-  OpenAPIV2.OperationObject,
-  OpenAPIV3.OperationObject,
-  OpenAPIV3_1.OperationObject
->;
+export type ApiEndpointComponent = ApiComponent<OpenApiOperation>;
 export type ApiEndpoint = ApiEndpointComponent & {
   name: string;
   path: string;
   pathInfo: ApiPath;
   method: ApiMethod;
-  summary?: string;
-  description?: string;
+  summary: string | undefined;
+  description: string | undefined;
   parameters: ApiParameter[];
   deprecated: boolean;
-  requestBody?: ApiRequestBody;
+  requestBody: ApiRequestBody | undefined;
   responses: ApiResponse[];
   tags: string[];
   custom: Record<string, unknown>;
 };
 
-export type ApiParameterComponent = ApiComponent<
-  OpenAPIV2.ParameterObject,
-  OpenAPIV3.ParameterObject,
-  OpenAPIV3_1.ParameterObject
->;
+export type ApiParameterComponent = ApiComponent<OpenApiParameter>;
 export type ApiParameter = ApiParameterComponent & {
   name: string;
   target: ApiParameterTarget;
-  description?: string;
+  description: string | undefined;
   required: boolean;
   deprecated: boolean;
-  allowEmptyValue?: boolean;
-  style?: string;
-  explode?: boolean;
-  allowReserved?: boolean;
-  schema?: ApiSchema;
+  allowEmptyValue: boolean | undefined;
+  style: string | undefined;
+  explode: boolean | undefined;
+  allowReserved: boolean | undefined;
+  schema: ApiSchema | undefined;
 };
 
-export type ApiRequestBodyComponent = ApiComponent<never, OpenAPIV3.RequestBodyObject, OpenAPIV3_1.RequestBodyObject>;
+export type ApiRequestBodyComponent = ApiComponent<OpenApiRequestBody>;
 export type ApiRequestBody = ApiRequestBodyComponent & {
-  description?: string;
+  description: string | undefined;
   content: ApiContent[];
   required: boolean;
 };
 
-export type ApiContentComponent = ApiComponent<never, OpenAPIV3.MediaTypeObject, OpenAPIV3_1.MediaTypeObject>;
+export type ApiContentComponent = ApiComponent<OpenApiMediaType>;
 export type ApiContent = ApiContentComponent & {
   type: string;
-  schema?: ApiSchema;
+  schema: ApiSchema | undefined;
 };
 
-export type ApiExampleComponent = ApiComponent<
-  OpenAPIV2.ResponseObject,
-  OpenAPIV3.ResponseObject,
-  OpenAPIV3_1.ResponseObject
->;
+export type ApiExampleComponent = ApiComponent<OpenApiResponse>;
 export type ApiResponse = ApiExampleComponent & {
-  statusCode?: number;
-  description?: string;
+  statusCode: number | undefined;
+  description: string | undefined;
   headers: ApiHeader[];
   contentOptions: ApiContent[];
 };
 
-export type ApiHeaderComponent = ApiComponent<OpenAPIV2.HeaderObject, OpenAPIV3.HeaderObject, OpenAPIV3_1.HeaderObject>;
+export type ApiHeaderComponent = Omit<ApiComponent<OpenApiHeader> | ApiComponent<OpenApiSchema>, '$ref'> & {
+  $ref: ApiHeader | undefined;
+};
 export type ApiHeader = ApiHeaderComponent & Omit<ApiParameter, 'target'>;
 
 export type ApiSchemaType = 'string' | 'number' | 'integer' | 'array' | 'boolean' | 'null' | 'object' | string;
@@ -150,20 +141,21 @@ export type ApiSchemaProperty = {
   name: string;
   schema: ApiSchema;
 };
-export type ApiSchemaComponent = ApiComponent<OpenAPIV2.SchemaObject, OpenAPIV3.SchemaObject, OpenAPIV3_1.SchemaObject>;
+export type ApiSchemaComponent = ApiComponent<OpenApiSchema>;
 export type ApiSchemaBase = ApiSchemaComponent & {
   name: string;
   isNameGenerated: boolean;
-  description?: string;
+  description: string | undefined;
   deprecated: boolean;
   accessibility: ApiSchemaAccessibility;
-  enum?: unknown[];
-  const?: unknown;
-  default?: unknown;
-  example?: unknown;
-  nullable?: boolean;
+  enum: unknown[] | undefined;
+  const: unknown | undefined;
+  default: unknown | undefined;
+  example: unknown | undefined;
+  nullable: boolean;
   required: Set<string>;
   custom: Record<string, unknown>;
+  not: ApiSchema | undefined;
 };
 export type ApiSchema<T extends ApiSchemaKind = ApiSchemaKind> = ApiSchemaBase & ApiSchemaExtensions<T>;
 type AdditionalCombinedSchemaProperties = {
@@ -171,25 +163,25 @@ type AdditionalCombinedSchemaProperties = {
   anyOf: ApiSchema[];
 };
 type AdditionalArraySchemaProperties = {
-  items?: ApiSchema;
-  minItems?: number;
-  maxItems?: number;
+  items: ApiSchema | undefined;
+  minItems: number | undefined;
+  maxItems: number | undefined;
 };
 type AdditionalObjectSchemaProperties = {
   properties: Map<string, ApiSchemaProperty>;
-  additionalProperties?: boolean | ApiSchema;
+  additionalProperties: boolean | undefined | ApiSchema;
 } & AdditionalCombinedSchemaProperties;
 type AdditionalNumberSchemaProperties = {
-  minimum?: number;
-  maximum?: number;
+  minimum: number | undefined;
+  maximum: number | undefined;
 };
 type AdditionalStringSchemaProperties = {
-  pattern?: string;
-  minLength?: number;
-  maxLength?: number;
+  pattern: string | undefined;
+  minLength: number | undefined;
+  maxLength: number | undefined;
 };
 type AdditionalPrimitiveSchemaProperties = {
-  format?: string;
+  format: string | undefined;
 };
 export type ApiSchemaExtensions<T extends ApiSchemaKind> = T extends 'oneOf'
   ? { kind: 'oneOf'; oneOf: ApiSchema[] }

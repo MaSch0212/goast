@@ -2,11 +2,11 @@ import { join } from 'path';
 
 import fs from 'fs-extra';
 
-import { OpenApiGenerator, OpenApiVersion } from '@goast/core';
+import { OpenApiGenerator } from '@goast/core';
 import { toCustomCase } from '@goast/core/utils';
-import { openApiV2FilesDir, openApiV3FilesDir, openApiV3_1FilesDir, verify } from '@goast/test/utils';
+import { OpenApiVersion, openApiV2FilesDir, openApiV3FilesDir, openApiV3_1FilesDir, verify } from '@goast/test/utils';
 
-import { TypeScriptModelsGenerator } from '../lib/generators/models-generator.js';
+import { TypeScriptModelsGenerator } from '../lib/generators/models-generator';
 
 const filePaths: { [P in OpenApiVersion]: string } = {
   '2.0': openApiV2FilesDir,

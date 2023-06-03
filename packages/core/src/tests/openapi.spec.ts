@@ -1,10 +1,9 @@
 import { join } from 'path';
 
-import { openApiV2FilesDir, openApiV3FilesDir, openApiV3_1FilesDir, verify } from '@goast/test/utils';
+import { OpenApiVersion, openApiV2FilesDir, openApiV3FilesDir, openApiV3_1FilesDir, verify } from '@goast/test/utils';
 
-import { OpenApiParser } from '../lib/parser.js';
-import { OpenApiVersion } from '../lib/types.js';
-import { toCustomCase } from '../lib/utils/string.utils.js';
+import { OpenApiParser } from '../lib/parse/parser';
+import { toCustomCase } from '../lib/utils/string.utils';
 
 const filePaths: { [P in OpenApiVersion]: string } = {
   '2.0': openApiV2FilesDir,
@@ -23,6 +22,12 @@ for (const [version, path] of Object.entries(filePaths)) {
       test(toCustomCase(fileWithoutExt, { wordCasing: 'all-lower', wordSeparator: ' ' }), async () => {
         const filePath = join(path, file);
         const data = await new OpenApiParser().parseApisAndTransform(filePath);
+
+        // Remove properties that do not need to be verified
+        for (const schema of Object.values(data.schemas)) {
+          delete (schema.$src as any).document;
+        }
+
         await verify(data.schemas);
       });
     }

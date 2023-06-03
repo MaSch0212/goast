@@ -3,9 +3,10 @@
     '$src': {
       file: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml',
       path: '/components/schemas/MyString',
-      component: { type: 'string' },
-      version: '3.0'
+      originalComponent: { type: 'string' },
+      component: { type: 'string' }
     },
+    '$ref': undefined,
     id: 'schema-1',
     name: 'MyString',
     isNameGenerated: false,
@@ -16,9 +17,11 @@
     enum: undefined,
     default: undefined,
     example: undefined,
-    nullable: undefined,
+    nullable: false,
     required: Set(0) {},
     custom: {},
+    not: undefined,
+    const: undefined,
     type: 'string',
     format: undefined,
     pattern: undefined,
@@ -29,9 +32,10 @@
     '$src': {
       file: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml',
       path: '/components/schemas/MyInteger',
-      component: { type: 'integer' },
-      version: '3.0'
+      originalComponent: { type: 'integer' },
+      component: { type: 'integer' }
     },
+    '$ref': undefined,
     id: 'schema-2',
     name: 'MyInteger',
     isNameGenerated: false,
@@ -42,9 +46,11 @@
     enum: undefined,
     default: undefined,
     example: undefined,
-    nullable: undefined,
+    nullable: false,
     required: Set(0) {},
     custom: {},
+    not: undefined,
+    const: undefined,
     type: 'integer',
     format: undefined,
     minimum: undefined,
@@ -54,9 +60,10 @@
     '$src': {
       file: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml',
       path: '/components/schemas/MyNumber',
-      component: { type: 'number' },
-      version: '3.0'
+      originalComponent: { type: 'number' },
+      component: { type: 'number' }
     },
+    '$ref': undefined,
     id: 'schema-3',
     name: 'MyNumber',
     isNameGenerated: false,
@@ -67,9 +74,11 @@
     enum: undefined,
     default: undefined,
     example: undefined,
-    nullable: undefined,
+    nullable: false,
     required: Set(0) {},
     custom: {},
+    not: undefined,
+    const: undefined,
     type: 'number',
     format: undefined,
     minimum: undefined,
@@ -79,9 +88,10 @@
     '$src': {
       file: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml',
       path: '/components/schemas/MyBoolean',
-      component: { type: 'boolean' },
-      version: '3.0'
+      originalComponent: { type: 'boolean' },
+      component: { type: 'boolean' }
     },
+    '$ref': undefined,
     id: 'schema-4',
     name: 'MyBoolean',
     isNameGenerated: false,
@@ -92,9 +102,11 @@
     enum: undefined,
     default: undefined,
     example: undefined,
-    nullable: undefined,
+    nullable: false,
     required: Set(0) {},
     custom: {},
+    not: undefined,
+    const: undefined,
     type: 'boolean',
     format: undefined
   },
@@ -102,9 +114,10 @@
     '$src': {
       file: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml',
       path: '/components/schemas/MyArray',
-      component: { type: 'array' },
-      version: '3.0'
+      originalComponent: { type: 'array' },
+      component: { type: 'array' }
     },
+    '$ref': undefined,
     id: 'schema-5',
     name: 'MyArray',
     isNameGenerated: false,
@@ -115,9 +128,11 @@
     enum: undefined,
     default: undefined,
     example: undefined,
-    nullable: undefined,
+    nullable: false,
     required: Set(0) {},
     custom: {},
+    not: undefined,
+    const: undefined,
     type: 'array',
     items: undefined,
     minItems: undefined,
@@ -127,9 +142,10 @@
     '$src': {
       file: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml',
       path: '/components/schemas/MyObject',
-      component: { type: 'object' },
-      version: '3.0'
+      originalComponent: { type: 'object' },
+      component: { type: 'object' }
     },
+    '$ref': undefined,
     id: 'schema-6',
     name: 'MyObject',
     isNameGenerated: false,
@@ -140,9 +156,11 @@
     enum: undefined,
     default: undefined,
     example: undefined,
-    nullable: undefined,
+    nullable: false,
     required: Set(0) {},
     custom: {},
+    not: undefined,
+    const: undefined,
     type: 'object',
     properties: Map(0) {},
     format: undefined,

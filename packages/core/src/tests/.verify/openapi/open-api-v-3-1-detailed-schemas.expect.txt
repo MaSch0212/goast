@@ -3,9 +3,10 @@
     '$src': {
       file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
       path: '/components/schemas/WithTitle',
-      component: { title: 'My Title', type: 'string' },
-      version: '3.1'
+      originalComponent: { title: 'My Title', type: 'string' },
+      component: { title: 'My Title', type: 'string' }
     },
+    '$ref': undefined,
     id: 'schema-1',
     name: 'My Title',
     isNameGenerated: false,
@@ -19,6 +20,8 @@
     nullable: false,
     required: Set(0) {},
     custom: {},
+    not: undefined,
+    const: undefined,
     type: 'string',
     format: undefined,
     pattern: undefined,
@@ -29,7 +32,7 @@
     '$src': {
       file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
       path: '/components/schemas/WithAllCommon',
-      component: {
+      originalComponent: {
         description: 'My Description',
         type: [ 'string', null ],
         format: 'email',
@@ -40,8 +43,19 @@
         deprecated: true,
         example: '<yours>@example.io'
       },
-      version: '3.1'
+      component: {
+        description: 'My Description',
+        type: [ 'string', null ],
+        format: 'email',
+        default: 'john.doe@example.io',
+        maxLength: 255,
+        minLength: 5,
+        pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$',
+        deprecated: true,
+        example: '<yours>@example.io'
+      }
     },
+    '$ref': undefined,
     id: 'schema-2',
     name: 'WithAllCommon',
     isNameGenerated: false,
@@ -55,6 +69,8 @@
     nullable: true,
     required: Set(0) {},
     custom: {},
+    not: undefined,
+    const: undefined,
     type: 'string',
     format: 'email',
     pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$',
@@ -65,9 +81,10 @@
     '$src': {
       file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
       path: '/components/schemas/MyEnum',
-      component: { type: 'string', enum: [ 'one', 'two', 'three' ] },
-      version: '3.1'
+      originalComponent: { type: 'string', enum: [ 'one', 'two', 'three' ] },
+      component: { type: 'string', enum: [ 'one', 'two', 'three' ] }
     },
+    '$ref': undefined,
     id: 'schema-3',
     name: 'MyEnum',
     isNameGenerated: false,
@@ -81,6 +98,8 @@
     nullable: false,
     required: Set(0) {},
     custom: {},
+    not: undefined,
+    const: undefined,
     type: 'string',
     format: undefined,
     pattern: undefined,
@@ -91,9 +110,10 @@
     '$src': {
       file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
       path: '/components/schemas/WriteOnly',
-      component: { type: 'string', writeOnly: true },
-      version: '3.1'
+      originalComponent: { type: 'string', writeOnly: true },
+      component: { type: 'string', writeOnly: true }
     },
+    '$ref': undefined,
     id: 'schema-4',
     name: 'WriteOnly',
     isNameGenerated: false,
@@ -107,6 +127,8 @@
     nullable: false,
     required: Set(0) {},
     custom: {},
+    not: undefined,
+    const: undefined,
     type: 'string',
     format: undefined,
     pattern: undefined,
@@ -117,9 +139,10 @@
     '$src': {
       file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
       path: '/components/schemas/ReadOnly',
-      component: { type: 'string', readOnly: true },
-      version: '3.1'
+      originalComponent: { type: 'string', readOnly: true },
+      component: { type: 'string', readOnly: true }
     },
+    '$ref': undefined,
     id: 'schema-5',
     name: 'ReadOnly',
     isNameGenerated: false,
@@ -133,6 +156,8 @@
     nullable: false,
     required: Set(0) {},
     custom: {},
+    not: undefined,
+    const: undefined,
     type: 'string',
     format: undefined,
     pattern: undefined,

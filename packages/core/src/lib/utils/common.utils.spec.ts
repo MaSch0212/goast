@@ -1,4 +1,4 @@
-import { isNullish } from './helpers.js';
+import { isNullish } from './common.utils';
 
 describe('isNullish', () => {
   test('returns true for null', () => {
