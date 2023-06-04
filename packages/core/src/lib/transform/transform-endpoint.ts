@@ -87,12 +87,13 @@ function transformApiPath(
   const existing = context.transformed.paths.get(openApiObjectId);
   if (existing) return existing;
 
+  const ref = pathItem.$ref ? transformApiPath(context, path, pathItem.$ref, true) : undefined;
   const apiPath: ApiPath = {
     $src: {
       ...pathItem.$src,
       component: pathItem,
     },
-    $ref: undefined,
+    $ref: ref,
     id: context.idGenerator.generateId('path'),
     summary: pathItem.summary,
     description: pathItem.description,
@@ -111,7 +112,6 @@ function transformApiPath(
   };
 
   context.transformed.paths.set(openApiObjectId, apiPath);
-  if (pathItem.$ref) apiPath.$ref = transformApiPath(context, path, pathItem.$ref, true);
   if (!isReference) context.paths.set(path, apiPath);
   return apiPath;
 }
@@ -121,13 +121,14 @@ function transformParameter(context: OpenApiTransformerContext, parameter: Deref
   const existing = context.transformed.parameters.get(openApiObjectId);
   if (existing) return existing;
 
+  const ref = parameter.$ref ? transformParameter(context, parameter.$ref) : undefined;
   const id = context.idGenerator.generateId('parameter');
   const p: ApiParameter = {
     $src: {
       ...parameter.$src,
       component: parameter,
     },
-    $ref: undefined,
+    $ref: ref,
     id: id,
     name: parameter.name ?? id,
     target: parameter.in as ApiParameterTarget,
@@ -142,7 +143,6 @@ function transformParameter(context: OpenApiTransformerContext, parameter: Deref
   };
 
   context.transformed.parameters.set(openApiObjectId, p);
-  if (parameter.$ref) p.$ref = transformParameter(context, parameter.$ref);
   return p;
 }
 
@@ -154,12 +154,13 @@ function transformRequestBody(
   const existing = context.transformed.requestBodies.get(openApiObjectId);
   if (existing) return existing;
 
+  const ref = requestBody.$ref ? transformRequestBody(context, requestBody.$ref) : undefined;
   const rb: ApiRequestBody = {
     $src: {
       ...requestBody.$src,
       component: requestBody,
     },
-    $ref: undefined,
+    $ref: ref,
     id: context.idGenerator.generateId('requestBody'),
     description: requestBody.description,
     required: requestBody.required ?? false,
@@ -167,7 +168,6 @@ function transformRequestBody(
   };
 
   context.transformed.requestBodies.set(openApiObjectId, rb);
-  if (requestBody.$ref) rb.$ref = transformRequestBody(context, requestBody.$ref);
   return rb;
 }
 
@@ -193,12 +193,13 @@ function transformResponse(
   const existing = context.transformed.responses.get(openApiObjectId);
   if (existing) return existing;
 
+  const ref = response.$ref ? transformResponse(context, response.$ref, status) : undefined;
   const r: ApiResponse = {
     $src: {
       ...response.$src,
       component: response,
     },
-    $ref: undefined,
+    $ref: ref,
     id: context.idGenerator.generateId('response'),
     statusCode: Number(status),
     description: response.description,
@@ -207,7 +208,6 @@ function transformResponse(
   };
 
   context.transformed.responses.set(openApiObjectId, r);
-  if (response.$ref) r.$ref = transformResponse(context, response.$ref, status);
   return r;
 }
 
@@ -233,19 +233,19 @@ function transformMediaType(
   const existing = context.transformed.content.get(openApiObjectId);
   if (existing) return existing;
 
+  const ref = mediaType.$ref ? transformMediaType(context, mediaType.$ref, media) : undefined;
   const mt: ApiContent = {
     $src: {
       ...mediaType.$src,
       component: mediaType,
     },
-    $ref: undefined,
+    $ref: ref,
     id: context.idGenerator.generateId('content'),
     type: media,
     schema: mediaType.schema ? transformSchema(context, mediaType.schema) : undefined,
   };
 
   context.transformed.content.set(openApiObjectId, mt);
-  if (mediaType.$ref) mt.$ref = transformMediaType(context, mediaType.$ref, media);
   return mt;
 }
 
@@ -289,6 +289,8 @@ function transformHeader(
   if (existing) return existing;
 
   let h: ApiHeader;
+  const ref = header.$ref ? transformHeader(context, header.$ref, name) : undefined;
+  const id = context.idGenerator.generateId('header');
   if (isSchema(header)) {
     h = {
       $src: {
@@ -296,8 +298,8 @@ function transformHeader(
         ...(header.$src as any),
         component: header,
       },
-      $ref: undefined,
-      id: context.idGenerator.generateId('header'),
+      $ref: ref as ApiHeader['$ref'],
+      id,
       name,
       description: header.description,
       required: false,
@@ -315,8 +317,8 @@ function transformHeader(
         ...(header.$src as any),
         component: header,
       },
-      $ref: undefined,
-      id: context.idGenerator.generateId('header'),
+      $ref: ref as ApiHeader['$ref'],
+      id,
       name,
       description: header.description,
       required: header.required ?? false,
@@ -330,6 +332,5 @@ function transformHeader(
   }
 
   context.transformed.headers.set(openApiObjectId, h);
-  if (header.$ref) h.$ref = transformHeader(context, header.$ref, name) as ApiHeader['$ref'];
   return h;
 }

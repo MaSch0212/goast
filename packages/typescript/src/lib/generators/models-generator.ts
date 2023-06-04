@@ -9,7 +9,7 @@ import {
   OpenApiGeneratorConfig,
   OpenApiGeneratorContext,
 } from '@goast/core';
-import { getInitializedValue } from '@goast/core/utils';
+import { getInitializedValue, getSchemaReference } from '@goast/core/utils';
 
 import {
   TypeScriptModelsGeneratorConfig,
@@ -43,11 +43,11 @@ export class TypeScriptModelsGenerator
     this._modelGenerator = modelGenerator ?? new DefaultTypeScriptModelGenerator();
   }
 
-  protected get config(): OpenApiGeneratorConfig & TypeScriptModelsGeneratorConfig {
+  public get config(): OpenApiGeneratorConfig & TypeScriptModelsGeneratorConfig {
     return getInitializedValue(this._config);
   }
 
-  protected get data(): ApiData {
+  public get data(): ApiData {
     return getInitializedValue(this._data);
   }
 
@@ -61,9 +61,7 @@ export class TypeScriptModelsGenerator
 
   public async generate(): Promise<TypeScriptModelsGeneratorResult> {
     for (const schema of this.data.schemas) {
-      const modelGenerator = await this.initModelGenerator(schema);
-      const result = await modelGenerator.generate();
-      this.result.models[schema.id] = result;
+      await this.getSchemaResult(schema);
     }
 
     this.result.modelIndexFilePath = await this.generateIndexFile();
@@ -71,22 +69,44 @@ export class TypeScriptModelsGenerator
     return this.result;
   }
 
-  private async initModelGenerator(schema: ApiSchema): Promise<TypeScriptModelGenerator> {
-    const generator = typeof this._modelGenerator === 'function' ? new this._modelGenerator() : this._modelGenerator;
-    await generator.init(this.config, this.data, schema);
-    return generator;
+  public getSchemaResult(schema: ApiSchema): TypeScriptModelGeneratorResult {
+    const existingResult = this.result.models[schema.id];
+    if (existingResult) return existingResult;
+
+    let result: TypeScriptModelGeneratorResult;
+    const reference = this.getSchemaReference(schema);
+    if (reference) {
+      result = this.getSchemaResult(reference);
+    } else {
+      const modelGenerator = this.initModelGenerator(schema);
+      result = modelGenerator.generate();
+    }
+
+    if ((this.config as any)['__test__']) {
+      result = {
+        ...result,
+        __source__: `${schema.$src.file}#${schema.$src.path}`,
+      } as any;
+    }
+    this.result.models[schema.id] = result;
+    return result;
   }
 
-  protected async generateIndexFile(): Promise<string | undefined> {
+  protected getSchemaReference(schema: ApiSchema): ApiSchema | undefined {
+    const ref = getSchemaReference(schema, ['description']);
+    return ref.id !== schema.id ? ref : undefined;
+  }
+
+  protected generateIndexFile(): string | undefined {
     if (!this.shouldGenerateIndexFile()) {
       return undefined;
     }
 
     const filePath = this.getIndexFilePath();
     console.log(`Generating index file to ${filePath}...`);
-    await fs.ensureDir(dirname(filePath));
+    fs.ensureDirSync(dirname(filePath));
 
-    await fs.writeFile(filePath, this.generateIndexFileContent());
+    fs.writeFileSync(filePath, this.generateIndexFileContent());
 
     return filePath;
   }
@@ -113,5 +133,16 @@ export class TypeScriptModelsGenerator
     }
 
     return exports.toString(this.config.newLine);
+  }
+
+  private initModelGenerator(schema: ApiSchema): TypeScriptModelGenerator {
+    const generator = typeof this._modelGenerator === 'function' ? new this._modelGenerator() : this._modelGenerator;
+    generator.init({
+      config: this.config,
+      data: this.data,
+      schema,
+      getSchemaResult: (schema: ApiSchema) => this.getSchemaResult(schema),
+    });
+    return generator;
   }
 }

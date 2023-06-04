@@ -3,14 +3,7 @@ import { dirname, resolve } from 'path';
 import fs from 'fs-extra';
 
 import { ApiSchema, ArrayLikeApiSchema, CombinedLikeApiSchema, ObjectLikeApiSchema, ApiData } from '@goast/core';
-import {
-  SourceBuilder,
-  getInitializedValue,
-  resolveAnyOfAndAllOf,
-  selectFirstReferenceWithImpactfulChanges,
-  toCasing,
-  toPascalCase,
-} from '@goast/core/utils';
+import { SourceBuilder, getInitializedValue, resolveAnyOfAndAllOf, toCasing, toPascalCase } from '@goast/core/utils';
 
 import { TypeScriptModelGeneratorConfig } from './config';
 import { ImportExportCollection } from '../import-collection';
@@ -25,81 +18,73 @@ export interface TypeScriptModelGeneratorType extends Function {
   new (): TypeScriptModelGenerator;
 }
 
+export type TypeScriptModelGeneratorContext = {
+  readonly config: TypeScriptModelGeneratorConfig;
+  readonly data: ApiData;
+  readonly schema: ApiSchema;
+  getSchemaResult(schema: ApiSchema): TypeScriptModelGeneratorResult;
+};
+
 export interface TypeScriptModelGenerator<
   TOutput extends TypeScriptModelGeneratorResult = TypeScriptModelGeneratorResult
 > {
-  init(config: TypeScriptModelGeneratorConfig, data: ApiData, schema: ApiSchema): PromiseLike<void> | void;
-  generate(): PromiseLike<TOutput> | TOutput;
+  init(context: TypeScriptModelGeneratorContext): void;
+  generate(): TOutput;
 }
 
 export class DefaultTypeScriptModelGenerator implements TypeScriptModelGenerator {
-  private _usesReferencedSchema: boolean = false;
-  private _config?: TypeScriptModelGeneratorConfig;
-  private _data?: ApiData;
-  private _schema?: ApiSchema;
+  private _context?: TypeScriptModelGeneratorContext | undefined;
   private _builder?: SourceBuilder;
 
   protected filePath?: string;
   protected imports = new ImportExportCollection();
   protected interfaceSchema?: ApiSchema<'object'>;
 
-  protected get config(): TypeScriptModelGeneratorConfig {
-    return getInitializedValue(this._config);
-  }
-
-  protected get data(): ApiData {
-    return getInitializedValue(this._data);
-  }
-
-  protected get schema(): ApiSchema {
-    return getInitializedValue(this._schema);
+  protected get context(): TypeScriptModelGeneratorContext {
+    return getInitializedValue(this._context);
   }
 
   protected get builder(): SourceBuilder {
     return getInitializedValue(this._builder);
   }
 
-  public init(config: TypeScriptModelGeneratorConfig, data: ApiData, schema: ApiSchema): void {
-    const actualSchema = selectFirstReferenceWithImpactfulChanges(schema);
-    this._usesReferencedSchema = actualSchema !== schema;
-    this._config = config;
-    this._data = data;
-    this._schema = actualSchema;
-    this._builder = new SourceBuilder(config);
+  public init(context: TypeScriptModelGeneratorContext): void {
+    this._context = context;
+    this._builder = new SourceBuilder(context.config);
 
     this.filePath = undefined;
     this.imports.clear();
     this.interfaceSchema = this.resolveInterfaceSchema();
   }
 
-  public async generate(): Promise<TypeScriptModelGeneratorResult> {
-    if (this.shouldGenerateTypeDeclaration(this.schema)) {
-      const typeName = this.getDeclarationTypeName(this.schema);
-      const filePath = this.getFilePath(this.schema);
+  public generate(): TypeScriptModelGeneratorResult {
+    if (this.shouldGenerateTypeDeclaration(this.context.schema)) {
+      const typeName = this.getDeclarationTypeName(this.context.schema);
+      const filePath = this.getFilePath(this.context.schema);
       console.log(`Generating model ${typeName} to ${filePath}...`);
-      await fs.ensureDir(dirname(filePath));
+      fs.ensureDirSync(dirname(filePath));
 
       this.filePath = filePath;
       this.generateFileContent();
 
-      await fs.writeFile(filePath, this.builder.toString());
+      fs.writeFileSync(filePath, this.builder.toString());
 
       return {
         typeName,
         filePath: filePath,
       };
     } else {
-      this.generateModel(this.schema, this.builder);
+      this.generateModel(this.context.schema, this.builder);
       return { typeName: this.builder.toString(), filePath: undefined };
     }
   }
 
   protected resolveInterfaceSchema(): ApiSchema<'object'> | undefined {
     if (
-      this.config.typeDeclaration === 'prefer-interface' &&
-      (this.schema.kind === 'object' || this.schema.kind === 'combined')
+      this.context.config.typeDeclaration === 'prefer-interface' &&
+      (this.context.schema.kind === 'object' || this.context.schema.kind === 'combined')
     ) {
-      const resolvedSchema = resolveAnyOfAndAllOf(this.schema, true);
+      const resolvedSchema = resolveAnyOfAndAllOf(this.context.schema, true);
       if (resolvedSchema) {
         resolvedSchema.additionalProperties = undefined;
         return resolvedSchema;
@@ -109,10 +94,6 @@ export class DefaultTypeScriptModelGenerator implements TypeScriptModelGenerator
   }
 
   protected shouldGenerateTypeDeclaration(schema: ApiSchema): boolean {
-    if (this._usesReferencedSchema) {
-      return false;
-    }
-
     // All named schemas should have its own type declaration
     if (!schema.isNameGenerated) {
       return true;
@@ -135,42 +116,39 @@ export class DefaultTypeScriptModelGenerator implements TypeScriptModelGenerator
     }
 
     // For all other types, check if the user has enabled inline unnamed schemas
-    return !this.config.inlineUnnamedSchemas;
+    return !this.context.config.inlineUnnamedSchemas;
   }
 
   protected getTypeName(schema: ApiSchema): string {
-    if (!this.shouldGenerateTypeDeclaration(schema)) {
-      return SourceBuilder.build((builder) => this.generateModel(schema, builder), this.config);
+    const modelResult = this.context.getSchemaResult(schema);
+    if (modelResult.filePath && this.filePath) {
+      this.imports.addImport(
+        modelResult.typeName,
+        getModulePathRelativeToFile(this.filePath, modelResult.filePath, this.context.config.importModuleTransformer)
+      );
     }
-
-    const typeName = this.getDeclarationTypeName(schema);
-    const modulePath = this.filePath
-      ? getModulePathRelativeToFile(this.filePath, this.getFilePath(schema), this.config.importModuleTransformer)
-      : '';
-
-    this.imports.addImport(typeName, modulePath);
-    return typeName;
+    return modelResult.typeName;
   }
 
   protected getDeclarationTypeName(schema: ApiSchema): string {
-    return toCasing(schema.name, this.config.typeNameCasing);
+    return toCasing(schema.name, this.context.config.typeNameCasing);
   }
 
   protected getFilePath(schema: ApiSchema): string {
     return resolve(
-      this.config.outputDir,
-      this.config.modelsDirPath,
-      `${toCasing(schema.name, this.config.fileNameCasing)}.ts`
+      this.context.config.outputDir,
+      this.context.config.modelsDirPath,
+      `${toCasing(schema.name, this.context.config.fileNameCasing)}.ts`
     );
   }
 
   protected getAnyType(): string {
-    return this.config.preferUnknown ? 'unknown' : 'any';
+    return this.context.config.preferUnknown ? 'unknown' : 'any';
   }
 
   protected generateFileContent(): void {
     this.generateModelTypePrefix();
-    this.generateModel(this.interfaceSchema ?? this.schema, this.builder);
+    this.generateModel(this.interfaceSchema ?? this.context.schema, this.builder);
     this.generateModelTypeSuffix();
 
     if (this.imports.hasImports) {
@@ -181,18 +159,18 @@ export class DefaultTypeScriptModelGenerator implements TypeScriptModelGenerator
   }
 
   protected generateModelTypePrefix() {
-    this.generateDocumentation(this.schema, this.builder);
+    this.generateDocumentation(this.context.schema, this.builder);
     if (this.interfaceSchema) {
-      this.builder.append('export interface ').append(this.getDeclarationTypeName(this.schema)).append(' ');
+      this.builder.append('export interface ').append(this.getDeclarationTypeName(this.context.schema)).append(' ');
     } else if (
-      this.config.enumGeneration !== 'union' &&
-      this.schema.kind === 'string' &&
-      this.schema.enum !== undefined &&
-      this.schema.enum.length > 0
+      this.context.config.enumGeneration !== 'union' &&
+      this.context.schema.kind === 'string' &&
+      this.context.schema.enum !== undefined &&
+      this.context.schema.enum.length > 0
     ) {
-      this.builder.append('export enum ').append(this.getDeclarationTypeName(this.schema)).append(' ');
+      this.builder.append('export enum ').append(this.getDeclarationTypeName(this.context.schema)).append(' ');
     } else {
-      this.builder.append('export type ').append(this.getDeclarationTypeName(this.schema)).append(' = ');
+      this.builder.append('export type ').append(this.getDeclarationTypeName(this.context.schema)).append(' = ');
     }
   }
 
@@ -247,7 +225,7 @@ export class DefaultTypeScriptModelGenerator implements TypeScriptModelGenerator
 
   protected generateArrayModel(schema: ArrayLikeApiSchema, builder: SourceBuilder): void {
     builder
-      .append(this.config.immutableTypes ? 'ReadonlyArray' : 'Array')
+      .append(this.context.config.immutableTypes ? 'ReadonlyArray' : 'Array')
       .parenthesize('<>', (builder) =>
         builder.append(schema.items ? this.getTypeName(schema.items) : this.getAnyType())
       );
@@ -339,8 +317,8 @@ export class DefaultTypeScriptModelGenerator implements TypeScriptModelGenerator
           builder.appendLine().forEach(schema.properties.values(), (builder, property) => {
             this.generateDocumentation(property.schema, builder);
             builder
-              .appendIf(this.config.immutableTypes, 'readonly ')
-              .append(toTypeScriptPropertyName(property.name, this.config.useSingleQuotes))
+              .appendIf(this.context.config.immutableTypes, 'readonly ')
+              .append(toTypeScriptPropertyName(property.name, this.context.config.useSingleQuotes))
               .appendIf(!schema.required.has(property.name), '?')
               .append(': ')
               .append(this.getTypeName(property.schema))
@@ -354,11 +332,11 @@ export class DefaultTypeScriptModelGenerator implements TypeScriptModelGenerator
     // additional properties
     if (schema.additionalProperties) {
       builder
-        .appendIf(this.config.immutableTypes, 'Readonly<')
+        .appendIf(this.context.config.immutableTypes, 'Readonly<')
         .append('Record<string, ')
         .append(schema.additionalProperties === true ? 'unknown' : this.getTypeName(schema.additionalProperties))
         .append('>')
-        .appendIf(this.config.immutableTypes, '>');
+        .appendIf(this.context.config.immutableTypes, '>');
 
       if (schema.allOf.length > 0 || schema.anyOf.length > 0) {
         builder.append(' & ');
@@ -389,10 +367,10 @@ export class DefaultTypeScriptModelGenerator implements TypeScriptModelGenerator
 
   protected generateEnumModel(schema: ApiSchema<'string'>, builder: SourceBuilder): void {
     const stringEnum = (schema.enum?.filter((item) => typeof item === 'string') ?? []) as string[];
-    if (this.config.enumGeneration === 'union') {
+    if (this.context.config.enumGeneration === 'union') {
       builder.indent((builder) => {
         builder.forEachSeparated(stringEnum, ' | ', (builder, item) =>
-          builder.append(toTypeScriptStringLiteral(item, this.config.useSingleQuotes))
+          builder.append(toTypeScriptStringLiteral(item, this.context.config.useSingleQuotes))
         );
       });
     } else {
@@ -401,7 +379,7 @@ export class DefaultTypeScriptModelGenerator implements TypeScriptModelGenerator
           .appendLine()
           .forEach(stringEnum, (builder, item) =>
             builder.appendLine(
-              `${toPascalCase(item)} = ${toTypeScriptStringLiteral(item, this.config.useSingleQuotes)},`
+              `${toPascalCase(item)} = ${toTypeScriptStringLiteral(item, this.context.config.useSingleQuotes)},`
             )
           )
       );

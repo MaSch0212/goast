@@ -14,13 +14,14 @@ function transformTag(context: OpenApiTransformerContext, tag: Deref<OpenApiTag>
   const existing = context.transformed.services.get(openApiObjectId);
   if (existing) return existing;
 
+  const ref = tag.$ref ? transformTag(context, tag.$ref, true) : undefined;
   const id = context.idGenerator.generateId('service');
   const service: ApiService = {
     $src: {
       ...tag.$src,
       component: tag,
     },
-    $ref: undefined,
+    $ref: ref,
     id,
     name: tag.name ?? id,
     description: tag.description,
@@ -28,7 +29,6 @@ function transformTag(context: OpenApiTransformerContext, tag: Deref<OpenApiTag>
   };
 
   context.transformed.services.set(openApiObjectId, service);
-  if (tag.$ref) service.$ref = transformTag(context, tag.$ref, true);
   if (!isReference) context.services.set(service.name, service);
   return service;
 }

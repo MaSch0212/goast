@@ -1,438 +1,448 @@
 [
   {
+    '$ref': undefined,
     '$src': {
+      component: { oneOf: [] },
       file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
-      path: '/components/schemas/EmptyOneOf',
       originalComponent: { oneOf: [] },
-      component: { oneOf: [] }
+      path: '/components/schemas/EmptyOneOf'
     },
-    '$ref': undefined,
+    accessibility: 'all',
+    const: undefined,
+    custom: {},
+    default: undefined,
+    deprecated: false,
+    description: undefined,
+    enum: undefined,
+    example: undefined,
     id: 'schema-1',
+    isNameGenerated: false,
+    kind: 'oneOf',
     name: 'EmptyOneOf',
-    isNameGenerated: false,
-    description: undefined,
-    deprecated: false,
-    accessibility: 'all',
-    kind: 'oneOf',
-    enum: undefined,
-    default: undefined,
-    example: undefined,
-    nullable: false,
-    required: Set(0) {},
-    custom: {},
     not: undefined,
-    const: undefined,
-    oneOf: []
+    nullable: false,
+    oneOf: [],
+    required: Set(0) {}
   },
   {
+    '$ref': undefined,
     '$src': {
+      component: { type: 'string' },
       file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
-      path: '/components/schemas/OneOfSimpleTypes/oneOf/0',
       originalComponent: { type: 'string' },
-      component: { type: 'string' }
+      path: '/components/schemas/OneOfSimpleTypes/oneOf/0'
     },
-    '$ref': undefined,
+    accessibility: 'all',
+    const: undefined,
+    custom: {},
+    default: undefined,
+    deprecated: false,
+    description: undefined,
+    enum: undefined,
+    example: undefined,
+    format: undefined,
     id: 'schema-3',
-    name: 'schema-3',
     isNameGenerated: true,
-    description: undefined,
-    deprecated: false,
-    accessibility: 'all',
     kind: 'string',
-    enum: undefined,
-    default: undefined,
-    example: undefined,
-    nullable: false,
-    required: Set(0) {},
-    custom: {},
-    not: undefined,
-    const: undefined,
-    type: 'string',
-    format: undefined,
-    pattern: undefined,
+    maxLength: undefined,
     minLength: undefined,
-    maxLength: undefined
+    name: 'schema-3',
+    not: undefined,
+    nullable: false,
+    pattern: undefined,
+    required: Set(0) {},
+    type: 'string'
   },
   {
+    '$ref': undefined,
     '$src': {
+      component: { type: 'integer' },
       file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
-      path: '/components/schemas/OneOfSimpleTypes/oneOf/1',
       originalComponent: { type: 'integer' },
-      component: { type: 'integer' }
+      path: '/components/schemas/OneOfSimpleTypes/oneOf/1'
     },
-    '$ref': undefined,
-    id: 'schema-4',
-    name: 'schema-4',
-    isNameGenerated: true,
-    description: undefined,
-    deprecated: false,
     accessibility: 'all',
-    kind: 'integer',
-    enum: undefined,
+    const: undefined,
+    custom: {},
     default: undefined,
+    deprecated: false,
+    description: undefined,
+    enum: undefined,
     example: undefined,
+    format: undefined,
+    id: 'schema-4',
+    isNameGenerated: true,
+    kind: 'integer',
+    maximum: undefined,
+    minimum: undefined,
+    name: 'schema-4',
+    not: undefined,
     nullable: false,
     required: Set(0) {},
-    custom: {},
-    not: undefined,
-    const: undefined,
-    type: 'integer',
-    format: undefined,
-    minimum: undefined,
-    maximum: undefined
+    type: 'integer'
   },
   {
-    '$src': {
-      file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
-      path: '/components/schemas/OneOfSimpleTypes',
-      originalComponent: { oneOf: [ { type: 'string' }, { type: 'integer' } ] },
-      component: { oneOf: [ { type: 'string' }, { type: 'integer' } ] }
-    },
     '$ref': undefined,
-    id: 'schema-2',
-    name: 'OneOfSimpleTypes',
-    isNameGenerated: false,
-    description: undefined,
-    deprecated: false,
+    '$src': {
+      component: { oneOf: [ { type: 'string' }, { type: 'integer' } ] },
+      file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
+      originalComponent: { oneOf: [ { type: 'string' }, { type: 'integer' } ] },
+      path: '/components/schemas/OneOfSimpleTypes'
+    },
     accessibility: 'all',
-    kind: 'oneOf',
-    enum: undefined,
-    default: undefined,
-    example: undefined,
-    nullable: false,
-    required: Set(0) {},
-    custom: {},
-    not: undefined,
     const: undefined,
+    custom: {},
+    default: undefined,
+    deprecated: false,
+    description: undefined,
+    enum: undefined,
+    example: undefined,
+    id: 'schema-2',
+    isNameGenerated: false,
+    kind: 'oneOf',
+    name: 'OneOfSimpleTypes',
+    not: undefined,
+    nullable: false,
     oneOf: [
       {
-        '$src': {
-          file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
-          path: '/components/schemas/OneOfSimpleTypes/oneOf/0',
-          originalComponent: { type: 'string' },
-          component: { type: 'string' }
-        },
         '$ref': undefined,
-        id: 'schema-3',
-        name: 'schema-3',
-        isNameGenerated: true,
-        description: undefined,
-        deprecated: false,
+        '$src': {
+          component: { type: 'string' },
+          file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
+          originalComponent: { type: 'string' },
+          path: '/components/schemas/OneOfSimpleTypes/oneOf/0'
+        },
         accessibility: 'all',
-        kind: 'string',
-        enum: undefined,
-        default: undefined,
-        example: undefined,
-        nullable: false,
-        required: Set(0) {},
-        custom: {},
-        not: undefined,
         const: undefined,
-        type: 'string',
+        custom: {},
+        default: undefined,
+        deprecated: false,
+        description: undefined,
+        enum: undefined,
+        example: undefined,
         format: undefined,
-        pattern: undefined,
+        id: 'schema-3',
+        isNameGenerated: true,
+        kind: 'string',
+        maxLength: undefined,
         minLength: undefined,
-        maxLength: undefined
+        name: 'schema-3',
+        not: undefined,
+        nullable: false,
+        pattern: undefined,
+        required: Set(0) {},
+        type: 'string'
       },
       {
-        '$src': {
-          file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
-          path: '/components/schemas/OneOfSimpleTypes/oneOf/1',
-          originalComponent: { type: 'integer' },
-          component: { type: 'integer' }
-        },
         '$ref': undefined,
-        id: 'schema-4',
-        name: 'schema-4',
-        isNameGenerated: true,
-        description: undefined,
-        deprecated: false,
+        '$src': {
+          component: { type: 'integer' },
+          file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
+          originalComponent: { type: 'integer' },
+          path: '/components/schemas/OneOfSimpleTypes/oneOf/1'
+        },
         accessibility: 'all',
-        kind: 'integer',
-        enum: undefined,
+        const: undefined,
+        custom: {},
         default: undefined,
+        deprecated: false,
+        description: undefined,
+        enum: undefined,
         example: undefined,
+        format: undefined,
+        id: 'schema-4',
+        isNameGenerated: true,
+        kind: 'integer',
+        maximum: undefined,
+        minimum: undefined,
+        name: 'schema-4',
+        not: undefined,
         nullable: false,
         required: Set(0) {},
-        custom: {},
-        not: undefined,
-        const: undefined,
-        type: 'integer',
-        format: undefined,
-        minimum: undefined,
-        maximum: undefined
+        type: 'integer'
       }
-    ]
+    ],
+    required: Set(0) {}
   },
   {
-    '$src': {
-      file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
-      path: '/components/schemas/IgnoreType',
-      originalComponent: { type: 'string', oneOf: [] },
-      component: { type: 'string', oneOf: [] }
-    },
     '$ref': undefined,
+    '$src': {
+      component: { oneOf: [], type: 'string' },
+      file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
+      originalComponent: { oneOf: [], type: 'string' },
+      path: '/components/schemas/IgnoreType'
+    },
+    accessibility: 'all',
+    const: undefined,
+    custom: {},
+    default: undefined,
+    deprecated: false,
+    description: undefined,
+    enum: undefined,
+    example: undefined,
     id: 'schema-5',
-    name: 'IgnoreType',
     isNameGenerated: false,
-    description: undefined,
-    deprecated: false,
-    accessibility: 'all',
     kind: 'oneOf',
-    enum: undefined,
-    default: undefined,
-    example: undefined,
-    nullable: false,
-    required: Set(0) {},
-    custom: {},
+    name: 'IgnoreType',
     not: undefined,
-    const: undefined,
-    oneOf: []
+    nullable: false,
+    oneOf: [],
+    required: Set(0) {}
   },
   {
-    '$src': {
-      file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
-      path: '/components/schemas/WithReferences/oneOf/0',
-      originalComponent: { '$ref': '#/components/schemas/EmptyOneOf' },
-      component: { '$ref': '#/components/schemas/EmptyOneOf' }
-    },
     '$ref': {
-      '$src': {
-        file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
-        path: '/components/schemas/EmptyOneOf',
-        originalComponent: { oneOf: [] },
-        component: { oneOf: [] }
-      },
       '$ref': undefined,
-      id: 'schema-1',
-      name: 'EmptyOneOf',
-      isNameGenerated: false,
-      description: undefined,
-      deprecated: false,
+      '$src': {
+        component: { oneOf: [] },
+        file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
+        originalComponent: { oneOf: [] },
+        path: '/components/schemas/EmptyOneOf'
+      },
       accessibility: 'all',
-      kind: 'oneOf',
-      enum: undefined,
-      default: undefined,
-      example: undefined,
-      nullable: false,
-      required: Set(0) {},
-      custom: {},
-      not: undefined,
       const: undefined,
-      oneOf: []
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      enum: undefined,
+      example: undefined,
+      id: 'schema-1',
+      isNameGenerated: false,
+      kind: 'oneOf',
+      name: 'EmptyOneOf',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      required: Set(0) {}
     },
-    id: 'schema-7',
-    name: 'schema-7',
-    isNameGenerated: true,
-    description: undefined,
-    deprecated: false,
+    '$src': {
+      component: { '$ref': '#/components/schemas/EmptyOneOf' },
+      file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
+      originalComponent: { '$ref': '#/components/schemas/EmptyOneOf' },
+      path: '/components/schemas/WithReferences/oneOf/0'
+    },
     accessibility: 'all',
-    kind: 'oneOf',
-    enum: undefined,
-    default: undefined,
-    example: undefined,
-    nullable: false,
-    required: Set(0) {},
-    custom: {},
-    not: undefined,
     const: undefined,
-    oneOf: []
+    custom: {},
+    default: undefined,
+    deprecated: false,
+    description: undefined,
+    enum: undefined,
+    example: undefined,
+    id: 'schema-7',
+    isNameGenerated: true,
+    kind: 'oneOf',
+    name: 'schema-7',
+    not: undefined,
+    nullable: false,
+    oneOf: [],
+    required: Set(0) {}
   },
   {
-    '$src': {
-      file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
-      path: '/components/schemas/WithReferences/oneOf/1',
-      originalComponent: { '$ref': 'detailed-schemas.yml#/components/schemas/WithTitle' },
-      component: { '$ref': 'detailed-schemas.yml#/components/schemas/WithTitle' }
-    },
     '$ref': {
+      '$ref': undefined,
       '$src': {
-        file: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml',
-        path: '/components/schemas/WithTitle',
+        component: { title: 'My Title', type: 'string' },
         document: {
-          openapi: '3.0.0',
-          info: { version: '1.0.0', title: 'Detailed Schemas' },
-          paths: {
-            '/x': {
-              get: { responses: { '200': { description: '' } } }
-            }
-          },
           components: {
             schemas: {
-              WithTitle: { title: 'My Title', type: 'string' },
+              MyEnum: { enum: [ 'one', 'two', 'three' ], type: 'string' },
+              ReadOnly: { readOnly: true, type: 'string' },
               WithAllCommon: {
-                description: 'My Description',
-                type: 'string',
-                format: 'email',
                 default: 'john.doe@example.io',
+                deprecated: true,
+                description: 'My Description',
+                example: '<yours>@example.io',
+                format: 'email',
                 maxLength: 255,
                 minLength: 5,
-                pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$',
                 nullable: true,
-                deprecated: true,
-                example: '<yours>@example.io'
+                pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$',
+                type: 'string'
               },
-              MyEnum: { type: 'string', enum: [ 'one', 'two', 'three' ] },
-              WriteOnly: { type: 'string', writeOnly: true },
-              ReadOnly: { type: 'string', readOnly: true }
+              WithTitle: { title: 'My Title', type: 'string' },
+              WriteOnly: { type: 'string', writeOnly: true }
             }
-          }
-        },
-        originalComponent: { title: 'My Title', type: 'string' },
-        component: { title: 'My Title', type: 'string' }
-      },
-      '$ref': undefined,
-      id: 'schema-9',
-      name: 'My Title',
-      isNameGenerated: false,
-      description: undefined,
-      deprecated: false,
-      accessibility: 'all',
-      kind: 'string',
-      enum: undefined,
-      default: undefined,
-      example: undefined,
-      nullable: false,
-      required: Set(0) {},
-      custom: {},
-      not: undefined,
-      const: undefined,
-      type: 'string',
-      format: undefined,
-      pattern: undefined,
-      minLength: undefined,
-      maxLength: undefined
-    },
-    id: 'schema-8',
-    name: 'schema-8',
-    isNameGenerated: true,
-    description: undefined,
-    deprecated: false,
-    accessibility: 'all',
-    kind: 'string',
-    enum: undefined,
-    default: undefined,
-    example: undefined,
-    nullable: false,
-    required: Set(0) {},
-    custom: {},
-    not: undefined,
-    const: undefined,
-    type: 'string',
-    format: undefined,
-    pattern: undefined,
-    minLength: undefined,
-    maxLength: undefined
-  },
-  {
-    '$src': {
-      file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
-      path: '/components/schemas/WithReferences/oneOf/2',
-      originalComponent: { '$ref': 'simple-schemas.yml#/components/schemas/MyString' },
-      component: { '$ref': 'simple-schemas.yml#/components/schemas/MyString' }
-    },
-    '$ref': {
-      '$src': {
-        file: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml',
-        path: '/components/schemas/MyString',
-        document: {
+          },
+          info: { title: 'Detailed Schemas', version: '1.0.0' },
           openapi: '3.0.0',
-          info: { version: '1.0.0', title: 'Simple Schemas' },
           paths: {
             '/x': {
               get: { responses: { '200': { description: '' } } }
             }
-          },
+          }
+        },
+        file: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml',
+        originalComponent: { title: 'My Title', type: 'string' },
+        path: '/components/schemas/WithTitle'
+      },
+      accessibility: 'all',
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-8',
+      isNameGenerated: false,
+      kind: 'string',
+      maxLength: undefined,
+      minLength: undefined,
+      name: 'My Title',
+      not: undefined,
+      nullable: false,
+      pattern: undefined,
+      required: Set(0) {},
+      type: 'string'
+    },
+    '$src': {
+      component: { '$ref': 'detailed-schemas.yml#/components/schemas/WithTitle' },
+      file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
+      originalComponent: { '$ref': 'detailed-schemas.yml#/components/schemas/WithTitle' },
+      path: '/components/schemas/WithReferences/oneOf/1'
+    },
+    accessibility: 'all',
+    const: undefined,
+    custom: {},
+    default: undefined,
+    deprecated: false,
+    description: undefined,
+    enum: undefined,
+    example: undefined,
+    format: undefined,
+    id: 'schema-9',
+    isNameGenerated: true,
+    kind: 'string',
+    maxLength: undefined,
+    minLength: undefined,
+    name: 'schema-9',
+    not: undefined,
+    nullable: false,
+    pattern: undefined,
+    required: Set(0) {},
+    type: 'string'
+  },
+  {
+    '$ref': {
+      '$ref': undefined,
+      '$src': {
+        component: { type: 'string' },
+        document: {
           components: {
             schemas: {
-              MyString: { type: 'string' },
+              MyArray: { type: 'array' },
+              MyBoolean: { type: 'boolean' },
               MyInteger: { type: 'integer' },
               MyNumber: { type: 'number' },
-              MyBoolean: { type: 'boolean' },
-              MyArray: { type: 'array' },
-              MyObject: { type: 'object' }
+              MyObject: { type: 'object' },
+              MyString: { type: 'string' }
+            }
+          },
+          info: { title: 'Simple Schemas', version: '1.0.0' },
+          openapi: '3.0.0',
+          paths: {
+            '/x': {
+              get: { responses: { '200': { description: '' } } }
             }
           }
         },
+        file: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml',
         originalComponent: { type: 'string' },
-        component: { type: 'string' }
+        path: '/components/schemas/MyString'
       },
-      '$ref': undefined,
-      id: 'schema-11',
-      name: 'MyString',
-      isNameGenerated: false,
-      description: undefined,
-      deprecated: false,
       accessibility: 'all',
-      kind: 'string',
-      enum: undefined,
-      default: undefined,
-      example: undefined,
-      nullable: false,
-      required: Set(0) {},
-      custom: {},
-      not: undefined,
       const: undefined,
-      type: 'string',
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      enum: undefined,
+      example: undefined,
       format: undefined,
-      pattern: undefined,
+      id: 'schema-10',
+      isNameGenerated: false,
+      kind: 'string',
+      maxLength: undefined,
       minLength: undefined,
-      maxLength: undefined
+      name: 'MyString',
+      not: undefined,
+      nullable: false,
+      pattern: undefined,
+      required: Set(0) {},
+      type: 'string'
     },
-    id: 'schema-10',
-    name: 'schema-10',
-    isNameGenerated: true,
-    description: undefined,
-    deprecated: false,
+    '$src': {
+      component: { '$ref': 'simple-schemas.yml#/components/schemas/MyString' },
+      file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
+      originalComponent: { '$ref': 'simple-schemas.yml#/components/schemas/MyString' },
+      path: '/components/schemas/WithReferences/oneOf/2'
+    },
     accessibility: 'all',
-    kind: 'string',
-    enum: undefined,
-    default: undefined,
-    example: undefined,
-    nullable: false,
-    required: Set(0) {},
-    custom: {},
-    not: undefined,
     const: undefined,
-    type: 'string',
+    custom: {},
+    default: undefined,
+    deprecated: false,
+    description: undefined,
+    enum: undefined,
+    example: undefined,
     format: undefined,
-    pattern: undefined,
+    id: 'schema-11',
+    isNameGenerated: true,
+    kind: 'string',
+    maxLength: undefined,
     minLength: undefined,
-    maxLength: undefined
+    name: 'schema-11',
+    not: undefined,
+    nullable: false,
+    pattern: undefined,
+    required: Set(0) {},
+    type: 'string'
   },
   {
-    '$src': {
-      file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
-      path: '/components/schemas/WithReferences/oneOf/3',
-      originalComponent: { type: 'string' },
-      component: { type: 'string' }
-    },
     '$ref': undefined,
-    id: 'schema-12',
-    name: 'schema-12',
-    isNameGenerated: true,
-    description: undefined,
-    deprecated: false,
+    '$src': {
+      component: { type: 'string' },
+      file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
+      originalComponent: { type: 'string' },
+      path: '/components/schemas/WithReferences/oneOf/3'
+    },
     accessibility: 'all',
-    kind: 'string',
-    enum: undefined,
-    default: undefined,
-    example: undefined,
-    nullable: false,
-    required: Set(0) {},
-    custom: {},
-    not: undefined,
     const: undefined,
-    type: 'string',
+    custom: {},
+    default: undefined,
+    deprecated: false,
+    description: undefined,
+    enum: undefined,
+    example: undefined,
     format: undefined,
-    pattern: undefined,
+    id: 'schema-12',
+    isNameGenerated: true,
+    kind: 'string',
+    maxLength: undefined,
     minLength: undefined,
-    maxLength: undefined
+    name: 'schema-12',
+    not: undefined,
+    nullable: false,
+    pattern: undefined,
+    required: Set(0) {},
+    type: 'string'
   },
   {
+    '$ref': undefined,
     '$src': {
+      component: {
+        oneOf: [
+          { '$ref': '#/components/schemas/EmptyOneOf' },
+          {
+            '$ref': 'detailed-schemas.yml#/components/schemas/WithTitle'
+          },
+          { '$ref': 'simple-schemas.yml#/components/schemas/MyString' },
+          { type: 'string' }
+        ]
+      },
       file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
-      path: '/components/schemas/WithReferences',
       originalComponent: {
         oneOf: [
           { '$ref': '#/components/schemas/EmptyOneOf' },
@@ -443,278 +453,268 @@
           { type: 'string' }
         ]
       },
-      component: {
-        oneOf: [
-          { '$ref': '#/components/schemas/EmptyOneOf' },
-          {
-            '$ref': 'detailed-schemas.yml#/components/schemas/WithTitle'
-          },
-          { '$ref': 'simple-schemas.yml#/components/schemas/MyString' },
-          { type: 'string' }
-        ]
-      }
+      path: '/components/schemas/WithReferences'
     },
-    '$ref': undefined,
-    id: 'schema-6',
-    name: 'WithReferences',
-    isNameGenerated: false,
-    description: undefined,
-    deprecated: false,
     accessibility: 'all',
-    kind: 'oneOf',
-    enum: undefined,
-    default: undefined,
-    example: undefined,
-    nullable: false,
-    required: Set(0) {},
-    custom: {},
-    not: undefined,
     const: undefined,
+    custom: {},
+    default: undefined,
+    deprecated: false,
+    description: undefined,
+    enum: undefined,
+    example: undefined,
+    id: 'schema-6',
+    isNameGenerated: false,
+    kind: 'oneOf',
+    name: 'WithReferences',
+    not: undefined,
+    nullable: false,
     oneOf: [
       {
-        '$src': {
-          file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
-          path: '/components/schemas/WithReferences/oneOf/0',
-          originalComponent: { '$ref': '#/components/schemas/EmptyOneOf' },
-          component: { '$ref': '#/components/schemas/EmptyOneOf' }
-        },
         '$ref': {
-          '$src': {
-            file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
-            path: '/components/schemas/EmptyOneOf',
-            originalComponent: { oneOf: [] },
-            component: { oneOf: [] }
-          },
           '$ref': undefined,
-          id: 'schema-1',
-          name: 'EmptyOneOf',
-          isNameGenerated: false,
-          description: undefined,
-          deprecated: false,
+          '$src': {
+            component: { oneOf: [] },
+            file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
+            originalComponent: { oneOf: [] },
+            path: '/components/schemas/EmptyOneOf'
+          },
           accessibility: 'all',
-          kind: 'oneOf',
-          enum: undefined,
-          default: undefined,
-          example: undefined,
-          nullable: false,
-          required: Set(0) {},
-          custom: {},
-          not: undefined,
           const: undefined,
-          oneOf: []
+          custom: {},
+          default: undefined,
+          deprecated: false,
+          description: undefined,
+          enum: undefined,
+          example: undefined,
+          id: 'schema-1',
+          isNameGenerated: false,
+          kind: 'oneOf',
+          name: 'EmptyOneOf',
+          not: undefined,
+          nullable: false,
+          oneOf: [],
+          required: Set(0) {}
         },
-        id: 'schema-7',
-        name: 'schema-7',
-        isNameGenerated: true,
-        description: undefined,
-        deprecated: false,
+        '$src': {
+          component: { '$ref': '#/components/schemas/EmptyOneOf' },
+          file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
+          originalComponent: { '$ref': '#/components/schemas/EmptyOneOf' },
+          path: '/components/schemas/WithReferences/oneOf/0'
+        },
         accessibility: 'all',
-        kind: 'oneOf',
-        enum: undefined,
-        default: undefined,
-        example: undefined,
-        nullable: false,
-        required: Set(0) {},
-        custom: {},
-        not: undefined,
         const: undefined,
-        oneOf: []
+        custom: {},
+        default: undefined,
+        deprecated: false,
+        description: undefined,
+        enum: undefined,
+        example: undefined,
+        id: 'schema-7',
+        isNameGenerated: true,
+        kind: 'oneOf',
+        name: 'schema-7',
+        not: undefined,
+        nullable: false,
+        oneOf: [],
+        required: Set(0) {}
       },
       {
+        '$ref': {
+          '$ref': undefined,
+          '$src': {
+            component: { title: 'My Title', type: 'string' },
+            document: {
+              components: {
+                schemas: {
+                  MyEnum: { enum: [ 'one', 'two', 'three' ], type: 'string' },
+                  ReadOnly: { readOnly: true, type: 'string' },
+                  WithAllCommon: {
+                    default: 'john.doe@example.io',
+                    deprecated: true,
+                    description: 'My Description',
+                    example: '<yours>@example.io',
+                    format: 'email',
+                    maxLength: 255,
+                    minLength: 5,
+                    nullable: true,
+                    pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$',
+                    type: 'string'
+                  },
+                  WithTitle: { title: 'My Title', type: 'string' },
+                  WriteOnly: { type: 'string', writeOnly: true }
+                }
+              },
+              info: { title: 'Detailed Schemas', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/x': {
+                  get: { responses: { '200': { description: '' } } }
+                }
+              }
+            },
+            file: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml',
+            originalComponent: { title: 'My Title', type: 'string' },
+            path: '/components/schemas/WithTitle'
+          },
+          accessibility: 'all',
+          const: undefined,
+          custom: {},
+          default: undefined,
+          deprecated: false,
+          description: undefined,
+          enum: undefined,
+          example: undefined,
+          format: undefined,
+          id: 'schema-8',
+          isNameGenerated: false,
+          kind: 'string',
+          maxLength: undefined,
+          minLength: undefined,
+          name: 'My Title',
+          not: undefined,
+          nullable: false,
+          pattern: undefined,
+          required: Set(0) {},
+          type: 'string'
+        },
         '$src': {
+          component: {
+            '$ref': 'detailed-schemas.yml#/components/schemas/WithTitle'
+          },
           file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
-          path: '/components/schemas/WithReferences/oneOf/1',
           originalComponent: {
             '$ref': 'detailed-schemas.yml#/components/schemas/WithTitle'
           },
-          component: {
-            '$ref': 'detailed-schemas.yml#/components/schemas/WithTitle'
-          }
+          path: '/components/schemas/WithReferences/oneOf/1'
         },
-        '$ref': {
-          '$src': {
-            file: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml',
-            path: '/components/schemas/WithTitle',
-            document: {
-              openapi: '3.0.0',
-              info: { version: '1.0.0', title: 'Detailed Schemas' },
-              paths: {
-                '/x': {
-                  get: { responses: { '200': { description: '' } } }
-                }
-              },
-              components: {
-                schemas: {
-                  WithTitle: { title: 'My Title', type: 'string' },
-                  WithAllCommon: {
-                    description: 'My Description',
-                    type: 'string',
-                    format: 'email',
-                    default: 'john.doe@example.io',
-                    maxLength: 255,
-                    minLength: 5,
-                    pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$',
-                    nullable: true,
-                    deprecated: true,
-                    example: '<yours>@example.io'
-                  },
-                  MyEnum: { type: 'string', enum: [ 'one', 'two', 'three' ] },
-                  WriteOnly: { type: 'string', writeOnly: true },
-                  ReadOnly: { type: 'string', readOnly: true }
-                }
-              }
-            },
-            originalComponent: { title: 'My Title', type: 'string' },
-            component: { title: 'My Title', type: 'string' }
-          },
-          '$ref': undefined,
-          id: 'schema-9',
-          name: 'My Title',
-          isNameGenerated: false,
-          description: undefined,
-          deprecated: false,
-          accessibility: 'all',
-          kind: 'string',
-          enum: undefined,
-          default: undefined,
-          example: undefined,
-          nullable: false,
-          required: Set(0) {},
-          custom: {},
-          not: undefined,
-          const: undefined,
-          type: 'string',
-          format: undefined,
-          pattern: undefined,
-          minLength: undefined,
-          maxLength: undefined
-        },
-        id: 'schema-8',
-        name: 'schema-8',
-        isNameGenerated: true,
-        description: undefined,
-        deprecated: false,
         accessibility: 'all',
-        kind: 'string',
-        enum: undefined,
-        default: undefined,
-        example: undefined,
-        nullable: false,
-        required: Set(0) {},
-        custom: {},
-        not: undefined,
         const: undefined,
-        type: 'string',
+        custom: {},
+        default: undefined,
+        deprecated: false,
+        description: undefined,
+        enum: undefined,
+        example: undefined,
         format: undefined,
-        pattern: undefined,
+        id: 'schema-9',
+        isNameGenerated: true,
+        kind: 'string',
+        maxLength: undefined,
         minLength: undefined,
-        maxLength: undefined
+        name: 'schema-9',
+        not: undefined,
+        nullable: false,
+        pattern: undefined,
+        required: Set(0) {},
+        type: 'string'
       },
       {
-        '$src': {
-          file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
-          path: '/components/schemas/WithReferences/oneOf/2',
-          originalComponent: { '$ref': 'simple-schemas.yml#/components/schemas/MyString' },
-          component: { '$ref': 'simple-schemas.yml#/components/schemas/MyString' }
-        },
         '$ref': {
+          '$ref': undefined,
           '$src': {
-            file: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml',
-            path: '/components/schemas/MyString',
+            component: { type: 'string' },
             document: {
-              openapi: '3.0.0',
-              info: { version: '1.0.0', title: 'Simple Schemas' },
-              paths: {
-                '/x': {
-                  get: { responses: { '200': { description: '' } } }
-                }
-              },
               components: {
                 schemas: {
-                  MyString: { type: 'string' },
+                  MyArray: { type: 'array' },
+                  MyBoolean: { type: 'boolean' },
                   MyInteger: { type: 'integer' },
                   MyNumber: { type: 'number' },
-                  MyBoolean: { type: 'boolean' },
-                  MyArray: { type: 'array' },
-                  MyObject: { type: 'object' }
+                  MyObject: { type: 'object' },
+                  MyString: { type: 'string' }
+                }
+              },
+              info: { title: 'Simple Schemas', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/x': {
+                  get: { responses: { '200': { description: '' } } }
                 }
               }
             },
+            file: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml',
             originalComponent: { type: 'string' },
-            component: { type: 'string' }
+            path: '/components/schemas/MyString'
           },
-          '$ref': undefined,
-          id: 'schema-11',
-          name: 'MyString',
-          isNameGenerated: false,
-          description: undefined,
-          deprecated: false,
           accessibility: 'all',
-          kind: 'string',
-          enum: undefined,
-          default: undefined,
-          example: undefined,
-          nullable: false,
-          required: Set(0) {},
-          custom: {},
-          not: undefined,
           const: undefined,
-          type: 'string',
+          custom: {},
+          default: undefined,
+          deprecated: false,
+          description: undefined,
+          enum: undefined,
+          example: undefined,
           format: undefined,
-          pattern: undefined,
+          id: 'schema-10',
+          isNameGenerated: false,
+          kind: 'string',
+          maxLength: undefined,
           minLength: undefined,
-          maxLength: undefined
+          name: 'MyString',
+          not: undefined,
+          nullable: false,
+          pattern: undefined,
+          required: Set(0) {},
+          type: 'string'
         },
-        id: 'schema-10',
-        name: 'schema-10',
-        isNameGenerated: true,
-        description: undefined,
-        deprecated: false,
+        '$src': {
+          component: { '$ref': 'simple-schemas.yml#/components/schemas/MyString' },
+          file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
+          originalComponent: { '$ref': 'simple-schemas.yml#/components/schemas/MyString' },
+          path: '/components/schemas/WithReferences/oneOf/2'
+        },
         accessibility: 'all',
-        kind: 'string',
-        enum: undefined,
-        default: undefined,
-        example: undefined,
-        nullable: false,
-        required: Set(0) {},
-        custom: {},
-        not: undefined,
         const: undefined,
-        type: 'string',
+        custom: {},
+        default: undefined,
+        deprecated: false,
+        description: undefined,
+        enum: undefined,
+        example: undefined,
         format: undefined,
-        pattern: undefined,
+        id: 'schema-11',
+        isNameGenerated: true,
+        kind: 'string',
+        maxLength: undefined,
         minLength: undefined,
-        maxLength: undefined
+        name: 'schema-11',
+        not: undefined,
+        nullable: false,
+        pattern: undefined,
+        required: Set(0) {},
+        type: 'string'
       },
       {
-        '$src': {
-          file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
-          path: '/components/schemas/WithReferences/oneOf/3',
-          originalComponent: { type: 'string' },
-          component: { type: 'string' }
-        },
         '$ref': undefined,
-        id: 'schema-12',
-        name: 'schema-12',
-        isNameGenerated: true,
-        description: undefined,
-        deprecated: false,
+        '$src': {
+          component: { type: 'string' },
+          file: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml',
+          originalComponent: { type: 'string' },
+          path: '/components/schemas/WithReferences/oneOf/3'
+        },
         accessibility: 'all',
-        kind: 'string',
-        enum: undefined,
-        default: undefined,
-        example: undefined,
-        nullable: false,
-        required: Set(0) {},
-        custom: {},
-        not: undefined,
         const: undefined,
-        type: 'string',
+        custom: {},
+        default: undefined,
+        deprecated: false,
+        description: undefined,
+        enum: undefined,
+        example: undefined,
         format: undefined,
-        pattern: undefined,
+        id: 'schema-12',
+        isNameGenerated: true,
+        kind: 'string',
+        maxLength: undefined,
         minLength: undefined,
-        maxLength: undefined
+        name: 'schema-12',
+        not: undefined,
+        nullable: false,
+        pattern: undefined,
+        required: Set(0) {},
+        type: 'string'
       }
-    ]
+    ],
+    required: Set(0) {}
   }
 ]

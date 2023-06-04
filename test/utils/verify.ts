@@ -31,7 +31,7 @@ function cutString(text: string, length: number) {
 }
 
 function dataToText(data: unknown, depth: number = 100): string {
-  let text = typeof data === 'string' ? data : util.inspect(data, { depth });
+  let text = typeof data === 'string' ? data : util.inspect(data, { depth, sorted: true });
   text = text.replace(new RegExp(escapeRegExp(nxRootDir.replace(/\\/g, '\\\\')), 'g'), '<root>');
   return text;
 }

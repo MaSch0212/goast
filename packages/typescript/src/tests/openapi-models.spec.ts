@@ -26,12 +26,11 @@ for (const [version, path] of Object.entries(filePaths)) {
         const filePath = join(path, file);
 
         const writtenFiles: Map<string, unknown> = new Map();
-        jest.spyOn(fs, 'ensureDir').mockImplementation(() => Promise.resolve());
+        jest.spyOn(fs, 'ensureDirSync').mockImplementation();
         jest
-          .spyOn(fs, 'writeFile')
+          .spyOn(fs, 'writeFileSync')
           .mockImplementation((path: fs.PathOrFileDescriptor, data: string | NodeJS.ArrayBufferView) => {
             writtenFiles.set(path.toString(), data.toString());
-            return Promise.resolve();
           });
 
         const generatorOptions = {
@@ -39,7 +38,7 @@ for (const [version, path] of Object.entries(filePaths)) {
           newLine: '\n',
         };
         const state = await new OpenApiGenerator(generatorOptions)
-          .use(TypeScriptModelsGenerator)
+          .use(TypeScriptModelsGenerator, { __test__: true } as any)
           .parseAndGenerate(filePath);
         writtenFiles.set('state', state);
 

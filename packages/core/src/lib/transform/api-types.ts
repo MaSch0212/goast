@@ -41,7 +41,7 @@ export type Transformed<T> = T extends OpenApiTag
   ? ApiHeader
   : T extends OpenApiSchema
   ? ApiSchema
-  : never;
+  : undefined;
 
 export type ApiComponent<T> = {
   id: string;

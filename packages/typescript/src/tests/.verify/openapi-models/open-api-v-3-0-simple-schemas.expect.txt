@@ -1,43 +1,49 @@
 Map(8) {
-  '<root>\\out\\models\\my-string.model.ts' => 'export type MyString = string;\n',
-  '<root>\\out\\models\\my-integer.model.ts' => 'export type MyInteger = number;\n',
-  '<root>\\out\\models\\my-number.model.ts' => 'export type MyNumber = number;\n',
-  '<root>\\out\\models\\my-boolean.model.ts' => 'export type MyBoolean = boolean;\n',
-  '<root>\\out\\models\\my-array.model.ts' => 'export type MyArray = Array<unknown>;\n',
-  '<root>\\out\\models\\my-object.model.ts' => 'export type MyObject = {};\n',
   '<root>\\out\\models.ts' => "export { MyArray } from './models/my-array.model';\n" +
     "export { MyBoolean } from './models/my-boolean.model';\n" +
     "export { MyInteger } from './models/my-integer.model';\n" +
     "export { MyNumber } from './models/my-number.model';\n" +
     "export { MyObject } from './models/my-object.model';\n" +
     "export { MyString } from './models/my-string.model';\n",
+  '<root>\\out\\models\\my-array.model.ts' => 'export type MyArray = Array<unknown>;\n',
+  '<root>\\out\\models\\my-boolean.model.ts' => 'export type MyBoolean = boolean;\n',
+  '<root>\\out\\models\\my-integer.model.ts' => 'export type MyInteger = number;\n',
+  '<root>\\out\\models\\my-number.model.ts' => 'export type MyNumber = number;\n',
+  '<root>\\out\\models\\my-object.model.ts' => 'export type MyObject = {};\n',
+  '<root>\\out\\models\\my-string.model.ts' => 'export type MyString = string;\n',
   'state' => {
+    modelIndexFilePath: '<root>\\out\\models.ts',
     models: {
       'schema-1': {
-        typeName: 'MyString',
-        filePath: '<root>\\out\\models\\my-string.model.ts'
+        __source__: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml#/components/schemas/MyString',
+        filePath: '<root>\\out\\models\\my-string.model.ts',
+        typeName: 'MyString'
       },
       'schema-2': {
-        typeName: 'MyInteger',
-        filePath: '<root>\\out\\models\\my-integer.model.ts'
+        __source__: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml#/components/schemas/MyInteger',
+        filePath: '<root>\\out\\models\\my-integer.model.ts',
+        typeName: 'MyInteger'
       },
       'schema-3': {
-        typeName: 'MyNumber',
-        filePath: '<root>\\out\\models\\my-number.model.ts'
+        __source__: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml#/components/schemas/MyNumber',
+        filePath: '<root>\\out\\models\\my-number.model.ts',
+        typeName: 'MyNumber'
       },
       'schema-4': {
-        typeName: 'MyBoolean',
-        filePath: '<root>\\out\\models\\my-boolean.model.ts'
+        __source__: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml#/components/schemas/MyBoolean',
+        filePath: '<root>\\out\\models\\my-boolean.model.ts',
+        typeName: 'MyBoolean'
       },
       'schema-5': {
-        typeName: 'MyArray',
-        filePath: '<root>\\out\\models\\my-array.model.ts'
+        __source__: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml#/components/schemas/MyArray',
+        filePath: '<root>\\out\\models\\my-array.model.ts',
+        typeName: 'MyArray'
       },
       'schema-6': {
-        typeName: 'MyObject',
-        filePath: '<root>\\out\\models\\my-object.model.ts'
+        __source__: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml#/components/schemas/MyObject',
+        filePath: '<root>\\out\\models\\my-object.model.ts',
+        typeName: 'MyObject'
       }
-    },
-    modelIndexFilePath: '<root>\\out\\models.ts'
+    }
   }
 }

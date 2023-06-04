@@ -1,3 +1,4 @@
+import { isOpenApiObjectProperty } from '../internal-utils';
 import { OpenApiSchema } from '../parse';
 import { ApiSchema, ApiSchemaProperty } from '../transform';
 
@@ -63,100 +64,16 @@ function hasInvalidSubSchema(subSchemas: ApiSchema[]): boolean {
   );
 }
 
-export const openaApiSchemaProperties: (keyof OpenApiSchema)[] = [
-  'type',
-  'properties',
-  'items',
-  'required',
-  'enum',
-  'format',
-  'additionalProperties',
-  'anyOf',
-  'oneOf',
-  'allOf',
-  'not',
-  'minLength',
-  'maxLength',
-  'minimum',
-  'maximum',
-  'exclusiveMinimum',
-  'exclusiveMaximum',
-  'pattern',
-  'default',
-  'title',
-  'description',
-  'multipleOf',
-  'additionalItems',
-  'maxItems',
-  'minItems',
-  'uniqueItems',
-  'maxProperties',
-  'minProperties',
-  'definitions',
-  'patternProperties',
-  'dependencies',
-  'nullable',
-  'discriminator',
-  'readOnly',
-  'writeOnly',
-  'externalDocs',
-  'example',
-  'examples',
-  'xml',
-  'contentMediaType',
-  'const',
-  'deprecated',
-];
-export const defaultUnimpactfulProperties: (keyof OpenApiSchema)[] = [
-  'required',
-  'minLength',
-  'maxLength',
-  'minimum',
-  'maximum',
-  'exclusiveMinimum',
-  'exclusiveMaximum',
-  'pattern',
-  'default',
-  'description',
-  'multipleOf',
-  'maxItems',
-  'minItems',
-  'uniqueItems',
-  'maxProperties',
-  'minProperties',
-  'definitions',
-  'patternProperties',
-  'dependencies',
-  'externalDocs',
-  'example',
-  'examples',
-  'xml',
-  'contentMediaType',
-  'deprecated',
-];
-
-export function selectFirstReferenceWithImpactfulChanges(
-  schema: ApiSchema,
-  additionalUnimpactfulProperties: (keyof OpenApiSchema)[] = [],
-  additionalImpactfulProperties: (keyof OpenApiSchema)[] = []
-): ApiSchema {
-  const unimpactfulProperties = defaultUnimpactfulProperties.concat(additionalUnimpactfulProperties);
-  const impactfulProperties = openaApiSchemaProperties
-    .filter((x) => !unimpactfulProperties.includes(x))
-    .concat(additionalImpactfulProperties);
-  return selectFirstReferenceWithImpactfulChangesImpl(schema, impactfulProperties);
-}
-
-function selectFirstReferenceWithImpactfulChangesImpl(
-  schema: ApiSchema,
-  impactfulProperties: (keyof OpenApiSchema)[]
-): ApiSchema {
+/**
+ * Retrieves the first schema reference and the reference chain of a given schema that
+ * defines some schema properties. (e.g. schemas with just "$ref" are skipped)
+ * @param schema The schema to retrieve the reference from.
+ * @param propertiesToIgnore The properties to ignore when checking for a schema definition.
+ */
+export function getSchemaReference(schema: ApiSchema, propertiesToIgnore: (keyof OpenApiSchema)[]): ApiSchema {
   if (!schema.$ref) return schema;
-  const hasImpactfulChange = hasAnyProperty(schema.$src.originalComponent, impactfulProperties);
-  if (hasImpactfulChange) return schema;
-  return selectFirstReferenceWithImpactfulChangesImpl(schema.$ref, impactfulProperties);
-}
-
-function hasAnyProperty<T extends object>(obj: T, props: (keyof T)[]): boolean {
-  return props.some((x) => x in obj);
+  const hasPropertiesDefined = Object.keys(schema.$src.originalComponent).some(
+    (key) => isOpenApiObjectProperty(key) && !propertiesToIgnore.includes(key as keyof OpenApiSchema)
+  );
+  return hasPropertiesDefined ? schema : getSchemaReference(schema.$ref, propertiesToIgnore);
 }

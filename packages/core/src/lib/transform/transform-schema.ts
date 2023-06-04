@@ -46,6 +46,8 @@ export function transformSchema<T extends Deref<OpenApiSchema>>(
       kind = determineSchemaKind(schema);
     }
   }
+
+  const ref = schema.$ref ? transformSchema(context, schema.$ref, true) : undefined;
   const id = context.idGenerator.generateId('schema');
   const nameInfo = determineSchemaName(schema, id);
   const result: IncompleteApiSchema = {
@@ -53,7 +55,7 @@ export function transformSchema<T extends Deref<OpenApiSchema>>(
       ...schema.$src,
       component: schema,
     },
-    $ref: undefined,
+    $ref: ref,
     id,
     name: nameInfo.name,
     isNameGenerated: nameInfo.isGenerated,
@@ -77,7 +79,6 @@ export function transformSchema<T extends Deref<OpenApiSchema>>(
 
   context.incompleteSchemas.delete(schemaSource);
   context.transformed.schemas.set(openApiObjectId, result as IncompleteApiSchema & ApiSchemaExtensions<ApiSchemaKind>);
-  if (schema.$ref) result.$ref = transformSchema(context, schema.$ref, true);
   if (!isReference) {
     context.schemas.set(schemaSource, result as IncompleteApiSchema & ApiSchemaExtensions<ApiSchemaKind>);
   }
