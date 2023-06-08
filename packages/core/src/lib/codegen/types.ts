@@ -24,12 +24,12 @@ export interface OpenApiGenerationProvider<
   TOutput extends OpenApiGeneratorOutput,
   TConfig extends AnyConfig
 > {
-  init(context: OpenApiGeneratorContext<TInput>, config?: Partial<TConfig>): PromiseLike<void> | void;
-  generate(): PromiseLike<TOutput> | TOutput;
+  init(context: OpenApiGeneratorContext<TInput>, config?: Partial<TConfig>): void;
+  generate(): TOutput;
 }
 
 export type OpenApiGenerationProviderFn<
   TInput extends OpenApiGeneratorInput,
   TOutput extends OpenApiGeneratorOutput,
   TConfig extends AnyConfig
-> = (context: OpenApiGeneratorContext<TInput>, config?: Partial<TConfig>) => PromiseLike<TOutput> | TOutput;
+> = (context: OpenApiGeneratorContext<TInput>, config?: Partial<TConfig>) => TOutput;

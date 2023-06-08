@@ -2,17 +2,19 @@ import { resolve } from 'path';
 
 import { emptyDir, ensureDir } from 'fs-extra';
 
-import { OpenApiGeneratorConfig, OpenApiGeneratorConfigOverrides, defaultOpenApiGeneratorConfig } from './config';
+import { OpenApiGeneratorConfig, defaultOpenApiGeneratorConfig } from './config';
 import {
   AnyConfig,
   OpenApiGenerationProvider,
   OpenApiGenerationProviderFn,
   OpenApiGenerationProviderType,
+  OpenApiGeneratorContext,
   OpenApiGeneratorInput,
   OpenApiGeneratorOutput,
 } from './types';
 import { OpenApiParser } from '../parse/parser';
 import { ApiData } from '../transform';
+import { getInitializedValue } from '../utils';
 import { Merge } from '../utils/type.utils';
 
 type OpenApiGenerationProviders = (
@@ -99,13 +101,13 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
       let result: OpenApiGeneratorOutput | undefined;
       if (generator.kind === 'providerCtor') {
         const provider = new generator.generator();
-        await provider.init(context, generator.config);
-        result = await provider.generate();
+        provider.init(context, generator.config);
+        result = provider.generate();
       } else if (generator.kind === 'provider') {
-        await generator.generator.init(context, generator.config);
-        result = await generator.generator.generate();
+        generator.generator.init(context, generator.config);
+        result = generator.generator.generate();
       } else {
-        result = await generator.generator(context, generator.config);
+        result = generator.generator(context, generator.config);
       }
 
       if (result) {
@@ -122,7 +124,7 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
 }
 
 export class OpenApiGenerator extends _OpenApiGenerator<{}> {
-  constructor(config?: OpenApiGeneratorConfigOverrides) {
+  constructor(config?: Partial<OpenApiGeneratorConfig>) {
     super({ ...defaultOpenApiGeneratorConfig, ...config }, [], new OpenApiParser());
   }
 }
@@ -148,4 +150,43 @@ function mergeDeep<T extends Record<string, unknown>, U extends Record<string, u
   }
 
   return mergeDeep(target, ...sources);
+}
+
+export type DefaultGenerationProviderConfig<T extends AnyConfig> = Omit<T, keyof OpenApiGeneratorConfig> &
+  Partial<Pick<T, keyof OpenApiGeneratorConfig>>;
+
+export abstract class OpenApiGenerationProviderBase<
+  TInput extends OpenApiGeneratorInput,
+  TOutput extends OpenApiGeneratorOutput,
+  TConfig extends AnyConfig
+> implements OpenApiGenerationProvider<TInput, TOutput, TConfig>
+{
+  private _context?: OpenApiGeneratorContext<TInput>;
+  private _config?: OpenApiGeneratorConfig & TConfig;
+
+  public get context(): OpenApiGeneratorContext<TInput> {
+    return getInitializedValue(this._context);
+  }
+  public get config(): OpenApiGeneratorConfig & TConfig {
+    return getInitializedValue(this._config);
+  }
+  public get input(): TInput {
+    return this.context.input;
+  }
+  public get data(): ApiData {
+    return this.context.data;
+  }
+  public get state(): Map<string, unknown> {
+    return this.context.state;
+  }
+
+  public init(context: OpenApiGeneratorContext<TInput>, config?: Partial<TConfig>): void {
+    this._context = context;
+    this._config = { ...this.getDefaultConfig(), ...context.config, ...config } as unknown as OpenApiGeneratorConfig &
+      TConfig;
+  }
+
+  public abstract generate(): TOutput;
+
+  protected abstract getDefaultConfig(): DefaultGenerationProviderConfig<TConfig>;
 }

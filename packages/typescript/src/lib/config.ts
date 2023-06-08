@@ -1,40 +1,17 @@
-import { OpenApiGeneratorConfig } from '@goast/core';
-import {
-  SourceBuilderOptions,
-  StringCasing,
-  StringCasingWithOptions,
-  defaultSourceBuilderOptions,
-} from '@goast/core/utils';
+import { DefaultGenerationProviderConfig, OpenApiGeneratorConfig } from '@goast/core';
 
 import { ImportModuleTransformer } from './utils';
 
-type TypeScriptGeneratorConfigAdditions = {
-  fileNameCasing: StringCasing | StringCasingWithOptions;
-  typeNameCasing: StringCasing | StringCasingWithOptions;
-  functionNameCasing: StringCasing | StringCasingWithOptions;
-  propertyNameCasing: StringCasing | StringCasingWithOptions;
-  privatePropertyNameCasing: StringCasing | StringCasingWithOptions;
-
+export type TypeScriptGeneratorConfig = OpenApiGeneratorConfig & {
   importModuleTransformer: ImportModuleTransformer;
 
   preferUnknown: boolean;
   useSingleQuotes: boolean;
 };
-export type TypeScriptGeneratorConfig = SourceBuilderOptions &
-  OpenApiGeneratorConfig &
-  TypeScriptGeneratorConfigAdditions;
-export type TypeScriptGeneratorConfigOverrides = Partial<SourceBuilderOptions & TypeScriptGeneratorConfigAdditions>;
 
-export const defaultTypeScriptGeneratorConfig: Required<TypeScriptGeneratorConfigOverrides> = {
-  ...defaultSourceBuilderOptions,
+export const defaultTypeScriptGeneratorConfig: DefaultGenerationProviderConfig<TypeScriptGeneratorConfig> = {
   charsTreatedAsEmptyLine: ['{'],
   indent: { type: 'spaces', count: 2 },
-
-  fileNameCasing: { casing: 'kebab' },
-  typeNameCasing: 'pascal',
-  functionNameCasing: 'camel',
-  propertyNameCasing: 'camel',
-  privatePropertyNameCasing: { casing: 'camel', prefix: '_' },
 
   importModuleTransformer: 'omit-extension',
 

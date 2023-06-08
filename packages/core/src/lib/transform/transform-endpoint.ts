@@ -56,10 +56,11 @@ export function transformEndpoint(context: OpenApiTransformerContext, endpointIn
   for (const tag of tags) {
     let service = context.services.get(tag);
     if (!service) {
+      const id = context.idGenerator.generateId('service');
       service = {
         $ref: undefined,
-        id: context.idGenerator.generateId('service'),
-        name: tag,
+        id,
+        name: tag || id,
         description: undefined,
         endpoints: [],
       };

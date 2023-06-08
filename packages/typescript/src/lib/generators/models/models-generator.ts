@@ -1,21 +1,11 @@
 import { dirname, resolve } from 'path';
 
-import fs from 'fs-extra';
+import { ensureDirSync, writeFileSync } from 'fs-extra';
 
-import {
-  ApiSchema,
-  ApiData,
-  OpenApiGenerationProvider,
-  OpenApiGeneratorConfig,
-  OpenApiGeneratorContext,
-} from '@goast/core';
-import { getInitializedValue, getSchemaReference } from '@goast/core/utils';
+import { ApiSchema, DefaultGenerationProviderConfig, OpenApiSchemasGenerationProviderBase } from '@goast/core';
+import { Nullable } from '@goast/core/utils';
 
-import {
-  TypeScriptModelsGeneratorConfig,
-  TypeScriptModelsGeneratorConfigOverrides,
-  defaultTypeScriptModelsGeneratorConfig,
-} from './config';
+import { TypeScriptModelsGeneratorConfig, defaultTypeScriptModelsGeneratorConfig } from './config';
 import {
   DefaultTypeScriptModelGenerator,
   TypeScriptModelGenerator,
@@ -29,72 +19,46 @@ export type TypeScriptModelsGeneratorResult = {
   models: {
     [schemaId: string]: TypeScriptModelGeneratorResult;
   };
-  modelIndexFilePath: string | undefined;
+  modelIndexFilePath: Nullable<string>;
 };
 
-export class TypeScriptModelsGenerator
-  implements OpenApiGenerationProvider<{}, TypeScriptModelsGeneratorResult, TypeScriptModelsGeneratorConfig>
-{
+export class TypeScriptModelsGenerator extends OpenApiSchemasGenerationProviderBase<
+  {},
+  TypeScriptModelsGeneratorResult,
+  TypeScriptModelsGeneratorConfig,
+  TypeScriptModelGeneratorResult
+> {
   private readonly _modelGenerator: TypeScriptModelGeneratorType | TypeScriptModelGenerator;
-  private _config?: OpenApiGeneratorConfig & TypeScriptModelsGeneratorConfig;
-  private _data?: ApiData;
 
   constructor(modelGenerator?: TypeScriptModelGeneratorType | TypeScriptModelGenerator) {
+    super();
     this._modelGenerator = modelGenerator ?? new DefaultTypeScriptModelGenerator();
   }
 
-  public get config(): OpenApiGeneratorConfig & TypeScriptModelsGeneratorConfig {
-    return getInitializedValue(this._config);
+  protected override getDefaultConfig(): DefaultGenerationProviderConfig<TypeScriptModelsGeneratorConfig> {
+    return defaultTypeScriptModelsGeneratorConfig;
   }
 
-  public get data(): ApiData {
-    return getInitializedValue(this._data);
+  protected override initResult(): TypeScriptModelsGeneratorResult {
+    return {
+      models: {},
+      modelIndexFilePath: undefined,
+    };
   }
 
-  protected result: TypeScriptModelsGeneratorResult = { models: {}, modelIndexFilePath: undefined };
-
-  public init(context: OpenApiGeneratorContext<{}>, config?: TypeScriptModelsGeneratorConfigOverrides): void {
-    this._config = { ...defaultTypeScriptModelsGeneratorConfig, ...context.config, ...config };
-    this._data = context.data;
-    this.result = { models: {}, modelIndexFilePath: undefined };
-  }
-
-  public async generate(): Promise<TypeScriptModelsGeneratorResult> {
-    for (const schema of this.data.schemas) {
-      await this.getSchemaResult(schema);
-    }
-
-    this.result.modelIndexFilePath = await this.generateIndexFile();
-
+  public override generate(): TypeScriptModelsGeneratorResult {
+    super.generate();
+    this.result.modelIndexFilePath = this.generateIndexFile();
     return this.result;
   }
 
-  public getSchemaResult(schema: ApiSchema): TypeScriptModelGeneratorResult {
-    const existingResult = this.result.models[schema.id];
-    if (existingResult) return existingResult;
-
-    let result: TypeScriptModelGeneratorResult;
-    const reference = this.getSchemaReference(schema);
-    if (reference) {
-      result = this.getSchemaResult(reference);
-    } else {
-      const modelGenerator = this.initModelGenerator(schema);
-      result = modelGenerator.generate();
-    }
-
-    if ((this.config as any)['__test__']) {
-      result = {
-        ...result,
-        __source__: `${schema.$src.file}#${schema.$src.path}`,
-      } as any;
-    }
-    this.result.models[schema.id] = result;
-    return result;
+  protected override generateSchema(schema: ApiSchema): TypeScriptModelGeneratorResult {
+    const modelGenerator = this.initModelGenerator(schema);
+    return modelGenerator.generate();
   }
 
-  protected getSchemaReference(schema: ApiSchema): ApiSchema | undefined {
-    const ref = getSchemaReference(schema, ['description']);
-    return ref.id !== schema.id ? ref : undefined;
+  protected override addSchemaResult(schema: ApiSchema, result: TypeScriptModelGeneratorResult): void {
+    this.result.models[schema.id] = result;
   }
 
   protected generateIndexFile(): string | undefined {
@@ -104,9 +68,9 @@ export class TypeScriptModelsGenerator
 
     const filePath = this.getIndexFilePath();
     console.log(`Generating index file to ${filePath}...`);
-    fs.ensureDirSync(dirname(filePath));
+    ensureDirSync(dirname(filePath));
 
-    fs.writeFileSync(filePath, this.generateIndexFileContent());
+    writeFileSync(filePath, this.generateIndexFileContent());
 
     return filePath;
   }
@@ -125,10 +89,10 @@ export class TypeScriptModelsGenerator
 
     for (const modelId in this.result.models) {
       const model = this.result.models[modelId];
-      if (!model.filePath) continue;
+      if (!model.typeFilePath) continue;
       exports.addExport(
         model.typeName,
-        getModulePathRelativeToFile(absoluteIndexFilePath, model.filePath, this.config.importModuleTransformer)
+        getModulePathRelativeToFile(absoluteIndexFilePath, model.typeFilePath, this.config.importModuleTransformer)
       );
     }
 

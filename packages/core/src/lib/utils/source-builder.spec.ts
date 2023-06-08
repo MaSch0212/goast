@@ -141,6 +141,81 @@ describe('SourceBuilder', () => {
     });
   });
 
+  describe('prependIf', () => {
+    it('should prepend the specified value if the condition is true', () => {
+      const builder = new SourceBuilder().append('bar').prependIf(true, 'foo');
+      expect(builder.toString()).toBe('foobar');
+    });
+
+    it('should not prepend the specified value if the condition is false', () => {
+      const builder = new SourceBuilder().append('bar').prependIf(false, 'foo');
+      expect(builder.toString()).toBe('bar');
+    });
+  });
+
+  describe('prependLineIf', () => {
+    it('should prepend the specified value with a line terminator if the condition is true', () => {
+      const builder = new SourceBuilder().append('bar').prependLineIf(true, 'foo');
+      expect(builder.toString()).toBe('foo\nbar');
+    });
+
+    it('should not prepend the specified value if the condition is false', () => {
+      const builder = new SourceBuilder().append('bar').prependLineIf(false, 'foo');
+      expect(builder.toString()).toBe('bar');
+    });
+  });
+
+  describe('apply', () => {
+    it('should apply the provided builder function to the source builder', () => {
+      const builder = new SourceBuilder().apply((b) => b.append('foo'));
+      expect(builder.toString()).toBe('foo');
+    });
+  });
+
+  describe('applyWithLinePrefix', () => {
+    it('should apply the provided builder function with the specified line prefix', () => {
+      const builder = new SourceBuilder().applyWithLinePrefix('// ', (b) => {
+        b.appendLine('foo');
+        b.appendLine('bar');
+      });
+      expect(builder.toString()).toBe('// foo\n// bar\n');
+    });
+
+    it('should apply the provided builder function with the specified line prefix and indentation', () => {
+      const builder = new SourceBuilder().indent((b) =>
+        b.applyWithLinePrefix('// ', (b) => {
+          b.appendLine('foo');
+          b.appendLine('bar');
+        })
+      );
+      expect(builder.toString()).toBe('  // foo\n  // bar\n');
+    });
+  });
+
+  describe('appendWithLinePrefix', () => {
+    it('should append the specified values with the specified line prefix', () => {
+      const builder = new SourceBuilder().appendWithLinePrefix('// ', 'foo', 'bar');
+      expect(builder.toString()).toBe('// foobar');
+    });
+
+    it('should handle null and undefined values', () => {
+      const builder = new SourceBuilder().appendWithLinePrefix('// ', 'foo', null, undefined, 'bar');
+      expect(builder.toString()).toBe('// foobar');
+    });
+  });
+
+  describe('appendLineWithLinePrefix', () => {
+    it('should append the specified values as a new line with the specified line prefix', () => {
+      const builder = new SourceBuilder().appendLineWithLinePrefix('// ', 'foo', 'bar');
+      expect(builder.toString()).toBe('// foo\n// bar\n');
+    });
+
+    it('should handle null and undefined values', () => {
+      const builder = new SourceBuilder().appendLineWithLinePrefix('// ', 'foo', null, undefined, 'bar');
+      expect(builder.toString()).toBe('// foo\n// bar\n');
+    });
+  });
+
   describe('ensurePreviousLineEmpty', () => {
     it('should insert one empty line when current line is empty', () => {
       sb.append('line1', EOL, 'line2', EOL);

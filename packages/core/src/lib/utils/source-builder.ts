@@ -39,8 +39,8 @@ export class SourceBuilder extends StringBuilder {
   private readonly __options: SourceBuilderOptions;
   private readonly _emptyLineCharRegex: RegExp;
   private readonly _indentString: string;
-  private readonly _state: Record<string, unknown> = {};
 
+  private _linePrefix: string = '';
   private _isLineIndented: boolean = false;
   private _isLastLineEmpty: boolean = true;
   private _isCurrentLineEmpty: boolean = true;
@@ -173,6 +173,74 @@ export class SourceBuilder extends StringBuilder {
    */
   public appendLineIf(condition: Condition, ...value: Nullable<string>[]): this {
     return evalCondition(condition) ? this.appendLine(...value) : this;
+  }
+
+  /**
+   * Appends the specified values to this source builder with the specified line prefix.
+   * @param {string} prefix - The line prefix to use.
+   * @param {...(string|null|undefined)} value - The values to append.
+   * @returns {SourceBuilder} This source builder instance.
+   */
+  public appendWithLinePrefix(prefix: string, ...value: Nullable<string>[]): this {
+    return this.applyWithLinePrefix(prefix, (builder) => builder.append(...value));
+  }
+
+  /**
+   * Appends the specified values to this source builder as a new line with the specified line prefix.
+   * @param {string} prefix - The line prefix to use.
+   * @param {...(string|null|undefined)} value - The values to append.
+   * @returns {SourceBuilder} This source builder instance.
+   */
+  public appendLineWithLinePrefix(prefix: string, ...value: Nullable<string>[]): this {
+    return this.applyWithLinePrefix(prefix, (builder) => builder.appendLine(...value));
+  }
+
+  /**
+   * Prepends one or more strings to the beginning of the current SourceBuilder if the specified condition is true.
+   * @param condition The condition to check before prepending the specified value.
+   * @param value The string(s) to prepend.
+   * @returns The current SourceBuilder.
+   */
+  public prependIf(condition: Condition, ...value: Nullable<string | ((builder: StringBuilder) => void)>[]): this {
+    return evalCondition(condition) ? this.prepend(...value) : this;
+  }
+
+  /**
+   * Prepends one or more strings to the beginning of the current SourceBuilder, followed by a line terminator, if the specified condition is true.
+   * @param condition The condition to check before appending the specified value.
+   * @param value The string(s) to prepend.
+   * @returns The current SourceBuilder.
+   */
+  public prependLineIf(condition: Condition, ...value: Nullable<string | ((builder: StringBuilder) => void)>[]): this {
+    return evalCondition(condition) ? this.prependLine(...value) : this;
+  }
+
+  /**
+   * Applies the provided builder function to this source builder.
+   * @param builderFn The builder function to apply.
+   * @returns This source builder instance.
+   */
+  public apply(builderFn: (builder: SourceBuilder) => void): this {
+    builderFn(this);
+    return this;
+  }
+
+  /**
+   * Applies the provided builder function to this source builder with the specified line prefix.
+   * @param prefix The line prefix to use.
+   * @param builderFn The builder function to apply.
+   * @returns This source builder instance.
+   */
+  public applyWithLinePrefix(prefix: string, builderFn: (builder: this) => void): this {
+    const previousLinePrefix = this._linePrefix;
+    this._linePrefix += prefix;
+    try {
+      builderFn(this);
+    } finally {
+      this._linePrefix = previousLinePrefix;
+    }
+
+    return this;
   }
 
   /**
@@ -400,5 +468,8 @@ export class SourceBuilder extends StringBuilder {
 
   private appendIndent(): void {
     super.append(this._indentString.repeat(this.currentIndentLevel));
+    if (this._linePrefix) {
+      super.append(this._linePrefix);
+    }
   }
 }

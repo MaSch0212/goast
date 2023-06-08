@@ -1,13 +1,13 @@
-import { SourceBuilderOptions } from '../utils/source-builder';
+import { SourceBuilderOptions, defaultSourceBuilderOptions } from '../utils/source-builder';
 
-type OpenApiGeneratorConfigAdditions = {
+export type OpenApiGeneratorConfig = SourceBuilderOptions & {
   outputDir: string;
   clearOutputDir: boolean;
 };
-export type OpenApiGeneratorConfig = Partial<SourceBuilderOptions> & OpenApiGeneratorConfigAdditions;
-export type OpenApiGeneratorConfigOverrides = Partial<SourceBuilderOptions & OpenApiGeneratorConfigAdditions>;
 
 export const defaultOpenApiGeneratorConfig: OpenApiGeneratorConfig = {
+  ...defaultSourceBuilderOptions,
+
   outputDir: 'generated',
   clearOutputDir: true,
 };

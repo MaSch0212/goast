@@ -1,9 +1,16 @@
 import { dirname, resolve } from 'path';
 
-import fs from 'fs-extra';
+import { ensureDirSync, writeFileSync } from 'fs-extra';
 
 import { ApiSchema, ArrayLikeApiSchema, CombinedLikeApiSchema, ObjectLikeApiSchema, ApiData } from '@goast/core';
-import { SourceBuilder, getInitializedValue, resolveAnyOfAndAllOf, toCasing, toPascalCase } from '@goast/core/utils';
+import {
+  Nullable,
+  SourceBuilder,
+  getInitializedValue,
+  resolveAnyOfAndAllOf,
+  toCasing,
+  toPascalCase,
+} from '@goast/core/utils';
 
 import { TypeScriptModelGeneratorConfig } from './config';
 import { ImportExportCollection } from '../../import-collection';
@@ -11,7 +18,7 @@ import { getModulePathRelativeToFile, toTypeScriptPropertyName, toTypeScriptStri
 
 export type TypeScriptModelGeneratorResult = {
   typeName: string;
-  filePath: string | undefined;
+  typeFilePath: Nullable<string>;
 };
 
 export interface TypeScriptModelGeneratorType extends Function {
@@ -60,22 +67,19 @@ export class DefaultTypeScriptModelGenerator implements TypeScriptModelGenerator
   public generate(): TypeScriptModelGeneratorResult {
     if (this.shouldGenerateTypeDeclaration(this.context.schema)) {
       const typeName = this.getDeclarationTypeName(this.context.schema);
-      const filePath = this.getFilePath(this.context.schema);
-      console.log(`Generating model ${typeName} to ${filePath}...`);
-      fs.ensureDirSync(dirname(filePath));
+      const typeFilePath = this.getFilePath(this.context.schema);
+      console.log(`Generating model ${typeName} to ${typeFilePath}...`);
+      ensureDirSync(dirname(typeFilePath));
 
-      this.filePath = filePath;
+      this.filePath = typeFilePath;
       this.generateFileContent();
 
-      fs.writeFileSync(filePath, this.builder.toString());
+      writeFileSync(typeFilePath, this.builder.toString());
 
-      return {
-        typeName,
-        filePath: filePath,
-      };
+      return { typeName, typeFilePath };
     } else {
       this.generateModel(this.context.schema, this.builder);
-      return { typeName: this.builder.toString(), filePath: undefined };
+      return { typeName: this.builder.toString(), typeFilePath: undefined };
     }
   }
 
@@ -121,10 +125,14 @@ export class DefaultTypeScriptModelGenerator implements TypeScriptModelGenerator
 
   protected getTypeName(schema: ApiSchema): string {
     const modelResult = this.context.getSchemaResult(schema);
-    if (modelResult.filePath && this.filePath) {
+    if (modelResult.typeFilePath && this.filePath) {
       this.imports.addImport(
         modelResult.typeName,
-        getModulePathRelativeToFile(this.filePath, modelResult.filePath, this.context.config.importModuleTransformer)
+        getModulePathRelativeToFile(
+          this.filePath,
+          modelResult.typeFilePath,
+          this.context.config.importModuleTransformer
+        )
       );
     }
     return modelResult.typeName;
@@ -388,10 +396,7 @@ export class DefaultTypeScriptModelGenerator implements TypeScriptModelGenerator
 
   protected generateDocumentation(schema: ApiSchema, builder: SourceBuilder): void {
     if (schema.description) {
-      builder
-        .appendLine('/**')
-        .appendLine(` * ${schema.description.trim().replace('\r', '').split('\n').join('\n * ')}`)
-        .appendLine(' */');
+      builder.appendLine('/**').appendLineWithLinePrefix(' * ', schema.description.trim()).appendLine(' */');
     }
   }
 }
