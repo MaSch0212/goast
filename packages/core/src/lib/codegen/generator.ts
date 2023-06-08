@@ -10,7 +10,7 @@ import {
   OpenApiGenerationProviderType,
   OpenApiGeneratorInput,
   OpenApiGeneratorOutput,
-} from './types.js';
+} from './types';
 import { OpenApiParser } from '../parse/parser';
 import { ApiData } from '../transform';
 import { Merge } from '../utils/type.utils';

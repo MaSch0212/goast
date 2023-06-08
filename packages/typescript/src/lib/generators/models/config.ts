@@ -2,7 +2,7 @@ import {
   TypeScriptGeneratorConfig,
   TypeScriptGeneratorConfigOverrides,
   defaultTypeScriptGeneratorConfig,
-} from '../config';
+} from '../../config';
 
 type TypeScriptModelGeneratorConfigAdditions = {
   enumGeneration: 'union' | 'prefer-enum';

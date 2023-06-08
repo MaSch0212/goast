@@ -1,3 +1,3 @@
-export * from './openapi-types.js';
-export * from './parser.js';
-export * from './types.js';
+export * from './openapi-types';
+export * from './parser';
+export * from './types';

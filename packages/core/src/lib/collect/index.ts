@@ -1,3 +1,3 @@
-export * from './collector.js';
-export * from './helpers.js';
-export * from './types.js';
+export * from './collector';
+export * from './helpers';
+export * from './types';

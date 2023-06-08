@@ -1,3 +1,3 @@
-export * from './config.js';
-export * from './generator.js';
-export * from './types.js';
+export * from './config';
+export * from './generator';
+export * from './types';

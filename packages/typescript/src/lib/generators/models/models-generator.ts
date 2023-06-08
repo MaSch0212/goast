@@ -15,15 +15,15 @@ import {
   TypeScriptModelsGeneratorConfig,
   TypeScriptModelsGeneratorConfigOverrides,
   defaultTypeScriptModelsGeneratorConfig,
-} from './config.js';
+} from './config';
 import {
   DefaultTypeScriptModelGenerator,
   TypeScriptModelGenerator,
   TypeScriptModelGeneratorResult,
   TypeScriptModelGeneratorType,
-} from './model-generator.js';
-import { ImportExportCollection } from '../import-collection';
-import { getModulePathRelativeToFile } from '../utils';
+} from './model-generator';
+import { ImportExportCollection } from '../../import-collection';
+import { getModulePathRelativeToFile } from '../../utils';
 
 export type TypeScriptModelsGeneratorResult = {
   models: {

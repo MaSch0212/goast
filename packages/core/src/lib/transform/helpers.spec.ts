@@ -8,7 +8,7 @@ import {
   getCustomFields,
   transformAdditionalProperties,
   transformSchemaProperties,
-} from './helpers.js';
+} from './helpers';
 import { OpenApiTransformerContext } from './types';
 
 describe('determineSchemaKind', () => {

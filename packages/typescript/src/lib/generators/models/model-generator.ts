@@ -6,8 +6,8 @@ import { ApiSchema, ArrayLikeApiSchema, CombinedLikeApiSchema, ObjectLikeApiSche
 import { SourceBuilder, getInitializedValue, resolveAnyOfAndAllOf, toCasing, toPascalCase } from '@goast/core/utils';
 
 import { TypeScriptModelGeneratorConfig } from './config';
-import { ImportExportCollection } from '../import-collection';
-import { getModulePathRelativeToFile, toTypeScriptPropertyName, toTypeScriptStringLiteral } from '../utils';
+import { ImportExportCollection } from '../../import-collection';
+import { getModulePathRelativeToFile, toTypeScriptPropertyName, toTypeScriptStringLiteral } from '../../utils';
 
 export type TypeScriptModelGeneratorResult = {
   typeName: string;

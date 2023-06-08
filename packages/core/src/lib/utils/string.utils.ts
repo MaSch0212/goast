@@ -12,7 +12,7 @@ import {
   CustomCaseOptions,
   BaseCaseOptions,
   StringCasingWithOptions,
-} from './string.utils.types.js';
+} from './string.utils.types';
 import { Nullable } from './type.utils';
 
 /**
