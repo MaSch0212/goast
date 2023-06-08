@@ -28,11 +28,11 @@ export class TypeScriptModelsGenerator extends OpenApiSchemasGenerationProviderB
   TypeScriptModelsGeneratorConfig,
   TypeScriptModelGeneratorResult
 > {
-  private readonly _modelGenerator: TypeScriptModelGeneratorType | TypeScriptModelGenerator;
+  private readonly _modelGenerator: TypeScriptModelGeneratorType;
 
-  constructor(modelGenerator?: TypeScriptModelGeneratorType | TypeScriptModelGenerator) {
+  constructor(modelGenerator?: TypeScriptModelGeneratorType) {
     super();
-    this._modelGenerator = modelGenerator ?? new DefaultTypeScriptModelGenerator();
+    this._modelGenerator = modelGenerator ?? DefaultTypeScriptModelGenerator;
   }
 
   protected override getDefaultConfig(): DefaultGenerationProviderConfig<TypeScriptModelsGeneratorConfig> {
@@ -100,7 +100,7 @@ export class TypeScriptModelsGenerator extends OpenApiSchemasGenerationProviderB
   }
 
   private initModelGenerator(schema: ApiSchema): TypeScriptModelGenerator {
-    const generator = typeof this._modelGenerator === 'function' ? new this._modelGenerator() : this._modelGenerator;
+    const generator = new this._modelGenerator();
     generator.init({
       config: this.config,
       data: this.data,

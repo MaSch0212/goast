@@ -1,22 +1,22 @@
 Map(15) {
-  '<root>\\out\\models.ts' => "export { EmptyObject } from './models/empty-object.model';\n" +
-    "export { MyString } from './models/my-string.model';\n" +
-    "export { MyTitle } from './models/my-title.model';\n" +
-    "export { ObjectWithAdditionalProperties } from './models/object-with-additional-properties.model';\n" +
-    "export { ObjectWithNullablePropertiesAndRequiredProperties } from './models/object-with-nullable-properties-and-required-properties.model';\n" +
-    "export { ObjectWithNullableProperties } from './models/object-with-nullable-properties.model';\n" +
-    "export { ObjectWithPropertiesAllOfAndAnyOf } from './models/object-with-properties-all-of-and-any-of.model';\n" +
-    "export { ObjectWithPropertiesAndAdditionalProperties } from './models/object-with-properties-and-additional-properties.model';\n" +
-    "export { ObjectWithProperties } from './models/object-with-properties.model';\n" +
-    "export { ObjectWithReferencesInAllOf } from './models/object-with-references-in-all-of.model';\n" +
-    "export { ObjectWithReferencesInAnyOf } from './models/object-with-references-in-any-of.model';\n" +
-    "export { ObjectWithReferencesInProperties } from './models/object-with-references-in-properties.model';\n" +
-    "export { ObjectWithRequiredProperties } from './models/object-with-required-properties.model';\n",
-  '<root>\\out\\models\\empty-object.model.ts' => 'export type EmptyObject = {};\n',
-  '<root>\\out\\models\\my-string.model.ts' => 'export type MyString = string;\n',
-  '<root>\\out\\models\\my-title.model.ts' => 'export type MyTitle = string;\n',
-  '<root>\\out\\models\\object-with-additional-properties.model.ts' => 'export type ObjectWithAdditionalProperties = Record<string, string>;\n',
-  '<root>\\out\\models\\object-with-nullable-properties-and-required-properties.model.ts' => 'export type ObjectWithNullablePropertiesAndRequiredProperties = {\n' +
+  '<root>\\out\\models.ts' => "export { EmptyObject } from './models/empty-object';\n" +
+    "export { MyString } from './models/my-string';\n" +
+    "export { MyTitle } from './models/my-title';\n" +
+    "export { ObjectWithAdditionalProperties } from './models/object-with-additional-properties';\n" +
+    "export { ObjectWithNullableProperties } from './models/object-with-nullable-properties';\n" +
+    "export { ObjectWithNullablePropertiesAndRequiredProperties } from './models/object-with-nullable-properties-and-required-properties';\n" +
+    "export { ObjectWithProperties } from './models/object-with-properties';\n" +
+    "export { ObjectWithPropertiesAllOfAndAnyOf } from './models/object-with-properties-all-of-and-any-of';\n" +
+    "export { ObjectWithPropertiesAndAdditionalProperties } from './models/object-with-properties-and-additional-properties';\n" +
+    "export { ObjectWithReferencesInAllOf } from './models/object-with-references-in-all-of';\n" +
+    "export { ObjectWithReferencesInAnyOf } from './models/object-with-references-in-any-of';\n" +
+    "export { ObjectWithReferencesInProperties } from './models/object-with-references-in-properties';\n" +
+    "export { ObjectWithRequiredProperties } from './models/object-with-required-properties';\n",
+  '<root>\\out\\models\\empty-object.ts' => 'export type EmptyObject = {};\n',
+  '<root>\\out\\models\\my-string.ts' => 'export type MyString = string;\n',
+  '<root>\\out\\models\\my-title.ts' => 'export type MyTitle = string;\n',
+  '<root>\\out\\models\\object-with-additional-properties.ts' => 'export type ObjectWithAdditionalProperties = Record<string, string>;\n',
+  '<root>\\out\\models\\object-with-nullable-properties-and-required-properties.ts' => 'export type ObjectWithNullablePropertiesAndRequiredProperties = {\n' +
     '  a: string | null;\n' +
     '  b: number | null;\n' +
     '  c: number | null;\n' +
@@ -24,7 +24,7 @@ Map(15) {
     '  e: Array<unknown> | null;\n' +
     '  f: {} | null;\n' +
     '};\n',
-  '<root>\\out\\models\\object-with-nullable-properties.model.ts' => 'export type ObjectWithNullableProperties = {\n' +
+  '<root>\\out\\models\\object-with-nullable-properties.ts' => 'export type ObjectWithNullableProperties = {\n' +
     '  a?: string | null;\n' +
     '  b?: number | null;\n' +
     '  c?: number | null;\n' +
@@ -32,7 +32,7 @@ Map(15) {
     '  e?: Array<unknown> | null;\n' +
     '  f?: {} | null;\n' +
     '};\n',
-  '<root>\\out\\models\\object-with-properties-all-of-and-any-of.model.ts' => 'export type ObjectWithPropertiesAllOfAndAnyOf = {\n' +
+  '<root>\\out\\models\\object-with-properties-all-of-and-any-of.ts' => 'export type ObjectWithPropertiesAllOfAndAnyOf = {\n' +
     '  a: string;\n' +
     '  b: number;\n' +
     '  c: number;\n' +
@@ -68,7 +68,7 @@ Map(15) {
     '  cc?: Array<unknown>;\n' +
     '  dd?: {};\n' +
     '}>;\n',
-  '<root>\\out\\models\\object-with-properties-and-additional-properties.model.ts' => 'export type ObjectWithPropertiesAndAdditionalProperties = {\n' +
+  '<root>\\out\\models\\object-with-properties-and-additional-properties.ts' => 'export type ObjectWithPropertiesAndAdditionalProperties = {\n' +
     '  a?: string;\n' +
     '  b?: number;\n' +
     '  c?: number;\n' +
@@ -76,7 +76,7 @@ Map(15) {
     '  e?: Array<unknown>;\n' +
     '  f?: {};\n' +
     '} & Record<string, string>;\n',
-  '<root>\\out\\models\\object-with-properties.model.ts' => 'export type ObjectWithProperties = {\n' +
+  '<root>\\out\\models\\object-with-properties.ts' => 'export type ObjectWithProperties = {\n' +
     '  a?: string;\n' +
     '  b?: number;\n' +
     '  c?: number;\n' +
@@ -84,19 +84,19 @@ Map(15) {
     '  e?: Array<unknown>;\n' +
     '  f?: {};\n' +
     '};\n',
-  '<root>\\out\\models\\object-with-references-in-all-of.model.ts' => "import { EmptyObject } from './empty-object.model';\n" +
-    "import { MyString } from './my-string.model';\n" +
-    "import { MyTitle } from './my-title.model';\n" +
+  '<root>\\out\\models\\object-with-references-in-all-of.ts' => "import { EmptyObject } from './empty-object';\n" +
+    "import { MyString } from './my-string';\n" +
+    "import { MyTitle } from './my-title';\n" +
     '\n' +
     'export type ObjectWithReferencesInAllOf = EmptyObject & MyTitle & MyString & string;\n',
-  '<root>\\out\\models\\object-with-references-in-any-of.model.ts' => "import { EmptyObject } from './empty-object.model';\n" +
-    "import { MyString } from './my-string.model';\n" +
-    "import { MyTitle } from './my-title.model';\n" +
+  '<root>\\out\\models\\object-with-references-in-any-of.ts' => "import { EmptyObject } from './empty-object';\n" +
+    "import { MyString } from './my-string';\n" +
+    "import { MyTitle } from './my-title';\n" +
     '\n' +
     'export type ObjectWithReferencesInAnyOf = Partial<EmptyObject> & Partial<MyTitle> & Partial<MyString> & Partial<string>;\n',
-  '<root>\\out\\models\\object-with-references-in-properties.model.ts' => "import { EmptyObject } from './empty-object.model';\n" +
-    "import { MyString } from './my-string.model';\n" +
-    "import { MyTitle } from './my-title.model';\n" +
+  '<root>\\out\\models\\object-with-references-in-properties.ts' => "import { EmptyObject } from './empty-object';\n" +
+    "import { MyString } from './my-string';\n" +
+    "import { MyTitle } from './my-title';\n" +
     '\n' +
     'export type ObjectWithReferencesInProperties = {\n' +
     '  a?: EmptyObject;\n' +
@@ -104,7 +104,7 @@ Map(15) {
     '  c?: MyString;\n' +
     '  d?: string;\n' +
     '};\n',
-  '<root>\\out\\models\\object-with-required-properties.model.ts' => 'export type ObjectWithRequiredProperties = {\n' +
+  '<root>\\out\\models\\object-with-required-properties.ts' => 'export type ObjectWithRequiredProperties = {\n' +
     '  a: string;\n' +
     '  b: number;\n' +
     '  c: number;\n' +
@@ -117,137 +117,137 @@ Map(15) {
     models: {
       'schema-1': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/EmptyObject',
-        filePath: '<root>\\out\\models\\empty-object.model.ts',
+        typeFilePath: '<root>\\out\\models\\empty-object.ts',
         typeName: 'EmptyObject'
       },
       'schema-10': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/a',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'string'
       },
       'schema-11': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/b',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'number'
       },
       'schema-12': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/c',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'number'
       },
       'schema-13': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/d',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'boolean'
       },
       'schema-14': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/e',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'Array<unknown>'
       },
       'schema-15': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/f',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: '{}'
       },
       'schema-16': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithAdditionalProperties',
-        filePath: '<root>\\out\\models\\object-with-additional-properties.model.ts',
+        typeFilePath: '<root>\\out\\models\\object-with-additional-properties.ts',
         typeName: 'ObjectWithAdditionalProperties'
       },
       'schema-17': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithAdditionalProperties/additionalProperties',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'string'
       },
       'schema-18': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties',
-        filePath: '<root>\\out\\models\\object-with-properties-and-additional-properties.model.ts',
+        typeFilePath: '<root>\\out\\models\\object-with-properties-and-additional-properties.ts',
         typeName: 'ObjectWithPropertiesAndAdditionalProperties'
       },
       'schema-19': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/a',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'string'
       },
       'schema-2': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithProperties',
-        filePath: '<root>\\out\\models\\object-with-properties.model.ts',
+        typeFilePath: '<root>\\out\\models\\object-with-properties.ts',
         typeName: 'ObjectWithProperties'
       },
       'schema-20': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/b',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'number'
       },
       'schema-21': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/c',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'number'
       },
       'schema-22': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/d',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'boolean'
       },
       'schema-23': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/e',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'Array<unknown>'
       },
       'schema-24': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/f',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: '{}'
       },
       'schema-25': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/additionalProperties',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'string'
       },
       'schema-26': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf',
-        filePath: '<root>\\out\\models\\object-with-properties-all-of-and-any-of.model.ts',
+        typeFilePath: '<root>\\out\\models\\object-with-properties-all-of-and-any-of.ts',
         typeName: 'ObjectWithPropertiesAllOfAndAnyOf'
       },
       'schema-27': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/a',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'string'
       },
       'schema-28': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/b',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'number'
       },
       'schema-29': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/c',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'number'
       },
       'schema-3': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/a',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'string'
       },
       'schema-30': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/d',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'boolean'
       },
       'schema-31': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/e',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'Array<unknown>'
       },
       'schema-32': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/f',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: '{}'
       },
       'schema-33': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: '{\n' +
           '  g?: string;\n' +
           '  h?: number;\n' +
@@ -259,42 +259,42 @@ Map(15) {
       },
       'schema-34': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/g',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'string'
       },
       'schema-35': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/h',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'number'
       },
       'schema-36': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/i',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'number'
       },
       'schema-37': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/j',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'boolean'
       },
       'schema-38': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/k',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'Array<unknown>'
       },
       'schema-39': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/l',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: '{}'
       },
       'schema-4': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/b',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'number'
       },
       'schema-40': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: '{\n' +
           '  m?: string;\n' +
           '  n?: number;\n' +
@@ -306,37 +306,37 @@ Map(15) {
       },
       'schema-41': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/m',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'string'
       },
       'schema-42': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/n',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'number'
       },
       'schema-43': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/o',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'number'
       },
       'schema-44': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/p',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'boolean'
       },
       'schema-45': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/q',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'Array<unknown>'
       },
       'schema-46': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/r',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: '{}'
       },
       'schema-47': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: '{\n' +
           '  s?: string;\n' +
           '  t?: number;\n' +
@@ -348,42 +348,42 @@ Map(15) {
       },
       'schema-48': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/s',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'string'
       },
       'schema-49': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/t',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'number'
       },
       'schema-5': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/c',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'number'
       },
       'schema-50': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/u',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'number'
       },
       'schema-51': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/v',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'boolean'
       },
       'schema-52': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/w',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'Array<unknown>'
       },
       'schema-53': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/x',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: '{}'
       },
       'schema-54': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: '{\n' +
           '  y?: string;\n' +
           '  z?: number;\n' +
@@ -395,207 +395,207 @@ Map(15) {
       },
       'schema-55': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/y',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'string'
       },
       'schema-56': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/z',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'number'
       },
       'schema-57': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/aa',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'number'
       },
       'schema-58': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/bb',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'boolean'
       },
       'schema-59': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/cc',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'Array<unknown>'
       },
       'schema-6': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/d',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'boolean'
       },
       'schema-60': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/dd',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: '{}'
       },
       'schema-61': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties',
-        filePath: '<root>\\out\\models\\object-with-nullable-properties.model.ts',
+        typeFilePath: '<root>\\out\\models\\object-with-nullable-properties.ts',
         typeName: 'ObjectWithNullableProperties'
       },
       'schema-62': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/a',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'string'
       },
       'schema-63': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/b',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'number'
       },
       'schema-64': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/c',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'number'
       },
       'schema-65': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/d',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'boolean'
       },
       'schema-66': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/e',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'Array<unknown>'
       },
       'schema-67': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/f',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: '{}'
       },
       'schema-68': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties',
-        filePath: '<root>\\out\\models\\object-with-nullable-properties-and-required-properties.model.ts',
+        typeFilePath: '<root>\\out\\models\\object-with-nullable-properties-and-required-properties.ts',
         typeName: 'ObjectWithNullablePropertiesAndRequiredProperties'
       },
       'schema-69': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/a',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'string'
       },
       'schema-7': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/e',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'Array<unknown>'
       },
       'schema-70': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/b',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'number'
       },
       'schema-71': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/c',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'number'
       },
       'schema-72': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/d',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'boolean'
       },
       'schema-73': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/e',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'Array<unknown>'
       },
       'schema-74': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/f',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: '{}'
       },
       'schema-75': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithReferencesInProperties',
-        filePath: '<root>\\out\\models\\object-with-references-in-properties.model.ts',
+        typeFilePath: '<root>\\out\\models\\object-with-references-in-properties.ts',
         typeName: 'ObjectWithReferencesInProperties'
       },
       'schema-76': {
-        __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithReferencesInProperties/properties/a',
-        filePath: '<root>\\out\\models\\empty-object.model.ts',
+        __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/EmptyObject',
+        typeFilePath: '<root>\\out\\models\\empty-object.ts',
         typeName: 'EmptyObject'
       },
       'schema-77': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WithTitle',
-        filePath: '<root>\\out\\models\\my-title.model.ts',
+        typeFilePath: '<root>\\out\\models\\my-title.ts',
         typeName: 'MyTitle'
       },
       'schema-78': {
-        __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithReferencesInProperties/properties/b',
-        filePath: '<root>\\out\\models\\my-title.model.ts',
+        __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WithTitle',
+        typeFilePath: '<root>\\out\\models\\my-title.ts',
         typeName: 'MyTitle'
       },
       'schema-79': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyString',
-        filePath: '<root>\\out\\models\\my-string.model.ts',
+        typeFilePath: '<root>\\out\\models\\my-string.ts',
         typeName: 'MyString'
       },
       'schema-8': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/f',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: '{}'
       },
       'schema-80': {
-        __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithReferencesInProperties/properties/c',
-        filePath: '<root>\\out\\models\\my-string.model.ts',
+        __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyString',
+        typeFilePath: '<root>\\out\\models\\my-string.ts',
         typeName: 'MyString'
       },
       'schema-81': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithReferencesInProperties/properties/d',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'string'
       },
       'schema-82': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithReferencesInAnyOf',
-        filePath: '<root>\\out\\models\\object-with-references-in-any-of.model.ts',
+        typeFilePath: '<root>\\out\\models\\object-with-references-in-any-of.ts',
         typeName: 'ObjectWithReferencesInAnyOf'
       },
       'schema-83': {
-        __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithReferencesInAnyOf/anyOf/0',
-        filePath: '<root>\\out\\models\\empty-object.model.ts',
+        __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/EmptyObject',
+        typeFilePath: '<root>\\out\\models\\empty-object.ts',
         typeName: 'EmptyObject'
       },
       'schema-84': {
-        __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithReferencesInAnyOf/anyOf/1',
-        filePath: '<root>\\out\\models\\my-title.model.ts',
+        __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WithTitle',
+        typeFilePath: '<root>\\out\\models\\my-title.ts',
         typeName: 'MyTitle'
       },
       'schema-85': {
-        __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithReferencesInAnyOf/anyOf/2',
-        filePath: '<root>\\out\\models\\my-string.model.ts',
+        __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyString',
+        typeFilePath: '<root>\\out\\models\\my-string.ts',
         typeName: 'MyString'
       },
       'schema-86': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithReferencesInAnyOf/anyOf/3',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'string'
       },
       'schema-87': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithReferencesInAllOf',
-        filePath: '<root>\\out\\models\\object-with-references-in-all-of.model.ts',
+        typeFilePath: '<root>\\out\\models\\object-with-references-in-all-of.ts',
         typeName: 'ObjectWithReferencesInAllOf'
       },
       'schema-88': {
-        __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithReferencesInAllOf/allOf/0',
-        filePath: '<root>\\out\\models\\empty-object.model.ts',
+        __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/EmptyObject',
+        typeFilePath: '<root>\\out\\models\\empty-object.ts',
         typeName: 'EmptyObject'
       },
       'schema-89': {
-        __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithReferencesInAllOf/allOf/1',
-        filePath: '<root>\\out\\models\\my-title.model.ts',
+        __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WithTitle',
+        typeFilePath: '<root>\\out\\models\\my-title.ts',
         typeName: 'MyTitle'
       },
       'schema-9': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties',
-        filePath: '<root>\\out\\models\\object-with-required-properties.model.ts',
+        typeFilePath: '<root>\\out\\models\\object-with-required-properties.ts',
         typeName: 'ObjectWithRequiredProperties'
       },
       'schema-90': {
-        __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithReferencesInAllOf/allOf/2',
-        filePath: '<root>\\out\\models\\my-string.model.ts',
+        __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyString',
+        typeFilePath: '<root>\\out\\models\\my-string.ts',
         typeName: 'MyString'
       },
       'schema-91': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\object-schemas.yml#/components/schemas/ObjectWithReferencesInAllOf/allOf/3',
-        filePath: undefined,
+        typeFilePath: undefined,
         typeName: 'string'
       }
     }

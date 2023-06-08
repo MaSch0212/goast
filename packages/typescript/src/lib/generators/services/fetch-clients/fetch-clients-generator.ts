@@ -32,11 +32,11 @@ export class TypeScriptClientsGenerator extends OpenApiServicesGenerationProvide
   TypeScriptFetchClientsGeneratorConfig,
   TypeScriptFetchClientGeneratorResult
 > {
-  private readonly _clientGenerator: TypeScriptFetchClientGeneratorType | TypeScriptFetchClientGenerator;
+  private readonly _clientGenerator: TypeScriptFetchClientGeneratorType;
 
-  constructor(clientGenerator?: TypeScriptFetchClientGeneratorType | TypeScriptFetchClientGenerator) {
+  constructor(clientGenerator?: TypeScriptFetchClientGeneratorType) {
     super();
-    this._clientGenerator = clientGenerator ?? new DefaultTypeScriptFetchClientGenerator();
+    this._clientGenerator = clientGenerator ?? DefaultTypeScriptFetchClientGenerator;
   }
 
   protected override getDefaultConfig(): DefaultGenerationProviderConfig<TypeScriptFetchClientsGeneratorConfig> {
@@ -118,7 +118,7 @@ export class TypeScriptClientsGenerator extends OpenApiServicesGenerationProvide
   }
 
   private initClientGenerator(service: ApiService): TypeScriptFetchClientGenerator {
-    const generator = typeof this._clientGenerator === 'function' ? new this._clientGenerator() : this._clientGenerator;
+    const generator = new this._clientGenerator();
     generator.init({
       config: this.config,
       data: this.data,

@@ -6,7 +6,7 @@ import { OpenApiGenerator } from '@goast/core';
 import { toCustomCase } from '@goast/core/utils';
 import { OpenApiVersion, openApiV2FilesDir, openApiV3FilesDir, openApiV3_1FilesDir, verify } from '@goast/test/utils';
 
-import { TypeScriptModelsGenerator } from '../lib/generators/models-generator';
+import { TypeScriptModelsGenerator } from '../lib/generators/models/models-generator';
 
 const filePaths: { [P in OpenApiVersion]: string } = {
   '2.0': openApiV2FilesDir,
