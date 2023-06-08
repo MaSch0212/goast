@@ -46,10 +46,22 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
     this._parser = parser;
   }
 
-  public use<PInput extends TOutput, POutput extends OpenApiGeneratorOutput, PConfig extends AnyConfig>(
+  public use<PInput extends OpenApiGeneratorInput, POutput extends OpenApiGeneratorOutput, PConfig extends AnyConfig>(
     generator:
-      | OpenApiGenerationProviderType<PInput, POutput, PConfig>
-      | OpenApiGenerationProvider<PInput, POutput, PConfig>,
+      | OpenApiGenerationProviderType<
+          TOutput extends PInput
+            ? PInput
+            : { __error: 'The current output of the generator does not satisfy the input of this generator.' },
+          POutput,
+          PConfig
+        >
+      | OpenApiGenerationProvider<
+          TOutput extends PInput
+            ? PInput
+            : { __error: 'The current output of the generator does not satisfy the input of this generator.' },
+          POutput,
+          PConfig
+        >,
     config?: Partial<PConfig>
   ): _OpenApiGenerator<Merge<[TOutput, POutput]>> {
     if (typeof generator === 'function') {
