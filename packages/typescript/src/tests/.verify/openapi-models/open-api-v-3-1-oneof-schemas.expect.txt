@@ -20,63 +20,63 @@ Map(8) {
     models: {
       'schema-1': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/EmptyOneOf',
-        typeFilePath: '<root>\\out\\models\\empty-one-of.ts',
-        typeName: 'EmptyOneOf'
+        filePath: '<root>\\out\\models\\empty-one-of.ts',
+        name: 'EmptyOneOf'
       },
       'schema-10': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyString',
-        typeFilePath: '<root>\\out\\models\\my-string.ts',
-        typeName: 'MyString'
+        filePath: '<root>\\out\\models\\my-string.ts',
+        name: 'MyString'
       },
       'schema-11': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyString',
-        typeFilePath: '<root>\\out\\models\\my-string.ts',
-        typeName: 'MyString'
+        filePath: '<root>\\out\\models\\my-string.ts',
+        name: 'MyString'
       },
       'schema-12': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/WithReferences/oneOf/3',
-        typeFilePath: undefined,
-        typeName: 'string'
+        filePath: undefined,
+        name: 'string'
       },
       'schema-2': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/OneOfSimpleTypes',
-        typeFilePath: '<root>\\out\\models\\one-of-simple-types.ts',
-        typeName: 'OneOfSimpleTypes'
+        filePath: '<root>\\out\\models\\one-of-simple-types.ts',
+        name: 'OneOfSimpleTypes'
       },
       'schema-3': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/OneOfSimpleTypes/oneOf/0',
-        typeFilePath: undefined,
-        typeName: 'string'
+        filePath: undefined,
+        name: 'string'
       },
       'schema-4': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/OneOfSimpleTypes/oneOf/1',
-        typeFilePath: undefined,
-        typeName: 'number'
+        filePath: undefined,
+        name: 'number'
       },
       'schema-5': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/IgnoreType',
-        typeFilePath: '<root>\\out\\models\\ignore-type.ts',
-        typeName: 'IgnoreType'
+        filePath: '<root>\\out\\models\\ignore-type.ts',
+        name: 'IgnoreType'
       },
       'schema-6': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/WithReferences',
-        typeFilePath: '<root>\\out\\models\\with-references.ts',
-        typeName: 'WithReferences'
+        filePath: '<root>\\out\\models\\with-references.ts',
+        name: 'WithReferences'
       },
       'schema-7': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/EmptyOneOf',
-        typeFilePath: '<root>\\out\\models\\empty-one-of.ts',
-        typeName: 'EmptyOneOf'
+        filePath: '<root>\\out\\models\\empty-one-of.ts',
+        name: 'EmptyOneOf'
       },
       'schema-8': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WithTitle',
-        typeFilePath: '<root>\\out\\models\\my-title.ts',
-        typeName: 'MyTitle'
+        filePath: '<root>\\out\\models\\my-title.ts',
+        name: 'MyTitle'
       },
       'schema-9': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WithTitle',
-        typeFilePath: '<root>\\out\\models\\my-title.ts',
-        typeName: 'MyTitle'
+        filePath: '<root>\\out\\models\\my-title.ts',
+        name: 'MyTitle'
       }
     }
   }

@@ -14,28 +14,28 @@ Map(7) {
     models: {
       'schema-1': {
         __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/WithTitle',
-        typeFilePath: '<root>\\out\\models\\my-title.ts',
-        typeName: 'MyTitle'
+        filePath: '<root>\\out\\models\\my-title.ts',
+        name: 'MyTitle'
       },
       'schema-2': {
         __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/WithAllCommon',
-        typeFilePath: '<root>\\out\\models\\with-all-common.ts',
-        typeName: 'WithAllCommon'
+        filePath: '<root>\\out\\models\\with-all-common.ts',
+        name: 'WithAllCommon'
       },
       'schema-3': {
         __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/MyEnum',
-        typeFilePath: '<root>\\out\\models\\my-enum.ts',
-        typeName: 'MyEnum'
+        filePath: '<root>\\out\\models\\my-enum.ts',
+        name: 'MyEnum'
       },
       'schema-4': {
         __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/WriteOnly',
-        typeFilePath: '<root>\\out\\models\\write-only.ts',
-        typeName: 'WriteOnly'
+        filePath: '<root>\\out\\models\\write-only.ts',
+        name: 'WriteOnly'
       },
       'schema-5': {
         __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/ReadOnly',
-        typeFilePath: '<root>\\out\\models\\read-only.ts',
-        typeName: 'ReadOnly'
+        filePath: '<root>\\out\\models\\read-only.ts',
+        name: 'ReadOnly'
       }
     }
   }

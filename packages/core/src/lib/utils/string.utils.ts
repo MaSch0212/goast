@@ -359,4 +359,11 @@ export class StringBuilder {
   public toString(): string {
     return this._str;
   }
+
+  /**
+   * Removes all characters from the current StringBuilder.
+   */
+  public clear(): void {
+    this._str = '';
+  }
 }

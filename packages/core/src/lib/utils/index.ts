@@ -1,4 +1,6 @@
 export * from './common.utils';
+export * from './endpoint.utils';
+export * from './factory';
 export * from './generator.utils';
 export * from './object.utils';
 export * from './schema.utils';

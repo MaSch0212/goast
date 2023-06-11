@@ -6,39 +6,30 @@ import { OpenApiGeneratorConfig, defaultOpenApiGeneratorConfig } from './config'
 import {
   AnyConfig,
   OpenApiGenerationProvider,
+  OpenApiGenerationProviderContext,
   OpenApiGenerationProviderFn,
-  OpenApiGenerationProviderType,
   OpenApiGeneratorContext,
   OpenApiGeneratorInput,
   OpenApiGeneratorOutput,
 } from './types';
 import { OpenApiParser } from '../parse/parser';
 import { ApiData } from '../transform';
-import { getInitializedValue } from '../utils';
-import { Merge } from '../utils/type.utils';
+import { ActionProvider } from '../utils/action-provider';
+import { EmptyConstructor, Merge } from '../utils/type.utils';
 
-type OpenApiGenerationProviders = (
-  | {
-      kind: 'providerCtor';
-      generator: OpenApiGenerationProviderType<OpenApiGeneratorInput, OpenApiGeneratorOutput, AnyConfig>;
-      config: AnyConfig | undefined;
-    }
-  | {
-      kind: 'provider';
-      generator: OpenApiGenerationProvider<OpenApiGeneratorInput, OpenApiGeneratorOutput, AnyConfig>;
-      config: AnyConfig | undefined;
-    }
-  | {
-      kind: 'providerFn';
-      generator: OpenApiGenerationProviderFn<OpenApiGeneratorInput, OpenApiGeneratorOutput, AnyConfig>;
-      config: AnyConfig | undefined;
-    }
-)[];
+type OpenApiGenerationProviders = {
+  provider: ActionProvider<OpenApiGenerationProviderFn>;
+  config: AnyConfig | undefined;
+}[];
+
+type VInput<TActual, TExpected> = TExpected extends TActual
+  ? TActual
+  : { __error: 'The current output of the generator does not satisfy the input of this generator.' };
 
 class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
-  private _providers: OpenApiGenerationProviders;
-  private _config: OpenApiGeneratorConfig;
-  private _parser: OpenApiParser;
+  private readonly _providers: OpenApiGenerationProviders;
+  private readonly _config: OpenApiGeneratorConfig;
+  private readonly _parser: OpenApiParser;
 
   constructor(config: OpenApiGeneratorConfig, providers: OpenApiGenerationProviders, parser: OpenApiParser) {
     this._providers = providers;
@@ -47,50 +38,36 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
   }
 
   public use<PInput extends OpenApiGeneratorInput, POutput extends OpenApiGeneratorOutput, PConfig extends AnyConfig>(
-    generator:
-      | OpenApiGenerationProviderType<
-          TOutput extends PInput
-            ? PInput
-            : { __error: 'The current output of the generator does not satisfy the input of this generator.' },
-          POutput,
-          PConfig
-        >
-      | OpenApiGenerationProvider<
-          TOutput extends PInput
-            ? PInput
-            : { __error: 'The current output of the generator does not satisfy the input of this generator.' },
-          POutput,
-          PConfig
-        >,
+    provider: ActionProvider<OpenApiGenerationProviderFn<VInput<PInput, TOutput>, POutput, PConfig>>,
     config?: Partial<PConfig>
   ): _OpenApiGenerator<Merge<[TOutput, POutput]>> {
-    if (typeof generator === 'function') {
-      this._providers.push({
-        kind: 'providerCtor',
-        generator,
-        config,
-      });
-    } else {
-      this._providers.push({
-        kind: 'provider',
-        generator,
-        config,
-      });
-    }
-
+    this._providers.push({ provider: provider as any, config });
     return new _OpenApiGenerator<Merge<[TOutput, POutput]>>(this._config, [...this._providers], this._parser);
   }
 
-  public useFn<PInput extends TOutput, POutput extends OpenApiGeneratorOutput, PConfig extends AnyConfig>(
-    generator: OpenApiGenerationProviderFn<PInput, POutput, PConfig>,
+  public useType<
+    PInput extends OpenApiGeneratorInput,
+    POutput extends OpenApiGeneratorOutput,
+    PConfig extends AnyConfig
+  >(
+    type: EmptyConstructor<OpenApiGenerationProvider<VInput<PInput, TOutput>, POutput, PConfig>>,
     config?: Partial<PConfig>
   ): _OpenApiGenerator<Merge<[TOutput, POutput]>> {
-    this._providers.push({
-      kind: 'providerFn',
-      generator: generator as OpenApiGenerationProviderFn<OpenApiGeneratorInput, OpenApiGeneratorOutput, AnyConfig>,
-      config,
-    });
-    return this as unknown as _OpenApiGenerator<Merge<[TOutput, POutput]>>;
+    return this.use(ActionProvider.fromType(type, 'generate'), config);
+  }
+
+  public useFn<PInput extends TOutput, POutput extends OpenApiGeneratorOutput, PConfig extends AnyConfig>(
+    fn: OpenApiGenerationProviderFn<VInput<PInput, TOutput>, POutput, PConfig>,
+    config?: Partial<PConfig>
+  ): _OpenApiGenerator<Merge<[TOutput, POutput]>> {
+    return this.use(ActionProvider.fromFn(fn), config);
+  }
+
+  public useValue<PInput extends TOutput, POutput extends OpenApiGeneratorOutput, PConfig extends AnyConfig>(
+    value: OpenApiGenerationProvider<VInput<PInput, TOutput>, POutput, PConfig>,
+    config?: Partial<PConfig>
+  ): _OpenApiGenerator<Merge<[TOutput, POutput]>> {
+    return this.use(ActionProvider.fromValue(value, 'generate'), config);
   }
 
   public async generate<T extends ApiData>(data: T): Promise<TOutput> {
@@ -107,21 +84,9 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
         data,
         input,
         config: this._config,
-        state: new Map(),
       };
 
-      let result: OpenApiGeneratorOutput | undefined;
-      if (generator.kind === 'providerCtor') {
-        const provider = new generator.generator();
-        provider.init(context, generator.config);
-        result = provider.generate();
-      } else if (generator.kind === 'provider') {
-        generator.generator.init(context, generator.config);
-        result = generator.generator.generate();
-      } else {
-        result = generator.generator(context, generator.config);
-      }
-
+      const result = generator.provider.run(context, generator.config);
       if (result) {
         input = mergeDeep(input, result);
       }
@@ -170,35 +135,30 @@ export type DefaultGenerationProviderConfig<T extends AnyConfig> = Omit<T, keyof
 export abstract class OpenApiGenerationProviderBase<
   TInput extends OpenApiGeneratorInput,
   TOutput extends OpenApiGeneratorOutput,
-  TConfig extends AnyConfig
+  TConfig extends AnyConfig,
+  TContext extends OpenApiGenerationProviderContext<TInput, TConfig>
 > implements OpenApiGenerationProvider<TInput, TOutput, TConfig>
 {
-  private _context?: OpenApiGeneratorContext<TInput>;
-  private _config?: OpenApiGeneratorConfig & TConfig;
-
-  public get context(): OpenApiGeneratorContext<TInput> {
-    return getInitializedValue(this._context);
-  }
-  public get config(): OpenApiGeneratorConfig & TConfig {
-    return getInitializedValue(this._config);
-  }
-  public get input(): TInput {
-    return this.context.input;
-  }
-  public get data(): ApiData {
-    return this.context.data;
-  }
-  public get state(): Map<string, unknown> {
-    return this.context.state;
+  public generate(context: OpenApiGeneratorContext<TInput>, config?: Partial<TConfig> | undefined): TOutput {
+    const ctx = this.buildContext(context, config);
+    return this.onGenerate(ctx);
   }
 
-  public init(context: OpenApiGeneratorContext<TInput>, config?: Partial<TConfig>): void {
-    this._context = context;
-    this._config = { ...this.getDefaultConfig(), ...context.config, ...config } as unknown as OpenApiGeneratorConfig &
-      TConfig;
+  protected getProviderContext(
+    context: OpenApiGeneratorContext<TInput>,
+    config: Partial<TConfig> | undefined,
+    defaultConfig: DefaultGenerationProviderConfig<TConfig>
+  ): OpenApiGenerationProviderContext<TInput, TConfig> {
+    const c = { ...defaultConfig, ...context.config, ...config } as unknown as OpenApiGeneratorConfig & TConfig;
+    return Object.assign(context, {
+      config: c,
+    });
   }
 
-  public abstract generate(): TOutput;
+  protected abstract buildContext(
+    context: OpenApiGeneratorContext<TInput>,
+    config?: Partial<TConfig> | undefined
+  ): TContext;
 
-  protected abstract getDefaultConfig(): DefaultGenerationProviderConfig<TConfig>;
+  protected abstract onGenerate(ctx: TContext): TOutput;
 }

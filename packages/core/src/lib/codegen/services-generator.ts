@@ -1,52 +1,67 @@
-import { OpenApiGenerationProviderBase } from './generator';
+import { DefaultGenerationProviderConfig, OpenApiGenerationProviderBase } from './generator';
 import { addSourceIfTest } from './internal-utils';
-import { OpenApiGeneratorInput, OpenApiGeneratorOutput, AnyConfig, OpenApiGeneratorContext } from './types';
+import {
+  OpenApiGeneratorInput,
+  OpenApiGeneratorOutput,
+  AnyConfig,
+  OpenApiGeneratorContext,
+  OpenApiGenerationProviderContext,
+} from './types';
 import { ApiService } from '../transform';
-import { getInitializedValue } from '../utils';
+
+export type OpenApiServicesGenerationProviderContext<
+  TInput extends OpenApiGeneratorInput,
+  TOutput extends OpenApiGeneratorOutput,
+  TConfig extends AnyConfig,
+  TServiceOutput extends OpenApiGeneratorOutput
+> = OpenApiGenerationProviderContext<TInput, TConfig> & {
+  existingServiceResults: Map<string, TServiceOutput>;
+  output: TOutput;
+};
 
 export abstract class OpenApiServicesGenerationProviderBase<
   TInput extends OpenApiGeneratorInput,
   TOutput extends OpenApiGeneratorOutput,
   TConfig extends AnyConfig,
-  TServiceOutput extends OpenApiGeneratorOutput
-> extends OpenApiGenerationProviderBase<TInput, TOutput, TConfig> {
-  private _result: TOutput | undefined;
-
-  protected readonly existingServiceResults = new Map<string, TServiceOutput>();
-
-  protected get result(): TOutput {
-    return getInitializedValue(this._result);
+  TServiceOutput extends OpenApiGeneratorOutput,
+  TContext extends OpenApiServicesGenerationProviderContext<TInput, TOutput, TConfig, TServiceOutput>
+> extends OpenApiGenerationProviderBase<TInput, TOutput, TConfig, TContext> {
+  protected override getProviderContext(
+    context: OpenApiGeneratorContext<TInput>,
+    config: Partial<TConfig> | undefined,
+    defaultConfig: DefaultGenerationProviderConfig<TConfig>
+  ): OpenApiServicesGenerationProviderContext<TInput, TOutput, TConfig, TServiceOutput> {
+    const ctx = super.getProviderContext(context, config, defaultConfig);
+    return Object.assign(ctx, {
+      existingServiceResults: new Map<string, TServiceOutput>(),
+      output: this.initResult(ctx),
+    });
   }
 
-  public override init(context: OpenApiGeneratorContext<TInput>, config?: Partial<TConfig> | undefined): void {
-    super.init(context, config);
-    this._result = this.initResult();
-  }
-
-  public override generate(): TOutput {
-    for (const service of this.data.services) {
-      this.getServiceResult(service);
+  public override onGenerate(ctx: TContext): TOutput {
+    for (const service of ctx.data.services) {
+      this.getServiceResult(ctx, service);
     }
 
-    return this.result;
+    return ctx.output;
   }
 
-  public getServiceResult(service: ApiService): TServiceOutput {
-    const existingResult = this.existingServiceResults.get(service.id);
+  public getServiceResult(ctx: TContext, service: ApiService): TServiceOutput {
+    const existingResult = ctx.existingServiceResults.get(service.id);
     if (existingResult) return existingResult;
 
-    const result = this.generateService(service);
+    const result = this.generateService(ctx, service);
 
-    addSourceIfTest(this.config, result, () =>
+    addSourceIfTest(ctx.config, result, () =>
       service.$src ? `${service.$src.file}#${service.$src.path}` : `tag:${service.name}`
     );
-    this.addServiceResult(service, result);
+    this.addServiceResult(ctx, service, result);
     return result;
   }
 
-  protected abstract initResult(): TOutput;
+  protected abstract initResult(ctx: OpenApiGenerationProviderContext<TInput, TConfig>): TOutput;
 
-  protected abstract generateService(service: ApiService): TServiceOutput;
+  protected abstract generateService(ctx: TContext, service: ApiService): TServiceOutput;
 
-  protected abstract addServiceResult(service: ApiService, result: TServiceOutput): void;
+  protected abstract addServiceResult(ctx: TContext, service: ApiService, result: TServiceOutput): void;
 }

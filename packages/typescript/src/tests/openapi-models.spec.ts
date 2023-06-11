@@ -38,7 +38,7 @@ for (const [version, path] of Object.entries(filePaths)) {
           newLine: '\n',
         };
         const state = await new OpenApiGenerator(generatorOptions)
-          .use(TypeScriptModelsGenerator, { __test__: true } as any)
+          .useType(TypeScriptModelsGenerator, { __test__: true } as any)
           .parseAndGenerate(filePath);
         writtenFiles.set('state', state);
 

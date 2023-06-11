@@ -1,6 +1,7 @@
-import { DefaultGenerationProviderConfig } from '@goast/core';
-import { StringCasing, StringCasingWithOptions } from '@goast/core/utils';
+import { ApiSchema, DefaultGenerationProviderConfig, OpenApiSchemasGenerationProviderContext } from '@goast/core';
+import { Nullable, OptionalProperties, StringCasing, StringCasingWithOptions } from '@goast/core/utils';
 
+import { TypeScriptComponentOutput } from '../../common-results';
 import { TypeScriptGeneratorConfig, defaultTypeScriptGeneratorConfig } from '../../config';
 
 export type TypeScriptModelGeneratorConfig = TypeScriptGeneratorConfig & {
@@ -37,3 +38,26 @@ export const defaultTypeScriptModelsGeneratorConfig: DefaultGenerationProviderCo
 
     indexFilePath: 'models.ts',
   };
+
+export type TypeScriptModelsGeneratorInput = {};
+
+export type TypeScriptModelsGeneratorOutput = {
+  models: {
+    [schemaId: string]: TypeScriptModelGeneratorOutput;
+  };
+  modelIndexFilePath: Nullable<string>;
+};
+
+export type TypeScriptModelGeneratorOutput = OptionalProperties<TypeScriptComponentOutput, 'filePath'>;
+
+export type TypeScriptModelsGeneratorContext = OpenApiSchemasGenerationProviderContext<
+  TypeScriptModelsGeneratorInput,
+  TypeScriptModelsGeneratorOutput,
+  TypeScriptModelsGeneratorConfig,
+  TypeScriptModelGeneratorOutput
+>;
+
+export type TypeScriptModelGeneratorContext = TypeScriptModelsGeneratorContext & {
+  schema: ApiSchema;
+  getSchemaResult(schema: ApiSchema): TypeScriptModelGeneratorOutput;
+};

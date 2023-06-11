@@ -8,28 +8,27 @@ export type OpenApiGeneratorContext<TInput extends OpenApiGeneratorInput = OpenA
   data: ApiData;
   input: TInput;
   config: OpenApiGeneratorConfig;
-  state: Map<string, unknown>;
 };
 
-export interface OpenApiGenerationProviderType<
-  TInput extends OpenApiGeneratorInput,
-  TOutput extends OpenApiGeneratorOutput,
-  TConfig extends AnyConfig
-> extends Function {
-  new (): OpenApiGenerationProvider<TInput, TOutput, TConfig>;
-}
+export type OpenApiGenerationProviderContext<TInput extends OpenApiGeneratorInput, TConfig extends AnyConfig> = Omit<
+  OpenApiGeneratorContext<TInput>,
+  'config'
+> & {
+  config: OpenApiGeneratorConfig & TConfig;
+};
 
 export interface OpenApiGenerationProvider<
-  TInput extends OpenApiGeneratorInput,
-  TOutput extends OpenApiGeneratorOutput,
-  TConfig extends AnyConfig
+  TInput extends OpenApiGeneratorInput = OpenApiGeneratorInput,
+  TOutput extends OpenApiGeneratorOutput = OpenApiGeneratorOutput,
+  TConfig extends AnyConfig = AnyConfig
 > {
-  init(context: OpenApiGeneratorContext<TInput>, config?: Partial<TConfig>): void;
-  generate(): TOutput;
+  generate(
+    ...args: Parameters<OpenApiGenerationProviderFn<TInput, TOutput, TConfig>>
+  ): ReturnType<OpenApiGenerationProviderFn<TInput, TOutput, TConfig>>;
 }
 
 export type OpenApiGenerationProviderFn<
-  TInput extends OpenApiGeneratorInput,
-  TOutput extends OpenApiGeneratorOutput,
-  TConfig extends AnyConfig
+  TInput extends OpenApiGeneratorInput = OpenApiGeneratorInput,
+  TOutput extends OpenApiGeneratorOutput = OpenApiGeneratorOutput,
+  TConfig extends AnyConfig = AnyConfig
 > = (context: OpenApiGeneratorContext<TInput>, config?: Partial<TConfig>) => TOutput;

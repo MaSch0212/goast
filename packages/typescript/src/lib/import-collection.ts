@@ -1,4 +1,4 @@
-import { StringBuilder } from '@goast/core/utils';
+import { SourceBuilderOptions, StringBuilder } from '@goast/core/utils';
 
 export class ImportExportCollection {
   private readonly _imports: Map<string, Set<string>> = new Map();
@@ -35,8 +35,8 @@ export class ImportExportCollection {
     this._exports.clear();
   }
 
-  public toString(newLineChar: string): string {
-    const builder = new StringBuilder({ newLine: newLineChar });
+  public toString(options: Partial<SourceBuilderOptions>): string {
+    const builder = new StringBuilder(options);
     this.writeTo(builder);
     return builder.toString();
   }

@@ -2,111 +2,109 @@ import { dirname, resolve } from 'path';
 
 import { ensureDirSync, writeFileSync } from 'fs-extra';
 
-import { ApiSchema, DefaultGenerationProviderConfig, OpenApiSchemasGenerationProviderBase } from '@goast/core';
-import { Nullable } from '@goast/core/utils';
+import { ApiSchema, OpenApiGeneratorContext, OpenApiSchemasGenerationProviderBase } from '@goast/core';
+import { Factory } from '@goast/core/utils';
 
-import { TypeScriptModelsGeneratorConfig, defaultTypeScriptModelsGeneratorConfig } from './config';
+import { DefaultTypeScriptModelGenerator, TypeScriptModelGenerator } from './model-generator';
 import {
-  DefaultTypeScriptModelGenerator,
-  TypeScriptModelGenerator,
-  TypeScriptModelGeneratorResult,
-  TypeScriptModelGeneratorType,
-} from './model-generator';
+  TypeScriptModelGeneratorOutput,
+  TypeScriptModelsGeneratorConfig,
+  TypeScriptModelsGeneratorContext,
+  TypeScriptModelsGeneratorInput,
+  TypeScriptModelsGeneratorOutput,
+  defaultTypeScriptModelsGeneratorConfig,
+} from './models';
 import { ImportExportCollection } from '../../import-collection';
 import { getModulePathRelativeToFile } from '../../utils';
 
-export type TypeScriptModelsGeneratorResult = {
-  models: {
-    [schemaId: string]: TypeScriptModelGeneratorResult;
-  };
-  modelIndexFilePath: Nullable<string>;
-};
+type Input = TypeScriptModelsGeneratorInput;
+type Output = TypeScriptModelsGeneratorOutput;
+type Config = TypeScriptModelsGeneratorConfig;
+type SchemaOutput = TypeScriptModelGeneratorOutput;
+type Context = TypeScriptModelsGeneratorContext;
 
 export class TypeScriptModelsGenerator extends OpenApiSchemasGenerationProviderBase<
-  {},
-  TypeScriptModelsGeneratorResult,
-  TypeScriptModelsGeneratorConfig,
-  TypeScriptModelGeneratorResult
+  Input,
+  Output,
+  Config,
+  SchemaOutput,
+  Context
 > {
-  private readonly _modelGenerator: TypeScriptModelGeneratorType;
+  private readonly _modelGeneratorFactory: Factory<TypeScriptModelGenerator, []>;
 
-  constructor(modelGenerator?: TypeScriptModelGeneratorType) {
+  constructor(modelGeneratorFactory?: Factory<TypeScriptModelGenerator, []>) {
     super();
-    this._modelGenerator = modelGenerator ?? DefaultTypeScriptModelGenerator;
+    this._modelGeneratorFactory = modelGeneratorFactory ?? Factory.fromValue(new DefaultTypeScriptModelGenerator());
   }
 
-  protected override getDefaultConfig(): DefaultGenerationProviderConfig<TypeScriptModelsGeneratorConfig> {
-    return defaultTypeScriptModelsGeneratorConfig;
-  }
-
-  protected override initResult(): TypeScriptModelsGeneratorResult {
+  protected override initResult(): Output {
     return {
       models: {},
       modelIndexFilePath: undefined,
     };
   }
 
-  public override generate(): TypeScriptModelsGeneratorResult {
-    super.generate();
-    this.result.modelIndexFilePath = this.generateIndexFile();
-    return this.result;
+  protected override buildContext(
+    context: OpenApiGeneratorContext<TypeScriptModelsGeneratorInput>,
+    config?: Partial<Config> | undefined
+  ): Context {
+    return this.getProviderContext(context, config, defaultTypeScriptModelsGeneratorConfig);
   }
 
-  protected override generateSchema(schema: ApiSchema): TypeScriptModelGeneratorResult {
-    const modelGenerator = this.initModelGenerator(schema);
-    return modelGenerator.generate();
+  public override onGenerate(ctx: Context): Output {
+    const output = super.onGenerate(ctx);
+    output.modelIndexFilePath = this.generateIndexFile(ctx);
+    return output;
   }
 
-  protected override addSchemaResult(schema: ApiSchema, result: TypeScriptModelGeneratorResult): void {
-    this.result.models[schema.id] = result;
+  protected override generateSchema(ctx: Context, schema: ApiSchema): SchemaOutput {
+    const modelGenerator = this._modelGeneratorFactory.create();
+    return modelGenerator.generate({
+      ...ctx,
+      schema,
+      getSchemaResult: (schema) => this.getSchemaResult(ctx, schema),
+    });
   }
 
-  protected generateIndexFile(): string | undefined {
-    if (!this.shouldGenerateIndexFile()) {
+  protected override addSchemaResult(ctx: Context, schema: ApiSchema, result: SchemaOutput): void {
+    ctx.output.models[schema.id] = result;
+  }
+
+  protected generateIndexFile(ctx: Context): string | undefined {
+    if (!this.shouldGenerateIndexFile(ctx)) {
       return undefined;
     }
 
-    const filePath = this.getIndexFilePath();
-    console.log(`Generating index file to ${filePath}...`);
+    const filePath = this.getIndexFilePath(ctx);
+    console.log(`Generating model index file to ${filePath}...`);
     ensureDirSync(dirname(filePath));
 
-    writeFileSync(filePath, this.generateIndexFileContent());
+    writeFileSync(filePath, this.generateIndexFileContent(ctx));
 
     return filePath;
   }
 
-  protected getIndexFilePath(): string {
-    return resolve(this.config.outputDir, this.config.indexFilePath ?? 'models.ts');
+  protected getIndexFilePath(ctx: Context): string {
+    return resolve(ctx.config.outputDir, ctx.config.indexFilePath ?? 'models.ts');
   }
 
-  protected shouldGenerateIndexFile(): boolean {
-    return this.config.indexFilePath !== null;
+  protected shouldGenerateIndexFile(ctx: Context): boolean {
+    return ctx.config.indexFilePath !== null;
   }
 
-  protected generateIndexFileContent(): string {
+  protected generateIndexFileContent(ctx: Context): string {
     const exports = new ImportExportCollection();
-    const absoluteIndexFilePath = this.getIndexFilePath();
+    const absoluteIndexFilePath = this.getIndexFilePath(ctx);
 
-    for (const modelId in this.result.models) {
-      const model = this.result.models[modelId];
-      if (!model.typeFilePath) continue;
+    for (const modelId in ctx.output.models) {
+      const model = ctx.output.models[modelId];
+      if (!model.filePath) continue;
       exports.addExport(
-        model.typeName,
-        getModulePathRelativeToFile(absoluteIndexFilePath, model.typeFilePath, this.config.importModuleTransformer)
+        model.name,
+        getModulePathRelativeToFile(absoluteIndexFilePath, model.filePath, ctx.config.importModuleTransformer)
       );
     }
 
-    return exports.toString(this.config.newLine);
-  }
-
-  private initModelGenerator(schema: ApiSchema): TypeScriptModelGenerator {
-    const generator = new this._modelGenerator();
-    generator.init({
-      config: this.config,
-      data: this.data,
-      schema,
-      getSchemaResult: (schema: ApiSchema) => this.getSchemaResult(schema),
-    });
-    return generator;
+    return exports.toString(ctx.config);
   }
 }

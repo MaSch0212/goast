@@ -1,50 +1,64 @@
-import { OpenApiGenerationProviderBase } from './generator';
+import { DefaultGenerationProviderConfig, OpenApiGenerationProviderBase } from './generator';
 import { addSourceIfTest } from './internal-utils';
-import { OpenApiGeneratorInput, OpenApiGeneratorOutput, AnyConfig, OpenApiGeneratorContext } from './types';
+import {
+  OpenApiGeneratorInput,
+  OpenApiGeneratorOutput,
+  AnyConfig,
+  OpenApiGenerationProviderContext,
+  OpenApiGeneratorContext,
+} from './types';
 import { ApiEndpoint } from '../transform';
-import { getInitializedValue } from '../utils';
+
+export type OpenApiEndpointsGenerationProviderContext<
+  TInput extends OpenApiGeneratorInput,
+  TOutput extends OpenApiGeneratorOutput,
+  TConfig extends AnyConfig,
+  TEndpointOutput extends OpenApiGeneratorOutput
+> = OpenApiGenerationProviderContext<TInput, TConfig> & {
+  existingEndpointResults: Map<string, TEndpointOutput>;
+  output: TOutput;
+};
 
 export abstract class OpenApiEndpointsGenerationProviderBase<
   TInput extends OpenApiGeneratorInput,
   TOutput extends OpenApiGeneratorOutput,
   TConfig extends AnyConfig,
-  TEndpointOutput extends OpenApiGeneratorOutput
-> extends OpenApiGenerationProviderBase<TInput, TOutput, TConfig> {
-  private _result: TOutput | undefined;
-
-  protected readonly existingEndpointResults = new Map<string, TEndpointOutput>();
-
-  protected get result(): TOutput {
-    return getInitializedValue(this._result);
+  TEndpointOutput extends OpenApiGeneratorOutput,
+  TContext extends OpenApiEndpointsGenerationProviderContext<TInput, TOutput, TConfig, TEndpointOutput>
+> extends OpenApiGenerationProviderBase<TInput, TOutput, TConfig, TContext> {
+  protected override getProviderContext(
+    context: OpenApiGeneratorContext<TInput>,
+    config: Partial<TConfig> | undefined,
+    defaultConfig: DefaultGenerationProviderConfig<TConfig>
+  ): OpenApiEndpointsGenerationProviderContext<TInput, TOutput, TConfig, TEndpointOutput> {
+    const ctx = super.getProviderContext(context, config, defaultConfig);
+    return Object.assign(ctx, {
+      existingEndpointResults: new Map<string, TEndpointOutput>(),
+      output: this.initResult(ctx),
+    });
   }
 
-  public override init(context: OpenApiGeneratorContext<TInput>, config?: Partial<TConfig> | undefined): void {
-    super.init(context, config);
-    this._result = this.initResult();
-  }
-
-  public override generate(): TOutput {
-    for (const endpoint of this.data.endpoints) {
-      this.getEndpointResult(endpoint);
+  protected override onGenerate(ctx: TContext): TOutput {
+    for (const endpoint of ctx.data.endpoints) {
+      this.getEndpointResult(ctx, endpoint);
     }
 
-    return this.result;
+    return ctx.output;
   }
 
-  public getEndpointResult(endpoint: ApiEndpoint): TEndpointOutput {
-    const existingResult = this.existingEndpointResults.get(endpoint.id);
+  public getEndpointResult(ctx: TContext, endpoint: ApiEndpoint): TEndpointOutput {
+    const existingResult = ctx.existingEndpointResults.get(endpoint.id);
     if (existingResult) return existingResult;
 
-    const result = this.generateEndpoint(endpoint);
-
-    addSourceIfTest(this.config, result, () => `${endpoint.$src.file}#${endpoint.$src.path}`);
-    this.addEndpointResult(endpoint, result);
+    const result = this.generateEndpoint(ctx, endpoint);
+    addSourceIfTest(ctx.config, result, () => `${endpoint.$src.file}#${endpoint.$src.path}`);
+    this.addEndpointResult(ctx, endpoint, result);
     return result;
   }
 
-  protected abstract initResult(): TOutput;
+  protected abstract initResult(ctx: OpenApiGenerationProviderContext<TInput, TConfig>): TOutput;
 
-  protected abstract generateEndpoint(endpoint: ApiEndpoint): TEndpointOutput;
+  protected abstract generateEndpoint(ctx: TContext, endpoint: ApiEndpoint): TEndpointOutput;
 
-  protected abstract addEndpointResult(endpoint: ApiEndpoint, result: TEndpointOutput): void;
+  protected abstract addEndpointResult(ctx: TContext, endpoint: ApiEndpoint, result: TEndpointOutput): void;
 }

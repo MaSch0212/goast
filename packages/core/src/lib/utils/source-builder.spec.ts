@@ -262,19 +262,19 @@ describe('SourceBuilder', () => {
     });
   });
 
-  describe('if', () => {
+  describe('applyIf', () => {
     it('should append the content when condition is true', () => {
-      sb.if(true, (x) => x.append('stuff'));
+      sb.applyIf(true, (x) => x.append('stuff'));
       expect(sb.toString()).toBe(`stuff`);
     });
 
     it('should not append the content when condition is false', () => {
-      sb.if(false, (x) => x.append('stuff'));
+      sb.applyIf(false, (x) => x.append('stuff'));
       expect(sb.toString()).toBe(``);
     });
 
     it('should append the content when condition function returns true', () => {
-      sb.if(
+      sb.applyIf(
         () => true,
         (x) => x.append('stuff')
       );
@@ -282,7 +282,7 @@ describe('SourceBuilder', () => {
     });
 
     it('should not append the content when condition function returns false', () => {
-      sb.if(
+      sb.applyIf(
         () => false,
         (x) => x.append('stuff')
       );
@@ -290,9 +290,9 @@ describe('SourceBuilder', () => {
     });
   });
 
-  describe('ifElse', () => {
+  describe('applyIfElse', () => {
     it('should append the correct content when condition is true', () => {
-      sb.ifElse(
+      sb.applyIfElse(
         true,
         (x) => x.append('stuff'),
         (x) => x.append('other stuff')
@@ -301,7 +301,7 @@ describe('SourceBuilder', () => {
     });
 
     it('should append the correct content when condition is false', () => {
-      sb.ifElse(
+      sb.applyIfElse(
         false,
         (x) => x.append('stuff'),
         (x) => x.append('other stuff')
@@ -310,7 +310,7 @@ describe('SourceBuilder', () => {
     });
 
     it('should append the correct content when condition function returns true', () => {
-      sb.ifElse(
+      sb.applyIfElse(
         () => true,
         (x) => x.append('stuff'),
         (x) => x.append('other stuff')
@@ -319,7 +319,7 @@ describe('SourceBuilder', () => {
     });
 
     it('should append the correct content when condition function returns false', () => {
-      sb.ifElse(
+      sb.applyIfElse(
         () => false,
         (x) => x.append('stuff'),
         (x) => x.append('other stuff')

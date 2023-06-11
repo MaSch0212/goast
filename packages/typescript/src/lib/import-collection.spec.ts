@@ -1,10 +1,14 @@
+import { SourceBuilderOptions } from '@goast/core/utils';
+
 import { ImportExportCollection } from './import-collection';
 
 describe('ImportExportCollection', () => {
   let collection: ImportExportCollection;
+  let sourceBuilderOptions: Partial<SourceBuilderOptions>;
 
   beforeEach(() => {
     collection = new ImportExportCollection();
+    sourceBuilderOptions = { newLine: '\n' };
   });
 
   describe('addImport', () => {
@@ -12,7 +16,7 @@ describe('ImportExportCollection', () => {
       collection.addImport('myImport', 'myModule');
       expect(collection.hasImports).toBe(true);
       expect(collection.hasExports).toBe(false);
-      expect(collection.toString('\n')).toBe("import { myImport } from 'myModule';\n");
+      expect(collection.toString(sourceBuilderOptions)).toBe("import { myImport } from 'myModule';\n");
     });
 
     it('should add a new import to an existing module', () => {
@@ -20,7 +24,7 @@ describe('ImportExportCollection', () => {
       collection.addImport('myImport2', 'myModule');
       expect(collection.hasImports).toBe(true);
       expect(collection.hasExports).toBe(false);
-      expect(collection.toString('\n')).toBe("import { myImport1, myImport2 } from 'myModule';\n");
+      expect(collection.toString(sourceBuilderOptions)).toBe("import { myImport1, myImport2 } from 'myModule';\n");
     });
   });
 
@@ -29,7 +33,7 @@ describe('ImportExportCollection', () => {
       collection.addExport('myExport', 'myModule');
       expect(collection.hasImports).toBe(false);
       expect(collection.hasExports).toBe(true);
-      expect(collection.toString('\n')).toBe("export { myExport } from 'myModule';\n");
+      expect(collection.toString(sourceBuilderOptions)).toBe("export { myExport } from 'myModule';\n");
     });
 
     it('should add a new export to an existing module', () => {
@@ -37,7 +41,7 @@ describe('ImportExportCollection', () => {
       collection.addExport('myExport2', 'myModule');
       expect(collection.hasImports).toBe(false);
       expect(collection.hasExports).toBe(true);
-      expect(collection.toString('\n')).toBe("export { myExport1, myExport2 } from 'myModule';\n");
+      expect(collection.toString(sourceBuilderOptions)).toBe("export { myExport1, myExport2 } from 'myModule';\n");
     });
   });
 
@@ -50,19 +54,19 @@ describe('ImportExportCollection', () => {
       collection.clear();
       expect(collection.hasImports).toBe(false);
       expect(collection.hasExports).toBe(false);
-      expect(collection.toString('\n')).toBe('');
+      expect(collection.toString(sourceBuilderOptions)).toBe('');
     });
   });
 
   describe('toString', () => {
     it('should return an empty string if the collection is empty', () => {
-      expect(collection.toString('\n')).toBe('');
+      expect(collection.toString(sourceBuilderOptions)).toBe('');
     });
 
     it('should return a string representation of the collection', () => {
       collection.addImport('myImport', 'myModule');
       collection.addExport('myExport', 'myModule');
-      expect(collection.toString('\n')).toBe(
+      expect(collection.toString(sourceBuilderOptions)).toBe(
         "import { myImport } from 'myModule';\n\nexport { myExport } from 'myModule';\n"
       );
     });

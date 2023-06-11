@@ -2,128 +2,120 @@ import { dirname, resolve } from 'path';
 
 import { ensureDirSync, writeFileSync } from 'fs-extra';
 
-import { ApiService, DefaultGenerationProviderConfig, OpenApiServicesGenerationProviderBase } from '@goast/core';
+import { ApiService, OpenApiGeneratorContext, OpenApiServicesGenerationProviderBase } from '@goast/core';
+import { Factory } from '@goast/core/utils';
 
-import { TypeScriptFetchClientsGeneratorConfig, defaultTypeScriptFetchClientsGeneratorConfig } from './config';
+import { DefaultTypeScriptFetchClientGenerator, TypeScriptFetchClientGenerator } from './fetch-client-generator';
 import {
-  DefaultTypeScriptFetchClientGenerator,
-  TypeScriptFetchClientGenerator,
-  TypeScriptFetchClientGeneratorResult,
-  TypeScriptFetchClientGeneratorType,
-} from './fetch-client-generator';
+  TypeScriptFetchClientGeneratorOutput,
+  TypeScriptFetchClientsGeneratorConfig,
+  TypeScriptFetchClientsGeneratorContext,
+  TypeScriptFetchClientsGeneratorInput,
+  TypeScriptFetchClientsGeneratorOutput,
+  defaultTypeScriptFetchClientsGeneratorConfig,
+} from './models';
 import { ImportExportCollection } from '../../../import-collection';
 import { getModulePathRelativeToFile } from '../../../utils';
-import { TypeScriptModelsGeneratorResult } from '../../models/models-generator';
-import { TypeScriptClientInterfacesGeneratorResult } from '../client-interfaces/client-interfaces-generator';
 
-export type TypeScriptFetchClientsGeneratorInput = TypeScriptModelsGeneratorResult &
-  Partial<TypeScriptClientInterfacesGeneratorResult>;
-
-export type TypeScriptFetchClientsGeneratorResult = {
-  clients: {
-    [serviceId: string]: TypeScriptFetchClientGeneratorResult;
-  };
-  clientIndexFilePath: string | undefined;
-};
+type Input = TypeScriptFetchClientsGeneratorInput;
+type Output = TypeScriptFetchClientsGeneratorOutput;
+type Config = TypeScriptFetchClientsGeneratorConfig;
+type ServiceOutput = TypeScriptFetchClientGeneratorOutput;
+type Context = TypeScriptFetchClientsGeneratorContext;
 
 export class TypeScriptClientsGenerator extends OpenApiServicesGenerationProviderBase<
-  TypeScriptFetchClientsGeneratorInput,
-  TypeScriptFetchClientsGeneratorResult,
-  TypeScriptFetchClientsGeneratorConfig,
-  TypeScriptFetchClientGeneratorResult
+  Input,
+  Output,
+  Config,
+  ServiceOutput,
+  Context
 > {
-  private readonly _clientGenerator: TypeScriptFetchClientGeneratorType;
+  private readonly _clientGeneratorFactory: Factory<TypeScriptFetchClientGenerator, []>;
 
-  constructor(clientGenerator?: TypeScriptFetchClientGeneratorType) {
+  constructor(clientGeneratorFactory?: Factory<TypeScriptFetchClientGenerator, []>) {
     super();
-    this._clientGenerator = clientGenerator ?? DefaultTypeScriptFetchClientGenerator;
+    this._clientGeneratorFactory =
+      clientGeneratorFactory ?? Factory.fromValue(new DefaultTypeScriptFetchClientGenerator());
   }
 
-  protected override getDefaultConfig(): DefaultGenerationProviderConfig<TypeScriptFetchClientsGeneratorConfig> {
-    return defaultTypeScriptFetchClientsGeneratorConfig;
-  }
-
-  protected override initResult(): TypeScriptFetchClientsGeneratorResult {
+  protected override initResult(): Output {
     return {
       clients: {},
       clientIndexFilePath: undefined,
+      clientInterfaceIndexFilePath: undefined,
     };
   }
 
-  public override generate(): TypeScriptFetchClientsGeneratorResult {
-    super.generate();
-    this.result.clientIndexFilePath = this.generateIndexFile();
-    return this.result;
+  protected override buildContext(
+    context: OpenApiGeneratorContext<Input>,
+    config?: Partial<Config> | undefined
+  ): Context {
+    return this.getProviderContext(context, config, defaultTypeScriptFetchClientsGeneratorConfig);
   }
 
-  protected override generateService(service: ApiService): TypeScriptFetchClientGeneratorResult {
-    const clientGenerator = this.initClientGenerator(service);
-    return clientGenerator.generate();
+  public override onGenerate(ctx: Context): Output {
+    const output = super.onGenerate(ctx);
+    output.clientIndexFilePath = this.generateIndexFile(ctx);
+    return output;
   }
 
-  protected override addServiceResult(service: ApiService, result: TypeScriptFetchClientGeneratorResult): void {
-    this.result.clients[service.id] = result;
+  protected override generateService(ctx: Context, service: ApiService): ServiceOutput {
+    const clientGenerator = this._clientGeneratorFactory.create();
+    return clientGenerator.generate({
+      ...ctx,
+      service,
+    });
   }
 
-  protected generateIndexFile(): string | undefined {
-    if (!this.shouldGenerateIndexFile()) {
+  protected override addServiceResult(ctx: Context, service: ApiService, result: ServiceOutput): void {
+    ctx.output.clients[service.id] = result;
+  }
+
+  protected generateIndexFile(ctx: Context): string | undefined {
+    if (!this.shouldGenerateIndexFile(ctx)) {
       return undefined;
     }
 
-    const filePath = this.getIndexFilePath();
+    const filePath = this.getIndexFilePath(ctx);
     console.log(`Generating index file to ${filePath}...`);
     ensureDirSync(dirname(filePath));
 
-    writeFileSync(filePath, this.generateIndexFileContent(filePath));
+    writeFileSync(filePath, this.generateIndexFileContent(ctx, filePath));
 
     return filePath;
   }
 
-  protected getIndexFilePath(): string {
-    return resolve(this.config.outputDir, this.config.indexFilePath ?? 'clients.ts');
+  protected getIndexFilePath(ctx: Context): string {
+    return resolve(ctx.config.outputDir, ctx.config.indexFilePath ?? 'clients.ts');
   }
 
-  protected shouldGenerateIndexFile(): boolean {
-    return this.config.indexFilePath !== null;
+  protected shouldGenerateIndexFile(ctx: Context): boolean {
+    return ctx.config.indexFilePath !== null;
   }
 
-  protected generateIndexFileContent(absoluteIndexFilePath: string): string {
+  protected generateIndexFileContent(ctx: Context, absoluteIndexFilePath: string): string {
     const exports = new ImportExportCollection();
 
-    for (const clientId in this.result.clients) {
-      const client = this.result.clients[clientId];
-      if (!client.classFilePath) continue;
-      exports.addExport(
-        client.className,
-        getModulePathRelativeToFile(absoluteIndexFilePath, client.classFilePath, this.config.importModuleTransformer)
-      );
-    }
-
-    if (this.input.clientInterfaceIndexFilePath === absoluteIndexFilePath) {
-      for (const clientId in this.input.clients) {
-        const client = this.input.clients[clientId];
-        if (!client.interfaceFilePath) continue;
+    for (const clientId in ctx.output.clients) {
+      const client = ctx.output.clients[clientId];
+      if (client.class?.filePath) {
         exports.addExport(
-          client.interfaceName,
+          client.class.name,
+          getModulePathRelativeToFile(absoluteIndexFilePath, client.class.filePath, ctx.config.importModuleTransformer)
+        );
+      }
+      if (client.interface?.filePath) {
+        exports.addExport(
+          client.interface.name,
           getModulePathRelativeToFile(
             absoluteIndexFilePath,
-            client.interfaceFilePath,
-            this.config.importModuleTransformer
+            client.interface.filePath,
+            ctx.config.importModuleTransformer
           )
         );
       }
     }
 
-    return exports.toString(this.config.newLine);
-  }
-
-  private initClientGenerator(service: ApiService): TypeScriptFetchClientGenerator {
-    const generator = new this._clientGenerator();
-    generator.init({
-      config: this.config,
-      data: this.data,
-      service,
-    });
-    return generator;
+    return exports.toString(ctx.config);
   }
 }

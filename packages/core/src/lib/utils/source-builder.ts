@@ -220,7 +220,7 @@ export class SourceBuilder extends StringBuilder {
    * @param builderFn The builder function to apply.
    * @returns This source builder instance.
    */
-  public apply(builderFn: (builder: SourceBuilder) => void): this {
+  public apply(builderFn: (builder: this) => void): this {
     builderFn(this);
     return this;
   }
@@ -276,7 +276,7 @@ export class SourceBuilder extends StringBuilder {
    * @param builderFn The function to add content.
    * @returns A reference to this instance.
    */
-  public if(condition: Condition, builderFn: (builder: this) => void): this {
+  public applyIf(condition: Condition, builderFn: (builder: this) => void): this {
     if (evalCondition(condition)) {
       builderFn(this);
     }
@@ -291,7 +291,7 @@ export class SourceBuilder extends StringBuilder {
    * @param elseBuilderFn The function to add content if the condition is false.
    * @returns A reference to this instance.
    */
-  public ifElse(
+  public applyIfElse(
     condition: Condition,
     builderFn: (builder: this) => void,
     elseBuilderFn: (builder: this) => void
