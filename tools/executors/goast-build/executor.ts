@@ -58,26 +58,32 @@ async function prepare(options: ExecutorOptions, context: ExecutorContext): Prom
 }
 
 async function buildTypeScript(ctx: Context) {
+  console.log('Emitting types...');
+  const emitProject = createTypeScriptProject(ctx, ModuleKind.None, 'types', true);
+  await buildTypeScriptProject(emitProject);
+  console.log(`  - Done (types)${EOL}`);
+
   console.log('Building CommonJS...');
-  const cjsProject = createTypeScriptProject(ctx, ModuleKind.CommonJS);
+  const cjsProject = createTypeScriptProject(ctx, ModuleKind.CommonJS, 'cjs', false);
   await buildTypeScriptProject(cjsProject);
-  await renameJavaScriptFilesToCjs(ctx.distDir);
+  await writeJson(join(cjsProject.compilerOptions.get().outDir, 'package.json'), { type: 'commonjs' });
   console.log(`  - Done (CommonJS)${EOL}`);
 
   console.log('Building ES2015...');
-  const mjsProject = createTypeScriptProject(ctx, ModuleKind.ES2015, false);
+  const mjsProject = createTypeScriptProject(ctx, ModuleKind.ES2015, 'esm', false);
   await buildTypeScriptProject(mjsProject);
   console.log(`  - Done (ES2015)${EOL}`);
 }
 
-function createTypeScriptProject(ctx: Context, moduleKind: ModuleKind, declaration: boolean = true) {
+function createTypeScriptProject(ctx: Context, moduleKind: ModuleKind, outDir: string, declaration: boolean = true) {
   const project = new Project({
     tsConfigFilePath: ctx.tsConfig,
     compilerOptions: {
-      outDir: normalizePath(join(ctx.distDir, 'dist')),
+      outDir: normalizePath(join(ctx.distDir, outDir)),
       rootDir: ctx.projectSourceRoot,
       module: moduleKind,
       declaration,
+      emitDeclarationOnly: declaration,
     },
     resolutionHost: (moduleResolutionHost, getCompilerOptions) => {
       return {
@@ -113,21 +119,6 @@ async function buildTypeScriptProject(project: Project): Promise<EmitResult> {
   return emitResult;
 }
 
-async function renameJavaScriptFilesToCjs(distDir: string) {
-  const jsFiles = await glob(normalizePath(join(distDir, '**', '*.js')));
-  for (const file of jsFiles) {
-    await rename(file, file.replace(/\.js$/, '.cjs'));
-  }
-
-  const jsMapFiles = await glob(normalizePath(join(distDir, '**', '*.js.map')));
-  for (const file of jsMapFiles) {
-    const map = await readJson(file);
-    map.file = map.file.replace(/\.js$/, '.cjs');
-    await writeJson(file, map);
-    await rename(file, file.replace(/\.js\.map$/, '.cjs.map'));
-  }
-}
-
 async function buildPackageJson(ctx: Context) {
   console.log('Building package.json...');
   const { target, dependencies } = checkDependencies(ctx, ctx.tsConfig);
@@ -144,7 +135,6 @@ async function buildPackageJson(ctx: Context) {
       main: `dist/${removeTsExtension(getRelativeSourceFilePath(ctx, ctx.entryFile))}`,
       outputPath: ctx.distDir,
       updateBuildableProjectDepsInPackageJson: true,
-      outputFileExtensionForCjs: '.cjs',
       format: ['cjs', 'esm'],
     },
     ctx,
@@ -152,8 +142,13 @@ async function buildPackageJson(ctx: Context) {
     dependencies
   );
 
+  const relativeIndex = removeTsExtension(getRelativeSourceFilePath(ctx, ctx.entryFile));
   const packageJson = await readJson(join(ctx.distDir, 'package.json'));
   packageJson.exports = {};
+  packageJson.type = 'module';
+  packageJson.module = `./esm/${relativeIndex}.js`;
+  packageJson.main = `./cjs/${relativeIndex}.js`;
+  packageJson.types = `./types/${relativeIndex}.d.ts`;
   addExport(ctx, packageJson, { exportName: '.', entryFile: ctx.entryFile });
   for (const entryPoint of ctx.additionalEntryPoints) {
     addExport(ctx, packageJson, entryPoint);
@@ -174,9 +169,9 @@ function addExport(ctx: Context, packageJson: any, entryPoint: EntryPoint) {
       : './' + entryPoint.exportName;
   const entryPointFile = removeTsExtension(getRelativeSourceFilePath(ctx, entryPoint.entryFile));
   packageJson.exports[entryPointName] = {
-    import: `./dist/${entryPointFile}.js`,
-    require: `./dist/${entryPointFile}.cjs`,
-    types: `./dist/${entryPointFile}.d.ts`,
+    import: `./esm/${entryPointFile}.js`,
+    require: `./cjs/${entryPointFile}.js`,
+    types: `./types/${entryPointFile}.d.ts`,
   };
 }
 
