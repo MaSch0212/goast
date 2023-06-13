@@ -1,7 +1,6 @@
 import { resolve } from 'path';
 
-import { ApiEndpoint } from '@goast/core';
-import { getEndpointUrlPreview, toCasing } from '@goast/core/utils';
+import { ApiEndpoint, getEndpointUrlPreview, toCasing } from '@goast/core';
 
 import { TypeScriptFetchClientGeneratorContext, TypeScriptFetchClientGeneratorOutput } from './models';
 import { TypeScriptFileBuilder } from '../../../file-builder';

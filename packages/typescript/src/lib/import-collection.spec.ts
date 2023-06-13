@@ -1,4 +1,4 @@
-import { SourceBuilderOptions } from '@goast/core/utils';
+import { SourceBuilderOptions } from '@goast/core';
 
 import { ImportExportCollection } from './import-collection';
 

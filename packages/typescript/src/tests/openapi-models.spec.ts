@@ -2,8 +2,7 @@ import { join } from 'path';
 
 import fs from 'fs-extra';
 
-import { OpenApiGenerator } from '@goast/core';
-import { toCustomCase } from '@goast/core/utils';
+import { OpenApiGenerator, toCustomCase } from '@goast/core';
 import { OpenApiVersion, openApiV2FilesDir, openApiV3FilesDir, openApiV3_1FilesDir, verify } from '@goast/test/utils';
 
 import { TypeScriptModelsGenerator } from '../lib/generators/models/models-generator';

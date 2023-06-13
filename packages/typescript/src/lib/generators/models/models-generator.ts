@@ -2,8 +2,7 @@ import { dirname, resolve } from 'path';
 
 import { ensureDirSync, writeFileSync } from 'fs-extra';
 
-import { ApiSchema, OpenApiGeneratorContext, OpenApiSchemasGenerationProviderBase } from '@goast/core';
-import { Factory } from '@goast/core/utils';
+import { ApiSchema, OpenApiGeneratorContext, OpenApiSchemasGenerationProviderBase, Factory } from '@goast/core';
 
 import { DefaultTypeScriptModelGenerator, TypeScriptModelGenerator } from './model-generator';
 import {

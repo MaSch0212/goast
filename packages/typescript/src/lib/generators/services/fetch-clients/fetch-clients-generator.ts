@@ -2,8 +2,7 @@ import { dirname, resolve } from 'path';
 
 import { ensureDirSync, writeFileSync } from 'fs-extra';
 
-import { ApiService, OpenApiGeneratorContext, OpenApiServicesGenerationProviderBase } from '@goast/core';
-import { Factory } from '@goast/core/utils';
+import { ApiService, OpenApiGeneratorContext, OpenApiServicesGenerationProviderBase, Factory } from '@goast/core';
 
 import { DefaultTypeScriptFetchClientGenerator, TypeScriptFetchClientGenerator } from './fetch-client-generator';
 import {

@@ -1,5 +1,9 @@
-import { DefaultGenerationProviderConfig, OpenApiGeneratorConfig } from '@goast/core';
-import { StringCasing, StringCasingWithOptions } from '@goast/core/utils';
+import {
+  DefaultGenerationProviderConfig,
+  OpenApiGeneratorConfig,
+  StringCasing,
+  StringCasingWithOptions,
+} from '@goast/core';
 
 import { ImportModuleTransformer } from './utils';
 

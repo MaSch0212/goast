@@ -8,8 +8,9 @@ import {
   ArrayLikeApiSchema,
   CombinedLikeApiSchema,
   ObjectLikeApiSchema,
+  resolveAnyOfAndAllOf,
+  toCasing,
 } from '@goast/core';
-import { resolveAnyOfAndAllOf, toCasing } from '@goast/core/utils';
 
 import { TypeScriptModelGeneratorContext, TypeScriptModelGeneratorOutput } from './models';
 import { TypeScriptFileBuilder } from '../../file-builder';

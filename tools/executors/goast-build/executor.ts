@@ -75,7 +75,7 @@ async function buildTypeScript(ctx: Context) {
   console.log(`  - Done (ES2015)${EOL}`);
 }
 
-function createTypeScriptProject(ctx: Context, moduleKind: ModuleKind, outDir: string, declaration: boolean = true) {
+function createTypeScriptProject(ctx: Context, moduleKind: ModuleKind, outDir: string, declaration: boolean) {
   const project = new Project({
     tsConfigFilePath: ctx.tsConfig,
     compilerOptions: {

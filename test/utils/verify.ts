@@ -2,7 +2,7 @@ import { dirname, join, relative, resolve, basename } from 'path';
 import { ensureDir, pathExists, readFile, remove, writeFile } from 'fs-extra';
 import * as util from 'util';
 import { spawn } from 'child_process';
-import { toCasing } from '@goast/core/utils';
+import { toCasing } from '@goast/core';
 import { nxRootDir } from './paths';
 
 type VerifyError = 'no-expect-file' | 'verify-failed';

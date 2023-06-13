@@ -1,5 +1,11 @@
-import { ApiService, DefaultGenerationProviderConfig, OpenApiServicesGenerationProviderContext } from '@goast/core';
-import { StringCasing, StringCasingWithOptions, Nullable } from '@goast/core/utils';
+import {
+  ApiService,
+  DefaultGenerationProviderConfig,
+  OpenApiServicesGenerationProviderContext,
+  StringCasing,
+  StringCasingWithOptions,
+  Nullable,
+} from '@goast/core';
 
 import { TypeScriptComponentOutput } from '../../../common-results';
 import { TypeScriptGeneratorConfig, defaultTypeScriptGeneratorConfig } from '../../../config';

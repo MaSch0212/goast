@@ -1,4 +1,4 @@
-import { SourceBuilder } from '@goast/core/utils';
+import { SourceBuilder } from '@goast/core';
 
 import { TypeScriptGeneratorConfig } from './config';
 import { ImportExportCollection } from './import-collection';

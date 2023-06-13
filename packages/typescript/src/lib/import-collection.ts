@@ -1,4 +1,4 @@
-import { SourceBuilderOptions, StringBuilder } from '@goast/core/utils';
+import { SourceBuilderOptions, StringBuilder } from '@goast/core';
 
 export class ImportExportCollection {
   private readonly _imports: Map<string, Set<string>> = new Map();

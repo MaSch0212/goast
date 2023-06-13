@@ -1,5 +1,12 @@
-import { ApiSchema, DefaultGenerationProviderConfig, OpenApiSchemasGenerationProviderContext } from '@goast/core';
-import { Nullable, OptionalProperties, StringCasing, StringCasingWithOptions } from '@goast/core/utils';
+import {
+  ApiSchema,
+  DefaultGenerationProviderConfig,
+  OpenApiSchemasGenerationProviderContext,
+  Nullable,
+  OptionalProperties,
+  StringCasing,
+  StringCasingWithOptions,
+} from '@goast/core';
 
 import { TypeScriptComponentOutput } from '../../common-results';
 import { TypeScriptGeneratorConfig, defaultTypeScriptGeneratorConfig } from '../../config';

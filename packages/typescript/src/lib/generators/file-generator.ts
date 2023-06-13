@@ -1,5 +1,4 @@
-import { OpenApiGenerationProviderContext, OpenApiGeneratorInput } from '@goast/core';
-import { toCasing } from '@goast/core/utils';
+import { OpenApiGenerationProviderContext, OpenApiGeneratorInput, toCasing } from '@goast/core';
 
 import { TypeScriptGeneratorConfig } from '../config';
 import { toTypeScriptPropertyName, toTypeScriptStringLiteral } from '../utils';
