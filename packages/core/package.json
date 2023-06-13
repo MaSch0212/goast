@@ -1,5 +1,11 @@
 {
   "name": "@goast/core",
-  "version": "0.0.1",
+  "version": "0.0.2",
+  "repository": "https://github.com/MaSch0212/goast.git",
+  "author": {
+    "name": "Marc Schmidt (MaSch0212)",
+    "url": "https://github.com/MaSch0212"
+  },
+  "license": "MIT",
   "type": "commonjs"
 }
