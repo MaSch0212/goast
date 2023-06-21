@@ -23,6 +23,10 @@
     {
       "name": "📦 TypeScript",
       "path": "packages/typescript/src"
+    },
+    {
+      "name": "📦 Kotlin",
+      "path": "packages/kotlin/src"
     }
   ],
   "tasks": {

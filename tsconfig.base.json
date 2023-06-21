@@ -17,6 +17,7 @@
     "paths": {
       "@goast/cli": ["packages/cli/src/index.ts"],
       "@goast/core": ["packages/core/src/index.ts"],
+      "@goast/kotlin": ["packages/kotlin/src/index.ts"],
       "@goast/test/utils": ["test/utils/index.ts"],
       "@goast/typescript": ["packages/typescript/src/index.ts"]
     }
