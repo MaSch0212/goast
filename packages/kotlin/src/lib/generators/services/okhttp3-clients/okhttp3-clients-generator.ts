@@ -1,0 +1,83 @@
+import { writeFileSync } from 'fs';
+import { dirname, resolve } from 'path';
+
+import { ensureDirSync, readFileSync, readdirSync } from 'fs-extra';
+
+import { ApiService, Factory, OpenApiGeneratorContext, OpenApiServicesGenerationProviderBase } from '@goast/core';
+
+import {
+  KotlinOkHttp3ClientGeneratorOutput,
+  KotlinOkHttp3ClientsGeneratorConfig,
+  KotlinOkHttp3ClientsGeneratorContext,
+  KotlinOkHttp3ClientsGeneratorInput,
+  KotlinOkHttp3ClientsGeneratorOutput,
+  defaultKotlinOkHttp3ClientsGeneratorConfig,
+} from './models';
+import { KotlinOkHttp3Generator, DefaultKotlinOkHttp3Generator } from './okhttp3-client-generator';
+import { KotlinServicesGeneratorInput } from '../spring-controllers';
+
+type Input = KotlinOkHttp3ClientsGeneratorInput;
+type Output = KotlinOkHttp3ClientsGeneratorOutput;
+type Config = KotlinOkHttp3ClientsGeneratorConfig;
+type ServiceOutput = KotlinOkHttp3ClientGeneratorOutput;
+type Context = KotlinOkHttp3ClientsGeneratorContext;
+
+export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProviderBase<
+  Input,
+  Output,
+  Config,
+  ServiceOutput,
+  Context
+> {
+  private readonly _serviceGeneratorFactory: Factory<KotlinOkHttp3Generator, []>;
+
+  constructor(serviceGeneratorFactory?: Factory<KotlinOkHttp3Generator, []>) {
+    super();
+    this._serviceGeneratorFactory = serviceGeneratorFactory ?? Factory.fromValue(new DefaultKotlinOkHttp3Generator());
+  }
+
+  public override onGenerate(ctx: Context): Output {
+    this.copyInfrastructureFiles(ctx);
+    return super.onGenerate(ctx);
+  }
+
+  protected initResult(): Output {
+    return {
+      clients: {},
+    };
+  }
+
+  protected generateService(ctx: Context, service: ApiService): ServiceOutput {
+    const serviceGenerator = this._serviceGeneratorFactory.create();
+    return serviceGenerator.generate({
+      ...ctx,
+      service,
+    });
+  }
+
+  protected addServiceResult(ctx: Context, service: ApiService, result: ServiceOutput): void {
+    ctx.output.clients[service.id] = result;
+  }
+
+  protected buildContext(
+    context: OpenApiGeneratorContext<KotlinServicesGeneratorInput>,
+    config?: Partial<Config> | undefined
+  ): Context {
+    context.data.services = context.data.services.filter((x) => x.name !== 'exclude-from-generation');
+    return this.getProviderContext(context, config, defaultKotlinOkHttp3ClientsGeneratorConfig);
+  }
+
+  private copyInfrastructureFiles(ctx: Context): void {
+    const sourceDir = resolve(dirname(require.resolve('@goast/kotlin')), '../assets/client/okhttp3');
+    const targetDir = resolve(ctx.config.outputDir, ctx.config.infrastructurePackageName.replace(/\./g, '/'));
+    ensureDirSync(targetDir);
+
+    const files = readdirSync(sourceDir);
+    for (const file of files) {
+      const fileContent = readFileSync(resolve(sourceDir, file))
+        .toString()
+        .replace(/@PACKAGE_NAME@/g, ctx.config.infrastructurePackageName);
+      writeFileSync(resolve(targetDir, file), fileContent);
+    }
+  }
+}

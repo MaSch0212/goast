@@ -25,7 +25,7 @@ export class KotlinFileBuilder extends SourceBuilder {
     return this;
   }
 
-  public appendAnnotation(name: string, packageName: string | undefined, args?: AnnotationArgument<this>[]): this {
+  public appendAnnotation(name: string, packageName?: string, args?: AnnotationArgument<this>[]): this {
     const allArgs: [key: string | undefined, value: AnnotationArgumentValue<this>][] = [];
     if (args) {
       for (const a of args) {
