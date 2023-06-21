@@ -15,6 +15,7 @@ import {
 import { OpenApiParser } from '../parse/parser';
 import { ApiData } from '../transform';
 import { ActionProvider } from '../utils/action-provider';
+import { DirectoryScanOptions, getFiles } from '../utils/file-system.utils';
 import { EmptyConstructor, Merge } from '../utils/type.utils';
 
 type OpenApiGenerationProviders = {
@@ -98,6 +99,12 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
     const data = await this._parser.parseApisAndTransform(...fileNames);
     return await this.generate(data);
   }
+
+  public async parseAndGenerateFromDir(dir: string, options?: Partial<DirectoryScanOptions>): Promise<TOutput> {
+    const filter = (file: string) =>
+      (file.endsWith('.yml') || file.endsWith('.yaml') || file.endsWith('.json')) && (options?.filter?.(file) ?? true);
+    return this.parseAndGenerate(...(await getFiles(dir, { ...options, filter })));
+  }
 }
 
 export class OpenApiGenerator extends _OpenApiGenerator<{}> {
@@ -149,7 +156,7 @@ export abstract class OpenApiGenerationProviderBase<
     config: Partial<TConfig> | undefined,
     defaultConfig: DefaultGenerationProviderConfig<TConfig>
   ): OpenApiGenerationProviderContext<TInput, TConfig> {
-    const c = { ...defaultConfig, ...context.config, ...config } as unknown as OpenApiGeneratorConfig & TConfig;
+    const c = { ...context.config, ...defaultConfig, ...config } as unknown as OpenApiGeneratorConfig & TConfig;
     return Object.assign(context, {
       config: c,
     });
