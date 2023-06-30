@@ -53,12 +53,7 @@ export class DefaultKotlinSpringControllerGenerator
       .ensureCurrentLineEmpty()
       .apply((builder) => this.generateApiInterfaceSignature(ctx, builder))
       .append(' ')
-      .parenthesize('{}', (builder) =>
-        builder
-          .appendLine()
-          .apply((builder) => this.generateApiInterfaceContent(ctx, builder))
-          .ensureCurrentLineEmpty()
-      );
+      .parenthesizeMultiline('{}', (builder) => this.generateApiInterfaceContent(ctx, builder));
   }
 
   protected generateApiInterfaceAnnotations(ctx: Context, builder: Builder): void {
@@ -100,12 +95,7 @@ export class DefaultKotlinSpringControllerGenerator
       .ensureCurrentLineEmpty()
       .apply((builder) => this.generateApiInterfaceMethodSignature(ctx, builder, endpoint))
       .append(' ')
-      .parenthesize('{}', (builder) =>
-        builder
-          .appendLine()
-          .apply((builder) => this.generateApiInterfaceMethodContent(ctx, builder, endpoint))
-          .appendLine()
-      );
+      .parenthesizeMultiline('{}', (builder) => this.generateApiInterfaceMethodContent(ctx, builder, endpoint));
   }
 
   protected generateApiInterfaceMethodAnnnotations(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
@@ -117,20 +107,17 @@ export class DefaultKotlinSpringControllerGenerator
         [
           'responses',
           (builder) =>
-            builder.parenthesize('[]', (builder) =>
-              builder
-                .appendLine()
-                .forEachSeparated(endpoint.responses, ',\n', (builder, response) =>
-                  builder
-                    .append('ApiResponse')
-                    .addImport('ApiResponse', 'io.swagger.v3.oas.annotations.responses')
-                    .parenthesize('()', (builder) =>
-                      builder
-                        .append(`responseCode = ${this.toStringLiteral(ctx, response.statusCode?.toString())}, `)
-                        .append(`description = ${this.toStringLiteral(ctx, response.description?.trim())}`)
-                    )
-                )
-                .appendLine()
+            builder.parenthesizeMultiline('[]', (builder) =>
+              builder.forEachSeparated(endpoint.responses, ',\n', (builder, response) =>
+                builder
+                  .append('ApiResponse')
+                  .addImport('ApiResponse', 'io.swagger.v3.oas.annotations.responses')
+                  .parenthesize('()', (builder) =>
+                    builder
+                      .append(`responseCode = ${this.toStringLiteral(ctx, response.statusCode?.toString())}, `)
+                      .append(`description = ${this.toStringLiteral(ctx, response.description?.trim())}`)
+                  )
+              )
             ),
           endpoint.responses.length > 0,
         ],
@@ -150,12 +137,7 @@ export class DefaultKotlinSpringControllerGenerator
   protected generateApiInterfaceMethodSignature(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
     builder
       .append(`suspend fun ${toCasing(endpoint.name, 'camel')}`)
-      .parenthesize('()', (builder) =>
-        builder
-          .appendLine()
-          .apply((builder) => this.generateApiInterfaceMethodParameters(ctx, builder, endpoint))
-          .appendLine()
-      )
+      .parenthesizeMultiline('()', (builder) => this.generateApiInterfaceMethodParameters(ctx, builder, endpoint))
       .append(': ')
       .apply((builder) => this.generateApiInterfaceMethodReturnType(ctx, builder, endpoint));
   }
@@ -271,12 +253,7 @@ export class DefaultKotlinSpringControllerGenerator
       .ensureCurrentLineEmpty()
       .apply((builder) => this.generateApiControllerSignature(ctx, builder))
       .append(' ')
-      .parenthesize('{}', (builder) =>
-        builder
-          .appendLine()
-          .apply((builder) => this.generateApiControllerContent(ctx, builder))
-          .ensureCurrentLineEmpty()
-      );
+      .parenthesizeMultiline('{}', (builder) => this.generateApiControllerContent(ctx, builder));
   }
 
   protected generateApiControllerAnnotations(ctx: Context, builder: Builder): void {
@@ -294,12 +271,7 @@ export class DefaultKotlinSpringControllerGenerator
     builder
       .append('class ')
       .append(this.getApiControllerName(ctx))
-      .parenthesize('()', (builder) =>
-        builder
-          .appendLine()
-          .apply((builder) => this.generateApiControllerParameters(ctx, builder))
-          .ensureCurrentLineEmpty()
-      )
+      .parenthesizeMultiline('()', (builder) => this.generateApiControllerParameters(ctx, builder))
       .append(' : ')
       .append(this.getApiInterfaceName(ctx));
   }
@@ -318,15 +290,13 @@ export class DefaultKotlinSpringControllerGenerator
       .appendLine(this.getApiDelegateInterfaceName(ctx))
       .appendLine()
       .append('init ')
-      .parenthesize('{}', (builder) =>
+      .parenthesizeMultiline('{}', (builder) =>
         builder
-          .appendLine()
           .append('this.delegate = Optional.ofNullable(delegate).orElse')
           .addImport('Optional', 'java.util')
           .parenthesize('()', (builder) =>
             builder.append('object : ').append(this.getApiDelegateInterfaceName(ctx)).append(' {}')
           )
-          .appendLine()
       )
       .appendLine()
       .appendLine()
@@ -353,12 +323,7 @@ export class DefaultKotlinSpringControllerGenerator
       .ensureCurrentLineEmpty()
       .apply((builder) => this.generateApiDelegateInterfaceSignature(ctx, builder))
       .append(' ')
-      .parenthesize('{}', (builder) =>
-        builder
-          .appendLine()
-          .apply((builder) => this.generateApiDelegateInterfaceContent(ctx, builder))
-          .ensureCurrentLineEmpty()
-      );
+      .parenthesizeMultiline('{}', (builder) => this.generateApiDelegateInterfaceContent(ctx, builder));
   }
 
   protected generateApiDelegateInterfaceAnnotations(ctx: Context, builder: Builder): void {
@@ -389,12 +354,7 @@ export class DefaultKotlinSpringControllerGenerator
       .ensureCurrentLineEmpty()
       .apply((builder) => this.generateApiDelegateInterfaceMethodSignature(ctx, builder, endpoint))
       .append(' ')
-      .parenthesize('{}', (builder) =>
-        builder
-          .appendLine()
-          .apply((builder) => this.generateApiDelegateInterfaceMethodContent(ctx, builder, endpoint))
-          .ensureCurrentLineEmpty()
-      );
+      .parenthesizeMultiline('{}', (builder) => this.generateApiDelegateInterfaceMethodContent(ctx, builder, endpoint));
   }
 
   protected generateApiDelegateInterfaceMethodAnnnotations(
@@ -408,11 +368,8 @@ export class DefaultKotlinSpringControllerGenerator
   protected generateApiDelegateInterfaceMethodSignature(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
     builder
       .append(`suspend fun ${toCasing(endpoint.name, 'camel')}`)
-      .parenthesize('()', (builder) =>
-        builder
-          .appendLine()
-          .apply((builder) => this.generateApiDelegateInterfaceMethodParameters(ctx, builder, endpoint))
-          .appendLine()
+      .parenthesizeMultiline('()', (builder) =>
+        this.generateApiDelegateInterfaceMethodParameters(ctx, builder, endpoint)
       )
       .append(': ')
       .apply((builder) => this.generateApiDelegateInterfaceMethodReturnType(ctx, builder, endpoint));

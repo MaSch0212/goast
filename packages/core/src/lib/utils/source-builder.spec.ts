@@ -329,11 +329,18 @@ describe('SourceBuilder', () => {
   });
 
   describe('indent', () => {
-    it('should correctly indent the content', () => {
+    it('should correctly indent the content (fn)', () => {
       sb.append('line1', EOL);
       sb.indent((innerSb) => {
         innerSb.append('line2', EOL);
       });
+      sb.append('line3', EOL);
+      expect(sb.toString()).toBe(`line1${EOL}  line2${EOL}line3${EOL}`);
+    });
+
+    it('should correctly indent the content (string)', () => {
+      sb.append('line1', EOL);
+      sb.indent('line2\n');
       sb.append('line3', EOL);
       expect(sb.toString()).toBe(`line1${EOL}  line2${EOL}line3${EOL}`);
     });
@@ -349,10 +356,15 @@ describe('SourceBuilder', () => {
       expect(sb.toString()).toBe(`  line1${EOL}    line2${EOL}  line3${EOL}`);
     });
 
-    it('should correctly handle multiline strings', () => {
+    it('should correctly handle multiline strings (fn)', () => {
       sb.indent((innerSb) => {
         innerSb.append(`line1${EOL}line2`, EOL);
       });
+      expect(sb.toString()).toBe(`  line1${EOL}  line2${EOL}`);
+    });
+
+    it('should correctly handle multiline strings (string)', () => {
+      sb.indent('line1\nline2\n');
       expect(sb.toString()).toBe(`  line1${EOL}  line2${EOL}`);
     });
 
@@ -394,8 +406,13 @@ describe('SourceBuilder', () => {
       expect(sb.toString()).toBe(`{stuff}`);
     });
 
-    it('should parenthesize and indent the content', () => {
+    it('should parenthesize and indent the content (fn)', () => {
       sb.parenthesize('()', (x) => x.append(`${EOL}stuff${EOL}`));
+      expect(sb.toString()).toBe(`(${EOL}  stuff${EOL})`);
+    });
+
+    it('should parenthesize and indent the content (string)', () => {
+      sb.parenthesize('()', `${EOL}stuff${EOL}`);
       expect(sb.toString()).toBe(`(${EOL}  stuff${EOL})`);
     });
 
@@ -405,9 +422,41 @@ describe('SourceBuilder', () => {
     });
   });
 
+  describe('parenthesizeMultiline', () => {
+    it('should parenthesize the content with the given brackets string', () => {
+      sb.parenthesizeMultiline('{}', (x) => x.append('stuff'));
+      expect(sb.toString()).toBe(`{${EOL}  stuff${EOL}}`);
+    });
+
+    it('should parenthesize the content with the given brackets array', () => {
+      sb.parenthesizeMultiline(['{', '}'], (x) => x.append('stuff'));
+      expect(sb.toString()).toBe(`{${EOL}  stuff${EOL}}`);
+    });
+
+    it('should parenthesize and indent the content (fn)', () => {
+      sb.parenthesizeMultiline('()', (x) => x.append(`${EOL}stuff${EOL}`));
+      expect(sb.toString()).toBe(`(${EOL}${EOL}  stuff${EOL})`);
+    });
+
+    it('should parenthesize and indent the content (string)', () => {
+      sb.parenthesizeMultiline('()', `${EOL}stuff${EOL}`);
+      expect(sb.toString()).toBe(`(${EOL}${EOL}  stuff${EOL})`);
+    });
+
+    it('should parenthesize but not indent the content when indent is false', () => {
+      sb.parenthesizeMultiline('()', (x) => x.append(`${EOL}stuff${EOL}`), false);
+      expect(sb.toString()).toBe(`(${EOL}${EOL}stuff${EOL})`);
+    });
+  });
+
   describe('parenthesizeIf', () => {
-    it('should parenthesize when condition is true', () => {
+    it('should parenthesize when condition is true (fn)', () => {
       sb.parenthesizeIf(true, '()', (x) => x.append('stuff'));
+      expect(sb.toString()).toBe(`(stuff)`);
+    });
+
+    it('should parenthesize when condition is true (string)', () => {
+      sb.parenthesizeIf(true, '()', 'stuff');
       expect(sb.toString()).toBe(`(stuff)`);
     });
 
@@ -427,6 +476,41 @@ describe('SourceBuilder', () => {
 
     it('should not parenthesize when condition function returns false', () => {
       sb.parenthesizeIf(
+        () => false,
+        '()',
+        (x) => x.append('stuff')
+      );
+      expect(sb.toString()).toBe(`stuff`);
+    });
+  });
+
+  describe('parenthesizeMultilineIf', () => {
+    it('should parenthesize when condition is true (fn)', () => {
+      sb.parenthesizeMultilineIf(true, '()', (x) => x.append('stuff'));
+      expect(sb.toString()).toBe(`(${EOL}  stuff${EOL})`);
+    });
+
+    it('should parenthesize when condition is true (string)', () => {
+      sb.parenthesizeMultilineIf(true, '()', 'stuff');
+      expect(sb.toString()).toBe(`(${EOL}  stuff${EOL})`);
+    });
+
+    it('should not parenthesize when condition is false', () => {
+      sb.parenthesizeMultilineIf(false, '()', (x) => x.append('stuff'));
+      expect(sb.toString()).toBe(`stuff`);
+    });
+
+    it('should parenthesize when condition function returns true', () => {
+      sb.parenthesizeMultilineIf(
+        () => true,
+        '()',
+        (x) => x.append('stuff')
+      );
+      expect(sb.toString()).toBe(`(${EOL}  stuff${EOL})`);
+    });
+
+    it('should not parenthesize when condition function returns false', () => {
+      sb.parenthesizeMultilineIf(
         () => false,
         '()',
         (x) => x.append('stuff')

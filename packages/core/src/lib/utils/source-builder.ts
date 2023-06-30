@@ -307,17 +307,21 @@ export class SourceBuilder extends StringBuilder {
 
   /**
    * Adds one indentation level. If the current line already contains characters, only subsequent lines are affected.
-   * @param builderFn The function to add indented content.
+   * @param builderFn The function to add indented content or the content itself.
    * @param condition The condition to check before adding indentation.
    * @returns A reference to this instance.
    */
-  public indent(builderFn: (builder: this) => void, condition: Condition = true): this {
+  public indent(builderFnOrString: ((builder: this) => void) | string, condition: Condition = true): this {
     const shouldIndent = evalCondition(condition);
     if (shouldIndent) {
       this.currentIndentLevel++;
     }
     try {
-      builderFn(this);
+      if (typeof builderFnOrString === 'string') {
+        this.append(builderFnOrString);
+      } else {
+        builderFnOrString(this);
+      }
     } finally {
       if (shouldIndent) {
         this.currentIndentLevel--;
@@ -330,13 +334,37 @@ export class SourceBuilder extends StringBuilder {
   /**
    * Adds parentheses around the specified content and adds one indentation level.
    * @param brackets The brackets to use.
-   * @param builderFn The function to add content inside parentheses.
+   * @param builderFnOrString The function to add content inside parentheses or one string that should be parenthesized.
    * @param indent Whether to indent the content inside parentheses. Defaults to `true`.
    * @returns A reference to this instance.
    */
-  public parenthesize(brackets: Paratheses, builderFn: (builder: this) => void, indent: boolean = true): this {
+  public parenthesize(
+    brackets: Paratheses,
+    builderFnOrString: ((builder: this) => void) | string,
+    indent: boolean = true
+  ): this {
     this.append(brackets[0] ?? '');
-    this.indent(builderFn, indent);
+    this.indent(builderFnOrString, indent);
+    this.append(brackets[1] ?? '');
+
+    return this;
+  }
+
+  /**
+   * Adds parentheses around the specified content and adds one indentation level. Line breaks are added after start and before end of the parentheses.
+   * @param brackets The brackets to use.
+   * @param builderFnOrString The function to add content inside parentheses or one string that should be parenthesized.
+   * @param indent Whether to indent the content inside parentheses. Defaults to `true`.
+   * @returns A reference to this instance.
+   */
+  public parenthesizeMultiline(
+    brackets: Paratheses,
+    builderFnOrString: ((builder: this) => void) | string,
+    indent: boolean = true
+  ): this {
+    this.appendLine(brackets[0] ?? '');
+    this.indent(builderFnOrString, indent);
+    this.ensureCurrentLineEmpty();
     this.append(brackets[1] ?? '');
 
     return this;
@@ -346,20 +374,43 @@ export class SourceBuilder extends StringBuilder {
    * Adds parentheses around the specified content if the specified condition is true.
    * @param condition The condition to check before adding parentheses.
    * @param brackets The brackets to use.
-   * @param builderFn The function to add content inside parentheses.
+   * @param builderFnOrString The function to add content inside parentheses or one string that should be parenthesized.
    * @param indent Whether to indent the content inside parentheses. Defaults to `true`.
    * @returns A reference to this instance.
    */
   public parenthesizeIf(
     condition: Condition,
     brackets: Paratheses,
-    builderFn: (builder: this) => void,
+    builderFnOrString: ((builder: this) => void) | string,
     indent?: boolean
   ): this {
     if (evalCondition(condition)) {
-      this.parenthesize(brackets, builderFn, indent ?? true);
+      this.parenthesize(brackets, builderFnOrString, indent ?? true);
     } else {
-      this.indent(builderFn, indent ?? false);
+      this.indent(builderFnOrString, indent ?? false);
+    }
+
+    return this;
+  }
+
+  /**
+   * Adds parentheses around the specified content if the specified condition is true. Line breaks are added after start and before end of the parentheses.
+   * @param condition The condition to check before adding parentheses.
+   * @param brackets The brackets to use.
+   * @param builderFnOrString The function to add content inside parentheses or one string that should be parenthesized.
+   * @param indent Whether to indent the content inside parentheses. Defaults to `true`.
+   * @returns A reference to this instance.
+   */
+  public parenthesizeMultilineIf(
+    condition: Condition,
+    brackets: Paratheses,
+    builderFnOrString: ((builder: this) => void) | string,
+    indent?: boolean
+  ): this {
+    if (evalCondition(condition)) {
+      this.parenthesizeMultiline(brackets, builderFnOrString, indent ?? true);
+    } else {
+      this.indent(builderFnOrString, indent ?? false);
     }
 
     return this;

@@ -3,12 +3,14 @@ import { dirname } from 'path';
 
 import { ensureDirSync } from 'fs-extra';
 
-import { ApiEndpoint, toCasing } from '@goast/core';
+import { ApiEndpoint, ApiParameter, ApiSchema, toCasing } from '@goast/core';
 
 import { KotlinOkHttp3ClientGeneratorContext, KotlinOkHttp3ClientGeneratorOutput } from './models';
 import { KotlinImport } from '../../../common-results';
 import { KotlinFileBuilder } from '../../../file-builder';
+import { toKotlinStringLiteral } from '../../../utils';
 import { KotlinFileGenerator } from '../../file-generator';
+import { KotlinModelGeneratorOutput } from '../../models';
 
 type Context = KotlinOkHttp3ClientGeneratorContext;
 type Output = KotlinOkHttp3ClientGeneratorOutput;
@@ -44,12 +46,7 @@ export class DefaultKotlinOkHttp3Generator
       .ensureCurrentLineEmpty()
       .apply((builder) => this.generateApiClientClassSignature(ctx, builder))
       .append(' ')
-      .parenthesize('{}', (builder) =>
-        builder
-          .appendLine()
-          .apply((builder) => this.generateApiClientClassContent(ctx, builder))
-          .ensureCurrentLineEmpty()
-      );
+      .parenthesizeMultiline('{}', (builder) => this.generateApiClientClassContent(ctx, builder));
   }
 
   protected generateApiClientClassAnnotations(ctx: Context, builder: Builder): void {
@@ -60,14 +57,12 @@ export class DefaultKotlinOkHttp3Generator
     builder
       .append('class ')
       .append(this.getApiClientName(ctx))
-      .parenthesize('()', (builder) =>
+      .parenthesizeMultiline('()', (builder) =>
         builder
-          .appendLine()
           .appendLine('basePath: String = defaultBasePath,')
           .appendLine('client: OkHttpClient = ApiClient.defaultClient')
           .addImport('OkHttpClient', 'okhttp3')
           .addImport('ApiClient', ctx.config.infrastructurePackageName)
-          .ensureCurrentLineEmpty()
       )
       .append(' : ')
       .append('ApiClient(basePath, client)');
@@ -77,30 +72,42 @@ export class DefaultKotlinOkHttp3Generator
     builder
       .apply((builder) => this.generateApiClientCompanionObject(ctx, builder))
       .forEach(ctx.service.endpoints, (builder, endpoint) =>
-        builder.ensurePreviousLineEmpty().apply((builder) => this.generateApiClientMethod(ctx, builder, endpoint))
-      );
+        builder
+          .ensurePreviousLineEmpty()
+          .apply((builder) => this.generateApiClientMethod(ctx, builder, endpoint))
+          .ensurePreviousLineEmpty()
+          .apply((builder) => this.generateApiClientHttpInfoMethod(ctx, builder, endpoint))
+          .ensurePreviousLineEmpty()
+          .apply((builder) => this.generateApiClientRequestConfigMethod(ctx, builder, endpoint))
+      )
+      .ensurePreviousLineEmpty()
+      .apply((builder) => this.generateAdditionalMethods(ctx, builder));
   }
 
   protected generateApiClientCompanionObject(ctx: Context, builder: Builder): void {
-    builder.append('companion object ').parenthesize('{}', (builder) =>
-      builder
-        .appendLine()
-        .appendAnnotation('JvmStatic')
-        .append('val defaultBasePath: String by lazy ')
-        .parenthesize('{}', (builder) =>
-          builder
-            .appendLine()
-            .appendLine(
-              `System.getProperties().getProperty(ApiClient.baseUrlKey, ${this.toStringLiteral(
-                ctx,
-                this.getBasePath(ctx)
-              )})`
-            )
-            .addImport('ApiClient', ctx.config.infrastructurePackageName)
-            .ensureCurrentLineEmpty()
-        )
-        .ensureCurrentLineEmpty()
-    );
+    builder
+      .append('companion object ')
+      .parenthesizeMultiline('{}', (builder) => this.generateApiClientCompanionObjectContent(ctx, builder));
+  }
+
+  protected generateApiClientCompanionObjectContent(ctx: Context, builder: Builder): void {
+    this.generateApiClientCompanionObjectDefaultBasePathProperty(ctx, builder);
+  }
+
+  protected generateApiClientCompanionObjectDefaultBasePathProperty(ctx: Context, builder: Builder): void {
+    builder
+      .appendAnnotation('JvmStatic')
+      .append('val defaultBasePath: String by lazy ')
+      .parenthesizeMultiline('{}', (builder) =>
+        builder
+          .appendLine(
+            `System.getProperties().getProperty(ApiClient.baseUrlKey, ${this.toStringLiteral(
+              ctx,
+              this.getBasePath(ctx)
+            )})`
+          )
+          .addImport('ApiClient', ctx.config.infrastructurePackageName)
+      );
   }
 
   protected generateApiClientMethod(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
@@ -111,12 +118,7 @@ export class DefaultKotlinOkHttp3Generator
       .ensureCurrentLineEmpty()
       .apply((builder) => this.generateApiClientMethodSignature(ctx, builder, endpoint))
       .append(' ')
-      .parenthesize('{}', (builder) =>
-        builder
-          .appendLine()
-          .apply((builder) => this.generateApiClientMethodContent(ctx, builder, endpoint))
-          .ensureCurrentLineEmpty()
-      );
+      .parenthesizeMultiline('{}', (builder) => this.generateApiClientMethodContent(ctx, builder, endpoint));
   }
 
   protected generateApiClientMethodDocumentation(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
@@ -125,17 +127,381 @@ export class DefaultKotlinOkHttp3Generator
       .applyWithLinePrefix(' * ', (builder) =>
         builder
           .appendLine(`${endpoint.summary ?? 'TODO: Provide summary'}`)
-          .appendLine('@param request The request to send.')
-          .appendLine('@param callback The callback to execute once the request is sent.')
+          .apply((builder) => this.generateParamDocEntries(ctx, builder, endpoint))
+          .append('@return ')
+          .apply((builder) => this.generateApiClientMethodReturnType(ctx, builder, endpoint))
+          .appendLine()
+          .appendLine('@throws IllegalStateException If the request is not correctly configured')
+          .appendLine('@throws IOException Rethrows the OkHttp execute method exception')
+          .appendLine(
+            '@throws UnsupportedOperationException If the API returns an informational or redirection response'
+          )
+          .appendLine('@throws ClientException If the API returns a client error response')
+          .appendLine('@throws ServerException If the API returns a server error response')
       )
       .appendLine(' */');
   }
 
-  protected generateApiClientMethodAnnotations(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {}
+  protected generateApiClientMethodAnnotations(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
+    const responseSchema = this.getResponseSchema(ctx, endpoint);
+    builder
+      .applyIf(responseSchema !== undefined, (builder) =>
+        builder.appendAnnotation('Supress', undefined, ['"UNCHECKED_CAST"'])
+      )
+      .appendAnnotation('Throws', undefined, [
+        'IllegalStateException::class',
+        'IOException::class',
+        'UnsupportedOperationException::class',
+        'ClientException::class',
+        'ServerException::class',
+      ])
+      .addImport('IOException', 'java.io')
+      .addImport('ClientException', ctx.config.infrastructurePackageName)
+      .addImport('ServerException', ctx.config.infrastructurePackageName);
+  }
 
-  protected generateApiClientMethodSignature(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {}
+  protected generateApiClientMethodSignature(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
+    builder
+      .append('fun ')
+      .append(toCasing(endpoint.name, 'camel'))
+      .parenthesize('()', (builder) => this.generateApiClientMethodParameters(ctx, builder, endpoint))
+      .append(': ')
+      .apply((builder) => this.generateApiClientMethodReturnType(ctx, builder, endpoint));
+  }
 
-  protected generateApiClientMethodContent(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {}
+  protected generateApiClientMethodParameters(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
+    this.generateParams(ctx, builder, endpoint, true);
+  }
+
+  protected generateApiClientMethodReturnType(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
+    this.generateTypeUsage(ctx, builder, this.getResponseSchema(ctx, endpoint), 'Unit');
+  }
+
+  protected generateApiClientMethodContent(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
+    const responseSchema = this.getResponseSchema(ctx, endpoint);
+    builder
+      .append(`val localVarResponse = ${toCasing(endpoint.name, 'camel')}HttpInfo`)
+      .parenthesize('()', (builder) => this.generateParams(ctx, builder, endpoint, false))
+      .appendLine()
+      .appendLine()
+      .append('return when (localVarResponse.responseType) ')
+      .parenthesizeMultiline('{}', (builder) =>
+        builder
+          .append('ResponseType.Success -> ')
+          .applyIfElse(
+            responseSchema === undefined,
+            (builder) => builder.append('Unit'),
+            (builder) =>
+              builder
+                .append('(localVarResponse as Success<*>).data as ')
+                .addImport('Success', ctx.config.infrastructurePackageName)
+                .apply((builder) => this.generateTypeUsage(ctx, builder, responseSchema))
+          )
+          .ensureCurrentLineEmpty()
+          .appendLine(responseErrorHandlingCode)
+          .addImport('ClientError', ctx.config.infrastructurePackageName)
+          .addImport('ServerError', ctx.config.infrastructurePackageName)
+          .addImport('ResponseType', ctx.config.infrastructurePackageName)
+      );
+  }
+
+  protected generateApiClientHttpInfoMethod(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
+    builder
+      .apply((builder) => this.generateApiClientHttpInfoMethodDocumentation(ctx, builder, endpoint))
+      .ensureCurrentLineEmpty()
+      .apply((builder) => this.generateApiClientHttpInfoMethodAnnotations(ctx, builder, endpoint))
+      .ensureCurrentLineEmpty()
+      .apply((builder) => this.generateApiClientHttpInfoMethodSignature(ctx, builder, endpoint))
+      .append(' ')
+      .parenthesizeMultiline('{}', (builder) => this.generateApiClientHttpInfoMethodContent(ctx, builder, endpoint));
+  }
+
+  protected generateApiClientHttpInfoMethodDocumentation(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
+    builder
+      .appendLine('/**')
+      .applyWithLinePrefix(' * ', (builder) =>
+        builder
+          .appendLine(`${endpoint.summary ?? 'TODO: Provide summary'}`)
+          .apply((builder) => this.generateParamDocEntries(ctx, builder, endpoint))
+          .append('@return ')
+          .apply((builder) => this.generateApiClientHttpInfoMethodReturnType(ctx, builder, endpoint))
+          .appendLine()
+          .appendLine('@throws IllegalStateException If the request is not correctly configured')
+          .appendLine('@throws IOException Rethrows the OkHttp execute method exception')
+          .appendLine(
+            '@throws UnsupportedOperationException If the API returns an informational or redirection response'
+          )
+          .appendLine('@throws ClientException If the API returns a client error response')
+          .appendLine('@throws ServerException If the API returns a server error response')
+      )
+      .appendLine(' */');
+  }
+
+  protected generateApiClientHttpInfoMethodAnnotations(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
+    builder
+      .appendAnnotation('Throws', undefined, ['IllegalStateException::class', 'IOException::class'])
+      .addImport('IOException', 'java.io');
+  }
+
+  protected generateApiClientHttpInfoMethodSignature(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
+    builder
+      .append('fun ')
+      .append(toCasing(endpoint.name, 'camel'), 'HttpInfo')
+      .parenthesize('()', (builder) => this.generateApiClientHttpInfoMethodSignatureParameters(ctx, builder, endpoint))
+      .append(': ')
+      .apply((builder) => this.generateApiClientHttpInfoMethodReturnType(ctx, builder, endpoint));
+  }
+
+  protected generateApiClientHttpInfoMethodSignatureParameters(
+    ctx: Context,
+    builder: Builder,
+    endpoint: ApiEndpoint
+  ): void {
+    this.generateParams(ctx, builder, endpoint, true);
+  }
+
+  protected generateApiClientHttpInfoMethodReturnType(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
+    builder
+      .append('ApiResponse')
+      .addImport('ApiResponse', ctx.config.infrastructurePackageName)
+      .parenthesize('<>', (builder) =>
+        this.generateTypeUsage(ctx, builder, this.getResponseSchema(ctx, endpoint), 'Unit')
+      );
+  }
+
+  protected generateApiClientHttpInfoMethodContent(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
+    builder
+      .append(`val localVariableConfig = ${toCasing(endpoint.name, 'camel')}RequestConfig`)
+      .parenthesize('()', (builder) => this.generateParams(ctx, builder, endpoint, false))
+      .appendLine()
+      .appendLine()
+      .append('return request')
+      .parenthesize('<>', (builder) =>
+        builder
+          .apply((builder) => this.generateTypeUsage(ctx, builder, endpoint.requestBody?.content[0].schema, 'Unit'))
+          .append(', ')
+          .apply((builder) => this.generateTypeUsage(ctx, builder, this.getResponseSchema(ctx, endpoint), 'Unit'))
+      )
+      .parenthesizeMultiline('()', (builder) => builder.append('localVariableConfig'));
+  }
+
+  protected generateApiClientRequestConfigMethod(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
+    builder
+      .apply((builder) => this.generateApiClientRequestConfigMethodDocumentation(ctx, builder, endpoint))
+      .ensureCurrentLineEmpty()
+      .apply((builder) => this.generateApiClientRequestConfigMethodAnnotations(ctx, builder, endpoint))
+      .ensureCurrentLineEmpty()
+      .apply((builder) => this.generateApiClientRequestConfigMethodSignature(ctx, builder, endpoint))
+      .append(' ')
+      .parenthesizeMultiline('{}', (builder) =>
+        this.generateApiClientRequestConfigMethodContent(ctx, builder, endpoint)
+      );
+  }
+
+  protected generateApiClientRequestConfigMethodDocumentation(
+    ctx: Context,
+    builder: Builder,
+    endpoint: ApiEndpoint
+  ): void {
+    builder
+      .appendLine('/**')
+      .applyWithLinePrefix(' * ', (builder) =>
+        builder
+          .appendLine(`To obtain the request config of the operation ${toCasing(endpoint.name, 'camel')}`)
+          .apply((builder) => this.generateParamDocEntries(ctx, builder, endpoint))
+          .append('@return RequestConfig')
+      )
+      .appendLine(' */');
+  }
+
+  protected generateApiClientRequestConfigMethodAnnotations(
+    ctx: Context,
+    builder: Builder,
+    endpoint: ApiEndpoint
+  ): void {
+    // No annotations needed
+  }
+
+  protected generateApiClientRequestConfigMethodSignature(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
+    builder
+      .append('private fun ')
+      .append(toCasing(endpoint.name, 'camel'), 'RequestConfig')
+      .parenthesize('()', (builder) =>
+        this.generateApiClientRequestConfigMethodSignatureParameters(ctx, builder, endpoint)
+      )
+      .append(': ')
+      .apply((builder) => this.generateApiClientRequestConfigMethodReturnType(ctx, builder, endpoint));
+  }
+
+  protected generateApiClientRequestConfigMethodSignatureParameters(
+    ctx: Context,
+    builder: Builder,
+    endpoint: ApiEndpoint
+  ): void {
+    this.generateParams(ctx, builder, endpoint, true);
+  }
+
+  protected generateApiClientRequestConfigMethodReturnType(
+    ctx: Context,
+    builder: Builder,
+    endpoint: ApiEndpoint
+  ): void {
+    builder
+      .append('RequestConfig')
+      .addImport('RequestConfig', ctx.config.infrastructurePackageName)
+      .parenthesize('<>', (builder) =>
+        this.generateTypeUsage(ctx, builder, endpoint.requestBody?.content[0].schema, 'Unit')
+      );
+  }
+
+  protected generateApiClientRequestConfigMethodContent(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
+    builder
+      .appendLine(`val localVariableBody = ${this.getRequestBodyParamName(ctx, endpoint)}`)
+      .appendLine('val localVariableQuery: MultiValueMap = mutableMapOf()')
+      .addImport('MultiValueMap', ctx.config.infrastructurePackageName)
+      .forEach(
+        endpoint.parameters.filter((x) => x.target === 'query'),
+        (builder, param) => builder.appendLine(`localVariableQuery["${param.name}"] = ${toCasing(param.name, 'camel')}`)
+      )
+      .appendLine('val localVariableHeaders: MutableMap<String, String> = mutableMapOf()')
+      .appendLineIf(
+        endpoint.requestBody?.content[0] !== undefined,
+        `localVariableHeaders["Content-Type"] = "${endpoint.requestBody?.content[0].type}"`
+      )
+      .appendLine()
+      .append('return RequestConfig')
+      .addImport('RequestConfig', ctx.config.infrastructurePackageName)
+      .parenthesizeMultiline('()', (builder) =>
+        builder
+          .appendLine(`method = RequestMethod.${endpoint.method.toUpperCase()},`)
+          .addImport('RequestMethod', ctx.config.infrastructurePackageName)
+          .appendLine(`path = "${this.getPathWithInterpolation(ctx, endpoint)}",`)
+          .appendLine('query = localVariableQuery,')
+          .appendLine('headers = localVariableHeaders,')
+          .appendLine('requiresAuthentication = false,')
+          .appendLine('body = localVariableBody')
+      );
+  }
+
+  protected generateAdditionalMethods(ctx: Context, builder: Builder): void {
+    this.generateEncodeUriComponentMethod(ctx, builder);
+  }
+
+  protected generateEncodeUriComponentMethod(ctx: Context, builder: Builder): void {
+    builder
+      .appendLine('private fun encodeURIComponent(uriComponent: String): String =')
+      .indent(
+        'HttpUrl.Builder().scheme("http").host("localhost").addPathSegment(uriComponent).build().encodedPathSegments[0]'
+      )
+      .addImport('HttpUrl', 'okhttp3');
+  }
+
+  protected generateParamDocEntries(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
+    const parameters = this.getAllParameters(ctx, endpoint);
+    builder.forEach(parameters, (builder, parameter) =>
+      builder.appendLine(`@param ${parameter.name} ${parameter.description ?? 'TODO: Provide description'}`)
+    );
+  }
+
+  protected generateParams(
+    ctx: Context,
+    builder: Builder,
+    endpoint: ApiEndpoint,
+    includeTypeDefinition: boolean
+  ): void {
+    const parameters = this.getAllParameters(ctx, endpoint);
+    builder.forEachSeparated(parameters, ', ', (builder, parameter) =>
+      builder.append(toCasing(parameter.name, 'camel')).applyIf(includeTypeDefinition, (builder) =>
+        builder
+          .append(': ')
+          .apply((builder) => this.generateTypeUsage(ctx, builder, parameter.schema))
+          .appendIf(!parameter.required, '? = ', this.getDefaultValue(ctx, parameter.schema))
+      )
+    );
+  }
+
+  protected generateTypeUsage(ctx: Context, builder: Builder, schema: ApiSchema | undefined, fallback?: string): void {
+    if (schema && schema.kind === 'array') {
+      const schemaInfo = this.getSchemaInfo(ctx, schema.items);
+      builder.append(`List<${schemaInfo.typeName}>`);
+      builder.imports.addImports([schemaInfo, ...schemaInfo.additionalImports]);
+    } else if (schema || !fallback) {
+      const schemaInfo = this.getSchemaInfo(ctx, schema);
+      builder.append(schemaInfo.typeName);
+      builder.imports.addImports([schemaInfo, ...schemaInfo.additionalImports]);
+    } else {
+      builder.append(fallback);
+    }
+  }
+
+  protected getDefaultValue(ctx: Context, schema: ApiSchema | undefined): string {
+    if (!schema?.default) {
+      return 'null';
+    }
+
+    if (typeof schema.default === 'string') {
+      return toKotlinStringLiteral(schema.default);
+    } else if (typeof schema.default === 'number' || typeof schema.default === 'boolean') {
+      return schema.default.toString();
+    } else {
+      return 'null';
+    }
+  }
+
+  protected getPathWithInterpolation(ctx: Context, endpoint: ApiEndpoint): string {
+    let path = endpoint.path;
+    endpoint.parameters
+      .filter((x) => x.target === 'path')
+      .forEach((parameter) => {
+        path = path.replace(
+          `{${parameter.name}}`,
+          `\${encodeURIComponent(${toCasing(parameter.name, 'camel')}.toString())}`
+        );
+      });
+    return path;
+  }
+
+  protected getResponseSchema(ctx: Context, endpoint: ApiEndpoint): ApiSchema | undefined {
+    return endpoint.responses.find((x) => !x.statusCode || (x.statusCode >= 200 && x.statusCode < 300))
+      ?.contentOptions[0]?.schema;
+  }
+
+  protected getSchemaInfo(ctx: Context, schema: ApiSchema | undefined): KotlinModelGeneratorOutput {
+    return (
+      (schema && ctx.input.models[schema.id]) ?? { typeName: 'Any?', packageName: undefined, additionalImports: [] }
+    );
+  }
+
+  protected getAllParameters(ctx: Context, endpoint: ApiEndpoint): ApiParameter[] {
+    const parameters = endpoint.parameters.filter(
+      (parameter) => parameter.target === 'query' || parameter.target === 'path'
+    );
+    if (endpoint.requestBody) {
+      const schema = endpoint.requestBody.content[0].schema;
+      parameters.push({
+        $src: undefined!,
+        $ref: undefined,
+        id: 'body',
+        name: this.getRequestBodyParamName(ctx, endpoint),
+        target: 'body',
+        schema,
+        required: endpoint.requestBody.required,
+        description: endpoint.requestBody.description,
+        allowEmptyValue: undefined,
+        allowReserved: undefined,
+        deprecated: false,
+        explode: undefined,
+        style: undefined,
+      });
+    }
+
+    return parameters.sort((a, b) => (a.required === b.required ? 0 : a.required ? -1 : 1));
+  }
+
+  protected getRequestBodyParamName(ctx: Context, endpoint: ApiEndpoint): string {
+    const schema = endpoint.requestBody?.content[0].schema;
+    return schema ? this.getSchemaInfo(ctx, schema).typeName : 'body';
+  }
 
   protected getBasePath(ctx: Context): string {
     return (ctx.service.$src ?? ctx.service.endpoints[0]?.$src)?.document.servers?.[0]?.url ?? '/';
@@ -153,3 +519,23 @@ export class DefaultKotlinOkHttp3Generator
     return toCasing(ctx.service.name, 'pascal') + 'ApiClient';
   }
 }
+
+const responseErrorHandlingCode = `ResponseType.Informational -> throw UnsupportedOperationException("Client does not support Informational responses.")
+ResponseType.Redirection -> throw UnsupportedOperationException("Client does not support Redirection responses.")
+ResponseType.ClientError -> {
+    val localVarError = localVarResponse as ClientError<*>
+    throw ClientException(
+        "Client error : \${localVarError.statusCode} \${localVarError.message.orEmpty()}",
+        localVarError.statusCode,
+        localVarResponse
+    )
+}
+
+ResponseType.ServerError -> {
+    val localVarError = localVarResponse as ServerError<*>
+    throw ServerException(
+        "Server error : \${localVarError.statusCode} \${localVarError.message.orEmpty()}",
+        localVarError.statusCode,
+        localVarResponse
+    )
+}`;

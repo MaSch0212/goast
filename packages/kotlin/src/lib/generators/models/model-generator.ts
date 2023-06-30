@@ -17,7 +17,7 @@ export interface KotlinModelGenerator<TOutput extends Output = Output> {
 }
 
 export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Output> implements KotlinModelGenerator {
-  generate(ctx: KotlinModelGeneratorContext): KotlinModelGeneratorOutput {
+  public generate(ctx: KotlinModelGeneratorContext): KotlinModelGeneratorOutput {
     if (/\/(anyOf|allOf)(\/[0-9]+)?$/.test(ctx.schema.$src.path)) {
       // Do not generate types that are only used for anyOf and/or allOf
       return { typeName: 'Any?', packageName: undefined, additionalImports: [] };
@@ -100,10 +100,11 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       .apply((builder) => this.generateDocumentation(ctx, builder, schema))
       .append('data class ')
       .append(this.getDeclarationTypeName(ctx))
-      .parenthesizeIf(schema.properties.size > 0, '()', (builder) =>
-        builder
-          .appendLine()
-          .forEachSeparated(this.sortProperties(ctx, schema, schema.properties.values()), ',\n', (builder, property) =>
+      .parenthesizeMultilineIf(schema.properties.size > 0, '()', (builder) =>
+        builder.forEachSeparated(
+          this.sortProperties(ctx, schema, schema.properties.values()),
+          ',\n',
+          (builder, property) =>
             builder
               .ensurePreviousLineEmpty()
               .apply((builder) => this.generatePropertyAnnotations(ctx, builder, schema, property))
@@ -112,16 +113,15 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
               .applyIf(!schema.required.has(property.name), (builder) =>
                 builder.appendIf(!property.schema.nullable, '?').append(' = null')
               )
-          )
-          .appendLineIf(schema.properties.size > 0)
+        )
       )
-      .parenthesizeIf(
+      .parenthesizeMultilineIf(
         schema.additionalProperties !== undefined && schema.additionalProperties !== false,
         '{}',
         (builder) =>
-          builder
-            .appendLine()
-            .applyIf(schema.additionalProperties !== undefined && schema.additionalProperties !== false, (builder) =>
+          builder.applyIf(
+            schema.additionalProperties !== undefined && schema.additionalProperties !== false,
+            (builder) =>
               builder
                 .appendLine('@JsonIgnore')
                 .addImport('JsonIgnore', 'com.fasterxml.jackson.annotation')
@@ -140,9 +140,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
                   )
                 )
                 .append(' ')
-                .parenthesize('{}', (builder) =>
-                  builder.appendLine().appendLine('this.additionalProperties[name] = value')
-                )
+                .parenthesizeMultiline('{}', 'this.additionalProperties[name] = value')
                 .appendLine()
                 .appendLine()
                 .appendLine('@JsonAnyGetter')
@@ -150,9 +148,8 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
                 .append('fun getMap(): ')
                 .apply((builder) => this.generateMapType(ctx, builder, schema))
                 .append(' ')
-                .parenthesize('{}', (builder) => builder.appendLine().appendLine('return this.additionalProperties'))
-                .appendLine()
-            )
+                .parenthesizeMultiline('{}', 'return this.additionalProperties')
+          )
       );
   }
 
@@ -231,7 +228,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
         builder
           .append('@get:JsonInclude')
           .addImport('JsonInclude', 'com.fasterxml.jackson.annotation')
-          .parenthesize('()', (builder) => builder.append('JsonInclude.Include.NON_NULL'))
+          .parenthesize('()', 'JsonInclude.Include.NON_NULL')
           .appendLine()
       );
   }
@@ -346,22 +343,19 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       .append('enum class ')
       .append(this.getDeclarationTypeName(ctx))
       .append('(val value: String) ')
-      .parenthesize('{}', (builder) =>
-        builder
-          .appendLine()
-          .forEachSeparated(
-            schema.enum ?? [],
-            (builder) => builder.appendLine(',').appendLine(),
-            (builder, value) =>
-              builder
-                .append('@JsonProperty')
-                .addImport('JsonProperty', 'com.fasterxml.jackson.annotation')
-                .parenthesize('()', (builder) => builder.append(this.toStringLiteral(ctx, String(value))))
-                .appendLine()
-                .append(toCasing(String(value), 'snake'))
-                .parenthesize('()', (builder) => builder.append(this.toStringLiteral(ctx, String(value))))
-          )
-          .appendLine()
+      .parenthesizeMultiline('{}', (builder) =>
+        builder.forEachSeparated(
+          schema.enum ?? [],
+          (builder) => builder.appendLine(',').appendLine(),
+          (builder, value) =>
+            builder
+              .append('@JsonProperty')
+              .addImport('JsonProperty', 'com.fasterxml.jackson.annotation')
+              .parenthesize('()', this.toStringLiteral(ctx, String(value)))
+              .appendLine()
+              .append(toCasing(String(value), 'snake'))
+              .parenthesize('()', this.toStringLiteral(ctx, String(value)))
+        )
       );
   }
 

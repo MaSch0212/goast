@@ -1,9 +1,10 @@
 import { OpenApiCollectorData } from './types';
 import { isOpenApiObjectProperty } from '../internal-utils';
+import { Nullable } from '../utils';
 
 export function collect<T extends Record<`x-${string}`, unknown>>(
   data: OpenApiCollectorData,
-  obj: T | T[] | undefined,
+  obj: Nullable<T | Nullable<T>[]>,
   func: (data: OpenApiCollectorData, obj: NonNullable<T>) => void
 ) {
   if (!obj) return;
@@ -21,7 +22,7 @@ export function collect<T extends Record<`x-${string}`, unknown>>(
 
 export function collectRecord<T extends Record<`x-${string}`, unknown>>(
   data: OpenApiCollectorData,
-  obj: Record<string, T> | undefined,
+  obj: Nullable<Record<string, Nullable<T>>>,
   func: (data: OpenApiCollectorData, obj: NonNullable<T>, key: string) => void
 ) {
   if (!obj) return;
