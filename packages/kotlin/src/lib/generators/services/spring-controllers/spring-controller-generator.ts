@@ -487,11 +487,13 @@ export class DefaultKotlinSpringControllerGenerator
     );
     if (endpoint.requestBody) {
       const schema = endpoint.requestBody.content[0].schema;
+      const schemaInfo = this.getSchemaInfo(ctx, schema);
+      const name = /^Any\??$/.test(schemaInfo.typeName) ? 'body' : schemaInfo.typeName;
       parameters.push({
         $src: undefined!,
         $ref: undefined,
         id: 'body',
-        name: schema ? this.getSchemaInfo(ctx, schema).typeName : 'body',
+        name,
         target: 'body',
         schema,
         required: endpoint.requestBody.required,

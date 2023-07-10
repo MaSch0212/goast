@@ -500,7 +500,8 @@ export class DefaultKotlinOkHttp3Generator
 
   protected getRequestBodyParamName(ctx: Context, endpoint: ApiEndpoint): string {
     const schema = endpoint.requestBody?.content[0].schema;
-    return schema ? this.getSchemaInfo(ctx, schema).typeName : 'body';
+    const schemaInfo = this.getSchemaInfo(ctx, schema);
+    return /^Any\??$/.test(schemaInfo.typeName) ? 'body' : schemaInfo.typeName;
   }
 
   protected getBasePath(ctx: Context): string {
