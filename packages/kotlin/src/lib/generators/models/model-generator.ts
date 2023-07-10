@@ -91,11 +91,78 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
         builder.append('Any');
       }
     } else {
-      this.generateDataClass(ctx, builder, schema);
+      this.generateObjectPackageMember(ctx, builder, schema);
     }
   }
 
-  protected generateDataClass(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
+  protected generateObjectPackageMember(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
+    if (schema.discriminator) {
+      this.generateObjectInterface(ctx, builder, schema);
+    } else {
+      this.generateObjectDataClass(ctx, builder, schema);
+    }
+  }
+
+  protected generateObjectInterface(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
+    builder
+      .apply((builder) => this.generateDocumentation(ctx, builder, schema))
+      .ensureCurrentLineEmpty()
+      .apply((builder) => this.generateObjectInterfaceAnnotations(ctx, builder, schema))
+      .ensureCurrentLineEmpty()
+      .apply((builder) => this.generateObjectInterfaceSignature(ctx, builder, schema))
+      .append(' ')
+      .parenthesizeMultiline('{}', (builder) => this.generateObjectInterfaceMembers(ctx, builder, schema));
+  }
+
+  protected generateObjectInterfaceAnnotations(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
+    if (schema.discriminator) {
+      builder.appendAnnotation('JsonTypeInfo', 'com.fasterxml.jackson.annotation', [
+        ['use', 'JsonTypeInfo.Id.NAME'],
+        ['include', 'JsonTypeInfo.As.PROPERTY'],
+        ['property', this.toStringLiteral(ctx, schema.discriminator.propertyName)],
+        ['visible', 'true'],
+      ]);
+
+      const entries = Object.entries(schema.discriminator.mapping);
+      if (entries.length > 0) {
+        builder.appendAnnotation(
+          'JsonSubTypes',
+          'com.fasterxml.jackson.annotation',
+          entries.map(([value, schema]) => (builder) => {
+            const schemaResult = ctx.getSchemaResult(schema);
+            builder
+              .append(
+                `JsonSubTypes.Type(value = ${schemaResult.typeName}::class, name = ${this.toStringLiteral(ctx, value)})`
+              )
+              .addImport(schemaResult.typeName, schemaResult.packageName);
+          })
+        );
+      }
+    }
+  }
+
+  protected generateObjectInterfaceSignature(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
+    builder.append('interface ').append(this.getDeclarationTypeName(ctx));
+  }
+
+  protected generateObjectInterfaceMembers(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
+    builder.forEach(this.sortProperties(ctx, schema, schema.properties.values()), (builder, property) =>
+      builder
+        .ensurePreviousLineEmpty()
+        .apply((builder) => this.generateJsonPropertyAnnotation(ctx, builder, schema, property, 'get'))
+        .ensureCurrentLineEmpty()
+        .append(`val ${toCasing(property.name, 'camel')}: `)
+        .apply((builder) => this.generateType(ctx, builder, property.schema))
+        .applyIf(!schema.required.has(property.name), (builder) =>
+          builder.appendIf(!property.schema.nullable, '?').append(' = null')
+        )
+    );
+  }
+
+  protected generateObjectDataClass(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
+    const inheritedSchemas = schema.inheritedSchemas.filter(
+      (x) => this.shouldGenerateTypeDeclaration(ctx, x) && !x.isNameGenerated
+    );
     builder
       .apply((builder) => this.generateDocumentation(ctx, builder, schema))
       .append('data class ')
@@ -107,7 +174,11 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
           (builder, property) =>
             builder
               .ensurePreviousLineEmpty()
-              .apply((builder) => this.generatePropertyAnnotations(ctx, builder, schema, property))
+              .apply((builder) => this.generateObjectDataClassParameterAnnotations(ctx, builder, schema, property))
+              .appendIf(
+                inheritedSchemas.some((x) => this.hasProperty(ctx, x, property.name)),
+                'override '
+              )
               .append(`val ${toCasing(property.name, 'camel')}: `)
               .apply((builder) => this.generateType(ctx, builder, property.schema))
               .applyIf(!schema.required.has(property.name), (builder) =>
@@ -115,6 +186,16 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
               )
         )
       )
+      .applyIf(
+        inheritedSchemas.length > 0,
+        (builder) =>
+          builder
+            .append(' : ')
+            .forEachSeparated(inheritedSchemas, ', ', (builder, schema) =>
+              builder.append(toCasing(schema.name, 'pascal'))
+            ) // TODO: Calling generateType here will lead to endless loop
+      )
+      .append(' ')
       .parenthesizeMultilineIf(
         schema.additionalProperties !== undefined && schema.additionalProperties !== false,
         '{}',
@@ -153,7 +234,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       );
   }
 
-  protected generatePropertyAnnotations(
+  protected generateObjectDataClassParameterAnnotations(
     ctx: Context,
     builder: Builder,
     schema: ApiSchema,
@@ -213,10 +294,11 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     ctx: Context,
     builder: Builder,
     schema: ApiSchema,
-    property: ApiSchemaProperty
+    property: ApiSchemaProperty,
+    scope?: string
   ): void {
     builder
-      .append('@JsonProperty')
+      .append(`@${scope ? scope + ':' : ''}JsonProperty`)
       .addImport('JsonProperty', 'com.fasterxml.jackson.annotation')
       .parenthesize('()', (builder) =>
         builder
@@ -431,5 +513,13 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       const bRequired = schema.required.has(b.name) ? 1 : 0;
       return bRequired - aRequired;
     });
+  }
+
+  private hasProperty(ctx: Context, schema: ApiSchema, name: string): boolean {
+    return (
+      ('properties' in schema && schema.properties.has(name)) ||
+      ('anyOf' in schema && schema.anyOf.some((x) => this.hasProperty(ctx, x, name))) ||
+      ('allOf' in schema && schema.allOf.some((x) => this.hasProperty(ctx, x, name)))
+    );
   }
 }

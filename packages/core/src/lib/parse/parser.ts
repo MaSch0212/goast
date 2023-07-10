@@ -7,11 +7,12 @@ import nodeFetch from 'node-fetch';
 import YAML from 'yaml';
 
 import { createDerefProxy } from './deref-proxy';
-import { OpenApiDocument, OpenApiObject, OpenApiReference } from './openapi-types';
+import { OpenApiDocument, OpenApiObject, OpenApiReference, OpenApiSchema } from './openapi-types';
 import { Deref } from './types';
 import { collectOpenApi } from '../collect/collector';
 import { ApiData } from '../transform';
 import { transformOpenApi } from '../transform/transformer';
+import { isNullish } from '../utils';
 
 type LoadedDocument = {
   file: string;
@@ -69,7 +70,8 @@ export class OpenApiParser {
     for (const key of Object.keys(value) as (keyof T)[]) {
       if (key === '$ref') continue;
       const v = value[key];
-      if (v && typeof v === 'object') {
+      if (isNullish(v)) continue;
+      if (typeof v === 'object') {
         if (Array.isArray(v)) {
           (result as any)[key] = await Promise.all(
             v.map(async (v: any, index: number) => {
@@ -83,6 +85,9 @@ export class OpenApiParser {
         } else {
           (result as any)[key] = await this.dereference(file, `${path}/${String(key)}`, v as Record<string, unknown>);
         }
+      }
+      if (typeof v === 'string' && path.endsWith('/discriminator/mapping')) {
+        (result as any)[key] = await this.resolveReference<OpenApiSchema>(file, { $ref: v });
       }
     }
 

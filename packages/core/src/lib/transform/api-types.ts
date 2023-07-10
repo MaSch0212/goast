@@ -141,6 +141,10 @@ export type ApiSchemaProperty = {
   name: string;
   schema: ApiSchema;
 };
+export type ApiSchemaDiscriminator = {
+  propertyName: string;
+  mapping: Record<string, ApiSchema>;
+};
 export type ApiSchemaComponent = ApiComponent<OpenApiSchema>;
 export type ApiSchemaBase = ApiSchemaComponent & {
   name: string;
@@ -156,6 +160,8 @@ export type ApiSchemaBase = ApiSchemaComponent & {
   required: Set<string>;
   custom: Record<string, unknown>;
   not: ApiSchema | undefined;
+  discriminator: ApiSchemaDiscriminator | undefined;
+  inheritedSchemas: ApiSchema[];
 };
 export type ApiSchema<T extends ApiSchemaKind = ApiSchemaKind> = ApiSchemaBase & ApiSchemaExtensions<T>;
 type AdditionalCombinedSchemaProperties = {

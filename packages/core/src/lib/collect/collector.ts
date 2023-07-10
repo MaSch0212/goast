@@ -88,6 +88,9 @@ function collectSchema(data: OpenApiCollectorData, schemas: Collect<OpenApiSchem
     if (typeof schema.additionalItems === 'object') {
       collectSchema(data, schema.additionalItems);
     }
+    if (typeof schema.discriminator === 'object') {
+      collectRecord<Deref<OpenApiSchema>>(data, schema.discriminator?.mapping, collectSchema);
+    }
   });
 }
 

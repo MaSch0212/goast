@@ -14,8 +14,7 @@ import { createOverwriteProxy } from '../utils';
 
 export function transformSchema<T extends Deref<OpenApiSchema>>(
   context: OpenApiTransformerContext,
-  schema: T,
-  isReference = false
+  schema: T
 ): ApiSchema {
   if (!schema) {
     throw new Error('Schema is required.');
@@ -47,15 +46,14 @@ export function transformSchema<T extends Deref<OpenApiSchema>>(
     }
   }
 
-  const ref = schema.$ref ? transformSchema(context, schema.$ref, true) : undefined;
   const id = context.idGenerator.generateId('schema');
   const nameInfo = determineSchemaName(schema, id);
-  const result: IncompleteApiSchema = {
+  const incompleteSchema: IncompleteApiSchema = {
     $src: {
       ...schema.$src,
       component: schema,
     },
-    $ref: ref,
+    $ref: undefined,
     id,
     name: nameInfo.name,
     isNameGenerated: nameInfo.isGenerated,
@@ -71,18 +69,29 @@ export function transformSchema<T extends Deref<OpenApiSchema>>(
     custom: getCustomFields(schema),
     not: schema.not ? transformSchema(context, schema.not) : undefined,
     const: schema.const,
+    discriminator: schema.discriminator
+      ? {
+          propertyName:
+            typeof schema.discriminator === 'string' ? schema.discriminator : schema.discriminator.propertyName,
+          mapping: {},
+        }
+      : undefined,
+    inheritedSchemas: [],
   };
-  context.incompleteSchemas.set(schemaSource, result);
+  context.incompleteSchemas.set(schemaSource, incompleteSchema);
 
+  if (schema.$ref) {
+    incompleteSchema.$ref = transformSchema(context, schema.$ref);
+  }
   const extensions = schemaTransformers[kind](schema, context);
-  Object.assign(result, extensions);
+  const completeSchema = Object.assign(incompleteSchema, extensions) as IncompleteApiSchema &
+    ApiSchemaExtensions<ApiSchemaKind>;
+  resolveDescriminatorMapping(context, completeSchema);
 
   context.incompleteSchemas.delete(schemaSource);
-  context.transformed.schemas.set(openApiObjectId, result as IncompleteApiSchema & ApiSchemaExtensions<ApiSchemaKind>);
-  if (!isReference) {
-    context.schemas.set(schemaSource, result as IncompleteApiSchema & ApiSchemaExtensions<ApiSchemaKind>);
-  }
-  return result as IncompleteApiSchema & ApiSchemaExtensions<ApiSchemaKind>;
+  context.transformed.schemas.set(openApiObjectId, completeSchema);
+  context.schemas.set(schemaSource, completeSchema);
+  return completeSchema;
 }
 
 const schemaTransformers: {
@@ -151,3 +160,14 @@ const schemaTransformers: {
   null: () => ({ type: 'null' }),
   unknown: () => ({}),
 };
+
+function resolveDescriminatorMapping(context: OpenApiTransformerContext, schema: ApiSchema) {
+  const discriminator = schema.$src.component.discriminator;
+  if (!discriminator || typeof discriminator === 'string' || !discriminator.mapping) return;
+  for (const key of Object.keys(discriminator.mapping)) {
+    const mappedSchemaRef = discriminator.mapping[key];
+    const mappedSchema = transformSchema(context, mappedSchemaRef);
+    schema.discriminator!.mapping[key] = mappedSchema;
+    mappedSchema.inheritedSchemas.push(schema);
+  }
+}
