@@ -1,10 +1,10 @@
 import { ExecutorContext, normalizePath } from '@nx/devkit';
 import { HelperDependency, getHelperDependency, updatePackageJson } from '@nx/js';
 import { checkDependencies } from '@nx/js/src/utils/check-dependencies';
-import { copyFile, emptyDir, readJson, rename, writeJson } from 'fs-extra';
+import { copyFile, emptyDir, ensureDir, readJson, rename, writeJson } from 'fs-extra';
 import { glob } from 'glob';
 import { EOL } from 'os';
-import { join, relative } from 'path';
+import { dirname, join, relative } from 'path';
 import { DiagnosticCategory, EmitResult, ModuleKind, Project, getCompilerOptionsFromTsConfig } from 'ts-morph';
 import { EntryPoint, ExecutorOptions } from './schema';
 import { ResolvedModule, resolveModuleName } from 'typescript';
@@ -177,8 +177,13 @@ function addExport(ctx: Context, packageJson: any, entryPoint: EntryPoint) {
 
 async function copyAssets(ctx: Context) {
   console.log('Copying assets...');
-  const files = await glob(ctx.assets.map((x) => normalizePath(join(ctx.projectRoot, x))));
+  const files = await glob(
+    ctx.assets.map((x) => normalizePath(join(ctx.projectRoot, x))),
+    { nodir: true }
+  );
   for (const file of files) {
+    const targetDir = join(ctx.distDir, relative(ctx.projectRoot, dirname(file)));
+    await ensureDir(targetDir);
     await copyFile(file, join(ctx.distDir, relative(ctx.projectRoot, file)));
   }
   console.log(`  - Done (${files.length} asset(s))${EOL}`);

@@ -72,7 +72,6 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
   }
 
   protected getInfrastructurePackageName(config: Config): string {
-    console.log(config);
     if (typeof config.infrastructurePackageName === 'string') {
       return config.infrastructurePackageName;
     }
