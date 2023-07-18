@@ -5,6 +5,7 @@ import { ApiEndpoint, ApiParameter, ApiSchema, toCasing } from '@goast/core';
 import { KotlinServiceGeneratorContext, KotlinServiceGeneratorOutput } from './models';
 import { KotlinImport } from '../../../common-results';
 import { KotlinFileBuilder } from '../../../file-builder';
+import { modifyString } from '../../../utils';
 import { KotlinFileGenerator } from '../../file-generator';
 import { KotlinModelGeneratorOutput } from '../../models';
 
@@ -124,7 +125,7 @@ export class DefaultKotlinSpringControllerGenerator
       ])
       .appendAnnotation('RequestMapping', 'org.springframework.web.bind.annotation', [
         ['method', '[RequestMethod.' + endpoint.method.toUpperCase() + ']'],
-        ['value', '[' + this.toStringLiteral(ctx, endpoint.path) + ']'],
+        ['value', '[' + this.toStringLiteral(ctx, this.getEndpointPath(ctx, endpoint)) + ']'],
         [
           'consumes',
           '[' + endpoint.requestBody?.content.map((x) => this.toStringLiteral(ctx, x.type)).join(', ') + ']',
@@ -450,9 +451,21 @@ export class DefaultKotlinSpringControllerGenerator
   }
 
   protected getControllerRequestMapping(ctx: Context, prefix?: string): string {
-    const basePath = (ctx.service.$src ?? ctx.service.endpoints[0]?.$src)?.document.servers?.[0]?.url ?? '/';
+    const basePath = this.getBasePath(ctx);
     prefix ??= `openapi.${toCasing(ctx.service.name, 'camel')}`;
     return this.toStringLiteral(ctx, `\${${prefix}.base-path:${basePath}}`);
+  }
+
+  protected getBasePath(ctx: Context): string {
+    return modifyString(
+      (ctx.service.$src ?? ctx.service.endpoints[0]?.$src)?.document.servers?.[0]?.url ?? '/',
+      ctx.config.basePath,
+      ctx.service
+    );
+  }
+
+  protected getEndpointPath(ctx: Context, endpoint: ApiEndpoint): string {
+    return modifyString(endpoint.path, ctx.config.pathModifier, endpoint);
   }
 
   protected getDirectoryPath(ctx: Context, packageName: string): string {

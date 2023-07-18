@@ -1,4 +1,9 @@
-import { OpenApiServicesGenerationProviderContext, ApiService, DefaultGenerationProviderConfig } from '@goast/core';
+import {
+  OpenApiServicesGenerationProviderContext,
+  ApiService,
+  DefaultGenerationProviderConfig,
+  ApiEndpoint,
+} from '@goast/core';
 
 import { KotlinImport } from '../../../common-results';
 import { KotlinGeneratorConfig, defaultKotlinGeneratorConfig } from '../../../config';
@@ -7,6 +12,9 @@ import { KotlinModelsGeneratorOutput } from '../../models';
 export type KotlinServicesGeneratorConfig = KotlinGeneratorConfig & {
   packageName: string;
   packageSuffix: string;
+
+  basePath?: string | RegExp | ((basePath: string, service: ApiService) => string);
+  pathModifier?: RegExp | ((path: string, endpoint: ApiEndpoint) => string);
 };
 
 export const defaultKotlinServicesGeneratorConfig: DefaultGenerationProviderConfig<KotlinServicesGeneratorConfig> = {

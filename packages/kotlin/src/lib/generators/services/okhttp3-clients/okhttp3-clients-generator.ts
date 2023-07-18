@@ -64,19 +64,42 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
     config?: Partial<Config> | undefined
   ): Context {
     context.data.services = context.data.services.filter((x) => x.name !== 'exclude-from-generation');
-    return this.getProviderContext(context, config, defaultKotlinOkHttp3ClientsGeneratorConfig);
+    const providerContext = this.getProviderContext(context, config, defaultKotlinOkHttp3ClientsGeneratorConfig);
+    return Object.assign(providerContext, {
+      packageName: this.getPackageName(providerContext.config),
+      infrastructurePackageName: this.getInfrastructurePackageName(providerContext.config),
+    });
+  }
+
+  protected getInfrastructurePackageName(config: Config): string {
+    console.log(config);
+    if (typeof config.infrastructurePackageName === 'string') {
+      return config.infrastructurePackageName;
+    }
+    if (config.infrastructurePackageName.mode === 'append-package-name') {
+      return config.packageName + config.infrastructurePackageName.value;
+    }
+    if (config.infrastructurePackageName.mode === 'append-full-package-name') {
+      return this.getPackageName(config) + config.infrastructurePackageName.value;
+    }
+
+    return config.infrastructurePackageName.value;
+  }
+
+  protected getPackageName(config: Config): string {
+    return config.packageName + config.packageSuffix;
   }
 
   private copyInfrastructureFiles(ctx: Context): void {
     const sourceDir = resolve(dirname(require.resolve('@goast/kotlin')), '../assets/client/okhttp3');
-    const targetDir = resolve(ctx.config.outputDir, ctx.config.infrastructurePackageName.replace(/\./g, '/'));
+    const targetDir = resolve(ctx.config.outputDir, ctx.infrastructurePackageName.replace(/\./g, '/'));
     ensureDirSync(targetDir);
 
     const files = readdirSync(sourceDir);
     for (const file of files) {
       const fileContent = readFileSync(resolve(sourceDir, file))
         .toString()
-        .replace(/@PACKAGE_NAME@/g, ctx.config.infrastructurePackageName);
+        .replace(/@PACKAGE_NAME@/g, ctx.infrastructurePackageName);
       writeFileSync(resolve(targetDir, file), fileContent);
     }
   }
