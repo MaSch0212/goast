@@ -6,6 +6,7 @@ import { KotlinGeneratorConfig, defaultKotlinGeneratorConfig } from '../../confi
 export type KotlinModelsGeneratorConfig = KotlinGeneratorConfig & {
   packageName: string;
   packageSuffix: string;
+  oneOfBehavior: 'treat-as-any-of' | 'treat-as-all-of';
 };
 
 export const defaultKotlinModelsGeneratorConfig: DefaultGenerationProviderConfig<KotlinModelsGeneratorConfig> = {
@@ -13,6 +14,7 @@ export const defaultKotlinModelsGeneratorConfig: DefaultGenerationProviderConfig
 
   packageName: 'com.openapi.generated',
   packageSuffix: '.model',
+  oneOfBehavior: 'treat-as-any-of',
 };
 
 export type KotlinModelsGeneratorInput = {};

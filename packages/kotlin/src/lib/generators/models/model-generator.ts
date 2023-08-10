@@ -67,6 +67,12 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
 
   protected generateFileContent(ctx: Context, builder: Builder): void {
     let schema = ctx.schema;
+    if (schema.kind === 'oneOf') {
+      schema = ctx.config.oneOfBehavior === 'treat-as-any-of'
+        ? { ...(schema as any), kind: 'combined', anyOf: schema.oneOf, allOf: [], oneOf: undefined }
+        : { ...(schema as any), kind: 'combined', allOf: schema.oneOf, anyOf: [], oneOf: undefined };
+      ctx.schema = schema;
+    }
     if (schema.kind === 'object' || schema.kind === 'combined') {
       const mergedSchema = resolveAnyOfAndAllOf(schema, true);
       if (mergedSchema) {
