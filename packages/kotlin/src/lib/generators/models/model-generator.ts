@@ -168,7 +168,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
   protected generateObjectDataClass(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
     const inheritedSchemas = schema.inheritedSchemas.filter(
       (x) => this.shouldGenerateTypeDeclaration(ctx, x) && !x.isNameGenerated
-    );
+    ).filter((item, index, self) => self.indexOf(item) === index);
     builder
       .apply((builder) => this.generateDocumentation(ctx, builder, schema))
       .append('data class ')
