@@ -124,7 +124,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     if (schema.discriminator) {
       builder.appendAnnotation('JsonTypeInfo', 'com.fasterxml.jackson.annotation', [
         ['use', 'JsonTypeInfo.Id.NAME'],
-        ['include', 'JsonTypeInfo.As.PROPERTY'],
+        ['include', 'JsonTypeInfo.As.EXISTING_PROPERTY'],
         ['property', this.toStringLiteral(ctx, schema.discriminator.propertyName)],
         ['visible', 'true'],
       ]);
