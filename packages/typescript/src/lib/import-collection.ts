@@ -1,5 +1,7 @@
 import { SourceBuilderOptions, StringBuilder } from '@goast/core';
 
+import { TypeScriptImport } from './common-results';
+
 export class ImportExportCollection {
   private readonly _imports: Map<string, Set<string>> = new Map();
   private readonly _exports: Map<string, Set<string>> = new Map();
@@ -10,6 +12,17 @@ export class ImportExportCollection {
 
   public get hasExports(): boolean {
     return this._exports.size > 0;
+  }
+
+  public get imports(): TypeScriptImport[] {
+    return Array.from(this._imports.entries())
+      .map(([fromModule, importNames]) =>
+        Array.from(importNames).map((importName) => ({
+          modulePath: fromModule,
+          typeName: importName,
+        }))
+      )
+      .flat();
   }
 
   public addImport(importName: string, fromModule: string): void {

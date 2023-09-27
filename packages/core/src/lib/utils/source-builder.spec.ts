@@ -95,6 +95,11 @@ describe('SourceBuilder', () => {
       sb.append('', '', '', EOL, '', '');
       expect(sb.toString()).toBe(EOL);
     });
+
+    it('should apply the provided builder function to the source builder', () => {
+      const builder = new SourceBuilder().append((b) => b.append('foo'));
+      expect(builder.toString()).toBe('foo');
+    });
   });
 
   describe('appendIf', () => {
@@ -165,33 +170,6 @@ describe('SourceBuilder', () => {
     });
   });
 
-  describe('apply', () => {
-    it('should apply the provided builder function to the source builder', () => {
-      const builder = new SourceBuilder().apply((b) => b.append('foo'));
-      expect(builder.toString()).toBe('foo');
-    });
-  });
-
-  describe('applyWithLinePrefix', () => {
-    it('should apply the provided builder function with the specified line prefix', () => {
-      const builder = new SourceBuilder().applyWithLinePrefix('// ', (b) => {
-        b.appendLine('foo');
-        b.appendLine('bar');
-      });
-      expect(builder.toString()).toBe('// foo\n// bar\n');
-    });
-
-    it('should apply the provided builder function with the specified line prefix and indentation', () => {
-      const builder = new SourceBuilder().indent((b) =>
-        b.applyWithLinePrefix('// ', (b) => {
-          b.appendLine('foo');
-          b.appendLine('bar');
-        })
-      );
-      expect(builder.toString()).toBe('  // foo\n  // bar\n');
-    });
-  });
-
   describe('appendWithLinePrefix', () => {
     it('should append the specified values with the specified line prefix', () => {
       const builder = new SourceBuilder().appendWithLinePrefix('// ', 'foo', 'bar');
@@ -201,6 +179,24 @@ describe('SourceBuilder', () => {
     it('should handle null and undefined values', () => {
       const builder = new SourceBuilder().appendWithLinePrefix('// ', 'foo', null, undefined, 'bar');
       expect(builder.toString()).toBe('// foobar');
+    });
+
+    it('should apply the provided builder function with the specified line prefix', () => {
+      const builder = new SourceBuilder().appendWithLinePrefix('// ', (b) => {
+        b.appendLine('foo');
+        b.appendLine('bar');
+      });
+      expect(builder.toString()).toBe('// foo\n// bar\n');
+    });
+
+    it('should apply the provided builder function with the specified line prefix and indentation', () => {
+      const builder = new SourceBuilder().indent((b) =>
+        b.appendWithLinePrefix('// ', (b) => {
+          b.appendLine('foo');
+          b.appendLine('bar');
+        })
+      );
+      expect(builder.toString()).toBe('  // foo\n  // bar\n');
     });
   });
 
@@ -262,19 +258,19 @@ describe('SourceBuilder', () => {
     });
   });
 
-  describe('applyIf', () => {
+  describe('if', () => {
     it('should append the content when condition is true', () => {
-      sb.applyIf(true, (x) => x.append('stuff'));
+      sb.if(true, (x) => x.append('stuff'));
       expect(sb.toString()).toBe(`stuff`);
     });
 
     it('should not append the content when condition is false', () => {
-      sb.applyIf(false, (x) => x.append('stuff'));
+      sb.if(false, (x) => x.append('stuff'));
       expect(sb.toString()).toBe(``);
     });
 
     it('should append the content when condition function returns true', () => {
-      sb.applyIf(
+      sb.if(
         () => true,
         (x) => x.append('stuff')
       );
@@ -282,17 +278,15 @@ describe('SourceBuilder', () => {
     });
 
     it('should not append the content when condition function returns false', () => {
-      sb.applyIf(
+      sb.if(
         () => false,
         (x) => x.append('stuff')
       );
       expect(sb.toString()).toBe(``);
     });
-  });
 
-  describe('applyIfElse', () => {
     it('should append the correct content when condition is true', () => {
-      sb.applyIfElse(
+      sb.if(
         true,
         (x) => x.append('stuff'),
         (x) => x.append('other stuff')
@@ -301,7 +295,7 @@ describe('SourceBuilder', () => {
     });
 
     it('should append the correct content when condition is false', () => {
-      sb.applyIfElse(
+      sb.if(
         false,
         (x) => x.append('stuff'),
         (x) => x.append('other stuff')
@@ -310,7 +304,7 @@ describe('SourceBuilder', () => {
     });
 
     it('should append the correct content when condition function returns true', () => {
-      sb.applyIfElse(
+      sb.if(
         () => true,
         (x) => x.append('stuff'),
         (x) => x.append('other stuff')
@@ -319,7 +313,7 @@ describe('SourceBuilder', () => {
     });
 
     it('should append the correct content when condition function returns false', () => {
-      sb.applyIfElse(
+      sb.if(
         () => false,
         (x) => x.append('stuff'),
         (x) => x.append('other stuff')
@@ -367,29 +361,31 @@ describe('SourceBuilder', () => {
       sb.indent('line1\nline2\n');
       expect(sb.toString()).toBe(`  line1${EOL}  line2${EOL}`);
     });
+  });
 
+  describe('indentIf', () => {
     it('should indent when condition is true', () => {
-      sb.indent((x) => x.append('stuff'), true);
+      sb.indentIf(true, (x) => x.append('stuff'));
       expect(sb.toString()).toBe(`  stuff`);
     });
 
     it('should not indent when condition is false', () => {
-      sb.indent((x) => x.append('stuff'), false);
+      sb.indentIf(false, (x) => x.append('stuff'));
       expect(sb.toString()).toBe(`stuff`);
     });
 
     it('should indent when condition function returns true', () => {
-      sb.indent(
-        (x) => x.append('stuff'),
-        () => true
+      sb.indentIf(
+        () => true,
+        (x) => x.append('stuff')
       );
       expect(sb.toString()).toBe(`  stuff`);
     });
 
     it('should not indent when condition function returns false', () => {
-      sb.indent(
-        (x) => x.append('stuff'),
-        () => false
+      sb.indentIf(
+        () => false,
+        (x) => x.append('stuff')
       );
       expect(sb.toString()).toBe(`stuff`);
     });
@@ -417,34 +413,32 @@ describe('SourceBuilder', () => {
     });
 
     it('should parenthesize but not indent the content when indent is false', () => {
-      sb.parenthesize('()', (x) => x.append(`${EOL}stuff${EOL}`), false);
+      sb.parenthesize('()', (x) => x.append(`${EOL}stuff${EOL}`), { indent: false });
       expect(sb.toString()).toBe(`(${EOL}stuff${EOL})`);
     });
-  });
 
-  describe('parenthesizeMultiline', () => {
-    it('should parenthesize the content with the given brackets string', () => {
-      sb.parenthesizeMultiline('{}', (x) => x.append('stuff'));
+    it('should parenthesize the content with the given brackets string (multiline)', () => {
+      sb.parenthesize('{}', (x) => x.append('stuff'), { multiline: true });
       expect(sb.toString()).toBe(`{${EOL}  stuff${EOL}}`);
     });
 
-    it('should parenthesize the content with the given brackets array', () => {
-      sb.parenthesizeMultiline(['{', '}'], (x) => x.append('stuff'));
+    it('should parenthesize the content with the given brackets array (multiline)', () => {
+      sb.parenthesize(['{', '}'], (x) => x.append('stuff'), { multiline: true });
       expect(sb.toString()).toBe(`{${EOL}  stuff${EOL}}`);
     });
 
-    it('should parenthesize and indent the content (fn)', () => {
-      sb.parenthesizeMultiline('()', (x) => x.append(`${EOL}stuff${EOL}`));
+    it('should parenthesize and indent the content (fn) (multiline)', () => {
+      sb.parenthesize('()', (x) => x.append(`${EOL}stuff${EOL}`), { multiline: true });
       expect(sb.toString()).toBe(`(${EOL}${EOL}  stuff${EOL})`);
     });
 
-    it('should parenthesize and indent the content (string)', () => {
-      sb.parenthesizeMultiline('()', `${EOL}stuff${EOL}`);
+    it('should parenthesize and indent the content (string) (multiline)', () => {
+      sb.parenthesize('()', `${EOL}stuff${EOL}`, { multiline: true });
       expect(sb.toString()).toBe(`(${EOL}${EOL}  stuff${EOL})`);
     });
 
-    it('should parenthesize but not indent the content when indent is false', () => {
-      sb.parenthesizeMultiline('()', (x) => x.append(`${EOL}stuff${EOL}`), false);
+    it('should parenthesize but not indent the content when indent is false (multiline)', () => {
+      sb.parenthesize('()', (x) => x.append(`${EOL}stuff${EOL}`), { multiline: true, indent: false });
       expect(sb.toString()).toBe(`(${EOL}${EOL}stuff${EOL})`);
     });
   });
@@ -482,38 +476,38 @@ describe('SourceBuilder', () => {
       );
       expect(sb.toString()).toBe(`stuff`);
     });
-  });
 
-  describe('parenthesizeMultilineIf', () => {
-    it('should parenthesize when condition is true (fn)', () => {
-      sb.parenthesizeMultilineIf(true, '()', (x) => x.append('stuff'));
+    it('should parenthesize when condition is true (fn) (multiline)', () => {
+      sb.parenthesizeIf(true, '()', (x) => x.append('stuff'), { multiline: true });
       expect(sb.toString()).toBe(`(${EOL}  stuff${EOL})`);
     });
 
-    it('should parenthesize when condition is true (string)', () => {
-      sb.parenthesizeMultilineIf(true, '()', 'stuff');
+    it('should parenthesize when condition is true (string) (multiline)', () => {
+      sb.parenthesizeIf(true, '()', 'stuff', { multiline: true });
       expect(sb.toString()).toBe(`(${EOL}  stuff${EOL})`);
     });
 
-    it('should not parenthesize when condition is false', () => {
-      sb.parenthesizeMultilineIf(false, '()', (x) => x.append('stuff'));
+    it('should not parenthesize when condition is false (multiline)', () => {
+      sb.parenthesizeIf(false, '()', (x) => x.append('stuff'), { multiline: true });
       expect(sb.toString()).toBe(`stuff`);
     });
 
-    it('should parenthesize when condition function returns true', () => {
-      sb.parenthesizeMultilineIf(
+    it('should parenthesize when condition function returns true (multiline)', () => {
+      sb.parenthesizeIf(
         () => true,
         '()',
-        (x) => x.append('stuff')
+        (x) => x.append('stuff'),
+        { multiline: true }
       );
       expect(sb.toString()).toBe(`(${EOL}  stuff${EOL})`);
     });
 
-    it('should not parenthesize when condition function returns false', () => {
-      sb.parenthesizeMultilineIf(
+    it('should not parenthesize when condition function returns false (multiline)', () => {
+      sb.parenthesizeIf(
         () => false,
         '()',
-        (x) => x.append('stuff')
+        (x) => x.append('stuff'),
+        { multiline: true }
       );
       expect(sb.toString()).toBe(`stuff`);
     });
@@ -523,6 +517,39 @@ describe('SourceBuilder', () => {
     it('should add the content for each item', () => {
       sb.forEach(['a', 'b', 'c'], (x, item) => x.append(`(${item})`));
       expect(sb.toString()).toBe(`(a)(b)(c)`);
+    });
+
+    it('should add the content for items that match the condition', () => {
+      sb.forEach(['a', 'b', 'c'], (x, item) => x.append(`(${item})`), { condition: (item) => item === 'b' });
+      expect(sb.toString()).toBe(`(b)`);
+    });
+
+    it('should add the content for each item with the given string separator', () => {
+      sb.forEach(['a', 'b', 'c'], (x, item) => x.append(`item: ${item}`), { separator: ', ' });
+      expect(sb.toString()).toBe(`item: a, item: b, item: c`);
+    });
+
+    it('should add the content for each item with the given separator builder', () => {
+      sb.forEach(['a', 'b', 'c'], (x, item) => x.append(`item: ${item}`), {
+        separator: (x, p, n, pi, ni) => x.append(`(${p}:${pi}), (${n}:${ni})`),
+      });
+      expect(sb.toString()).toBe(`item: a(a:0), (b:1)item: b(b:1), (c:2)item: c`);
+    });
+
+    it('should add the content for items that match the condition with the given string separator', () => {
+      sb.forEach(['a', 'b', 'c'], (x, item) => x.append(`item: ${item}`), {
+        condition: (item) => item === 'a' || item === 'c',
+        separator: ', ',
+      });
+      expect(sb.toString()).toBe(`item: a, item: c`);
+    });
+
+    it('should add the content for items that match the condition with the given separator builder', () => {
+      sb.forEach(['a', 'b', 'c'], (x, item) => x.append(`item: ${item}`), {
+        condition: (item) => item === 'a' || item === 'c',
+        separator: (x, p, n, pi, ni) => x.append(`(${p}:${pi}), (${n}:${ni})`),
+      });
+      expect(sb.toString()).toBe(`item: a(a:0), (c:2)item: c`);
     });
   });
 
@@ -535,55 +562,6 @@ describe('SourceBuilder', () => {
     it('should not add the content for each item when condition is false', () => {
       sb.forEachIf(['a', 'b', 'c'], false, (x, item) => x.append(`(${item})`));
       expect(sb.toString()).toBe(``);
-    });
-  });
-
-  describe('forEachMatching', () => {
-    it('should add the content for items that match the condition', () => {
-      sb.forEachMatching(
-        ['a', 'b', 'c'],
-        (item) => item === 'b',
-        (x, item) => x.append(`(${item})`)
-      );
-      expect(sb.toString()).toBe(`(b)`);
-    });
-  });
-
-  describe('forEachSeparated', () => {
-    it('should add the content for each item with the given string separator', () => {
-      sb.forEachSeparated(['a', 'b', 'c'], ', ', (x, item) => x.append(`item: ${item}`));
-      expect(sb.toString()).toBe(`item: a, item: b, item: c`);
-    });
-
-    it('should add the content for each item with the given separator builder', () => {
-      sb.forEachSeparated(
-        ['a', 'b', 'c'],
-        (x, p, n, pi, ni) => x.append(`(${p}:${pi}), (${n}:${ni})`),
-        (x, item) => x.append(`item: ${item}`)
-      );
-      expect(sb.toString()).toBe(`item: a(a:0), (b:1)item: b(b:1), (c:2)item: c`);
-    });
-  });
-
-  describe('forEachMatchingSeparated', () => {
-    it('should add the content for items that match the condition with the given string separator', () => {
-      sb.forEachMatchingSeparated(
-        ['a', 'b', 'c'],
-        (item) => item === 'a' || item === 'c',
-        ', ',
-        (x, item) => x.append(`item: ${item}`)
-      );
-      expect(sb.toString()).toBe(`item: a, item: c`);
-    });
-
-    it('should add the content for items that match the condition with the given separator builder', () => {
-      sb.forEachMatchingSeparated(
-        ['a', 'b', 'c'],
-        (item) => item === 'a' || item === 'c',
-        (x, p, n, pi, ni) => x.append(`(${p}:${pi}), (${n}:${ni})`),
-        (x, item) => x.append(`item: ${item}`)
-      );
-      expect(sb.toString()).toBe(`item: a(a:0), (c:2)item: c`);
     });
   });
 });

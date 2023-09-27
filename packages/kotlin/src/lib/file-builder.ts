@@ -51,10 +51,13 @@ export class KotlinFileBuilder extends SourceBuilder {
       this.parenthesize('()', (builder) =>
         builder
           .appendLineIf(multiline)
-          .forEachSeparated(allArgs, multiline ? ',\n' : ', ', (builder, [name, value]) =>
-            builder
-              .append(name ? `${name} = ` : '')
-              .apply((builder) => (typeof value === 'string' ? builder.append(value) : value(builder)))
+          .forEach(
+            allArgs,
+            (builder, [name, value]) =>
+              builder
+                .append(name ? `${name} = ` : '')
+                .append((builder) => (typeof value === 'string' ? builder.append(value) : value(builder))),
+            { separator: multiline ? ',\n' : ', ' }
           )
           .appendLineIf(multiline)
       );
@@ -72,13 +75,11 @@ export class KotlinFileBuilder extends SourceBuilder {
 
   public override toString(addPadding: boolean = true): string {
     return new SourceBuilder(this.options)
-      .applyIf(this.packageName !== undefined, (builder) =>
-        builder.appendLine(`package ${this.packageName}`).appendLine()
-      )
-      .apply((builder) => this.imports.writeTo(builder))
-      .applyIf(addPadding, (builder) => builder.ensurePreviousLineEmpty())
+      .if(this.packageName !== undefined, (builder) => builder.appendLine(`package ${this.packageName}`).appendLine())
+      .append((builder) => this.imports.writeTo(builder))
+      .if(addPadding, (builder) => builder.ensurePreviousLineEmpty())
       .append(super.toString())
-      .applyIf(addPadding, (builder) => builder.ensureCurrentLineEmpty())
+      .if(addPadding, (builder) => builder.ensureCurrentLineEmpty())
       .toString();
   }
 }

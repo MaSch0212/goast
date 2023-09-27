@@ -1,7 +1,7 @@
 import { EOL } from 'os';
 
 import { Condition, evalCondition } from './condition';
-import { StringBuilder, StringBuilderOptions } from './string.utils';
+import { BuilderFn, StringBuilder, StringBuilderOptions, TextOrBuilderFn } from './string.utils';
 import { Nullable } from './type.utils';
 
 export type IndentOptions = { readonly type: 'tabs' } | { readonly type: 'spaces'; readonly count: number };
@@ -31,6 +31,38 @@ export type SeparatorBuidlerFn<TBuilder extends SourceBuilder, TItem> = (
   nextItemIndex: number
 ) => void;
 export type Separator<TBuilder extends SourceBuilder, TItem> = string | SeparatorBuidlerFn<TBuilder, TItem>;
+
+/**
+ * Options for the `parenthesize` methods of the `SourceBuilder`.
+ * @see SourceBuilder.parenthesize
+ * @see SourceBuilder.parenthesizeIf
+ */
+export type ParenthesizeOptions = {
+  /**
+   * Whether to add line breaks after start and before end of the parentheses. Defaults to `false`.
+   */
+  readonly multiline?: boolean;
+  /**
+   * Whether to indent the content inside parentheses. Defaults to `true`.
+   */
+  readonly indent?: boolean;
+};
+
+/**
+ * Options for the `forEach` methods of the `SourceBuilder`.
+ * @see SourceBuilder.forEach
+ * @see SourceBuilder.forEachIf
+ */
+export type ForEachOptions<TBuilder extends SourceBuilder, TItem> = {
+  /**
+   * The condition to check before adding content for each item. Defaults to `true`.
+   */
+  readonly condition?: Condition<TItem>;
+  /**
+   * The seperator to add between items. Default to `undefined`.
+   */
+  readonly separator?: Separator<TBuilder, TItem>;
+};
 
 /**
  * Represents an in-memory source file.
@@ -86,10 +118,7 @@ export class SourceBuilder extends StringBuilder {
    * @param options The options to use for the `SourceBuilder` instance.
    * @returns The string built by the `SourceBuilder` instance.
    */
-  public static override build(
-    buildAction: (builder: SourceBuilder) => void,
-    options?: Partial<SourceBuilderOptions>
-  ): string {
+  public static override build(buildAction: BuilderFn<SourceBuilder>, options?: Partial<SourceBuilderOptions>): string {
     const builder = new SourceBuilder(options);
     buildAction(builder);
     return builder.toString();
@@ -100,59 +129,52 @@ export class SourceBuilder extends StringBuilder {
    * @param value The string(s) to append.
    * @returns The current SourceBuilder.
    */
-  public override append(...value: Nullable<string>[]): this {
-    if (value.length === 0 || !value.some((v) => v && v.length > 0)) {
-      return this;
-    }
+  public override append(...value: Nullable<TextOrBuilderFn<this>>[]): this {
+    for (const str of value) {
+      if (!str) continue;
+      if (typeof str === 'function') {
+        str(this);
+        continue;
+      }
 
-    const str = value.join('');
+      let lineStartIndex = 0;
+      for (let i = 0; i < str.length; i++) {
+        if (str[i] === '\r') continue;
 
-    let lineStartIndex = 0;
-    for (let i = 0; i < str.length; i++) {
-      if (str[i] === '\r') continue;
-
-      if (str[i] === '\n') {
-        let lineLength = i - lineStartIndex;
-        for (let j = i; j > 0 && str[j - 1] === '\r'; j--) {
-          lineLength--;
-        }
-
-        if (lineLength > 0) {
-          if (!this._isLineIndented) {
-            this.appendIndent();
+        if (str[i] === '\n') {
+          let lineLength = i - lineStartIndex;
+          for (let j = i; j > 0 && str[j - 1] === '\r'; j--) {
+            lineLength--;
           }
-          super.append(str.substring(lineStartIndex, i).replace(/\r/g, ''));
+
+          if (lineLength > 0) {
+            if (!this._isLineIndented) {
+              this.appendIndent();
+            }
+            super.append(str.substring(lineStartIndex, i).replace(/\r/g, ''));
+          }
+
+          this._isLastLineEmpty = this._isCurrentLineEmpty;
+          super.append(this.__options.newLine);
+          this._isCurrentLineEmpty = true;
+          this._isLineIndented = false;
+
+          lineStartIndex = i + 1;
         }
 
-        this._isLastLineEmpty = this._isCurrentLineEmpty;
-        super.append(this.__options.newLine);
-        this._isCurrentLineEmpty = true;
-        this._isLineIndented = false;
-
-        lineStartIndex = i + 1;
+        if (!this._emptyLineCharRegex.test(str[i])) {
+          this._isCurrentLineEmpty = false;
+        }
       }
 
-      if (!this._emptyLineCharRegex.test(str[i])) {
-        this._isCurrentLineEmpty = false;
+      if (!this._isLineIndented && lineStartIndex < str.length) {
+        this.appendIndent();
+        this._isLineIndented = true;
       }
-    }
 
-    if (!this._isLineIndented && lineStartIndex < str.length) {
-      this.appendIndent();
-      this._isLineIndented = true;
+      super.append(str.substring(lineStartIndex).replace(/\r/g, ''));
     }
-
-    super.append(str.substring(lineStartIndex).replace(/\r/g, ''));
     return this;
-  }
-
-  /**
-   * Appends one or more strings to the end of the current SourceBuilder, followed by a line terminator.
-   * @param value The string(s) to append.
-   * @returns The current SourceBuilder.
-   */
-  public override appendLine(...value: Nullable<string>[]): this {
-    return this.append(...value, '\n');
   }
 
   /**
@@ -161,8 +183,17 @@ export class SourceBuilder extends StringBuilder {
    * @param value The string(s) to append.
    * @returns The current SourceBuilder.
    */
-  public appendIf(condition: Condition, ...value: Nullable<string>[]): this {
-    return evalCondition(condition) ? this.append(...value) : this;
+  public appendIf(condition: Condition, ...value: Nullable<TextOrBuilderFn<this>>[]): this {
+    return this.if(condition, (builder) => builder.append(...value));
+  }
+
+  /**
+   * Appends one or more strings to the end of the current SourceBuilder, followed by a line terminator.
+   * @param value The string(s) to append.
+   * @returns The current SourceBuilder.
+   */
+  public override appendLine(...value: Nullable<TextOrBuilderFn<this>>[]): this {
+    return this.append(...value, '\n');
   }
 
   /**
@@ -171,8 +202,8 @@ export class SourceBuilder extends StringBuilder {
    * @param value The string(s) to append.
    * @returns The current SourceBuilder.
    */
-  public appendLineIf(condition: Condition, ...value: Nullable<string>[]): this {
-    return evalCondition(condition) ? this.appendLine(...value) : this;
+  public appendLineIf(condition: Condition, ...value: Nullable<TextOrBuilderFn<this>>[]): this {
+    return this.if(condition, (builder) => builder.appendLine(...value));
   }
 
   /**
@@ -181,8 +212,16 @@ export class SourceBuilder extends StringBuilder {
    * @param {...(string|null|undefined)} value - The values to append.
    * @returns {SourceBuilder} This source builder instance.
    */
-  public appendWithLinePrefix(prefix: string, ...value: Nullable<string>[]): this {
-    return this.applyWithLinePrefix(prefix, (builder) => builder.append(...value));
+  public appendWithLinePrefix(prefix: string, ...value: Nullable<TextOrBuilderFn<this>>[]): this {
+    const previousLinePrefix = this._linePrefix;
+    this._linePrefix += prefix;
+    try {
+      this.append(...value);
+    } finally {
+      this._linePrefix = previousLinePrefix;
+    }
+
+    return this;
   }
 
   /**
@@ -191,8 +230,8 @@ export class SourceBuilder extends StringBuilder {
    * @param {...(string|null|undefined)} value - The values to append.
    * @returns {SourceBuilder} This source builder instance.
    */
-  public appendLineWithLinePrefix(prefix: string, ...value: Nullable<string>[]): this {
-    return this.applyWithLinePrefix(prefix, (builder) => builder.appendLine(...value));
+  public appendLineWithLinePrefix(prefix: string, ...value: Nullable<TextOrBuilderFn<this>>[]): this {
+    return this.appendWithLinePrefix(prefix, ...value, '\n');
   }
 
   /**
@@ -201,8 +240,8 @@ export class SourceBuilder extends StringBuilder {
    * @param value The string(s) to prepend.
    * @returns The current SourceBuilder.
    */
-  public prependIf(condition: Condition, ...value: Nullable<string | ((builder: StringBuilder) => void)>[]): this {
-    return evalCondition(condition) ? this.prepend(...value) : this;
+  public prependIf(condition: Condition, ...value: Nullable<TextOrBuilderFn<StringBuilder>>[]): this {
+    return this.if(condition, (builder) => builder.prepend(...value));
   }
 
   /**
@@ -211,36 +250,8 @@ export class SourceBuilder extends StringBuilder {
    * @param value The string(s) to prepend.
    * @returns The current SourceBuilder.
    */
-  public prependLineIf(condition: Condition, ...value: Nullable<string | ((builder: StringBuilder) => void)>[]): this {
-    return evalCondition(condition) ? this.prependLine(...value) : this;
-  }
-
-  /**
-   * Applies the provided builder function to this source builder.
-   * @param builderFn The builder function to apply.
-   * @returns This source builder instance.
-   */
-  public apply(builderFn: (builder: this) => void): this {
-    builderFn(this);
-    return this;
-  }
-
-  /**
-   * Applies the provided builder function to this source builder with the specified line prefix.
-   * @param prefix The line prefix to use.
-   * @param builderFn The builder function to apply.
-   * @returns This source builder instance.
-   */
-  public applyWithLinePrefix(prefix: string, builderFn: (builder: this) => void): this {
-    const previousLinePrefix = this._linePrefix;
-    this._linePrefix += prefix;
-    try {
-      builderFn(this);
-    } finally {
-      this._linePrefix = previousLinePrefix;
-    }
-
-    return this;
+  public prependLineIf(condition: Condition, ...value: Nullable<TextOrBuilderFn<StringBuilder>>[]): this {
+    return this.if(condition, (builder) => builder.prependLine(...value));
   }
 
   /**
@@ -273,33 +284,15 @@ export class SourceBuilder extends StringBuilder {
   /**
    * Inserts specified content if the specified condition is true.
    * @param condition The condition to check before inserting content.
-   * @param builderFn The function to add content.
-   * @returns A reference to this instance.
-   */
-  public applyIf(condition: Condition, builderFn: (builder: this) => void): this {
-    if (evalCondition(condition)) {
-      builderFn(this);
-    }
-
-    return this;
-  }
-
-  /**
-   * Inserts specified content depending on the specified condition.
-   * @param condition The condition to check before inserting content.
    * @param builderFn The function to add content if the condition is true.
    * @param elseBuilderFn The function to add content if the condition is false.
    * @returns A reference to this instance.
    */
-  public applyIfElse(
-    condition: Condition,
-    builderFn: (builder: this) => void,
-    elseBuilderFn: (builder: this) => void
-  ): this {
+  public if(condition: Condition, builderFn: BuilderFn<this>, elseBuilderFn?: BuilderFn<this>): this {
     if (evalCondition(condition)) {
       builderFn(this);
     } else {
-      elseBuilderFn(this);
+      elseBuilderFn?.(this);
     }
 
     return this;
@@ -311,190 +304,89 @@ export class SourceBuilder extends StringBuilder {
    * @param condition The condition to check before adding indentation.
    * @returns A reference to this instance.
    */
-  public indent(builderFnOrString: ((builder: this) => void) | string, condition: Condition = true): this {
-    const shouldIndent = evalCondition(condition);
-    if (shouldIndent) {
-      this.currentIndentLevel++;
-    }
+  public indent(value: Nullable<TextOrBuilderFn<this>>): this {
+    this.currentIndentLevel++;
     try {
-      if (typeof builderFnOrString === 'string') {
-        this.append(builderFnOrString);
-      } else {
-        builderFnOrString(this);
-      }
+      this.append(value);
     } finally {
-      if (shouldIndent) {
-        this.currentIndentLevel--;
-      }
+      this.currentIndentLevel--;
     }
 
     return this;
   }
 
   /**
-   * Adds parentheses around the specified content and adds one indentation level.
+   * Adds one indentation level if the specified condition is true. If the current line already contains characters, only subsequent lines are affected.
+   * @param builderFn The function to add indented content or the content itself.
+   * @param condition The condition to check before adding indentation.
+   * @returns A reference to this instance.
+   */
+  public indentIf(condition: Condition, value: Nullable<TextOrBuilderFn<this>>): this {
+    return this.if(
+      condition,
+      (builder) => builder.indent(value),
+      (builder) => builder.append(value)
+    );
+  }
+
+  /**
+   * Adds parentheses around the specified content.
    * @param brackets The brackets to use.
-   * @param builderFnOrString The function to add content inside parentheses or one string that should be parenthesized.
-   * @param indent Whether to indent the content inside parentheses. Defaults to `true`.
+   * @param value The function to add content inside parentheses or one string that should be parenthesized.
+   * @param options Options for the parentheses.
    * @returns A reference to this instance.
    */
   public parenthesize(
     brackets: Paratheses,
-    builderFnOrString: ((builder: this) => void) | string,
-    indent: boolean = true
+    value: Nullable<TextOrBuilderFn<this>>,
+    options?: ParenthesizeOptions
   ): this {
-    this.append(brackets[0] ?? '');
-    this.indent(builderFnOrString, indent);
-    this.append(brackets[1] ?? '');
-
-    return this;
-  }
-
-  /**
-   * Adds parentheses around the specified content and adds one indentation level. Line breaks are added after start and before end of the parentheses.
-   * @param brackets The brackets to use.
-   * @param builderFnOrString The function to add content inside parentheses or one string that should be parenthesized.
-   * @param indent Whether to indent the content inside parentheses. Defaults to `true`.
-   * @returns A reference to this instance.
-   */
-  public parenthesizeMultiline(
-    brackets: Paratheses,
-    builderFnOrString: ((builder: this) => void) | string,
-    indent: boolean = true
-  ): this {
-    this.appendLine(brackets[0] ?? '');
-    this.indent(builderFnOrString, indent);
-    this.ensureCurrentLineEmpty();
-    this.append(brackets[1] ?? '');
-
-    return this;
+    return this.if(
+      options?.multiline ?? false,
+      (b) => b.appendLine(brackets[0] ?? ''),
+      (b) => b.append(brackets[0] ?? '')
+    )
+      .indentIf(options?.indent ?? true, value)
+      .if(options?.multiline ?? false, (b) => b.ensureCurrentLineEmpty())
+      .append(brackets[1] ?? '');
   }
 
   /**
    * Adds parentheses around the specified content if the specified condition is true.
    * @param condition The condition to check before adding parentheses.
    * @param brackets The brackets to use.
-   * @param builderFnOrString The function to add content inside parentheses or one string that should be parenthesized.
-   * @param indent Whether to indent the content inside parentheses. Defaults to `true`.
+   * @param value The function to add content inside parentheses or one string that should be parenthesized.
+   * @param options Options for the parentheses.
    * @returns A reference to this instance.
    */
   public parenthesizeIf(
     condition: Condition,
     brackets: Paratheses,
-    builderFnOrString: ((builder: this) => void) | string,
-    indent?: boolean
+    value: TextOrBuilderFn<this>,
+    options?: ParenthesizeOptions
   ): this {
-    if (evalCondition(condition)) {
-      this.parenthesize(brackets, builderFnOrString, indent ?? true);
-    } else {
-      this.indent(builderFnOrString, indent ?? false);
-    }
-
-    return this;
-  }
-
-  /**
-   * Adds parentheses around the specified content if the specified condition is true. Line breaks are added after start and before end of the parentheses.
-   * @param condition The condition to check before adding parentheses.
-   * @param brackets The brackets to use.
-   * @param builderFnOrString The function to add content inside parentheses or one string that should be parenthesized.
-   * @param indent Whether to indent the content inside parentheses. Defaults to `true`.
-   * @returns A reference to this instance.
-   */
-  public parenthesizeMultilineIf(
-    condition: Condition,
-    brackets: Paratheses,
-    builderFnOrString: ((builder: this) => void) | string,
-    indent?: boolean
-  ): this {
-    if (evalCondition(condition)) {
-      this.parenthesizeMultiline(brackets, builderFnOrString, indent ?? true);
-    } else {
-      this.indent(builderFnOrString, indent ?? false);
-    }
-
-    return this;
+    return this.if(
+      condition,
+      (builder) => builder.parenthesize(brackets, value, options),
+      (builder) => builder.indentIf(options?.indent ?? true, value)
+    );
   }
 
   /**
    * Adds content for each item in the specified array.
    * @param items The items to add content for.
    * @param builderFn The function to add content for each item.
+   * @param options The options for the loop.
    * @returns A reference to this instance.
    */
-  public forEach<T>(items: Iterable<T>, builderFn: (builder: this, item: T, index: number) => void): this {
-    return this.forEachImpl(items, builderFn);
-  }
-
-  /**
-   * Adds content for each item in the specified array.
-   * @param items The items to add content for.
-   * @param condition The condition to check before adding content.
-   * @param builderFn The function to add content for each item.
-   * @returns A reference to this instance.
-   */
-  public forEachIf<T>(
-    items: Iterable<T>,
-    condition: Condition,
-    builderFn: (builder: this, item: T, index: number) => void
-  ): this {
-    return evalCondition(condition) ? this.forEachImpl(items, builderFn) : this;
-  }
-
-  /**
-   * Adds content for each item in the specified array.
-   * @param items The items to add content for.
-   * @param condition The condition to check before adding content for each item.
-   * @param builderFn The function to add content for each item.
-   * @returns A reference to this instance.
-   */
-  public forEachMatching<T>(
-    items: Iterable<T>,
-    condition: Condition<T>,
-    builderFn: (builder: this, item: T, index: number) => void
-  ): this {
-    return this.forEachImpl(items, builderFn, undefined, condition);
-  }
-
-  /**
-   * Adds content for each item in the specified array.
-   * @param items The items to add content for.
-   * @param seperator The seperator to add between items.
-   * @param builderFn The function to add content for each item.
-   * @returns A reference to this instance.
-   */
-  public forEachSeparated<T>(
-    items: Iterable<T>,
-    seperator: Separator<this, T>,
-    builderFn: (builder: this, item: T, index: number) => void
-  ): this {
-    return this.forEachImpl(items, builderFn, seperator);
-  }
-
-  /**
-   * Adds content for each item in the specified array.
-   * @param items The items to add content for.
-   * @param condition The condition to check before adding content for each item.
-   * @param seperator The seperator to add between items.
-   * @param builderFn The function to add content for each item.
-   * @returns A reference to this instance.
-   */
-  public forEachMatchingSeparated<T>(
-    items: Iterable<T>,
-    condition: Condition<T>,
-    seperator: Separator<this, T>,
-    builderFn: (builder: this, item: T, index: number) => void
-  ): this {
-    return this.forEachImpl(items, builderFn, seperator, condition);
-  }
-
-  private forEachImpl<T>(
+  public forEach<T>(
     items: Iterable<T>,
     builderFn: (builder: this, item: T, index: number) => void,
-    seperator?: Separator<this, T>,
-    condition: Condition<T> = true
+    options?: ForEachOptions<this, T>
   ): this {
-    if (condition === false) return this;
+    const condition = options?.condition ?? true;
+    if (options?.condition === false) return this;
+    const seperator = options?.separator;
     let previousIndex: number = -1;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     let previousItem: T = undefined!;
@@ -515,6 +407,15 @@ export class SourceBuilder extends StringBuilder {
       index++;
     }
     return this;
+  }
+
+  public forEachIf<T>(
+    items: Iterable<T>,
+    condition: Condition,
+    builderFn: (builder: this, item: T, index: number) => void,
+    options?: ForEachOptions<this, T>
+  ): this {
+    return this.if(condition, (b) => b.forEach(items, builderFn, options));
   }
 
   private appendIndent(): void {

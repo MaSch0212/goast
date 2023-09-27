@@ -14,26 +14,31 @@ Map(7) {
     models: {
       'schema-1': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WithTitle',
+        additionalImports: [],
         filePath: '<root>\\out\\models\\my-title.ts',
         name: 'MyTitle'
       },
       'schema-2': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WithAllCommon',
+        additionalImports: [],
         filePath: '<root>\\out\\models\\with-all-common.ts',
         name: 'WithAllCommon'
       },
       'schema-3': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/MyEnum',
+        additionalImports: [],
         filePath: '<root>\\out\\models\\my-enum.ts',
         name: 'MyEnum'
       },
       'schema-4': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WriteOnly',
+        additionalImports: [],
         filePath: '<root>\\out\\models\\write-only.ts',
         name: 'WriteOnly'
       },
       'schema-5': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/ReadOnly',
+        additionalImports: [],
         filePath: '<root>\\out\\models\\read-only.ts',
         name: 'ReadOnly'
       }

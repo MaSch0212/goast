@@ -66,5 +66,4 @@ export type TypeScriptModelsGeneratorContext = OpenApiSchemasGenerationProviderC
 
 export type TypeScriptModelGeneratorContext = TypeScriptModelsGeneratorContext & {
   schema: ApiSchema;
-  getSchemaResult(schema: ApiSchema): TypeScriptModelGeneratorOutput;
 };

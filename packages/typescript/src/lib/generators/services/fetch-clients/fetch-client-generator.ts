@@ -52,9 +52,9 @@ export class DefaultTypeScriptFetchClientGenerator
   protected generateInterface(ctx: Context, builder: Builder) {
     builder
       .ensurePreviousLineEmpty()
-      .apply((builder) => this.generateInterfaceDocumentation(ctx, builder))
+      .append((builder) => this.generateInterfaceDocumentation(ctx, builder))
       .ensureCurrentLineEmpty()
-      .apply((builder) => this.generateInterfaceSignature(ctx, builder))
+      .append((builder) => this.generateInterfaceSignature(ctx, builder))
       .append(' ')
       .parenthesize('{}', (builder) => this.generateInterfaceContent(ctx, builder))
       .appendLine();
@@ -79,18 +79,18 @@ export class DefaultTypeScriptFetchClientGenerator
   protected generateInterfaceServiceMethod(ctx: Context, builder: Builder, endpoint: ApiEndpoint) {
     builder
       .ensurePreviousLineEmpty()
-      .apply((builder) => this.generateServiceMethodDocumentation(ctx, builder, endpoint))
+      .append((builder) => this.generateServiceMethodDocumentation(ctx, builder, endpoint))
       .ensureCurrentLineEmpty()
-      .apply((builder) => this.generateServiceMethodSignature(ctx, builder, endpoint))
+      .append((builder) => this.generateServiceMethodSignature(ctx, builder, endpoint))
       .appendLine(';');
   }
 
   protected generateClass(ctx: Context, builder: Builder) {
     builder
       .ensurePreviousLineEmpty()
-      .apply((builder) => this.generateClassDocumentation(ctx, builder))
+      .append((builder) => this.generateClassDocumentation(ctx, builder))
       .ensureCurrentLineEmpty()
-      .apply((builder) => this.generateClassSignature(ctx, builder))
+      .append((builder) => this.generateClassSignature(ctx, builder))
       .append(' ')
       .parenthesize('{}', (builder) => this.generateClassContent(ctx, builder))
       .appendLine();
@@ -115,9 +115,9 @@ export class DefaultTypeScriptFetchClientGenerator
   protected generateClassServiceMethod(ctx: Context, builder: Builder, endpoint: ApiEndpoint) {
     builder
       .ensurePreviousLineEmpty()
-      .apply((builder) => this.generateServiceMethodDocumentation(ctx, builder, endpoint))
+      .append((builder) => this.generateServiceMethodDocumentation(ctx, builder, endpoint))
       .ensureCurrentLineEmpty()
-      .apply((builder) => this.generateServiceMethodSignature(ctx, builder, endpoint))
+      .append((builder) => this.generateServiceMethodSignature(ctx, builder, endpoint))
       .append(' ')
       .parenthesize('{}', (builder) => this.generateServiceMethodContent(ctx, builder, endpoint))
       .appendLine();
@@ -127,16 +127,13 @@ export class DefaultTypeScriptFetchClientGenerator
     const hasParams =
       endpoint.parameters.some((p) => p.target === 'path' || p.target === 'query') ||
       (!!endpoint.requestBody && endpoint.requestBody?.content.length > 0);
-    builder
-      .appendLine('/**')
-      .applyWithLinePrefix(' * ', (builder) =>
-        builder
-          .appendLine(endpoint.description ?? '[No description was provided by the API]')
-          .appendLine(`@see ${getEndpointUrlPreview(endpoint)}`)
-          .appendLineIf(hasParams, `@param params Parameters for the endpoint.`)
-          .appendLine(`@returns The response of the call to the endpoint.`)
-      )
-      .appendLine(' */');
+    builder.appendComment('/***/', (builder) =>
+      builder
+        .appendLine(endpoint.description ?? '[No description was provided by the API]')
+        .appendLine(`@see ${getEndpointUrlPreview(endpoint)}`)
+        .appendLineIf(hasParams, `@param params Parameters for the endpoint.`)
+        .appendLine(`@returns The response of the call to the endpoint.`)
+    );
   }
 
   protected generateServiceMethodSignature(ctx: Context, builder: Builder, endpoint: ApiEndpoint) {
@@ -144,7 +141,7 @@ export class DefaultTypeScriptFetchClientGenerator
       .append(toCasing(endpoint.name, ctx.config.methodCasing))
       .parenthesize('()', (builder) => this.generateServiceMethodParameters(ctx, builder, endpoint))
       .append(' : ')
-      .apply((builder) => this.generateServiceMethodReturnValue(ctx, builder, endpoint));
+      .append((builder) => this.generateServiceMethodReturnValue(ctx, builder, endpoint));
   }
 
   protected generateServiceMethodParameters(ctx: Context, builder: Builder, endpoint: ApiEndpoint) {
@@ -157,7 +154,7 @@ export class DefaultTypeScriptFetchClientGenerator
               `${this.toPropertyName(ctx, parameter.name)}: ${this.getTypeName(ctx, builder, parameter.schema?.id)};`
             )
           )
-          .applyIf(!!endpoint.requestBody && endpoint.requestBody.content.length > 0, (builder) =>
+          .appendIf(!!endpoint.requestBody && endpoint.requestBody.content.length > 0, (builder) =>
             builder.appendLine(`body: ${this.getTypeName(ctx, builder, endpoint.requestBody?.content[0].schema?.id)};`)
           )
       );

@@ -68,9 +68,10 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
   protected generateFileContent(ctx: Context, builder: Builder): void {
     let schema = ctx.schema;
     if (schema.kind === 'oneOf') {
-      schema = ctx.config.oneOfBehavior === 'treat-as-any-of'
-        ? { ...(schema as any), kind: 'combined', anyOf: schema.oneOf, allOf: [], oneOf: undefined }
-        : { ...(schema as any), kind: 'combined', allOf: schema.oneOf, anyOf: [], oneOf: undefined };
+      schema =
+        ctx.config.oneOfBehavior === 'treat-as-any-of'
+          ? { ...(schema as any), kind: 'combined', anyOf: schema.oneOf, allOf: [], oneOf: undefined }
+          : { ...(schema as any), kind: 'combined', allOf: schema.oneOf, anyOf: [], oneOf: undefined };
       ctx.schema = schema;
     }
     if (schema.kind === 'object' || schema.kind === 'combined') {
@@ -111,13 +112,13 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
 
   protected generateObjectInterface(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
     builder
-      .apply((builder) => this.generateDocumentation(ctx, builder, schema))
+      .append((builder) => this.generateDocumentation(ctx, builder, schema))
       .ensureCurrentLineEmpty()
-      .apply((builder) => this.generateObjectInterfaceAnnotations(ctx, builder, schema))
+      .append((builder) => this.generateObjectInterfaceAnnotations(ctx, builder, schema))
       .ensureCurrentLineEmpty()
-      .apply((builder) => this.generateObjectInterfaceSignature(ctx, builder, schema))
+      .append((builder) => this.generateObjectInterfaceSignature(ctx, builder, schema))
       .append(' ')
-      .parenthesizeMultiline('{}', (builder) => this.generateObjectInterfaceMembers(ctx, builder, schema));
+      .parenthesize('{}', (builder) => this.generateObjectInterfaceMembers(ctx, builder, schema), { multiline: true });
   }
 
   protected generateObjectInterfaceAnnotations(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
@@ -155,88 +156,92 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     builder.forEach(this.sortProperties(ctx, schema, schema.properties.values()), (builder, property) =>
       builder
         .ensurePreviousLineEmpty()
-        .apply((builder) => this.generateJsonPropertyAnnotation(ctx, builder, schema, property, 'get'))
+        .append((builder) => this.generateJsonPropertyAnnotation(ctx, builder, schema, property, 'get'))
         .ensureCurrentLineEmpty()
         .append(`val ${toCasing(property.name, 'camel')}: `)
-        .apply((builder) => this.generateType(ctx, builder, property.schema))
-        .applyIf(!schema.required.has(property.name), (builder) =>
+        .append((builder) => this.generateType(ctx, builder, property.schema))
+        .if(!schema.required.has(property.name), (builder) =>
           builder.appendIf(!property.schema.nullable, '?').append(' = null')
         )
     );
   }
 
   protected generateObjectDataClass(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
-    const inheritedSchemas = schema.inheritedSchemas.filter(
-      (x) => this.shouldGenerateTypeDeclaration(ctx, x) && !x.isNameGenerated
-    ).filter((item, index, self) => self.indexOf(item) === index);
+    const inheritedSchemas = schema.inheritedSchemas
+      .filter((x) => this.shouldGenerateTypeDeclaration(ctx, x) && !x.isNameGenerated)
+      .filter((item, index, self) => self.indexOf(item) === index);
     builder
-      .apply((builder) => this.generateDocumentation(ctx, builder, schema))
+      .append((builder) => this.generateDocumentation(ctx, builder, schema))
       .append('data class ')
       .append(this.getDeclarationTypeName(ctx))
-      .parenthesizeMultilineIf(schema.properties.size > 0, '()', (builder) =>
-        builder.forEachSeparated(
-          this.sortProperties(ctx, schema, schema.properties.values()),
-          ',\n',
-          (builder, property) =>
-            builder
-              .ensurePreviousLineEmpty()
-              .apply((builder) => this.generateObjectDataClassParameterAnnotations(ctx, builder, schema, property))
-              .appendIf(
-                inheritedSchemas.some((x) => this.hasProperty(ctx, x, property.name)),
-                'override '
-              )
-              .append(`val ${toCasing(property.name, 'camel')}: `)
-              .apply((builder) => this.generateType(ctx, builder, property.schema))
-              .applyIf(!schema.required.has(property.name), (builder) =>
-                builder.appendIf(!property.schema.nullable, '?').append(' = null')
-              )
-        )
+      .parenthesizeIf(
+        schema.properties.size > 0,
+        '()',
+        (builder) =>
+          builder.forEach(
+            this.sortProperties(ctx, schema, schema.properties.values()),
+
+            (builder, property) =>
+              builder
+                .ensurePreviousLineEmpty()
+                .append((builder) => this.generateObjectDataClassParameterAnnotations(ctx, builder, schema, property))
+                .appendIf(
+                  inheritedSchemas.some((x) => this.hasProperty(ctx, x, property.name)),
+                  'override '
+                )
+                .append(`val ${toCasing(property.name, 'camel')}: `)
+                .append((builder) => this.generateType(ctx, builder, property.schema))
+                .if(!schema.required.has(property.name), (builder) =>
+                  builder.appendIf(!property.schema.nullable, '?').append(' = null')
+                ),
+            { separator: ',\n' }
+          ),
+        { multiline: true }
       )
-      .applyIf(
+      .if(
         inheritedSchemas.length > 0,
         (builder) =>
           builder
             .append(' : ')
-            .forEachSeparated(inheritedSchemas, ', ', (builder, schema) =>
-              builder.append(toCasing(schema.name, 'pascal'))
-            ) // TODO: Calling generateType here will lead to endless loop
+            .forEach(inheritedSchemas, (builder, schema) => builder.append(toCasing(schema.name, 'pascal')), {
+              separator: ', ',
+            }) // TODO: Calling generateType here will lead to endless loop
       )
       .append(' ')
-      .parenthesizeMultilineIf(
+      .parenthesizeIf(
         schema.additionalProperties !== undefined && schema.additionalProperties !== false,
         '{}',
         (builder) =>
-          builder.applyIf(
-            schema.additionalProperties !== undefined && schema.additionalProperties !== false,
-            (builder) =>
-              builder
-                .appendLine('@JsonIgnore')
-                .addImport('JsonIgnore', 'com.fasterxml.jackson.annotation')
-                .append('val additionalProperties: Mutable')
-                .apply((builder) => this.generateMapType(ctx, builder, schema))
-                .appendLine(' = mutableMapOf()')
-                .appendLine()
-                .appendLine('@JsonAnySetter')
-                .addImport('JsonAnySetter', 'com.fasterxml.jackson.annotation')
-                .append('fun set')
-                .parenthesize('()', (builder) =>
-                  builder.append('name: String, value: ').applyIfElse(
-                    schema.additionalProperties === true,
-                    (builder) => builder.append('Any?'),
-                    (builder) => this.generateType(ctx, builder, schema.additionalProperties as ApiSchema)
-                  )
+          builder.if(schema.additionalProperties !== undefined && schema.additionalProperties !== false, (builder) =>
+            builder
+              .appendLine('@JsonIgnore')
+              .addImport('JsonIgnore', 'com.fasterxml.jackson.annotation')
+              .append('val additionalProperties: Mutable')
+              .append((builder) => this.generateMapType(ctx, builder, schema))
+              .appendLine(' = mutableMapOf()')
+              .appendLine()
+              .appendLine('@JsonAnySetter')
+              .addImport('JsonAnySetter', 'com.fasterxml.jackson.annotation')
+              .append('fun set')
+              .parenthesize('()', (builder) =>
+                builder.append('name: String, value: ').if(
+                  schema.additionalProperties === true,
+                  (builder) => builder.append('Any?'),
+                  (builder) => this.generateType(ctx, builder, schema.additionalProperties as ApiSchema)
                 )
-                .append(' ')
-                .parenthesizeMultiline('{}', 'this.additionalProperties[name] = value')
-                .appendLine()
-                .appendLine()
-                .appendLine('@JsonAnyGetter')
-                .addImport('JsonAnyGetter', 'com.fasterxml.jackson.annotation')
-                .append('fun getMap(): ')
-                .apply((builder) => this.generateMapType(ctx, builder, schema))
-                .append(' ')
-                .parenthesizeMultiline('{}', 'return this.additionalProperties')
-          )
+              )
+              .append(' ')
+              .parenthesize('{}', 'this.additionalProperties[name] = value', { multiline: true })
+              .appendLine()
+              .appendLine()
+              .appendLine('@JsonAnyGetter')
+              .addImport('JsonAnyGetter', 'com.fasterxml.jackson.annotation')
+              .append('fun getMap(): ')
+              .append((builder) => this.generateMapType(ctx, builder, schema))
+              .append(' ')
+              .parenthesize('{}', 'return this.additionalProperties', { multiline: true })
+          ),
+        { multiline: true }
       );
   }
 
@@ -291,7 +296,9 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       .append('@Schema')
       .addImport('Schema', 'io.swagger.v3.oas.annotations.media')
       .parenthesizeIf(parts.size > 0, '()', (builder) =>
-        builder.forEachSeparated(parts.entries(), ', ', (builder, [key, value]) => builder.append(`${key} = ${value}`))
+        builder.forEach(parts.entries(), (builder, [key, value]) => builder.append(`${key} = ${value}`), {
+          separator: ', ',
+        })
       )
       .appendLine();
   }
@@ -312,7 +319,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
           .appendIf(schema.required.has(property.name), ', required = true')
       )
       .appendLine()
-      .applyIf(property.schema.custom['exclude-when-null'] === true, (builder) =>
+      .if(property.schema.custom['exclude-when-null'] === true, (builder) =>
         builder
           .append('@get:JsonInclude')
           .addImport('JsonInclude', 'com.fasterxml.jackson.annotation')
@@ -329,7 +336,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       builder
         .append('Map')
         .parenthesize('<>', (builder) =>
-          builder.append('String, ').apply((builder) => this.generateType(ctx, builder, propertiesType))
+          builder.append('String, ').append((builder) => this.generateType(ctx, builder, propertiesType))
         );
     }
   }
@@ -427,29 +434,32 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
 
   protected generateEnum(ctx: Context, builder: Builder, schema: ApiSchema): void {
     builder
-      .apply((builder) => this.generateDocumentation(ctx, builder, schema))
+      .append((builder) => this.generateDocumentation(ctx, builder, schema))
       .append('enum class ')
       .append(this.getDeclarationTypeName(ctx))
       .append('(val value: String) ')
-      .parenthesizeMultiline('{}', (builder) =>
-        builder.forEachSeparated(
-          schema.enum ?? [],
-          (builder) => builder.appendLine(',').appendLine(),
-          (builder, value) =>
-            builder
-              .append('@JsonProperty')
-              .addImport('JsonProperty', 'com.fasterxml.jackson.annotation')
-              .parenthesize('()', this.toStringLiteral(ctx, String(value)))
-              .appendLine()
-              .append(toCasing(String(value), 'snake'))
-              .parenthesize('()', this.toStringLiteral(ctx, String(value)))
-        )
+      .parenthesize(
+        '{}',
+        (builder) =>
+          builder.forEach(
+            schema.enum ?? [],
+            (builder, value) =>
+              builder
+                .append('@JsonProperty')
+                .addImport('JsonProperty', 'com.fasterxml.jackson.annotation')
+                .parenthesize('()', this.toStringLiteral(ctx, String(value)))
+                .appendLine()
+                .append(toCasing(String(value), 'snake'))
+                .parenthesize('()', this.toStringLiteral(ctx, String(value))),
+            { separator: (builder) => builder.appendLine(',').appendLine() }
+          ),
+        { multiline: true }
       );
   }
 
   protected generateArrayType(ctx: Context, builder: Builder, schema: ApiSchema<'array'>): void {
     builder.append('List').parenthesize('<>', (builder) =>
-      builder.applyIfElse(
+      builder.if(
         schema.items === undefined,
         (builder) => builder.append('Any?'),
         (builder) => this.generateType(ctx, builder, schema.items!)
@@ -465,7 +475,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       builder
         .ensurePreviousLineEmpty()
         .appendLine('/**')
-        .applyWithLinePrefix(' * ', (builder) =>
+        .appendWithLinePrefix(' * ', (builder) =>
           builder
             .appendLineIf(!!schema.description, schema.description)
             .forEach(propertiesWithDescription, (builder, property) =>

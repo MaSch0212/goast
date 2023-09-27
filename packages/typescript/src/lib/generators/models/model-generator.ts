@@ -8,12 +8,14 @@ import {
   ArrayLikeApiSchema,
   CombinedLikeApiSchema,
   ObjectLikeApiSchema,
+  getSchemaReference,
   resolveAnyOfAndAllOf,
   toCasing,
 } from '@goast/core';
 
 import { TypeScriptModelGeneratorContext, TypeScriptModelGeneratorOutput } from './models';
 import { TypeScriptFileBuilder } from '../../file-builder';
+import { toTypeScriptPropertyName } from '../../utils';
 import { TypeScriptFileGenerator } from '../file-generator';
 
 type Context = TypeScriptModelGeneratorContext;
@@ -29,9 +31,9 @@ export class DefaultTypeScriptModelGenerator
   implements TypeScriptModelGenerator
 {
   public generate(ctx: Context): Output {
-    if (this.shouldGenerateTypeDeclaration(ctx)) {
-      const name = this.getDeclarationTypeName(ctx);
-      const filePath = this.getFilePath(ctx);
+    if (this.shouldGenerateTypeDeclaration(ctx, ctx.schema)) {
+      const name = this.getDeclarationTypeName(ctx, ctx.schema);
+      const filePath = this.getFilePath(ctx, ctx.schema);
       console.log(`Generating model ${name} to ${filePath}...`);
       ensureDirSync(dirname(filePath));
 
@@ -40,11 +42,13 @@ export class DefaultTypeScriptModelGenerator
 
       writeFileSync(filePath, builder.toString());
 
-      return { name, filePath };
+      return { name, filePath, additionalImports: [] };
     } else {
       const builder = new TypeScriptFileBuilder(undefined, ctx.config);
       this.generateType(ctx, builder, ctx.schema);
-      return { name: builder.toString(false), filePath: undefined };
+      const additionalImports = builder.imports.imports;
+      builder.imports.clear();
+      return { name: builder.toString(false), filePath: undefined, additionalImports };
     }
   }
 
@@ -66,9 +70,9 @@ export class DefaultTypeScriptModelGenerator
 
   protected generateEnum(ctx: Context, builder: Builder): void {
     builder
-      .apply((builder) => this.generateTypeDocumentation(ctx, builder))
+      .append((builder) => this.generateTypeDocumentation(ctx, builder))
       .ensureCurrentLineEmpty()
-      .apply((builder) => this.generateEnumSignature(ctx, builder))
+      .append((builder) => this.generateEnumSignature(ctx, builder))
       .parenthesize('{}', (builder) => {
         builder.ensureCurrentLineEmpty();
         this.generateEnumValues(ctx, builder);
@@ -77,7 +81,7 @@ export class DefaultTypeScriptModelGenerator
   }
 
   protected generateEnumSignature(ctx: Context, builder: Builder): void {
-    builder.append('export enum ').append(this.getDeclarationTypeName(ctx));
+    builder.append('export enum ').append(this.getDeclarationTypeName(ctx, ctx.schema));
   }
 
   protected generateEnumValues(ctx: Context, builder: Builder): void {
@@ -90,45 +94,66 @@ export class DefaultTypeScriptModelGenerator
 
   protected generateInterface(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
     builder
-      .apply((builder) => this.generateTypeDocumentation(ctx, builder))
+      .append((builder) => this.generateTypeDocumentation(ctx, builder))
       .ensureCurrentLineEmpty()
-      .apply((builder) => this.generateInterfaceSignature(ctx, builder))
+      .append((builder) => this.generateInterfaceSignature(ctx, builder))
       .parenthesize('{}', (builder) =>
-        builder.appendLine().apply((builder) => this.generateInterfaceContent(ctx, builder, schema))
+        builder.appendLine().append((builder) => this.generateInterfaceContent(ctx, builder, schema))
       )
       .appendLine();
   }
 
   protected generateInterfaceSignature(ctx: Context, builder: Builder): void {
-    builder.append('export interface ').append(this.getDeclarationTypeName(ctx));
+    builder.append('export interface ').append(this.getDeclarationTypeName(ctx, ctx.schema));
   }
 
   protected generateInterfaceContent(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
     this.generateObjectTypeProperties(ctx, builder, schema);
     if (schema.additionalProperties) {
-      const valueType =
-        schema.additionalProperties === true
-          ? this.getAnyType(ctx)
-          : this.getTypeName(ctx, builder, schema.additionalProperties);
-      builder.appendLine(`[key: string]: ${valueType};`);
+      builder.append('[key: string]: ');
+      if (schema.additionalProperties === true) {
+        builder.append(this.getAnyType(ctx));
+      } else {
+        this.generateTypeUsage(ctx, builder, schema.additionalProperties);
+      }
+      builder.appendLine(';');
     }
   }
 
   protected generateTypeAlias(ctx: Context, builder: Builder): void {
     builder
-      .apply((builder) => this.generateTypeDocumentation(ctx, builder))
+      .append((builder) => this.generateTypeDocumentation(ctx, builder))
       .ensureCurrentLineEmpty()
-      .apply((builder) => this.generateTypeAliasSignature(ctx, builder))
+      .append((builder) => this.generateTypeAliasSignature(ctx, builder))
       .append(' = ')
-      .apply((builder) => this.generateType(ctx, builder, ctx.schema))
+      .append((builder) => this.generateType(ctx, builder, ctx.schema))
       .appendLine(';');
   }
 
   protected generateTypeAliasSignature(ctx: Context, builder: Builder): void {
-    builder.append('export type ').append(this.getDeclarationTypeName(ctx));
+    builder.append('export type ').append(this.getDeclarationTypeName(ctx, ctx.schema));
+  }
+
+  protected generateTypeUsage(ctx: Context, builder: Builder, schema: ApiSchema): void {
+    schema = getSchemaReference(schema, ['description']);
+    if (this.shouldGenerateTypeDeclaration(ctx, schema)) {
+      const name = this.getDeclarationTypeName(ctx, schema);
+      const filePath = this.getFilePath(ctx, schema);
+      if (filePath) {
+        builder.addImport(name, filePath);
+      }
+      builder.append(name);
+    } else {
+      this.generateType(ctx, builder, schema);
+    }
   }
 
   protected generateType(ctx: Context, builder: Builder, schema: ApiSchema): void {
+    if (schema.enum !== undefined && schema.enum.length > 0) {
+      this.generateEnumType(ctx, builder, schema as ApiSchema<'string'>);
+      return;
+    }
+
     switch (schema.kind) {
       case 'boolean':
         builder.append('boolean');
@@ -138,11 +163,7 @@ export class DefaultTypeScriptModelGenerator
         builder.append('number');
         break;
       case 'string':
-        if (schema.enum !== undefined && schema.enum.length > 0) {
-          this.generateEnumType(ctx, builder, schema as ApiSchema<'string'>);
-        } else {
-          builder.append('string');
-        }
+        builder.append('string');
         break;
       case 'null':
         builder.append('null');
@@ -173,10 +194,11 @@ export class DefaultTypeScriptModelGenerator
 
   protected generateArrayType(ctx: Context, builder: Builder, schema: ArrayLikeApiSchema): void {
     builder
-      .append(ctx.config.immutableTypes ? 'ReadonlyArray' : 'Array')
-      .parenthesize('<>', (builder) =>
-        builder.append(schema.items ? this.getTypeName(ctx, builder, schema.items) : this.getAnyType(ctx))
-      );
+      .appendIf(ctx.config.immutableTypes, 'readonly ')
+      .parenthesize('()', (builder) =>
+        schema.items ? this.generateTypeUsage(ctx, builder, schema.items) : builder.append(this.getAnyType(ctx))
+      )
+      .append('[]');
   }
 
   protected generateCombinedType(ctx: Context, builder: Builder, schema: CombinedLikeApiSchema): void {
@@ -186,14 +208,17 @@ export class DefaultTypeScriptModelGenerator
     }
 
     builder
-      .forEachSeparated(schema.allOf, ' & ', (builder, schema) =>
-        builder.append(this.getTypeName(ctx, builder, schema))
-      )
-      .applyIf(schema.anyOf.length > 0, (builder) =>
+      .forEach(schema.allOf, (builder, schema) => this.generateTypeUsage(ctx, builder, schema), { separator: ' & ' })
+      .appendIf(schema.anyOf.length > 0, (builder) =>
         builder
           .appendIf(schema.allOf.length > 0, ' & ')
-          .forEachSeparated(schema.anyOf, ' & ', (builder, schema) =>
-            builder.append(`Partial<${this.getTypeName(ctx, builder, schema)}>`)
+          .forEach(
+            schema.anyOf,
+            (builder, schema) =>
+              builder
+                .append('Partial')
+                .parenthesize('<>', (builder) => this.generateTypeUsage(ctx, builder, schema), { indent: false }),
+            { separator: ' & ' }
           )
       );
   }
@@ -205,9 +230,9 @@ export class DefaultTypeScriptModelGenerator
     }
 
     builder.parenthesizeIf(schema.oneOf.length > 1, '()', (builder) =>
-      builder.forEachSeparated(schema.oneOf, ' | ', (builder, schema) =>
-        builder.append(this.getTypeName(ctx, builder, schema))
-      )
+      builder.forEach(schema.oneOf, (builder, schema) => this.generateTypeUsage(ctx, builder, schema), {
+        separator: ' | ',
+      })
     );
   }
 
@@ -220,10 +245,9 @@ export class DefaultTypeScriptModelGenerator
     const parenthesize = schema.type.length > 1;
     builder.parenthesizeIf(parenthesize, '()', (builder) =>
       builder
-        .applyIf(parenthesize, (builder) => builder.appendLine().append('| '))
-        .forEachSeparated(
+        .appendIf(parenthesize, (builder) => builder.appendLine().append('| '))
+        .forEach(
           schema.type,
-          (builder) => builder.appendLine().append('| '),
           (builder, type) => {
             switch (type) {
               case 'string':
@@ -249,7 +273,8 @@ export class DefaultTypeScriptModelGenerator
                 builder.append('never');
                 break;
             }
-          }
+          },
+          { separator: (builder) => builder.appendLine().append('| ') }
         )
     );
   }
@@ -259,7 +284,8 @@ export class DefaultTypeScriptModelGenerator
       schema.properties.size === 0 &&
       !schema.additionalProperties &&
       schema.allOf.length === 0 &&
-      schema.anyOf.length === 0
+      schema.anyOf.length === 0 &&
+      schema.discriminator === undefined
     ) {
       builder.append('{}');
       return;
@@ -269,7 +295,7 @@ export class DefaultTypeScriptModelGenerator
     if (schema.properties.size > 0) {
       builder
         .parenthesize('{}', (builder) =>
-          builder.appendLine().apply((builder) => this.generateObjectTypeProperties(ctx, builder, schema))
+          builder.appendLine().append((builder) => this.generateObjectTypeProperties(ctx, builder, schema))
         )
         .appendIf(!!schema.additionalProperties || schema.allOf.length > 0 || schema.anyOf.length > 0, ' & ');
     }
@@ -293,10 +319,10 @@ export class DefaultTypeScriptModelGenerator
       this.generatePropertyDocumentation(ctx, builder, property);
       builder
         .appendIf(ctx.config.immutableTypes, 'readonly ')
-        .append(this.toPropertyName(ctx, property.name))
+        .append(toTypeScriptPropertyName(property.name, ctx.config.useSingleQuotes))
         .appendIf(!schema.required.has(property.name), '?')
         .append(': ')
-        .append(this.getTypeName(ctx, builder, property.schema))
+        .append((builder) => this.generateTypeUsage(ctx, builder, property.schema))
         .appendIf(property.schema.nullable === true, ' | null')
         .appendLine(';');
     });
@@ -305,20 +331,21 @@ export class DefaultTypeScriptModelGenerator
   protected generateObjectTypeAdditionalProperties(ctx: Context, builder: Builder, schema: ObjectLikeApiSchema): void {
     if (!schema.additionalProperties) return;
     builder
-      .appendIf(ctx.config.immutableTypes, 'Readonly<')
-      .append('Record<string, ')
-      .append(
-        schema.additionalProperties === true ? 'unknown' : this.getTypeName(ctx, builder, schema.additionalProperties)
-      )
-      .append('>')
-      .appendIf(ctx.config.immutableTypes, '>');
+      .appendIf(ctx.config.immutableTypes, 'readonly ')
+      .append('Record')
+      .appendGenericTypeParameters(
+        'string',
+        schema.additionalProperties === true
+          ? this.getAnyType(ctx)
+          : (builder) => this.generateTypeUsage(ctx, builder, schema.additionalProperties as ApiSchema)
+      );
   }
 
-  protected generateEnumType(ctx: Context, builder: Builder, schema: ApiSchema<'string'>): void {
+  protected generateEnumType(ctx: Context, builder: Builder, schema: ApiSchema): void {
     builder.indent((builder) => {
-      builder.forEachSeparated(schema.enum ?? [], ' | ', (builder, item) =>
-        builder.append(this.toStringLiteral(ctx, String(item)))
-      );
+      builder.forEach(schema.enum ?? [], (builder, item) => builder.append(this.toStringLiteral(ctx, String(item))), {
+        separator: ' | ',
+      });
     });
   }
 
@@ -331,29 +358,27 @@ export class DefaultTypeScriptModelGenerator
   }
 
   protected generateDocumentation(ctx: Context, builder: Builder, schema: ApiSchema): void {
-    if (schema.description) {
-      builder.appendLine('/**').appendLineWithLinePrefix(' * ', schema.description.trim()).appendLine(' */');
-    }
+    builder.appendComment('/***/', schema.description);
   }
 
-  protected shouldGenerateTypeDeclaration(ctx: Context): boolean {
+  protected shouldGenerateTypeDeclaration(ctx: Context, schema: ApiSchema): boolean {
     // All named schemas should have its own type declaration
-    if (!ctx.schema.isNameGenerated) {
+    if (!schema.isNameGenerated) {
       return true;
     }
 
     // All enum types should have its own type declaration
-    if (ctx.schema.kind === 'string' && ctx.schema.enum !== undefined && ctx.schema.enum.length > 0) {
+    if (schema.kind === 'string' && schema.enum !== undefined && schema.enum.length > 0) {
       return true;
     }
 
     // All primitive types already exist and do not need its own type declaration
     if (
-      ctx.schema.kind !== 'array' &&
-      ctx.schema.kind !== 'combined' &&
-      ctx.schema.kind !== 'multi-type' &&
-      ctx.schema.kind !== 'object' &&
-      ctx.schema.kind !== 'oneOf'
+      schema.kind !== 'array' &&
+      schema.kind !== 'combined' &&
+      schema.kind !== 'multi-type' &&
+      schema.kind !== 'object' &&
+      schema.kind !== 'oneOf'
     ) {
       return false;
     }
@@ -372,23 +397,15 @@ export class DefaultTypeScriptModelGenerator
     return undefined;
   }
 
-  protected getTypeName(ctx: Context, builder: Builder, schema: ApiSchema): string {
-    const modelResult = ctx.getSchemaResult(schema);
-    if (modelResult.filePath) {
-      builder.addImport(modelResult.name, modelResult.filePath);
-    }
-    return modelResult.name;
+  protected getDeclarationTypeName(ctx: Context, schema: ApiSchema): string {
+    return toCasing(schema.name, ctx.config.typeNameCasing);
   }
 
-  protected getDeclarationTypeName(ctx: Context): string {
-    return toCasing(ctx.schema.name, ctx.config.typeNameCasing);
-  }
-
-  protected getFilePath(ctx: Context): string {
+  protected getFilePath(ctx: Context, schema: ApiSchema): string {
     return resolve(
       ctx.config.outputDir,
       ctx.config.modelsDirPath,
-      `${toCasing(ctx.schema.name, ctx.config.fileNameCasing)}.ts`
+      `${toCasing(schema.name, ctx.config.fileNameCasing)}.ts`
     );
   }
 }

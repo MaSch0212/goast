@@ -41,11 +41,11 @@ export class DefaultKotlinOkHttp3Generator
 
   protected generateApiClientFileContent(ctx: Context, builder: Builder): void {
     builder
-      .apply((builder) => this.generateApiClientClassAnnotations(ctx, builder))
+      .append((builder) => this.generateApiClientClassAnnotations(ctx, builder))
       .ensureCurrentLineEmpty()
-      .apply((builder) => this.generateApiClientClassSignature(ctx, builder))
+      .append((builder) => this.generateApiClientClassSignature(ctx, builder))
       .append(' ')
-      .parenthesizeMultiline('{}', (builder) => this.generateApiClientClassContent(ctx, builder));
+      .parenthesize('{}', (builder) => this.generateApiClientClassContent(ctx, builder), { multiline: true });
   }
 
   protected generateApiClientClassAnnotations(ctx: Context, builder: Builder): void {
@@ -56,12 +56,15 @@ export class DefaultKotlinOkHttp3Generator
     builder
       .append('class ')
       .append(this.getApiClientName(ctx))
-      .parenthesizeMultiline('()', (builder) =>
-        builder
-          .appendLine('basePath: String = defaultBasePath,')
-          .appendLine('client: OkHttpClient = ApiClient.defaultClient')
-          .addImport('OkHttpClient', 'okhttp3')
-          .addImport('ApiClient', ctx.infrastructurePackageName)
+      .parenthesize(
+        '()',
+        (builder) =>
+          builder
+            .appendLine('basePath: String = defaultBasePath,')
+            .appendLine('client: OkHttpClient = ApiClient.defaultClient')
+            .addImport('OkHttpClient', 'okhttp3')
+            .addImport('ApiClient', ctx.infrastructurePackageName),
+        { multiline: true }
       )
       .append(' : ')
       .append('ApiClient(basePath, client)');
@@ -69,24 +72,24 @@ export class DefaultKotlinOkHttp3Generator
 
   protected generateApiClientClassContent(ctx: Context, builder: Builder): void {
     builder
-      .apply((builder) => this.generateApiClientCompanionObject(ctx, builder))
+      .append((builder) => this.generateApiClientCompanionObject(ctx, builder))
       .forEach(ctx.service.endpoints, (builder, endpoint) =>
         builder
           .ensurePreviousLineEmpty()
-          .apply((builder) => this.generateApiClientMethod(ctx, builder, endpoint))
+          .append((builder) => this.generateApiClientMethod(ctx, builder, endpoint))
           .ensurePreviousLineEmpty()
-          .apply((builder) => this.generateApiClientHttpInfoMethod(ctx, builder, endpoint))
+          .append((builder) => this.generateApiClientHttpInfoMethod(ctx, builder, endpoint))
           .ensurePreviousLineEmpty()
-          .apply((builder) => this.generateApiClientRequestConfigMethod(ctx, builder, endpoint))
+          .append((builder) => this.generateApiClientRequestConfigMethod(ctx, builder, endpoint))
       )
       .ensurePreviousLineEmpty()
-      .apply((builder) => this.generateAdditionalMethods(ctx, builder));
+      .append((builder) => this.generateAdditionalMethods(ctx, builder));
   }
 
   protected generateApiClientCompanionObject(ctx: Context, builder: Builder): void {
     builder
       .append('companion object ')
-      .parenthesizeMultiline('{}', (builder) => this.generateApiClientCompanionObjectContent(ctx, builder));
+      .parenthesize('{}', (builder) => this.generateApiClientCompanionObjectContent(ctx, builder), { multiline: true });
   }
 
   protected generateApiClientCompanionObjectContent(ctx: Context, builder: Builder): void {
@@ -97,38 +100,43 @@ export class DefaultKotlinOkHttp3Generator
     builder
       .appendAnnotation('JvmStatic')
       .append('val defaultBasePath: String by lazy ')
-      .parenthesizeMultiline('{}', (builder) =>
-        builder
-          .appendLine(
-            `System.getProperties().getProperty(ApiClient.baseUrlKey, ${this.toStringLiteral(
-              ctx,
-              this.getBasePath(ctx)
-            )})`
-          )
-          .addImport('ApiClient', ctx.infrastructurePackageName)
+      .parenthesize(
+        '{}',
+        (builder) =>
+          builder
+            .appendLine(
+              `System.getProperties().getProperty(ApiClient.baseUrlKey, ${this.toStringLiteral(
+                ctx,
+                this.getBasePath(ctx)
+              )})`
+            )
+            .addImport('ApiClient', ctx.infrastructurePackageName),
+        { multiline: true }
       );
   }
 
   protected generateApiClientMethod(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
     builder
-      .apply((builder) => this.generateApiClientMethodDocumentation(ctx, builder, endpoint))
+      .append((builder) => this.generateApiClientMethodDocumentation(ctx, builder, endpoint))
       .ensureCurrentLineEmpty()
-      .apply((builder) => this.generateApiClientMethodAnnotations(ctx, builder, endpoint))
+      .append((builder) => this.generateApiClientMethodAnnotations(ctx, builder, endpoint))
       .ensureCurrentLineEmpty()
-      .apply((builder) => this.generateApiClientMethodSignature(ctx, builder, endpoint))
+      .append((builder) => this.generateApiClientMethodSignature(ctx, builder, endpoint))
       .append(' ')
-      .parenthesizeMultiline('{}', (builder) => this.generateApiClientMethodContent(ctx, builder, endpoint));
+      .parenthesize('{}', (builder) => this.generateApiClientMethodContent(ctx, builder, endpoint), {
+        multiline: true,
+      });
   }
 
   protected generateApiClientMethodDocumentation(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
     builder
       .appendLine('/**')
-      .applyWithLinePrefix(' * ', (builder) =>
+      .appendWithLinePrefix(' * ', (builder) =>
         builder
           .appendLine(`${endpoint.summary ?? 'TODO: Provide summary'}`)
-          .apply((builder) => this.generateParamDocEntries(ctx, builder, endpoint))
+          .append((builder) => this.generateParamDocEntries(ctx, builder, endpoint))
           .append('@return ')
-          .apply((builder) => this.generateApiClientMethodReturnType(ctx, builder, endpoint))
+          .append((builder) => this.generateApiClientMethodReturnType(ctx, builder, endpoint))
           .appendLine()
           .appendLine('@throws IllegalStateException If the request is not correctly configured')
           .appendLine('@throws IOException Rethrows the OkHttp execute method exception')
@@ -161,7 +169,7 @@ export class DefaultKotlinOkHttp3Generator
       .append(toCasing(endpoint.name, 'camel'))
       .parenthesize('()', (builder) => this.generateApiClientMethodParameters(ctx, builder, endpoint))
       .append(': ')
-      .apply((builder) => this.generateApiClientMethodReturnType(ctx, builder, endpoint));
+      .append((builder) => this.generateApiClientMethodReturnType(ctx, builder, endpoint));
   }
 
   protected generateApiClientMethodParameters(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
@@ -180,46 +188,51 @@ export class DefaultKotlinOkHttp3Generator
       .appendLine()
       .appendLine()
       .append('return when (localVarResponse.responseType) ')
-      .parenthesizeMultiline('{}', (builder) =>
-        builder
-          .append('ResponseType.Success -> ')
-          .applyIfElse(
-            responseSchema === undefined,
-            (builder) => builder.append('Unit'),
-            (builder) =>
-              builder
-                .append('(localVarResponse as Success<*>).data as ')
-                .addImport('Success', ctx.infrastructurePackageName)
-                .apply((builder) => this.generateTypeUsage(ctx, builder, responseSchema))
-          )
-          .ensureCurrentLineEmpty()
-          .appendLine(responseErrorHandlingCode)
-          .addImport('ClientError', ctx.infrastructurePackageName)
-          .addImport('ServerError', ctx.infrastructurePackageName)
-          .addImport('ResponseType', ctx.infrastructurePackageName)
+      .parenthesize(
+        '{}',
+        (builder) =>
+          builder
+            .append('ResponseType.Success -> ')
+            .if(
+              responseSchema === undefined,
+              (builder) => builder.append('Unit'),
+              (builder) =>
+                builder
+                  .append('(localVarResponse as Success<*>).data as ')
+                  .addImport('Success', ctx.infrastructurePackageName)
+                  .append((builder) => this.generateTypeUsage(ctx, builder, responseSchema))
+            )
+            .ensureCurrentLineEmpty()
+            .appendLine(responseErrorHandlingCode)
+            .addImport('ClientError', ctx.infrastructurePackageName)
+            .addImport('ServerError', ctx.infrastructurePackageName)
+            .addImport('ResponseType', ctx.infrastructurePackageName),
+        { multiline: true }
       );
   }
 
   protected generateApiClientHttpInfoMethod(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
     builder
-      .apply((builder) => this.generateApiClientHttpInfoMethodDocumentation(ctx, builder, endpoint))
+      .append((builder) => this.generateApiClientHttpInfoMethodDocumentation(ctx, builder, endpoint))
       .ensureCurrentLineEmpty()
-      .apply((builder) => this.generateApiClientHttpInfoMethodAnnotations(ctx, builder, endpoint))
+      .append((builder) => this.generateApiClientHttpInfoMethodAnnotations(ctx, builder, endpoint))
       .ensureCurrentLineEmpty()
-      .apply((builder) => this.generateApiClientHttpInfoMethodSignature(ctx, builder, endpoint))
+      .append((builder) => this.generateApiClientHttpInfoMethodSignature(ctx, builder, endpoint))
       .append(' ')
-      .parenthesizeMultiline('{}', (builder) => this.generateApiClientHttpInfoMethodContent(ctx, builder, endpoint));
+      .parenthesize('{}', (builder) => this.generateApiClientHttpInfoMethodContent(ctx, builder, endpoint), {
+        multiline: true,
+      });
   }
 
   protected generateApiClientHttpInfoMethodDocumentation(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
     builder
       .appendLine('/**')
-      .applyWithLinePrefix(' * ', (builder) =>
+      .appendWithLinePrefix(' * ', (builder) =>
         builder
           .appendLine(`${endpoint.summary ?? 'TODO: Provide summary'}`)
-          .apply((builder) => this.generateParamDocEntries(ctx, builder, endpoint))
+          .append((builder) => this.generateParamDocEntries(ctx, builder, endpoint))
           .append('@return ')
-          .apply((builder) => this.generateApiClientHttpInfoMethodReturnType(ctx, builder, endpoint))
+          .append((builder) => this.generateApiClientHttpInfoMethodReturnType(ctx, builder, endpoint))
           .appendLine()
           .appendLine('@throws IllegalStateException If the request is not correctly configured')
           .appendLine('@throws IOException Rethrows the OkHttp execute method exception')
@@ -244,7 +257,7 @@ export class DefaultKotlinOkHttp3Generator
       .append(toCasing(endpoint.name, 'camel'), 'WithHttpInfo')
       .parenthesize('()', (builder) => this.generateApiClientHttpInfoMethodSignatureParameters(ctx, builder, endpoint))
       .append(': ')
-      .apply((builder) => this.generateApiClientHttpInfoMethodReturnType(ctx, builder, endpoint));
+      .append((builder) => this.generateApiClientHttpInfoMethodReturnType(ctx, builder, endpoint));
   }
 
   protected generateApiClientHttpInfoMethodSignatureParameters(
@@ -273,24 +286,24 @@ export class DefaultKotlinOkHttp3Generator
       .append('return request')
       .parenthesize('<>', (builder) =>
         builder
-          .apply((builder) => this.generateTypeUsage(ctx, builder, endpoint.requestBody?.content[0].schema, 'Unit'))
+          .append((builder) => this.generateTypeUsage(ctx, builder, endpoint.requestBody?.content[0].schema, 'Unit'))
           .append(', ')
-          .apply((builder) => this.generateTypeUsage(ctx, builder, this.getResponseSchema(ctx, endpoint), 'Unit'))
+          .append((builder) => this.generateTypeUsage(ctx, builder, this.getResponseSchema(ctx, endpoint), 'Unit'))
       )
-      .parenthesizeMultiline('()', (builder) => builder.append('localVariableConfig'));
+      .parenthesize('()', (builder) => builder.append('localVariableConfig'), { multiline: true });
   }
 
   protected generateApiClientRequestConfigMethod(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
     builder
-      .apply((builder) => this.generateApiClientRequestConfigMethodDocumentation(ctx, builder, endpoint))
+      .append((builder) => this.generateApiClientRequestConfigMethodDocumentation(ctx, builder, endpoint))
       .ensureCurrentLineEmpty()
-      .apply((builder) => this.generateApiClientRequestConfigMethodAnnotations(ctx, builder, endpoint))
+      .append((builder) => this.generateApiClientRequestConfigMethodAnnotations(ctx, builder, endpoint))
       .ensureCurrentLineEmpty()
-      .apply((builder) => this.generateApiClientRequestConfigMethodSignature(ctx, builder, endpoint))
+      .append((builder) => this.generateApiClientRequestConfigMethodSignature(ctx, builder, endpoint))
       .append(' ')
-      .parenthesizeMultiline('{}', (builder) =>
-        this.generateApiClientRequestConfigMethodContent(ctx, builder, endpoint)
-      );
+      .parenthesize('{}', (builder) => this.generateApiClientRequestConfigMethodContent(ctx, builder, endpoint), {
+        multiline: true,
+      });
   }
 
   protected generateApiClientRequestConfigMethodDocumentation(
@@ -300,10 +313,10 @@ export class DefaultKotlinOkHttp3Generator
   ): void {
     builder
       .appendLine('/**')
-      .applyWithLinePrefix(' * ', (builder) =>
+      .appendWithLinePrefix(' * ', (builder) =>
         builder
           .appendLine(`To obtain the request config of the operation ${toCasing(endpoint.name, 'camel')}`)
-          .apply((builder) => this.generateParamDocEntries(ctx, builder, endpoint))
+          .append((builder) => this.generateParamDocEntries(ctx, builder, endpoint))
           .append('@return RequestConfig')
       )
       .appendLine(' */');
@@ -325,7 +338,7 @@ export class DefaultKotlinOkHttp3Generator
         this.generateApiClientRequestConfigMethodSignatureParameters(ctx, builder, endpoint)
       )
       .append(': ')
-      .apply((builder) => this.generateApiClientRequestConfigMethodReturnType(ctx, builder, endpoint));
+      .append((builder) => this.generateApiClientRequestConfigMethodReturnType(ctx, builder, endpoint));
   }
 
   protected generateApiClientRequestConfigMethodSignatureParameters(
@@ -358,22 +371,29 @@ export class DefaultKotlinOkHttp3Generator
       )
       .appendLine('val localVariableQuery: MultiValueMap = mutableMapOf<String, List<String>>()')
       .addImport('MultiValueMap', ctx.infrastructurePackageName)
-      .applyIf(queryParameters.length > 0, (builder) =>
+      .if(queryParameters.length > 0, (builder) =>
         builder.indent((builder) =>
-          builder.append('.apply ').parenthesizeMultiline('{}', (builder) =>
-            builder.forEach(queryParameters, (builder, param) =>
-              builder
-                .appendIf(!param.required, `if (${toCasing(param.name, 'camel')} != null) `)
-                .parenthesizeMultilineIf(!param.required, '{}', (builder) =>
-                  builder.appendLine(
-                    `put(${this.toStringLiteral(ctx, toCasing(param.name, 'camel'))}, listOf(${toCasing(
-                      param.name,
-                      'camel'
-                    )}.toString()))`
+          builder.append('.apply ').parenthesize(
+            '{}',
+            (builder) =>
+              builder.forEach(queryParameters, (builder, param) =>
+                builder
+                  .appendIf(!param.required, `if (${toCasing(param.name, 'camel')} != null) `)
+                  .parenthesizeIf(
+                    !param.required,
+                    '{}',
+                    (builder) =>
+                      builder.appendLine(
+                        `put(${this.toStringLiteral(ctx, toCasing(param.name, 'camel'))}, listOf(${toCasing(
+                          param.name,
+                          'camel'
+                        )}.toString()))`
+                      ),
+                    { multiline: true }
                   )
-                )
-                .appendLine()
-            )
+                  .appendLine()
+              ),
+            { multiline: true }
           )
         )
       )
@@ -386,15 +406,18 @@ export class DefaultKotlinOkHttp3Generator
       .appendLine()
       .append('return RequestConfig')
       .addImport('RequestConfig', ctx.infrastructurePackageName)
-      .parenthesizeMultiline('()', (builder) =>
-        builder
-          .appendLine(`method = RequestMethod.${endpoint.method.toUpperCase()},`)
-          .addImport('RequestMethod', ctx.infrastructurePackageName)
-          .appendLine(`path = "${this.getPathWithInterpolation(ctx, endpoint)}",`)
-          .appendLine('query = localVariableQuery,')
-          .appendLine('headers = localVariableHeaders,')
-          .appendLine('requiresAuthentication = false,')
-          .appendLineIf(!!endpoint.requestBody, 'body = localVariableBody')
+      .parenthesize(
+        '()',
+        (builder) =>
+          builder
+            .appendLine(`method = RequestMethod.${endpoint.method.toUpperCase()},`)
+            .addImport('RequestMethod', ctx.infrastructurePackageName)
+            .appendLine(`path = "${this.getPathWithInterpolation(ctx, endpoint)}",`)
+            .appendLine('query = localVariableQuery,')
+            .appendLine('headers = localVariableHeaders,')
+            .appendLine('requiresAuthentication = false,')
+            .appendLineIf(!!endpoint.requestBody, 'body = localVariableBody'),
+        { multiline: true }
       );
   }
 
@@ -425,13 +448,16 @@ export class DefaultKotlinOkHttp3Generator
     includeTypeDefinition: boolean
   ): void {
     const parameters = this.getAllParameters(ctx, endpoint);
-    builder.forEachSeparated(parameters, ', ', (builder, parameter) =>
-      builder.append(toCasing(parameter.name, 'camel')).applyIf(includeTypeDefinition, (builder) =>
-        builder
-          .append(': ')
-          .apply((builder) => this.generateTypeUsage(ctx, builder, parameter.schema))
-          .appendIf(!parameter.required, '? = ', this.getDefaultValue(ctx, parameter.schema))
-      )
+    builder.forEach(
+      parameters,
+      (builder, parameter) =>
+        builder.append(toCasing(parameter.name, 'camel')).if(includeTypeDefinition, (builder) =>
+          builder
+            .append(': ')
+            .append((builder) => this.generateTypeUsage(ctx, builder, parameter.schema))
+            .appendIf(!parameter.required, '? = ', this.getDefaultValue(ctx, parameter.schema))
+        ),
+      { separator: ', ' }
     );
   }
 

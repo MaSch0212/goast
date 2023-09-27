@@ -259,6 +259,9 @@ export const defaultStringBuilderOptions: StringBuilderOptions = {
   newLine: EOL,
 };
 
+export type BuilderFn<TBuilder extends StringBuilder> = (builder: TBuilder) => void;
+export type TextOrBuilderFn<TBuilder extends StringBuilder> = string | BuilderFn<TBuilder>;
+
 /**
  * Represents a mutable string of characters.
  */
@@ -307,10 +310,14 @@ export class StringBuilder {
    * @param value The string(s) to append.
    * @returns The current StringBuilder.
    */
-  public append(...value: Nullable<string>[]): this {
+  public append(...value: Nullable<TextOrBuilderFn<this>>[]): this {
     for (const part of value) {
-      if (isNullish(part) || part.length === 0) continue;
-      this._str += part;
+      if (!part) continue;
+      if (typeof part === 'string') {
+        this._str += part;
+      } else {
+        part(this);
+      }
     }
     return this;
   }
@@ -320,7 +327,7 @@ export class StringBuilder {
    * @param value
    * @returns
    */
-  public appendLine(...value: Nullable<string>[]): this {
+  public appendLine(...value: Nullable<TextOrBuilderFn<this>>[]): this {
     return this.append(...value, this._options.newLine);
   }
 
@@ -329,7 +336,7 @@ export class StringBuilder {
    * @param value The string(s) to prepend.
    * @returns The current StringBuilder.
    */
-  public prepend(...value: Nullable<string | ((builder: StringBuilder) => void)>[]): this {
+  public prepend(...value: Nullable<TextOrBuilderFn<StringBuilder>>[]): this {
     for (const part of value.reverse()) {
       if (isNullish(part)) continue;
       if (typeof part === 'function') {
@@ -348,7 +355,7 @@ export class StringBuilder {
    * @param value The string(s) to prepend.
    * @returns The current StringBuilder.
    */
-  public prependLine(...value: Nullable<string | ((builder: StringBuilder) => void)>[]): this {
+  public prependLine(...value: Nullable<TextOrBuilderFn<StringBuilder>>[]): this {
     return this.prepend(...value, this._options.newLine);
   }
 

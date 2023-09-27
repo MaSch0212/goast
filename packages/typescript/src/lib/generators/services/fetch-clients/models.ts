@@ -55,8 +55,8 @@ export type TypeScriptFetchClientsGeneratorOutput = {
 };
 
 export type TypeScriptFetchClientGeneratorOutput = {
-  class?: TypeScriptComponentOutput;
-  interface?: TypeScriptComponentOutput;
+  class?: Omit<TypeScriptComponentOutput, 'additionalImports'>;
+  interface?: Omit<TypeScriptComponentOutput, 'additionalImports'>;
 };
 
 export type TypeScriptFetchClientsGeneratorContext = OpenApiServicesGenerationProviderContext<

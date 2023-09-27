@@ -1,4 +1,4 @@
-import { SourceBuilder } from '@goast/core';
+import { Nullable, SourceBuilder, TextOrBuilderFn } from '@goast/core';
 
 import { TypeScriptGeneratorConfig } from './config';
 import { ImportExportCollection } from './import-collection';
@@ -42,10 +42,29 @@ export class TypeScriptFileBuilder extends SourceBuilder {
 
   public override toString(addPadding: boolean = true): string {
     return new SourceBuilder(this.options)
-      .apply((builder) => this.imports.writeTo(builder))
-      .applyIf(addPadding, (builder) => builder.ensurePreviousLineEmpty())
+      .append((builder) => this.imports.writeTo(builder))
+      .appendIf(addPadding, (builder) => builder.ensurePreviousLineEmpty())
       .append(super.toString())
-      .applyIf(addPadding, (builder) => builder.ensureCurrentLineEmpty())
+      .appendIf(addPadding, (builder) => builder.ensureCurrentLineEmpty())
       .toString();
+  }
+
+  public appendGenericTypeParameters(...genericTypeParameters: Nullable<TextOrBuilderFn<this>>[]): this {
+    if (genericTypeParameters.length === 0) return this;
+    return this.parenthesize('<>', (builder) =>
+      builder.forEach(genericTypeParameters, (builder, parameter) => builder.append(parameter), { separator: ', ' })
+    );
+  }
+
+  public appendComment(style: '/***/' | '/**/' | '//', comment: Nullable<TextOrBuilderFn<this>>): this {
+    if (!comment) return this;
+    if (typeof comment === 'string') {
+      comment = comment.trim();
+    }
+    return style === '//'
+      ? this.appendLineWithLinePrefix('// ', comment)
+      : this.appendLine(style === '/**/' ? '/*' : '/**')
+          .appendLineWithLinePrefix(' * ', comment)
+          .appendLine(' */');
   }
 }

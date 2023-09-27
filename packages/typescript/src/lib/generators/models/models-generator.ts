@@ -61,7 +61,6 @@ export class TypeScriptModelsGenerator extends OpenApiSchemasGenerationProviderB
     return modelGenerator.generate({
       ...ctx,
       schema,
-      getSchemaResult: (schema) => this.getSchemaResult(ctx, schema),
     });
   }
 

@@ -5,7 +5,7 @@ Map(8) {
     "export { MyNumber } from './models/my-number';\n" +
     "export { MyObject } from './models/my-object';\n" +
     "export { MyString } from './models/my-string';\n",
-  '<root>\\out\\models\\my-array.ts' => 'export type MyArray = Array<unknown>;\n',
+  '<root>\\out\\models\\my-array.ts' => 'export type MyArray = (unknown)[];\n',
   '<root>\\out\\models\\my-boolean.ts' => 'export type MyBoolean = boolean;\n',
   '<root>\\out\\models\\my-integer.ts' => 'export type MyInteger = number;\n',
   '<root>\\out\\models\\my-number.ts' => 'export type MyNumber = number;\n',
@@ -16,31 +16,37 @@ Map(8) {
     models: {
       'schema-1': {
         __source__: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml#/definitions/MyString',
+        additionalImports: [],
         filePath: '<root>\\out\\models\\my-string.ts',
         name: 'MyString'
       },
       'schema-2': {
         __source__: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml#/definitions/MyInteger',
+        additionalImports: [],
         filePath: '<root>\\out\\models\\my-integer.ts',
         name: 'MyInteger'
       },
       'schema-3': {
         __source__: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml#/definitions/MyNumber',
+        additionalImports: [],
         filePath: '<root>\\out\\models\\my-number.ts',
         name: 'MyNumber'
       },
       'schema-4': {
         __source__: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml#/definitions/MyBoolean',
+        additionalImports: [],
         filePath: '<root>\\out\\models\\my-boolean.ts',
         name: 'MyBoolean'
       },
       'schema-5': {
         __source__: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml#/definitions/MyArray',
+        additionalImports: [],
         filePath: '<root>\\out\\models\\my-array.ts',
         name: 'MyArray'
       },
       'schema-6': {
         __source__: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml#/definitions/MyObject',
+        additionalImports: [],
         filePath: '<root>\\out\\models\\my-object.ts',
         name: 'MyObject'
       }
