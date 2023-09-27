@@ -60,6 +60,7 @@ export abstract class OpenApiSchemasGenerationProviderBase<
     }
 
     addSourceIfTest(ctx.config, result, () => `${schema.$src.file}#${schema.$src.path}`);
+    ctx.existingSchemaResults.set(schema.id, result);
     this.addSchemaResult(ctx, schema, result);
     return result;
   }

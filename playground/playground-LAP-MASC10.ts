@@ -4,12 +4,14 @@ import YAML from 'yaml';
 import fs from 'fs-extra';
 import { OpenApiGenerator, OpenApiParser } from '@goast/core';
 import { KotlinModelsGenerator, KotlinOkHttp3ClientsGenerator, KotlinSpringControllersGenerator } from '@goast/kotlin';
+import { TypeScriptModelsGenerator } from '@goast/typescript';
 
 export async function main(): Promise<void> {
   const packageName = 'com.serviceware.platform.engine.data';
   const outBaseDir = 'out';
   const mainOutDir = path.join(outBaseDir, 'main', 'kotlin');
   const testOutDir = path.join(outBaseDir, 'test', 'kotlin');
+  const clientOutDir = path.join(outBaseDir, 'client');
   const basePath = /\/api\/.*/;
 
   const x = await new OpenApiGenerator({ outputDir: outBaseDir })
@@ -20,6 +22,7 @@ export async function main(): Promise<void> {
       packageName,
       outputDir: testOutDir,
     })
+    .useType(TypeScriptModelsGenerator, { outputDir: clientOutDir, immutableTypes: true })
     .parseAndGenerateFromDir('.openapi');
-  console.log(x);
+  //console.log(x);
 }
