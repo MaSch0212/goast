@@ -410,12 +410,24 @@ export class SourceBuilder extends StringBuilder {
   }
 
   public forEachIf<T>(
-    items: Iterable<T>,
     condition: Condition,
+    items: Iterable<T>,
     builderFn: (builder: this, item: T, index: number) => void,
     options?: ForEachOptions<this, T>
   ): this {
     return this.if(condition, (b) => b.forEach(items, builderFn, options));
+  }
+
+  public appendSeparated(items: Iterable<Nullable<TextOrBuilderFn<this>>>, separator: string): this {
+    return this.forEach(items, (builder, item) => builder.append(item), { separator });
+  }
+
+  public appendSeparatedIf(
+    condition: Condition,
+    items: Iterable<Nullable<TextOrBuilderFn<this>>>,
+    separator: string
+  ): this {
+    return this.forEachIf(condition, items, (builder, item) => builder.append(item), { separator });
   }
 
   private appendIndent(): void {

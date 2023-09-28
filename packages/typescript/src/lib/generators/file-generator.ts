@@ -13,8 +13,19 @@ export abstract class TypeScriptFileGenerator<
     return context.config.preferUnknown ? 'unknown' : 'any';
   }
 
-  protected toPropertyName(context: TContext, name: string): string {
-    return toTypeScriptPropertyName(toCasing(name, context.config.propertyNameCasing), context.config.useSingleQuotes);
+  protected toTypeName(context: TContext, name: string): string {
+    return toCasing(name, context.config.typeNameCasing);
+  }
+
+  protected toMethodName(context: TContext, name: string): string {
+    return toTypeScriptPropertyName(toCasing(name, context.config.methodNameCasing), context.config.useSingleQuotes);
+  }
+
+  protected toPropertyName(context: TContext, name: string, keepCasing: boolean = false): string {
+    return toTypeScriptPropertyName(
+      keepCasing ? name : toCasing(name, context.config.propertyNameCasing),
+      context.config.useSingleQuotes
+    );
   }
 
   protected toEnumValueName(context: TContext, name: string): string {

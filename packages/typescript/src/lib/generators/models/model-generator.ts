@@ -73,11 +73,8 @@ export class DefaultTypeScriptModelGenerator
       .append((builder) => this.generateTypeDocumentation(ctx, builder))
       .ensureCurrentLineEmpty()
       .append((builder) => this.generateEnumSignature(ctx, builder))
-      .parenthesize('{}', (builder) => {
-        builder.ensureCurrentLineEmpty();
-        this.generateEnumValues(ctx, builder);
-      })
-      .appendLine();
+      .parenthesize('{}', (builder) => this.generateEnumValues(ctx, builder), { multiline: true })
+      .ensureCurrentLineEmpty();
   }
 
   protected generateEnumSignature(ctx: Context, builder: Builder): void {
@@ -85,11 +82,12 @@ export class DefaultTypeScriptModelGenerator
   }
 
   protected generateEnumValues(ctx: Context, builder: Builder): void {
-    const enumValues = ctx.schema.enum ?? [];
-    for (let i = 0; i < enumValues.length; i++) {
-      const enumValue = String(enumValues[i]);
-      builder.appendLine(`${this.toEnumValueName(ctx, enumValue)} = ${this.toStringLiteral(ctx, enumValue)},`);
-    }
+    builder.forEach(
+      ctx.schema.enum?.map((x) => String(x)) ?? [],
+      (builder, enumValue) =>
+        builder.append(`${this.toEnumValueName(ctx, enumValue)} = ${this.toStringLiteral(ctx, enumValue)}`),
+      { separator: ',\n' }
+    );
   }
 
   protected generateInterface(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
@@ -97,10 +95,12 @@ export class DefaultTypeScriptModelGenerator
       .append((builder) => this.generateTypeDocumentation(ctx, builder))
       .ensureCurrentLineEmpty()
       .append((builder) => this.generateInterfaceSignature(ctx, builder))
-      .parenthesize('{}', (builder) =>
-        builder.appendLine().append((builder) => this.generateInterfaceContent(ctx, builder, schema))
+      .parenthesize(
+        '{}',
+        (builder) => builder.append((builder) => this.generateInterfaceContent(ctx, builder, schema)),
+        { multiline: true }
       )
-      .appendLine();
+      .ensureCurrentLineEmpty();
   }
 
   protected generateInterfaceSignature(ctx: Context, builder: Builder): void {
@@ -140,7 +140,7 @@ export class DefaultTypeScriptModelGenerator
       const name = this.getDeclarationTypeName(ctx, schema);
       const filePath = this.getFilePath(ctx, schema);
       if (filePath) {
-        builder.addImport(name, filePath);
+        builder.addFileImport(name, filePath);
       }
       builder.append(name);
     } else {

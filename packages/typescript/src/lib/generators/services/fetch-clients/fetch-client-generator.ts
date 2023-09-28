@@ -181,7 +181,7 @@ export class DefaultTypeScriptFetchClientGenerator
     }
 
     if (modelInfo.filePath) {
-      builder.addImport(modelInfo.name, modelInfo.filePath);
+      builder.addFileImport(modelInfo.name, modelInfo.filePath);
     }
 
     return modelInfo.name;

@@ -555,12 +555,31 @@ describe('SourceBuilder', () => {
 
   describe('forEachIf', () => {
     it('should add the content for each item when condition is true', () => {
-      sb.forEachIf(['a', 'b', 'c'], true, (x, item) => x.append(`(${item})`));
+      sb.forEachIf(true, ['a', 'b', 'c'], (x, item) => x.append(`(${item})`));
       expect(sb.toString()).toBe(`(a)(b)(c)`);
     });
 
     it('should not add the content for each item when condition is false', () => {
-      sb.forEachIf(['a', 'b', 'c'], false, (x, item) => x.append(`(${item})`));
+      sb.forEachIf(false, ['a', 'b', 'c'], (x, item) => x.append(`(${item})`));
+      expect(sb.toString()).toBe(``);
+    });
+  });
+
+  describe('appendSeparated', () => {
+    it('should add the content for each item with the given string separator', () => {
+      sb.appendSeparated(['a', 'b', 'c'], ', ');
+      expect(sb.toString()).toBe(`a, b, c`);
+    });
+  });
+
+  describe('appendSeparatedIf', () => {
+    it('should add the content for each item with the given string separator when condition is true', () => {
+      sb.appendSeparatedIf(true, ['a', 'b', 'c'], ', ');
+      expect(sb.toString()).toBe(`a, b, c`);
+    });
+
+    it('should not add the content for each item with the given string separator when condition is false', () => {
+      sb.appendSeparatedIf(false, ['a', 'b', 'c'], ', ');
       expect(sb.toString()).toBe(``);
     });
   });

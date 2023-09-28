@@ -10,6 +10,8 @@ import { ImportModuleTransformer } from './utils';
 export type TypeScriptGeneratorConfig = OpenApiGeneratorConfig & {
   importModuleTransformer: ImportModuleTransformer;
 
+  typeNameCasing: StringCasing | StringCasingWithOptions;
+  methodNameCasing: StringCasing | StringCasingWithOptions;
   propertyNameCasing: StringCasing | StringCasingWithOptions;
   enumValueNameCasing: StringCasing | StringCasingWithOptions;
 
@@ -23,6 +25,8 @@ export const defaultTypeScriptGeneratorConfig: DefaultGenerationProviderConfig<T
 
   importModuleTransformer: 'omit-extension',
 
+  typeNameCasing: 'pascal',
+  methodNameCasing: 'camel',
   propertyNameCasing: 'camel',
   enumValueNameCasing: 'pascal',
 

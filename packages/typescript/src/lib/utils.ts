@@ -44,3 +44,21 @@ function transformModulePath(modulePath: string, transformer: ImportModuleTransf
 
   return modulePath;
 }
+
+export function modifyString<TArgs extends any[]>(
+  value: string,
+  modifier: string | RegExp | ((value: string, ...args: TArgs) => string) | undefined,
+  ...args: TArgs
+): string {
+  if (typeof modifier === 'string') {
+    return modifier;
+  }
+  if (modifier instanceof RegExp) {
+    const match = value.match(modifier);
+    return match?.[0] ?? value;
+  }
+  if (typeof modifier === 'function') {
+    return modifier(value, ...args);
+  }
+  return value;
+}
