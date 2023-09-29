@@ -112,9 +112,9 @@ export class TypeScriptAngularClientsGenerator extends OpenApiServicesGeneration
     const targetDir = resolve(ctx.config.outputDir, ctx.config.utilsDirPath);
     ensureDirSync(targetDir);
 
-    const files = ['api-configuration.ts', 'base-service.ts', 'request-builder.ts'];
+    const files = ['api-configuration.ts', 'base-service.ts', 'request-builder.ts', 'strict-http-response.ts'];
     if (ctx.config.clientMethodFlavor === 'response-handler') {
-      files.push('response-handler.ts', 'strict-http-response.ts');
+      files.push('response-handler.ts');
     }
 
     const rootUrl = this.getRootUrl(ctx);

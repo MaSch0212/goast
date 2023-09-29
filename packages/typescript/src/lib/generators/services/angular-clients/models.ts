@@ -16,6 +16,7 @@ export type TypeScriptAngularClientsGeneratorConfig = TypeScriptGeneratorConfig 
   fileNameCasing: StringCasing | StringCasingWithOptions;
 
   exposeResponseMethods: boolean;
+  exposePathProperties: boolean;
   clientMethodFlavor: 'default' | 'response-handler';
   responseTypesFileNameCasing: StringCasing | StringCasingWithOptions;
   responseTypesDirPath: string;
@@ -35,6 +36,7 @@ export const defaultTypeScriptAngularClientsGeneratorConfig: DefaultGenerationPr
     fileNameCasing: { casing: 'kebab', suffix: '.service' },
 
     exposeResponseMethods: false,
+    exposePathProperties: false,
     clientMethodFlavor: 'default',
     responseTypesFileNameCasing: { casing: 'kebab', suffix: '-responses.model' },
     responseTypesDirPath: 'models/responses',

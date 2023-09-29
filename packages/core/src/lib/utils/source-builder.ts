@@ -156,8 +156,14 @@ export class SourceBuilder extends StringBuilder {
 
           this._isLastLineEmpty = this._isCurrentLineEmpty;
           super.append(this.__options.newLine);
-          this._isCurrentLineEmpty = true;
-          this._isLineIndented = false;
+          if (this._linePrefix) {
+            this.appendIndent();
+            this._isLineIndented = true;
+            this._isCurrentLineEmpty = false;
+          } else {
+            this._isLineIndented = false;
+            this._isCurrentLineEmpty = true;
+          }
 
           lineStartIndex = i + 1;
         }
@@ -167,7 +173,7 @@ export class SourceBuilder extends StringBuilder {
         }
       }
 
-      if (!this._isLineIndented && lineStartIndex < str.length) {
+      if (!this._isLineIndented && (lineStartIndex < str.length || this._linePrefix)) {
         this.appendIndent();
         this._isLineIndented = true;
       }
@@ -368,7 +374,7 @@ export class SourceBuilder extends StringBuilder {
     return this.if(
       condition,
       (builder) => builder.parenthesize(brackets, value, options),
-      (builder) => builder.indentIf(options?.indent ?? true, value)
+      (builder) => builder.indentIf(options?.indent === true, value)
     );
   }
 

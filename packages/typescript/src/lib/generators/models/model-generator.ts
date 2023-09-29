@@ -333,7 +333,7 @@ export class DefaultTypeScriptModelGenerator
     builder
       .appendIf(ctx.config.immutableTypes, 'readonly ')
       .append('Record')
-      .appendGenericTypeParameters(
+      .appendGenericArguments(
         'string',
         schema.additionalProperties === true
           ? this.getAnyType(ctx)
