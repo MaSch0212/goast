@@ -3,7 +3,13 @@ import { dirname, resolve } from 'path';
 
 import { ensureDirSync, writeFileSync } from 'fs-extra';
 
-import { ApiService, Factory, OpenApiGeneratorContext, OpenApiServicesGenerationProviderBase } from '@goast/core';
+import {
+  ApiService,
+  Factory,
+  OpenApiGeneratorContext,
+  OpenApiServicesGenerationProviderBase,
+  notNullish,
+} from '@goast/core';
 
 import {
   DefaultTypeScriptAngularServiceGenerator,
@@ -17,8 +23,9 @@ import {
   TypeScriptAngularServicesGeneratorContext,
   defaultTypeScriptAngularServicesGeneratorConfig,
 } from './models';
+import { TypeScriptFileBuilder } from '../../../file-builder';
 import { ImportExportCollection } from '../../../import-collection';
-import { getModulePathRelativeToFile, modifyString } from '../../../utils';
+import { modifyString } from '../../../utils';
 
 type Input = TypeScriptAngularServicesGeneratorInput;
 type Output = TypeScriptAngularServicesGeneratorOutput;
@@ -45,6 +52,7 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
     return {
       services: {},
       servicesIndexFilePath: undefined,
+      responseModelsIndexFilePath: undefined,
     };
   }
 
@@ -58,7 +66,7 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
   public override onGenerate(ctx: Context): Output {
     const output = super.onGenerate(ctx);
     this.copyUtilsFiles(ctx);
-    output.servicesIndexFilePath = this.generateIndexFile(ctx);
+    output.servicesIndexFilePath = this.generateServicesIndexFile(ctx);
     return output;
   }
 
@@ -74,40 +82,79 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
     ctx.output.services[service.id] = result;
   }
 
-  protected generateIndexFile(ctx: Context): string | undefined {
-    if (!this.shouldGenerateIndexFile(ctx)) {
+  protected generateServicesIndexFile(ctx: Context): string | undefined {
+    if (!this.shouldGenerateServicesIndexFile(ctx)) {
       return undefined;
     }
 
-    const filePath = this.getIndexFilePath(ctx);
+    const filePath = this.getServicesIndexFilePath(ctx);
     console.log(`Generating index file to ${filePath}...`);
     ensureDirSync(dirname(filePath));
 
-    writeFileSync(filePath, this.generateIndexFileContent(ctx, filePath));
+    const builder = new TypeScriptFileBuilder(filePath, ctx.config);
+    this.generateServicesIndexFileContent(ctx, builder);
+    writeFileSync(filePath, builder.toString());
 
     return filePath;
   }
 
-  protected getIndexFilePath(ctx: Context): string {
+  protected getServicesIndexFilePath(ctx: Context): string {
     return resolve(ctx.config.outputDir, ctx.config.indexFilePath ?? 'clients.ts');
   }
 
-  protected shouldGenerateIndexFile(ctx: Context): boolean {
-    return ctx.config.indexFilePath !== null;
+  protected shouldGenerateServicesIndexFile(ctx: Context): boolean {
+    return notNullish(ctx.config.indexFilePath);
   }
 
-  protected generateIndexFileContent(ctx: Context, absoluteIndexFilePath: string): string {
+  protected generateServicesIndexFileContent(ctx: Context, builder: TypeScriptFileBuilder) {
     const exports = new ImportExportCollection();
 
-    for (const clientId in ctx.output.services) {
-      const client = ctx.output.services[clientId];
-      exports.addExport(
-        client.name,
-        getModulePathRelativeToFile(absoluteIndexFilePath, client.filePath, ctx.config.importModuleTransformer)
-      );
+    for (const serviceId in ctx.output.services) {
+      const service = ctx.output.services[serviceId];
+      exports.addExport(service.component, service.filePath);
     }
 
-    return exports.toString(ctx.config);
+    exports.writeTo(builder);
+  }
+
+  protected generateResponseModelsIndexFile(ctx: Context): string | undefined {
+    if (!this.shouldGenerateResponseModelsIndexFile(ctx)) {
+      return undefined;
+    }
+
+    const filePath = this.getResponseModelsIndexFilePath(ctx);
+    console.log(`Generating response models index file to ${filePath}...`);
+    ensureDirSync(dirname(filePath));
+
+    const builder = new TypeScriptFileBuilder(filePath, ctx.config);
+    this.generateResponseModelsIndexFileContent(ctx, builder);
+    writeFileSync(filePath, builder.toString());
+
+    return filePath;
+  }
+
+  protected getResponseModelsIndexFilePath(ctx: Context): string {
+    return resolve(ctx.config.outputDir, ctx.config.responseModelsIndexFilePath ?? 'responses.ts');
+  }
+
+  protected shouldGenerateResponseModelsIndexFile(ctx: Context): boolean {
+    return notNullish(ctx.config.responseModelsDirPath) && notNullish(ctx.config.responseModelsIndexFilePath);
+  }
+
+  protected generateResponseModelsIndexFileContent(ctx: Context, builder: TypeScriptFileBuilder) {
+    const exports = new ImportExportCollection();
+
+    for (const serviceId in ctx.output.services) {
+      const service = ctx.output.services[serviceId];
+      for (const operationId in service.responseModels) {
+        const responseModel = service.responseModels[operationId];
+        if (responseModel.filePath) {
+          exports.addExport(responseModel.component, responseModel.filePath);
+        }
+      }
+    }
+
+    exports.writeTo(builder);
   }
 
   protected copyUtilsFiles(ctx: Context): void {

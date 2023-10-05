@@ -12,27 +12,51 @@ Map(6) {
     models: {
       'schema-1': {
         __source__: '<root>\\test\\openapi-files\\v2\\detailed-schemas.yml#/definitions/WithTitle',
-        additionalImports: [],
+        component: 'MyTitle',
         filePath: '<root>\\out\\models\\my-title.ts',
-        name: 'MyTitle'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\my-title.ts',
+            name: 'MyTitle'
+          }
+        ]
       },
       'schema-2': {
         __source__: '<root>\\test\\openapi-files\\v2\\detailed-schemas.yml#/definitions/WithAllCommon',
-        additionalImports: [],
+        component: 'WithAllCommon',
         filePath: '<root>\\out\\models\\with-all-common.ts',
-        name: 'WithAllCommon'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\with-all-common.ts',
+            name: 'WithAllCommon'
+          }
+        ]
       },
       'schema-3': {
         __source__: '<root>\\test\\openapi-files\\v2\\detailed-schemas.yml#/definitions/MyEnum',
-        additionalImports: [],
+        component: 'MyEnum',
         filePath: '<root>\\out\\models\\my-enum.ts',
-        name: 'MyEnum'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\my-enum.ts',
+            name: 'MyEnum'
+          }
+        ]
       },
       'schema-4': {
         __source__: '<root>\\test\\openapi-files\\v2\\detailed-schemas.yml#/definitions/ReadOnly',
-        additionalImports: [],
+        component: 'ReadOnly',
         filePath: '<root>\\out\\models\\read-only.ts',
-        name: 'ReadOnly'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\read-only.ts',
+            name: 'ReadOnly'
+          }
+        ]
       }
     }
   }

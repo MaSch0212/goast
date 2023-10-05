@@ -16,39 +16,75 @@ Map(8) {
     models: {
       'schema-1': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyString',
-        additionalImports: [],
+        component: 'MyString',
         filePath: '<root>\\out\\models\\my-string.ts',
-        name: 'MyString'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\my-string.ts',
+            name: 'MyString'
+          }
+        ]
       },
       'schema-2': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyInteger',
-        additionalImports: [],
+        component: 'MyInteger',
         filePath: '<root>\\out\\models\\my-integer.ts',
-        name: 'MyInteger'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\my-integer.ts',
+            name: 'MyInteger'
+          }
+        ]
       },
       'schema-3': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyNumber',
-        additionalImports: [],
+        component: 'MyNumber',
         filePath: '<root>\\out\\models\\my-number.ts',
-        name: 'MyNumber'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\my-number.ts',
+            name: 'MyNumber'
+          }
+        ]
       },
       'schema-4': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyBoolean',
-        additionalImports: [],
+        component: 'MyBoolean',
         filePath: '<root>\\out\\models\\my-boolean.ts',
-        name: 'MyBoolean'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\my-boolean.ts',
+            name: 'MyBoolean'
+          }
+        ]
       },
       'schema-5': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyArray',
-        additionalImports: [],
+        component: 'MyArray',
         filePath: '<root>\\out\\models\\my-array.ts',
-        name: 'MyArray'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\my-array.ts',
+            name: 'MyArray'
+          }
+        ]
       },
       'schema-6': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyObject',
-        additionalImports: [],
+        component: 'MyObject',
         filePath: '<root>\\out\\models\\my-object.ts',
-        name: 'MyObject'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\my-object.ts',
+            name: 'MyObject'
+          }
+        ]
       }
     }
   }

@@ -20,75 +20,126 @@ Map(8) {
     models: {
       'schema-1': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/EmptyOneOf',
-        additionalImports: [],
+        component: 'EmptyOneOf',
         filePath: '<root>\\out\\models\\empty-one-of.ts',
-        name: 'EmptyOneOf'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\empty-one-of.ts',
+            name: 'EmptyOneOf'
+          }
+        ]
       },
       'schema-10': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyString',
-        additionalImports: [],
+        component: 'MyString',
         filePath: '<root>\\out\\models\\my-string.ts',
-        name: 'MyString'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\my-string.ts',
+            name: 'MyString'
+          }
+        ]
       },
       'schema-11': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyString',
-        additionalImports: [],
+        component: 'MyString',
         filePath: '<root>\\out\\models\\my-string.ts',
-        name: 'MyString'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\my-string.ts',
+            name: 'MyString'
+          }
+        ]
       },
       'schema-12': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/WithReferences/oneOf/3',
-        additionalImports: [],
-        filePath: undefined,
-        name: 'string'
+        component: 'string',
+        imports: []
       },
       'schema-2': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/OneOfSimpleTypes',
-        additionalImports: [],
+        component: 'OneOfSimpleTypes',
         filePath: '<root>\\out\\models\\one-of-simple-types.ts',
-        name: 'OneOfSimpleTypes'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\one-of-simple-types.ts',
+            name: 'OneOfSimpleTypes'
+          }
+        ]
       },
       'schema-3': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/OneOfSimpleTypes/oneOf/0',
-        additionalImports: [],
-        filePath: undefined,
-        name: 'string'
+        component: 'string',
+        imports: []
       },
       'schema-4': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/OneOfSimpleTypes/oneOf/1',
-        additionalImports: [],
-        filePath: undefined,
-        name: 'number'
+        component: 'number',
+        imports: []
       },
       'schema-5': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/IgnoreType',
-        additionalImports: [],
+        component: 'IgnoreType',
         filePath: '<root>\\out\\models\\ignore-type.ts',
-        name: 'IgnoreType'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\ignore-type.ts',
+            name: 'IgnoreType'
+          }
+        ]
       },
       'schema-6': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/WithReferences',
-        additionalImports: [],
+        component: 'WithReferences',
         filePath: '<root>\\out\\models\\with-references.ts',
-        name: 'WithReferences'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\with-references.ts',
+            name: 'WithReferences'
+          }
+        ]
       },
       'schema-7': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/EmptyOneOf',
-        additionalImports: [],
+        component: 'EmptyOneOf',
         filePath: '<root>\\out\\models\\empty-one-of.ts',
-        name: 'EmptyOneOf'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\empty-one-of.ts',
+            name: 'EmptyOneOf'
+          }
+        ]
       },
       'schema-8': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WithTitle',
-        additionalImports: [],
+        component: 'MyTitle',
         filePath: '<root>\\out\\models\\my-title.ts',
-        name: 'MyTitle'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\my-title.ts',
+            name: 'MyTitle'
+          }
+        ]
       },
       'schema-9': {
         __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WithTitle',
-        additionalImports: [],
+        component: 'MyTitle',
         filePath: '<root>\\out\\models\\my-title.ts',
-        name: 'MyTitle'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\my-title.ts',
+            name: 'MyTitle'
+          }
+        ]
       }
     }
   }

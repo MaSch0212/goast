@@ -4,6 +4,7 @@ import {
   DefaultGenerationProviderConfig,
   Nullable,
   OpenApiServicesGenerationProviderContext,
+  RequiredProperties,
   StringCasing,
   StringCasingWithOptions,
 } from '@goast/core';
@@ -14,19 +15,20 @@ import { TypeScriptModelsGeneratorOutput } from '../../models';
 
 export type TypeScriptAngularServicesGeneratorConfig = TypeScriptGeneratorConfig & {
   fileNameCasing: StringCasing | StringCasingWithOptions;
+  responseModelsFileNameCasing: StringCasing | StringCasingWithOptions;
 
   exposeResponseMethods: boolean;
   exposePathProperties: boolean;
   clientMethodFlavor: 'default' | 'response-handler';
-  responseTypesFileNameCasing: StringCasing | StringCasingWithOptions;
-  responseTypesDirPath: string;
 
   rootUrl?: string | RegExp | ((rootUrl: string) => string);
   pathModifier?: RegExp | ((path: string, endpoint: ApiEndpoint) => string);
 
-  clientDirPath: string;
+  servicesDirPath: string;
+  responseModelsDirPath: Nullable<string>;
   utilsDirPath: string;
   indexFilePath: Nullable<string>;
+  responseModelsIndexFilePath: Nullable<string>;
 };
 
 export const defaultTypeScriptAngularServicesGeneratorConfig: DefaultGenerationProviderConfig<TypeScriptAngularServicesGeneratorConfig> =
@@ -34,16 +36,17 @@ export const defaultTypeScriptAngularServicesGeneratorConfig: DefaultGenerationP
     ...defaultTypeScriptGeneratorConfig,
 
     fileNameCasing: { casing: 'kebab', suffix: '.service' },
+    responseModelsFileNameCasing: { casing: 'kebab', suffix: '-responses.model' },
 
     exposeResponseMethods: false,
     exposePathProperties: false,
     clientMethodFlavor: 'default',
-    responseTypesFileNameCasing: { casing: 'kebab', suffix: '-responses.model' },
-    responseTypesDirPath: 'models/responses',
 
-    clientDirPath: 'services',
+    servicesDirPath: 'services',
+    responseModelsDirPath: 'models/responses',
     utilsDirPath: 'utils',
     indexFilePath: 'services.ts',
+    responseModelsIndexFilePath: 'responses.ts',
   };
 
 export type TypeScriptAngularServicesGeneratorInput = TypeScriptModelsGeneratorOutput;
@@ -53,9 +56,18 @@ export type TypeScriptAngularServicesGeneratorOutput = {
     [serviceId: string]: TypeScriptAngularServiceGeneratorOutput;
   };
   servicesIndexFilePath: string | undefined;
+  responseModelsIndexFilePath: string | undefined;
 };
 
-export type TypeScriptAngularServiceGeneratorOutput = Omit<TypeScriptComponentOutput, 'additionalImports'>;
+export type x = Omit<TypeScriptComponentOutput, 'additionalImports'>;
+
+export type TypeScriptAngularServiceGeneratorOutput = RequiredProperties<TypeScriptComponentOutput, 'filePath'> & {
+  responseModels: {
+    [operationId: string]: TypeScriptComponentOutput & {
+      statusCodes: { [statusCode: string]: TypeScriptComponentOutput };
+    };
+  };
+};
 
 export type TypeScriptAngularServicesGeneratorContext = OpenApiServicesGenerationProviderContext<
   TypeScriptAngularServicesGeneratorInput,

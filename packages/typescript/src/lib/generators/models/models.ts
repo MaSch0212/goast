@@ -3,7 +3,6 @@ import {
   DefaultGenerationProviderConfig,
   OpenApiSchemasGenerationProviderContext,
   Nullable,
-  OptionalProperties,
   StringCasing,
   StringCasingWithOptions,
 } from '@goast/core';
@@ -55,7 +54,7 @@ export type TypeScriptModelsGeneratorOutput = {
   modelIndexFilePath: Nullable<string>;
 };
 
-export type TypeScriptModelGeneratorOutput = OptionalProperties<TypeScriptComponentOutput, 'filePath'>;
+export type TypeScriptModelGeneratorOutput = TypeScriptComponentOutput;
 
 export type TypeScriptModelsGeneratorContext = OpenApiSchemasGenerationProviderContext<
   TypeScriptModelsGeneratorInput,

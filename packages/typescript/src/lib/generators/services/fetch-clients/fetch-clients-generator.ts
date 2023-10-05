@@ -13,8 +13,8 @@ import {
   TypeScriptFetchClientsGeneratorOutput,
   defaultTypeScriptFetchClientsGeneratorConfig,
 } from './models';
+import { TypeScriptFileBuilder } from '../../../file-builder';
 import { ImportExportCollection } from '../../../import-collection';
-import { getModulePathRelativeToFile } from '../../../utils';
 
 type Input = TypeScriptFetchClientsGeneratorInput;
 type Output = TypeScriptFetchClientsGeneratorOutput;
@@ -79,7 +79,9 @@ export class TypeScriptClientsGenerator extends OpenApiServicesGenerationProvide
     console.log(`Generating index file to ${filePath}...`);
     ensureDirSync(dirname(filePath));
 
-    writeFileSync(filePath, this.generateIndexFileContent(ctx, filePath));
+    const builder = new TypeScriptFileBuilder(filePath, ctx.config);
+    this.generateIndexFileContent(ctx, builder);
+    writeFileSync(filePath, builder.toString());
 
     return filePath;
   }
@@ -92,29 +94,19 @@ export class TypeScriptClientsGenerator extends OpenApiServicesGenerationProvide
     return ctx.config.indexFilePath !== null;
   }
 
-  protected generateIndexFileContent(ctx: Context, absoluteIndexFilePath: string): string {
+  protected generateIndexFileContent(ctx: Context, builder: TypeScriptFileBuilder) {
     const exports = new ImportExportCollection();
 
     for (const clientId in ctx.output.clients) {
       const client = ctx.output.clients[clientId];
       if (client.class?.filePath) {
-        exports.addExport(
-          client.class.name,
-          getModulePathRelativeToFile(absoluteIndexFilePath, client.class.filePath, ctx.config.importModuleTransformer)
-        );
+        exports.addExport(client.class.component, client.class.filePath);
       }
       if (client.interface?.filePath) {
-        exports.addExport(
-          client.interface.name,
-          getModulePathRelativeToFile(
-            absoluteIndexFilePath,
-            client.interface.filePath,
-            ctx.config.importModuleTransformer
-          )
-        );
+        exports.addExport(client.interface.component, client.interface.filePath);
       }
     }
 
-    return exports.toString(ctx.config);
+    exports.writeTo(builder);
   }
 }

@@ -42,13 +42,13 @@ export class DefaultTypeScriptModelGenerator
 
       writeFileSync(filePath, builder.toString());
 
-      return { name, filePath, additionalImports: [] };
+      return { component: name, filePath, imports: [{ kind: 'file', name, modulePath: filePath }] };
     } else {
       const builder = new TypeScriptFileBuilder(undefined, ctx.config);
       this.generateType(ctx, builder, ctx.schema);
-      const additionalImports = builder.imports.imports;
+      const imports = builder.imports.imports;
       builder.imports.clear();
-      return { name: builder.toString(false), filePath: undefined, additionalImports };
+      return { component: builder.toString(false), imports };
     }
   }
 
@@ -140,7 +140,7 @@ export class DefaultTypeScriptModelGenerator
       const name = this.getDeclarationTypeName(ctx, schema);
       const filePath = this.getFilePath(ctx, schema);
       if (filePath) {
-        builder.addFileImport(name, filePath);
+        builder.addImport(name, filePath);
       }
       builder.append(name);
     } else {

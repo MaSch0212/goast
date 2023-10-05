@@ -30,7 +30,7 @@ export class DefaultTypeScriptFetchClientGenerator
       builder = new TypeScriptFileBuilder(filePath, ctx.config);
       this.generateInterface(ctx, builder);
 
-      result.interface = { filePath, name };
+      result.interface = { filePath, component: name, imports: [{ kind: 'file', name, modulePath: filePath }] };
     }
 
     if (this.shouldGenerateClass(ctx)) {
@@ -43,7 +43,7 @@ export class DefaultTypeScriptFetchClientGenerator
       }
       this.generateClass(ctx, builder);
 
-      result.class = { filePath, name };
+      result.class = { filePath, component: name, imports: [{ kind: 'file', name, modulePath: filePath }] };
     }
 
     return result;
@@ -180,11 +180,9 @@ export class DefaultTypeScriptFetchClientGenerator
       return this.getAnyType(ctx);
     }
 
-    if (modelInfo.filePath) {
-      builder.addFileImport(modelInfo.name, modelInfo.filePath);
-    }
+    modelInfo.imports.forEach((x) => builder.addImport(x.name, x.modulePath));
 
-    return modelInfo.name;
+    return modelInfo.component;
   }
 
   protected shouldGenerateInterface(ctx: Context): boolean {

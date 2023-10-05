@@ -31,56 +31,61 @@ export class DefaultTypeScriptAngularServiceGenerator
 {
   protected readonly httpClientType: TypeScriptExternalTypeOptions = {
     name: 'HttpClient',
-    moduleName: '@angular/common/http',
+    module: '@angular/common/http',
   };
   protected readonly httpContextType: TypeScriptExternalTypeOptions = {
     name: 'HttpContext',
-    moduleName: '@angular/common/http',
+    module: '@angular/common/http',
   };
   protected readonly httpResponseType: TypeScriptExternalTypeOptions = {
     name: 'HttpResponse',
-    moduleName: '@angular/common/http',
+    module: '@angular/common/http',
   };
   protected readonly observableType: TypeScriptExternalTypeOptions = {
     name: 'Observable',
-    moduleName: 'rxjs',
+    module: 'rxjs',
   };
   protected readonly rxjsFilterType: TypeScriptExternalTypeOptions = {
     name: 'filter',
-    moduleName: 'rxjs',
+    module: 'rxjs',
   };
   protected readonly rxjsMapType: TypeScriptExternalTypeOptions = {
     name: 'map',
-    moduleName: 'rxjs',
+    module: 'rxjs',
   };
   protected getApiConfigurationType(ctx: Context): TypeScriptExternalTypeOptions {
-    return { name: 'ApiConfiguration', filePath: resolve(this.getUtilsDirPath(ctx), 'api-configuration.ts') };
+    return { name: 'ApiConfiguration', module: resolve(this.getUtilsDirPath(ctx), 'api-configuration.ts') };
   }
   protected getBaseServiceType(ctx: Context): TypeScriptExternalTypeOptions {
-    return { name: 'BaseService', filePath: resolve(this.getUtilsDirPath(ctx), 'base-service.ts') };
+    return { name: 'BaseService', module: resolve(this.getUtilsDirPath(ctx), 'base-service.ts') };
   }
   protected getStrictHttpResponseType(ctx: Context): TypeScriptExternalTypeOptions {
-    return { name: 'StrictHttpResponse', filePath: resolve(this.getUtilsDirPath(ctx), 'strict-http-response.ts') };
+    return { name: 'StrictHttpResponse', module: resolve(this.getUtilsDirPath(ctx), 'strict-http-response.ts') };
   }
   protected getRequestBuilderType(ctx: Context): TypeScriptExternalTypeOptions {
-    return { name: 'RequestBuilder', filePath: resolve(this.getUtilsDirPath(ctx), 'request-builder.ts') };
+    return { name: 'RequestBuilder', module: resolve(this.getUtilsDirPath(ctx), 'request-builder.ts') };
   }
 
   public generate(ctx: Context): Output {
-    const filePath = this.getFilePath(ctx);
-    const name = this.getClassName(ctx);
+    const filePath = this.getServiceFilePath(ctx);
+    const name = this.getServiceClassName(ctx);
     console.log(`Generating service ${name} in ${filePath}...`);
 
-    const builder = new TypeScriptFileBuilder(filePath, ctx.config);
-    this.generateFileContent(ctx, builder);
-
     ensureDirSync(dirname(filePath));
-    writeFileSync(filePath, builder.toString());
 
-    return { filePath, name };
+    const serviceBuilder = new TypeScriptFileBuilder(filePath, ctx.config);
+    this.generateServiceFileContent(ctx, serviceBuilder);
+    writeFileSync(filePath, serviceBuilder.toString());
+
+    return {
+      filePath,
+      component: name,
+      responseModels: {}, //notNullish(ctx.config.responseModelsDirPath) ? this.generateResponseModels(ctx) : {},
+      imports: [{ kind: 'file', name, modulePath: filePath }],
+    };
   }
 
-  protected generateFileContent(ctx: Context, builder: Builder) {
+  protected generateServiceFileContent(ctx: Context, builder: Builder) {
     builder
       .append((builder) =>
         builder.forEach(
@@ -92,6 +97,13 @@ export class DefaultTypeScriptAngularServiceGenerator
       .ensurePreviousLineEmpty()
       .append((builder) => this.generateClass(ctx, builder));
   }
+
+  // protected generateResponseModels(ctx: Context): Output['responseModels'] {
+  //   const filePath = this.get;
+  //   const builder = new TypeScriptFileBuilder();
+  // }
+
+  //protected generateResponseModelsFileContent(ctx: Context, builder: Builder) {}
 
   protected generateEndpointParamsType(ctx: Context, builder: Builder, endpoint: ApiEndpoint) {
     if (!this.hasEndpointParams(ctx, endpoint)) {
@@ -174,7 +186,7 @@ export class DefaultTypeScriptAngularServiceGenerator
       .appendExternalTypeUsage(this.getRequestBuilderType(ctx))
       .appendParameters(
         'this.rootUrl',
-        `${this.getClassName(ctx)}.${this.getEndpointPathPropertyName(ctx, endpoint)}`,
+        `${this.getServiceClassName(ctx)}.${this.getEndpointPathPropertyName(ctx, endpoint)}`,
         this.toStringLiteral(ctx, endpoint.method)
       )
       .appendLine(';');
@@ -295,12 +307,12 @@ export class DefaultTypeScriptAngularServiceGenerator
 
   protected getClassOptions(ctx: Context): TypeScriptClassOptions {
     return {
-      name: this.getClassName(ctx),
+      name: this.getServiceClassName(ctx),
       documentation: ctx.service.description,
       annotations: [
         {
           name: 'Injectable',
-          moduleName: '@angular/core',
+          module: '@angular/core',
           args: [(builder) => builder.appendObjectLiteral(`providedIn: ${this.toStringLiteral(ctx, 'root')}`)],
         },
       ],
@@ -433,7 +445,7 @@ export class DefaultTypeScriptAngularServiceGenerator
     );
   }
 
-  protected getClassName(ctx: Context): string {
+  protected getServiceClassName(ctx: Context): string {
     return this.toTypeName(ctx, ctx.service.name);
   }
 
@@ -457,11 +469,19 @@ export class DefaultTypeScriptAngularServiceGenerator
     return this.getEndpointMethodName(ctx, endpoint) + '$Response';
   }
 
-  protected getFilePath(ctx: Context): string {
+  protected getServiceFilePath(ctx: Context): string {
     return resolve(
       ctx.config.outputDir,
-      ctx.config.clientDirPath,
+      ctx.config.servicesDirPath,
       `${toCasing(ctx.service.name, ctx.config.fileNameCasing)}.ts`
+    );
+  }
+
+  protected getResponseModelsFilePath(ctx: Context): string {
+    return resolve(
+      ctx.config.outputDir,
+      ctx.config.responseModelsDirPath ?? 'models/responses',
+      `${toCasing(ctx.service.name, ctx.config.responseModelsFileNameCasing)}.ts`
     );
   }
 

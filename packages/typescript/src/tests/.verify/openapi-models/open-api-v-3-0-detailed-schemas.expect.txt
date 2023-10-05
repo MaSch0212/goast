@@ -14,33 +14,63 @@ Map(7) {
     models: {
       'schema-1': {
         __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/WithTitle',
-        additionalImports: [],
+        component: 'MyTitle',
         filePath: '<root>\\out\\models\\my-title.ts',
-        name: 'MyTitle'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\my-title.ts',
+            name: 'MyTitle'
+          }
+        ]
       },
       'schema-2': {
         __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/WithAllCommon',
-        additionalImports: [],
+        component: 'WithAllCommon',
         filePath: '<root>\\out\\models\\with-all-common.ts',
-        name: 'WithAllCommon'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\with-all-common.ts',
+            name: 'WithAllCommon'
+          }
+        ]
       },
       'schema-3': {
         __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/MyEnum',
-        additionalImports: [],
+        component: 'MyEnum',
         filePath: '<root>\\out\\models\\my-enum.ts',
-        name: 'MyEnum'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\my-enum.ts',
+            name: 'MyEnum'
+          }
+        ]
       },
       'schema-4': {
         __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/WriteOnly',
-        additionalImports: [],
+        component: 'WriteOnly',
         filePath: '<root>\\out\\models\\write-only.ts',
-        name: 'WriteOnly'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\write-only.ts',
+            name: 'WriteOnly'
+          }
+        ]
       },
       'schema-5': {
         __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/ReadOnly',
-        additionalImports: [],
+        component: 'ReadOnly',
         filePath: '<root>\\out\\models\\read-only.ts',
-        name: 'ReadOnly'
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>\\out\\models\\read-only.ts',
+            name: 'ReadOnly'
+          }
+        ]
       }
     }
   }

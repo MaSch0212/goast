@@ -13,8 +13,8 @@ import {
   TypeScriptModelsGeneratorOutput,
   defaultTypeScriptModelsGeneratorConfig,
 } from './models';
+import { TypeScriptFileBuilder } from '../../file-builder';
 import { ImportExportCollection } from '../../import-collection';
-import { getModulePathRelativeToFile } from '../../utils';
 
 type Input = TypeScriptModelsGeneratorInput;
 type Output = TypeScriptModelsGeneratorOutput;
@@ -77,7 +77,9 @@ export class TypeScriptModelsGenerator extends OpenApiSchemasGenerationProviderB
     console.log(`Generating model index file to ${filePath}...`);
     ensureDirSync(dirname(filePath));
 
-    writeFileSync(filePath, this.generateIndexFileContent(ctx));
+    const builder = new TypeScriptFileBuilder(filePath, ctx.config);
+    this.generateIndexFileContent(ctx, builder);
+    writeFileSync(filePath, builder.toString());
 
     return filePath;
   }
@@ -90,19 +92,16 @@ export class TypeScriptModelsGenerator extends OpenApiSchemasGenerationProviderB
     return ctx.config.indexFilePath !== null;
   }
 
-  protected generateIndexFileContent(ctx: Context): string {
+  protected generateIndexFileContent(ctx: Context, builder: TypeScriptFileBuilder) {
     const exports = new ImportExportCollection();
-    const absoluteIndexFilePath = this.getIndexFilePath(ctx);
 
     for (const modelId in ctx.output.models) {
       const model = ctx.output.models[modelId];
-      if (!model.filePath) continue;
-      exports.addExport(
-        model.name,
-        getModulePathRelativeToFile(absoluteIndexFilePath, model.filePath, ctx.config.importModuleTransformer)
-      );
+      if (model.filePath) {
+        exports.addExport(model.component, model.filePath);
+      }
     }
 
-    return exports.toString(ctx.config);
+    exports.writeTo(builder);
   }
 }

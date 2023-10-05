@@ -3,7 +3,6 @@ import { Nullable, SourceBuilder, TextOrBuilderFn, notNullish } from '@goast/cor
 import { TypeScriptGeneratorConfig } from './config';
 import { TypeScriptModelGeneratorOutput } from './generators';
 import { ImportExportCollection } from './import-collection';
-import { getModulePathRelativeToFile } from './utils';
 
 export class TypeScriptFileBuilder extends SourceBuilder {
   public readonly filePath: string | undefined;
@@ -18,37 +17,13 @@ export class TypeScriptFileBuilder extends SourceBuilder {
     this.filePath = filePath;
   }
 
-  public addFileImport(name: string, filePath: string): this {
-    this.imports.addImport(
-      name,
-      this.filePath
-        ? getModulePathRelativeToFile(this.filePath, filePath, this.options.importModuleTransformer)
-        : filePath
-    );
+  public addImport(name: string, moduleNameOrfilePath: string): this {
+    this.imports.addImport(name, moduleNameOrfilePath);
     return this;
   }
 
-  public addModuleImport(name: string, moduleName: string): this {
-    this.imports.addImport(name, moduleName);
-    return this;
-  }
-
-  public addImport(type: TypeScriptExternalTypeOptions): this {
-    if ('filePath' in type) {
-      this.addFileImport(type.name, type.filePath);
-    } else {
-      this.addModuleImport(type.name, type.moduleName);
-    }
-    return this;
-  }
-
-  public addFileExport(name: string, filePath: string): this {
-    this.imports.addExport(
-      name,
-      this.filePath
-        ? getModulePathRelativeToFile(this.filePath, filePath, this.options.importModuleTransformer)
-        : filePath
-    );
+  public addExport(name: string, filePath: string): this {
+    this.imports.addExport(name, filePath);
     return this;
   }
 
@@ -59,7 +34,7 @@ export class TypeScriptFileBuilder extends SourceBuilder {
 
   public override toString(addPadding: boolean = true): string {
     return new SourceBuilder(this.options)
-      .append((builder) => this.imports.writeTo(builder))
+      .append((builder) => this.imports.writeTo(builder, this.filePath, this.options.importModuleTransformer))
       .appendIf(addPadding, (builder) => builder.ensurePreviousLineEmpty())
       .append(super.toString())
       .appendIf(addPadding, (builder) => builder.ensureCurrentLineEmpty())
@@ -157,19 +132,15 @@ export class TypeScriptFileBuilder extends SourceBuilder {
   }
 
   public appendModelUsage(type: TypeScriptModelGeneratorOutput): this {
-    this.append(type.name);
-    if (type.filePath) this.addFileImport(type.name, type.filePath);
-    for (const additionalImport of type.additionalImports) {
-      this.addFileImport(additionalImport.typeName, additionalImport.modulePath);
+    this.append(type.component);
+    for (const i of type.imports) {
+      this.addImport(i.name, i.modulePath);
     }
     return this;
   }
 
   public appendExternalTypeUsage(type: TypeScriptExternalTypeOptions): this {
-    this.append(type.name);
-    if ('filePath' in type) this.addFileImport(type.name, type.filePath);
-    else this.addModuleImport(type.name, type.moduleName);
-    return this;
+    return this.append(type.name).addImport(type.name, type.module);
   }
 
   public appendTypeDeclaration(options: TypeScriptTypeDeclarationOptions): this {
@@ -183,8 +154,7 @@ export class TypeScriptFileBuilder extends SourceBuilder {
   }
 
   public appendAnnotation(options: TypeScriptAnnotationOptions): this {
-    if (options.filePath) this.addFileImport(options.name, options.filePath);
-    else if (options.moduleName) this.addModuleImport(options.name, options.moduleName);
+    if (options.module) this.addImport(options.name, options.module);
     return this.append(`@${options.name}`).appendParameters(...(options.args ?? []));
   }
 
@@ -315,12 +285,12 @@ export type TypeScriptTypeDeclarationOptions = {
 
 export type TypeScriptExternalTypeOptions = {
   name: string;
-} & ({ filePath: string } | { moduleName: string });
+  module: string;
+};
 
 export type TypeScriptAnnotationOptions = {
   name: string;
-  filePath?: string;
-  moduleName?: string;
+  module?: string;
   args?: Nullable<TextOrBuilderFn<TypeScriptFileBuilder>>[];
 };
 
