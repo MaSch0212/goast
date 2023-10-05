@@ -5,43 +5,46 @@ import { ensureDirSync, writeFileSync } from 'fs-extra';
 
 import { ApiService, Factory, OpenApiGeneratorContext, OpenApiServicesGenerationProviderBase } from '@goast/core';
 
-import { DefaultTypeScriptAngularClientGenerator, TypeScriptAngularClientGenerator } from './angular-client-generator';
 import {
-  TypeScriptAngularClientsGeneratorInput,
-  TypeScriptAngularClientsGeneratorOutput,
-  TypeScriptAngularClientsGeneratorConfig,
-  TypeScriptAngularClientGeneratorOutput,
-  TypeScriptAngularClientsGeneratorContext,
-  defaultTypeScriptAngularClientsGeneratorConfig,
+  DefaultTypeScriptAngularServiceGenerator,
+  TypeScriptAngularServiceGenerator,
+} from './angular-service-generator';
+import {
+  TypeScriptAngularServicesGeneratorInput,
+  TypeScriptAngularServicesGeneratorOutput,
+  TypeScriptAngularServicesGeneratorConfig,
+  TypeScriptAngularServiceGeneratorOutput,
+  TypeScriptAngularServicesGeneratorContext,
+  defaultTypeScriptAngularServicesGeneratorConfig,
 } from './models';
 import { ImportExportCollection } from '../../../import-collection';
 import { getModulePathRelativeToFile, modifyString } from '../../../utils';
 
-type Input = TypeScriptAngularClientsGeneratorInput;
-type Output = TypeScriptAngularClientsGeneratorOutput;
-type Config = TypeScriptAngularClientsGeneratorConfig;
-type ServiceOutput = TypeScriptAngularClientGeneratorOutput;
-type Context = TypeScriptAngularClientsGeneratorContext;
+type Input = TypeScriptAngularServicesGeneratorInput;
+type Output = TypeScriptAngularServicesGeneratorOutput;
+type Config = TypeScriptAngularServicesGeneratorConfig;
+type ServiceOutput = TypeScriptAngularServiceGeneratorOutput;
+type Context = TypeScriptAngularServicesGeneratorContext;
 
-export class TypeScriptAngularClientsGenerator extends OpenApiServicesGenerationProviderBase<
+export class TypeScriptAngularServicesGenerator extends OpenApiServicesGenerationProviderBase<
   Input,
   Output,
   Config,
   ServiceOutput,
   Context
 > {
-  private readonly _clientGeneratorFactory: Factory<TypeScriptAngularClientGenerator, []>;
+  private readonly _clientGeneratorFactory: Factory<TypeScriptAngularServiceGenerator, []>;
 
-  constructor(clientGeneratorFactory?: Factory<TypeScriptAngularClientGenerator, []>) {
+  constructor(clientGeneratorFactory?: Factory<TypeScriptAngularServiceGenerator, []>) {
     super();
     this._clientGeneratorFactory =
-      clientGeneratorFactory ?? Factory.fromValue(new DefaultTypeScriptAngularClientGenerator());
+      clientGeneratorFactory ?? Factory.fromValue(new DefaultTypeScriptAngularServiceGenerator());
   }
 
   protected override initResult(): Output {
     return {
-      clients: {},
-      clientIndexFilePath: undefined,
+      services: {},
+      servicesIndexFilePath: undefined,
     };
   }
 
@@ -49,13 +52,13 @@ export class TypeScriptAngularClientsGenerator extends OpenApiServicesGeneration
     context: OpenApiGeneratorContext<Input>,
     config?: Partial<Config> | undefined
   ): Context {
-    return this.getProviderContext(context, config, defaultTypeScriptAngularClientsGeneratorConfig);
+    return this.getProviderContext(context, config, defaultTypeScriptAngularServicesGeneratorConfig);
   }
 
   public override onGenerate(ctx: Context): Output {
     const output = super.onGenerate(ctx);
     this.copyUtilsFiles(ctx);
-    output.clientIndexFilePath = this.generateIndexFile(ctx);
+    output.servicesIndexFilePath = this.generateIndexFile(ctx);
     return output;
   }
 
@@ -68,7 +71,7 @@ export class TypeScriptAngularClientsGenerator extends OpenApiServicesGeneration
   }
 
   protected override addServiceResult(ctx: Context, service: ApiService, result: ServiceOutput): void {
-    ctx.output.clients[service.id] = result;
+    ctx.output.services[service.id] = result;
   }
 
   protected generateIndexFile(ctx: Context): string | undefined {
@@ -96,8 +99,8 @@ export class TypeScriptAngularClientsGenerator extends OpenApiServicesGeneration
   protected generateIndexFileContent(ctx: Context, absoluteIndexFilePath: string): string {
     const exports = new ImportExportCollection();
 
-    for (const clientId in ctx.output.clients) {
-      const client = ctx.output.clients[clientId];
+    for (const clientId in ctx.output.services) {
+      const client = ctx.output.services[clientId];
       exports.addExport(
         client.name,
         getModulePathRelativeToFile(absoluteIndexFilePath, client.filePath, ctx.config.importModuleTransformer)

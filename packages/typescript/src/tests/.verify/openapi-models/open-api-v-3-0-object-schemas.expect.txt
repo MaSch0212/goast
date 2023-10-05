@@ -15,7 +15,10 @@ Map(15) {
   '<root>\\out\\models\\empty-object.ts' => 'export type EmptyObject = {};\n',
   '<root>\\out\\models\\my-string.ts' => 'export type MyString = string;\n',
   '<root>\\out\\models\\my-title.ts' => 'export type MyTitle = string;\n',
-  '<root>\\out\\models\\object-with-additional-properties.ts' => 'export type ObjectWithAdditionalProperties = Record<string, string>;\n',
+  '<root>\\out\\models\\object-with-additional-properties.ts' => 'export type ObjectWithAdditionalProperties = Record<\n' +
+    '  string,\n' +
+    '  string\n' +
+    '>;\n',
   '<root>\\out\\models\\object-with-nullable-properties-and-required-properties.ts' => 'export type ObjectWithNullablePropertiesAndRequiredProperties = {\n' +
     '  a: string | null;\n' +
     '  b: number | null;\n' +
@@ -75,7 +78,10 @@ Map(15) {
     '  d?: boolean;\n' +
     '  e?: (unknown)[];\n' +
     '  f?: {};\n' +
-    '} & Record<string, string>;\n',
+    '} & Record<\n' +
+    '  string,\n' +
+    '  string\n' +
+    '>;\n',
   '<root>\\out\\models\\object-with-properties.ts' => 'export type ObjectWithProperties = {\n' +
     '  a?: string;\n' +
     '  b?: number;\n' +

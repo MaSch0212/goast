@@ -12,7 +12,7 @@ import { TypeScriptComponentOutput } from '../../../common-results';
 import { TypeScriptGeneratorConfig, defaultTypeScriptGeneratorConfig } from '../../../config';
 import { TypeScriptModelsGeneratorOutput } from '../../models';
 
-export type TypeScriptAngularClientsGeneratorConfig = TypeScriptGeneratorConfig & {
+export type TypeScriptAngularServicesGeneratorConfig = TypeScriptGeneratorConfig & {
   fileNameCasing: StringCasing | StringCasingWithOptions;
 
   exposeResponseMethods: boolean;
@@ -29,7 +29,7 @@ export type TypeScriptAngularClientsGeneratorConfig = TypeScriptGeneratorConfig 
   indexFilePath: Nullable<string>;
 };
 
-export const defaultTypeScriptAngularClientsGeneratorConfig: DefaultGenerationProviderConfig<TypeScriptAngularClientsGeneratorConfig> =
+export const defaultTypeScriptAngularServicesGeneratorConfig: DefaultGenerationProviderConfig<TypeScriptAngularServicesGeneratorConfig> =
   {
     ...defaultTypeScriptGeneratorConfig,
 
@@ -46,24 +46,24 @@ export const defaultTypeScriptAngularClientsGeneratorConfig: DefaultGenerationPr
     indexFilePath: 'services.ts',
   };
 
-export type TypeScriptAngularClientsGeneratorInput = TypeScriptModelsGeneratorOutput;
+export type TypeScriptAngularServicesGeneratorInput = TypeScriptModelsGeneratorOutput;
 
-export type TypeScriptAngularClientsGeneratorOutput = {
-  clients: {
-    [serviceId: string]: TypeScriptAngularClientGeneratorOutput;
+export type TypeScriptAngularServicesGeneratorOutput = {
+  services: {
+    [serviceId: string]: TypeScriptAngularServiceGeneratorOutput;
   };
-  clientIndexFilePath: string | undefined;
+  servicesIndexFilePath: string | undefined;
 };
 
-export type TypeScriptAngularClientGeneratorOutput = Omit<TypeScriptComponentOutput, 'additionalImports'>;
+export type TypeScriptAngularServiceGeneratorOutput = Omit<TypeScriptComponentOutput, 'additionalImports'>;
 
-export type TypeScriptAngularClientsGeneratorContext = OpenApiServicesGenerationProviderContext<
-  TypeScriptAngularClientsGeneratorInput,
-  TypeScriptAngularClientsGeneratorOutput,
-  TypeScriptAngularClientsGeneratorConfig,
-  TypeScriptAngularClientGeneratorOutput
+export type TypeScriptAngularServicesGeneratorContext = OpenApiServicesGenerationProviderContext<
+  TypeScriptAngularServicesGeneratorInput,
+  TypeScriptAngularServicesGeneratorOutput,
+  TypeScriptAngularServicesGeneratorConfig,
+  TypeScriptAngularServiceGeneratorOutput
 >;
 
-export type TypeScriptAngularClientGeneratorContext = TypeScriptAngularClientsGeneratorContext & {
+export type TypeScriptAngularServiceGeneratorContext = TypeScriptAngularServicesGeneratorContext & {
   readonly service: ApiService;
 };

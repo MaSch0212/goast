@@ -5,7 +5,7 @@ import { ensureDirSync } from 'fs-extra';
 
 import { ApiEndpoint, TextOrBuilderFn, toCasing } from '@goast/core';
 
-import { TypeScriptAngularClientGeneratorContext, TypeScriptAngularClientGeneratorOutput } from './models';
+import { TypeScriptAngularServiceGeneratorContext, TypeScriptAngularServiceGeneratorOutput } from './models';
 import {
   TypeScriptClassOptions,
   TypeScriptConstructorOptions,
@@ -17,17 +17,17 @@ import {
 } from '../../../file-builder';
 import { TypeScriptFileGenerator } from '../../file-generator';
 
-type Context = TypeScriptAngularClientGeneratorContext;
-type Output = TypeScriptAngularClientGeneratorOutput;
+type Context = TypeScriptAngularServiceGeneratorContext;
+type Output = TypeScriptAngularServiceGeneratorOutput;
 type Builder = TypeScriptFileBuilder;
 
-export interface TypeScriptAngularClientGenerator<TOutput extends Output = Output> {
+export interface TypeScriptAngularServiceGenerator<TOutput extends Output = Output> {
   generate(ctx: Context): TOutput;
 }
 
-export class DefaultTypeScriptAngularClientGenerator
+export class DefaultTypeScriptAngularServiceGenerator
   extends TypeScriptFileGenerator<Context, Output>
-  implements TypeScriptAngularClientGenerator
+  implements TypeScriptAngularServiceGenerator
 {
   protected readonly httpClientType: TypeScriptExternalTypeOptions = {
     name: 'HttpClient',
