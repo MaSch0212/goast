@@ -2,7 +2,14 @@ import { dirname } from 'path';
 
 import { ensureDirSync, writeFileSync } from 'fs-extra';
 
-import { ApiSchema, ApiSchemaProperty, ObjectLikeApiSchema, resolveAnyOfAndAllOf, toCasing } from '@goast/core';
+import {
+  ApiSchema,
+  ApiSchemaProperty,
+  ObjectLikeApiSchema,
+  getSchemaReference,
+  resolveAnyOfAndAllOf,
+  toCasing,
+} from '@goast/core';
 
 import { KotlinModelGeneratorContext, KotlinModelGeneratorOutput } from './models';
 import { KotlinFileBuilder } from '../../file-builder';
@@ -44,7 +51,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     }
 
     if (this.shouldGenerateTypeDeclaration(ctx, ctx.schema)) {
-      const typeName = this.getDeclarationTypeName(ctx);
+      const typeName = this.getDeclarationTypeName(ctx, ctx.schema);
       const packageName = ctx.config.packageName + ctx.config.packageSuffix;
       const filePath = `${ctx.config.outputDir}/${packageName.replace(/\./g, '/')}/${typeName}.kt`;
       console.log(`Generating model ${packageName}.${typeName} to ${filePath}...`);
@@ -85,6 +92,20 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       this.generateObjectType(ctx, builder, schema);
     } else if (schema.enum !== undefined && schema.enum.length > 0) {
       this.generateEnum(ctx, builder, schema);
+    } else {
+      this.generateType(ctx, builder, schema);
+    }
+  }
+
+  protected generateTypeUsage(ctx: Context, builder: Builder, schema: ApiSchema): void {
+    schema = getSchemaReference(schema, ['description']);
+    if (this.shouldGenerateTypeDeclaration(ctx, schema)) {
+      const name = this.getDeclarationTypeName(ctx, schema);
+      const packageName = ctx.config.packageName + ctx.config.packageSuffix;
+      if (packageName) {
+        builder.addImport(name, packageName);
+      }
+      builder.append(name);
     } else {
       this.generateType(ctx, builder, schema);
     }
@@ -135,21 +156,22 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
         builder.appendAnnotation(
           'JsonSubTypes',
           'com.fasterxml.jackson.annotation',
-          entries.map(([value, schema]) => (builder) => {
-            const schemaResult = ctx.getSchemaResult(schema);
-            builder
-              .append(
-                `JsonSubTypes.Type(value = ${schemaResult.typeName}::class, name = ${this.toStringLiteral(ctx, value)})`
-              )
-              .addImport(schemaResult.typeName, schemaResult.packageName);
-          })
+          entries.map(
+            ([value, schema]) =>
+              (builder) =>
+                builder.append(
+                  'JsonSubTypes.Type(value = ',
+                  (builder) => this.generateTypeUsage(ctx, builder, schema),
+                  `::class, name = ${this.toStringLiteral(ctx, value)})`
+                )
+          )
         );
       }
     }
   }
 
   protected generateObjectInterfaceSignature(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
-    builder.append('interface ').append(this.getDeclarationTypeName(ctx));
+    builder.append('interface ').append(this.getDeclarationTypeName(ctx, schema));
   }
 
   protected generateObjectInterfaceMembers(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
@@ -159,7 +181,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
         .append((builder) => this.generateJsonPropertyAnnotation(ctx, builder, schema, property, 'get'))
         .ensureCurrentLineEmpty()
         .append(`val ${toCasing(property.name, 'camel')}: `)
-        .append((builder) => this.generateType(ctx, builder, property.schema))
+        .append((builder) => this.generateTypeUsage(ctx, builder, property.schema))
         .if(!schema.required.has(property.name), (builder) =>
           builder.appendIf(!property.schema.nullable, '?').append(' = null')
         )
@@ -173,7 +195,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     builder
       .append((builder) => this.generateDocumentation(ctx, builder, schema))
       .append('data class ')
-      .append(this.getDeclarationTypeName(ctx))
+      .append(this.getDeclarationTypeName(ctx, schema))
       .parenthesizeIf(
         schema.properties.size > 0,
         '()',
@@ -190,7 +212,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
                   'override '
                 )
                 .append(`val ${toCasing(property.name, 'camel')}: `)
-                .append((builder) => this.generateType(ctx, builder, property.schema))
+                .append((builder) => this.generateTypeUsage(ctx, builder, property.schema))
                 .if(!schema.required.has(property.name), (builder) =>
                   builder.appendIf(!property.schema.nullable, '?').append(' = null')
                 ),
@@ -198,14 +220,12 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
           ),
         { multiline: true }
       )
-      .if(
-        inheritedSchemas.length > 0,
-        (builder) =>
-          builder
-            .append(' : ')
-            .forEach(inheritedSchemas, (builder, schema) => builder.append(toCasing(schema.name, 'pascal')), {
-              separator: ', ',
-            }) // TODO: Calling generateType here will lead to endless loop
+      .if(inheritedSchemas.length > 0, (builder) =>
+        builder
+          .append(' : ')
+          .forEach(inheritedSchemas, (builder, schema) => this.generateTypeUsage(ctx, builder, schema), {
+            separator: ', ',
+          })
       )
       .append(' ')
       .parenthesizeIf(
@@ -227,7 +247,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
                 builder.append('name: String, value: ').if(
                   schema.additionalProperties === true,
                   (builder) => builder.append('Any?'),
-                  (builder) => this.generateType(ctx, builder, schema.additionalProperties as ApiSchema)
+                  (builder) => this.generateTypeUsage(ctx, builder, schema.additionalProperties as ApiSchema)
                 )
               )
               .append(' ')
@@ -336,25 +356,12 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       builder
         .append('Map')
         .parenthesize('<>', (builder) =>
-          builder.append('String, ').append((builder) => this.generateType(ctx, builder, propertiesType))
+          builder.append('String, ').append((builder) => this.generateTypeUsage(ctx, builder, propertiesType))
         );
     }
   }
 
   protected generateType(ctx: Context, builder: Builder, schema: ApiSchema): void {
-    if (this.shouldGenerateTypeDeclaration(ctx, schema)) {
-      if (schema === ctx.schema) {
-        builder.append('Any?');
-        return;
-      }
-      const schemaResult = ctx.getSchemaResult(schema);
-      builder.append(schemaResult.typeName);
-      if (schemaResult.packageName) {
-        builder.addImport(schemaResult.typeName, schemaResult.packageName);
-      }
-      return;
-    }
-
     switch (schema.kind) {
       case 'boolean':
         builder.append('Boolean');
@@ -436,7 +443,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     builder
       .append((builder) => this.generateDocumentation(ctx, builder, schema))
       .append('enum class ')
-      .append(this.getDeclarationTypeName(ctx))
+      .append(this.getDeclarationTypeName(ctx, schema))
       .append('(val value: String) ')
       .parenthesize(
         '{}',
@@ -462,7 +469,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       builder.if(
         schema.items === undefined,
         (builder) => builder.append('Any?'),
-        (builder) => this.generateType(ctx, builder, schema.items!)
+        (builder) => this.generateTypeUsage(ctx, builder, schema.items!)
       )
     );
   }
@@ -515,8 +522,8 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     return true;
   }
 
-  protected getDeclarationTypeName(ctx: Context): string {
-    return toCasing(ctx.schema.name, 'pascal');
+  protected getDeclarationTypeName(ctx: Context, schema: ApiSchema): string {
+    return toCasing(schema.name, 'pascal');
   }
 
   protected sortProperties(

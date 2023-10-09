@@ -48,7 +48,6 @@ export class KotlinModelsGenerator extends OpenApiSchemasGenerationProviderBase<
     return modelGenerator.generate({
       ...ctx,
       schema,
-      getSchemaResult: (schema) => this.getSchemaResult(ctx, schema),
     });
   }
 

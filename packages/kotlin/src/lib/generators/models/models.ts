@@ -38,5 +38,4 @@ export type KotlinModelsGeneratorContext = OpenApiSchemasGenerationProviderConte
 
 export type KotlinModelGeneratorContext = KotlinModelsGeneratorContext & {
   schema: ApiSchema;
-  getSchemaResult(schema: ApiSchema): KotlinModelGeneratorOutput;
 };
