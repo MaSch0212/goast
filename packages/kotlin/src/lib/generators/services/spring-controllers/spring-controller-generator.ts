@@ -236,7 +236,7 @@ export class DefaultKotlinSpringControllerGenerator
       .append(toCasing(parameter.name, 'camel'))
       .append(': ')
       .append((builder) => this.generateTypeUsage(ctx, builder, parameter.schema))
-      .append(!parameter.required && !parameter.schema?.nullable ? '?' : '');
+      .append(!parameter.required && parameter.schema?.default === undefined && !parameter.schema?.nullable ? '?' : '');
   }
 
   protected generateApiInterfaceMethodContent(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
@@ -444,7 +444,7 @@ export class DefaultKotlinSpringControllerGenerator
       .append(toCasing(parameter.name, 'camel'))
       .append(': ')
       .append((builder) => this.generateTypeUsage(ctx, builder, parameter.schema))
-      .append(!parameter.required && !parameter.schema?.nullable ? '?' : '');
+      .append(!parameter.required && parameter.schema?.default === undefined && !parameter.schema?.nullable ? '?' : '');
   }
 
   protected generateApiDelegateInterfaceMethodContent(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
