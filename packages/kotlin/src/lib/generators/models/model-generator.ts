@@ -509,6 +509,11 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       return false;
     }
 
+    // Too complex types cannot be represented in Kotlin, so they fallback to Any
+    if (schema.kind === 'combined' || schema.kind === 'multi-type' || schema.kind === 'oneOf') {
+      return false;
+    }
+
     // Only object types with properties should have its own type declaration
     if (
       schema.kind === 'object' &&
