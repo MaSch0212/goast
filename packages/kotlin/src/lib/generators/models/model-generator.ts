@@ -73,21 +73,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
   }
 
   protected generateFileContent(ctx: Context, builder: Builder): void {
-    let schema = ctx.schema;
-    if (schema.kind === 'oneOf') {
-      schema =
-        ctx.config.oneOfBehavior === 'treat-as-any-of'
-          ? { ...(schema as any), kind: 'combined', anyOf: schema.oneOf, allOf: [], oneOf: undefined }
-          : { ...(schema as any), kind: 'combined', allOf: schema.oneOf, anyOf: [], oneOf: undefined };
-      ctx.schema = schema;
-    }
-    if (schema.kind === 'object' || schema.kind === 'combined') {
-      const mergedSchema = resolveAnyOfAndAllOf(schema, true);
-      if (mergedSchema) {
-        schema = mergedSchema;
-      }
-    }
-
+    const schema = this.normalizeSchema(ctx, ctx.schema);
     if (schema.kind === 'object') {
       this.generateObjectType(ctx, builder, schema);
     } else if (schema.enum !== undefined && schema.enum.length > 0) {
@@ -510,7 +496,11 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     }
 
     // Too complex types cannot be represented in Kotlin, so they fallback to Any
-    if (schema.kind === 'combined' || schema.kind === 'multi-type' || schema.kind === 'oneOf') {
+    if (schema.kind === 'multi-type') {
+      return false;
+    }
+    schema = this.normalizeSchema(ctx, schema);
+    if (schema.kind === 'combined' || schema.kind === 'oneOf') {
       return false;
     }
 
@@ -541,6 +531,24 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       const bRequired = schema.required.has(b.name) ? 1 : 0;
       return bRequired - aRequired;
     });
+  }
+
+  private normalizeSchema(ctx: Context, schema: ApiSchema): ApiSchema {
+    if (schema.kind === 'oneOf') {
+      schema =
+        ctx.config.oneOfBehavior === 'treat-as-any-of'
+          ? { ...(schema as any), kind: 'combined', anyOf: schema.oneOf, allOf: [], oneOf: undefined }
+          : { ...(schema as any), kind: 'combined', allOf: schema.oneOf, anyOf: [], oneOf: undefined };
+      ctx.schema = schema;
+    }
+    if (schema.kind === 'object' || schema.kind === 'combined') {
+      const mergedSchema = resolveAnyOfAndAllOf(schema, true);
+      if (mergedSchema) {
+        schema = mergedSchema;
+      }
+    }
+
+    return schema;
   }
 
   private hasProperty(ctx: Context, schema: ApiSchema, name: string): boolean {
