@@ -28,14 +28,14 @@ export function transformSchema<T extends Deref<OpenApiSchema>>(
   if (existing) return existing;
 
   let kind = determineSchemaKind(schema);
-  let nullable = false;
+  let nullable = kind === 'null';
   if (kind === 'multi-type') {
     const types = schema.type as string[];
     let isSingleType = types.length === 1;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (types.length === 2 && (types.includes('null') || types.includes(null!))) {
+    if (types.includes('null') || types.includes(null!)) {
       nullable = true;
-      isSingleType = true;
+      isSingleType = types.length === 2;
     }
 
     if (isSingleType) {
@@ -43,6 +43,8 @@ export function transformSchema<T extends Deref<OpenApiSchema>>(
       schema = createOverwriteProxy(schema);
       schema.type = newType;
       kind = determineSchemaKind(schema);
+    } else {
+      schema.type = types.filter((t) => t !== 'null' && t !== null);
     }
   }
 
