@@ -364,7 +364,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
         }
         break;
       case 'null':
-        builder.append('null');
+        builder.append('Nothing');
         break;
       case 'unknown':
         builder.append('Any');
