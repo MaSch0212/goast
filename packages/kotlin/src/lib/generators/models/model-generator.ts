@@ -266,7 +266,14 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
           builder.append(String(schema.default));
           break;
         case 'string':
-          builder.append(this.toStringLiteral(ctx, String(schema.default)));
+          if (schema.enum && schema.enum.length > 0) {
+            builder
+              .append((builder) => this.generateTypeUsage(ctx, builder, schema))
+              .append('.')
+              .append(toCasing(String(schema.default), ctx.config.enumValueNameCasing));
+          } else {
+            builder.append(this.toStringLiteral(ctx, String(schema.default)));
+          }
           break;
         default:
           builder.append('null');
