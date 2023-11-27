@@ -188,7 +188,6 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
         (builder) =>
           builder.forEach(
             this.sortProperties(ctx, schema, schema.properties.values()),
-
             (builder, property) =>
               builder
                 .ensurePreviousLineEmpty()
@@ -199,8 +198,11 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
                 )
                 .append(`val ${toCasing(property.name, 'camel')}: `)
                 .append((builder) => this.generateTypeUsage(ctx, builder, property.schema))
-                .if(!schema.required.has(property.name), (builder) =>
-                  builder.appendIf(!property.schema.nullable, '?').append(' = null')
+                .if(!schema.required.has(property.name), (builder) => builder.appendIf(!property.schema.nullable, '?'))
+                .appendIf(
+                  property.schema.default !== undefined || !schema.required.has(property.name),
+                  ' = ',
+                  (builder) => this.generateDefaultValue(ctx, builder, property.schema)
                 ),
             { separator: ',\n' }
           ),
@@ -249,6 +251,28 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
           ),
         { multiline: true }
       );
+  }
+
+  protected generateDefaultValue(ctx: Context, builder: Builder, schema: ApiSchema) {
+    if (schema.default === null || schema.default === undefined) {
+      builder.append('null');
+    } else {
+      switch (schema.kind) {
+        case 'boolean':
+          builder.append(Boolean(schema.default) || String(schema.default).toLowerCase() === 'true' ? 'true' : 'false');
+          break;
+        case 'integer':
+        case 'number':
+          builder.append(String(schema.default));
+          break;
+        case 'string':
+          builder.append(this.toStringLiteral(ctx, String(schema.default)));
+          break;
+        default:
+          builder.append('null');
+          break;
+      }
+    }
   }
 
   protected generateObjectDataClassParameterAnnotations(
