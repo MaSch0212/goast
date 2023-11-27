@@ -24,13 +24,16 @@ class DerefProxyHandler<T extends OpenApiObject<string>> implements ProxyHandler
       return this._source;
     }
 
-    return (
-      this._overwrittenValues[prop] ??
-      (target as Record<PropertyKey, unknown>)[prop] ??
-      (propertiesNotDerivedFromRef.includes(prop)
-        ? undefined
-        : (this._ref as Record<PropertyKey, unknown> | undefined)?.[prop])
-    );
+    if (this._overwrittenValues[prop] !== undefined) {
+      return this._overwrittenValues[prop];
+    }
+    if ((target as Record<PropertyKey, unknown>)[prop] !== undefined) {
+      return (target as Record<PropertyKey, unknown>)[prop];
+    }
+
+    return propertiesNotDerivedFromRef.includes(prop)
+      ? undefined
+      : (this._ref as Record<PropertyKey, unknown> | undefined)?.[prop];
   }
 
   public set(target: T, prop: PropertyKey, value: unknown): boolean {
