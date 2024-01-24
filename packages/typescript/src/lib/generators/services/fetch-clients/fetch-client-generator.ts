@@ -132,9 +132,10 @@ export class DefaultTypeScriptFetchClientGenerator
       .append('export class ')
       .append(this.getClassName(ctx))
       .appendIf(this.shouldGenerateInterface(ctx), (builder) =>
-        builder.addImport(this.getInterfaceName(ctx), this.getInterfaceFilePath(ctx))
-      )
-      .append(' implements ', this.getInterfaceName(ctx));
+        builder
+          .addImport(this.getInterfaceName(ctx), this.getInterfaceFilePath(ctx))
+          .append(' implements ', this.getInterfaceName(ctx))
+      );
   }
 
   protected generateClassContent(ctx: Context, builder: Builder) {
