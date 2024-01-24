@@ -1,6 +1,8 @@
-import { resolve } from 'path';
+import { dirname, resolve } from 'path';
 
-import { ApiEndpoint, getEndpointUrlPreview, toCasing } from '@goast/core';
+import { ensureDirSync, writeFileSync } from 'fs-extra';
+
+import { ApiEndpoint, ApiSchema, getEndpointUrlPreview, notNullish, toCasing } from '@goast/core';
 
 import { TypeScriptFetchClientGeneratorContext, TypeScriptFetchClientGeneratorOutput } from './models';
 import { TypeScriptFileBuilder } from '../../../file-builder';
@@ -27,8 +29,11 @@ export class DefaultTypeScriptFetchClientGenerator
       const name = this.getInterfaceName(ctx);
       console.log(`Generating interface ${name} in ${filePath}...`);
 
+      ensureDirSync(dirname(filePath));
+
       builder = new TypeScriptFileBuilder(filePath, ctx.config);
       this.generateInterface(ctx, builder);
+      writeFileSync(filePath, builder.toString());
 
       result.interface = { filePath, component: name, imports: [{ kind: 'file', name, modulePath: filePath }] };
     }
@@ -38,10 +43,14 @@ export class DefaultTypeScriptFetchClientGenerator
       const name = this.getClassName(ctx);
       console.log(`Generating class ${name} in ${filePath}...`);
 
+      ensureDirSync(dirname(filePath));
+
       if (!builder || builder.filePath !== filePath) {
         builder = new TypeScriptFileBuilder(filePath, ctx.config);
       }
+      this.generateDefaultOptions(ctx, builder);
       this.generateClass(ctx, builder);
+      writeFileSync(filePath, builder.toString());
 
       result.class = { filePath, component: name, imports: [{ kind: 'file', name, modulePath: filePath }] };
     }
@@ -85,6 +94,22 @@ export class DefaultTypeScriptFetchClientGenerator
       .appendLine(';');
   }
 
+  protected generateDefaultOptions(ctx: Context, builder: Builder) {
+    const baseUrl = ctx.service.endpoints
+      .map((x) => x.$src?.document.servers?.find((x) => x.url)?.url)
+      .find((x) => !!x);
+    builder
+      .ensurePreviousLineEmpty()
+      .addImport('FetchClientOptions', this.getUtilPath(ctx, 'types.ts'))
+      .append('export const ', this.getDefaultOptionsConstantName(ctx), ': FetchClientOptions = ')
+      .parenthesize(
+        '{}',
+        (builder) =>
+          builder.appendLineIf(notNullish(baseUrl), 'baseUrl: ', this.toStringLiteral(ctx, baseUrl ?? ''), ','),
+        { indent: true, multiline: true }
+      );
+  }
+
   protected generateClass(ctx: Context, builder: Builder) {
     builder
       .ensurePreviousLineEmpty()
@@ -103,13 +128,38 @@ export class DefaultTypeScriptFetchClientGenerator
   }
 
   protected generateClassSignature(ctx: Context, builder: Builder) {
-    builder.append('export class ').append(this.getClassName(ctx));
+    builder
+      .append('export class ')
+      .append(this.getClassName(ctx))
+      .appendIf(this.shouldGenerateInterface(ctx), (builder) =>
+        builder.addImport(this.getInterfaceName(ctx), this.getInterfaceFilePath(ctx))
+      )
+      .append(' implements ', this.getInterfaceName(ctx));
   }
 
   protected generateClassContent(ctx: Context, builder: Builder) {
-    builder.forEach(ctx.service.endpoints, (builder, endpoint) =>
-      this.generateClassServiceMethod(ctx, builder, endpoint)
-    );
+    builder
+      .append((builder) => this.generateClassFields(ctx, builder))
+      .append((builder) => this.generateClassConstructor(ctx, builder))
+      .forEach(ctx.service.endpoints, (builder, endpoint) => this.generateClassServiceMethod(ctx, builder, endpoint));
+  }
+
+  protected generateClassFields(ctx: Context, builder: Builder) {
+    builder.ensureCurrentLineEmpty().appendLine('private readonly _options: FetchClientOptions;');
+  }
+
+  protected generateClassConstructor(ctx: Context, builder: Builder) {
+    builder
+      .ensurePreviousLineEmpty()
+      .append('constructor(options?: FetchClientOptions)')
+      .parenthesize('{}', (builder) => this.generateClassConstructorContent(ctx, builder), {
+        indent: true,
+        multiline: true,
+      });
+  }
+
+  protected generateClassConstructorContent(ctx: Context, builder: Builder) {
+    builder.appendLine('this._options = { ...', this.getDefaultOptionsConstantName(ctx), ', ...options };');
   }
 
   protected generateClassServiceMethod(ctx: Context, builder: Builder, endpoint: ApiEndpoint) {
@@ -119,7 +169,10 @@ export class DefaultTypeScriptFetchClientGenerator
       .ensureCurrentLineEmpty()
       .append((builder) => this.generateServiceMethodSignature(ctx, builder, endpoint))
       .append(' ')
-      .parenthesize('{}', (builder) => this.generateServiceMethodContent(ctx, builder, endpoint))
+      .parenthesize('{}', (builder) => this.generateServiceMethodContent(ctx, builder, endpoint), {
+        indent: true,
+        multiline: true,
+      })
       .appendLine();
   }
 
@@ -132,7 +185,7 @@ export class DefaultTypeScriptFetchClientGenerator
         .appendLine(endpoint.description ?? '[No description was provided by the API]')
         .appendLine(`@see ${getEndpointUrlPreview(endpoint)}`)
         .appendLineIf(hasParams, `@param params Parameters for the endpoint.`)
-        .appendLine(`@returns The response of the call to the endpoint.`)
+        .append(`@returns The response of the call to the endpoint.`)
     );
   }
 
@@ -140,34 +193,91 @@ export class DefaultTypeScriptFetchClientGenerator
     builder
       .append(toCasing(endpoint.name, ctx.config.methodCasing))
       .parenthesize('()', (builder) => this.generateServiceMethodParameters(ctx, builder, endpoint))
-      .append(' : ')
+      .append(': ')
       .append((builder) => this.generateServiceMethodReturnValue(ctx, builder, endpoint));
   }
 
   protected generateServiceMethodParameters(ctx: Context, builder: Builder, endpoint: ApiEndpoint) {
+    const params = endpoint.parameters.filter((x) => x.target === 'path' || x.target === 'query');
+    const bodySchemaId = endpoint.requestBody?.content[0]?.schema?.id;
     builder
-      .append('params: ')
-      .parenthesize('{}', (builder) =>
+      .appendLineIf(params.length > 0 && !!bodySchemaId)
+      .if(params.length > 0, (builder) =>
         builder
-          .forEach(endpoint.parameters, (builder, parameter) =>
-            builder.appendLine(
-              `${this.toPropertyName(ctx, parameter.name)}: ${this.getTypeName(ctx, builder, parameter.schema?.id)};`
-            )
+          .append('params: ')
+          .parenthesize(
+            '{}',
+            (builder) =>
+              builder.forEach(params, (builder, parameter) =>
+                builder.appendLine(
+                  `${this.toPropertyName(ctx, parameter.name)}: ${this.getTypeName(
+                    ctx,
+                    builder,
+                    parameter.schema?.id
+                  )};`
+                )
+              ),
+            { indent: true, multiline: true }
           )
-          .appendIf(!!endpoint.requestBody && endpoint.requestBody.content.length > 0, (builder) =>
-            builder.appendLine(`body: ${this.getTypeName(ctx, builder, endpoint.requestBody?.content[0].schema?.id)};`)
-          )
-      );
+      )
+      .appendLineIf(params.length > 0 && !!bodySchemaId, ',')
+      .appendIf(!!bodySchemaId, (builder) => builder.append(`body: ${this.getTypeName(ctx, builder, bodySchemaId)}`))
+      .appendLineIf(params.length > 0 && !!bodySchemaId);
   }
 
-  // eslint-disable-next-line unused-imports/no-unused-vars
   protected generateServiceMethodReturnValue(ctx: Context, builder: Builder, endpoint: ApiEndpoint) {
-    builder.append('Response');
+    const successResponse =
+      endpoint.responses.find((x) => x.statusCode === 200) ??
+      endpoint.responses.find((x) => x.statusCode && x.statusCode > 200 && x.statusCode < 300);
+    const schema = successResponse?.contentOptions?.find((x) => x.schema !== undefined)?.schema;
+
+    builder.append('Promise').parenthesize('<>', (builder) => this.generateTypedResponse(ctx, builder, schema));
+  }
+
+  protected generateTypedResponse(ctx: Context, builder: Builder, schema: ApiSchema | undefined) {
+    builder
+      .addImport('TypedResponse', this.getUtilPath(ctx, 'types.ts'))
+      .append('TypedResponse')
+      .parenthesize('<>', (builder) => builder.append(this.getTypeName(ctx, builder, schema?.id)));
   }
 
   protected generateServiceMethodContent(ctx: Context, builder: Builder, endpoint: ApiEndpoint) {
-    // TODO: Implement
-    builder.appendLine('return undefined as unknown as Response;');
+    builder
+      .addImport('UrlBuilder', this.getUtilPath(ctx, 'url-builder.ts'))
+      .appendLine('const url = new UrlBuilder(this._options.baseUrl)')
+      .indent((builder) =>
+        builder
+          .appendLine(`.withPath(${this.toStringLiteral(ctx, endpoint.path)})`)
+          .forEach(
+            endpoint.parameters.filter((x) => x.target === 'path' || x.target === 'query'),
+            (builder, parameter) =>
+              builder
+                .appendIf(parameter.target === 'path', `.withPathParam`)
+                .appendIf(parameter.target === 'query', `.withQueryParam`)
+                .parenthesize(
+                  '()',
+                  `${this.toStringLiteral(ctx, parameter.name)}, params.${this.toPropertyName(ctx, parameter.name)}`
+                )
+                .appendLine()
+          )
+          .appendLine('.build();')
+      )
+      .append('return (this._options.fetch ?? fetch)')
+      .parenthesize(
+        '()',
+        (builder) =>
+          builder.append('url, ').parenthesize(
+            '{}',
+            (builder) =>
+              builder
+                .appendLine('method: ', this.toStringLiteral(ctx, toCasing(endpoint.method, 'all-upper')), ',')
+                .appendLine('headers: this._options.headers,')
+                .appendLineIf(!!endpoint.requestBody?.content[0]?.schema, 'body: JSON.stringify(body),'),
+            { indent: true, multiline: true }
+          ),
+        { indent: false }
+      )
+      .appendLine(' as ', (builder) => this.generateServiceMethodReturnValue(ctx, builder, endpoint), ';');
   }
 
   protected getTypeName(ctx: Context, builder: Builder, schemaId: string | undefined): string {
@@ -201,6 +311,10 @@ export class DefaultTypeScriptFetchClientGenerator
     return toCasing(ctx.service.name, ctx.config.classNameCasing);
   }
 
+  protected getDefaultOptionsConstantName(ctx: Context): string {
+    return toCasing(this.getClassName(ctx) + '-default-options', ctx.config.constantCasing);
+  }
+
   protected getInterfaceFilePath(ctx: Context): string {
     return resolve(
       ctx.config.outputDir,
@@ -215,5 +329,9 @@ export class DefaultTypeScriptFetchClientGenerator
       ctx.config.clientDirPath,
       `${toCasing(ctx.service.name, ctx.config.fileNameCasing)}.ts`
     );
+  }
+
+  protected getUtilPath(ctx: Context, fileName: string) {
+    return resolve(ctx.config.outputDir, ctx.config.utilsDirPath, fileName);
   }
 }

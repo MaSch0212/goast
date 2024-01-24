@@ -4,7 +4,11 @@ import YAML from 'yaml';
 import fs from 'fs-extra';
 import { OpenApiGenerator, OpenApiParser } from '@goast/core';
 import { KotlinModelsGenerator, KotlinOkHttp3ClientsGenerator, KotlinSpringControllersGenerator } from '@goast/kotlin';
-import { TypeScriptAngularServicesGenerator, TypeScriptModelsGenerator } from '@goast/typescript';
+import {
+  TypeScriptAngularServicesGenerator,
+  TypeScriptModelsGenerator,
+  TypeScriptClientsGenerator,
+} from '@goast/typescript';
 
 export async function main(): Promise<void> {
   const packageName = 'com.serviceware.platform.engine.data';
@@ -23,7 +27,7 @@ export async function main(): Promise<void> {
       outputDir: testOutDir,
     })
     .useType(TypeScriptModelsGenerator, { outputDir: clientOutDir, immutableTypes: true })
-    .useType(TypeScriptAngularServicesGenerator, { outputDir: clientOutDir })
+    .useType(TypeScriptClientsGenerator, { outputDir: clientOutDir, clientFileKind: 'class-and-interface' })
     .parseAndGenerateFromDir('.openapi');
   //console.log(x);
 }

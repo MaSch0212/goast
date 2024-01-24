@@ -331,13 +331,16 @@ export class DefaultTypeScriptModelGenerator
   protected generateObjectTypeAdditionalProperties(ctx: Context, builder: Builder, schema: ObjectLikeApiSchema): void {
     if (!schema.additionalProperties) return;
     builder
-      .appendIf(ctx.config.immutableTypes, 'readonly ')
-      .append('Record')
-      .appendGenericArguments(
-        'string',
-        schema.additionalProperties === true
-          ? this.getAnyType(ctx)
-          : (builder) => this.generateTypeUsage(ctx, builder, schema.additionalProperties as ApiSchema)
+      .appendIf(ctx.config.immutableTypes, 'Readonly')
+      .parenthesizeIf(ctx.config.immutableTypes, '<>', (builder) =>
+        builder
+          .append('Record')
+          .appendGenericArguments(
+            'string',
+            schema.additionalProperties === true
+              ? this.getAnyType(ctx)
+              : (builder) => this.generateTypeUsage(ctx, builder, schema.additionalProperties as ApiSchema)
+          )
       );
   }
 

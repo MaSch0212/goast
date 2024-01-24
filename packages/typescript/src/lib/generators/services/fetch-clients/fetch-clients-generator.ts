@@ -1,6 +1,6 @@
 import { dirname, resolve } from 'path';
 
-import { ensureDirSync, writeFileSync } from 'fs-extra';
+import { ensureDirSync, writeFileSync, copyFileSync, readdirSync } from 'fs-extra';
 
 import { ApiService, OpenApiGeneratorContext, OpenApiServicesGenerationProviderBase, Factory } from '@goast/core';
 
@@ -53,6 +53,7 @@ export class TypeScriptClientsGenerator extends OpenApiServicesGenerationProvide
   }
 
   public override onGenerate(ctx: Context): Output {
+    this.copyUtilsFiles(ctx);
     const output = super.onGenerate(ctx);
     output.clientIndexFilePath = this.generateIndexFile(ctx);
     return output;
@@ -108,5 +109,16 @@ export class TypeScriptClientsGenerator extends OpenApiServicesGenerationProvide
     }
 
     exports.writeTo(builder);
+  }
+
+  private copyUtilsFiles(ctx: Context): void {
+    const sourceDir = resolve(dirname(require.resolve('@goast/typescript')), '../assets/client/fetch');
+    const targetDir = resolve(ctx.config.outputDir, ctx.config.utilsDirPath);
+    ensureDirSync(targetDir);
+
+    const files = readdirSync(sourceDir);
+    for (const file of files) {
+      copyFileSync(resolve(sourceDir, file), resolve(targetDir, file));
+    }
   }
 }

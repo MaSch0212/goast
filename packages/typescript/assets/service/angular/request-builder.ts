@@ -119,6 +119,7 @@ class PathParameter extends Parameter {
     return path;
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   serializeValue(value: any, separator = ','): string {
     let result = typeof value === 'string' ? encodeURIComponent(value) : super.serializeValue(value, separator);

@@ -14,6 +14,7 @@ export type TypeScriptGeneratorConfig = OpenApiGeneratorConfig & {
   methodNameCasing: StringCasing | StringCasingWithOptions;
   propertyNameCasing: StringCasing | StringCasingWithOptions;
   enumValueNameCasing: StringCasing | StringCasingWithOptions;
+  constantCasing: StringCasing | StringCasingWithOptions;
 
   preferUnknown: boolean;
   useSingleQuotes: boolean;
@@ -29,6 +30,7 @@ export const defaultTypeScriptGeneratorConfig: DefaultGenerationProviderConfig<T
   methodNameCasing: 'camel',
   propertyNameCasing: 'camel',
   enumValueNameCasing: 'pascal',
+  constantCasing: { casing: 'snake', wordCasing: 'all-upper' },
 
   preferUnknown: true,
   useSingleQuotes: true,

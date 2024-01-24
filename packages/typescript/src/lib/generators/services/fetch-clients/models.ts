@@ -24,6 +24,7 @@ export type TypeScriptFetchClientsGeneratorConfig = TypeScriptGeneratorConfig & 
   clientInterfaceDirPath: Nullable<string>;
   indexFilePath: Nullable<string>;
   interfaceIndexFilePath: Nullable<string>;
+  utilsDirPath: string;
 };
 
 export const defaultTypeScriptFetchClientsGeneratorConfig: DefaultGenerationProviderConfig<TypeScriptFetchClientsGeneratorConfig> =
@@ -42,6 +43,7 @@ export const defaultTypeScriptFetchClientsGeneratorConfig: DefaultGenerationProv
     clientInterfaceDirPath: 'clients/interfaces',
     indexFilePath: 'clients.ts',
     interfaceIndexFilePath: 'clients.ts',
+    utilsDirPath: 'utils',
   };
 
 export type TypeScriptFetchClientsGeneratorInput = TypeScriptModelsGeneratorOutput;
