@@ -31,6 +31,7 @@ export class UrlBuilder {
       .map((key) => `${key}=${this.queryParams[key]}`)
       .join('&');
     const path = this.path.replace(/\{([^}]+)\}/g, (_, name) => this.pathParams[name]);
-    return `${this.baseUrl}${path || '/'}${queryString ? '?' + queryString : ''}`;
+    const url = `${this.baseUrl}${path || '/'}${queryString ? '?' + queryString : ''}`;
+    return url.replace(/(?<!:)[\\/]+(?=\/)|[\\/](?=\?)/g, '');
   }
 }

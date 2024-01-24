@@ -211,11 +211,10 @@ export class DefaultTypeScriptFetchClientGenerator
             (builder) =>
               builder.forEach(params, (builder, parameter) =>
                 builder.appendLine(
-                  `${this.toPropertyName(ctx, parameter.name)}: ${this.getTypeName(
-                    ctx,
-                    builder,
-                    parameter.schema?.id
-                  )};`
+                  this.toPropertyName(ctx, parameter.name),
+                  parameter.required ? ': ' : '?: ',
+                  this.getTypeName(ctx, builder, parameter.schema?.id),
+                  ';'
                 )
               ),
             { indent: true, multiline: true }
