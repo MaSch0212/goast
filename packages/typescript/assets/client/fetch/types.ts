@@ -3,7 +3,7 @@ export type TypedResponse<T> = Response & {
 };
 
 export type FetchClientOptions = {
-  readonly baseUrl?: string;
-  readonly fetch?: typeof fetch;
-  readonly headers?: Record<string, string>;
+  baseUrl?: string;
+  fetch?: typeof fetch;
+  headers?: Record<string, string>;
 };

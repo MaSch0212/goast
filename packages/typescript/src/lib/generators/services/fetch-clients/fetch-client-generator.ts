@@ -146,13 +146,13 @@ export class DefaultTypeScriptFetchClientGenerator
   }
 
   protected generateClassFields(ctx: Context, builder: Builder) {
-    builder.ensureCurrentLineEmpty().appendLine('private readonly _options: FetchClientOptions;');
+    builder.ensureCurrentLineEmpty().appendLine('public options: FetchClientOptions;');
   }
 
   protected generateClassConstructor(ctx: Context, builder: Builder) {
     builder
       .ensurePreviousLineEmpty()
-      .append('constructor(options?: FetchClientOptions)')
+      .append('constructor(options?: Partial<FetchClientOptions>)')
       .parenthesize('{}', (builder) => this.generateClassConstructorContent(ctx, builder), {
         indent: true,
         multiline: true,
@@ -160,7 +160,7 @@ export class DefaultTypeScriptFetchClientGenerator
   }
 
   protected generateClassConstructorContent(ctx: Context, builder: Builder) {
-    builder.appendLine('this._options = { ...', this.getDefaultOptionsConstantName(ctx), ', ...options };');
+    builder.appendLine('this.options = { ...', this.getDefaultOptionsConstantName(ctx), ', ...options };');
   }
 
   protected generateClassServiceMethod(ctx: Context, builder: Builder, endpoint: ApiEndpoint) {
@@ -244,7 +244,7 @@ export class DefaultTypeScriptFetchClientGenerator
   protected generateServiceMethodContent(ctx: Context, builder: Builder, endpoint: ApiEndpoint) {
     builder
       .addImport('UrlBuilder', this.getUtilPath(ctx, 'url-builder.ts'))
-      .appendLine('const url = new UrlBuilder(this._options.baseUrl)')
+      .appendLine('const url = new UrlBuilder(this.options.baseUrl)')
       .indent((builder) =>
         builder
           .appendLine(`.withPath(${this.toStringLiteral(ctx, endpoint.path)})`)
@@ -262,7 +262,7 @@ export class DefaultTypeScriptFetchClientGenerator
           )
           .appendLine('.build();')
       )
-      .append('return (this._options.fetch ?? fetch)')
+      .append('return (this.options.fetch ?? fetch)')
       .parenthesize(
         '()',
         (builder) =>
@@ -271,7 +271,7 @@ export class DefaultTypeScriptFetchClientGenerator
             (builder) =>
               builder
                 .appendLine('method: ', this.toStringLiteral(ctx, toCasing(endpoint.method, 'all-upper')), ',')
-                .appendLine('headers: this._options.headers,')
+                .appendLine('headers: this.options.headers,')
                 .appendLineIf(!!endpoint.requestBody?.content[0]?.schema, 'body: JSON.stringify(body),'),
             { indent: true, multiline: true }
           ),
