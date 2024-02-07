@@ -226,19 +226,16 @@ export class DefaultTypeScriptFetchClientGenerator
   }
 
   protected generateServiceMethodReturnValue(ctx: Context, builder: Builder, endpoint: ApiEndpoint) {
-    const successResponse =
-      endpoint.responses.find((x) => x.statusCode === 200) ??
-      endpoint.responses.find((x) => x.statusCode && x.statusCode > 200 && x.statusCode < 300);
-    const schema = successResponse?.contentOptions?.find((x) => x.schema !== undefined)?.schema;
-
-    builder.append('Promise').parenthesize('<>', (builder) => this.generateTypedResponse(ctx, builder, schema));
+    builder
+      .append('Promise')
+      .parenthesize('<>', (builder) => this.generateTypedResponse(ctx, builder, this.getResponseSchema(ctx, endpoint)));
   }
 
   protected generateTypedResponse(ctx: Context, builder: Builder, schema: ApiSchema | undefined) {
     builder
       .addImport('TypedResponse', this.getUtilPath(ctx, 'types.ts'))
       .append('TypedResponse')
-      .parenthesize('<>', (builder) => builder.append(this.getTypeName(ctx, builder, schema?.id)));
+      .parenthesize('<>', (builder) => builder.append(this.getTypeName(ctx, builder, schema?.id, 'void')));
   }
 
   protected generateServiceMethodContent(ctx: Context, builder: Builder, endpoint: ApiEndpoint) {
@@ -262,7 +259,7 @@ export class DefaultTypeScriptFetchClientGenerator
           )
           .appendLine('.build();')
       )
-      .append('return (this.options.fetch ?? fetch)')
+      .append('const response = (this.options.fetch ?? fetch)')
       .parenthesize(
         '()',
         (builder) =>
@@ -277,12 +274,22 @@ export class DefaultTypeScriptFetchClientGenerator
           ),
         { indent: false }
       )
-      .appendLine(' as ', (builder) => this.generateServiceMethodReturnValue(ctx, builder, endpoint), ';');
+      .appendLine(';')
+      .appendLine(
+        "Object.defineProperty(response, 'isVoidResponse', { value: ",
+        this.getResponseSchema(ctx, endpoint) ? 'false' : 'true',
+        ' });'
+      )
+      .appendLine(
+        'return response as unknown as ',
+        (builder) => this.generateServiceMethodReturnValue(ctx, builder, endpoint),
+        ';'
+      );
   }
 
-  protected getTypeName(ctx: Context, builder: Builder, schemaId: string | undefined): string {
+  protected getTypeName(ctx: Context, builder: Builder, schemaId: string | undefined, fallback?: string): string {
     if (!schemaId) {
-      return this.getAnyType(ctx);
+      return fallback ? fallback : this.getAnyType(ctx);
     }
 
     const modelInfo = ctx.input.models[schemaId];
@@ -333,5 +340,12 @@ export class DefaultTypeScriptFetchClientGenerator
 
   protected getUtilPath(ctx: Context, fileName: string) {
     return resolve(ctx.config.outputDir, ctx.config.utilsDirPath, fileName);
+  }
+
+  private getResponseSchema(ctx: Context, endpoint: ApiEndpoint) {
+    const successResponse =
+      endpoint.responses.find((x) => x.statusCode === 200) ??
+      endpoint.responses.find((x) => x.statusCode && x.statusCode > 200 && x.statusCode < 300);
+    return successResponse?.contentOptions?.find((x) => x.schema !== undefined)?.schema;
   }
 }
