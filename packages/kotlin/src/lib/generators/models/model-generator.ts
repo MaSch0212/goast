@@ -209,7 +209,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
         '()',
         (builder) =>
           builder.forEach(
-            params,
+            this.sortProperties(ctx, schema, params),
             (builder, property) =>
               this.generateObjectDataClassProperty(ctx, builder, schema, inheritedSchemas, property),
             { separator: ',\n' }
@@ -620,11 +620,13 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     schema: ApiSchema,
     properties: Iterable<ApiSchemaProperty>
   ): ApiSchemaProperty[] {
-    return [...properties].sort((a, b) => {
-      const aRequired = schema.required.has(a.name) || schema.default ? 1 : 0;
-      const bRequired = schema.required.has(b.name) || schema.default ? 1 : 0;
-      return bRequired - aRequired;
-    });
+    return [...properties].sort((a, b) => classify(a) - classify(b));
+
+    function classify(p: ApiSchemaProperty) {
+      if (p.schema.default !== undefined) return 1;
+      if (schema.required.has(p.name)) return 0;
+      return 2;
+    }
   }
 
   private normalizeSchema(ctx: Context, schema: ApiSchema): ApiSchema {
