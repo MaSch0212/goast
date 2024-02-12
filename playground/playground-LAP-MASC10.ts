@@ -19,8 +19,20 @@ export async function main(): Promise<void> {
   const basePath = /\/api\/.*/;
 
   const x = await new OpenApiGenerator({ outputDir: outBaseDir })
-    .useType(KotlinModelsGenerator, { packageName, outputDir: mainOutDir })
-    .useType(KotlinSpringControllersGenerator, { basePath, packageName, outputDir: mainOutDir })
+    .useType(KotlinModelsGenerator, {
+      packageName,
+      outputDir: mainOutDir,
+      addJacksonAnnotations: false,
+      addJakartaValidationAnnotations: false,
+      addSwaggerAnnotations: false,
+    })
+    .useType(KotlinSpringControllersGenerator, {
+      basePath,
+      packageName,
+      outputDir: mainOutDir,
+      addJakartaValidationAnnotations: false,
+      addSwaggerAnnotations: false,
+    })
     .useType(KotlinOkHttp3ClientsGenerator, {
       basePath,
       packageName,
@@ -29,5 +41,5 @@ export async function main(): Promise<void> {
     .useType(TypeScriptModelsGenerator, { outputDir: clientOutDir, immutableTypes: true })
     .useType(TypeScriptClientsGenerator, { outputDir: clientOutDir, clientFileKind: 'class-and-interface' })
     .parseAndGenerateFromDir('.openapi');
-  //console.log(x);
+  // console.log(x);
 }

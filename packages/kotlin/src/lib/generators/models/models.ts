@@ -7,6 +7,10 @@ export type KotlinModelsGeneratorConfig = KotlinGeneratorConfig & {
   packageName: string;
   packageSuffix: string;
   oneOfBehavior: 'treat-as-any-of' | 'treat-as-all-of';
+
+  addJacksonAnnotations: boolean;
+  addJakartaValidationAnnotations: boolean;
+  addSwaggerAnnotations: boolean;
 };
 
 export const defaultKotlinModelsGeneratorConfig: DefaultGenerationProviderConfig<KotlinModelsGeneratorConfig> = {
@@ -15,6 +19,10 @@ export const defaultKotlinModelsGeneratorConfig: DefaultGenerationProviderConfig
   packageName: 'com.openapi.generated',
   packageSuffix: '.model',
   oneOfBehavior: 'treat-as-any-of',
+
+  addJacksonAnnotations: true,
+  addJakartaValidationAnnotations: true,
+  addSwaggerAnnotations: true,
 };
 
 export type KotlinModelsGeneratorInput = {};

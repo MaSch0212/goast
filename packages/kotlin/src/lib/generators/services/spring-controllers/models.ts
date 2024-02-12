@@ -15,6 +15,9 @@ export type KotlinServicesGeneratorConfig = KotlinGeneratorConfig & {
 
   basePath?: string | RegExp | ((basePath: string, service: ApiService) => string);
   pathModifier?: RegExp | ((path: string, endpoint: ApiEndpoint) => string);
+
+  addSwaggerAnnotations: boolean;
+  addJakartaValidationAnnotations: boolean;
 };
 
 export const defaultKotlinServicesGeneratorConfig: DefaultGenerationProviderConfig<KotlinServicesGeneratorConfig> = {
@@ -22,6 +25,9 @@ export const defaultKotlinServicesGeneratorConfig: DefaultGenerationProviderConf
 
   packageName: 'com.openapi.generated',
   packageSuffix: '.api',
+
+  addSwaggerAnnotations: true,
+  addJakartaValidationAnnotations: true,
 };
 
 export type KotlinServicesGeneratorInput = KotlinModelsGeneratorOutput;

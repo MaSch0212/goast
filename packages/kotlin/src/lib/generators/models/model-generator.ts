@@ -129,7 +129,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
   }
 
   protected generateObjectInterfaceAnnotations(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
-    if (schema.discriminator) {
+    if (schema.discriminator && ctx.config.addJacksonAnnotations) {
       builder.appendAnnotation('JsonTypeInfo', 'com.fasterxml.jackson.annotation', [
         ['use', 'JsonTypeInfo.Id.NAME'],
         ['include', 'JsonTypeInfo.As.EXISTING_PROPERTY'],
@@ -222,14 +222,16 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
         (builder) =>
           builder.if(schema.additionalProperties !== undefined && schema.additionalProperties !== false, (builder) =>
             builder
-              .appendLine('@JsonIgnore')
-              .addImport('JsonIgnore', 'com.fasterxml.jackson.annotation')
+              .if(ctx.config.addJacksonAnnotations, (builder) =>
+                builder.appendLine('@JsonIgnore').addImport('JsonIgnore', 'com.fasterxml.jackson.annotation')
+              )
               .append('val additionalProperties: Mutable')
               .append((builder) => this.generateMapType(ctx, builder, schema))
               .appendLine(' = mutableMapOf()')
               .appendLine()
-              .appendLine('@JsonAnySetter')
-              .addImport('JsonAnySetter', 'com.fasterxml.jackson.annotation')
+              .if(ctx.config.addJacksonAnnotations, (builder) =>
+                builder.appendLine('@JsonAnySetter').addImport('JsonAnySetter', 'com.fasterxml.jackson.annotation')
+              )
               .append('fun set')
               .parenthesize('()', (builder) =>
                 builder.append('name: String, value: ').if(
@@ -242,8 +244,9 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
               .parenthesize('{}', 'this.additionalProperties[name] = value', { multiline: true })
               .appendLine()
               .appendLine()
-              .appendLine('@JsonAnyGetter')
-              .addImport('JsonAnyGetter', 'com.fasterxml.jackson.annotation')
+              .if(ctx.config.addJacksonAnnotations, (builder) =>
+                builder.appendLine('@JsonAnyGetter').addImport('JsonAnyGetter', 'com.fasterxml.jackson.annotation')
+              )
               .append('fun getMap(): ')
               .append((builder) => this.generateMapType(ctx, builder, schema))
               .append(' ')
@@ -299,16 +302,18 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     schema: ApiSchema,
     property: ApiSchemaProperty
   ): void {
-    if (property.schema.kind === 'string' && property.schema.pattern) {
-      builder
-        .append('@get:Pattern(regexp = ')
-        .append(this.toStringLiteral(ctx, property.schema.pattern))
-        .append(')')
-        .addImport('Pattern', 'jakarta.validation.constraints')
-        .appendLine();
-    }
-    if (this.shouldGenerateTypeDeclaration(ctx, property.schema)) {
-      builder.append('@field:Valid').addImport('Valid', 'jakarta.validation').appendLine();
+    if (ctx.config.addJakartaValidationAnnotations) {
+      if (property.schema.kind === 'string' && property.schema.pattern) {
+        builder
+          .append('@get:Pattern(regexp = ')
+          .append(this.toStringLiteral(ctx, property.schema.pattern))
+          .append(')')
+          .addImport('Pattern', 'jakarta.validation.constraints')
+          .appendLine();
+      }
+      if (this.shouldGenerateTypeDeclaration(ctx, property.schema)) {
+        builder.append('@field:Valid').addImport('Valid', 'jakarta.validation').appendLine();
+      }
     }
   }
 
@@ -318,26 +323,28 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     schema: ApiSchema,
     property: ApiSchemaProperty
   ): void {
-    const parts: Map<string, string> = new Map();
-    if (property.schema.example !== undefined) {
-      parts.set('example', this.toStringLiteral(ctx, String(property.schema.example)));
-    }
-    if (schema.required.has(property.name)) {
-      parts.set('required', 'true');
-    }
-    if (property.schema.description !== undefined) {
-      parts.set('description', this.toStringLiteral(ctx, property.schema.description));
-    }
+    if (ctx.config.addSwaggerAnnotations) {
+      const parts: Map<string, string> = new Map();
+      if (property.schema.example !== undefined) {
+        parts.set('example', this.toStringLiteral(ctx, String(property.schema.example)));
+      }
+      if (schema.required.has(property.name)) {
+        parts.set('required', 'true');
+      }
+      if (property.schema.description !== undefined) {
+        parts.set('description', this.toStringLiteral(ctx, property.schema.description));
+      }
 
-    builder
-      .append('@Schema')
-      .addImport('Schema', 'io.swagger.v3.oas.annotations.media')
-      .parenthesizeIf(parts.size > 0, '()', (builder) =>
-        builder.forEach(parts.entries(), (builder, [key, value]) => builder.append(`${key} = ${value}`), {
-          separator: ', ',
-        })
-      )
-      .appendLine();
+      builder
+        .append('@Schema')
+        .addImport('Schema', 'io.swagger.v3.oas.annotations.media')
+        .parenthesizeIf(parts.size > 0, '()', (builder) =>
+          builder.forEach(parts.entries(), (builder, [key, value]) => builder.append(`${key} = ${value}`), {
+            separator: ', ',
+          })
+        )
+        .appendLine();
+    }
   }
 
   protected generateJsonPropertyAnnotation(
@@ -348,18 +355,22 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     scope?: string
   ): void {
     builder
-      .append(`@${scope ? scope + ':' : ''}JsonProperty`)
-      .addImport('JsonProperty', 'com.fasterxml.jackson.annotation')
-      .parenthesize('()', (builder) =>
+      .if(ctx.config.addJacksonAnnotations, (builder) =>
         builder
-          .append(this.toStringLiteral(ctx, property.name))
-          .appendIf(schema.required.has(property.name), ', required = true')
+          .append(`@${scope ? scope + ':' : ''}JsonProperty`)
+          .addImport('JsonProperty', 'com.fasterxml.jackson.annotation')
+          .parenthesize('()', (builder) =>
+            builder
+              .append(this.toStringLiteral(ctx, property.name))
+              .appendIf(schema.required.has(property.name), ', required = true')
+          )
+          .appendLine()
       )
-      .appendLine()
       .if(property.schema.custom['exclude-when-null'] === true, (builder) =>
         builder
-          .append('@get:JsonInclude')
-          .addImport('JsonInclude', 'com.fasterxml.jackson.annotation')
+          .if(ctx.config.addJacksonAnnotations, (builder) =>
+            builder.append('@get:JsonInclude').addImport('JsonInclude', 'com.fasterxml.jackson.annotation')
+          )
           .parenthesize('()', 'JsonInclude.Include.NON_NULL')
           .appendLine()
       );
@@ -469,10 +480,13 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
             schema.enum ?? [],
             (builder, value) =>
               builder
-                .append('@JsonProperty')
-                .addImport('JsonProperty', 'com.fasterxml.jackson.annotation')
-                .parenthesize('()', this.toStringLiteral(ctx, String(value)))
-                .appendLine()
+                .if(ctx.config.addJacksonAnnotations, (builder) =>
+                  builder
+                    .append('@JsonProperty')
+                    .addImport('JsonProperty', 'com.fasterxml.jackson.annotation')
+                    .parenthesize('()', this.toStringLiteral(ctx, String(value)))
+                    .appendLine()
+                )
                 .append(toCasing(String(value), 'snake'))
                 .parenthesize('()', this.toStringLiteral(ctx, String(value))),
             { separator: (builder) => builder.appendLine(',').appendLine() }

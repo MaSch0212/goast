@@ -103,34 +103,36 @@ export class DefaultKotlinSpringControllerGenerator
 
   protected generateApiInterfaceMethodAnnnotations(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
     builder
-      .appendAnnotation('Operation', 'io.swagger.v3.oas.annotations', [
-        ['summary', this.toStringLiteral(ctx, endpoint.summary?.trim())],
-        ['operationId', this.toStringLiteral(ctx, endpoint.name)],
-        ['description', this.toStringLiteral(ctx, endpoint.description?.trim())],
-        [
-          'responses',
-          (builder) =>
-            builder.parenthesize(
-              '[]',
-              (builder) =>
-                builder.forEach(
-                  endpoint.responses,
-                  (builder, response) =>
-                    builder
-                      .append('ApiResponse')
-                      .addImport('ApiResponse', 'io.swagger.v3.oas.annotations.responses')
-                      .parenthesize('()', (builder) =>
-                        builder
-                          .append(`responseCode = ${this.toStringLiteral(ctx, response.statusCode?.toString())}, `)
-                          .append(`description = ${this.toStringLiteral(ctx, response.description?.trim())}`)
-                      ),
-                  { separator: ',\n' }
-                ),
-              { multiline: true }
-            ),
-          endpoint.responses.length > 0,
-        ],
-      ])
+      .if(ctx.config.addSwaggerAnnotations, (builder) =>
+        builder.appendAnnotation('Operation', 'io.swagger.v3.oas.annotations', [
+          ['summary', this.toStringLiteral(ctx, endpoint.summary?.trim())],
+          ['operationId', this.toStringLiteral(ctx, endpoint.name)],
+          ['description', this.toStringLiteral(ctx, endpoint.description?.trim())],
+          [
+            'responses',
+            (builder) =>
+              builder.parenthesize(
+                '[]',
+                (builder) =>
+                  builder.forEach(
+                    endpoint.responses,
+                    (builder, response) =>
+                      builder
+                        .append('ApiResponse')
+                        .addImport('ApiResponse', 'io.swagger.v3.oas.annotations.responses')
+                        .parenthesize('()', (builder) =>
+                          builder
+                            .append(`responseCode = ${this.toStringLiteral(ctx, response.statusCode?.toString())}, `)
+                            .append(`description = ${this.toStringLiteral(ctx, response.description?.trim())}`)
+                        ),
+                    { separator: ',\n' }
+                  ),
+                { multiline: true }
+              ),
+            endpoint.responses.length > 0,
+          ],
+        ])
+      )
       .appendAnnotation('RequestMapping', 'org.springframework.web.bind.annotation', [
         ['method', '[RequestMethod.' + endpoint.method.toUpperCase() + ']'],
         ['value', '[' + this.toStringLiteral(ctx, this.getEndpointPath(ctx, endpoint)) + ']'],
@@ -186,20 +188,22 @@ export class DefaultKotlinSpringControllerGenerator
   ): void {
     const parameterSchemaInfo = this.getSchemaInfo(ctx, parameter.schema);
 
-    if (parameter.schema?.default !== undefined) {
-      builder.addImport('Schema', 'io.swagger.v3.oas.annotations.media');
+    if (ctx.config.addSwaggerAnnotations) {
+      if (parameter.schema?.default !== undefined) {
+        builder.addImport('Schema', 'io.swagger.v3.oas.annotations.media');
+      }
+      builder.appendAnnotation('Parameter', 'io.swagger.v3.oas.annotations', [
+        ['description', this.toStringLiteral(ctx, parameter.description?.trim())],
+        ['required', parameter.required?.toString()],
+        [
+          'schema',
+          `Schema(defaultValue = ${this.toStringLiteral(ctx, String(parameter.schema?.default))})`,
+          parameter.schema?.default !== undefined,
+        ],
+      ]);
     }
-    builder.appendAnnotation('Parameter', 'io.swagger.v3.oas.annotations', [
-      ['description', this.toStringLiteral(ctx, parameter.description?.trim())],
-      ['required', parameter.required?.toString()],
-      [
-        'schema',
-        `Schema(defaultValue = ${this.toStringLiteral(ctx, String(parameter.schema?.default))})`,
-        parameter.schema?.default !== undefined,
-      ],
-    ]);
 
-    if (parameterSchemaInfo.packageName) {
+    if (parameterSchemaInfo.packageName && ctx.config.addJakartaValidationAnnotations) {
       builder.appendAnnotation('Valid', 'jakarta.validation');
     }
 
@@ -274,9 +278,11 @@ export class DefaultKotlinSpringControllerGenerator
 
   protected generateApiControllerAnnotations(ctx: Context, builder: Builder): void {
     builder
-      .appendAnnotation('Generated', 'jakarta.annotation', [
-        ['value', '[' + this.toStringLiteral(ctx, 'com.goast.kotlin.spring-service-generator') + ']'],
-      ])
+      .if(ctx.config.addJakartaValidationAnnotations, (builder) =>
+        builder.appendAnnotation('Generated', 'jakarta.annotation', [
+          ['value', '[' + this.toStringLiteral(ctx, 'com.goast.kotlin.spring-service-generator') + ']'],
+        ])
+      )
       .appendAnnotation('Controller', 'org.springframework.stereotype')
       .appendAnnotation('RequestMapping', 'org.springframework.web.bind.annotation', [
         this.getControllerRequestMapping(ctx),
@@ -346,9 +352,11 @@ export class DefaultKotlinSpringControllerGenerator
   }
 
   protected generateApiDelegateInterfaceAnnotations(ctx: Context, builder: Builder): void {
-    builder.appendAnnotation('Generated', 'jakarta.annotation', [
-      ['value', '[' + this.toStringLiteral(ctx, 'com.goast.kotlin.spring-service-generator') + ']'],
-    ]);
+    if (ctx.config.addJakartaValidationAnnotations) {
+      builder.appendAnnotation('Generated', 'jakarta.annotation', [
+        ['value', '[' + this.toStringLiteral(ctx, 'com.goast.kotlin.spring-service-generator') + ']'],
+      ]);
+    }
   }
 
   protected generateApiDelegateInterfaceSignature(ctx: Context, builder: Builder): void {
