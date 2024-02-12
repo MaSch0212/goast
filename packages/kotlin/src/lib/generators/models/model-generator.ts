@@ -6,6 +6,7 @@ import {
   ApiSchema,
   ApiSchemaProperty,
   ObjectLikeApiSchema,
+  createOverwriteProxy,
   getSchemaReference,
   resolveAnyOfAndAllOf,
   toCasing,
@@ -174,10 +175,31 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     );
   }
 
+  protected generateObjectDataClassProperty(
+    ctx: Context,
+    builder: Builder,
+    schema: ApiSchema<'object'>,
+    inheritedSchemas: ApiSchema[],
+    property: ApiSchemaProperty
+  ): void {
+    builder
+      .ensurePreviousLineEmpty()
+      .append((builder) => this.generateObjectDataClassParameterAnnotations(ctx, builder, schema, property))
+      .appendIf(
+        inheritedSchemas.some((x) => this.hasProperty(ctx, x, property.name)),
+        'override '
+      )
+      .append(`val ${toCasing(property.name, 'camel')}: `)
+      .append((builder) => this.generateTypeUsage(ctx, builder, property.schema))
+      .if(!schema.required.has(property.name), (builder) => builder.appendIf(!property.schema.nullable, '?'))
+      .appendIf(property.schema.default !== undefined || !schema.required.has(property.name), ' = ', (builder) =>
+        this.generateDefaultValue(ctx, builder, property.schema)
+      );
+  }
+
   protected generateObjectDataClass(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
-    const inheritedSchemas = schema.inheritedSchemas
-      .filter((x) => this.shouldGenerateTypeDeclaration(ctx, x) && !x.isNameGenerated)
-      .filter((item, index, self) => self.indexOf(item) === index);
+    const inheritedSchemas = this.getInheritedSchemas(ctx, schema);
+    const { params, properties } = this.classifyClassProperties(ctx, schema);
     builder
       .append((builder) => this.generateDocumentation(ctx, builder, schema))
       .append('data class ')
@@ -187,23 +209,9 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
         '()',
         (builder) =>
           builder.forEach(
-            this.sortProperties(ctx, schema, schema.properties.values()),
+            params,
             (builder, property) =>
-              builder
-                .ensurePreviousLineEmpty()
-                .append((builder) => this.generateObjectDataClassParameterAnnotations(ctx, builder, schema, property))
-                .appendIf(
-                  inheritedSchemas.some((x) => this.hasProperty(ctx, x, property.name)),
-                  'override '
-                )
-                .append(`val ${toCasing(property.name, 'camel')}: `)
-                .append((builder) => this.generateTypeUsage(ctx, builder, property.schema))
-                .if(!schema.required.has(property.name), (builder) => builder.appendIf(!property.schema.nullable, '?'))
-                .appendIf(
-                  property.schema.default !== undefined || !schema.required.has(property.name),
-                  ' = ',
-                  (builder) => this.generateDefaultValue(ctx, builder, property.schema)
-                ),
+              this.generateObjectDataClassProperty(ctx, builder, schema, inheritedSchemas, property),
             { separator: ',\n' }
           ),
         { multiline: true }
@@ -217,41 +225,48 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       )
       .append(' ')
       .parenthesizeIf(
-        schema.additionalProperties !== undefined && schema.additionalProperties !== false,
+        (schema.additionalProperties !== undefined && schema.additionalProperties !== false) || properties.length > 0,
         '{}',
         (builder) =>
-          builder.if(schema.additionalProperties !== undefined && schema.additionalProperties !== false, (builder) =>
-            builder
-              .if(ctx.config.addJacksonAnnotations, (builder) =>
-                builder.appendLine('@JsonIgnore').addImport('JsonIgnore', 'com.fasterxml.jackson.annotation')
-              )
-              .append('val additionalProperties: Mutable')
-              .append((builder) => this.generateMapType(ctx, builder, schema))
-              .appendLine(' = mutableMapOf()')
-              .appendLine()
-              .if(ctx.config.addJacksonAnnotations, (builder) =>
-                builder.appendLine('@JsonAnySetter').addImport('JsonAnySetter', 'com.fasterxml.jackson.annotation')
-              )
-              .append('fun set')
-              .parenthesize('()', (builder) =>
-                builder.append('name: String, value: ').if(
-                  schema.additionalProperties === true,
-                  (builder) => builder.append('Any?'),
-                  (builder) => this.generateTypeUsage(ctx, builder, schema.additionalProperties as ApiSchema)
+          builder
+            .if(schema.additionalProperties !== undefined && schema.additionalProperties !== false, (builder) =>
+              builder
+                .if(ctx.config.addJacksonAnnotations, (builder) =>
+                  builder.appendLine('@JsonIgnore').addImport('JsonIgnore', 'com.fasterxml.jackson.annotation')
                 )
-              )
-              .append(' ')
-              .parenthesize('{}', 'this.additionalProperties[name] = value', { multiline: true })
-              .appendLine()
-              .appendLine()
-              .if(ctx.config.addJacksonAnnotations, (builder) =>
-                builder.appendLine('@JsonAnyGetter').addImport('JsonAnyGetter', 'com.fasterxml.jackson.annotation')
-              )
-              .append('fun getMap(): ')
-              .append((builder) => this.generateMapType(ctx, builder, schema))
-              .append(' ')
-              .parenthesize('{}', 'return this.additionalProperties', { multiline: true })
-          ),
+                .append('val additionalProperties: Mutable')
+                .append((builder) => this.generateMapType(ctx, builder, schema))
+                .appendLine(' = mutableMapOf()')
+                .appendLine()
+                .if(ctx.config.addJacksonAnnotations, (builder) =>
+                  builder.appendLine('@JsonAnySetter').addImport('JsonAnySetter', 'com.fasterxml.jackson.annotation')
+                )
+                .append('fun set')
+                .parenthesize('()', (builder) =>
+                  builder.append('name: String, value: ').if(
+                    schema.additionalProperties === true,
+                    (builder) => builder.append('Any?'),
+                    (builder) => this.generateTypeUsage(ctx, builder, schema.additionalProperties as ApiSchema)
+                  )
+                )
+                .append(' ')
+                .parenthesize('{}', 'this.additionalProperties[name] = value', { multiline: true })
+                .appendLine()
+                .appendLine()
+                .if(ctx.config.addJacksonAnnotations, (builder) =>
+                  builder.appendLine('@JsonAnyGetter').addImport('JsonAnyGetter', 'com.fasterxml.jackson.annotation')
+                )
+                .append('fun getMap(): ')
+                .append((builder) => this.generateMapType(ctx, builder, schema))
+                .append(' ')
+                .parenthesize('{}', 'return this.additionalProperties', { multiline: true })
+            )
+            .forEach(
+              properties,
+              (builder, property) =>
+                this.generateObjectDataClassProperty(ctx, builder, schema, inheritedSchemas, property),
+              { separator: ',\n' }
+            ),
         { multiline: true }
       );
   }
@@ -566,14 +581,48 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     return toCasing(schema.name, 'pascal');
   }
 
+  protected getInheritedSchemas(ctx: KotlinModelGeneratorContext, schema: ApiSchema) {
+    return schema.inheritedSchemas
+      .filter((x) => this.shouldGenerateTypeDeclaration(ctx, x) && !x.isNameGenerated)
+      .filter((item, index, self) => self.indexOf(item) === index);
+  }
+
+  protected classifyClassProperties(
+    ctx: Context,
+    schema: ApiSchema<'object'>
+  ): { params: ApiSchemaProperty[]; properties: ApiSchemaProperty[] } {
+    const inheritedSchemas = this.getInheritedSchemas(ctx, schema);
+    const result: { params: ApiSchemaProperty[]; properties: ApiSchemaProperty[] } = { params: [], properties: [] };
+    for (const property of schema.properties.values()) {
+      const discriminator = inheritedSchemas.find(
+        (x) => x.discriminator?.propertyName === property.name
+      )?.discriminator;
+      if (discriminator) {
+        const value = Object.entries(discriminator.mapping).find(([_, v]) => v.id === schema.id)?.[0];
+        if (value) {
+          const p = createOverwriteProxy(property);
+          const s = createOverwriteProxy(p.schema);
+          p.schema = s;
+          s.default = value;
+          result.properties.push(p);
+          continue;
+        }
+      }
+
+      result.params.push(property);
+    }
+
+    return result;
+  }
+
   protected sortProperties(
     ctx: Context,
     schema: ApiSchema,
     properties: Iterable<ApiSchemaProperty>
   ): ApiSchemaProperty[] {
     return [...properties].sort((a, b) => {
-      const aRequired = schema.required.has(a.name) ? 1 : 0;
-      const bRequired = schema.required.has(b.name) ? 1 : 0;
+      const aRequired = schema.required.has(a.name) || schema.default ? 1 : 0;
+      const bRequired = schema.required.has(b.name) || schema.default ? 1 : 0;
       return bRequired - aRequired;
     });
   }

@@ -22,16 +22,11 @@ export async function main(): Promise<void> {
     .useType(KotlinModelsGenerator, {
       packageName,
       outputDir: mainOutDir,
-      addJacksonAnnotations: false,
-      addJakartaValidationAnnotations: false,
-      addSwaggerAnnotations: false,
     })
     .useType(KotlinSpringControllersGenerator, {
       basePath,
       packageName,
       outputDir: mainOutDir,
-      addJakartaValidationAnnotations: false,
-      addSwaggerAnnotations: false,
     })
     .useType(KotlinOkHttp3ClientsGenerator, {
       basePath,
