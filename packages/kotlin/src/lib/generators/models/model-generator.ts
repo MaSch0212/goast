@@ -598,12 +598,12 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
         (x) => x.discriminator?.propertyName === property.name
       )?.discriminator;
       if (discriminator) {
-        const value = Object.entries(discriminator.mapping).find(([_, v]) => v.id === schema.id)?.[0];
-        if (value) {
+        const schemaMappings = Object.entries(discriminator.mapping).filter(([_, v]) => v.id === schema.id);
+        if (schemaMappings.length === 1) {
           const p = createOverwriteProxy(property);
           const s = createOverwriteProxy(p.schema);
           p.schema = s;
-          s.default = value;
+          s.default = schemaMappings[0][0];
           result.properties.push(p);
           continue;
         }
