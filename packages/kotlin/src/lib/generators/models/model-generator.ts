@@ -199,7 +199,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
 
   protected generateObjectDataClass(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
     const inheritedSchemas = this.getInheritedSchemas(ctx, schema);
-    const { params, properties } = this.classifyClassProperties(ctx, schema);
+    const params = this.getClassProperties(ctx, schema);
     builder
       .append((builder) => this.generateDocumentation(ctx, builder, schema))
       .append(params.length === 0 ? 'class' : 'data class', ' ')
@@ -225,48 +225,41 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       )
       .append(' ')
       .parenthesizeIf(
-        (schema.additionalProperties !== undefined && schema.additionalProperties !== false) || properties.length > 0,
+        schema.additionalProperties !== undefined && schema.additionalProperties !== false,
         '{}',
         (builder) =>
-          builder
-            .if(schema.additionalProperties !== undefined && schema.additionalProperties !== false, (builder) =>
-              builder
-                .if(ctx.config.addJacksonAnnotations, (builder) =>
-                  builder.appendLine('@JsonIgnore').addImport('JsonIgnore', 'com.fasterxml.jackson.annotation')
+          builder.if(schema.additionalProperties !== undefined && schema.additionalProperties !== false, (builder) =>
+            builder
+              .if(ctx.config.addJacksonAnnotations, (builder) =>
+                builder.appendLine('@JsonIgnore').addImport('JsonIgnore', 'com.fasterxml.jackson.annotation')
+              )
+              .append('val additionalProperties: Mutable')
+              .append((builder) => this.generateMapType(ctx, builder, schema))
+              .appendLine(' = mutableMapOf()')
+              .appendLine()
+              .if(ctx.config.addJacksonAnnotations, (builder) =>
+                builder.appendLine('@JsonAnySetter').addImport('JsonAnySetter', 'com.fasterxml.jackson.annotation')
+              )
+              .append('fun set')
+              .parenthesize('()', (builder) =>
+                builder.append('name: String, value: ').if(
+                  schema.additionalProperties === true,
+                  (builder) => builder.append('Any?'),
+                  (builder) => this.generateTypeUsage(ctx, builder, schema.additionalProperties as ApiSchema)
                 )
-                .append('val additionalProperties: Mutable')
-                .append((builder) => this.generateMapType(ctx, builder, schema))
-                .appendLine(' = mutableMapOf()')
-                .appendLine()
-                .if(ctx.config.addJacksonAnnotations, (builder) =>
-                  builder.appendLine('@JsonAnySetter').addImport('JsonAnySetter', 'com.fasterxml.jackson.annotation')
-                )
-                .append('fun set')
-                .parenthesize('()', (builder) =>
-                  builder.append('name: String, value: ').if(
-                    schema.additionalProperties === true,
-                    (builder) => builder.append('Any?'),
-                    (builder) => this.generateTypeUsage(ctx, builder, schema.additionalProperties as ApiSchema)
-                  )
-                )
-                .append(' ')
-                .parenthesize('{}', 'this.additionalProperties[name] = value', { multiline: true })
-                .appendLine()
-                .appendLine()
-                .if(ctx.config.addJacksonAnnotations, (builder) =>
-                  builder.appendLine('@JsonAnyGetter').addImport('JsonAnyGetter', 'com.fasterxml.jackson.annotation')
-                )
-                .append('fun getMap(): ')
-                .append((builder) => this.generateMapType(ctx, builder, schema))
-                .append(' ')
-                .parenthesize('{}', 'return this.additionalProperties', { multiline: true })
-            )
-            .forEach(
-              properties,
-              (builder, property) =>
-                this.generateObjectDataClassProperty(ctx, builder, schema, inheritedSchemas, property),
-              { separator: ',\n' }
-            ),
+              )
+              .append(' ')
+              .parenthesize('{}', 'this.additionalProperties[name] = value', { multiline: true })
+              .appendLine()
+              .appendLine()
+              .if(ctx.config.addJacksonAnnotations, (builder) =>
+                builder.appendLine('@JsonAnyGetter').addImport('JsonAnyGetter', 'com.fasterxml.jackson.annotation')
+              )
+              .append('fun getMap(): ')
+              .append((builder) => this.generateMapType(ctx, builder, schema))
+              .append(' ')
+              .parenthesize('{}', 'return this.additionalProperties', { multiline: true })
+          ),
         { multiline: true }
       );
   }
@@ -593,12 +586,10 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       .filter((item, index, self) => self.indexOf(item) === index);
   }
 
-  protected classifyClassProperties(
-    ctx: Context,
-    schema: ApiSchema<'object'>
-  ): { params: ApiSchemaProperty[]; properties: ApiSchemaProperty[] } {
+  protected getClassProperties(ctx: Context, schema: ApiSchema<'object'>): ApiSchemaProperty[] {
     const inheritedSchemas = this.getInheritedSchemas(ctx, schema);
-    const result: { params: ApiSchemaProperty[]; properties: ApiSchemaProperty[] } = { params: [], properties: [] };
+    const properties: ApiSchemaProperty[] = [];
+    const appendedProperties: ApiSchemaProperty[] = [];
     for (const property of schema.properties.values()) {
       const discriminator = inheritedSchemas.find(
         (x) => x.discriminator?.propertyName === property.name
@@ -610,15 +601,15 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
           const s = createOverwriteProxy(p.schema);
           p.schema = s;
           s.default = schemaMappings[0][0];
-          result.properties.push(p);
+          appendedProperties.push(p);
           continue;
         }
       }
 
-      result.params.push(property);
+      properties.push(property);
     }
 
-    return result;
+    return [...this.sortProperties(ctx, schema, properties), ...appendedProperties];
   }
 
   protected sortProperties(
