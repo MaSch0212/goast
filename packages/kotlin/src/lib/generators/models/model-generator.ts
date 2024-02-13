@@ -169,9 +169,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
         .ensureCurrentLineEmpty()
         .append(`val ${toCasing(property.name, 'camel')}: `)
         .append((builder) => this.generateTypeUsage(ctx, builder, property.schema))
-        .if(!schema.required.has(property.name), (builder) =>
-          builder.appendIf(!property.schema.nullable, '?').append(' = null')
-        )
+        .if(!schema.required.has(property.name), (builder) => builder.appendIf(!property.schema.nullable, '?'))
     );
   }
 
@@ -209,7 +207,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
         '()',
         (builder) =>
           builder.forEach(
-            this.sortProperties(ctx, schema, params),
+            params,
             (builder, property) =>
               this.generateObjectDataClassProperty(ctx, builder, schema, inheritedSchemas, property),
             { separator: ',\n' }
