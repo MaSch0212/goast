@@ -202,10 +202,10 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     const { params, properties } = this.classifyClassProperties(ctx, schema);
     builder
       .append((builder) => this.generateDocumentation(ctx, builder, schema))
-      .append('data class ')
+      .append(params.length === 0 ? 'class' : 'data class ')
       .append(this.getDeclarationTypeName(ctx, schema))
       .parenthesizeIf(
-        schema.properties.size > 0,
+        params.length > 0,
         '()',
         (builder) =>
           builder.forEach(
