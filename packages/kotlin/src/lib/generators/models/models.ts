@@ -5,7 +5,7 @@ import { KotlinGeneratorConfig, defaultKotlinGeneratorConfig } from '../../confi
 
 export type KotlinModelsGeneratorConfig = KotlinGeneratorConfig & {
   packageName: string;
-  packageSuffix: string;
+  packageSuffix: string | ((schema: ApiSchema) => string);
   oneOfBehavior: 'treat-as-any-of' | 'treat-as-all-of';
 
   addJacksonAnnotations: boolean;

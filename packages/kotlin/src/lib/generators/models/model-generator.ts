@@ -53,7 +53,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
 
     if (this.shouldGenerateTypeDeclaration(ctx, ctx.schema)) {
       const typeName = this.getDeclarationTypeName(ctx, ctx.schema);
-      const packageName = ctx.config.packageName + ctx.config.packageSuffix;
+      const packageName = this.getPackageName(ctx, ctx.schema);
       const filePath = `${ctx.config.outputDir}/${packageName.replace(/\./g, '/')}/${typeName}.kt`;
       console.log(`Generating model ${packageName}.${typeName} to ${filePath}...`);
       ensureDirSync(dirname(filePath));
@@ -88,7 +88,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     schema = getSchemaReference(schema, ['description']);
     if (this.shouldGenerateTypeDeclaration(ctx, schema)) {
       const name = this.getDeclarationTypeName(ctx, schema);
-      const packageName = ctx.config.packageName + ctx.config.packageSuffix;
+      const packageName = this.getPackageName(ctx, schema);
       if (packageName) {
         builder.addImport(name, packageName);
       }
@@ -537,6 +537,12 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
         )
         .appendLine(' */');
     }
+  }
+
+  protected getPackageName(ctx: Context, schema: ApiSchema): string {
+    const packageSuffix =
+      typeof ctx.config.packageSuffix === 'string' ? ctx.config.packageSuffix : ctx.config.packageSuffix(schema);
+    return ctx.config.packageName + packageSuffix;
   }
 
   protected shouldGenerateTypeDeclaration(ctx: Context, schema: ApiSchema): boolean {

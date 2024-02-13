@@ -3,7 +3,7 @@ import { dirname } from 'path';
 
 import { ensureDirSync } from 'fs-extra';
 
-import { ApiEndpoint, ApiParameter, ApiSchema, toCasing } from '@goast/core';
+import { ApiEndpoint, ApiParameter, ApiSchema, ApiService, toCasing } from '@goast/core';
 
 import { KotlinOkHttp3ClientGeneratorContext, KotlinOkHttp3ClientGeneratorOutput } from './models';
 import { KotlinImport } from '../../../common-results';
@@ -26,17 +26,18 @@ export class DefaultKotlinOkHttp3Generator
 {
   public generate(ctx: KotlinOkHttp3ClientGeneratorContext): KotlinImport {
     const typeName = this.getApiClientName(ctx);
-    const filePath = this.getFilePath(ctx);
+    const packageName = this.getPackageName(ctx, ctx.service);
+    const filePath = this.getFilePath(ctx, packageName);
     ensureDirSync(dirname(filePath));
 
     console.log(`Generating client for service ${ctx.service.name} to ${filePath}...`);
 
-    const builder = new KotlinFileBuilder(ctx.packageName, ctx.config);
+    const builder = new KotlinFileBuilder(packageName, ctx.config);
     this.generateApiClientFileContent(ctx, builder);
 
     writeFileSync(filePath, builder.toString());
 
-    return { typeName, packageName: ctx.packageName };
+    return { typeName, packageName };
   }
 
   protected generateApiClientFileContent(ctx: Context, builder: Builder): void {
@@ -481,6 +482,12 @@ export class DefaultKotlinOkHttp3Generator
     }
   }
 
+  protected getPackageName(ctx: Context, service: ApiService): string {
+    const packageSuffix =
+      typeof ctx.config.packageSuffix === 'string' ? ctx.config.packageSuffix : ctx.config.packageSuffix(service);
+    return ctx.config.packageName + packageSuffix;
+  }
+
   protected getTypeNameWithNullability(typeName: string, nullable: boolean | undefined): string {
     if (nullable === undefined) return typeName;
     return nullable ? `${typeName}?` : typeName.match(/^(.*?)\??$/)![1];
@@ -568,8 +575,8 @@ export class DefaultKotlinOkHttp3Generator
     return modifyString(endpoint.path, ctx.config.pathModifier, endpoint);
   }
 
-  protected getFilePath(ctx: Context): string {
-    return `${ctx.config.outputDir}/${ctx.packageName.replace(/\./g, '/')}/${this.getApiClientName(ctx)}.kt`;
+  protected getFilePath(ctx: Context, packageName: string): string {
+    return `${ctx.config.outputDir}/${packageName.replace(/\./g, '/')}/${this.getApiClientName(ctx)}.kt`;
   }
 
   protected getApiClientName(ctx: Context): string {

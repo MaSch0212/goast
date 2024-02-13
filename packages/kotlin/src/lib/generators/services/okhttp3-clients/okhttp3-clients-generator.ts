@@ -66,7 +66,6 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
     context.data.services = context.data.services.filter((x) => x.name !== 'exclude-from-generation');
     const providerContext = this.getProviderContext(context, config, defaultKotlinOkHttp3ClientsGeneratorConfig);
     return Object.assign(providerContext, {
-      packageName: this.getPackageName(providerContext.config),
       infrastructurePackageName: this.getInfrastructurePackageName(providerContext.config),
     });
   }
@@ -86,7 +85,8 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
   }
 
   protected getPackageName(config: Config): string {
-    return config.packageName + config.packageSuffix;
+    const packageSuffix = typeof config.packageSuffix === 'string' ? config.packageSuffix : config.packageSuffix();
+    return config.packageName + packageSuffix;
   }
 
   private copyInfrastructureFiles(ctx: Context): void {

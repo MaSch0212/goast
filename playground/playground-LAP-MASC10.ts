@@ -2,7 +2,7 @@ import * as util from 'util';
 import path from 'path';
 import YAML from 'yaml';
 import fs from 'fs-extra';
-import { OpenApiGenerator, OpenApiParser } from '@goast/core';
+import { OpenApiGenerator, OpenApiParser, toCamelCase } from '@goast/core';
 import { KotlinModelsGenerator, KotlinOkHttp3ClientsGenerator, KotlinSpringControllersGenerator } from '@goast/kotlin';
 import {
   TypeScriptAngularServicesGenerator,
@@ -22,6 +22,7 @@ export async function main(): Promise<void> {
     .useType(KotlinModelsGenerator, {
       packageName,
       outputDir: mainOutDir,
+      packageSuffix: (schema) => '.' + toCamelCase(path.basename(schema.$src.file).replace(/\.ya?ml$/, '')) + '.model',
     })
     .useType(KotlinSpringControllersGenerator, {
       basePath,

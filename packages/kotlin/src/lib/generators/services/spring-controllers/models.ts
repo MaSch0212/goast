@@ -11,7 +11,7 @@ import { KotlinModelsGeneratorOutput } from '../../models';
 
 export type KotlinServicesGeneratorConfig = KotlinGeneratorConfig & {
   packageName: string;
-  packageSuffix: string;
+  packageSuffix: string | ((service: ApiService) => string);
 
   basePath?: string | RegExp | ((basePath: string, service: ApiService) => string);
   pathModifier?: RegExp | ((path: string, endpoint: ApiEndpoint) => string);

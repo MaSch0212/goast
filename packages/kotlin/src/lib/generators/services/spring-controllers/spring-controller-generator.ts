@@ -506,7 +506,9 @@ export class DefaultKotlinSpringControllerGenerator
   }
 
   protected getPackageName(ctx: Context): string {
-    return ctx.config.packageName + ctx.config.packageSuffix;
+    const packageSuffix =
+      typeof ctx.config.packageSuffix === 'string' ? ctx.config.packageSuffix : ctx.config.packageSuffix(ctx.service);
+    return ctx.config.packageName + packageSuffix;
   }
 
   protected getApiInterfaceName(ctx: Context): string {

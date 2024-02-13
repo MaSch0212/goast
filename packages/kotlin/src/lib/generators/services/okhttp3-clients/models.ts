@@ -11,7 +11,7 @@ import { KotlinModelsGeneratorOutput } from '../../models';
 
 export type KotlinOkHttp3ClientsGeneratorConfig = KotlinGeneratorConfig & {
   packageName: string;
-  packageSuffix: string;
+  packageSuffix: string | ((service?: ApiService) => string);
   infrastructurePackageName:
     | string
     | { mode: 'append-package-name' | 'append-full-package-name' | 'replace'; value: string };
@@ -45,7 +45,6 @@ export type KotlinOkHttp3ClientsGeneratorContext = OpenApiServicesGenerationProv
   KotlinOkHttp3ClientsGeneratorConfig,
   KotlinOkHttp3ClientGeneratorOutput
 > & {
-  packageName: string;
   infrastructurePackageName: string;
 };
 
