@@ -239,7 +239,7 @@ export class DefaultKotlinSpringControllerGenerator
     builder
       .append(toCasing(parameter.name, 'camel'))
       .append(': ')
-      .append((builder) => this.generateTypeUsage(ctx, builder, parameter.schema))
+      .append((builder) => this.generateTypeUsage(ctx, builder, parameter.schema, parameter.target === 'body'))
       .append(!parameter.required && parameter.schema?.default === undefined && !parameter.schema?.nullable ? '?' : '');
   }
 
@@ -451,7 +451,7 @@ export class DefaultKotlinSpringControllerGenerator
     builder
       .append(toCasing(parameter.name, 'camel'))
       .append(': ')
-      .append((builder) => this.generateTypeUsage(ctx, builder, parameter.schema))
+      .append((builder) => this.generateTypeUsage(ctx, builder, parameter.schema, parameter.target === 'body'))
       .append(!parameter.required && parameter.schema?.default === undefined && !parameter.schema?.nullable ? '?' : '');
   }
 
@@ -466,13 +466,23 @@ export class DefaultKotlinSpringControllerGenerator
     builder
       .append('ResponseEntity')
       .addImport('ResponseEntity', 'org.springframework.http')
-      .parenthesize('<>', (builder) => this.generateTypeUsage(ctx, builder, schema, 'Unit'));
+      .parenthesize('<>', (builder) => this.generateTypeUsage(ctx, builder, schema, true, 'Unit'));
   }
 
-  protected generateTypeUsage(ctx: Context, builder: Builder, schema: ApiSchema | undefined, fallback?: string): void {
+  protected generateTypeUsage(
+    ctx: Context,
+    builder: Builder,
+    schema: ApiSchema | undefined,
+    arrayAsFlux: boolean,
+    fallback?: string
+  ): void {
     if (schema && schema.kind === 'array') {
       const schemaInfo = this.getSchemaInfo(ctx, schema.items);
-      builder.append(`Flux<${schemaInfo.typeName}>`).addImport('Flux', 'reactor.core.publisher');
+      if (arrayAsFlux) {
+        builder.append(`Flux<${schemaInfo.typeName}>`).addImport('Flux', 'reactor.core.publisher');
+      } else {
+        builder.append(`List<${schemaInfo.typeName}>`);
+      }
       builder.imports.addImports([schemaInfo, ...schemaInfo.additionalImports]);
     } else if (schema || !fallback) {
       const schemaInfo = this.getSchemaInfo(ctx, schema);
