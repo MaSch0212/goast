@@ -1,6 +1,6 @@
 import { ensureDirSync, writeFileSync } from 'fs-extra';
 
-import { ApiEndpoint, ApiParameter, ApiSchema, toCasing } from '@goast/core';
+import { ApiEndpoint, ApiParameter, ApiSchema, notNullish, toCasing } from '@goast/core';
 
 import { KotlinServiceGeneratorContext, KotlinServiceGeneratorOutput } from './models';
 import { KotlinImport } from '../../../common-results';
@@ -165,7 +165,7 @@ export class DefaultKotlinSpringControllerGenerator
   }
 
   protected generateApiInterfaceMethodReturnType(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
-    this.generateResponseEntityType(ctx, builder, endpoint.responses[0]?.contentOptions[0]?.schema);
+    this.generateResponseEntityType(ctx, builder, endpoint);
   }
 
   protected generateApiInterfaceMethodParameter(
@@ -414,7 +414,7 @@ export class DefaultKotlinSpringControllerGenerator
   }
 
   protected generateApiDelegateInterfaceMethodReturnType(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
-    this.generateResponseEntityType(ctx, builder, endpoint.responses[0]?.contentOptions[0]?.schema);
+    this.generateResponseEntityType(ctx, builder, endpoint);
   }
 
   protected generateApiDelegateInterfaceMethodParameter(
@@ -462,11 +462,30 @@ export class DefaultKotlinSpringControllerGenerator
       .addImport('HttpStatus', 'org.springframework.http');
   }
 
-  protected generateResponseEntityType(ctx: Context, builder: Builder, schema: ApiSchema | undefined): void {
+  protected generateResponseEntityType(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
     builder
       .append('ResponseEntity')
       .addImport('ResponseEntity', 'org.springframework.http')
-      .parenthesize('<>', (builder) => this.generateTypeUsage(ctx, builder, schema, true, 'Unit'));
+      .parenthesize('<>', (builder) => {
+        const responseSchemas = endpoint.responses
+          .flatMap((x) => x.contentOptions.flatMap((x) => x.schema))
+          .filter(notNullish)
+          .filter(
+            (x, i, a) =>
+              a.findIndex((y) => {
+                const xInfo = this.getSchemaInfo(ctx, x);
+                const yInfo = this.getSchemaInfo(ctx, y);
+                return xInfo.typeName === yInfo.typeName && xInfo.packageName === yInfo.packageName;
+              }) === i
+          );
+        if (responseSchemas.length === 1) {
+          this.generateTypeUsage(ctx, builder, responseSchemas[0], true, 'Unit');
+        } else if (responseSchemas.length === 0) {
+          builder.append('Unit');
+        } else {
+          builder.append('Any?');
+        }
+      });
   }
 
   protected generateTypeUsage(
