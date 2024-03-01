@@ -259,13 +259,25 @@ export const defaultStringBuilderOptions: StringBuilderOptions = {
   newLine: EOL,
 };
 
-export type BuilderFn<TBuilder extends StringBuilder> = (builder: TBuilder) => void;
-export type TextOrBuilderFn<TBuilder extends StringBuilder> = string | BuilderFn<TBuilder>;
+export type BuilderFn<TBuilder> = (builder: TBuilder) => void;
+
+/** @deprecated Use AppendValue<TBuilder> instead */
+export type TextOrBuilderFn<TBuilder> = string | BuilderFn<TBuilder>;
+
+export type AppendValue<TBuilder, TAdditionalAppends = never> =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | BuilderFn<TBuilder>
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  | Exclude<TAdditionalAppends, Function>;
 
 /**
  * Represents a mutable string of characters.
  */
-export class StringBuilder {
+export class StringBuilder<TAdditionalAppends = never> {
   private readonly _options: StringBuilderOptions;
   private _str: string = '';
 
@@ -305,19 +317,25 @@ export class StringBuilder {
     return builder.toString();
   }
 
+  protected appendSingle(value: AppendValue<this, TAdditionalAppends>) {
+    if (isNullish(value)) return;
+    if (typeof value === 'string') {
+      this._str += value;
+    } else if (typeof value === 'number' || typeof value === 'boolean') {
+      this._str += value.toString();
+    } else if (typeof value === 'function') {
+      (value as BuilderFn<this>)(this);
+    }
+  }
+
   /**
    * Appends one or more strings to the end of the current StringBuilder.
    * @param value The string(s) to append.
    * @returns The current StringBuilder.
    */
-  public append(...value: Nullable<TextOrBuilderFn<this>>[]): this {
+  public append(...value: AppendValue<this, TAdditionalAppends>[]): this {
     for (const part of value) {
-      if (!part) continue;
-      if (typeof part === 'string') {
-        this._str += part;
-      } else {
-        part(this);
-      }
+      this.appendSingle(part);
     }
     return this;
   }
@@ -327,7 +345,7 @@ export class StringBuilder {
    * @param value
    * @returns
    */
-  public appendLine(...value: Nullable<TextOrBuilderFn<this>>[]): this {
+  public appendLine(...value: Nullable<AppendValue<this, TAdditionalAppends>>[]): this {
     return this.append(...value, this._options.newLine);
   }
 
@@ -336,15 +354,17 @@ export class StringBuilder {
    * @param value The string(s) to prepend.
    * @returns The current StringBuilder.
    */
-  public prepend(...value: Nullable<TextOrBuilderFn<StringBuilder>>[]): this {
+  public prepend(...value: AppendValue<StringBuilder>[]): this {
     for (const part of value.reverse()) {
       if (isNullish(part)) continue;
       if (typeof part === 'function') {
         const builder = new StringBuilder(this.options);
         part(builder);
         this._str = builder.toString() + this._str;
-      } else if (part.length > 0) {
+      } else if (typeof part === 'string') {
         this._str = part + this._str;
+      } else {
+        this._str = part.toString() + this._str;
       }
     }
     return this;
@@ -355,7 +375,7 @@ export class StringBuilder {
    * @param value The string(s) to prepend.
    * @returns The current StringBuilder.
    */
-  public prependLine(...value: Nullable<TextOrBuilderFn<StringBuilder>>[]): this {
+  public prependLine(...value: AppendValue<StringBuilder>[]): this {
     return this.prepend(...value, this._options.newLine);
   }
 

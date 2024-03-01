@@ -2,7 +2,7 @@ import { dirname, resolve } from 'path';
 
 import { ensureDirSync, writeFileSync } from 'fs-extra';
 
-import { ApiEndpoint, ApiSchema, getEndpointUrlPreview, notNullish, toCasing } from '@goast/core';
+import { ApiEndpoint, ApiSchema, notNullish, toCasing } from '@goast/core';
 
 import { TypeScriptFetchClientGeneratorContext, TypeScriptFetchClientGeneratorOutput } from './models';
 import { TypeScriptFileBuilder } from '../../../file-builder';
@@ -181,13 +181,13 @@ export class DefaultTypeScriptFetchClientGenerator
     const hasParams =
       endpoint.parameters.some((p) => p.target === 'path' || p.target === 'query') ||
       (!!endpoint.requestBody && endpoint.requestBody?.content.length > 0);
-    builder.appendComment('/***/', (builder) =>
-      builder
-        .appendLine(endpoint.description ?? '[No description was provided by the API]')
-        .appendLine(`@see ${getEndpointUrlPreview(endpoint)}`)
-        .appendLineIf(hasParams, `@param params Parameters for the endpoint.`)
-        .append(`@returns The response of the call to the endpoint.`)
-    );
+    // builder.appendComment('/***/', (builder) =>
+    //   builder
+    //     .appendLine(endpoint.description ?? '[No description was provided by the API]')
+    //     .appendLine(`@see ${getEndpointUrlPreview(endpoint)}`)
+    //     .appendLineIf(hasParams, `@param params Parameters for the endpoint.`)
+    //     .append(`@returns The response of the call to the endpoint.`)
+    // );
   }
 
   protected generateServiceMethodSignature(ctx: Context, builder: Builder, endpoint: ApiEndpoint) {

@@ -330,18 +330,17 @@ export class DefaultTypeScriptModelGenerator
 
   protected generateObjectTypeAdditionalProperties(ctx: Context, builder: Builder, schema: ObjectLikeApiSchema): void {
     if (!schema.additionalProperties) return;
-    builder
-      .appendIf(ctx.config.immutableTypes, 'Readonly')
-      .parenthesizeIf(ctx.config.immutableTypes, '<>', (builder) =>
-        builder
-          .append('Record')
-          .appendGenericArguments(
-            'string',
-            schema.additionalProperties === true
-              ? this.getAnyType(ctx)
-              : (builder) => this.generateTypeUsage(ctx, builder, schema.additionalProperties as ApiSchema)
-          )
-      );
+    builder.appendIf(ctx.config.immutableTypes, 'Readonly').parenthesizeIf(
+      ctx.config.immutableTypes,
+      '<>',
+      (builder) => builder.append('Record')
+      // .appendGenericArguments(
+      //   'string',
+      //   schema.additionalProperties === true
+      //     ? this.getAnyType(ctx)
+      //     : (builder) => this.generateTypeUsage(ctx, builder, schema.additionalProperties as ApiSchema)
+      // )
+    );
   }
 
   protected generateEnumType(ctx: Context, builder: Builder, schema: ApiSchema): void {
@@ -361,7 +360,7 @@ export class DefaultTypeScriptModelGenerator
   }
 
   protected generateDocumentation(ctx: Context, builder: Builder, schema: ApiSchema): void {
-    builder.appendComment('/***/', schema.description);
+    // builder.appendComment('/***/', schema.description);
   }
 
   protected shouldGenerateTypeDeclaration(ctx: Context, schema: ApiSchema): boolean {

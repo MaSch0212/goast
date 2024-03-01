@@ -19,3 +19,16 @@ export type EmptyConstructor<T> = Constructor<T, []>;
 export type FunctionNames<T> = {
   [K in keyof T]: T[K] extends (...args: any[]) => any ? K : never;
 }[keyof T];
+
+export type Prettify<T> = {
+  [K in keyof T]: T[K];
+} & {};
+
+export type ValueOf<T> = T[keyof T];
+
+export type NonEmptyArray<T> = [T, ...T[]];
+
+type MustInclude<T, U extends T[]> = [T] extends [ValueOf<U>] ? U : never;
+export function stringUnionToArray<T>() {
+  return <U extends NonEmptyArray<T>>(...elements: MustInclude<T, U>) => elements;
+}

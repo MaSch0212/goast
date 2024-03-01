@@ -1,7 +1,8 @@
 import { EOL } from 'os';
 
+import { isNullish } from './common.utils';
 import { Condition, evalCondition } from './condition';
-import { BuilderFn, StringBuilder, StringBuilderOptions, TextOrBuilderFn } from './string.utils';
+import { AppendValue, BuilderFn, StringBuilder, StringBuilderOptions } from './string.utils';
 import { Nullable } from './type.utils';
 
 export type IndentOptions = { readonly type: 'tabs' } | { readonly type: 'spaces'; readonly count: number };
@@ -23,14 +24,14 @@ export type Paratheses =
   | Omit<string, KnownParatheses>
   | [open: Nullable<string>, close: Nullable<string>];
 
-export type SeparatorBuidlerFn<TBuilder extends SourceBuilder, TItem> = (
+export type SeparatorBuidlerFn<TBuilder, TItem> = (
   builder: TBuilder,
   previousItem: TItem,
   nextItem: TItem,
   previousItemIndex: number,
   nextItemIndex: number
 ) => void;
-export type Separator<TBuilder extends SourceBuilder, TItem> = string | SeparatorBuidlerFn<TBuilder, TItem>;
+export type Separator<TBuilder, TItem> = string | SeparatorBuidlerFn<TBuilder, TItem>;
 
 /**
  * Options for the `parenthesize` methods of the `SourceBuilder`.
@@ -53,7 +54,7 @@ export type ParenthesizeOptions = {
  * @see SourceBuilder.forEach
  * @see SourceBuilder.forEachIf
  */
-export type ForEachOptions<TBuilder extends SourceBuilder, TItem> = {
+export type ForEachOptions<TBuilder, TItem> = {
   /**
    * The condition to check before adding content for each item. Defaults to `true`.
    */
@@ -64,10 +65,15 @@ export type ForEachOptions<TBuilder extends SourceBuilder, TItem> = {
   readonly separator?: Separator<TBuilder, TItem>;
 };
 
+type SwitchCase<TValue, TBuilder> = {
+  case: TValue;
+  build: BuilderFn<TBuilder>;
+};
+
 /**
  * Represents an in-memory source file.
  */
-export class SourceBuilder extends StringBuilder {
+export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAdditionalAppends> {
   private readonly __options: SourceBuilderOptions;
   private readonly _emptyLineCharRegex: RegExp;
   private readonly _indentString: string;
@@ -124,63 +130,61 @@ export class SourceBuilder extends StringBuilder {
     return builder.toString();
   }
 
-  /**
-   * Appends one or more strings to the end of the current SourceBuilder.
-   * @param value The string(s) to append.
-   * @returns The current SourceBuilder.
-   */
-  public override append(...value: Nullable<TextOrBuilderFn<this>>[]): this {
-    for (const str of value) {
-      if (!str) continue;
-      if (typeof str === 'function') {
-        str(this);
-        continue;
-      }
-
-      let lineStartIndex = 0;
-      for (let i = 0; i < str.length; i++) {
-        if (str[i] === '\r') continue;
-
-        if (str[i] === '\n') {
-          let lineLength = i - lineStartIndex;
-          for (let j = i; j > 0 && str[j - 1] === '\r'; j--) {
-            lineLength--;
-          }
-
-          if (lineLength > 0) {
-            if (!this._isLineIndented) {
-              this.appendIndent();
-            }
-            super.append(str.substring(lineStartIndex, i).replace(/\r/g, ''));
-          }
-
-          this._isLastLineEmpty = this._isCurrentLineEmpty;
-          super.append(this.__options.newLine);
-          if (this._linePrefix) {
-            this.appendIndent();
-            this._isLineIndented = true;
-            this._isCurrentLineEmpty = false;
-          } else {
-            this._isLineIndented = false;
-            this._isCurrentLineEmpty = true;
-          }
-
-          lineStartIndex = i + 1;
-        }
-
-        if (!this._emptyLineCharRegex.test(str[i])) {
-          this._isCurrentLineEmpty = false;
-        }
-      }
-
-      if (!this._isLineIndented && (lineStartIndex < str.length || this._linePrefix)) {
-        this.appendIndent();
-        this._isLineIndented = true;
-      }
-
-      super.append(str.substring(lineStartIndex).replace(/\r/g, ''));
+  protected override appendSingle(value: AppendValue<this, TAdditionalAppends>) {
+    if (isNullish(value)) return;
+    if (typeof value === 'function') {
+      (value as BuilderFn<this>)(this);
+      return;
     }
-    return this;
+    if (typeof value === 'number' || typeof value === 'boolean') {
+      value = value.toString();
+    }
+    if (typeof value !== 'string') {
+      return;
+    }
+
+    let lineStartIndex = 0;
+    for (let i = 0; i < value.length; i++) {
+      if (value[i] === '\r') continue;
+
+      if (value[i] === '\n') {
+        let lineLength = i - lineStartIndex;
+        for (let j = i; j > 0 && value[j - 1] === '\r'; j--) {
+          lineLength--;
+        }
+
+        if (lineLength > 0) {
+          if (!this._isLineIndented) {
+            this.appendIndent();
+          }
+          super.appendSingle(value.substring(lineStartIndex, i).replace(/\r/g, ''));
+        }
+
+        this._isLastLineEmpty = this._isCurrentLineEmpty;
+        super.appendSingle(this.__options.newLine);
+        if (this._linePrefix) {
+          this.appendIndent();
+          this._isLineIndented = true;
+          this._isCurrentLineEmpty = false;
+        } else {
+          this._isLineIndented = false;
+          this._isCurrentLineEmpty = true;
+        }
+
+        lineStartIndex = i + 1;
+      }
+
+      if (!this._emptyLineCharRegex.test(value[i])) {
+        this._isCurrentLineEmpty = false;
+      }
+    }
+
+    if (!this._isLineIndented && (lineStartIndex < value.length || this._linePrefix)) {
+      this.appendIndent();
+      this._isLineIndented = true;
+    }
+
+    super.appendSingle(value.substring(lineStartIndex).replace(/\r/g, ''));
   }
 
   /**
@@ -189,7 +193,7 @@ export class SourceBuilder extends StringBuilder {
    * @param value The string(s) to append.
    * @returns The current SourceBuilder.
    */
-  public appendIf(condition: Condition, ...value: Nullable<TextOrBuilderFn<this>>[]): this {
+  public appendIf(condition: Condition, ...value: AppendValue<this, TAdditionalAppends>[]): this {
     return this.if(condition, (builder) => builder.append(...value));
   }
 
@@ -198,7 +202,7 @@ export class SourceBuilder extends StringBuilder {
    * @param value The string(s) to append.
    * @returns The current SourceBuilder.
    */
-  public override appendLine(...value: Nullable<TextOrBuilderFn<this>>[]): this {
+  public override appendLine(...value: AppendValue<this, TAdditionalAppends>[]): this {
     return this.append(...value, '\n');
   }
 
@@ -208,7 +212,7 @@ export class SourceBuilder extends StringBuilder {
    * @param value The string(s) to append.
    * @returns The current SourceBuilder.
    */
-  public appendLineIf(condition: Condition, ...value: Nullable<TextOrBuilderFn<this>>[]): this {
+  public appendLineIf(condition: Condition, ...value: AppendValue<this, TAdditionalAppends>[]): this {
     return this.if(condition, (builder) => builder.appendLine(...value));
   }
 
@@ -218,7 +222,7 @@ export class SourceBuilder extends StringBuilder {
    * @param {...(string|null|undefined)} value - The values to append.
    * @returns {SourceBuilder} This source builder instance.
    */
-  public appendWithLinePrefix(prefix: string, ...value: Nullable<TextOrBuilderFn<this>>[]): this {
+  public appendWithLinePrefix(prefix: string, ...value: AppendValue<this, TAdditionalAppends>[]): this {
     const previousLinePrefix = this._linePrefix;
     this._linePrefix += prefix;
     try {
@@ -236,7 +240,7 @@ export class SourceBuilder extends StringBuilder {
    * @param {...(string|null|undefined)} value - The values to append.
    * @returns {SourceBuilder} This source builder instance.
    */
-  public appendLineWithLinePrefix(prefix: string, ...value: Nullable<TextOrBuilderFn<this>>[]): this {
+  public appendLineWithLinePrefix(prefix: string, ...value: AppendValue<this, TAdditionalAppends>[]): this {
     return this.appendWithLinePrefix(prefix, ...value, '\n');
   }
 
@@ -246,7 +250,7 @@ export class SourceBuilder extends StringBuilder {
    * @param value The string(s) to prepend.
    * @returns The current SourceBuilder.
    */
-  public prependIf(condition: Condition, ...value: Nullable<TextOrBuilderFn<StringBuilder>>[]): this {
+  public prependIf(condition: Condition, ...value: AppendValue<StringBuilder>[]): this {
     return this.if(condition, (builder) => builder.prepend(...value));
   }
 
@@ -256,7 +260,7 @@ export class SourceBuilder extends StringBuilder {
    * @param value The string(s) to prepend.
    * @returns The current SourceBuilder.
    */
-  public prependLineIf(condition: Condition, ...value: Nullable<TextOrBuilderFn<StringBuilder>>[]): this {
+  public prependLineIf(condition: Condition, ...value: AppendValue<StringBuilder>[]): this {
     return this.if(condition, (builder) => builder.prependLine(...value));
   }
 
@@ -304,13 +308,48 @@ export class SourceBuilder extends StringBuilder {
     return this;
   }
 
+  public switch<T extends string | number>(
+    value: T,
+    cases: Record<T, BuilderFn<this>>,
+    defaultBuilderFn?: BuilderFn<this>
+  ): this;
+  public switch<T>(
+    value: T,
+    cases: SwitchCase<T, this>[],
+    defaultBuilderFn?: BuilderFn<this>,
+    equals?: (a: T, b: T) => boolean
+  ): this;
+  public switch<T>(
+    value: T,
+    cases: Record<string | number, BuilderFn<this>> | SwitchCase<T, this>[],
+    defaultBuilderFn?: BuilderFn<this>,
+    equals?: (a: T, b: T) => boolean
+  ): this {
+    if ((typeof value === 'string' || typeof value === 'number') && !Array.isArray(cases)) {
+      const builderFn = cases[value] ?? defaultBuilderFn;
+      if (builderFn) {
+        builderFn(this);
+      }
+    } else if (Array.isArray(cases)) {
+      for (const c of cases) {
+        if (equals ? equals(value, c.case) : value === c.case) {
+          c.build(this);
+          return this;
+        }
+      }
+      defaultBuilderFn?.(this);
+    }
+
+    return this;
+  }
+
   /**
    * Adds one indentation level. If the current line already contains characters, only subsequent lines are affected.
    * @param builderFn The function to add indented content or the content itself.
    * @param condition The condition to check before adding indentation.
    * @returns A reference to this instance.
    */
-  public indent(value: Nullable<TextOrBuilderFn<this>>): this {
+  public indent(value: AppendValue<this, TAdditionalAppends>): this {
     this.currentIndentLevel++;
     try {
       this.append(value);
@@ -327,7 +366,7 @@ export class SourceBuilder extends StringBuilder {
    * @param condition The condition to check before adding indentation.
    * @returns A reference to this instance.
    */
-  public indentIf(condition: Condition, value: Nullable<TextOrBuilderFn<this>>): this {
+  public indentIf(condition: Condition, value: AppendValue<this, TAdditionalAppends>): this {
     return this.if(
       condition,
       (builder) => builder.indent(value),
@@ -344,7 +383,7 @@ export class SourceBuilder extends StringBuilder {
    */
   public parenthesize(
     brackets: Paratheses,
-    value: Nullable<TextOrBuilderFn<this>>,
+    value: AppendValue<this, TAdditionalAppends>,
     options?: ParenthesizeOptions
   ): this {
     return this.if(
@@ -368,7 +407,7 @@ export class SourceBuilder extends StringBuilder {
   public parenthesizeIf(
     condition: Condition,
     brackets: Paratheses,
-    value: TextOrBuilderFn<this>,
+    value: AppendValue<this, TAdditionalAppends>,
     options?: ParenthesizeOptions
   ): this {
     return this.if(
@@ -424,22 +463,22 @@ export class SourceBuilder extends StringBuilder {
     return this.if(condition, (b) => b.forEach(items, builderFn, options));
   }
 
-  public appendSeparated(items: Iterable<Nullable<TextOrBuilderFn<this>>>, separator: string): this {
+  public appendSeparated(items: Iterable<AppendValue<this, TAdditionalAppends>>, separator: string): this {
     return this.forEach(items, (builder, item) => builder.append(item), { separator });
   }
 
   public appendSeparatedIf(
     condition: Condition,
-    items: Iterable<Nullable<TextOrBuilderFn<this>>>,
+    items: Iterable<AppendValue<this, TAdditionalAppends>>,
     separator: string
   ): this {
     return this.forEachIf(condition, items, (builder, item) => builder.append(item), { separator });
   }
 
   private appendIndent(): void {
-    super.append(this._indentString.repeat(this.currentIndentLevel));
+    super.appendSingle(this._indentString.repeat(this.currentIndentLevel));
     if (this._linePrefix) {
-      super.append(this._linePrefix);
+      super.appendSingle(this._linePrefix);
     }
   }
 }
