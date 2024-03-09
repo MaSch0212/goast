@@ -15,11 +15,17 @@ import {
   writeKtReference,
   writeKtString,
 } from './nodes';
+import { KtClassParameter, ktClassParameterNodeKind, writeKtClassParameter } from './nodes/class-parameter';
+import { KtDocTag, ktDocTagNodeKind, writeKtDocTag } from './nodes/doc-tag';
+import { KtParameter, ktParameterNodeKind, writeKtParameter } from './nodes/parameter';
 import { KotlinFileBuilder } from '../file-builder';
 
 export type KtWritableNode<TBuilder extends SourceBuilder = KtDefaultBuilder> =
   | KtAnnotation<TBuilder>
+  | KtClassParameter<TBuilder>
+  | KtDocTag<TBuilder>
   | KtGenericParameter<TBuilder>
+  | KtParameter<TBuilder>
   | KtReference<TBuilder>
   | KtString<TBuilder>;
 
@@ -31,8 +37,14 @@ export function writeKt<TBuilder extends SourceBuilder = KtDefaultBuilder>(
     switch (value.kind) {
       case ktAnnotationNodeKind:
         return writeKtAnnotation(builder, value);
+      case ktClassParameterNodeKind:
+        return writeKtClassParameter(builder, value);
+      case ktDocTagNodeKind:
+        return writeKtDocTag(builder, value);
       case ktGenericParameterNodeKind:
         return writeKtGenericParameter(builder, value);
+      case ktParameterNodeKind:
+        return writeKtParameter(builder, value);
       case ktReferenceNodeKind:
         if (!(builder instanceof KotlinFileBuilder)) {
           throw new Error('Reference node can be used only in Kotlin file');

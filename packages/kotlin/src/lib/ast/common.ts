@@ -11,6 +11,7 @@ export type KtNode<TKind extends string, TBuilder extends SourceBuilder = KtDefa
   TBuilder
 >;
 
+export type KtAccessibility = 'public' | 'protected' | 'internal' | 'private' | null;
 export function ktNode<TKind extends string, TBuilder extends SourceBuilder = KtDefaultBuilder>(
   kind: TKind,
   options?: AstNodeOptions<KtNode<TKind, TBuilder>>
