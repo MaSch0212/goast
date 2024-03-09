@@ -2,7 +2,7 @@ import { EOL } from 'os';
 
 import { isNullish } from './common.utils';
 import { Condition, evalCondition } from './condition';
-import { AppendValue, BuilderFn, StringBuilder, StringBuilderOptions } from './string.utils';
+import { AppendParam, AppendValue, StringBuilder, StringBuilderOptions } from './string-builder';
 import { Nullable } from './type.utils';
 
 export type IndentOptions = { readonly type: 'tabs' } | { readonly type: 'spaces'; readonly count: number };
@@ -65,9 +65,9 @@ export type ForEachOptions<TBuilder, TItem> = {
   readonly separator?: Separator<TBuilder, TItem>;
 };
 
-type SwitchCase<TValue, TBuilder> = {
+type SwitchCase<TValue, TBuilder extends StringBuilder> = {
   case: TValue;
-  build: BuilderFn<TBuilder>;
+  value: AppendValue<TBuilder>;
 };
 
 /**
@@ -124,20 +124,33 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
    * @param options The options to use for the `SourceBuilder` instance.
    * @returns The string built by the `SourceBuilder` instance.
    */
-  public static override build(buildAction: BuilderFn<SourceBuilder>, options?: Partial<SourceBuilderOptions>): string {
+  public static override build(
+    buildAction: AppendParam<SourceBuilder, never>,
+    options?: Partial<SourceBuilderOptions>
+  ): string {
     const builder = new SourceBuilder(options);
-    buildAction(builder);
+    builder.append(buildAction);
     return builder.toString();
   }
 
-  protected override appendSingle(value: AppendValue<this, TAdditionalAppends>) {
+  protected override appendSingle(value: AppendParam<this, TAdditionalAppends>) {
     if (isNullish(value)) return;
+    if (Array.isArray(value)) {
+      for (const part of value) {
+        this.appendSingle(part);
+      }
+      return;
+    }
     if (typeof value === 'function') {
-      (value as BuilderFn<this>)(this);
+      (value as (builder: this) => void)(this);
       return;
     }
     if (typeof value === 'number' || typeof value === 'boolean') {
       value = value.toString();
+    }
+    if (typeof value === 'object' && value !== null && '__type' in value && value.__type === 'append-value-group') {
+      this.forEach(value.values, (builder, part) => builder.append(part), { separator: value.separator });
+      return;
     }
     if (typeof value !== 'string') {
       return;
@@ -193,7 +206,7 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
    * @param value The string(s) to append.
    * @returns The current SourceBuilder.
    */
-  public appendIf(condition: Condition, ...value: AppendValue<this, TAdditionalAppends>[]): this {
+  public appendIf(condition: Condition, ...value: AppendParam<this, TAdditionalAppends>[]): this {
     return this.if(condition, (builder) => builder.append(...value));
   }
 
@@ -202,7 +215,7 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
    * @param value The string(s) to append.
    * @returns The current SourceBuilder.
    */
-  public override appendLine(...value: AppendValue<this, TAdditionalAppends>[]): this {
+  public override appendLine(...value: AppendParam<this, TAdditionalAppends>[]): this {
     return this.append(...value, '\n');
   }
 
@@ -212,7 +225,7 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
    * @param value The string(s) to append.
    * @returns The current SourceBuilder.
    */
-  public appendLineIf(condition: Condition, ...value: AppendValue<this, TAdditionalAppends>[]): this {
+  public appendLineIf(condition: Condition, ...value: AppendParam<this, TAdditionalAppends>[]): this {
     return this.if(condition, (builder) => builder.appendLine(...value));
   }
 
@@ -222,7 +235,7 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
    * @param {...(string|null|undefined)} value - The values to append.
    * @returns {SourceBuilder} This source builder instance.
    */
-  public appendWithLinePrefix(prefix: string, ...value: AppendValue<this, TAdditionalAppends>[]): this {
+  public appendWithLinePrefix(prefix: string, ...value: AppendParam<this, TAdditionalAppends>[]): this {
     const previousLinePrefix = this._linePrefix;
     this._linePrefix += prefix;
     try {
@@ -240,8 +253,8 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
    * @param {...(string|null|undefined)} value - The values to append.
    * @returns {SourceBuilder} This source builder instance.
    */
-  public appendLineWithLinePrefix(prefix: string, ...value: AppendValue<this, TAdditionalAppends>[]): this {
-    return this.appendWithLinePrefix(prefix, ...value, '\n');
+  public appendLineWithLinePrefix(prefix: string, ...value: AppendParam<this, TAdditionalAppends>[]): this {
+    return this.appendWithLinePrefix(prefix, ...value).appendLine();
   }
 
   /**
@@ -250,7 +263,7 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
    * @param value The string(s) to prepend.
    * @returns The current SourceBuilder.
    */
-  public prependIf(condition: Condition, ...value: AppendValue<StringBuilder>[]): this {
+  public prependIf(condition: Condition, ...value: AppendParam<StringBuilder, never>[]): this {
     return this.if(condition, (builder) => builder.prepend(...value));
   }
 
@@ -260,7 +273,7 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
    * @param value The string(s) to prepend.
    * @returns The current SourceBuilder.
    */
-  public prependLineIf(condition: Condition, ...value: AppendValue<StringBuilder>[]): this {
+  public prependLineIf(condition: Condition, ...value: AppendParam<StringBuilder, never>[]): this {
     return this.if(condition, (builder) => builder.prependLine(...value));
   }
 
@@ -298,46 +311,40 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
    * @param elseBuilderFn The function to add content if the condition is false.
    * @returns A reference to this instance.
    */
-  public if(condition: Condition, builderFn: BuilderFn<this>, elseBuilderFn?: BuilderFn<this>): this {
-    if (evalCondition(condition)) {
-      builderFn(this);
-    } else {
-      elseBuilderFn?.(this);
-    }
-
-    return this;
+  public if(
+    condition: Condition,
+    builderFn: AppendParam<this, TAdditionalAppends>,
+    elseBuilderFn?: AppendParam<this, TAdditionalAppends>
+  ): this {
+    return evalCondition(condition) ? this.append(builderFn) : this.append(elseBuilderFn);
   }
 
   public switch<T extends string | number>(
     value: T,
-    cases: Record<T, BuilderFn<this>>,
-    defaultBuilderFn?: BuilderFn<this>
+    cases: Record<T, AppendParam<this, TAdditionalAppends>>,
+    defaultBuilderFn?: AppendParam<this, TAdditionalAppends>
   ): this;
   public switch<T>(
     value: T,
     cases: SwitchCase<T, this>[],
-    defaultBuilderFn?: BuilderFn<this>,
+    defaultBuilderFn?: AppendParam<this, TAdditionalAppends>,
     equals?: (a: T, b: T) => boolean
   ): this;
   public switch<T>(
     value: T,
-    cases: Record<string | number, BuilderFn<this>> | SwitchCase<T, this>[],
-    defaultBuilderFn?: BuilderFn<this>,
+    cases: Record<string | number, AppendParam<this, TAdditionalAppends>> | SwitchCase<T, this>[],
+    defaultBuilderFn?: AppendParam<this, TAdditionalAppends>,
     equals?: (a: T, b: T) => boolean
   ): this {
     if ((typeof value === 'string' || typeof value === 'number') && !Array.isArray(cases)) {
-      const builderFn = cases[value] ?? defaultBuilderFn;
-      if (builderFn) {
-        builderFn(this);
-      }
+      return this.append(cases[value] ?? defaultBuilderFn);
     } else if (Array.isArray(cases)) {
       for (const c of cases) {
         if (equals ? equals(value, c.case) : value === c.case) {
-          c.build(this);
-          return this;
+          return this.append(c.value);
         }
       }
-      defaultBuilderFn?.(this);
+      return this.append(defaultBuilderFn);
     }
 
     return this;
@@ -349,7 +356,7 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
    * @param condition The condition to check before adding indentation.
    * @returns A reference to this instance.
    */
-  public indent(value: AppendValue<this, TAdditionalAppends>): this {
+  public indent(value: AppendParam<this, TAdditionalAppends>): this {
     this.currentIndentLevel++;
     try {
       this.append(value);
@@ -366,7 +373,7 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
    * @param condition The condition to check before adding indentation.
    * @returns A reference to this instance.
    */
-  public indentIf(condition: Condition, value: AppendValue<this, TAdditionalAppends>): this {
+  public indentIf(condition: Condition, value: AppendParam<this, TAdditionalAppends>): this {
     return this.if(
       condition,
       (builder) => builder.indent(value),
@@ -383,7 +390,7 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
    */
   public parenthesize(
     brackets: Paratheses,
-    value: AppendValue<this, TAdditionalAppends>,
+    value: AppendParam<this, TAdditionalAppends>,
     options?: ParenthesizeOptions
   ): this {
     return this.if(
@@ -407,7 +414,7 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
   public parenthesizeIf(
     condition: Condition,
     brackets: Paratheses,
-    value: AppendValue<this, TAdditionalAppends>,
+    value: AppendParam<this, TAdditionalAppends>,
     options?: ParenthesizeOptions
   ): this {
     return this.if(
@@ -463,13 +470,13 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
     return this.if(condition, (b) => b.forEach(items, builderFn, options));
   }
 
-  public appendSeparated(items: Iterable<AppendValue<this, TAdditionalAppends>>, separator: string): this {
+  public appendSeparated(items: Iterable<AppendParam<this, TAdditionalAppends>>, separator: string): this {
     return this.forEach(items, (builder, item) => builder.append(item), { separator });
   }
 
   public appendSeparatedIf(
     condition: Condition,
-    items: Iterable<AppendValue<this, TAdditionalAppends>>,
+    items: Iterable<AppendParam<this, TAdditionalAppends>>,
     separator: string
   ): this {
     return this.forEachIf(condition, items, (builder, item) => builder.append(item), { separator });

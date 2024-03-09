@@ -1,5 +1,3 @@
-import { EOL } from 'os';
-
 import { isNullish } from './common.utils';
 import {
   WordCasing,
@@ -248,149 +246,13 @@ export function escapeRegExp(str: string): string {
 }
 
 /**
- * Options for the StringBuilder class.
- * @default newLine = os.EOL
+ * Removes characters from a string and, if necessary, inserts new characters in their place, returning the spliced string.
+ * @param str The string to splice.
+ * @param start The index at which to start changing the string.
+ * @param deleteCount The number of characters to remove.
+ * @param insert The string to insert.
+ * @returns The spliced string.
  */
-export type StringBuilderOptions = {
-  readonly newLine: string;
-};
-
-export const defaultStringBuilderOptions: StringBuilderOptions = {
-  newLine: EOL,
-};
-
-export type BuilderFn<TBuilder> = (builder: TBuilder) => void;
-
-/** @deprecated Use AppendValue<TBuilder> instead */
-export type TextOrBuilderFn<TBuilder> = string | BuilderFn<TBuilder>;
-
-export type AppendValue<TBuilder, TAdditionalAppends = never> =
-  | string
-  | number
-  | boolean
-  | null
-  | undefined
-  | BuilderFn<TBuilder>
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  | Exclude<TAdditionalAppends, Function>;
-
-/**
- * Represents a mutable string of characters.
- */
-export class StringBuilder<TAdditionalAppends = never> {
-  private readonly _options: StringBuilderOptions;
-  private _str: string = '';
-
-  public get options(): StringBuilderOptions {
-    return this._options;
-  }
-
-  /**
-   * Initializes a new instance of the StringBuilder class.
-   * @param options The options.
-   */
-  constructor(options?: Partial<StringBuilderOptions>) {
-    this._options = { ...defaultStringBuilderOptions, ...options };
-  }
-
-  /**
-   * Creates a new StringBuilder instance and appends the specified string to it.
-   * @param str The string to append.
-   * @param options The options.
-   * @returns A new StringBuilder instance.
-   */
-  public static fromString(str: string, options?: Partial<StringBuilderOptions>): StringBuilder {
-    const builder = new StringBuilder(options);
-    builder.append(str);
-    return builder;
-  }
-
-  /**
-   * Builds a string using a StringBuilder build action.
-   * @param buildAction The build action to perform on the StringBuilder instance.
-   * @param options The options for the StringBuilder instance.
-   * @returns The built string.
-   */
-  public static build(buildAction: (builder: StringBuilder) => void, options?: Partial<StringBuilderOptions>): string {
-    const builder = new StringBuilder(options);
-    buildAction(builder);
-    return builder.toString();
-  }
-
-  protected appendSingle(value: AppendValue<this, TAdditionalAppends>) {
-    if (isNullish(value)) return;
-    if (typeof value === 'string') {
-      this._str += value;
-    } else if (typeof value === 'number' || typeof value === 'boolean') {
-      this._str += value.toString();
-    } else if (typeof value === 'function') {
-      (value as BuilderFn<this>)(this);
-    }
-  }
-
-  /**
-   * Appends one or more strings to the end of the current StringBuilder.
-   * @param value The string(s) to append.
-   * @returns The current StringBuilder.
-   */
-  public append(...value: AppendValue<this, TAdditionalAppends>[]): this {
-    for (const part of value) {
-      this.appendSingle(part);
-    }
-    return this;
-  }
-
-  /**
-   * Appends one or more strings to the end of the current StringBuilder, followed by a line terminator.
-   * @param value
-   * @returns
-   */
-  public appendLine(...value: Nullable<AppendValue<this, TAdditionalAppends>>[]): this {
-    return this.append(...value, this._options.newLine);
-  }
-
-  /**
-   * Prepends one or more strings to the beginning of the current StringBuilder.
-   * @param value The string(s) to prepend.
-   * @returns The current StringBuilder.
-   */
-  public prepend(...value: AppendValue<StringBuilder>[]): this {
-    for (const part of value.reverse()) {
-      if (isNullish(part)) continue;
-      if (typeof part === 'function') {
-        const builder = new StringBuilder(this.options);
-        part(builder);
-        this._str = builder.toString() + this._str;
-      } else if (typeof part === 'string') {
-        this._str = part + this._str;
-      } else {
-        this._str = part.toString() + this._str;
-      }
-    }
-    return this;
-  }
-
-  /**
-   * Prepends one or more strings to the beginning of the current StringBuilder, followed by a line terminator.
-   * @param value The string(s) to prepend.
-   * @returns The current StringBuilder.
-   */
-  public prependLine(...value: AppendValue<StringBuilder>[]): this {
-    return this.prepend(...value, this._options.newLine);
-  }
-
-  /**
-   * Converts the value of this instance to a string.
-   * @returns A string whose value is the same as this instance.
-   */
-  public toString(): string {
-    return this._str;
-  }
-
-  /**
-   * Removes all characters from the current StringBuilder.
-   */
-  public clear(): void {
-    this._str = '';
-  }
+export function spliceString(str: string, start: number, deleteCount: number, insert: string): string {
+  return str.slice(0, start) + insert + str.slice(start + deleteCount);
 }

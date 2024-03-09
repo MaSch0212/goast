@@ -7,6 +7,7 @@ export type OptionalProperties<T, K extends keyof T> = Omit<T, K> & Partial<Pick
 export type RequiredProperties<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
 
 export type ArrayItem<T> = T extends (infer U)[] ? U : never;
+export type SingleOrMultiple<T> = T | T[];
 
 export type Nullable<T> = T | null | undefined;
 
@@ -32,3 +33,46 @@ type MustInclude<T, U extends T[]> = [T] extends [ValueOf<U>] ? U : never;
 export function stringUnionToArray<T>() {
   return <U extends NonEmptyArray<T>>(...elements: MustInclude<T, U>) => elements;
 }
+
+export type StringSuggestions<T extends string> = T | Omit<string, T>;
+
+export type ParametersWithOverloads<T extends (...args: any[]) => any> = T extends {
+  (...args: infer A1): any;
+  (...args: infer A2): any;
+  (...args: infer A3): any;
+  (...args: infer A4): any;
+  (...args: infer A5): any;
+  (...args: infer A6): any;
+}
+  ? A1 | A2 | A3 | A4 | A5 | A6
+  : T extends {
+      (...args: infer A1): any;
+      (...args: infer A2): any;
+      (...args: infer A3): any;
+      (...args: infer A4): any;
+      (...args: infer A5): any;
+    }
+  ? A1 | A2 | A3 | A4 | A5
+  : T extends {
+      (...args: infer A1): any;
+      (...args: infer A2): any;
+      (...args: infer A3): any;
+      (...args: infer A4): any;
+    }
+  ? A1 | A2 | A3 | A4
+  : T extends {
+      (...args: infer A1): any;
+      (...args: infer A2): any;
+      (...args: infer A3): any;
+    }
+  ? A1 | A2 | A3
+  : T extends {
+      (...args: infer A1): any;
+      (...args: infer A2): any;
+    }
+  ? A1 | A2
+  : T extends {
+      (...args: infer A1): any;
+    }
+  ? A1
+  : never;

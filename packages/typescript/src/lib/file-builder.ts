@@ -1,18 +1,22 @@
-import { AppendValue, SourceBuilder } from '@goast/core';
+import { AppendParam, AppendValue, SourceBuilder, isAppendValue } from '@goast/core';
 
-import { TsNode, TsWritableNodes } from './ast/types';
-import { writers } from './ast/writers';
+import { isTsNode } from './ast';
+import { TsWritableNode, writeTs } from './ast/writable-nodes';
 import { TypeScriptGeneratorConfig, defaultTypeScriptGeneratorConfig } from './config';
 import { TypeScriptModelGeneratorOutput } from './generators';
 import { ImportExportCollection } from './import-collection';
 
-export type TypeScriptAppends<TAdditionalAppends> =
-  | TsWritableNodes
-  | Exclude<TAdditionalAppends, { kind: TsWritableNodes['kind'] }>;
-export type TypeScriptAppendValue<TBuilder, TAdditionalAppends = never> = AppendValue<
+export type TypeScriptAppends<TAdditionalAppends> = TsWritableNode<TypeScriptFileBuilder> | TAdditionalAppends;
+export type TypeScriptAppendParam<TBuilder extends TypeScriptFileBuilder, TAdditionalAppends> = AppendParam<
   TBuilder,
   TypeScriptAppends<TAdditionalAppends>
 >;
+
+export function isTypeScriptAppendValue<TBuilder extends TypeScriptFileBuilder = TypeScriptFileBuilder>(
+  value: unknown
+): value is AppendValue<TBuilder> {
+  return isAppendValue(value) || isTsNode(value);
+}
 
 export class TypeScriptFileBuilder<TAdditionalAppends = never> extends SourceBuilder<
   TypeScriptAppends<TAdditionalAppends>
@@ -53,11 +57,10 @@ export class TypeScriptFileBuilder<TAdditionalAppends = never> extends SourceBui
       .toString();
   }
 
-  protected override appendSingle(value: TypeScriptAppendValue<this, TAdditionalAppends>) {
+  protected override appendSingle(value: TypeScriptAppendParam<this, TAdditionalAppends>) {
     super.appendSingle(value);
-    if (typeof value === 'object' && value !== null && 'kind' in value && value.kind in writers) {
-      const writer = writers[value.kind] as (builder: this, value: TsNode<string>) => void;
-      writer(this, value);
+    if (isTsNode(value)) {
+      writeTs(this, value);
     }
   }
 

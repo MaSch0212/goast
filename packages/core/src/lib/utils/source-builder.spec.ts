@@ -48,7 +48,7 @@ describe('SourceBuilder', () => {
       expect(result).toEqual('helloworld');
     });
 
-    it.only('should build a string using a callback function that receives a `SourceBuilder` instance and options', () => {
+    it('should build a string using a callback function that receives a `SourceBuilder` instance and options', () => {
       const buildAction = (builder: SourceBuilder) => {
         builder.appendLine('hello');
         builder.indent((b) => b.append('world'));
@@ -161,7 +161,7 @@ describe('SourceBuilder', () => {
   describe('prependLineIf', () => {
     it('should prepend the specified value with a line terminator if the condition is true', () => {
       const builder = new SourceBuilder().append('bar').prependLineIf(true, 'foo');
-      expect(builder.toString()).toBe('foo\nbar');
+      expect(builder.toString()).toBe(`foo${EOL}bar`);
     });
 
     it('should not prepend the specified value if the condition is false', () => {
@@ -186,7 +186,7 @@ describe('SourceBuilder', () => {
         b.appendLine('foo');
         b.appendLine('bar');
       });
-      expect(builder.toString()).toBe('// foo\n// bar\n');
+      expect(builder.toString()).toBe(`// foo${EOL}// bar${EOL}// `);
     });
 
     it('should apply the provided builder function with the specified line prefix and indentation', () => {
@@ -196,19 +196,19 @@ describe('SourceBuilder', () => {
           b.appendLine('bar');
         })
       );
-      expect(builder.toString()).toBe('  // foo\n  // bar\n');
+      expect(builder.toString()).toBe(`  // foo${EOL}  // bar${EOL}  // `);
     });
   });
 
   describe('appendLineWithLinePrefix', () => {
     it('should append the specified values as a new line with the specified line prefix', () => {
       const builder = new SourceBuilder().appendLineWithLinePrefix('// ', 'foo', 'bar');
-      expect(builder.toString()).toBe('// foo\n// bar\n');
+      expect(builder.toString()).toBe('// foobar' + EOL);
     });
 
     it('should handle null and undefined values', () => {
       const builder = new SourceBuilder().appendLineWithLinePrefix('// ', 'foo', null, undefined, 'bar');
-      expect(builder.toString()).toBe('// foo\n// bar\n');
+      expect(builder.toString()).toBe('// foobar' + EOL);
     });
   });
 
