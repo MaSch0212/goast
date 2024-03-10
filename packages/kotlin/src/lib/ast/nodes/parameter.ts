@@ -1,7 +1,7 @@
 import { SourceBuilder, AppendValue, AstNodeOptions } from '@goast/core';
 
 import { KtAnnotation, writeKtAnnotations } from './annotation';
-import { KtDefaultBuilder, KtNode, isKtNode, ktNode, writeKtNode } from '../common';
+import { KtAccessibility, KtDefaultBuilder, KtNode, isKtNode, ktNode, writeKtNode } from '../common';
 import { writeKt } from '../writable-nodes';
 
 export const ktParameterNodeKind = 'parameter' as const;
@@ -15,9 +15,30 @@ export type KtParameter<TBuilder extends SourceBuilder = KtDefaultBuilder> = KtN
   annotations: KtAnnotation<TBuilder>[];
   default: AppendValue<TBuilder> | null;
   vararg: boolean;
+
+  // class parameter options
+  accessibility: KtAccessibility;
+  property: 'readonly' | 'mutable' | null;
 };
 
 export function ktParameter<TBuilder extends SourceBuilder = KtDefaultBuilder>(
+  name: string,
+  type: AppendValue<TBuilder>,
+  options?: AstNodeOptions<KtParameter<TBuilder>, 'name' | 'type' | 'accessibility' | 'property'>
+): KtParameter<TBuilder> {
+  return {
+    ...ktNode(ktParameterNodeKind, options),
+    name,
+    type,
+    annotations: options?.annotations ?? [],
+    default: options?.default ?? null,
+    vararg: options?.vararg ?? false,
+    accessibility: null,
+    property: null,
+  };
+}
+
+export function ktClassParameter<TBuilder extends SourceBuilder = KtDefaultBuilder>(
   name: string,
   type: AppendValue<TBuilder>,
   options?: AstNodeOptions<KtParameter<TBuilder>, 'name' | 'type'>
@@ -29,6 +50,8 @@ export function ktParameter<TBuilder extends SourceBuilder = KtDefaultBuilder>(
     annotations: options?.annotations ?? [],
     default: options?.default ?? null,
     vararg: options?.vararg ?? false,
+    accessibility: options?.accessibility ?? null,
+    property: options?.property ?? null,
   };
 }
 
@@ -45,7 +68,9 @@ export function writeKtParameter<TBuilder extends SourceBuilder = KtDefaultBuild
   return writeKtNode(builder, node, (b) =>
     b
       .append((b) => writeKtAnnotations(b, node.annotations, true))
+      .appendIf(!!node.accessibility && !!node.property, node.accessibility, ' ')
       .appendIf(node.vararg, 'vararg ')
+      .appendIf(!!node.property, node.property === 'mutable' ? 'var' : 'val', ' ')
       .append(node.name, ': ', node.type)
       .appendIf(!!node.default, ' = ', node.default)
   );
@@ -53,7 +78,7 @@ export function writeKtParameter<TBuilder extends SourceBuilder = KtDefaultBuild
 
 export function writeKtParameters<TBuilder extends SourceBuilder = KtDefaultBuilder>(
   builder: TBuilder,
-  parameters: (KtParameter<TBuilder> | AppendValue<TBuilder>)[]
+  parameters: KtParameter<TBuilder>[]
 ): TBuilder {
   const multiline = parameters.length > 2 || parameters.some((p) => isKtParameter(p) && p.annotations.length > 0);
   return builder.parenthesize(

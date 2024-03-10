@@ -35,6 +35,11 @@ export function stringUnionToArray<T>() {
 }
 
 export type StringSuggestions<T extends string> = T | Omit<string, T>;
+export function suggestionsAsString<T>(
+  value: T
+): T extends StringSuggestions<infer U> ? Exclude<T, StringSuggestions<U>> | string : T {
+  return value as any;
+}
 
 export type ParametersWithOverloads<T extends (...args: any[]) => any> = T extends {
   (...args: infer A1): any;

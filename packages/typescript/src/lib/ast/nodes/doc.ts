@@ -34,7 +34,7 @@ export function writeTsDoc<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   return writeTsNode(
     builder,
     node,
-    node.description === null && node.tags.length === 0
+    !node.description && node.tags.length === 0
       ? (b) => b
       : (b) =>
           b
