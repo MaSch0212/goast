@@ -1,4 +1,4 @@
-import { AstNodeOptions, SourceBuilder, spliceString } from '@goast/core';
+import { AstNodeOptions, Nullable, SourceBuilder, spliceString } from '@goast/core';
 
 import { KtDefaultBuilder, KtNode, isKtNode, ktNode, writeKtNode } from '../common';
 import { writeKt } from '../writable-nodes';
@@ -15,12 +15,12 @@ export type KtString<TBuilder extends SourceBuilder = KtDefaultBuilder> = KtNode
 };
 
 export function ktString<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  value: string | null,
+  value: Nullable<string>,
   options?: AstNodeOptions<KtString<TBuilder>, 'value'>
 ): KtString<TBuilder> {
   return {
     ...ktNode(ktStringNodeKind, options),
-    value,
+    value: value ?? null,
     template: options?.template ?? false,
     multiline: options?.multiline ?? false,
     trimMargin: options?.trimMargin ?? true,

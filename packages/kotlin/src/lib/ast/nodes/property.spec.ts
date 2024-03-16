@@ -1,6 +1,6 @@
 import { EOL } from 'os';
 
-import { ktAnnotation } from '.';
+import { ktAnnotation, ktDoc } from '.';
 import { ktProperty, ktPropertyAccessor, writeKtPropertyAccessor } from './property';
 import { KotlinFileBuilder } from '../../file-builder';
 
@@ -81,9 +81,15 @@ describe('ktProperty', () => {
     expect(builder.toString(false)).toBe(`var x: Any?${EOL}    set${EOL}`);
   });
 
+  it('should write documentation if it exists', () => {
+    builder.append(ktProperty('x', { doc: ktDoc('Hello') }));
+    expect(builder.toString(false)).toBe(`/**${EOL} * Hello${EOL} */${EOL}val x: Any?${EOL}`);
+  });
+
   it('should write all the parts of the property', () => {
     builder.append(
       ktProperty('x', {
+        doc: ktDoc('Hello'),
         default: '42',
         mutable: true,
         type: 'Int',
@@ -100,7 +106,7 @@ describe('ktProperty', () => {
       })
     );
     expect(builder.toString(false)).toBe(
-      `@Inject${EOL}@Optional${EOL}const lateinit abstract override open var x: Int = 42 by lazy(42, true)${EOL}    get${EOL}    set${EOL}`
+      `/**${EOL} * Hello${EOL} */${EOL}@Inject${EOL}@Optional${EOL}const lateinit abstract override open var x: Int = 42 by lazy(42, true)${EOL}    get${EOL}    set${EOL}`
     );
   });
 

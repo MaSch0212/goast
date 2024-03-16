@@ -2,6 +2,7 @@
 import { SourceBuilder, AppendValue, AstNodeOptions } from '@goast/core';
 
 import { KtAnnotation, writeKtAnnotations } from './annotation';
+import { KtDoc } from './doc';
 import { KtReference } from './reference';
 import { KtAccessibility, KtDefaultBuilder, KtNode, isKtNode, ktNode, writeKtNode } from '../common';
 import { writeKt } from '../writable-nodes';
@@ -13,6 +14,7 @@ export type KtProperty<TBuilder extends SourceBuilder = KtDefaultBuilder> = KtNo
   typeof ktPropertyNodeKind,
   TBuilder
 > & {
+  doc: KtDoc<TBuilder> | null;
   name: string;
   type: AppendValue<TBuilder>;
   annotations: KtAnnotation<TBuilder>[];
@@ -46,6 +48,7 @@ export function ktProperty<TBuilder extends SourceBuilder = KtDefaultBuilder>(
 ): KtProperty<TBuilder> {
   return {
     ...ktNode(ktPropertyNodeKind, options),
+    doc: options?.doc ?? null,
     accessibility: options?.accessibility ?? null,
     annotations: options?.annotations ?? [],
     const: options?.const ?? false,
@@ -94,6 +97,7 @@ export function writeKtProperty<TBuilder extends SourceBuilder = KtDefaultBuilde
 ): TBuilder {
   return writeKtNode(builder, node, (b) =>
     b
+      .append((b) => writeKt(b, node.doc))
       .append((b) => writeKtAnnotations(b, node.annotations, true))
       .appendIf(!!node.accessibility, node.accessibility, ' ')
       .appendIf(node.const, 'const ')

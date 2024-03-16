@@ -5,20 +5,62 @@ import { ensureDirSync, writeFileSync } from 'fs-extra';
 import {
   ApiSchema,
   ApiSchemaProperty,
+  AppendValue,
+  AppendValueGroup,
   ObjectLikeApiSchema,
+  appendValueGroup,
   createOverwriteProxy,
   getSchemaReference,
+  notNullish,
   resolveAnyOfAndAllOf,
   toCasing,
 } from '@goast/core';
 
 import { KotlinModelGeneratorContext, KotlinModelGeneratorOutput } from './models';
+import {
+  KtAnnotation,
+  KtAnnotationTarget,
+  KtClass,
+  KtFunction,
+  KtInterface,
+  KtProperty,
+  ktAnnotation,
+  ktArgument,
+  ktClass,
+  ktClassParameter,
+  ktConstructor,
+  ktDoc,
+  ktFunction,
+  ktInterface,
+  ktProperty,
+  ktReference,
+  ktString,
+} from '../../ast';
 import { KotlinFileBuilder } from '../../file-builder';
 import { KotlinFileGenerator } from '../file-generator';
 
 type Context = KotlinModelGeneratorContext;
 type Output = KotlinModelGeneratorOutput;
 type Builder = KotlinFileBuilder;
+
+const jackson = {
+  jsonTypeInfo: ktReference('JsonTypeInfo', 'com.fasterxml.jackson.annotation'),
+  jsonSubTypes: ktReference('JsonSubTypes', 'com.fasterxml.jackson.annotation'),
+  jsonProperty: ktReference('JsonProperty', 'com.fasterxml.jackson.annotation'),
+  jsonInclude: ktReference('JsonInclude', 'com.fasterxml.jackson.annotation'),
+  jsonIgnore: ktReference('JsonIgnore', 'com.fasterxml.jackson.annotation'),
+  jsonAnySetter: ktReference('JsonAnySetter', 'com.fasterxml.jackson.annotation'),
+  jsonAnyGetter: ktReference('JsonAnyGetter', 'com.fasterxml.jackson.annotation'),
+};
+
+const jakarta = {
+  pattern: ktReference('Pattern', 'jakarta.validation.constraints'),
+  valid: ktReference('Valid', 'jakarta.validation'),
+};
+
+const swagger = {
+  schema: ktReference('Schema', 'io.swagger.v3.oas.annotations.media'),
+};
 
 export interface KotlinModelGenerator<TOutput extends Output = Output> {
   generate(ctx: Context): TOutput;
@@ -72,6 +114,225 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       return { typeName: builder.toString(false), packageName: undefined, additionalImports };
     }
   }
+
+  protected getFileContent(ctx: Context): AppendValueGroup<Builder> {
+    return appendValueGroup<Builder>([this.getSchemaDeclaration(ctx, this.normalizeSchema(ctx, ctx.schema))], '\n\n');
+  }
+
+  protected getSchemaDeclaration(ctx: Context, schema: ApiSchema): AppendValue<Builder> {
+    if (schema.kind === 'object') {
+      return schema.discriminator ? this.getInterface(ctx, schema) : this.getClass(ctx, schema);
+    } else if (schema.enum !== undefined && schema.enum.length > 0) {
+      return this.getEnum(ctx, schema);
+    }
+
+    return '// The generator was not able to generate this schema.\n// This should not happend. If you see this comment, please open an Issue on Github.';
+  }
+
+  protected getClass(ctx: Context, schema: ApiSchema<'object'>): KtClass<Builder> {
+    const inheritedSchemas = this.getInheritedSchemas(ctx, schema);
+    const params = this.getClassProperties(ctx, schema);
+    return ktClass(this.getDeclarationTypeName(ctx, schema), {
+      doc: ktDoc(schema.description),
+      classKind: params.length === 0 ? null : 'data',
+      implements: inheritedSchemas.map((schema) => this.getType(ctx, schema)),
+      primaryConstructor: ktConstructor(
+        params.map((property) =>
+          ktClassParameter(
+            toCasing(property.name, 'camel'),
+            this.getType(ctx, property.schema, !schema.required.has(property.name)),
+            {
+              description: property.schema.description,
+              annotations: [
+                this.getJakartaPatternAnnotation(ctx, schema, property),
+                this.getJakartaValidAnnotation(ctx, schema, property),
+                this.getSwaggerSchemaAnnotation(ctx, schema, property),
+                this.getJacksonJsonPropertyAnnotation(ctx, schema, property),
+                this.getJacksonJsonIncludeAnnotation(ctx, schema, property),
+              ].filter(notNullish),
+              override: inheritedSchemas.some((x) => this.hasProperty(ctx, x, property.name)),
+              property: 'readonly',
+              default:
+                property.schema.default !== undefined || !schema.required.has(property.name)
+                  ? this.getDefaultValue(ctx, property.schema)
+                  : null,
+            }
+          )
+        )
+      ),
+      members: this.getAdditionalPropertiesMembers(ctx, schema),
+    });
+  }
+
+  protected getInterface(ctx: Context, schema: ApiSchema<'object'>): KtInterface<Builder> {
+    return ktInterface(this.getDeclarationTypeName(ctx, schema), {
+      doc: ktDoc(schema.description),
+      annotations: [
+        this.getJacksonJsonTypeInfoAnnotation(ctx, schema),
+        this.getJacksonJsonSubTypesAnnotation(ctx, schema),
+      ].filter(notNullish),
+      members: this.sortProperties(ctx, schema, schema.properties.values()).map((property) =>
+        ktProperty(toCasing(property.name, 'camel'), {
+          doc: ktDoc(property.schema.description),
+          annotations: [
+            this.getJacksonJsonPropertyAnnotation(ctx, schema, property, 'get'),
+            this.getJacksonJsonIncludeAnnotation(ctx, schema, property, 'get'),
+          ].filter(notNullish),
+          type: this.getType(ctx, property.schema, !schema.required.has(property.name)),
+        })
+      ),
+    });
+  }
+
+  protected getEnum(ctx: Context, schema: ApiSchema): KtClass<Builder> {
+    throw new Error('Method not implemented.');
+  }
+
+  protected getType(ctx: Context, schema: ApiSchema, nullable?: boolean): AppendValue<Builder> {
+    throw new Error('Method not implemented.');
+  }
+
+  protected getMapType(
+    ctx: Context,
+    builder: Builder,
+    schema: ApiSchema<'object'>,
+    typeName = 'Map'
+  ): AppendValue<Builder> {
+    throw new Error('Method not implemented.');
+  }
+
+  protected getDefaultValue(ctx: Context, schema: ApiSchema): AppendValue<Builder> {
+    throw new Error('Method not implemented.');
+  }
+
+  protected getAdditionalPropertiesMembers(ctx: Context, schema: ApiSchema<'object'>): AppendValue<Builder>[] {
+    return schema.additionalProperties !== undefined && schema.additionalProperties !== false
+      ? [ktProperty('additionalProperties'), ktFunction('set'), ktFunction('getMap')]
+      : [];
+  }
+
+  // #region Annotations
+  protected getJacksonJsonTypeInfoAnnotation(ctx: Context, schema: ApiSchema<'object'>): KtAnnotation<Builder> | null {
+    return ctx.config.addJacksonAnnotations && schema.discriminator
+      ? ktAnnotation(jackson.jsonTypeInfo, [
+          ktArgument('JsonTypeInfo.Id.NAME', { name: 'use' }),
+          ktArgument('JsonTypeInfo.As.EXISTING_PROPERTY', { name: 'include' }),
+          ktArgument(ktString(schema.discriminator.propertyName), { name: 'property' }),
+          ktArgument('true', { name: 'visible' }),
+        ])
+      : null;
+  }
+
+  protected getJacksonJsonSubTypesAnnotation(ctx: Context, schema: ApiSchema<'object'>): KtAnnotation<Builder> | null {
+    if (!ctx.config.addJacksonAnnotations || !schema.discriminator) return null;
+    const entries = Object.entries(schema.discriminator.mapping);
+    return entries.length > 0
+      ? ktAnnotation(
+          jackson.jsonSubTypes,
+          entries.map(([value, schema]) =>
+            ktArgument((builder) =>
+              builder
+                .append(jackson.jsonSubTypes, '.Type(')
+                .append(ktArgument((b) => b.append(this.getType(ctx, schema), '::class'), { name: 'value' }))
+                .append(', ')
+                .append(ktArgument(ktString(value), { name: 'name' }))
+                .append(')')
+            )
+          )
+        )
+      : null;
+  }
+
+  protected getJacksonJsonPropertyAnnotation(
+    ctx: Context,
+    schema: ApiSchema,
+    property: ApiSchemaProperty,
+    target?: KtAnnotationTarget
+  ): KtAnnotation<Builder> | null {
+    return ctx.config.addJacksonAnnotations
+      ? ktAnnotation(
+          jackson.jsonProperty,
+          [ktArgument(ktString(property.name)), ktArgument('true', { name: 'required' })],
+          { target }
+        )
+      : null;
+  }
+
+  protected getJacksonJsonIncludeAnnotation(
+    ctx: Context,
+    schema: ApiSchema,
+    property: ApiSchemaProperty,
+    target?: KtAnnotationTarget
+  ): KtAnnotation<Builder> | null {
+    return ctx.config.addJacksonAnnotations
+      ? ktAnnotation(jackson.jsonInclude, [ktArgument((b) => b.append(jackson.jsonInclude, '.Include.NON_NULL'))], {
+          target,
+        })
+      : null;
+  }
+
+  protected getJakartaPatternAnnotation(
+    ctx: Context,
+    schema: ApiSchema,
+    property: ApiSchemaProperty
+  ): KtAnnotation<Builder> | null {
+    return ctx.config.addJakartaValidationAnnotations && property.schema.kind === 'string' && property.schema.pattern
+      ? ktAnnotation(jakarta.pattern, [ktArgument(ktString(property.schema.pattern), { name: 'regexp' })], {
+          target: 'get',
+        })
+      : null;
+  }
+
+  protected getJakartaValidAnnotation(
+    ctx: Context,
+    schema: ApiSchema,
+    property: ApiSchemaProperty
+  ): KtAnnotation<Builder> | null {
+    return ctx.config.addJakartaValidationAnnotations && this.shouldGenerateTypeDeclaration(ctx, property.schema)
+      ? ktAnnotation(jakarta.valid, [], { target: 'field' })
+      : null;
+  }
+
+  protected getSwaggerSchemaAnnotation(
+    ctx: Context,
+    schema: ApiSchema,
+    property: ApiSchemaProperty
+  ): KtAnnotation<Builder> | null {
+    return ctx.config.addSwaggerAnnotations
+      ? ktAnnotation(
+          swagger.schema,
+          [
+            property.schema.example !== undefined
+              ? ktArgument(ktString(String(property.schema.example)), { name: 'example' })
+              : null,
+            schema.required.has(property.name) ? ktArgument('true', { name: 'required' }) : null,
+            property.schema.description !== undefined
+              ? ktArgument(ktString(property.schema.description), { name: 'description' })
+              : null,
+          ].filter(notNullish)
+        )
+      : null;
+  }
+  // #endregion
+
+  // #region Members
+  protected getAdditionalPropertiesProperty(ctx: Context, schema: ApiSchema<'object'>): KtProperty<Builder> {
+    return ktProperty('additionalProperties', {
+      annotations: [ktAnnotation(jackson.jsonIgnore)],
+      type: this.getMapType(ctx, schema, 'MutableMap'),
+    });
+  }
+
+  protected getAdditionalPropertiesSetter(ctx: Context, schema: ApiSchema<'object'>): KtFunction<Builder> {
+    return ktFunction('set');
+  }
+
+  protected getAdditionalPropertiesGetter(ctx: Context, schema: ApiSchema<'object'>): KtFunction<Builder> {
+    return ktFunction('getMap');
+  }
+  // #endregion
+
+  // ---
 
   protected generateFileContent(ctx: Context, builder: Builder): void {
     const schema = this.normalizeSchema(ctx, ctx.schema);

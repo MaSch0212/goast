@@ -8,8 +8,10 @@ import {
 } from '@goast/core';
 
 import { KtAnnotation, writeKtAnnotations } from './annotation';
+import { KtArgument } from './argument';
 import { KtParameter, writeKtParameters } from './parameter';
 import { KtAccessibility, KtDefaultBuilder, KtNode, isKtNode, ktNode, writeKtNode } from '../common';
+import { writeKt } from '../writable-nodes';
 
 export const ktConstructorNodeKind = 'constructor' as const;
 
@@ -22,7 +24,7 @@ export type KtConstructor<TBuilder extends SourceBuilder = KtDefaultBuilder> = K
   parameters: KtParameter<TBuilder>[];
   body: AppendValue<TBuilder>;
   delegateTarget: StringSuggestions<'this' | 'super'> | null;
-  delegateArguments: AppendValue<TBuilder>[];
+  delegateArguments: (KtArgument<TBuilder> | AppendValue<TBuilder>)[];
 };
 
 export function ktConstructor<TBuilder extends SourceBuilder = KtDefaultBuilder>(
@@ -61,7 +63,7 @@ export function writeKtConstructor<TBuilder extends SourceBuilder>(
         ': ',
         suggestionsAsString(node.delegateTarget),
         (b) =>
-          b.parenthesize('()', (b) => b.forEach(node.delegateArguments, (b, a) => b.append(a), { separator: ', ' })),
+          b.parenthesize('()', (b) => b.forEach(node.delegateArguments, (b, a) => writeKt(b, a), { separator: ', ' })),
         ' '
       )
       .parenthesize('{}', node.body, { multiline: !!node.body })

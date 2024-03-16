@@ -95,6 +95,11 @@ describe('ktClassParameter', () => {
       expect(builder.toString(false)).toBe('x: Int = 42');
     });
 
+    it('should write override if it exists', () => {
+      builder.append(ktClassParameter('x', 'Int', { override: true }));
+      expect(builder.toString(false)).toBe('override x: Int');
+    });
+
     it('should write vararg if it exists', () => {
       builder.append(ktClassParameter('x', 'Int', { vararg: true }));
       expect(builder.toString(false)).toBe('vararg x: Int');
@@ -129,13 +134,14 @@ describe('ktClassParameter', () => {
       builder.append(
         ktClassParameter('x', 'Int', {
           default: '42',
+          override: true,
           vararg: true,
           property: 'mutable',
           accessibility: 'private',
           annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')],
         })
       );
-      expect(builder.toString(false)).toBe(`@Inject${EOL}@Optional${EOL}private vararg var x: Int = 42`);
+      expect(builder.toString(false)).toBe(`@Inject${EOL}@Optional${EOL}private override vararg var x: Int = 42`);
     });
 
     it('should render injections', () => {

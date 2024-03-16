@@ -1,6 +1,8 @@
 import { AppendValue, AstNodeOptions, SourceBuilder, StringSuggestions } from '@goast/core';
 
+import { KtArgument } from './argument';
 import { KtDefaultBuilder, KtNode, isKtNode, ktNode, writeKtNode } from '../common';
+import { writeKt } from '../writable-nodes';
 
 export const ktAnnotationNodeKind = 'annotation' as const;
 
@@ -12,19 +14,19 @@ export type KtAnnotation<TBuilder extends SourceBuilder = KtDefaultBuilder> = Kt
   TBuilder
 > & {
   class: AppendValue<TBuilder>;
-  parameters: AppendValue<TBuilder>[];
+  arguments: (KtArgument<TBuilder> | AppendValue<TBuilder>)[];
   target: KtAnnotationTarget | null;
 };
 
 export function ktAnnotation<TBuilder extends SourceBuilder = KtDefaultBuilder>(
   $class: AppendValue<TBuilder>,
-  parameters?: AppendValue<TBuilder>[] | null,
-  options?: AstNodeOptions<KtAnnotation<TBuilder>, 'class' | 'parameters'>
+  $arguments?: AppendValue<TBuilder>[] | null,
+  options?: AstNodeOptions<KtAnnotation<TBuilder>, 'class' | 'arguments'>
 ): KtAnnotation<TBuilder> {
   return {
     ...ktNode(ktAnnotationNodeKind, options),
     class: $class,
-    parameters: parameters ?? [],
+    arguments: $arguments ?? [],
     target: options?.target ?? null,
   };
 }
@@ -44,8 +46,8 @@ export function writeKtAnnotation<TBuilder extends SourceBuilder = KtDefaultBuil
       .append('@')
       .appendIf(!!node.target, node.target as string | null, ':')
       .append(node.class)
-      .if(node.parameters.length > 0, (b) =>
-        b.parenthesize('()', (b) => b.forEach(node.parameters, (b, p) => b.append(p), { separator: ', ' }))
+      .if(node.arguments.length > 0, (b) =>
+        b.parenthesize('()', (b) => b.forEach(node.arguments, (b, p) => writeKt(b, p), { separator: ', ' }))
       )
   );
 }

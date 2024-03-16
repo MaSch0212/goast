@@ -1,0 +1,44 @@
+Map(2) {
+  'out/com/openapi/generated/model/MyEnum.kt' => 'package com.openapi.generated.model\n' +
+    '\n' +
+    'import com.fasterxml.jackson.annotation.JsonProperty\n' +
+    '\n' +
+    'enum class MyEnum(val value: String) {\n' +
+    '    @JsonProperty("one")\n' +
+    '    ONE("one"),\n' +
+    '\n' +
+    '    @JsonProperty("two")\n' +
+    '    TWO("two"),\n' +
+    '\n' +
+    '    @JsonProperty("three")\n' +
+    '    THREE("three")\n' +
+    '}\n',
+  'state' => {
+    models: {
+      'schema-1': {
+        __source__: '<root>\\test\\openapi-files\\v2\\detailed-schemas.yml#/definitions/WithTitle',
+        additionalImports: [],
+        packageName: undefined,
+        typeName: 'String'
+      },
+      'schema-2': {
+        __source__: '<root>\\test\\openapi-files\\v2\\detailed-schemas.yml#/definitions/WithAllCommon',
+        additionalImports: [],
+        packageName: undefined,
+        typeName: 'String'
+      },
+      'schema-3': {
+        __source__: '<root>\\test\\openapi-files\\v2\\detailed-schemas.yml#/definitions/MyEnum',
+        additionalImports: [],
+        packageName: 'com.openapi.generated.model',
+        typeName: 'MyEnum'
+      },
+      'schema-4': {
+        __source__: '<root>\\test\\openapi-files\\v2\\detailed-schemas.yml#/definitions/ReadOnly',
+        additionalImports: [],
+        packageName: undefined,
+        typeName: 'String'
+      }
+    }
+  }
+}

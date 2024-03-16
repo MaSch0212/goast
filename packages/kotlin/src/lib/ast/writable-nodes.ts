@@ -1,7 +1,8 @@
-import { AppendValue, SourceBuilder, isAppendValue, isAppendValueGroup } from '@goast/core';
+import { AppendValue, SourceBuilder, isAppendValue, isAppendValueGroup, notNullish } from '@goast/core';
 
 import { KtDefaultBuilder, isKtNode } from './common';
 import { KtAnnotation, ktAnnotationNodeKind, writeKtAnnotation } from './nodes/annotation';
+import { KtArgument, ktArgumentNodeKind, writeKtArgument } from './nodes/argument';
 import { KtClass, ktClassNodeKind, writeKtClass } from './nodes/class';
 import { KtConstructor, ktConstructorNodeKind, writeKtConstructor } from './nodes/constructor';
 import { KtDoc, ktDocNodeKind, writeKtDoc } from './nodes/doc';
@@ -11,6 +12,8 @@ import { KtEnumValue, ktEnumValueNodeKind, writeKtEnumValue } from './nodes/enum
 import { KtFunction, ktFunctionNodeKind, writeKtFunction } from './nodes/function';
 import { KtGenericParameter, ktGenericParameterNodeKind, writeKtGenericParameter } from './nodes/generic-parameter';
 import { KtInitBlock, ktInitBlockNodeKind, writeKtInitBlock } from './nodes/init-block';
+import { KtInterface, ktInterfaceNodeKind, writeKtInterface } from './nodes/interface';
+import { KtObject, ktObjectNodeKind, writeKtObject } from './nodes/object';
 import { KtParameter, ktParameterNodeKind, writeKtParameter } from './nodes/parameter';
 import { KtProperty, isKtProperty, ktPropertyNodeKind, writeKtProperty } from './nodes/property';
 import { KtReference, ktReferenceNodeKind, writeKtReference } from './nodes/reference';
@@ -19,6 +22,7 @@ import { KotlinFileBuilder } from '../file-builder';
 
 export type KtWritableNode<TBuilder extends SourceBuilder = KtDefaultBuilder> =
   | KtAnnotation<TBuilder>
+  | KtArgument<TBuilder>
   | KtClass<TBuilder>
   | KtConstructor<TBuilder>
   | KtDocTag<TBuilder>
@@ -28,6 +32,8 @@ export type KtWritableNode<TBuilder extends SourceBuilder = KtDefaultBuilder> =
   | KtFunction<TBuilder>
   | KtGenericParameter<TBuilder>
   | KtInitBlock<TBuilder>
+  | KtInterface<TBuilder>
+  | KtObject<TBuilder>
   | KtParameter<TBuilder>
   | KtProperty<TBuilder>
   | KtReference<TBuilder>
@@ -41,6 +47,8 @@ export function writeKt<TBuilder extends SourceBuilder = KtDefaultBuilder>(
     switch (value.kind) {
       case ktAnnotationNodeKind:
         return writeKtAnnotation(builder, value);
+      case ktArgumentNodeKind:
+        return writeKtArgument(builder, value);
       case ktClassNodeKind:
         return writeKtClass(builder, value);
       case ktConstructorNodeKind:
@@ -59,6 +67,10 @@ export function writeKt<TBuilder extends SourceBuilder = KtDefaultBuilder>(
         return writeKtGenericParameter(builder, value);
       case ktInitBlockNodeKind:
         return writeKtInitBlock(builder, value);
+      case ktInterfaceNodeKind:
+        return writeKtInterface(builder, value);
+      case ktObjectNodeKind:
+        return writeKtObject(builder, value);
       case ktParameterNodeKind:
         return writeKtParameter(builder, value);
       case ktPropertyNodeKind:
@@ -80,9 +92,10 @@ export function writeKtMembers<TBuilder extends SourceBuilder>(
   members: (AppendValue<TBuilder> | KtWritableNode<TBuilder>)[],
   options?: { alreadyHasMembers?: boolean }
 ) {
+  members = members.filter(notNullish);
   return builder.forEach(members, (b, m, i) =>
     b.if(
-      !isKtProperty(m) && !isAppendValue(m) && !isAppendValueGroup(m),
+      !(isKtProperty(m) && !m.doc && m.annotations.length === 0) && !isAppendValue(m) && !isAppendValueGroup(m),
       (b) =>
         b
           .if(i > 0 || !!options?.alreadyHasMembers, (b) => b.ensurePreviousLineEmpty())

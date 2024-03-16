@@ -1,0 +1,25 @@
+import { ktArgument } from './argument';
+import { KotlinFileBuilder } from '../../file-builder';
+
+describe('ktArgument', () => {
+  let builder: KotlinFileBuilder;
+
+  beforeEach(() => {
+    builder = new KotlinFileBuilder();
+  });
+
+  it('should write argument', () => {
+    builder.append(ktArgument('123'));
+    expect(builder.toString(false)).toBe('123');
+  });
+
+  it('should write argument with name', () => {
+    builder.append(ktArgument('123', { name: 'y' }));
+    expect(builder.toString(false)).toBe('y = 123');
+  });
+
+  it('should render injections', () => {
+    builder.append(ktArgument('123', { inject: { before: 'before', after: 'afgter' } }));
+    expect(builder.toString(false)).toBe('beforeyafter');
+  });
+});

@@ -1,0 +1,42 @@
+Map(1) {
+  'state' => {
+    models: {
+      'schema-1': {
+        __source__: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml#/definitions/MyString',
+        additionalImports: [],
+        packageName: undefined,
+        typeName: 'String'
+      },
+      'schema-2': {
+        __source__: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml#/definitions/MyInteger',
+        additionalImports: [],
+        packageName: undefined,
+        typeName: 'Int'
+      },
+      'schema-3': {
+        __source__: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml#/definitions/MyNumber',
+        additionalImports: [],
+        packageName: undefined,
+        typeName: 'Double'
+      },
+      'schema-4': {
+        __source__: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml#/definitions/MyBoolean',
+        additionalImports: [],
+        packageName: undefined,
+        typeName: 'Boolean'
+      },
+      'schema-5': {
+        __source__: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml#/definitions/MyArray',
+        additionalImports: [],
+        packageName: undefined,
+        typeName: 'List<Any?>'
+      },
+      'schema-6': {
+        __source__: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml#/definitions/MyObject',
+        additionalImports: [],
+        packageName: undefined,
+        typeName: 'Any'
+      }
+    }
+  }
+}

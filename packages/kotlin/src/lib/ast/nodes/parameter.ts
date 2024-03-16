@@ -21,6 +21,7 @@ export type KtParameter<TBuilder extends SourceBuilder = KtDefaultBuilder> = KtN
   accessibility: KtAccessibility;
   property: 'readonly' | 'mutable' | null;
   propertyDescription: AppendValue<TBuilder>;
+  override: boolean;
 };
 
 export function ktParameter<TBuilder extends SourceBuilder = KtDefaultBuilder>(
@@ -28,7 +29,7 @@ export function ktParameter<TBuilder extends SourceBuilder = KtDefaultBuilder>(
   type: AppendValue<TBuilder>,
   options?: AstNodeOptions<
     KtParameter<TBuilder>,
-    'name' | 'type' | 'accessibility' | 'property' | 'propertyDescription'
+    'name' | 'type' | 'accessibility' | 'property' | 'propertyDescription' | 'override'
   >
 ): KtParameter<TBuilder> {
   return {
@@ -42,6 +43,7 @@ export function ktParameter<TBuilder extends SourceBuilder = KtDefaultBuilder>(
     accessibility: null,
     property: null,
     propertyDescription: null,
+    override: false,
   };
 }
 
@@ -61,6 +63,7 @@ export function ktClassParameter<TBuilder extends SourceBuilder = KtDefaultBuild
     accessibility: options?.accessibility ?? null,
     property: options?.property ?? null,
     propertyDescription: options?.propertyDescription ?? null,
+    override: options?.override ?? false,
   };
 }
 
@@ -78,6 +81,7 @@ export function writeKtParameter<TBuilder extends SourceBuilder = KtDefaultBuild
     b
       .append((b) => writeKtAnnotations(b, node.annotations, true))
       .appendIf(!!node.accessibility && !!node.property, node.accessibility, ' ')
+      .appendIf(!!node.override, 'override ')
       .appendIf(node.vararg, 'vararg ')
       .appendIf(!!node.property, node.property === 'mutable' ? 'var' : 'val', ' ')
       .append(node.name, ': ', node.type)

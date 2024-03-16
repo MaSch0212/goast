@@ -1,0 +1,78 @@
+Map(1) {
+  'state' => {
+    models: {
+      'schema-1': {
+        __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/EmptyOneOf',
+        additionalImports: [],
+        packageName: undefined,
+        typeName: 'Any'
+      },
+      'schema-10': {
+        __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyString',
+        additionalImports: [],
+        packageName: undefined,
+        typeName: 'String'
+      },
+      'schema-11': {
+        __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyString',
+        additionalImports: [],
+        packageName: undefined,
+        typeName: 'String'
+      },
+      'schema-12': {
+        __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/WithReferences/oneOf/3',
+        additionalImports: [],
+        packageName: undefined,
+        typeName: 'String'
+      },
+      'schema-2': {
+        __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/OneOfSimpleTypes',
+        additionalImports: [],
+        packageName: undefined,
+        typeName: 'Any'
+      },
+      'schema-3': {
+        __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/OneOfSimpleTypes/oneOf/0',
+        additionalImports: [],
+        packageName: undefined,
+        typeName: 'String'
+      },
+      'schema-4': {
+        __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/OneOfSimpleTypes/oneOf/1',
+        additionalImports: [],
+        packageName: undefined,
+        typeName: 'Int'
+      },
+      'schema-5': {
+        __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/IgnoreType',
+        additionalImports: [],
+        packageName: undefined,
+        typeName: 'Any'
+      },
+      'schema-6': {
+        __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/WithReferences',
+        additionalImports: [],
+        packageName: undefined,
+        typeName: 'Any'
+      },
+      'schema-7': {
+        __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/EmptyOneOf',
+        additionalImports: [],
+        packageName: undefined,
+        typeName: 'Any'
+      },
+      'schema-8': {
+        __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WithTitle',
+        additionalImports: [],
+        packageName: undefined,
+        typeName: 'String'
+      },
+      'schema-9': {
+        __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WithTitle',
+        additionalImports: [],
+        packageName: undefined,
+        typeName: 'String'
+      }
+    }
+  }
+}

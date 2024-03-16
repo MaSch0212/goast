@@ -1,6 +1,6 @@
 import { EOL } from 'os';
 
-import { ktAnnotation, ktClassParameter, ktConstructor } from '.';
+import { ktAnnotation, ktClassParameter, ktConstructor, ktObject } from '.';
 import { ktDoc } from './doc';
 import { ktEnum } from './enum';
 import { ktEnumValue } from './enum-value';
@@ -58,6 +58,16 @@ describe('ktEnum', () => {
     );
   });
 
+  it('should write implemented interfaces', () => {
+    builder.append(ktEnum('Foo', [ktEnumValue('BAR')], { implements: ['Bar', 'Baz'] }));
+    expect(builder.toString(false)).toBe(`enum class Foo : Bar, Baz {${EOL}    BAR${EOL}}${EOL}`);
+  });
+
+  it('should write companion object', () => {
+    builder.append(ktEnum('Foo', [ktEnumValue('BAR')], { companionObject: ktObject() }));
+    expect(builder.toString(false)).toBe(`enum class Foo {${EOL}    BAR;${EOL}${EOL}    companion object${EOL}}${EOL}`);
+  });
+
   it('should write all options', () => {
     builder.append(
       ktEnum('Foo', [ktEnumValue('BAR', { arguments: ['0', '1'] })], {
@@ -65,11 +75,13 @@ describe('ktEnum', () => {
         annotations: [ktAnnotation('Deprecated')],
         accessibility: 'private',
         primaryConstructor: ktConstructor([ktClassParameter('x', 'Int'), ktClassParameter('y', 'Int')]),
+        implements: ['Bar', 'Baz'],
         members: ['// Comment 1', '// Comment 2'],
+        companionObject: ktObject(),
       })
     );
     expect(builder.toString(false)).toBe(
-      `/**${EOL} * This is a foo${EOL} */${EOL}@Deprecated${EOL}private enum class Foo(x: Int, y: Int) {${EOL}    BAR(0, 1);${EOL}${EOL}    // Comment 1${EOL}    // Comment 2${EOL}}${EOL}`
+      `/**${EOL} * This is a foo${EOL} */${EOL}@Deprecated${EOL}private enum class Foo(x: Int, y: Int) : Bar, Baz {${EOL}    BAR(0, 1);${EOL}${EOL}    // Comment 1${EOL}    // Comment 2${EOL}${EOL}    companion object${EOL}}${EOL}`
     );
   });
 

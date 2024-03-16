@@ -1,4 +1,5 @@
 export * from './annotation';
+export * from './argument';
 export * from './class';
 export * from './constructor';
 export * from './doc-tag';
@@ -8,8 +9,8 @@ export * from './enum';
 export * from './function';
 export * from './generic-parameter';
 export * from './init-block';
-// export * from './interface';
-// export * from './object';
+export * from './interface';
+export * from './object';
 export * from './parameter';
 export * from './property';
 export * from './reference';

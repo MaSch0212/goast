@@ -1,6 +1,7 @@
-import { AppendValue, AstNodeOptions, SourceBuilder } from '@goast/core';
+import { AppendValue, AstNodeOptions, SourceBuilder, notNullish } from '@goast/core';
 
 import { KtAnnotation, writeKtAnnotations } from './annotation';
+import { KtArgument } from './argument';
 import { KtDoc } from './doc';
 import { KtFunction } from './function';
 import { KtParameter } from './parameter';
@@ -16,7 +17,7 @@ export type KtEnumValue<TBuilder extends SourceBuilder = KtDefaultBuilder> = KtN
   name: string;
   doc: KtDoc<TBuilder> | null;
   annotations: KtAnnotation<TBuilder>[];
-  arguments: AppendValue<TBuilder>[];
+  arguments: (KtArgument<TBuilder> | AppendValue<TBuilder>)[];
   members: (KtParameter<TBuilder> | KtFunction<TBuilder> | AppendValue<TBuilder>)[];
 };
 
@@ -50,9 +51,9 @@ export function writeKtEnumValue<TBuilder extends SourceBuilder>(
       .append((b) => writeKtAnnotations(b, node.annotations, true))
       .append(node.name)
       .appendIf(node.arguments.length > 0, (b) =>
-        b.parenthesize('()', (b) => b.forEach(node.arguments, (b, a) => b.append(a), { separator: ', ' }))
+        b.parenthesize('()', (b) => b.forEach(node.arguments, (b, a) => writeKt(b, a), { separator: ', ' }))
       )
-      .appendIf(node.members.length > 0, (b) =>
+      .appendIf(node.members.some(notNullish), (b) =>
         b.append(' ').parenthesize('{}', (b) => writeKtMembers(b, node.members), { multiline: true })
       )
   );
@@ -62,7 +63,7 @@ export function writeKtEnumValues<TBuilder extends SourceBuilder>(
   builder: TBuilder,
   values: KtEnumValue<TBuilder>[]
 ): TBuilder {
-  const spacing = values.some((v) => v.annotations.length > 0 || v.doc || v.members.length > 0);
+  const spacing = values.some((v) => v.annotations.length > 0 || v.doc || v.members.some(notNullish));
   const multiline = spacing || values.length > 4 || values.some((v) => v.arguments.length > 0);
   return builder.forEach(
     values,

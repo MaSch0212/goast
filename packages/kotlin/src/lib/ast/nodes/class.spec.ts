@@ -3,7 +3,7 @@ import { EOL } from 'os';
 import { appendValueGroup } from '@goast/core';
 import { normalizeEOL } from '@goast/test/utils';
 
-import { ktAnnotation, ktDoc } from '.';
+import { ktAnnotation, ktDoc, ktObject } from '.';
 import { ktClass } from './class';
 import { ktConstructor } from './constructor';
 import { ktFunction } from './function';
@@ -60,7 +60,6 @@ describe('ktClass', () => {
     expect(builder.toString(false)).toBe(
       normalizeEOL(
         `class Foo {
-
     constructor(x: Int) {
         println(x)
     }
@@ -144,14 +143,14 @@ describe('ktClass', () => {
   });
 
   it('should write base class', () => {
-    builder.append(ktClass('Foo', { baseClass: 'Bar' }));
+    builder.append(ktClass('Foo', { extends: 'Bar' }));
     expect(builder.toString(false)).toBe(`class Foo : Bar${EOL}`);
   });
 
   it('should write base class constructor arguments', () => {
     builder.append(
       ktClass('Foo', {
-        baseClass: 'Bar',
+        extends: 'Bar',
         primaryConstructor: ktConstructor([], null, { delegateTarget: 'super', delegateArguments: ['1337', '4711'] }),
       })
     );
@@ -159,8 +158,13 @@ describe('ktClass', () => {
   });
 
   it('should write implemented interfaces', () => {
-    builder.append(ktClass('Foo', { implementedInterfaces: ['Bar', 'Baz'] }));
+    builder.append(ktClass('Foo', { implements: ['Bar', 'Baz'] }));
     expect(builder.toString(false)).toBe(`class Foo : Bar, Baz${EOL}`);
+  });
+
+  it('should write companion object', () => {
+    builder.append(ktClass('Foo', { companionObject: ktObject() }));
+    expect(builder.toString(false)).toBe(`class Foo {${EOL}    companion object${EOL}}${EOL}`);
   });
 
   it('should write all parts of the class', () => {
@@ -178,13 +182,14 @@ describe('ktClass', () => {
         open: true,
         abstract: true,
         classKind: 'annotation',
-        baseClass: 'Bar',
-        implementedInterfaces: ['Baz'],
+        extends: 'Bar',
+        implements: ['Baz'],
+        companionObject: ktObject(),
       })
     );
     expect(builder.toString(false)).toBe(
       normalizeEOL(
-        `/**${EOL} * This is a class${EOL} */${EOL}@Inject${EOL}@Optional${EOL}private open abstract annotation class Foo<T, U>(x: Int) : Bar(x), Baz {${EOL}    val y: Int?${EOL}}${EOL}`
+        `/**${EOL} * This is a class${EOL} */${EOL}@Inject${EOL}@Optional${EOL}private open abstract annotation class Foo<T, U>(x: Int) : Bar(x), Baz {${EOL}    val y: Int?${EOL}${EOL}    companion object${EOL}}${EOL}`
       )
     );
   });
