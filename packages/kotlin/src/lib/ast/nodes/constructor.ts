@@ -1,4 +1,11 @@
-import { AppendValue, AstNodeOptions, SourceBuilder, StringSuggestions, suggestionsAsString } from '@goast/core';
+import {
+  AppendValue,
+  AstNodeOptions,
+  Nullable,
+  SourceBuilder,
+  StringSuggestions,
+  suggestionsAsString,
+} from '@goast/core';
 
 import { KtAnnotation, writeKtAnnotations } from './annotation';
 import { KtParameter, writeKtParameters } from './parameter';
@@ -19,13 +26,13 @@ export type KtConstructor<TBuilder extends SourceBuilder = KtDefaultBuilder> = K
 };
 
 export function ktConstructor<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  parameters: KtParameter<TBuilder>[],
-  body: AppendValue<TBuilder>,
+  parameters?: Nullable<KtParameter<TBuilder>[]>,
+  body?: AppendValue<TBuilder>,
   options?: AstNodeOptions<KtConstructor<TBuilder>, 'parameters' | 'body'>
 ): KtConstructor<TBuilder> {
   return {
     ...ktNode(ktConstructorNodeKind, options),
-    parameters,
+    parameters: parameters ?? [],
     body,
     accessibility: options?.accessibility ?? null,
     annotations: options?.annotations ?? [],
@@ -58,5 +65,24 @@ export function writeKtConstructor<TBuilder extends SourceBuilder>(
         ' '
       )
       .parenthesize('{}', node.body, { multiline: !!node.body })
+  );
+}
+
+export function writeKtPrimaryConstructor<TBuilder extends SourceBuilder>(
+  builder: TBuilder,
+  node: KtConstructor<TBuilder>
+): TBuilder {
+  if (node.parameters.length === 0 && !node.accessibility && node.annotations.length === 0) {
+    return builder;
+  }
+
+  const needsCtorKeyword = node.annotations.length > 0 || !!node.accessibility;
+  return writeKtNode(builder, node, (b) =>
+    b
+      .appendIf(needsCtorKeyword, ' ')
+      .append((b) => writeKtAnnotations(b, node.annotations, false))
+      .appendIf(!!node.accessibility, node.accessibility, ' ')
+      .appendIf(needsCtorKeyword, 'constructor')
+      .appendIf(needsCtorKeyword || node.parameters.length > 0, (b) => writeKtParameters(b, node.parameters))
   );
 }

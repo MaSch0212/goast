@@ -1,10 +1,10 @@
 export * from './annotation';
-// export * from './class';
+export * from './class';
 export * from './constructor';
 export * from './doc-tag';
 export * from './doc';
-// export * from './enum-value';
-// export * from './enum';
+export * from './enum-value';
+export * from './enum';
 export * from './function';
 export * from './generic-parameter';
 export * from './init-block';

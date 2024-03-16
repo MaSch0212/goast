@@ -119,6 +119,7 @@ export function writeKtProperty<TBuilder extends SourceBuilder = KtDefaultBuilde
           .appendIf(!!node.getter, '\n', (b) => writeKtPropertyAccessor(b, node.getter!, 'get'))
           .appendIf(!!node.setter, '\n', (b) => writeKtPropertyAccessor(b, node.setter!, 'set'))
       )
+      .appendLine()
   );
 }
 

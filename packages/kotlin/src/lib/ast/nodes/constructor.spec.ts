@@ -1,7 +1,7 @@
 import { EOL } from 'os';
 
 import { ktAnnotation } from '.';
-import { ktConstructor } from './constructor';
+import { ktConstructor, writeKtPrimaryConstructor } from './constructor';
 import { ktParameter } from './parameter';
 import { KotlinFileBuilder } from '../../file-builder';
 
@@ -64,5 +64,52 @@ describe('ktConstructor', () => {
   it('should render injections', () => {
     builder.append(ktConstructor([], null, { inject: { before: ['before'], after: ['after'] } }));
     expect(builder.toString(false)).toBe(`beforeconstructor() {}after`);
+  });
+});
+
+describe('ktPrimaryConstructor', () => {
+  let builder: KotlinFileBuilder;
+
+  beforeEach(() => {
+    builder = new KotlinFileBuilder();
+  });
+
+  it('should not write anything if there are no parameters, accessibility, or annotations', () => {
+    writeKtPrimaryConstructor(builder, ktConstructor());
+    expect(builder.toString(false)).toBe('');
+  });
+
+  it('should not write body', () => {
+    writeKtPrimaryConstructor(builder, ktConstructor([], 'println("Hello")'));
+    expect(builder.toString(false)).toBe('');
+  });
+
+  it('should write accessibility', () => {
+    writeKtPrimaryConstructor(builder, ktConstructor([], null, { accessibility: 'private' }));
+    expect(builder.toString(false)).toBe(' private constructor()');
+  });
+
+  it('should write annotations', () => {
+    writeKtPrimaryConstructor(
+      builder,
+      ktConstructor([], null, { annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')] })
+    );
+    expect(builder.toString(false)).toBe(' @Inject @Optional constructor()');
+  });
+
+  it('should write parameters', () => {
+    writeKtPrimaryConstructor(builder, ktConstructor([ktParameter('x', 'Int')], null));
+    expect(builder.toString(false)).toBe('(x: Int)');
+  });
+
+  it('should write all the parts of the primary constructor', () => {
+    writeKtPrimaryConstructor(
+      builder,
+      ktConstructor([ktParameter('x', 'Int')], 'println("Hello")', {
+        accessibility: 'private',
+        annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')],
+      })
+    );
+    expect(builder.toString(false)).toBe(' @Inject @Optional private constructor(x: Int)');
   });
 });

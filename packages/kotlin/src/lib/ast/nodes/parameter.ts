@@ -15,16 +15,21 @@ export type KtParameter<TBuilder extends SourceBuilder = KtDefaultBuilder> = KtN
   annotations: KtAnnotation<TBuilder>[];
   default: AppendValue<TBuilder> | null;
   vararg: boolean;
+  description: AppendValue<TBuilder>;
 
   // class parameter options
   accessibility: KtAccessibility;
   property: 'readonly' | 'mutable' | null;
+  propertyDescription: AppendValue<TBuilder>;
 };
 
 export function ktParameter<TBuilder extends SourceBuilder = KtDefaultBuilder>(
   name: string,
   type: AppendValue<TBuilder>,
-  options?: AstNodeOptions<KtParameter<TBuilder>, 'name' | 'type' | 'accessibility' | 'property'>
+  options?: AstNodeOptions<
+    KtParameter<TBuilder>,
+    'name' | 'type' | 'accessibility' | 'property' | 'propertyDescription'
+  >
 ): KtParameter<TBuilder> {
   return {
     ...ktNode(ktParameterNodeKind, options),
@@ -33,8 +38,10 @@ export function ktParameter<TBuilder extends SourceBuilder = KtDefaultBuilder>(
     annotations: options?.annotations ?? [],
     default: options?.default ?? null,
     vararg: options?.vararg ?? false,
+    description: options?.description ?? null,
     accessibility: null,
     property: null,
+    propertyDescription: null,
   };
 }
 
@@ -50,8 +57,10 @@ export function ktClassParameter<TBuilder extends SourceBuilder = KtDefaultBuild
     annotations: options?.annotations ?? [],
     default: options?.default ?? null,
     vararg: options?.vararg ?? false,
+    description: options?.description ?? null,
     accessibility: options?.accessibility ?? null,
     property: options?.property ?? null,
+    propertyDescription: options?.propertyDescription ?? null,
   };
 }
 

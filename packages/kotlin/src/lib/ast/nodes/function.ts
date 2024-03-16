@@ -1,6 +1,7 @@
 import { SourceBuilder, AppendValue, AstNodeOptions } from '@goast/core';
 
 import { KtAnnotation, writeKtAnnotations } from './annotation';
+import { KtDoc } from './doc';
 import { KtGenericParameter, writeKtGenericParameters } from './generic-parameter';
 import { KtParameter, writeKtParameters } from './parameter';
 import { KtReference } from './reference';
@@ -16,6 +17,7 @@ export type KtFunction<TBuilder extends SourceBuilder = KtDefaultBuilder> = KtNo
   name: string;
   generics: KtGenericParameter<TBuilder>[];
   parameters: KtParameter<TBuilder>[];
+  doc: KtDoc<TBuilder> | null;
   returnType: AppendValue<TBuilder>;
   body: AppendValue<TBuilder>;
   accessibility: KtAccessibility;
@@ -31,6 +33,9 @@ export type KtFunction<TBuilder extends SourceBuilder = KtDefaultBuilder> = KtNo
   override: boolean;
   abstract: boolean;
   inject: {
+    beforeDoc: AppendValue<TBuilder>;
+    afterDoc: AppendValue<TBuilder>;
+    beforeAnnotations: AppendValue<TBuilder>;
     afterAnnotations: AppendValue<TBuilder>;
     beforeKeywords: AppendValue<TBuilder>;
     afterKeywords: AppendValue<TBuilder>;
@@ -59,6 +64,7 @@ export function ktFunction<TBuilder extends SourceBuilder = KtDefaultBuilder>(
     name,
     generics: options?.generics ?? [],
     parameters: options?.parameters ?? [],
+    doc: options?.doc ?? null,
     returnType: options?.returnType ?? null,
     body: options?.body ?? null,
     accessibility: options?.accessibility ?? null,
@@ -75,6 +81,9 @@ export function ktFunction<TBuilder extends SourceBuilder = KtDefaultBuilder>(
     abstract: options?.abstract ?? false,
     inject: {
       ...base.inject,
+      beforeDoc: options?.inject?.beforeDoc ?? null,
+      afterDoc: options?.inject?.afterDoc ?? null,
+      beforeAnnotations: options?.inject?.beforeAnnotations ?? null,
       afterAnnotations: options?.inject?.afterAnnotations ?? null,
       beforeKeywords: options?.inject?.beforeKeywords ?? null,
       afterKeywords: options?.inject?.afterKeywords ?? null,
@@ -106,6 +115,10 @@ export function writeKtFunction<TBuilder extends SourceBuilder = KtDefaultBuilde
 ): TBuilder {
   return writeKtNode(builder, node, (b) =>
     b
+      .append(node.inject.beforeDoc)
+      .append((b) => writeKt(b, node.doc))
+      .append(node.inject.afterDoc)
+      .append(node.inject.beforeAnnotations)
       .append((b) => writeKtAnnotations(b, node.annotations, true))
       .append(node.inject.afterAnnotations)
       .appendIf(!!node.accessibility, node.accessibility, ' ')

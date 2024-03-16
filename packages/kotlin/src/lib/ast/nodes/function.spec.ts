@@ -1,6 +1,7 @@
 import { EOL } from 'os';
 
 import { ktAnnotation } from './annotation';
+import { ktDoc } from './doc';
 import { ktFunction } from './function';
 import { ktGenericParameter } from './generic-parameter';
 import { ktParameter } from './parameter';
@@ -108,12 +109,18 @@ describe('ktFunction', () => {
     expect(builder.toString(false)).toBe('abstract fun foo()');
   });
 
+  it('should write documenation if it exists', () => {
+    builder.append(ktFunction('foo', { doc: ktDoc('This is a function') }));
+    expect(builder.toString(false)).toBe(`/**${EOL} * This is a function${EOL} */${EOL}fun foo() {}`);
+  });
+
   it('should write all the parts of the function', () => {
     builder.append(
       ktFunction('foo', {
         generics: [ktGenericParameter('T')],
         parameters: [ktParameter('x', 'Int')],
         returnType: 'Int',
+        doc: ktDoc('This is a function'),
         body: 'println("Hello")',
         accessibility: 'private',
         annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')],
@@ -129,7 +136,7 @@ describe('ktFunction', () => {
       })
     );
     expect(builder.toString(false)).toBe(
-      `@Inject${EOL}@Optional${EOL}private inline infix tailrec open override operator fun <T> @Fancy String.foo(x: Int): Int = println("Hello")`
+      `/**${EOL} * This is a function${EOL} */${EOL}@Inject${EOL}@Optional${EOL}private inline infix tailrec open override operator fun <T> @Fancy String.foo(x: Int): Int = println("Hello")`
     );
   });
 
@@ -138,6 +145,7 @@ describe('ktFunction', () => {
       ktFunction('foo', {
         generics: [ktGenericParameter('T')],
         parameters: [ktParameter('x', 'Int')],
+        doc: ktDoc('This is a function'),
         returnType: 'Int',
         body: 'println("Hello")',
         accessibility: 'private',
@@ -168,12 +176,15 @@ describe('ktFunction', () => {
           afterReceiverType: '[art]',
           beforeReceiverAnnotations: '[bra]',
           afterReceiverAnnotations: '[ara]',
+          beforeAnnotations: '[ba]',
           afterAnnotations: '[aa]',
+          beforeDoc: '[bd]',
+          afterDoc: '[ad]',
         },
       })
     );
     expect(builder.toString(false)).toBe(
-      `[bg]@Inject${EOL}@Optional${EOL}[aa]private [bk]inline infix tailrec open override operator [ak]fun [bgg]<T>[agg] [bra]@Fancy [ara][brt]String[art].[bn]foo[an][bp](x: Int)[ap]: [br]Int[ar] = println("Hello")[ag]`
+      `[bg][bd]${EOL}/**${EOL} * This is a function${EOL} */${EOL}[ad][ba]@Inject${EOL}@Optional${EOL}[aa]private [bk]inline infix tailrec open override operator [ak]fun [bgg]<T>[agg] [bra]@Fancy [ara][brt]String[art].[bn]foo[an][bp](x: Int)[ap]: [br]Int[ar] = println("Hello")[ag]`
     );
   });
 });

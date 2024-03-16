@@ -13,72 +13,72 @@ describe('ktProperty', () => {
 
   it('should write a property', () => {
     builder.append(ktProperty('x'));
-    expect(builder.toString(false)).toBe('val x: Any?');
+    expect(builder.toString(false)).toBe(`val x: Any?${EOL}`);
   });
 
   it('should write a property with a default value', () => {
     builder.append(ktProperty('x', { default: '42' }));
-    expect(builder.toString(false)).toBe('val x = 42');
+    expect(builder.toString(false)).toBe(`val x = 42${EOL}`);
   });
 
   it('should write a mutable property', () => {
     builder.append(ktProperty('x', { mutable: true }));
-    expect(builder.toString(false)).toBe('var x: Any?');
+    expect(builder.toString(false)).toBe(`var x: Any?${EOL}`);
   });
 
   it('should write a property with a type', () => {
     builder.append(ktProperty('x', { type: 'Int' }));
-    expect(builder.toString(false)).toBe('val x: Int');
+    expect(builder.toString(false)).toBe(`val x: Int${EOL}`);
   });
 
   it('should write all annotations', () => {
     builder.append(ktProperty('x', { annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')] }));
-    expect(builder.toString(false)).toBe(`@Inject${EOL}@Optional${EOL}val x: Any?`);
+    expect(builder.toString(false)).toBe(`@Inject${EOL}@Optional${EOL}val x: Any?${EOL}`);
   });
 
   it('should write the const keyword if configured', () => {
     builder.append(ktProperty('x', { const: true }));
-    expect(builder.toString(false)).toBe('const val x: Any?');
+    expect(builder.toString(false)).toBe(`const val x: Any?${EOL}`);
   });
 
   it('should write the lateinit keyword if configured', () => {
     builder.append(ktProperty('x', { lateinit: true }));
-    expect(builder.toString(false)).toBe('lateinit val x: Any?');
+    expect(builder.toString(false)).toBe(`lateinit val x: Any?${EOL}`);
   });
 
   it('should write the open keyword if configured', () => {
     builder.append(ktProperty('x', { open: true }));
-    expect(builder.toString(false)).toBe('open val x: Any?');
+    expect(builder.toString(false)).toBe(`open val x: Any?${EOL}`);
   });
 
   it('should write the override keyword if configured', () => {
     builder.append(ktProperty('x', { override: true }));
-    expect(builder.toString(false)).toBe('override val x: Any?');
+    expect(builder.toString(false)).toBe(`override val x: Any?${EOL}`);
   });
 
   it('should write the abstract keyword if configured', () => {
     builder.append(ktProperty('x', { abstract: true }));
-    expect(builder.toString(false)).toBe('abstract val x: Any?');
+    expect(builder.toString(false)).toBe(`abstract val x: Any?${EOL}`);
   });
 
   it('should write the delegate if it exists', () => {
     builder.append(ktProperty('x', { delegate: 'lazy' }));
-    expect(builder.toString(false)).toBe('val x: Any? by lazy');
+    expect(builder.toString(false)).toBe(`val x: Any? by lazy${EOL}`);
   });
 
   it('should write the delegate with arguments if they exist', () => {
     builder.append(ktProperty('x', { delegate: 'lazy', delegateArguments: ['42', 'true'] }));
-    expect(builder.toString(false)).toBe('val x: Any? by lazy(42, true)');
+    expect(builder.toString(false)).toBe(`val x: Any? by lazy(42, true)${EOL}`);
   });
 
   it('should write the getter if it exists', () => {
     builder.append(ktProperty('x', { getter: ktPropertyAccessor() }));
-    expect(builder.toString(false)).toBe(`val x: Any?${EOL}    get`);
+    expect(builder.toString(false)).toBe(`val x: Any?${EOL}    get${EOL}`);
   });
 
   it('should write the setter if it exists', () => {
     builder.append(ktProperty('x', { setter: ktPropertyAccessor() }));
-    expect(builder.toString(false)).toBe(`var x: Any?${EOL}    set`);
+    expect(builder.toString(false)).toBe(`var x: Any?${EOL}    set${EOL}`);
   });
 
   it('should write all the parts of the property', () => {
@@ -100,13 +100,13 @@ describe('ktProperty', () => {
       })
     );
     expect(builder.toString(false)).toBe(
-      `@Inject${EOL}@Optional${EOL}const lateinit abstract override open var x: Int = 42 by lazy(42, true)${EOL}    get${EOL}    set`
+      `@Inject${EOL}@Optional${EOL}const lateinit abstract override open var x: Int = 42 by lazy(42, true)${EOL}    get${EOL}    set${EOL}`
     );
   });
 
   it('should render injections', () => {
     builder.append(ktProperty('x', { inject: { before: ['before'], after: ['after'] } }));
-    expect(builder.toString(false)).toBe('beforeval x: Any?after');
+    expect(builder.toString(false)).toBe(`beforeval x: Any?${EOL}after`);
   });
 });
 
