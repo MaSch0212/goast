@@ -28,7 +28,7 @@ for (const [version, path] of Object.entries(filePaths)) {
           delete (schema.$src as any).document;
         }
 
-        await verify(data.schemas);
+        await verify(data);
       });
     }
   });

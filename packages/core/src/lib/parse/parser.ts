@@ -62,7 +62,7 @@ export class OpenApiParser {
       document: existingDocument.dereferencedDocument,
       originalComponent: value,
     });
-    existingDocument.dereferencedComponents.set(path, result);
+    existingDocument.dereferencedComponents.set(path, result as Deref<OpenApiObject<string>>);
 
     if (value.$ref) {
       result.$ref = await this.resolveReference<T>(file, value as OpenApiReference);

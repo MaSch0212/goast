@@ -5,6 +5,7 @@ info:
 
 paths:
   /x:
+    x-ignore: true
     get:
       responses:
         200:
