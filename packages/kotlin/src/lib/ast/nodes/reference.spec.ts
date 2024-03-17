@@ -29,6 +29,11 @@ describe('ktReference', () => {
     ]);
   });
 
+  it('should render nullable', () => {
+    builder.append(ktReference('MyClass', null, { nullable: true }));
+    expect(builder.toString(false)).toBe('MyClass?');
+  });
+
   it('should render injections', () => {
     builder.append(ktReference('MyClass', null, { inject: { before: 'before', after: 'after' } }));
     expect(builder.toString(false)).toBe('beforeMyClassafter');

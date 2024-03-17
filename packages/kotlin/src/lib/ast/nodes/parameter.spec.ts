@@ -74,6 +74,14 @@ describe('ktParameter', () => {
       writeKtParameters(builder, [ktParameter('x', 'Int', { annotations: [ktAnnotation('Inject')] })]);
       expect(builder.toString(false)).toBe(`(${EOL}    @Inject${EOL}    x: Int${EOL})`);
     });
+
+    it('shoudl add spacing if one parameter has annotations', () => {
+      writeKtParameters(builder, [
+        ktParameter('x', 'Int'),
+        ktParameter('y', 'String', { annotations: [ktAnnotation('Inject')] }),
+      ]);
+      expect(builder.toString(false)).toBe(`(${EOL}    x: Int,${EOL}${EOL}    @Inject${EOL}    y: String${EOL})`);
+    });
   });
 });
 

@@ -6,12 +6,12 @@ Map(10) {
     '\n' +
     '/**\n' +
     ' * My Object Description\n' +
+    ' * \n' +
     ' * @param a My Property Description\n' +
     ' * @param b My Property Description\n' +
     ' * With Multiple Lines\n' +
-    ' *  */\n' +
+    ' */\n' +
     'data class ObjectWithDescription(\n' +
-    '\n' +
     '    @Schema(description = "My Property Description")\n' +
     '    @JsonProperty("a")\n' +
     '    val a: String? = null,\n' +
@@ -19,14 +19,13 @@ Map(10) {
     '    @Schema(description = "My Property Description\\nWith Multiple Lines\\n")\n' +
     '    @JsonProperty("b")\n' +
     '    val b: Int? = null\n' +
-    ') \n',
+    ')\n',
   'out/com/openapi/generated/model/ObjectWithNullableProperties.kt' => 'package com.openapi.generated.model\n' +
     '\n' +
     'import com.fasterxml.jackson.annotation.JsonProperty\n' +
     'import io.swagger.v3.oas.annotations.media.Schema\n' +
     '\n' +
     'data class ObjectWithNullableProperties(\n' +
-    '\n' +
     '    @Schema\n' +
     '    @JsonProperty("a")\n' +
     '    val a: String? = null,\n' +
@@ -50,14 +49,13 @@ Map(10) {
     '    @Schema\n' +
     '    @JsonProperty("f")\n' +
     '    val f: Any? = null\n' +
-    ') \n',
+    ')\n',
   'out/com/openapi/generated/model/ObjectWithNullablePropertiesAndRequiredProperties.kt' => 'package com.openapi.generated.model\n' +
     '\n' +
     'import com.fasterxml.jackson.annotation.JsonProperty\n' +
     'import io.swagger.v3.oas.annotations.media.Schema\n' +
     '\n' +
     'data class ObjectWithNullablePropertiesAndRequiredProperties(\n' +
-    '\n' +
     '    @Schema(required = true)\n' +
     '    @JsonProperty("a", required = true)\n' +
     '    val a: String?,\n' +
@@ -81,14 +79,13 @@ Map(10) {
     '    @Schema(required = true)\n' +
     '    @JsonProperty("f", required = true)\n' +
     '    val f: Any?\n' +
-    ') \n',
+    ')\n',
   'out/com/openapi/generated/model/ObjectWithProperties.kt' => 'package com.openapi.generated.model\n' +
     '\n' +
     'import com.fasterxml.jackson.annotation.JsonProperty\n' +
     'import io.swagger.v3.oas.annotations.media.Schema\n' +
     '\n' +
     'data class ObjectWithProperties(\n' +
-    '\n' +
     '    @Schema\n' +
     '    @JsonProperty("a")\n' +
     '    val a: String? = null,\n' +
@@ -112,14 +109,13 @@ Map(10) {
     '    @Schema\n' +
     '    @JsonProperty("f")\n' +
     '    val f: Any? = null\n' +
-    ') \n',
+    ')\n',
   'out/com/openapi/generated/model/ObjectWithPropertiesAllOf.kt' => 'package com.openapi.generated.model\n' +
     '\n' +
     'import com.fasterxml.jackson.annotation.JsonProperty\n' +
     'import io.swagger.v3.oas.annotations.media.Schema\n' +
     '\n' +
     'data class ObjectWithPropertiesAllOf(\n' +
-    '\n' +
     '    @Schema(required = true)\n' +
     '    @JsonProperty("g", required = true)\n' +
     '    val g: String,\n' +
@@ -167,7 +163,7 @@ Map(10) {
     '    @Schema(required = true)\n' +
     '    @JsonProperty("r", required = true)\n' +
     '    val r: Any\n' +
-    ') \n',
+    ')\n',
   'out/com/openapi/generated/model/ObjectWithPropertiesAndAdditionalProperties.kt' => 'package com.openapi.generated.model\n' +
     '\n' +
     'import com.fasterxml.jackson.annotation.JsonAnyGetter\n' +
@@ -177,7 +173,6 @@ Map(10) {
     'import io.swagger.v3.oas.annotations.media.Schema\n' +
     '\n' +
     'data class ObjectWithPropertiesAndAdditionalProperties(\n' +
-    '\n' +
     '    @Schema\n' +
     '    @JsonProperty("a")\n' +
     '    val a: String? = null,\n' +
@@ -215,14 +210,13 @@ Map(10) {
     '        return this.additionalProperties\n' +
     '    }\n' +
     '}\n',
-  'out/com/openapi/generated/model/ObjectWithReferencesInAllOf.kt' => 'package com.openapi.generated.model\n\nAny\n',
+  'out/com/openapi/generated/model/ObjectWithReferencesInAllOf.kt' => 'package com.openapi.generated.model\n\nclass ObjectWithReferencesInAllOf\n',
   'out/com/openapi/generated/model/ObjectWithReferencesInProperties.kt' => 'package com.openapi.generated.model\n' +
     '\n' +
     'import com.fasterxml.jackson.annotation.JsonProperty\n' +
     'import io.swagger.v3.oas.annotations.media.Schema\n' +
     '\n' +
     'data class ObjectWithReferencesInProperties(\n' +
-    '\n' +
     '    @Schema\n' +
     '    @JsonProperty("a")\n' +
     '    val a: Any? = null,\n' +
@@ -238,14 +232,13 @@ Map(10) {
     '    @Schema\n' +
     '    @JsonProperty("d")\n' +
     '    val d: String? = null\n' +
-    ') \n',
+    ')\n',
   'out/com/openapi/generated/model/ObjectWithRequiredProperties.kt' => 'package com.openapi.generated.model\n' +
     '\n' +
     'import com.fasterxml.jackson.annotation.JsonProperty\n' +
     'import io.swagger.v3.oas.annotations.media.Schema\n' +
     '\n' +
     'data class ObjectWithRequiredProperties(\n' +
-    '\n' +
     '    @Schema(required = true)\n' +
     '    @JsonProperty("a", required = true)\n' +
     '    val a: String,\n' +
@@ -269,7 +262,7 @@ Map(10) {
     '    @Schema(required = true)\n' +
     '    @JsonProperty("f", required = true)\n' +
     '    val f: Any\n' +
-    ') \n',
+    ')\n',
   'state' => {
     models: {
       'schema-1': {

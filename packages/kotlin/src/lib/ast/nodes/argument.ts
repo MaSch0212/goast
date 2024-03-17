@@ -23,6 +23,14 @@ export function ktArgument<TBuilder extends SourceBuilder = KtDefaultBuilder>(
   };
 }
 
+export function ktNamedArgument<TBuilder extends SourceBuilder = KtDefaultBuilder>(
+  name: string,
+  value: AppendValue<TBuilder>,
+  options?: AstNodeOptions<KtArgument<TBuilder>, 'name' | 'value'>
+): KtArgument<TBuilder> {
+  return ktArgument(value, { ...options, name });
+}
+
 export function isKtArgument<TBuilder extends SourceBuilder = KtDefaultBuilder>(
   node: unknown
 ): node is KtArgument<TBuilder> {

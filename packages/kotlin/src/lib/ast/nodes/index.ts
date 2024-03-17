@@ -1,5 +1,6 @@
 export * from './annotation';
 export * from './argument';
+export * from './call';
 export * from './class';
 export * from './constructor';
 export * from './doc-tag';

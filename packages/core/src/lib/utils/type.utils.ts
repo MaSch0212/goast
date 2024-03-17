@@ -8,6 +8,8 @@ export type RequiredProperties<T, K extends keyof T> = Omit<T, K> & Required<Pic
 
 export type ArrayItem<T> = T extends (infer U)[] ? U : never;
 export type SingleOrMultiple<T> = T | T[];
+export type Single<T> = T extends (infer U)[] ? U : T;
+export type Multiple<T> = T extends (infer U)[] ? U[] : T[];
 
 export type Nullable<T> = T | null | undefined;
 
@@ -81,3 +83,6 @@ export type ParametersWithOverloads<T extends (...args: any[]) => any> = T exten
     }
   ? A1
   : never;
+
+type _TupleOf<T, N extends number, R extends unknown[]> = R['length'] extends N ? R : _TupleOf<T, N, [T, ...R]>;
+export type TupleWithCount<T, N extends number> = N extends N ? (number extends N ? T[] : _TupleOf<T, N, []>) : never;

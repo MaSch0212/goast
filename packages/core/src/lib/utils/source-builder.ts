@@ -149,7 +149,7 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
       value = value.toString();
     }
     if (typeof value === 'object' && value !== null && '__type' in value && value.__type === 'append-value-group') {
-      this.forEach(value.values, (builder, part) => builder.append(part), { separator: value.separator });
+      this.forEach(value.values, (builder, part) => builder.append(part), { separator: value.separator ?? undefined });
       return;
     }
     if (typeof value !== 'string') {

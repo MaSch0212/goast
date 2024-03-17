@@ -19,7 +19,7 @@ describe('ktArgument', () => {
   });
 
   it('should render injections', () => {
-    builder.append(ktArgument('123', { inject: { before: 'before', after: 'afgter' } }));
-    expect(builder.toString(false)).toBe('beforeyafter');
+    builder.append(ktArgument('123', { inject: { before: 'before', after: 'after' } }));
+    expect(builder.toString(false)).toBe('before123after');
   });
 });

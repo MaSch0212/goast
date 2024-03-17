@@ -14,7 +14,7 @@ export type AppendParam<TBuilder extends StringBuilder, TAdditionalAppends> = Si
   | {
       __type: 'append-value-group';
       values: AppendParam<TBuilder, TAdditionalAppends>[];
-      separator: string;
+      separator: string | null;
     }
 >;
 
@@ -81,7 +81,7 @@ export class StringBuilder<TAdditionalAppends = never> {
     ) {
       let isFirst = true;
       for (const part of value.values) {
-        if (!isFirst) {
+        if (!isFirst && value.separator) {
           this.append(value.separator);
         }
         this.appendSingle(part);

@@ -1,4 +1,4 @@
-import { SourceBuilder, AppendValue, AstNodeOptions } from '@goast/core';
+import { SourceBuilder, AppendValue, AstNodeOptions, TupleWithCount } from '@goast/core';
 
 import { KtDefaultBuilder, KtNode, isKtNode, ktNode, writeKtNode } from '../common';
 
@@ -11,6 +11,7 @@ export type KtReference<TBuilder extends SourceBuilder = KtDefaultBuilder> = KtN
   name: string;
   packageName: string | null;
   generics: AppendValue<TBuilder>[];
+  nullable: boolean;
 };
 
 export function ktReference<TBuilder extends SourceBuilder = KtDefaultBuilder>(
@@ -23,7 +24,28 @@ export function ktReference<TBuilder extends SourceBuilder = KtDefaultBuilder>(
     name,
     packageName: packageName ?? null,
     generics: options?.generics ?? [],
+    nullable: options?.nullable ?? false,
   };
+}
+
+export function ktReferenceFactory<TBuilder extends SourceBuilder = KtDefaultBuilder>(
+  name: string,
+  packageName?: string | null,
+  options?: AstNodeOptions<KtReference<TBuilder>, 'name' | 'packageName'>
+): (nullable?: boolean) => KtReference<TBuilder> {
+  return (nullable) => ktReference(name, packageName, { ...options, nullable: nullable ?? options?.nullable });
+}
+
+export function ktGenericReferenceFactory<
+  TGenericCount extends number,
+  TBuilder extends SourceBuilder = KtDefaultBuilder
+>(
+  name: string,
+  packageName?: string | null,
+  options?: AstNodeOptions<KtReference<TBuilder>, 'name' | 'packageName'>
+): (generics: TupleWithCount<AppendValue<TBuilder>, TGenericCount>, nullable?: boolean) => KtReference<TBuilder> {
+  return (generics, nullable) =>
+    ktReference(name, packageName, { ...options, generics, nullable: nullable ?? options?.nullable });
 }
 
 export function isKtReference<TBuilder extends SourceBuilder = KtDefaultBuilder>(
@@ -44,5 +66,6 @@ export function writeKtReference<TBuilder extends KtDefaultBuilder = KtDefaultBu
     if (node.packageName) {
       b.addImport(node.name, node.packageName);
     }
+    b.appendIf(node.nullable, '?');
   });
 }

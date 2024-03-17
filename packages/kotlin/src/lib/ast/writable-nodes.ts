@@ -3,6 +3,7 @@ import { AppendValue, SourceBuilder, isAppendValue, isAppendValueGroup, notNulli
 import { KtDefaultBuilder, isKtNode } from './common';
 import { KtAnnotation, ktAnnotationNodeKind, writeKtAnnotation } from './nodes/annotation';
 import { KtArgument, ktArgumentNodeKind, writeKtArgument } from './nodes/argument';
+import { KtCall, ktCallNodeKind, writeKtCall } from './nodes/call';
 import { KtClass, ktClassNodeKind, writeKtClass } from './nodes/class';
 import { KtConstructor, ktConstructorNodeKind, writeKtConstructor } from './nodes/constructor';
 import { KtDoc, ktDocNodeKind, writeKtDoc } from './nodes/doc';
@@ -23,6 +24,7 @@ import { KotlinFileBuilder } from '../file-builder';
 export type KtWritableNode<TBuilder extends SourceBuilder = KtDefaultBuilder> =
   | KtAnnotation<TBuilder>
   | KtArgument<TBuilder>
+  | KtCall<TBuilder>
   | KtClass<TBuilder>
   | KtConstructor<TBuilder>
   | KtDocTag<TBuilder>
@@ -49,6 +51,8 @@ export function writeKt<TBuilder extends SourceBuilder = KtDefaultBuilder>(
         return writeKtAnnotation(builder, value);
       case ktArgumentNodeKind:
         return writeKtArgument(builder, value);
+      case ktCallNodeKind:
+        return writeKtCall(builder, value);
       case ktClassNodeKind:
         return writeKtClass(builder, value);
       case ktConstructorNodeKind:

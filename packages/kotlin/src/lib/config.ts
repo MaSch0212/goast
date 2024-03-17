@@ -6,6 +6,9 @@ import {
 } from '@goast/core';
 
 export type KotlinGeneratorConfig = OpenApiGeneratorConfig & {
+  typeNameCasing: StringCasing | StringCasingWithOptions;
+  parameterNameCasing: StringCasing | StringCasingWithOptions;
+  functionNameCasing: StringCasing | StringCasingWithOptions;
   propertyNameCasing: StringCasing | StringCasingWithOptions;
   enumValueNameCasing: StringCasing | StringCasingWithOptions;
 };
@@ -14,6 +17,9 @@ export const defaultKotlinGeneratorConfig: DefaultGenerationProviderConfig<Kotli
   charsTreatedAsEmptyLine: ['{'],
   indent: { type: 'spaces', count: 4 },
 
+  typeNameCasing: 'pascal',
+  parameterNameCasing: 'camel',
+  functionNameCasing: 'camel',
   propertyNameCasing: 'camel',
   enumValueNameCasing: 'snake',
 };

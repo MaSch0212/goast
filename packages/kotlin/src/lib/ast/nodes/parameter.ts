@@ -94,9 +94,15 @@ export function writeKtParameters<TBuilder extends SourceBuilder = KtDefaultBuil
   parameters: KtParameter<TBuilder>[]
 ): TBuilder {
   const multiline = parameters.length > 2 || parameters.some((p) => isKtParameter(p) && p.annotations.length > 0);
+  const spacing = multiline && parameters.some((p) => p.annotations.length > 0);
   return builder.parenthesize(
     '()',
-    (b) => b.forEach(parameters, (b, p) => writeKt(b, p), { separator: multiline ? ',\n' : ', ' }),
+    (b) =>
+      b.forEach(
+        parameters,
+        (b, p, i) => b.if(i > 0 && spacing, (b) => b.ensurePreviousLineEmpty()).append((b) => writeKt(b, p)),
+        { separator: multiline ? ',\n' : ', ' }
+      ),
     { multiline }
   );
 }
