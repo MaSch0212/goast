@@ -1,844 +1,904 @@
-Map(10) {
-  'out/com/openapi/generated/model/ObjectWithNullableProperties.kt' => 'package com.openapi.generated.model\n' +
-    '\n' +
-    'import com.fasterxml.jackson.annotation.JsonProperty\n' +
-    'import io.swagger.v3.oas.annotations.media.Schema\n' +
-    '\n' +
-    'data class ObjectWithNullableProperties(\n' +
-    '    @Schema\n' +
-    '    @JsonProperty("a")\n' +
-    '    val a: String? = null,\n' +
-    '\n' +
-    '    @Schema\n' +
-    '    @JsonProperty("b")\n' +
-    '    val b: Int? = null,\n' +
-    '\n' +
-    '    @Schema\n' +
-    '    @JsonProperty("c")\n' +
-    '    val c: Double? = null,\n' +
-    '\n' +
-    '    @Schema\n' +
-    '    @JsonProperty("d")\n' +
-    '    val d: Boolean? = null,\n' +
-    '\n' +
-    '    @Schema\n' +
-    '    @JsonProperty("e")\n' +
-    '    val e: List<Any?>? = null,\n' +
-    '\n' +
-    '    @Schema\n' +
-    '    @JsonProperty("f")\n' +
-    '    val f: Any? = null\n' +
-    ')\n',
-  'out/com/openapi/generated/model/ObjectWithNullablePropertiesAndRequiredProperties.kt' => 'package com.openapi.generated.model\n' +
-    '\n' +
-    'import com.fasterxml.jackson.annotation.JsonProperty\n' +
-    'import io.swagger.v3.oas.annotations.media.Schema\n' +
-    '\n' +
-    'data class ObjectWithNullablePropertiesAndRequiredProperties(\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("a", required = true)\n' +
-    '    val a: String?,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("b", required = true)\n' +
-    '    val b: Int?,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("c", required = true)\n' +
-    '    val c: Double?,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("d", required = true)\n' +
-    '    val d: Boolean?,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("e", required = true)\n' +
-    '    val e: List<Any?>?,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("f", required = true)\n' +
-    '    val f: Any?\n' +
-    ')\n',
-  'out/com/openapi/generated/model/ObjectWithProperties.kt' => 'package com.openapi.generated.model\n' +
-    '\n' +
-    'import com.fasterxml.jackson.annotation.JsonProperty\n' +
-    'import io.swagger.v3.oas.annotations.media.Schema\n' +
-    '\n' +
-    'data class ObjectWithProperties(\n' +
-    '    @Schema\n' +
-    '    @JsonProperty("a")\n' +
-    '    val a: String? = null,\n' +
-    '\n' +
-    '    @Schema\n' +
-    '    @JsonProperty("b")\n' +
-    '    val b: Int? = null,\n' +
-    '\n' +
-    '    @Schema\n' +
-    '    @JsonProperty("c")\n' +
-    '    val c: Double? = null,\n' +
-    '\n' +
-    '    @Schema\n' +
-    '    @JsonProperty("d")\n' +
-    '    val d: Boolean? = null,\n' +
-    '\n' +
-    '    @Schema\n' +
-    '    @JsonProperty("e")\n' +
-    '    val e: List<Any?>? = null,\n' +
-    '\n' +
-    '    @Schema\n' +
-    '    @JsonProperty("f")\n' +
-    '    val f: Any? = null\n' +
-    ')\n',
-  'out/com/openapi/generated/model/ObjectWithPropertiesAllOfAndAnyOf.kt' => 'package com.openapi.generated.model\n' +
-    '\n' +
-    'import com.fasterxml.jackson.annotation.JsonProperty\n' +
-    'import io.swagger.v3.oas.annotations.media.Schema\n' +
-    '\n' +
-    'data class ObjectWithPropertiesAllOfAndAnyOf(\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("g", required = true)\n' +
-    '    val g: String,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("h", required = true)\n' +
-    '    val h: Int,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("i", required = true)\n' +
-    '    val i: Double,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("j", required = true)\n' +
-    '    val j: Boolean,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("k", required = true)\n' +
-    '    val k: List<Any?>,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("l", required = true)\n' +
-    '    val l: Any,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("m", required = true)\n' +
-    '    val m: String,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("n", required = true)\n' +
-    '    val n: Int,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("o", required = true)\n' +
-    '    val o: Double,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("p", required = true)\n' +
-    '    val p: Boolean,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("q", required = true)\n' +
-    '    val q: List<Any?>,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("r", required = true)\n' +
-    '    val r: Any,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("s", required = true)\n' +
-    '    val s: String,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("t", required = true)\n' +
-    '    val t: Int,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("u", required = true)\n' +
-    '    val u: Double,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("v", required = true)\n' +
-    '    val v: Boolean,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("w", required = true)\n' +
-    '    val w: List<Any?>,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("x", required = true)\n' +
-    '    val x: Any,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("y", required = true)\n' +
-    '    val y: String,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("z", required = true)\n' +
-    '    val z: Int,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("aa", required = true)\n' +
-    '    val aa: Double,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("bb", required = true)\n' +
-    '    val bb: Boolean,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("cc", required = true)\n' +
-    '    val cc: List<Any?>,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("dd", required = true)\n' +
-    '    val dd: Any\n' +
-    ')\n',
-  'out/com/openapi/generated/model/ObjectWithPropertiesAndAdditionalProperties.kt' => 'package com.openapi.generated.model\n' +
-    '\n' +
-    'import com.fasterxml.jackson.annotation.JsonAnyGetter\n' +
-    'import com.fasterxml.jackson.annotation.JsonAnySetter\n' +
-    'import com.fasterxml.jackson.annotation.JsonIgnore\n' +
-    'import com.fasterxml.jackson.annotation.JsonProperty\n' +
-    'import io.swagger.v3.oas.annotations.media.Schema\n' +
-    '\n' +
-    'data class ObjectWithPropertiesAndAdditionalProperties(\n' +
-    '    @Schema\n' +
-    '    @JsonProperty("a")\n' +
-    '    val a: String? = null,\n' +
-    '\n' +
-    '    @Schema\n' +
-    '    @JsonProperty("b")\n' +
-    '    val b: Int? = null,\n' +
-    '\n' +
-    '    @Schema\n' +
-    '    @JsonProperty("c")\n' +
-    '    val c: Double? = null,\n' +
-    '\n' +
-    '    @Schema\n' +
-    '    @JsonProperty("d")\n' +
-    '    val d: Boolean? = null,\n' +
-    '\n' +
-    '    @Schema\n' +
-    '    @JsonProperty("e")\n' +
-    '    val e: List<Any?>? = null,\n' +
-    '\n' +
-    '    @Schema\n' +
-    '    @JsonProperty("f")\n' +
-    '    val f: Any? = null\n' +
-    ') {\n' +
-    '    @JsonIgnore\n' +
-    '    val additionalProperties: MutableMap<String, String> = mutableMapOf()\n' +
-    '\n' +
-    '    @JsonAnySetter\n' +
-    '    fun set(name: String, value: String) {\n' +
-    '        this.additionalProperties[name] = value\n' +
-    '    }\n' +
-    '\n' +
-    '    @JsonAnyGetter\n' +
-    '    fun getMap(): Map<String, String> {\n' +
-    '        return this.additionalProperties\n' +
-    '    }\n' +
-    '}\n',
-  'out/com/openapi/generated/model/ObjectWithReferencesInAllOf.kt' => 'package com.openapi.generated.model\n\nclass ObjectWithReferencesInAllOf\n',
-  'out/com/openapi/generated/model/ObjectWithReferencesInAnyOf.kt' => 'package com.openapi.generated.model\n\nclass ObjectWithReferencesInAnyOf\n',
-  'out/com/openapi/generated/model/ObjectWithReferencesInProperties.kt' => 'package com.openapi.generated.model\n' +
-    '\n' +
-    'import com.fasterxml.jackson.annotation.JsonProperty\n' +
-    'import io.swagger.v3.oas.annotations.media.Schema\n' +
-    '\n' +
-    'data class ObjectWithReferencesInProperties(\n' +
-    '    @Schema\n' +
-    '    @JsonProperty("a")\n' +
-    '    val a: Any? = null,\n' +
-    '\n' +
-    '    @Schema\n' +
-    '    @JsonProperty("b")\n' +
-    '    val b: String? = null,\n' +
-    '\n' +
-    '    @Schema\n' +
-    '    @JsonProperty("c")\n' +
-    '    val c: String? = null,\n' +
-    '\n' +
-    '    @Schema\n' +
-    '    @JsonProperty("d")\n' +
-    '    val d: String? = null\n' +
-    ')\n',
-  'out/com/openapi/generated/model/ObjectWithRequiredProperties.kt' => 'package com.openapi.generated.model\n' +
-    '\n' +
-    'import com.fasterxml.jackson.annotation.JsonProperty\n' +
-    'import io.swagger.v3.oas.annotations.media.Schema\n' +
-    '\n' +
-    'data class ObjectWithRequiredProperties(\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("a", required = true)\n' +
-    '    val a: String,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("b", required = true)\n' +
-    '    val b: Int,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("c", required = true)\n' +
-    '    val c: Double,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("d", required = true)\n' +
-    '    val d: Boolean,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("e", required = true)\n' +
-    '    val e: List<Any?>,\n' +
-    '\n' +
-    '    @Schema(required = true)\n' +
-    '    @JsonProperty("f", required = true)\n' +
-    '    val f: Any\n' +
-    ')\n',
-  'state' => {
-    models: {
-      'schema-1': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/EmptyObject',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Any'
-      },
-      'schema-10': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/a',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'String'
-      },
-      'schema-11': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/b',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Int'
-      },
-      'schema-12': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/c',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Double'
-      },
-      'schema-13': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/d',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Boolean'
-      },
-      'schema-14': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/e',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'List<Any?>'
-      },
-      'schema-15': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/f',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Any'
-      },
-      'schema-16': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithAdditionalProperties',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Map<String, String>'
-      },
-      'schema-17': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithAdditionalProperties/additionalProperties',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'String'
-      },
-      'schema-18': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties',
-        additionalImports: [],
-        packageName: 'com.openapi.generated.model',
-        typeName: 'ObjectWithPropertiesAndAdditionalProperties'
-      },
-      'schema-19': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/a',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'String'
-      },
-      'schema-2': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithProperties',
-        additionalImports: [],
-        packageName: 'com.openapi.generated.model',
-        typeName: 'ObjectWithProperties'
-      },
-      'schema-20': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/b',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Int'
-      },
-      'schema-21': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/c',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Double'
-      },
-      'schema-22': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/d',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Boolean'
-      },
-      'schema-23': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/e',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'List<Any?>'
-      },
-      'schema-24': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/f',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Any'
-      },
-      'schema-25': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/additionalProperties',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'String'
-      },
-      'schema-26': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf',
-        additionalImports: [],
-        packageName: 'com.openapi.generated.model',
-        typeName: 'ObjectWithPropertiesAllOfAndAnyOf'
-      },
-      'schema-27': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/a',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'String'
-      },
-      'schema-28': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/b',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Int'
-      },
-      'schema-29': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/c',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Double'
-      },
-      'schema-3': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/a',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'String'
-      },
-      'schema-30': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/d',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Boolean'
-      },
-      'schema-31': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/e',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'List<Any?>'
-      },
-      'schema-32': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/f',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Any'
-      },
-      'schema-33': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Any?'
-      },
-      'schema-34': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/g',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'String'
-      },
-      'schema-35': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/h',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Int'
-      },
-      'schema-36': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/i',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Double'
-      },
-      'schema-37': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/j',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Boolean'
-      },
-      'schema-38': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/k',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'List<Any?>'
-      },
-      'schema-39': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/l',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Any'
-      },
-      'schema-4': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/b',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Int'
-      },
-      'schema-40': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Any?'
-      },
-      'schema-41': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/m',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'String'
-      },
-      'schema-42': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/n',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Int'
-      },
-      'schema-43': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/o',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Double'
-      },
-      'schema-44': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/p',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Boolean'
-      },
-      'schema-45': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/q',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'List<Any?>'
-      },
-      'schema-46': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/r',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Any'
-      },
-      'schema-47': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Any?'
-      },
-      'schema-48': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/s',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'String'
-      },
-      'schema-49': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/t',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Int'
-      },
-      'schema-5': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/c',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Double'
-      },
-      'schema-50': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/u',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Double'
-      },
-      'schema-51': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/v',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Boolean'
-      },
-      'schema-52': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/w',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'List<Any?>'
-      },
-      'schema-53': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/x',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Any'
-      },
-      'schema-54': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Any?'
-      },
-      'schema-55': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/y',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'String'
-      },
-      'schema-56': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/z',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Int'
-      },
-      'schema-57': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/aa',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Double'
-      },
-      'schema-58': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/bb',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Boolean'
-      },
-      'schema-59': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/cc',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'List<Any?>'
-      },
-      'schema-6': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/d',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Boolean'
-      },
-      'schema-60': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/dd',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Any'
-      },
-      'schema-61': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties',
-        additionalImports: [],
-        packageName: 'com.openapi.generated.model',
-        typeName: 'ObjectWithNullableProperties'
-      },
-      'schema-62': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/a',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'String?'
-      },
-      'schema-63': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/b',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Int?'
-      },
-      'schema-64': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/c',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Double?'
-      },
-      'schema-65': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/d',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Boolean?'
-      },
-      'schema-66': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/e',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'List<Any?>?'
-      },
-      'schema-67': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/f',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Any?'
-      },
-      'schema-68': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties',
-        additionalImports: [],
-        packageName: 'com.openapi.generated.model',
-        typeName: 'ObjectWithNullablePropertiesAndRequiredProperties'
-      },
-      'schema-69': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/a',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'String?'
-      },
-      'schema-7': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/e',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'List<Any?>'
-      },
-      'schema-70': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/b',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Int?'
-      },
-      'schema-71': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/c',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Double?'
-      },
-      'schema-72': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/d',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Boolean?'
-      },
-      'schema-73': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/e',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'List<Any?>?'
-      },
-      'schema-74': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/f',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Any?'
-      },
-      'schema-75': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithReferencesInProperties',
-        additionalImports: [],
-        packageName: 'com.openapi.generated.model',
-        typeName: 'ObjectWithReferencesInProperties'
-      },
-      'schema-76': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/EmptyObject',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Any'
-      },
-      'schema-77': {
-        __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/WithTitle',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'String'
-      },
-      'schema-78': {
-        __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/WithTitle',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'String'
-      },
-      'schema-79': {
-        __source__: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml#/components/schemas/MyString',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'String'
-      },
-      'schema-8': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/f',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Any'
-      },
-      'schema-80': {
-        __source__: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml#/components/schemas/MyString',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'String'
-      },
-      'schema-81': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithReferencesInProperties/properties/d',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'String'
-      },
-      'schema-82': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithReferencesInAnyOf',
-        additionalImports: [],
-        packageName: 'com.openapi.generated.model',
-        typeName: 'ObjectWithReferencesInAnyOf'
-      },
-      'schema-83': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/EmptyObject',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Any'
-      },
-      'schema-84': {
-        __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/WithTitle',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'String'
-      },
-      'schema-85': {
-        __source__: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml#/components/schemas/MyString',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'String'
-      },
-      'schema-86': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithReferencesInAnyOf/anyOf/3',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Any?'
-      },
-      'schema-87': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithReferencesInAllOf',
-        additionalImports: [],
-        packageName: 'com.openapi.generated.model',
-        typeName: 'ObjectWithReferencesInAllOf'
-      },
-      'schema-88': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/EmptyObject',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Any'
-      },
-      'schema-89': {
-        __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/WithTitle',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'String'
-      },
-      'schema-9': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties',
-        additionalImports: [],
-        packageName: 'com.openapi.generated.model',
-        typeName: 'ObjectWithRequiredProperties'
-      },
-      'schema-90': {
-        __source__: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml#/components/schemas/MyString',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'String'
-      },
-      'schema-91': {
-        __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithReferencesInAllOf/allOf/3',
-        additionalImports: [],
-        packageName: undefined,
-        typeName: 'Any?'
-      }
+┌──────────────────────────────────────┐
+│ state                                │
+├──────────────────────────────────────┤
+{
+  models: {
+    'schema-1': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/EmptyObject',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Any'
+    },
+    'schema-10': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/a',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'String'
+    },
+    'schema-11': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/b',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Int'
+    },
+    'schema-12': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/c',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Double'
+    },
+    'schema-13': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/d',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Boolean'
+    },
+    'schema-14': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/e',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'List<Any?>'
+    },
+    'schema-15': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/f',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Any'
+    },
+    'schema-16': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithAdditionalProperties',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Map<String, String>'
+    },
+    'schema-17': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithAdditionalProperties/additionalProperties',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'String'
+    },
+    'schema-18': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties',
+      additionalImports: [],
+      packageName: 'com.openapi.generated.model',
+      typeName: 'ObjectWithPropertiesAndAdditionalProperties'
+    },
+    'schema-19': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/a',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'String'
+    },
+    'schema-2': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithProperties',
+      additionalImports: [],
+      packageName: 'com.openapi.generated.model',
+      typeName: 'ObjectWithProperties'
+    },
+    'schema-20': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/b',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Int'
+    },
+    'schema-21': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/c',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Double'
+    },
+    'schema-22': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/d',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Boolean'
+    },
+    'schema-23': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/e',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'List<Any?>'
+    },
+    'schema-24': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/f',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Any'
+    },
+    'schema-25': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/additionalProperties',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'String'
+    },
+    'schema-26': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf',
+      additionalImports: [],
+      packageName: 'com.openapi.generated.model',
+      typeName: 'ObjectWithPropertiesAllOfAndAnyOf'
+    },
+    'schema-27': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/a',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'String'
+    },
+    'schema-28': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/b',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Int'
+    },
+    'schema-29': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/c',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Double'
+    },
+    'schema-3': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/a',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'String'
+    },
+    'schema-30': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/d',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Boolean'
+    },
+    'schema-31': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/e',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'List<Any?>'
+    },
+    'schema-32': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/f',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Any'
+    },
+    'schema-33': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Any?'
+    },
+    'schema-34': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/g',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'String'
+    },
+    'schema-35': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/h',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Int'
+    },
+    'schema-36': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/i',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Double'
+    },
+    'schema-37': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/j',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Boolean'
+    },
+    'schema-38': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/k',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'List<Any?>'
+    },
+    'schema-39': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/l',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Any'
+    },
+    'schema-4': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/b',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Int'
+    },
+    'schema-40': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Any?'
+    },
+    'schema-41': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/m',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'String'
+    },
+    'schema-42': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/n',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Int'
+    },
+    'schema-43': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/o',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Double'
+    },
+    'schema-44': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/p',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Boolean'
+    },
+    'schema-45': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/q',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'List<Any?>'
+    },
+    'schema-46': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/r',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Any'
+    },
+    'schema-47': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Any?'
+    },
+    'schema-48': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/s',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'String'
+    },
+    'schema-49': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/t',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Int'
+    },
+    'schema-5': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/c',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Double'
+    },
+    'schema-50': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/u',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Double'
+    },
+    'schema-51': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/v',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Boolean'
+    },
+    'schema-52': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/w',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'List<Any?>'
+    },
+    'schema-53': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/x',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Any'
+    },
+    'schema-54': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Any?'
+    },
+    'schema-55': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/y',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'String'
+    },
+    'schema-56': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/z',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Int'
+    },
+    'schema-57': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/aa',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Double'
+    },
+    'schema-58': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/bb',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Boolean'
+    },
+    'schema-59': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/cc',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'List<Any?>'
+    },
+    'schema-6': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/d',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Boolean'
+    },
+    'schema-60': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/dd',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Any'
+    },
+    'schema-61': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties',
+      additionalImports: [],
+      packageName: 'com.openapi.generated.model',
+      typeName: 'ObjectWithNullableProperties'
+    },
+    'schema-62': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/a',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'String?'
+    },
+    'schema-63': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/b',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Int?'
+    },
+    'schema-64': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/c',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Double?'
+    },
+    'schema-65': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/d',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Boolean?'
+    },
+    'schema-66': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/e',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'List<Any?>?'
+    },
+    'schema-67': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/f',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Any?'
+    },
+    'schema-68': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties',
+      additionalImports: [],
+      packageName: 'com.openapi.generated.model',
+      typeName: 'ObjectWithNullablePropertiesAndRequiredProperties'
+    },
+    'schema-69': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/a',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'String?'
+    },
+    'schema-7': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/e',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'List<Any?>'
+    },
+    'schema-70': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/b',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Int?'
+    },
+    'schema-71': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/c',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Double?'
+    },
+    'schema-72': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/d',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Boolean?'
+    },
+    'schema-73': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/e',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'List<Any?>?'
+    },
+    'schema-74': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/f',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Any?'
+    },
+    'schema-75': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithReferencesInProperties',
+      additionalImports: [],
+      packageName: 'com.openapi.generated.model',
+      typeName: 'ObjectWithReferencesInProperties'
+    },
+    'schema-76': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/EmptyObject',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Any'
+    },
+    'schema-77': {
+      __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/WithTitle',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'String'
+    },
+    'schema-78': {
+      __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/WithTitle',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'String'
+    },
+    'schema-79': {
+      __source__: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml#/components/schemas/MyString',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'String'
+    },
+    'schema-8': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/f',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Any'
+    },
+    'schema-80': {
+      __source__: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml#/components/schemas/MyString',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'String'
+    },
+    'schema-81': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithReferencesInProperties/properties/d',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'String'
+    },
+    'schema-82': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithReferencesInAnyOf',
+      additionalImports: [],
+      packageName: 'com.openapi.generated.model',
+      typeName: 'ObjectWithReferencesInAnyOf'
+    },
+    'schema-83': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/EmptyObject',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Any'
+    },
+    'schema-84': {
+      __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/WithTitle',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'String'
+    },
+    'schema-85': {
+      __source__: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml#/components/schemas/MyString',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'String'
+    },
+    'schema-86': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithReferencesInAnyOf/anyOf/3',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Any?'
+    },
+    'schema-87': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithReferencesInAllOf',
+      additionalImports: [],
+      packageName: 'com.openapi.generated.model',
+      typeName: 'ObjectWithReferencesInAllOf'
+    },
+    'schema-88': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/EmptyObject',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Any'
+    },
+    'schema-89': {
+      __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/WithTitle',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'String'
+    },
+    'schema-9': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties',
+      additionalImports: [],
+      packageName: 'com.openapi.generated.model',
+      typeName: 'ObjectWithRequiredProperties'
+    },
+    'schema-90': {
+      __source__: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml#/components/schemas/MyString',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'String'
+    },
+    'schema-91': {
+      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithReferencesInAllOf/allOf/3',
+      additionalImports: [],
+      packageName: undefined,
+      typeName: 'Any?'
     }
   }
 }
+└──────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/ObjectWithProperties.kt │
+├─────────────────────────────────────────────────────────┤
+package com.openapi.generated.model
+
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.swagger.v3.oas.annotations.media.Schema
+
+data class ObjectWithProperties(
+    @Schema
+    @JsonProperty("a")
+    val a: String? = null,
+
+    @Schema
+    @JsonProperty("b")
+    val b: Int? = null,
+
+    @Schema
+    @JsonProperty("c")
+    val c: Double? = null,
+
+    @Schema
+    @JsonProperty("d")
+    val d: Boolean? = null,
+
+    @Schema
+    @JsonProperty("e")
+    val e: List<Any?>? = null,
+
+    @Schema
+    @JsonProperty("f")
+    val f: Any? = null
+)
+
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/ObjectWithRequiredProperties.kt │
+├─────────────────────────────────────────────────────────────────┤
+package com.openapi.generated.model
+
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.swagger.v3.oas.annotations.media.Schema
+
+data class ObjectWithRequiredProperties(
+    @Schema(required = true)
+    @JsonProperty("a", required = true)
+    val a: String,
+
+    @Schema(required = true)
+    @JsonProperty("b", required = true)
+    val b: Int,
+
+    @Schema(required = true)
+    @JsonProperty("c", required = true)
+    val c: Double,
+
+    @Schema(required = true)
+    @JsonProperty("d", required = true)
+    val d: Boolean,
+
+    @Schema(required = true)
+    @JsonProperty("e", required = true)
+    val e: List<Any?>,
+
+    @Schema(required = true)
+    @JsonProperty("f", required = true)
+    val f: Any
+)
+
+└─────────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/ObjectWithPropertiesAndAdditionalProperties.kt │
+├────────────────────────────────────────────────────────────────────────────────┤
+package com.openapi.generated.model
+
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.swagger.v3.oas.annotations.media.Schema
+
+data class ObjectWithPropertiesAndAdditionalProperties(
+    @Schema
+    @JsonProperty("a")
+    val a: String? = null,
+
+    @Schema
+    @JsonProperty("b")
+    val b: Int? = null,
+
+    @Schema
+    @JsonProperty("c")
+    val c: Double? = null,
+
+    @Schema
+    @JsonProperty("d")
+    val d: Boolean? = null,
+
+    @Schema
+    @JsonProperty("e")
+    val e: List<Any?>? = null,
+
+    @Schema
+    @JsonProperty("f")
+    val f: Any? = null
+) {
+    @JsonIgnore
+    val additionalProperties: MutableMap<String, String> = mutableMapOf()
+
+    @JsonAnySetter
+    fun set(name: String, value: String) {
+        this.additionalProperties[name] = value
+    }
+
+    @JsonAnyGetter
+    fun getMap(): Map<String, String> {
+        return this.additionalProperties
+    }
+}
+
+└────────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/ObjectWithPropertiesAllOfAndAnyOf.kt │
+├──────────────────────────────────────────────────────────────────────┤
+package com.openapi.generated.model
+
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.swagger.v3.oas.annotations.media.Schema
+
+data class ObjectWithPropertiesAllOfAndAnyOf(
+    @Schema(required = true)
+    @JsonProperty("g", required = true)
+    val g: String,
+
+    @Schema(required = true)
+    @JsonProperty("h", required = true)
+    val h: Int,
+
+    @Schema(required = true)
+    @JsonProperty("i", required = true)
+    val i: Double,
+
+    @Schema(required = true)
+    @JsonProperty("j", required = true)
+    val j: Boolean,
+
+    @Schema(required = true)
+    @JsonProperty("k", required = true)
+    val k: List<Any?>,
+
+    @Schema(required = true)
+    @JsonProperty("l", required = true)
+    val l: Any,
+
+    @Schema(required = true)
+    @JsonProperty("m", required = true)
+    val m: String,
+
+    @Schema(required = true)
+    @JsonProperty("n", required = true)
+    val n: Int,
+
+    @Schema(required = true)
+    @JsonProperty("o", required = true)
+    val o: Double,
+
+    @Schema(required = true)
+    @JsonProperty("p", required = true)
+    val p: Boolean,
+
+    @Schema(required = true)
+    @JsonProperty("q", required = true)
+    val q: List<Any?>,
+
+    @Schema(required = true)
+    @JsonProperty("r", required = true)
+    val r: Any,
+
+    @Schema(required = true)
+    @JsonProperty("s", required = true)
+    val s: String,
+
+    @Schema(required = true)
+    @JsonProperty("t", required = true)
+    val t: Int,
+
+    @Schema(required = true)
+    @JsonProperty("u", required = true)
+    val u: Double,
+
+    @Schema(required = true)
+    @JsonProperty("v", required = true)
+    val v: Boolean,
+
+    @Schema(required = true)
+    @JsonProperty("w", required = true)
+    val w: List<Any?>,
+
+    @Schema(required = true)
+    @JsonProperty("x", required = true)
+    val x: Any,
+
+    @Schema(required = true)
+    @JsonProperty("y", required = true)
+    val y: String,
+
+    @Schema(required = true)
+    @JsonProperty("z", required = true)
+    val z: Int,
+
+    @Schema(required = true)
+    @JsonProperty("aa", required = true)
+    val aa: Double,
+
+    @Schema(required = true)
+    @JsonProperty("bb", required = true)
+    val bb: Boolean,
+
+    @Schema(required = true)
+    @JsonProperty("cc", required = true)
+    val cc: List<Any?>,
+
+    @Schema(required = true)
+    @JsonProperty("dd", required = true)
+    val dd: Any
+)
+
+└──────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/ObjectWithNullableProperties.kt │
+├─────────────────────────────────────────────────────────────────┤
+package com.openapi.generated.model
+
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.swagger.v3.oas.annotations.media.Schema
+
+data class ObjectWithNullableProperties(
+    @Schema
+    @JsonProperty("a")
+    val a: String? = null,
+
+    @Schema
+    @JsonProperty("b")
+    val b: Int? = null,
+
+    @Schema
+    @JsonProperty("c")
+    val c: Double? = null,
+
+    @Schema
+    @JsonProperty("d")
+    val d: Boolean? = null,
+
+    @Schema
+    @JsonProperty("e")
+    val e: List<Any?>? = null,
+
+    @Schema
+    @JsonProperty("f")
+    val f: Any? = null
+)
+
+└─────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/ObjectWithNullablePropertiesAndRequiredProperties.kt │
+├──────────────────────────────────────────────────────────────────────────────────────┤
+package com.openapi.generated.model
+
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.swagger.v3.oas.annotations.media.Schema
+
+data class ObjectWithNullablePropertiesAndRequiredProperties(
+    @Schema(required = true)
+    @JsonProperty("a", required = true)
+    val a: String?,
+
+    @Schema(required = true)
+    @JsonProperty("b", required = true)
+    val b: Int?,
+
+    @Schema(required = true)
+    @JsonProperty("c", required = true)
+    val c: Double?,
+
+    @Schema(required = true)
+    @JsonProperty("d", required = true)
+    val d: Boolean?,
+
+    @Schema(required = true)
+    @JsonProperty("e", required = true)
+    val e: List<Any?>?,
+
+    @Schema(required = true)
+    @JsonProperty("f", required = true)
+    val f: Any?
+)
+
+└──────────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/ObjectWithReferencesInProperties.kt │
+├─────────────────────────────────────────────────────────────────────┤
+package com.openapi.generated.model
+
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.swagger.v3.oas.annotations.media.Schema
+
+data class ObjectWithReferencesInProperties(
+    @Schema
+    @JsonProperty("a")
+    val a: Any? = null,
+
+    @Schema
+    @JsonProperty("b")
+    val b: String? = null,
+
+    @Schema
+    @JsonProperty("c")
+    val c: String? = null,
+
+    @Schema
+    @JsonProperty("d")
+    val d: String? = null
+)
+
+└─────────────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/ObjectWithReferencesInAnyOf.kt │
+├────────────────────────────────────────────────────────────────┤
+package com.openapi.generated.model
+
+class ObjectWithReferencesInAnyOf
+
+└────────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/ObjectWithReferencesInAllOf.kt │
+├────────────────────────────────────────────────────────────────┤
+package com.openapi.generated.model
+
+class ObjectWithReferencesInAllOf
+
+└────────────────────────────────────────────────────────────────┘

@@ -4,9 +4,10 @@
     {
       '$ref': undefined,
       '$src': {
-        component: { title: 'My Title', type: 'string' },
+        component: '37 inspect chars',
+        document: '9 inspect chars',
         file: '<root>\\test\\openapi-files\\v2\\detailed-schemas.yml',
-        originalComponent: { title: 'My Title', type: 'string' },
+        originalComponent: '37 inspect chars',
         path: '/definitions/WithTitle'
       },
       accessibility: 'all',
@@ -35,25 +36,10 @@
     {
       '$ref': undefined,
       '$src': {
-        component: {
-          default: 'john.doe@example.io',
-          description: 'My Description',
-          example: '<yours>@example.io',
-          maxLength: 255,
-          minLength: 5,
-          pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$',
-          type: 'string'
-        },
+        component: '218 inspect chars',
+        document: '9 inspect chars',
         file: '<root>\\test\\openapi-files\\v2\\detailed-schemas.yml',
-        originalComponent: {
-          default: 'john.doe@example.io',
-          description: 'My Description',
-          example: '<yours>@example.io',
-          maxLength: 255,
-          minLength: 5,
-          pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$',
-          type: 'string'
-        },
+        originalComponent: '218 inspect chars',
         path: '/definitions/WithAllCommon'
       },
       accessibility: 'all',
@@ -82,9 +68,10 @@
     {
       '$ref': undefined,
       '$src': {
-        component: { enum: [ 'one', 'two', 'three' ], type: 'string' },
+        component: '51 inspect chars',
+        document: '9 inspect chars',
         file: '<root>\\test\\openapi-files\\v2\\detailed-schemas.yml',
-        originalComponent: { enum: [ 'one', 'two', 'three' ], type: 'string' },
+        originalComponent: '51 inspect chars',
         path: '/definitions/MyEnum'
       },
       accessibility: 'all',
@@ -113,9 +100,10 @@
     {
       '$ref': undefined,
       '$src': {
-        component: { readOnly: true, type: 'string' },
+        component: '34 inspect chars',
+        document: '9 inspect chars',
         file: '<root>\\test\\openapi-files\\v2\\detailed-schemas.yml',
-        originalComponent: { readOnly: true, type: 'string' },
+        originalComponent: '34 inspect chars',
         path: '/definitions/ReadOnly'
       },
       accessibility: 'readOnly',

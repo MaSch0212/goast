@@ -4,9 +4,10 @@
     {
       '$ref': undefined,
       '$src': {
-        component: { type: 'string' },
+        component: '18 inspect chars',
+        document: '9 inspect chars',
         file: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml',
-        originalComponent: { type: 'string' },
+        originalComponent: '18 inspect chars',
         path: '/definitions/MyString'
       },
       accessibility: 'all',
@@ -35,9 +36,10 @@
     {
       '$ref': undefined,
       '$src': {
-        component: { type: 'integer' },
+        component: '19 inspect chars',
+        document: '9 inspect chars',
         file: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml',
-        originalComponent: { type: 'integer' },
+        originalComponent: '19 inspect chars',
         path: '/definitions/MyInteger'
       },
       accessibility: 'all',
@@ -65,9 +67,10 @@
     {
       '$ref': undefined,
       '$src': {
-        component: { type: 'number' },
+        component: '18 inspect chars',
+        document: '9 inspect chars',
         file: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml',
-        originalComponent: { type: 'number' },
+        originalComponent: '18 inspect chars',
         path: '/definitions/MyNumber'
       },
       accessibility: 'all',
@@ -95,9 +98,10 @@
     {
       '$ref': undefined,
       '$src': {
-        component: { type: 'boolean' },
+        component: '19 inspect chars',
+        document: '9 inspect chars',
         file: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml',
-        originalComponent: { type: 'boolean' },
+        originalComponent: '19 inspect chars',
         path: '/definitions/MyBoolean'
       },
       accessibility: 'all',
@@ -123,9 +127,10 @@
     {
       '$ref': undefined,
       '$src': {
-        component: { type: 'array' },
+        component: '17 inspect chars',
+        document: '9 inspect chars',
         file: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml',
-        originalComponent: { type: 'array' },
+        originalComponent: '17 inspect chars',
         path: '/definitions/MyArray'
       },
       accessibility: 'all',
@@ -153,9 +158,10 @@
     {
       '$ref': undefined,
       '$src': {
-        component: { type: 'object' },
+        component: '18 inspect chars',
+        document: '9 inspect chars',
         file: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml',
-        originalComponent: { type: 'object' },
+        originalComponent: '18 inspect chars',
         path: '/definitions/MyObject'
       },
       accessibility: 'all',

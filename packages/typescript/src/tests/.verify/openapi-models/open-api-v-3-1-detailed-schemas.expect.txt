@@ -1,77 +1,115 @@
-Map(7) {
-  '<root>\\out\\models.ts' => "export { MyEnum } from './models/my-enum';\n" +
-    "export { MyTitle } from './models/my-title';\n" +
-    "export { ReadOnly } from './models/read-only';\n" +
-    "export { WithAllCommon } from './models/with-all-common';\n" +
-    "export { WriteOnly } from './models/write-only';\n",
-  '<root>\\out\\models\\my-enum.ts' => "export type MyEnum = 'one' | 'two' | 'three';\n",
-  '<root>\\out\\models\\my-title.ts' => 'export type MyTitle = string;\n',
-  '<root>\\out\\models\\read-only.ts' => 'export type ReadOnly = string;\n',
-  '<root>\\out\\models\\with-all-common.ts' => '/**\n * My Description\n */\nexport type WithAllCommon = string;\n',
-  '<root>\\out\\models\\write-only.ts' => 'export type WriteOnly = string;\n',
-  'state' => {
-    modelIndexFilePath: '<root>\\out\\models.ts',
-    models: {
-      'schema-1': {
-        __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WithTitle',
-        component: 'MyTitle',
-        filePath: '<root>\\out\\models\\my-title.ts',
-        imports: [
-          {
-            kind: 'file',
-            modulePath: '<root>\\out\\models\\my-title.ts',
-            name: 'MyTitle'
-          }
-        ]
-      },
-      'schema-2': {
-        __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WithAllCommon',
-        component: 'WithAllCommon',
-        filePath: '<root>\\out\\models\\with-all-common.ts',
-        imports: [
-          {
-            kind: 'file',
-            modulePath: '<root>\\out\\models\\with-all-common.ts',
-            name: 'WithAllCommon'
-          }
-        ]
-      },
-      'schema-3': {
-        __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/MyEnum',
-        component: 'MyEnum',
-        filePath: '<root>\\out\\models\\my-enum.ts',
-        imports: [
-          {
-            kind: 'file',
-            modulePath: '<root>\\out\\models\\my-enum.ts',
-            name: 'MyEnum'
-          }
-        ]
-      },
-      'schema-4': {
-        __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WriteOnly',
-        component: 'WriteOnly',
-        filePath: '<root>\\out\\models\\write-only.ts',
-        imports: [
-          {
-            kind: 'file',
-            modulePath: '<root>\\out\\models\\write-only.ts',
-            name: 'WriteOnly'
-          }
-        ]
-      },
-      'schema-5': {
-        __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/ReadOnly',
-        component: 'ReadOnly',
-        filePath: '<root>\\out\\models\\read-only.ts',
-        imports: [
-          {
-            kind: 'file',
-            modulePath: '<root>\\out\\models\\read-only.ts',
-            name: 'ReadOnly'
-          }
-        ]
-      }
+┌──────────────────────────────────────┐
+│ state                                │
+├──────────────────────────────────────┤
+{
+  modelIndexFilePath: '<root>\\out\\models.ts',
+  models: {
+    'schema-1': {
+      __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WithTitle',
+      component: 'MyTitle',
+      filePath: '<root>\\out\\models\\my-title.ts',
+      imports: [
+        {
+          kind: 'file',
+          modulePath: '<root>\\out\\models\\my-title.ts',
+          name: 'MyTitle'
+        }
+      ]
+    },
+    'schema-2': {
+      __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WithAllCommon',
+      component: 'WithAllCommon',
+      filePath: '<root>\\out\\models\\with-all-common.ts',
+      imports: [
+        {
+          kind: 'file',
+          modulePath: '<root>\\out\\models\\with-all-common.ts',
+          name: 'WithAllCommon'
+        }
+      ]
+    },
+    'schema-3': {
+      __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/MyEnum',
+      component: 'MyEnum',
+      filePath: '<root>\\out\\models\\my-enum.ts',
+      imports: [
+        {
+          kind: 'file',
+          modulePath: '<root>\\out\\models\\my-enum.ts',
+          name: 'MyEnum'
+        }
+      ]
+    },
+    'schema-4': {
+      __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WriteOnly',
+      component: 'WriteOnly',
+      filePath: '<root>\\out\\models\\write-only.ts',
+      imports: [
+        {
+          kind: 'file',
+          modulePath: '<root>\\out\\models\\write-only.ts',
+          name: 'WriteOnly'
+        }
+      ]
+    },
+    'schema-5': {
+      __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/ReadOnly',
+      component: 'ReadOnly',
+      filePath: '<root>\\out\\models\\read-only.ts',
+      imports: [
+        {
+          kind: 'file',
+          modulePath: '<root>\\out\\models\\read-only.ts',
+          name: 'ReadOnly'
+        }
+      ]
     }
   }
 }
+└──────────────────────────────────────┘
+
+┌──────────────────────────────────────┐
+│ C:\src\goast\out\models\my-title.ts  │
+├──────────────────────────────────────┤
+export type MyTitle = string;
+
+└──────────────────────────────────────┘
+
+┌────────────────────────────────────────────┐
+│ C:\src\goast\out\models\with-all-common.ts │
+├────────────────────────────────────────────┤
+export type WithAllCommon = string;
+
+└────────────────────────────────────────────┘
+
+┌──────────────────────────────────────┐
+│ C:\src\goast\out\models\my-enum.ts   │
+├──────────────────────────────────────┤
+export type MyEnum = string;
+
+└──────────────────────────────────────┘
+
+┌───────────────────────────────────────┐
+│ C:\src\goast\out\models\write-only.ts │
+├───────────────────────────────────────┤
+export type WriteOnly = string;
+
+└───────────────────────────────────────┘
+
+┌──────────────────────────────────────┐
+│ C:\src\goast\out\models\read-only.ts │
+├──────────────────────────────────────┤
+export type ReadOnly = string;
+
+└──────────────────────────────────────┘
+
+┌──────────────────────────────────────┐
+│ C:\src\goast\out\models.ts           │
+├──────────────────────────────────────┤
+export { MyEnum } from './models/my-enum';
+export { MyTitle } from './models/my-title';
+export { ReadOnly } from './models/read-only';
+export { WithAllCommon } from './models/with-all-common';
+export { WriteOnly } from './models/write-only';
+
+└──────────────────────────────────────┘

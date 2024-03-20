@@ -34,6 +34,6 @@ export function writeTsArrayType<TBuilder extends SourceBuilder = TsDefaultBuild
   node: TsArrayType<TBuilder>
 ): TBuilder {
   return writeTsNode(builder, node, (b) =>
-    b.appendIf(node.readonly, 'readonly ').parenthesize('()', node.type).append('[]')
+    b.appendIf(node.readonly, 'readonly ').parenthesize('()', node.type, { indent: false }).append('[]')
   );
 }

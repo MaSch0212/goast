@@ -10,6 +10,7 @@ import {
   Nullable,
   ObjectLikeApiSchema,
   getSchemaReference,
+  notNullish,
   resolveAnyOfAndAllOf,
   toCasing,
 } from '@goast/core';
@@ -104,7 +105,7 @@ export class DefaultTypeScriptModelGenerator
     return tsTypeAlias(this.getDeclarationTypeName(ctx, schema), {
       export: true,
       doc: tsDoc({ description: schema.description }),
-      type: this.getType(ctx, schema),
+      type: this.getType(ctx, schema, true),
     });
   }
 
@@ -113,7 +114,7 @@ export class DefaultTypeScriptModelGenerator
       ? tsIndexer(
           'string',
           schema.additionalProperties === true ? this.getAnyType(ctx) : this.getType(ctx, schema.additionalProperties),
-          { readonly: true }
+          { readonly: ctx.config.immutableTypes }
         )
       : null;
   }
@@ -123,17 +124,17 @@ export class DefaultTypeScriptModelGenerator
       return tsProperty(property.name, {
         doc: tsDoc({ description: property.schema.description }),
         readonly: ctx.config.immutableTypes,
-        optional: schema.required.has(property.name),
+        optional: !schema.required.has(property.name),
         type: tsUnionType([this.getType(ctx, property.schema), property.schema.nullable ? 'null' : null]),
       });
     });
   }
 
-  protected getType(ctx: Context, schema: Nullable<ApiSchema>): AppendValue<Builder> {
+  protected getType(ctx: Context, schema: Nullable<ApiSchema>, skipSchemas = false): AppendValue<Builder> {
     if (!schema) return this.getAnyType(ctx);
 
     schema = getSchemaReference(schema, ['description']);
-    if (this.shouldGenerateTypeDeclaration(ctx, schema)) {
+    if (!skipSchemas && this.shouldGenerateTypeDeclaration(ctx, schema)) {
       return tsReference(this.getDeclarationTypeName(ctx, schema), this.getFilePath(ctx, schema));
     }
 
@@ -169,13 +170,15 @@ export class DefaultTypeScriptModelGenerator
   }
 
   protected getObjectType(ctx: Context, schema: ObjectLikeApiSchema): AppendValue<Builder> {
-    const objectType = tsObjectType({
-      properties: this.getProperties(ctx, schema),
-      indexer: this.getIndexer(ctx, schema),
-    });
-    return schema.allOf.length > 0 || schema.anyOf.length > 0
-      ? tsIntersectionType([objectType, this.getCombinedType(ctx, schema)])
-      : objectType;
+    const parts = [
+      schema.properties.size > 0 ? tsObjectType({ properties: this.getProperties(ctx, schema) }) : null,
+      schema.additionalProperties ? tsObjectType({ indexer: this.getIndexer(ctx, schema) }) : null,
+      schema.allOf.length > 0 || schema.anyOf.length > 0 ? this.getCombinedType(ctx, schema) : null,
+    ].filter(notNullish);
+    if (parts.length === 0) {
+      parts.push(tsObjectType());
+    }
+    return tsIntersectionType(parts);
   }
 
   protected getCombinedType(ctx: Context, schema: CombinedLikeApiSchema): AppendValue<Builder> {
@@ -184,7 +187,7 @@ export class DefaultTypeScriptModelGenerator
     }
     return tsIntersectionType([
       ...schema.allOf.map((x) => this.getType(ctx, x)),
-      ...schema.anyOf.map((x) => tsReference('Partial', { generics: [this.getType(ctx, x)] })),
+      ...schema.anyOf.map((x) => tsReference('Partial', null, { generics: [this.getType(ctx, x)] })),
     ]);
   }
 

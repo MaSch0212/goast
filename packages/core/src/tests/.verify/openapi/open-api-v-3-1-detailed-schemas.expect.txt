@@ -4,9 +4,10 @@
     {
       '$ref': undefined,
       '$src': {
-        component: { title: 'My Title', type: 'string' },
+        component: '37 inspect chars',
+        document: '9 inspect chars',
         file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
-        originalComponent: { title: 'My Title', type: 'string' },
+        originalComponent: '37 inspect chars',
         path: '/components/schemas/WithTitle'
       },
       accessibility: 'all',
@@ -35,29 +36,10 @@
     {
       '$ref': undefined,
       '$src': {
-        component: {
-          default: 'john.doe@example.io',
-          deprecated: true,
-          description: 'My Description',
-          example: '<yours>@example.io',
-          format: 'email',
-          maxLength: 255,
-          minLength: 5,
-          pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$',
-          type: [ 'string', null ]
-        },
+        component: '267 inspect chars',
+        document: '9 inspect chars',
         file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
-        originalComponent: {
-          default: 'john.doe@example.io',
-          deprecated: true,
-          description: 'My Description',
-          example: '<yours>@example.io',
-          format: 'email',
-          maxLength: 255,
-          minLength: 5,
-          pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$',
-          type: [ 'string', null ]
-        },
+        originalComponent: '267 inspect chars',
         path: '/components/schemas/WithAllCommon'
       },
       accessibility: 'all',
@@ -86,9 +68,10 @@
     {
       '$ref': undefined,
       '$src': {
-        component: { enum: [ 'one', 'two', 'three' ], type: 'string' },
+        component: '51 inspect chars',
+        document: '9 inspect chars',
         file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
-        originalComponent: { enum: [ 'one', 'two', 'three' ], type: 'string' },
+        originalComponent: '51 inspect chars',
         path: '/components/schemas/MyEnum'
       },
       accessibility: 'all',
@@ -117,9 +100,10 @@
     {
       '$ref': undefined,
       '$src': {
-        component: { type: 'string', writeOnly: true },
+        component: '35 inspect chars',
+        document: '9 inspect chars',
         file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
-        originalComponent: { type: 'string', writeOnly: true },
+        originalComponent: '35 inspect chars',
         path: '/components/schemas/WriteOnly'
       },
       accessibility: 'writeOnly',
@@ -148,9 +132,10 @@
     {
       '$ref': undefined,
       '$src': {
-        component: { readOnly: true, type: 'string' },
+        component: '34 inspect chars',
+        document: '9 inspect chars',
         file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
-        originalComponent: { readOnly: true, type: 'string' },
+        originalComponent: '34 inspect chars',
         path: '/components/schemas/ReadOnly'
       },
       accessibility: 'readOnly',

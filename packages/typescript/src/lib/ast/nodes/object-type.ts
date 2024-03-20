@@ -44,10 +44,11 @@ export function writeTsObjectType<TBuilder extends SourceBuilder = TsDefaultBuil
       (b) =>
         b
           .forEach(node.properties, (b, p) => writeTs(b, p))
-          .appendLineIf(node.properties.length > 0 && node.methods.length > 0)
+          .appendIf(!!node.indexer, (b) => writeTs(b, node.indexer))
+          .appendLineIf((node.properties.length > 0 || !!node.indexer) && node.methods.length > 0)
           .forEach(node.methods, (b, m) => writeTs(b, m)),
       {
-        multiline: node.properties.length > 0 || node.methods.length > 0,
+        multiline: !!node.indexer || node.properties.length > 0 || node.methods.length > 0,
       }
     )
   );

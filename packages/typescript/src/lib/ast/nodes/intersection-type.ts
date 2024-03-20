@@ -28,6 +28,31 @@ export function writeTsIntersectionType<TBuilder extends SourceBuilder = TsDefau
   builder: TBuilder,
   node: TsIntersectionType<TBuilder>
 ): TBuilder {
-  const types: AppendValue<TBuilder>[] = node.types.length === 0 ? ['unknown'] : node.types;
-  return writeTsNode(builder, node, (b) => b.forEach(types, (b, t) => b.parenthesize('()', t), { separator: ' & ' }));
+  const types: AppendValue<TBuilder>[] = node.types.length === 0 ? ['unknown'] : resolveNestedIntersectionTypes(node);
+  const multiline = types.length > 2;
+  return writeTsNode(builder, node, (b) =>
+    b.parenthesizeIf(
+      types.length > 1,
+      '()',
+      (b) =>
+        b.appendIf(multiline, '& ').forEach(types, (b, t) => b.append(t), {
+          separator: multiline ? '\n& ' : ' & ',
+        }),
+      { indent: multiline, multiline }
+    )
+  );
+}
+
+function resolveNestedIntersectionTypes<TBuilder extends SourceBuilder>(
+  node: TsIntersectionType<TBuilder>
+): AppendValue<TBuilder>[] {
+  const types: AppendValue<TBuilder>[] = [];
+  for (const type of node.types) {
+    if (isTsIntersectionType<TBuilder>(type)) {
+      types.push(...resolveNestedIntersectionTypes(type));
+    } else {
+      types.push(type);
+    }
+  }
+  return types;
 }
