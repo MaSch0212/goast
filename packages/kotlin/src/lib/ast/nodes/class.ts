@@ -63,7 +63,7 @@ export function ktClass<TBuilder extends SourceBuilder = KtDefaultBuilder>(
   };
 }
 
-export function isKtClass<TBuilder extends SourceBuilder = KtDefaultBuilder>(node: unknown): node is KtClass<TBuilder> {
+export function isKtClass(node: unknown): node is KtClass<never> {
   return isKtNode(node, ktClassNodeKind);
 }
 

@@ -85,4 +85,16 @@ export type ParametersWithOverloads<T extends (...args: any[]) => any> = T exten
   : never;
 
 type _TupleOf<T, N extends number, R extends unknown[]> = R['length'] extends N ? R : _TupleOf<T, N, [T, ...R]>;
-export type TupleWithCount<T, N extends number> = N extends N ? (number extends N ? T[] : _TupleOf<T, N, []>) : never;
+export type TupleWithCount<T, N extends number | number[]> = N extends number
+  ? number extends N
+    ? T[]
+    : _TupleOf<T, N, []>
+  : N extends [infer A, ...infer R]
+  ? A extends number
+    ? R extends number[]
+      ? TupleWithCount<T, A> | TupleWithCount<T, R>
+      : never
+    : never
+  : N extends []
+  ? never
+  : T[];

@@ -32,25 +32,26 @@ export function ktReferenceFactory<TBuilder extends SourceBuilder = KtDefaultBui
   name: string,
   packageName?: string | null,
   options?: AstNodeOptions<KtReference<TBuilder>, 'name' | 'packageName'>
-): (nullable?: boolean) => KtReference<TBuilder> {
-  return (nullable) => ktReference(name, packageName, { ...options, nullable: nullable ?? options?.nullable });
+) {
+  return (nullable?: boolean) =>
+    ktReference(name, packageName, { ...options, nullable: nullable ?? options?.nullable });
 }
 
 export function ktGenericReferenceFactory<
-  TGenericCount extends number,
+  TGenericCount extends number | number[],
   TBuilder extends SourceBuilder = KtDefaultBuilder
->(
-  name: string,
-  packageName?: string | null,
-  options?: AstNodeOptions<KtReference<TBuilder>, 'name' | 'packageName'>
-): (generics: TupleWithCount<AppendValue<TBuilder>, TGenericCount>, nullable?: boolean) => KtReference<TBuilder> {
-  return (generics, nullable) =>
-    ktReference(name, packageName, { ...options, generics, nullable: nullable ?? options?.nullable });
+>(name: string, packageName?: string | null, options?: AstNodeOptions<KtReference<TBuilder>, 'name' | 'packageName'>) {
+  return Object.assign(
+    (generics: TupleWithCount<AppendValue<TBuilder>, TGenericCount>, nullable?: boolean) =>
+      ktReference(name, packageName, { ...options, generics, nullable: nullable ?? options?.nullable }),
+    {
+      infer: (nullable?: boolean) =>
+        ktReference(name, packageName, { ...options, nullable: nullable ?? options?.nullable }),
+    }
+  );
 }
 
-export function isKtReference<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  value: unknown
-): value is KtReference<TBuilder> {
+export function isKtReference(value: unknown): value is KtReference<never> {
   return isKtNode(value, ktReferenceNodeKind);
 }
 

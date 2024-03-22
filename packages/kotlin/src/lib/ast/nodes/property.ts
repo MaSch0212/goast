@@ -79,15 +79,11 @@ export function ktPropertyAccessor<TBuilder extends SourceBuilder = KtDefaultBui
   };
 }
 
-export function isKtProperty<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  node: unknown
-): node is KtProperty<TBuilder> {
+export function isKtProperty(node: unknown): node is KtProperty<never> {
   return isKtNode(node, ktPropertyNodeKind);
 }
 
-export function isKtPropertyAccessor<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  node: unknown
-): node is KtPropertyAccessor<TBuilder> {
+export function isKtPropertyAccessor(node: unknown): node is KtPropertyAccessor<never> {
   return isKtNode(node, ktPropertyAccessorNodeKind);
 }
 

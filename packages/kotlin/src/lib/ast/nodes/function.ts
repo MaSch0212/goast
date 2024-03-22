@@ -103,9 +103,7 @@ export function ktFunction<TBuilder extends SourceBuilder = KtDefaultBuilder>(
   };
 }
 
-export function isKtFunction<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  node: unknown
-): node is KtFunction<TBuilder> {
+export function isKtFunction(node: unknown): node is KtFunction<never> {
   return isKtNode(node, ktFunctionNodeKind);
 }
 

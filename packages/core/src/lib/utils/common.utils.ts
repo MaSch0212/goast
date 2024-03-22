@@ -38,3 +38,31 @@ export function run<T>(value: T, callback: (value: T) => void): T {
 export function transform<T, U>(value: T, callback: (value: T) => U): U {
   return callback(value);
 }
+
+type IterableItem<T> = T extends Iterable<infer U> ? U : never;
+export function modifyEach<T extends Iterable<unknown>>(
+  values: T,
+  callback: (value: NonNullable<IterableItem<T>>) => void
+): T {
+  for (const value of values) {
+    if (notNullish(value)) {
+      callback(value as NonNullable<IterableItem<T>>);
+    }
+  }
+  return values;
+}
+
+export function runEach<T extends Iterable<unknown>>(values: T, callback: (value: IterableItem<T>) => void): T {
+  for (const value of values) {
+    callback(value as IterableItem<T>);
+  }
+  return values;
+}
+
+export function transformEach<T, U>(values: Iterable<T>, callback: (value: T) => U): U[] {
+  const result: U[] = [];
+  for (const value of values) {
+    result.push(callback(value));
+  }
+  return result;
+}

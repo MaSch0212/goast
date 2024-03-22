@@ -32,9 +32,7 @@ export function ktObject<TBuilder extends SourceBuilder = KtDefaultBuilder>(
   };
 }
 
-export function isKtObject<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  node: unknown
-): node is KtObject<TBuilder> {
+export function isKtObject(node: unknown): node is KtObject<never> {
   return isKtNode(node, ktObjectNodeKind);
 }
 

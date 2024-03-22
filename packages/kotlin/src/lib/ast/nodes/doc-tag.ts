@@ -98,9 +98,7 @@ export function ktDocTag<TBuilder extends SourceBuilder = KtDefaultBuilder>(
   };
 }
 
-export function isKtDocTag<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  node: unknown
-): node is KtDocTag<TBuilder> {
+export function isKtDocTag(node: unknown): node is KtDocTag<never> {
   return isKtNode(node, ktDocTagNodeKind);
 }
 

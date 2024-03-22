@@ -23,7 +23,7 @@ export function ktCall<TBuilder extends SourceBuilder = KtDefaultBuilder>(
   };
 }
 
-export function isKtCall<TBuilder extends SourceBuilder = KtDefaultBuilder>(node: unknown): node is KtCall<TBuilder> {
+export function isKtCall(node: unknown): node is KtCall<never> {
   return isKtNode(node, ktCallNodeKind);
 }
 

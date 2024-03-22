@@ -24,7 +24,7 @@ export function ktDoc<TBuilder extends SourceBuilder = KtDefaultBuilder>(
   };
 }
 
-export function isKtDoc<TBuilder extends SourceBuilder = KtDefaultBuilder>(value: unknown): value is KtDoc<TBuilder> {
+export function isKtDoc(value: unknown): value is KtDoc<never> {
   return isKtNode(value, ktDocNodeKind);
 }
 

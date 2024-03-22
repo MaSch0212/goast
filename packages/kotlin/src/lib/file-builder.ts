@@ -104,7 +104,7 @@ export class KotlinFileBuilder<TAdditionalAppends = never> extends SourceBuilder
   protected override appendSingle(value: KotlinAppendParam<this, TAdditionalAppends>): void {
     super.appendSingle(value);
     if (isKtNode(value)) {
-      writeKt(this, value);
+      writeKt<this>(this, value as any);
     }
   }
 }

@@ -18,12 +18,18 @@ export type AppendParam<TBuilder extends StringBuilder, TAdditionalAppends> = Si
     }
 >;
 
+export const AdditionalAppendsSymbol = Symbol('AdditionalAppends');
+
 /**
  * Represents a mutable string of characters.
  */
 export class StringBuilder<TAdditionalAppends = never> {
   private readonly _options: StringBuilderOptions;
   private _str: string = '';
+
+  [AdditionalAppendsSymbol](_: TAdditionalAppends): void {
+    throw new Error('This method should never be called.');
+  }
 
   public get options(): StringBuilderOptions {
     return this._options;

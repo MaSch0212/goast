@@ -29,9 +29,7 @@ export function ktString<TBuilder extends SourceBuilder = KtDefaultBuilder>(
   };
 }
 
-export function isKtString<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  value: unknown
-): value is KtString<TBuilder> {
+export function isKtString(value: unknown): value is KtString<never> {
   return isKtNode(value, ktStringNodeKind);
 }
 

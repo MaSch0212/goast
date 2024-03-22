@@ -21,9 +21,7 @@ export function ktInitBlock<TBuilder extends SourceBuilder = KtDefaultBuilder>(
   };
 }
 
-export function isKtInitBlock<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  value: unknown
-): value is KtInitBlock<TBuilder> {
+export function isKtInitBlock(value: unknown): value is KtInitBlock<never> {
   return isKtNode(value, ktInitBlockNodeKind);
 }
 

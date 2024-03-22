@@ -51,9 +51,7 @@ export function ktInterface<TBuilder extends SourceBuilder = KtDefaultBuilder>(
   };
 }
 
-export function isKtInterface<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  node: unknown
-): node is KtInterface<TBuilder> {
+export function isKtInterface(node: unknown): node is KtInterface<never> {
   return isKtNode(node, ktInterfaceNodeKind);
 }
 

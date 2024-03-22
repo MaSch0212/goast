@@ -1,4 +1,4 @@
-import { AstNode, AstNodeOptions, SourceBuilder, astNode, isAstNode } from '@goast/core';
+import { AstNode, AstNodeOptions, SourceBuilder, astNode, defaultOpenApiGeneratorConfig, isAstNode } from '@goast/core';
 
 import { KotlinGeneratorConfig, defaultKotlinGeneratorConfig } from '../config';
 import { KotlinFileBuilder } from '../file-builder';
@@ -19,21 +19,15 @@ export function ktNode<TKind extends string, TBuilder extends SourceBuilder = Kt
   return astNode(ktLangkey, kind, options);
 }
 
-export function isKtNode<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  value: unknown
-): value is KtNode<string, TBuilder>;
-export function isKtNode<TKind extends string, TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  value: unknown,
-  kind: TKind
-): value is KtNode<TKind, TBuilder>;
-export function isKtNode<TKind extends string, TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  value: unknown,
-  kind?: TKind
-): value is KtNode<TKind, TBuilder> {
+export function isKtNode(value: unknown): value is KtNode<string, never>;
+export function isKtNode<TKind extends string>(value: unknown, kind: TKind): value is KtNode<TKind, never>;
+export function isKtNode<TKind extends string>(value: unknown, kind?: TKind): value is KtNode<TKind, never> {
   return kind === undefined ? isAstNode(value, ktLangkey) : isAstNode(value, ktLangkey, kind);
 }
 
 const ktConfigSymbol = Symbol();
+type _BuilderWithConfig = SourceBuilder & { [ktConfigSymbol]?: KotlinGeneratorConfig };
+
 export function getKotlinBuilderOptions(builder: SourceBuilder) {
   if (builder instanceof KotlinFileBuilder) {
     return builder.options;
@@ -41,8 +35,8 @@ export function getKotlinBuilderOptions(builder: SourceBuilder) {
   if (ktConfigSymbol in builder.options) {
     return builder.options[ktConfigSymbol] as KotlinGeneratorConfig;
   }
-  const options = { ...defaultKotlinGeneratorConfig, ...builder.options };
-  (builder as any)[ktConfigSymbol] = options;
+  const options = { ...defaultOpenApiGeneratorConfig, ...defaultKotlinGeneratorConfig, ...builder.options };
+  (builder as _BuilderWithConfig)[ktConfigSymbol] = options;
   return options;
 }
 

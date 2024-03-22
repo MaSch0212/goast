@@ -31,9 +31,7 @@ export function ktNamedArgument<TBuilder extends SourceBuilder = KtDefaultBuilde
   return ktArgument(value, { ...options, name });
 }
 
-export function isKtArgument<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  node: unknown
-): node is KtArgument<TBuilder> {
+export function isKtArgument(node: unknown): node is KtArgument<never> {
   return isKtNode(node, ktArgumentNodeKind);
 }
 

@@ -31,9 +31,7 @@ export function ktAnnotation<TBuilder extends SourceBuilder = KtDefaultBuilder>(
   };
 }
 
-export function isKtAnnotation<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  value: unknown
-): value is KtAnnotation<TBuilder> {
+export function isKtAnnotation(value: unknown): value is KtAnnotation<never> {
   return isKtNode(value, ktAnnotationNodeKind);
 }
 

@@ -35,9 +35,7 @@ export function ktEnumValue<TBuilder extends SourceBuilder = KtDefaultBuilder>(
   };
 }
 
-export function isKtEnumValue<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  node: unknown
-): node is KtEnumValue<TBuilder> {
+export function isKtEnumValue(node: unknown): node is KtEnumValue<never> {
   return isKtNode(node, ktEnumValueNodeKind);
 }
 

@@ -3,7 +3,7 @@ import path from 'path';
 import YAML from 'yaml';
 import fs from 'fs-extra';
 import { ApiSchema, OpenApiGenerator, OpenApiParser, spliceString } from '@goast/core';
-import { TypeScriptClientsGenerator, TypeScriptModelsGenerator } from '@goast/typescript';
+import { DefaultKotlinModelGenerator } from '@goast/kotlin';
 
 export async function main(): Promise<void> {
   // const x = await new OpenApiGenerator({ outputDir: 'out' })

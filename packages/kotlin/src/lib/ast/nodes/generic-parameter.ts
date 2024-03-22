@@ -26,9 +26,7 @@ export function ktGenericParameter<TBuilder extends SourceBuilder = KtDefaultBui
   };
 }
 
-export function isKtGenericParameter<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  node: unknown
-): node is KtGenericParameter<TBuilder> {
+export function isKtGenericParameter(node: unknown): node is KtGenericParameter<never> {
   return isKtNode(node, ktGenericParameterNodeKind);
 }
 

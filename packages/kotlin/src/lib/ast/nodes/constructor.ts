@@ -43,9 +43,7 @@ export function ktConstructor<TBuilder extends SourceBuilder = KtDefaultBuilder>
   };
 }
 
-export function isKtConstructor<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  node: unknown
-): node is KtConstructor<TBuilder> {
+export function isKtConstructor(node: unknown): node is KtConstructor<never> {
   return isKtNode(node, ktConstructorNodeKind);
 }
 

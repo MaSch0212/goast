@@ -56,7 +56,7 @@ export function ktEnum<TBuilder extends SourceBuilder = KtDefaultBuilder>(
   };
 }
 
-export function isKtEnum<TBuilder extends SourceBuilder = KtDefaultBuilder>(node: unknown): node is KtEnum<TBuilder> {
+export function isKtEnum(node: unknown): node is KtEnum<never> {
   return isKtNode(node, ktEnumNodeKind);
 }
 

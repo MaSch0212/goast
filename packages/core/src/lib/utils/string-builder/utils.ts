@@ -1,12 +1,16 @@
-import { StringBuilder } from './string-builder';
+import { AdditionalAppendsSymbol, AppendParam, StringBuilder } from './string-builder';
 import { concatSingleOrMultiple } from '../common.utils';
 import { Nullable } from '../type.utils';
 
-export type AppendValue<TBuilder extends StringBuilder = StringBuilder> = Parameters<TBuilder['append']>[number];
-export type AppendValueGroup<TBuilder extends StringBuilder = StringBuilder> = Extract<
-  AppendValue<TBuilder>,
-  { __type: 'append-value-group' }
+export type AppendValue<TBuilder extends StringBuilder = StringBuilder> = AppendParam<
+  TBuilder,
+  Parameters<TBuilder[typeof AdditionalAppendsSymbol]>[0]
 >;
+export type AppendValueGroup<TBuilder extends StringBuilder = StringBuilder> = {
+  __type: 'append-value-group';
+  values: AppendValue<TBuilder>[];
+  separator: string | null;
+};
 
 /** @deprecated Use AppendValue<TBuilder> instead */
 export type TextOrBuilderFn<TBuilder> = string | ((builder: TBuilder) => void);
@@ -14,7 +18,7 @@ export type TextOrBuilderFn<TBuilder> = string | ((builder: TBuilder) => void);
 export function appendValueGroup<TBuilder extends StringBuilder = StringBuilder>(
   values: AppendValue<TBuilder>[],
   separator?: Nullable<string>
-): AppendValueGroup<StringBuilder> {
+): AppendValueGroup<TBuilder> {
   return {
     __type: 'append-value-group',
     values,
