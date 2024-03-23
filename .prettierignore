@@ -4,3 +4,5 @@
 /coverage
 pnpm-lock.yaml
 .verify/
+
+/.nx/cache

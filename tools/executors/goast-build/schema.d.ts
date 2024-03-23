@@ -1,4 +1,5 @@
 export interface ExecutorOptions {
+  outputPath: string;
   entryFile?: string;
   additionalEntryPoints?: Record<string, string>;
   tsConfig?: string;

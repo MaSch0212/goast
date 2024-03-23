@@ -13,7 +13,6 @@ type Context = Required<Omit<ExecutorOptions, 'additionalEntryPoints'>> & {
   additionalEntryPoints: EntryPoint[];
   projectRoot: string;
   projectSourceRoot: string;
-  distDir: string;
 } & ExecutorContext;
 
 export default async function runExecutor(options: ExecutorOptions, context: ExecutorContext) {
@@ -45,14 +44,14 @@ async function prepare(options: ExecutorOptions, context: ExecutorContext): Prom
       entryFile: join(project.root, entryFile),
     })),
     assets: options.assets ?? [],
+    outputPath: options.outputPath,
     entryFile: join(project.root, options.entryFile ?? 'src/index.ts'),
     projectRoot: project.root,
     projectSourceRoot: project.sourceRoot ?? project.root,
-    distDir: join('dist', project.root),
     tsConfig: join(project.root, options.tsConfig || 'tsconfig.lib.json'),
   };
 
-  await emptyDir(ctx.distDir);
+  await emptyDir(ctx.outputPath);
 
   return Object.assign({}, context, ctx);
 }
@@ -79,7 +78,7 @@ function createTypeScriptProject(ctx: Context, moduleKind: ModuleKind, outDir: s
   const project = new Project({
     tsConfigFilePath: ctx.tsConfig,
     compilerOptions: {
-      outDir: normalizePath(join(ctx.distDir, outDir)),
+      outDir: normalizePath(join(ctx.outputPath, outDir)),
       rootDir: ctx.projectSourceRoot,
       module: moduleKind,
       declaration,
@@ -133,7 +132,7 @@ async function buildPackageJson(ctx: Context) {
     {
       projectRoot: '',
       main: `dist/${removeTsExtension(getRelativeSourceFilePath(ctx, ctx.entryFile))}`,
-      outputPath: ctx.distDir,
+      outputPath: ctx.outputPath,
       updateBuildableProjectDepsInPackageJson: true,
       format: ['cjs', 'esm'],
     },
@@ -143,7 +142,7 @@ async function buildPackageJson(ctx: Context) {
   );
 
   const relativeIndex = removeTsExtension(getRelativeSourceFilePath(ctx, ctx.entryFile));
-  const packageJson = await readJson(join(ctx.distDir, 'package.json'));
+  const packageJson = await readJson(join(ctx.outputPath, 'package.json'));
   packageJson.exports = {};
   packageJson.type = 'module';
   packageJson.module = `./esm/${relativeIndex}.js`;
@@ -154,7 +153,7 @@ async function buildPackageJson(ctx: Context) {
     addExport(ctx, packageJson, entryPoint);
   }
   packageJson.exports['./package.json'] = './package.json';
-  await writeJson(join(ctx.distDir, 'package.json'), packageJson, { spaces: 2 });
+  await writeJson(join(ctx.outputPath, 'package.json'), packageJson, { spaces: 2 });
   console.log(`  - Done (package.json)${EOL}`);
 }
 
@@ -182,9 +181,9 @@ async function copyAssets(ctx: Context) {
     { nodir: true }
   );
   for (const file of files) {
-    const targetDir = join(ctx.distDir, relative(ctx.projectRoot, dirname(file)));
+    const targetDir = join(ctx.outputPath, relative(ctx.projectRoot, dirname(file)));
     await ensureDir(targetDir);
-    await copyFile(file, join(ctx.distDir, relative(ctx.projectRoot, file)));
+    await copyFile(file, join(ctx.outputPath, relative(ctx.projectRoot, file)));
   }
   console.log(`  - Done (${files.length} asset(s))${EOL}`);
 }
