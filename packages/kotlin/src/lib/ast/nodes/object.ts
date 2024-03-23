@@ -1,58 +1,66 @@
-import { SourceBuilder, AppendValue, AstNodeOptions, notNullish } from '@goast/core';
+import { SourceBuilder, AppendValue, AstNodeOptions, notNullish, toArray, SingleOrMultiple } from '@goast/core';
 
 import { KtFunction } from './function';
 import { KtInitBlock } from './init-block';
 import { KtProperty } from './property';
 import { KtReference } from './reference';
-import { KtDefaultBuilder, KtNode, isKtNode, ktNode, writeKtNode } from '../common';
-import { writeKt, writeKtMembers } from '../writable-nodes';
+import { KotlinFileBuilder } from '../../file-builder';
+import { KtNode } from '../node';
+import { writeKt, writeKtMembers } from '../utils';
 
-export const ktObjectNodeKind = 'object' as const;
+type KtObjectOptions<TBuilder extends SourceBuilder> = AstNodeOptions<KtObject<TBuilder>, typeof KtNode<TBuilder>>;
 
-export type KtObject<TBuilder extends SourceBuilder = KtDefaultBuilder> = KtNode<typeof ktObjectNodeKind, TBuilder> & {
-  data: boolean;
-  name: string | null;
-  class: KtReference<TBuilder> | AppendValue<TBuilder>;
-  classArguments: AppendValue<TBuilder>[];
-  implements: (KtReference<TBuilder> | AppendValue<TBuilder>)[];
-  members: (KtInitBlock<TBuilder> | KtProperty<TBuilder> | KtFunction<TBuilder> | AppendValue<TBuilder>)[];
+export class KtObject<
+  TBuilder extends SourceBuilder = KotlinFileBuilder,
+  TInjects extends string = never
+> extends KtNode<TBuilder, TInjects> {
+  public data: boolean;
+  public name: string | null;
+  public class: KtReference<TBuilder> | AppendValue<TBuilder>;
+  public classArguments: AppendValue<TBuilder>[];
+  public implements: (KtReference<TBuilder> | AppendValue<TBuilder>)[];
+  public members: (KtInitBlock<TBuilder> | KtProperty<TBuilder> | KtFunction<TBuilder> | AppendValue<TBuilder>)[];
+
+  constructor(options: KtObjectOptions<TBuilder>) {
+    super(options);
+    this.data = options.data ?? false;
+    this.name = options.name ?? null;
+    this.class = options.class;
+    this.classArguments = options.classArguments ?? [];
+    this.implements = options.implements ?? [];
+    this.members = options.members ?? [];
+  }
+
+  protected override onWrite(builder: TBuilder): void {
+    builder
+      .appendIf(this.data, 'data ')
+      .append('object')
+      .appendIf(!!this.name, ' ', this.name)
+      .appendIf(!!this.class || this.implements.length > 0, ' : ')
+      .appendIf(
+        !!this.class,
+        (b) => writeKt(b, this.class),
+        (b) => b.parenthesize('()', (b) => b.forEach(this.classArguments, (b, a) => writeKt(b, a), { separator: ', ' }))
+      )
+      .appendIf(!!this.class && this.implements.length > 0, ', ')
+      .forEach(this.implements, (b, i) => writeKt(b, i), { separator: ', ' })
+      .if(this.members.some(notNullish), (b) =>
+        b.append(' ').parenthesize('{}', (b) => writeKtMembers(b, this.members), { multiline: true })
+      )
+      .appendLineIf(!!this.name);
+  }
+}
+
+const createObject = <TBuilder extends SourceBuilder = KotlinFileBuilder>(options?: KtObjectOptions<TBuilder>) =>
+  new KtObject<TBuilder>(options ?? {});
+
+const writeObjects = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+  builder: TBuilder,
+  nodes: SingleOrMultiple<KtObject<TBuilder> | AppendValue<TBuilder>>
+) => {
+  builder.forEach(toArray(nodes), writeKt, { separator: '\n' });
 };
 
-export function ktObject<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  options?: AstNodeOptions<KtObject<TBuilder>>
-): KtObject<TBuilder> {
-  return {
-    ...ktNode(ktObjectNodeKind, options),
-    data: options?.data ?? false,
-    name: options?.name ?? null,
-    class: options?.class ?? null,
-    classArguments: options?.classArguments ?? [],
-    implements: options?.implements ?? [],
-    members: options?.members ?? [],
-  };
-}
-
-export function isKtObject(node: unknown): node is KtObject<never> {
-  return isKtNode(node, ktObjectNodeKind);
-}
-
-export function writeKtObject<TBuilder extends SourceBuilder>(builder: TBuilder, node: KtObject<TBuilder>): TBuilder {
-  return writeKtNode(builder, node, (b) =>
-    b
-      .appendIf(node.data, 'data ')
-      .append('object')
-      .appendIf(!!node.name, ' ', node.name)
-      .appendIf(!!node.class || node.implements.length > 0, ' : ')
-      .appendIf(!!node.class, (b) =>
-        writeKt(b, node.class).parenthesize('()', (b) =>
-          b.forEach(node.classArguments, (b, a) => writeKt(b, a), { separator: ', ' })
-        )
-      )
-      .appendIf(!!node.class && node.implements.length > 0, ', ')
-      .forEach(node.implements, (b, i) => writeKt(b, i), { separator: ', ' })
-      .if(node.members.some(notNullish), (b) =>
-        b.append(' ').parenthesize('{}', (b) => writeKtMembers(b, node.members), { multiline: true })
-      )
-      .appendLineIf(!!node.name)
-  );
-}
+export const ktObject = Object.assign(createObject, {
+  write: writeObjects,
+});

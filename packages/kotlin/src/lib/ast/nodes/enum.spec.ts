@@ -1,6 +1,6 @@
 import { EOL } from 'os';
 
-import { ktAnnotation, ktClassParameter, ktConstructor, ktObject } from '.';
+import { ktAnnotation, ktConstructor, ktObject, ktParameter } from '.';
 import { ktDoc } from './doc';
 import { ktEnum } from './enum';
 import { ktEnumValue } from './enum-value';
@@ -36,14 +36,14 @@ describe('ktEnum', () => {
   });
 
   it('should write access modifiers', () => {
-    builder.append(ktEnum('Foo', [ktEnumValue('BAR')], { accessibility: 'private' }));
+    builder.append(ktEnum('Foo', [ktEnumValue('BAR')], { accessModifier: 'private' }));
     expect(builder.toString(false)).toBe(`private enum class Foo {${EOL}    BAR${EOL}}${EOL}`);
   });
 
   it('should write primary constructor', () => {
     builder.append(
       ktEnum('Foo', [ktEnumValue('BAR', { arguments: ['0', '1'] })], {
-        primaryConstructor: ktConstructor([ktClassParameter('x', 'Int'), ktClassParameter('y', 'Int')]),
+        primaryConstructor: ktConstructor([ktParameter('x', 'Int'), ktParameter('y', 'Int')]),
       })
     );
     expect(builder.toString(false)).toBe(`enum class Foo(x: Int, y: Int) {${EOL}    BAR(0, 1)${EOL}}${EOL}`);
@@ -73,8 +73,8 @@ describe('ktEnum', () => {
       ktEnum('Foo', [ktEnumValue('BAR', { arguments: ['0', '1'] })], {
         doc: ktDoc('This is a foo'),
         annotations: [ktAnnotation('Deprecated')],
-        accessibility: 'private',
-        primaryConstructor: ktConstructor([ktClassParameter('x', 'Int'), ktClassParameter('y', 'Int')]),
+        accessModifier: 'private',
+        primaryConstructor: ktConstructor([ktParameter('x', 'Int'), ktParameter('y', 'Int')]),
         implements: ['Bar', 'Baz'],
         members: ['// Comment 1', '// Comment 2'],
         companionObject: ktObject(),

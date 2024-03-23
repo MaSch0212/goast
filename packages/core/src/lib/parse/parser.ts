@@ -65,7 +65,7 @@ export class OpenApiParser {
     existingDocument.dereferencedComponents.set(path, result as Deref<OpenApiObject<string>>);
 
     if (value.$ref) {
-      result.$ref = await this.resolveReference<T>(file, value as OpenApiReference);
+      result.$ref = (await this.resolveReference<T>(file, value as OpenApiReference)) as any;
     }
     for (const key of Object.keys(value) as (keyof T)[]) {
       if (key === '$ref') continue;

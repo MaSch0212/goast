@@ -1,169 +1,155 @@
-import { SourceBuilder, AppendValue, AstNodeOptions } from '@goast/core';
+import { SourceBuilder, AstNodeOptions, AppendValue, Prettify, SingleOrMultiple, toArray } from '@goast/core';
 
-import { KtAnnotation, writeKtAnnotations } from './annotation';
+import { ktAnnotation, KtAnnotation } from './annotation';
 import { KtDoc } from './doc';
-import { KtGenericParameter, writeKtGenericParameters } from './generic-parameter';
-import { KtParameter, writeKtParameters } from './parameter';
+import { ktGenericParameter, KtGenericParameter } from './generic-parameter';
+import { ktParameter, KtParameter } from './parameter';
 import { KtReference } from './reference';
-import { KtDefaultBuilder, KtNode, KtAccessibility, ktNode, isKtNode, writeKtNode } from '../common';
-import { writeKt } from '../writable-nodes';
+import { KotlinFileBuilder } from '../../file-builder';
+import { KtAccessModifier } from '../common';
+import { KtNode } from '../node';
+import { writeKt } from '../utils';
 
-export const ktFunctionNodeKind = 'function' as const;
+type KtFunctionOptions<TBuilder extends SourceBuilder = KotlinFileBuilder> = AstNodeOptions<
+  KtFunction<TBuilder>,
+  typeof KtNode<TBuilder>,
+  'name'
+>;
 
-export type KtFunction<TBuilder extends SourceBuilder = KtDefaultBuilder> = KtNode<
-  typeof ktFunctionNodeKind,
-  TBuilder
-> & {
-  name: string;
-  generics: KtGenericParameter<TBuilder>[];
-  parameters: KtParameter<TBuilder>[];
-  doc: KtDoc<TBuilder> | null;
-  returnType: AppendValue<TBuilder>;
-  body: AppendValue<TBuilder>;
-  accessibility: KtAccessibility;
-  annotations: KtAnnotation<TBuilder>[];
-  receiverType: KtReference<TBuilder> | AppendValue<TBuilder>;
-  receiverAnnotations: KtAnnotation<TBuilder>[];
-  singleExpression: boolean;
-  open: boolean;
-  inline: boolean;
-  infix: boolean;
-  tailrec: boolean;
-  operator: boolean;
-  override: boolean;
-  abstract: boolean;
-  inject: {
-    beforeDoc: AppendValue<TBuilder>;
-    afterDoc: AppendValue<TBuilder>;
-    beforeAnnotations: AppendValue<TBuilder>;
-    afterAnnotations: AppendValue<TBuilder>;
-    beforeKeywords: AppendValue<TBuilder>;
-    afterKeywords: AppendValue<TBuilder>;
-    beforeGenerics: AppendValue<TBuilder>;
-    afterGenerics: AppendValue<TBuilder>;
-    beforeReceiverAnnotations: AppendValue<TBuilder>;
-    afterReceiverAnnotations: AppendValue<TBuilder>;
-    beforeReceiverType: AppendValue<TBuilder>;
-    afterReceiverType: AppendValue<TBuilder>;
-    beforeName: AppendValue<TBuilder>;
-    afterName: AppendValue<TBuilder>;
-    beforeParameters: AppendValue<TBuilder>;
-    afterParameters: AppendValue<TBuilder>;
-    beforeReturnType: AppendValue<TBuilder>;
-    afterReturnType: AppendValue<TBuilder>;
-  };
-};
+type KtFunctionInjects =
+  | 'beforeDoc'
+  | 'afterDoc'
+  | 'beforeAnnotations'
+  | 'afterAnnotations'
+  | 'beforeKeywords'
+  | 'afterKeywords'
+  | 'beforeGenerics'
+  | 'afterGenerics'
+  | 'beforeReceiverAnnotations'
+  | 'afterReceiverAnnotations'
+  | 'beforeReceiverType'
+  | 'afterReceiverType'
+  | 'beforeName'
+  | 'afterName'
+  | 'beforeParameters'
+  | 'afterParameters'
+  | 'beforeReturnType'
+  | 'afterReturnType';
 
-export function ktFunction<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  name: string,
-  options?: AstNodeOptions<KtFunction<TBuilder>, 'name'>
-): KtFunction<TBuilder> {
-  const base = ktNode(ktFunctionNodeKind, options);
-  return {
-    ...base,
-    name,
-    generics: options?.generics ?? [],
-    parameters: options?.parameters ?? [],
-    doc: options?.doc ?? null,
-    returnType: options?.returnType ?? null,
-    body: options?.body ?? null,
-    accessibility: options?.accessibility ?? null,
-    annotations: options?.annotations ?? [],
-    receiverType: options?.receiverType ?? null,
-    receiverAnnotations: options?.receiverAnnotations ?? [],
-    singleExpression: options?.singleExpression ?? false,
-    open: options?.open ?? false,
-    inline: options?.inline ?? false,
-    infix: options?.infix ?? false,
-    tailrec: options?.tailrec ?? false,
-    operator: options?.operator ?? false,
-    override: options?.override ?? false,
-    abstract: options?.abstract ?? false,
-    inject: {
-      ...base.inject,
-      beforeDoc: options?.inject?.beforeDoc ?? null,
-      afterDoc: options?.inject?.afterDoc ?? null,
-      beforeAnnotations: options?.inject?.beforeAnnotations ?? null,
-      afterAnnotations: options?.inject?.afterAnnotations ?? null,
-      beforeKeywords: options?.inject?.beforeKeywords ?? null,
-      afterKeywords: options?.inject?.afterKeywords ?? null,
-      beforeGenerics: options?.inject?.beforeGenerics ?? null,
-      afterGenerics: options?.inject?.afterGenerics ?? null,
-      beforeReceiverAnnotations: options?.inject?.beforeReceiverAnnotations ?? null,
-      afterReceiverAnnotations: options?.inject?.afterReceiverAnnotations ?? null,
-      beforeReceiverType: options?.inject?.beforeReceiverType ?? null,
-      afterReceiverType: options?.inject?.afterReceiverType ?? null,
-      beforeName: options?.inject?.beforeName ?? null,
-      afterName: options?.inject?.afterName ?? null,
-      beforeParameters: options?.inject?.beforeParameters ?? null,
-      afterParameters: options?.inject?.afterParameters ?? null,
-      beforeReturnType: options?.inject?.beforeReturnType ?? null,
-      afterReturnType: options?.inject?.afterReturnType ?? null,
-    },
-  };
-}
+export class KtFunction<
+  TBuilder extends SourceBuilder = KotlinFileBuilder,
+  TInjects extends string = never
+> extends KtNode<TBuilder, KtFunctionInjects | TInjects> {
+  public name: string;
+  public generics: KtGenericParameter<TBuilder>[];
+  public parameters: KtParameter<TBuilder>[];
+  public doc: KtDoc<TBuilder> | null;
+  public returnType: AppendValue<TBuilder>;
+  public body: AppendValue<TBuilder>;
+  public accessModifier: KtAccessModifier;
+  public annotations: KtAnnotation<TBuilder>[];
+  public receiverType: KtReference<TBuilder> | AppendValue<TBuilder>;
+  public receiverAnnotations: KtAnnotation<TBuilder>[];
+  public singleExpression: boolean;
+  public open: boolean;
+  public inline: boolean;
+  public infix: boolean;
+  public tailrec: boolean;
+  public operator: boolean;
+  public override: boolean;
+  public abstract: boolean;
 
-export function isKtFunction(node: unknown): node is KtFunction<never> {
-  return isKtNode(node, ktFunctionNodeKind);
-}
+  constructor(options: KtFunctionOptions<TBuilder>) {
+    super(options);
+    this.name = options.name;
+    this.generics = options.generics ?? [];
+    this.parameters = options.parameters ?? [];
+    this.doc = options.doc ?? null;
+    this.returnType = options.returnType ?? null;
+    this.body = options.body ?? null;
+    this.accessModifier = options.accessModifier ?? null;
+    this.annotations = options.annotations ?? [];
+    this.receiverType = options.receiverType ?? null;
+    this.receiverAnnotations = options.receiverAnnotations ?? [];
+    this.singleExpression = options.singleExpression ?? false;
+    this.open = options.open ?? false;
+    this.inline = options.inline ?? false;
+    this.infix = options.infix ?? false;
+    this.tailrec = options.tailrec ?? false;
+    this.operator = options.operator ?? false;
+    this.override = options.override ?? false;
+    this.abstract = options.abstract ?? false;
+  }
 
-export function writeKtFunction<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  builder: TBuilder,
-  node: KtFunction<TBuilder>
-): TBuilder {
-  return writeKtNode(builder, node, (b) =>
-    b
-      .append(node.inject.beforeDoc)
-      .append((b) => writeKt(b, node.doc))
-      .append(node.inject.afterDoc)
-      .append(node.inject.beforeAnnotations)
-      .append((b) => writeKtAnnotations(b, node.annotations, true))
-      .append(node.inject.afterAnnotations)
-      .appendIf(!!node.accessibility, node.accessibility, ' ')
-      .append(node.inject.beforeKeywords)
-      .appendIf(node.inline, 'inline ')
-      .appendIf(node.infix, 'infix ')
-      .appendIf(node.tailrec, 'tailrec ')
-      .appendIf(node.open, 'open ')
-      .appendIf(node.override, 'override ')
-      .appendIf(node.abstract, 'abstract ')
-      .appendIf(node.operator, 'operator ')
-      .append(node.inject.afterKeywords)
+  protected override onWrite(builder: TBuilder): void {
+    builder
+      .append(this.inject.beforeDoc)
+      .append((b) => this.doc?.write(b))
+      .append(this.inject.afterDoc)
+      .append(this.inject.beforeAnnotations)
+      .append((b) => ktAnnotation.write(b, this.annotations, { multiline: true }))
+      .append(this.inject.afterAnnotations)
+      .appendIf(!!this.accessModifier, this.accessModifier, ' ')
+      .append(this.inject.beforeKeywords)
+      .appendIf(this.inline, 'inline ')
+      .appendIf(this.infix, 'infix ')
+      .appendIf(this.tailrec, 'tailrec ')
+      .appendIf(this.open, 'open ')
+      .appendIf(this.override, 'override ')
+      .appendIf(this.abstract, 'abstract ')
+      .appendIf(this.operator, 'operator ')
+      .append(this.inject.afterKeywords)
       .append('fun ')
       .appendIf(
-        node.generics.length > 0,
-        node.inject.beforeGenerics,
-        (b) => writeKtGenericParameters(b, node.generics),
-        node.inject.afterGenerics,
+        this.generics.length > 0,
+        this.inject.beforeGenerics,
+        (b) => ktGenericParameter.write(b, this.generics),
+        this.inject.afterGenerics,
         ' '
       )
       .appendIf(
-        !!node.receiverType,
-        node.inject.beforeReceiverAnnotations,
-        (b) => writeKtAnnotations(b, node.receiverAnnotations, false),
-        node.inject.afterReceiverAnnotations,
-        node.inject.beforeReceiverType,
-        (b) => writeKt(b, node.receiverType),
-        node.inject.afterReceiverType,
+        !!this.receiverType,
+        this.inject.beforeReceiverAnnotations,
+        (b) => ktAnnotation.write(b, this.receiverAnnotations, { multiline: false }),
+        this.inject.afterReceiverAnnotations,
+        this.inject.beforeReceiverType,
+        (b) => writeKt(b, this.receiverType),
+        this.inject.afterReceiverType,
         '.'
       )
       .append(
-        node.inject.beforeName,
-        node.name,
-        node.inject.afterName,
-        node.inject.beforeParameters,
-        (b) => writeKtParameters(b, node.parameters),
-        node.inject.afterParameters
+        this.inject.beforeName,
+        this.name,
+        this.inject.afterName,
+        this.inject.beforeParameters,
+        (b) => ktParameter.write(b, this.parameters),
+        this.inject.afterParameters
       )
-      .appendIf(!!node.returnType, ': ', node.inject.beforeReturnType, node.returnType, node.inject.afterReturnType)
-      .if(!node.abstract, (b) =>
+      .appendIf(!!this.returnType, ': ', this.inject.beforeReturnType, this.returnType, this.inject.afterReturnType)
+      .if(!this.abstract, (b) =>
         b
           .append(' ')
-          .appendIf(node.singleExpression && !!node.body, '= ')
-          .parenthesizeIf(!node.singleExpression || !node.body, '{}', node.body, {
-            multiline: !!node.body,
+          .appendIf(this.singleExpression && !!this.body, '= ')
+          .parenthesizeIf(!this.singleExpression || !this.body, '{}', this.body, {
+            multiline: !!this.body,
             indent: true,
           })
-      )
-  );
+      );
+  }
 }
+
+const createFunction = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+  name: KtFunction<TBuilder>['name'],
+  options?: Prettify<Omit<KtFunctionOptions<TBuilder>, 'name'>>
+) => new KtFunction<TBuilder>({ ...options, name });
+
+const writeFunctions = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+  builder: TBuilder,
+  nodes: SingleOrMultiple<KtFunction<TBuilder> | AppendValue<TBuilder>>
+) => {
+  builder.forEach(toArray(nodes), writeKt, { separator: '\n' });
+};
+
+export const ktFunction = Object.assign(createFunction, {
+  write: writeFunctions,
+});

@@ -186,7 +186,7 @@ describe('SourceBuilder', () => {
         b.appendLine('foo');
         b.appendLine('bar');
       });
-      expect(builder.toString()).toBe(`// foo${EOL}// bar${EOL}// `);
+      expect(builder.toString()).toBe(`// foo${EOL}// bar${EOL}`);
     });
 
     it('should apply the provided builder function with the specified line prefix and indentation', () => {
@@ -196,7 +196,7 @@ describe('SourceBuilder', () => {
           b.appendLine('bar');
         })
       );
-      expect(builder.toString()).toBe(`  // foo${EOL}  // bar${EOL}  // `);
+      expect(builder.toString()).toBe(`  // foo${EOL}  // bar${EOL}`);
     });
   });
 

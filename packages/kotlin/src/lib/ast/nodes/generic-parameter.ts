@@ -1,52 +1,49 @@
-import { AppendValue, AstNodeOptions, SourceBuilder } from '@goast/core';
+import { AppendValue, AstNodeOptions, Prettify, SingleOrMultiple, SourceBuilder, toArray } from '@goast/core';
 
-import { KtDefaultBuilder, KtNode, isKtNode, ktNode, writeKtNode } from '../common';
-import { writeKt } from '../writable-nodes';
+import { KotlinFileBuilder } from '../../file-builder';
+import { KtNode } from '../node';
+import { writeKt } from '../utils';
 
-export const ktGenericParameterNodeKind = 'generic-parameter' as const;
+type KtGenericParameterOptions<TBuilder extends SourceBuilder> = AstNodeOptions<
+  KtGenericParameter<TBuilder>,
+  typeof KtNode<TBuilder>,
+  'name'
+>;
 
-export type KtGenericParameter<TBuilder extends SourceBuilder = KtDefaultBuilder> = KtNode<
-  typeof ktGenericParameterNodeKind,
-  TBuilder
-> & {
-  name: string;
-  description: AppendValue<TBuilder>;
-  constraint: AppendValue<TBuilder>;
+export class KtGenericParameter<
+  TBuilder extends SourceBuilder = KotlinFileBuilder,
+  TInjects extends string = never
+> extends KtNode<TBuilder, TInjects> {
+  public name: string;
+  public description: AppendValue<TBuilder>;
+  public constraint: AppendValue<TBuilder>;
+
+  constructor(options: KtGenericParameterOptions<TBuilder>) {
+    super(options);
+    this.name = options.name;
+    this.description = options.description ?? null;
+    this.constraint = options.constraint ?? null;
+  }
+
+  protected override onWrite(builder: TBuilder): void {
+    builder.append(this.name).appendIf(this.constraint !== null, ' : ', this.constraint);
+  }
+}
+
+const createGenericParameter = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+  name: KtGenericParameter<TBuilder>['name'],
+  options?: Prettify<Omit<KtGenericParameterOptions<TBuilder>, 'name'>>
+) => new KtGenericParameter<TBuilder>({ ...options, name });
+
+const writeGenericParameters = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+  builder: TBuilder,
+  nodes: SingleOrMultiple<KtGenericParameter<TBuilder> | AppendValue<TBuilder>>
+) => {
+  nodes = toArray(nodes);
+  if (nodes.length === 0) return;
+  builder.parenthesize('<>', (b) => b.forEach(nodes, writeKt, { separator: ', ' }));
 };
 
-export function ktGenericParameter<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  name: string,
-  options?: AstNodeOptions<KtGenericParameter<TBuilder>, 'name'>
-): KtGenericParameter<TBuilder> {
-  return {
-    ...ktNode(ktGenericParameterNodeKind, options),
-    name,
-    description: options?.description ?? null,
-    constraint: options?.constraint ?? null,
-  };
-}
-
-export function isKtGenericParameter(node: unknown): node is KtGenericParameter<never> {
-  return isKtNode(node, ktGenericParameterNodeKind);
-}
-
-export function writeKtGenericParameter<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  builder: TBuilder,
-  node: KtGenericParameter<TBuilder>
-): TBuilder {
-  return writeKtNode(builder, node, (b) =>
-    b.append(node.name).appendIf(node.constraint !== null, ' : ', node.constraint)
-  );
-}
-
-export function writeKtGenericParameters<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  builder: TBuilder,
-  parameters: (KtGenericParameter<TBuilder> | AppendValue<TBuilder>)[]
-): TBuilder {
-  if (parameters.length === 0) return builder;
-  return builder.parenthesize('<>', (b) =>
-    b.forEach(parameters, (b, p) => writeKt(b, p), {
-      separator: ', ',
-    })
-  );
-}
+export const ktGenericParameter = Object.assign(createGenericParameter, {
+  write: writeGenericParameters,
+});

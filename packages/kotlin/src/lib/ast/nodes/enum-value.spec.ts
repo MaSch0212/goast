@@ -2,7 +2,7 @@ import { EOL } from 'os';
 
 import { ktAnnotation } from '.';
 import { ktDoc } from './doc';
-import { ktEnumValue, writeKtEnumValues } from './enum-value';
+import { ktEnumValue } from './enum-value';
 import { KotlinFileBuilder } from '../../file-builder';
 
 describe('ktEnumValue', () => {
@@ -69,12 +69,12 @@ describe('writeKtEnumValues', () => {
   });
 
   it('should write enum values in single line', () => {
-    writeKtEnumValues(builder, [ktEnumValue('FOO'), ktEnumValue('BAR')]);
+    ktEnumValue.write(builder, [ktEnumValue('FOO'), ktEnumValue('BAR')]);
     expect(builder.toString(false)).toBe('FOO, BAR');
   });
 
   it('should write enum values in multiline', () => {
-    writeKtEnumValues(builder, [
+    ktEnumValue.write(builder, [
       ktEnumValue('FOO'),
       ktEnumValue('BAR'),
       ktEnumValue('BAZ'),
@@ -85,7 +85,7 @@ describe('writeKtEnumValues', () => {
   });
 
   it('should write enum values with space between', () => {
-    writeKtEnumValues(builder, [
+    ktEnumValue.write(builder, [
       ktEnumValue('FOO'),
       ktEnumValue('BAR', { annotations: [ktAnnotation('Deprecated')] }),
       ktEnumValue('BAZ'),

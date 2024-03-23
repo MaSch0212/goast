@@ -1,4 +1,4 @@
-import { ktGenericParameter, writeKtGenericParameters } from './generic-parameter';
+import { ktGenericParameter } from './generic-parameter';
 import { KotlinFileBuilder } from '../../file-builder';
 
 describe('ktGenericParameter', () => {
@@ -27,17 +27,17 @@ describe('ktGenericParameter', () => {
 
   describe('multiple', () => {
     it('should not write anything if the node is empty', () => {
-      writeKtGenericParameters(builder, []);
+      ktGenericParameter.write(builder, []);
       expect(builder.toString(false)).toBe('');
     });
 
     it('should write a single parameter', () => {
-      writeKtGenericParameters(builder, [ktGenericParameter('T')]);
+      ktGenericParameter.write(builder, [ktGenericParameter('T')]);
       expect(builder.toString(false)).toBe('<T>');
     });
 
     it('should write all the parameters', () => {
-      writeKtGenericParameters(builder, [ktGenericParameter('T'), ktGenericParameter('U')]);
+      ktGenericParameter.write(builder, [ktGenericParameter('T'), ktGenericParameter('U')]);
       expect(builder.toString(false)).toBe('<T, U>');
     });
   });

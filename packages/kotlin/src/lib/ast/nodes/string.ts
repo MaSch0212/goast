@@ -1,108 +1,127 @@
-import { AstNodeOptions, Nullable, SourceBuilder, spliceString } from '@goast/core';
+import {
+  AppendValue,
+  AstNodeOptions,
+  Prettify,
+  Separator,
+  SingleOrMultiple,
+  SourceBuilder,
+  spliceString,
+  toArray,
+} from '@goast/core';
 
-import { KtDefaultBuilder, KtNode, isKtNode, ktNode, writeKtNode } from '../common';
-import { writeKt } from '../writable-nodes';
+import { KotlinFileBuilder } from '../../file-builder';
+import { KtNode } from '../node';
+import { writeKt } from '../utils';
 
-export const ktStringNodeKind = 'string' as const;
+type KtStringOptions<TBuilder extends SourceBuilder> = AstNodeOptions<KtString<TBuilder>, typeof KtNode<TBuilder>>;
 
-export type KtString<TBuilder extends SourceBuilder = KtDefaultBuilder> = KtNode<typeof ktStringNodeKind, TBuilder> & {
-  value: string | null;
-  template: boolean;
-  multiline: boolean;
-  trimMargin: boolean;
-  marginPrefix: string | null;
-  autoAddMarginPrefix: boolean;
-};
+export class KtString<
+  TBuilder extends SourceBuilder = KotlinFileBuilder,
+  TInjects extends string = never
+> extends KtNode<TBuilder, TInjects> {
+  public value: string | null;
+  public template: boolean;
+  public multiline: boolean;
+  public trimMargin: boolean;
+  public marginPrefix: string | null;
+  public autoAddMarginPrefix: boolean;
 
-export function ktString<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  value: Nullable<string>,
-  options?: AstNodeOptions<KtString<TBuilder>, 'value'>
-): KtString<TBuilder> {
-  return {
-    ...ktNode(ktStringNodeKind, options),
-    value: value ?? null,
-    template: options?.template ?? false,
-    multiline: options?.multiline ?? false,
-    trimMargin: options?.trimMargin ?? true,
-    marginPrefix: options?.marginPrefix ?? null,
-    autoAddMarginPrefix: options?.autoAddMarginPrefix ?? true,
-  };
-}
-
-export function isKtString(value: unknown): value is KtString<never> {
-  return isKtNode(value, ktStringNodeKind);
-}
-
-export function writeKtString<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  builder: TBuilder,
-  node: KtString<TBuilder>
-): TBuilder {
-  if (node.value === null) {
-    return builder.append('null');
+  constructor(options: KtStringOptions<TBuilder>) {
+    super(options);
+    this.value = options?.value ?? null;
+    this.template = options?.template ?? false;
+    this.multiline = options?.multiline ?? false;
+    this.trimMargin = options?.trimMargin ?? true;
+    this.marginPrefix = options?.marginPrefix ?? null;
+    this.autoAddMarginPrefix = options?.autoAddMarginPrefix ?? true;
   }
 
-  let value = JSON.stringify(node.value).slice(1, -1);
-  if (node.multiline) {
-    value = value.replace(/\\n/g, '\n').replace(/\\r/g, '\r');
-  }
-  if (!node.template) {
-    value = value.replace(/\$/g, '\\$');
-  } else {
-    const originalParts = findTemplateParts(node.value);
-    const escapedParts = findTemplateParts(value);
-    if (originalParts.length !== escapedParts.length) {
-      throw new Error('Template parts count mismatch');
+  protected override onWrite(builder: TBuilder): void {
+    if (this.value === null) {
+      builder.append('null');
+      return;
     }
-    for (let i = originalParts.length - 1; i >= 0; i--) {
-      const original = originalParts[i];
-      const escaped = escapedParts[i];
-      value = spliceString(value, escaped.index, escaped.value.length, original.value);
+
+    let value = JSON.stringify(this.value).slice(1, -1);
+    if (this.multiline) {
+      value = value.replace(/\\n/g, '\n').replace(/\\r/g, '\r');
     }
-  }
-  return writeKtNode(builder, node, (b) =>
-    b
-      .if(node.multiline, (b) => b.append('"""').appendLineIf(node.trimMargin), '"')
-      .indentIf(node.multiline && node.trimMargin, (b) =>
+
+    if (!this.template) {
+      value = value.replace(/\$/g, '\\$');
+    } else {
+      const originalParts = this.findTemplateParts(this.value);
+      const escapedParts = this.findTemplateParts(value);
+      if (originalParts.length !== escapedParts.length) {
+        throw new Error('Template parts count mismatch');
+      }
+      for (let i = originalParts.length - 1; i >= 0; i--) {
+        const original = originalParts[i];
+        const escaped = escapedParts[i];
+        value = spliceString(value, escaped.index, escaped.value.length, original.value);
+      }
+    }
+
+    builder
+      .if(this.multiline, (b) => b.append('"""').appendLineIf(this.trimMargin), '"')
+      .indentIf(this.multiline && this.trimMargin, (b) =>
         b
           .if(
-            node.multiline && node.trimMargin && node.autoAddMarginPrefix,
-            (b) => b.appendWithLinePrefix(node.marginPrefix ?? '|', value),
+            this.multiline && this.trimMargin && this.autoAddMarginPrefix,
+            (b) => b.appendWithLinePrefix(this.marginPrefix ?? '|', value),
             value
           )
           .if(
-            node.multiline,
+            this.multiline,
             (b) =>
               b
-                .appendLineIf(node.trimMargin)
+                .appendLineIf(this.trimMargin)
                 .append('"""')
                 .appendIf(
-                  node.trimMargin,
+                  this.trimMargin,
                   '.trimMargin(',
-                  node.marginPrefix ? (b) => writeKt(b, ktString(node.marginPrefix)) : null,
+                  this.marginPrefix ? (b) => new KtString<TBuilder>({ value: this.marginPrefix }).write(b) : null,
                   ')'
                 ),
             '"'
           )
-      )
-  );
-}
+      );
+  }
 
-function findTemplateParts(value: string) {
-  const parts: { value: string; index: number }[] = [];
-  let start: number | undefined = undefined;
-  let bracketCount = 0;
-  for (let i = 0; i < value.length; i++) {
-    if (value[i] === '$' && value[i + 1] === '{') {
-      start = i;
-    } else if (value[i] === '{') {
-      bracketCount++;
-    } else if (value[i] === '}') {
-      bracketCount--;
-      if (bracketCount === 0 && start !== undefined) {
-        parts.push({ value: value.slice(start, i + 1), index: start });
-        start = undefined;
+  protected findTemplateParts(value: string) {
+    const parts: { value: string; index: number }[] = [];
+    let start: number | undefined = undefined;
+    let bracketCount = 0;
+    for (let i = 0; i < value.length; i++) {
+      if (value[i] === '$' && value[i + 1] === '{') {
+        start = i;
+      } else if (value[i] === '{') {
+        bracketCount++;
+      } else if (value[i] === '}') {
+        bracketCount--;
+        if (bracketCount === 0 && start !== undefined) {
+          parts.push({ value: value.slice(start, i + 1), index: start });
+          start = undefined;
+        }
       }
     }
+    return parts;
   }
-  return parts;
 }
+
+const createString = <TBuilder extends SourceBuilder>(
+  value: KtString<TBuilder>['value'],
+  options?: Prettify<Omit<KtStringOptions<TBuilder>, 'value'>>
+) => new KtString<TBuilder>({ ...options, value });
+
+const writeStrings = <TBuilder extends SourceBuilder>(
+  builder: TBuilder,
+  nodes: SingleOrMultiple<KtString<TBuilder> | AppendValue<TBuilder>>,
+  options?: { separator: Separator<TBuilder, KtString<TBuilder> | AppendValue<TBuilder>> }
+) => {
+  builder.forEach(toArray(nodes), writeKt, { separator: options?.separator });
+};
+
+export const ktString = Object.assign(createString, {
+  write: writeStrings,
+});

@@ -1,146 +1,158 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { SourceBuilder, AppendValue, AstNodeOptions } from '@goast/core';
+import { SourceBuilder, AppendValue, AstNodeOptions, Prettify, SingleOrMultiple, toArray } from '@goast/core';
 
-import { KtAnnotation, writeKtAnnotations } from './annotation';
+import { ktAnnotation, KtAnnotation } from './annotation';
+import { ktArgument } from './argument';
 import { KtDoc } from './doc';
 import { KtReference } from './reference';
-import { KtAccessibility, KtDefaultBuilder, KtNode, isKtNode, ktNode, writeKtNode } from '../common';
-import { writeKt } from '../writable-nodes';
+import { KotlinFileBuilder } from '../../file-builder';
+import { KtAccessModifier } from '../common';
+import { KtNode } from '../node';
+import { writeKt } from '../utils';
 
-export const ktPropertyNodeKind = 'property' as const;
-export const ktPropertyAccessorNodeKind = 'property-accessor' as const;
+type KtPropertyAccessorOptions<TBuilder extends SourceBuilder> = AstNodeOptions<
+  KtPropertyAccessor<TBuilder>,
+  typeof KtNode<TBuilder>,
+  never,
+  'kind'
+>;
 
-export type KtProperty<TBuilder extends SourceBuilder = KtDefaultBuilder> = KtNode<
-  typeof ktPropertyNodeKind,
-  TBuilder
-> & {
-  doc: KtDoc<TBuilder> | null;
-  name: string;
-  type: AppendValue<TBuilder>;
-  annotations: KtAnnotation<TBuilder>[];
-  accessibility: KtAccessibility;
-  getter: KtPropertyAccessor<TBuilder> | null;
-  setter: KtPropertyAccessor<TBuilder> | null;
-  default: AppendValue<TBuilder>;
-  delegate: KtReference<TBuilder> | AppendValue<TBuilder>;
-  delegateArguments: AppendValue<TBuilder>[] | null;
-  mutable: boolean;
-  const: boolean;
-  lateinit: boolean;
-  open: boolean;
-  override: boolean;
-  abstract: boolean;
-};
+export abstract class KtPropertyAccessor<
+  TBuilder extends SourceBuilder = KotlinFileBuilder,
+  TInjects extends string = never
+> extends KtNode<TBuilder, TInjects> {
+  public abstract get kind(): 'get' | 'set';
+  public accessModifier: KtAccessModifier;
+  public annotations: KtAnnotation<TBuilder>[];
+  public body: AppendValue<TBuilder>;
+  public singleExpression: boolean;
 
-export type KtPropertyAccessor<TBuilder extends SourceBuilder = KtDefaultBuilder> = KtNode<
-  typeof ktPropertyAccessorNodeKind,
-  TBuilder
-> & {
-  accessibility: KtAccessibility;
-  annotations: KtAnnotation<TBuilder>[];
-  body: AppendValue<TBuilder>;
-  singleExpression: boolean;
-};
+  constructor(options: KtPropertyAccessorOptions<TBuilder>) {
+    super(options);
+    this.accessModifier = options.accessModifier ?? null;
+    this.annotations = options.annotations ?? [];
+    this.body = options.body;
+    this.singleExpression = options.singleExpression ?? false;
+  }
 
-export function ktProperty<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  name: string,
-  options?: AstNodeOptions<KtProperty<TBuilder>, 'name'>
-): KtProperty<TBuilder> {
-  return {
-    ...ktNode(ktPropertyNodeKind, options),
-    doc: options?.doc ?? null,
-    accessibility: options?.accessibility ?? null,
-    annotations: options?.annotations ?? [],
-    const: options?.const ?? false,
-    delegate: options?.delegate ?? null,
-    delegateArguments: options?.delegateArguments ?? null,
-    getter: options?.getter ?? null,
-    default: options?.default ?? null,
-    lateinit: options?.lateinit ?? false,
-    mutable: options?.mutable ?? false,
-    name,
-    open: options?.open ?? false,
-    override: options?.override ?? false,
-    type: options?.type ?? null,
-    abstract: options?.abstract ?? false,
-    setter: options?.setter ?? null,
-  };
-}
-
-export function ktPropertyAccessor<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  options?: AstNodeOptions<KtPropertyAccessor<TBuilder>>
-): KtPropertyAccessor<TBuilder> {
-  return {
-    ...ktNode(ktPropertyAccessorNodeKind, options),
-    accessibility: options?.accessibility ?? null,
-    annotations: options?.annotations ?? [],
-    body: options?.body ?? null,
-    singleExpression: options?.singleExpression ?? false,
-  };
-}
-
-export function isKtProperty(node: unknown): node is KtProperty<never> {
-  return isKtNode(node, ktPropertyNodeKind);
-}
-
-export function isKtPropertyAccessor(node: unknown): node is KtPropertyAccessor<never> {
-  return isKtNode(node, ktPropertyAccessorNodeKind);
-}
-
-export function writeKtProperty<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  builder: TBuilder,
-  node: KtProperty<TBuilder>
-): TBuilder {
-  return writeKtNode(builder, node, (b) =>
-    b
-      .append((b) => writeKt(b, node.doc))
-      .append((b) => writeKtAnnotations(b, node.annotations, true))
-      .appendIf(!!node.accessibility, node.accessibility, ' ')
-      .appendIf(node.const, 'const ')
-      .appendIf(node.lateinit, 'lateinit ')
-      .appendIf(node.abstract, 'abstract ')
-      .appendIf(node.override, 'override ')
-      .appendIf(node.open, 'open ')
-      .if(node.mutable || !!node.setter, 'var ', 'val ')
-      .append(node.name)
-      .appendIf(!!node.type || (!node.default && !node.getter?.body), ': ', node.type ? node.type : 'Any?')
-      .appendIf(!!node.default, ' = ', node.default)
-      .appendIf(
-        !!node.delegate,
-        ' by ',
-        (b) => writeKt(b, node.delegate),
-        (b) =>
-          b.parenthesizeIf(node.delegateArguments !== null, '()', (b) =>
-            b.forEach(node.delegateArguments ?? [], (b, a) => b.append(a), { separator: ', ' })
+  protected override onWrite(builder: TBuilder): void {
+    builder
+      .append((b) => ktAnnotation.write(b, this.annotations, { multiline: true }))
+      .appendIf(!!this.accessModifier, this.accessModifier, ' ')
+      .append(this.kind)
+      .appendIf(!!this.body, (b) =>
+        b
+          .parenthesize('()', (b) => b.appendIf(this.kind === 'set', 'value'))
+          .if(
+            this.singleExpression,
+            (b) => b.append(' = ', this.body),
+            (b) => b.append(' ').parenthesize('{}', this.body, { multiline: true })
           )
+      );
+  }
+}
+export class KtPropertyGetter<TBuilder extends SourceBuilder = KotlinFileBuilder> extends KtPropertyAccessor<TBuilder> {
+  public override readonly kind = 'get';
+}
+export class KtPropertySetter<TBuilder extends SourceBuilder = KotlinFileBuilder> extends KtPropertyAccessor<TBuilder> {
+  public override readonly kind = 'set';
+}
+
+type KtPropertyOptions<TBuilder extends SourceBuilder> = AstNodeOptions<
+  KtProperty<TBuilder>,
+  typeof KtNode<TBuilder>,
+  'name'
+>;
+
+export class KtProperty<TBuilder extends SourceBuilder = KotlinFileBuilder> extends KtNode<TBuilder> {
+  public doc: KtDoc<TBuilder> | null;
+  public name: string;
+  public type: AppendValue<TBuilder>;
+  public annotations: KtAnnotation<TBuilder>[];
+  public accessModifier: KtAccessModifier;
+  public getter: KtPropertyGetter<TBuilder> | null;
+  public setter: KtPropertySetter<TBuilder> | null;
+  public default: AppendValue<TBuilder>;
+  public delegate: KtReference<TBuilder> | AppendValue<TBuilder>;
+  public delegateArguments: AppendValue<TBuilder>[] | null;
+  public mutable: boolean;
+  public const: boolean;
+  public lateinit: boolean;
+  public open: boolean;
+  public override: boolean;
+  public abstract: boolean;
+
+  constructor(options: KtPropertyOptions<TBuilder>) {
+    super(options);
+    this.doc = options.doc ?? null;
+    this.name = options.name;
+    this.type = options.type;
+    this.annotations = options.annotations ?? [];
+    this.accessModifier = options.accessModifier ?? null;
+    this.getter = options.getter ?? null;
+    this.setter = options.setter ?? null;
+    this.default = options.default;
+    this.delegate = options.delegate;
+    this.delegateArguments = options.delegateArguments ?? null;
+    this.mutable = options.mutable ?? false;
+    this.const = options.const ?? false;
+    this.lateinit = options.lateinit ?? false;
+    this.open = options.open ?? false;
+    this.override = options.override ?? false;
+    this.abstract = options.abstract ?? false;
+  }
+
+  protected override onWrite(builder: TBuilder): void {
+    builder
+      .append((b) => this.doc?.write(b))
+      .append((b) => ktAnnotation.write(b, this.annotations, { multiline: true }))
+      .appendIf(!!this.accessModifier, this.accessModifier, ' ')
+      .appendIf(this.const, 'const ')
+      .appendIf(this.lateinit, 'lateinit ')
+      .appendIf(this.abstract, 'abstract ')
+      .appendIf(this.override, 'override ')
+      .appendIf(this.open, 'open ')
+      .if(this.mutable || !!this.setter, 'var ', 'val ')
+      .append(this.name)
+      .appendIf(!!this.type || (!this.default && !this.getter?.body), ': ', this.type ? this.type : 'Any?')
+      .appendIf(!!this.default, ' = ', this.default)
+      .appendIf(
+        !!this.delegate,
+        ' by ',
+        (b) => writeKt(b, this.delegate),
+        this.delegateArguments ? (b) => ktArgument.write(b, this.delegateArguments) : null
       )
       .indent((b) =>
         b
-          .appendIf(!!node.getter, '\n', (b) => writeKtPropertyAccessor(b, node.getter!, 'get'))
-          .appendIf(!!node.setter, '\n', (b) => writeKtPropertyAccessor(b, node.setter!, 'set'))
+          .appendIf(!!this.getter, '\n', (b) => this.getter?.write(b))
+          .appendIf(!!this.setter, '\n', (b) => this.setter?.write(b))
       )
-      .appendLine()
-  );
+      .appendLine();
+  }
 }
 
-export function writeKtPropertyAccessor<TBuilder extends SourceBuilder = KtDefaultBuilder>(
+const createPropertyGetter = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+  options?: KtPropertyAccessorOptions<TBuilder>
+) => new KtPropertyGetter<TBuilder>(options ?? {});
+
+const createPropertySetter = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+  options?: KtPropertyAccessorOptions<TBuilder>
+) => new KtPropertySetter<TBuilder>(options ?? {});
+
+const createProperty = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+  name: KtProperty<TBuilder>['name'],
+  options?: Prettify<Omit<KtPropertyOptions<TBuilder>, 'name'>>
+) => new KtProperty<TBuilder>({ ...options, name });
+
+const writeProperties = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
   builder: TBuilder,
-  node: KtPropertyAccessor<TBuilder>,
-  kind: 'get' | 'set'
-): TBuilder {
-  return writeKtNode(builder, node, (b) =>
-    b
-      .append((b) => writeKtAnnotations(b, node.annotations, true))
-      .appendIf(!!node.accessibility, node.accessibility, ' ')
-      .append(kind)
-      .appendIf(!!node.body, (b) =>
-        b
-          .parenthesize('()', (b) => b.appendIf(kind === 'set', 'value'))
-          .if(
-            node.singleExpression,
-            (b) => b.append(' = ', node.body),
-            (b) => b.append(' ').parenthesize('{}', node.body, { multiline: true })
-          )
-      )
-  );
-}
+  properties: SingleOrMultiple<KtProperty<TBuilder> | AppendValue<TBuilder>>
+) => {
+  builder.forEach(toArray(properties), writeKt, { separator: '\n' });
+};
+
+export const ktProperty = Object.assign(createProperty, {
+  getter: createPropertyGetter,
+  setter: createPropertySetter,
+  write: writeProperties,
+});

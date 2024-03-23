@@ -86,7 +86,8 @@
       "editor.codeActionsOnSave": {
         "source.fixAll": "explicit"
       }
-    }
+    },
+    "typescript.tsdk": "🏠 Root/node_modules/typescript/lib"
   },
   "extensions": {
     "recommendations": ["esbenp.prettier-vscode", "dbaeumer.vscode-eslint"]

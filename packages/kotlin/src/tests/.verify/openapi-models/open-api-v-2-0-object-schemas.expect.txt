@@ -766,7 +766,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 
 /**
  * My Object Description
- * 
+ *
  * @param a My Property Description
  * @param b My Property Description
  * With Multiple Lines

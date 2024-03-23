@@ -1,71 +1,81 @@
-import { AppendValue, AstNodeOptions, SourceBuilder, notNullish } from '@goast/core';
+import {
+  AppendValue,
+  AstNodeOptions,
+  Prettify,
+  SingleOrMultiple,
+  SourceBuilder,
+  notNullish,
+  toArray,
+} from '@goast/core';
 
-import { KtAnnotation, writeKtAnnotations } from './annotation';
-import { KtArgument } from './argument';
+import { ktAnnotation, KtAnnotation } from './annotation';
+import { ktArgument, KtArgument } from './argument';
 import { KtDoc } from './doc';
 import { KtFunction } from './function';
 import { KtParameter } from './parameter';
-import { KtDefaultBuilder, KtNode, isKtNode, ktNode, writeKtNode } from '../common';
-import { writeKt, writeKtMembers } from '../writable-nodes';
+import { KotlinFileBuilder } from '../../file-builder';
+import { KtNode } from '../node';
+import { writeKt, writeKtMembers } from '../utils';
 
-export const ktEnumValueNodeKind = 'enum-value' as const;
+type KtEnumValueOptions<TBuilder extends SourceBuilder> = AstNodeOptions<
+  KtEnumValue<TBuilder>,
+  typeof KtNode<TBuilder>,
+  'name'
+>;
 
-export type KtEnumValue<TBuilder extends SourceBuilder = KtDefaultBuilder> = KtNode<
-  typeof ktEnumValueNodeKind,
-  TBuilder
-> & {
-  name: string;
-  doc: KtDoc<TBuilder> | null;
-  annotations: KtAnnotation<TBuilder>[];
-  arguments: (KtArgument<TBuilder> | AppendValue<TBuilder>)[];
-  members: (KtParameter<TBuilder> | KtFunction<TBuilder> | AppendValue<TBuilder>)[];
-};
+export class KtEnumValue<
+  TBuilder extends SourceBuilder = KotlinFileBuilder,
+  TInjects extends string = never
+> extends KtNode<TBuilder, TInjects> {
+  public name: string;
+  public doc: KtDoc<TBuilder> | null;
+  public annotations: KtAnnotation<TBuilder>[];
+  public arguments: (KtArgument<TBuilder> | AppendValue<TBuilder>)[];
+  public members: (KtParameter<TBuilder> | KtFunction<TBuilder> | AppendValue<TBuilder>)[];
 
-export function ktEnumValue<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  name: string,
-  options?: AstNodeOptions<KtEnumValue<TBuilder>, 'name'>
-): KtEnumValue<TBuilder> {
-  return {
-    ...ktNode(ktEnumValueNodeKind, options),
-    name,
-    doc: options?.doc ?? null,
-    annotations: options?.annotations ?? [],
-    arguments: options?.arguments ?? [],
-    members: options?.members ?? [],
-  };
+  constructor(options: KtEnumValueOptions<TBuilder>) {
+    super(options);
+    this.name = options.name;
+    this.doc = options.doc ?? null;
+    this.annotations = options.annotations ?? [];
+    this.arguments = options.arguments ?? [];
+    this.members = options.members ?? [];
+  }
+
+  protected override onWrite(builder: TBuilder): void {
+    builder
+      .append((b) => this.doc?.write(b))
+      .append((b) => ktAnnotation.write(b, this.annotations, { multiline: true }))
+      .append(this.name)
+      .appendIf(this.arguments.length > 0, (b) => ktArgument.write(b, this.arguments))
+      .appendIf(this.members.some(notNullish), (b) =>
+        b.append(' ').parenthesize('{}', (b) => writeKtMembers(b, this.members), { multiline: true })
+      );
+  }
 }
 
-export function isKtEnumValue(node: unknown): node is KtEnumValue<never> {
-  return isKtNode(node, ktEnumValueNodeKind);
-}
+const createEnumValue = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+  name: KtEnumValue<TBuilder>['name'],
+  options?: Prettify<Omit<KtEnumValueOptions<TBuilder>, 'name'>>
+) => new KtEnumValue<TBuilder>({ ...options, name });
 
-export function writeKtEnumValue<TBuilder extends SourceBuilder>(
+const writeEnumValues = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
   builder: TBuilder,
-  node: KtEnumValue<TBuilder>
-): TBuilder {
-  return writeKtNode(builder, node, (b) =>
-    b
-      .append((b) => writeKt(b, node.doc))
-      .append((b) => writeKtAnnotations(b, node.annotations, true))
-      .append(node.name)
-      .appendIf(node.arguments.length > 0, (b) =>
-        b.parenthesize('()', (b) => b.forEach(node.arguments, (b, a) => writeKt(b, a), { separator: ', ' }))
-      )
-      .appendIf(node.members.some(notNullish), (b) =>
-        b.append(' ').parenthesize('{}', (b) => writeKtMembers(b, node.members), { multiline: true })
-      )
+  nodes: SingleOrMultiple<KtEnumValue<TBuilder> | AppendValue<TBuilder>>
+) => {
+  nodes = toArray(nodes);
+  const spacing = nodes.some(
+    (v) => v instanceof KtEnumValue && (v.annotations.length > 0 || v.doc || v.members.some(notNullish))
   );
-}
-
-export function writeKtEnumValues<TBuilder extends SourceBuilder>(
-  builder: TBuilder,
-  values: KtEnumValue<TBuilder>[]
-): TBuilder {
-  const spacing = values.some((v) => v.annotations.length > 0 || v.doc || v.members.some(notNullish));
-  const multiline = spacing || values.length > 4 || values.some((v) => v.arguments.length > 0);
-  return builder.forEach(
-    values,
-    (b, v, i) => b.if(spacing && i > 0, (b) => b.ensurePreviousLineEmpty()).append((b) => writeKtEnumValue(b, v)),
+  const multiline =
+    spacing || nodes.length > 4 || nodes.some((v) => v instanceof KtEnumValue && v.arguments.length > 0);
+  builder.forEach(
+    nodes,
+    (b, v, i) => b.if(spacing && i > 0, (b) => b.ensurePreviousLineEmpty()).append((b) => writeKt(b, v)),
     { separator: multiline ? ',\n' : ', ' }
   );
-}
+};
+
+export const ktEnumValue = Object.assign(createEnumValue, {
+  write: writeEnumValues,
+});

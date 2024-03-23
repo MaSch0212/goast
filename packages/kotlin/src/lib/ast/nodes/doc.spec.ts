@@ -28,7 +28,7 @@ describe('ktDoc', () => {
 
   it('should write all the parts of the node', () => {
     builder.append(ktDoc('description', [ktDocTag('tag1'), ktDocTag('tag2')]));
-    expect(builder.toString(false)).toBe(`/**${EOL} * description${EOL} * ${EOL} * @tag1${EOL} * @tag2${EOL} */${EOL}`);
+    expect(builder.toString(false)).toBe(`/**${EOL} * description${EOL} *${EOL} * @tag1${EOL} * @tag2${EOL} */${EOL}`);
   });
 
   it('should render injections', () => {

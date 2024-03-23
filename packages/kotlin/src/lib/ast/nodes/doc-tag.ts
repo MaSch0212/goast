@@ -5,19 +5,44 @@ import {
   StringSuggestions,
   ParametersWithOverloads,
   appendValueGroup,
+  Prettify,
+  SingleOrMultiple,
+  toArray,
 } from '@goast/core';
 
-import { KtDefaultBuilder, KtNode, isKtNode, ktNode, writeKtNode } from '../common';
+import { KotlinFileBuilder } from '../../file-builder';
+import { KtNode } from '../node';
+import { writeKt } from '../utils';
 
-export const ktDocTagNodeKind = 'doc-tag' as const;
+type KtDocTagOptions<TBuilder extends SourceBuilder> = AstNodeOptions<
+  KtDocTag<TBuilder>,
+  typeof KtNode<TBuilder>,
+  'tag'
+>;
 
-export type KtDocTag<TBuilder extends SourceBuilder = KtDefaultBuilder> = KtNode<typeof ktDocTagNodeKind, TBuilder> & {
-  tag: string;
-  args: AppendValue<TBuilder>[];
-  description: AppendValue<TBuilder>;
-};
+export class KtDocTag<
+  TBuilder extends SourceBuilder = KotlinFileBuilder,
+  TInjects extends string = never
+> extends KtNode<TBuilder, TInjects> {
+  public tag: string;
+  public args: AppendValue<TBuilder>[];
+  public description: AppendValue<TBuilder>;
 
-type _KtDocTagOpt<TBuilder extends SourceBuilder> = AstNodeOptions<KtDocTag<TBuilder>, 'tag' | 'args'>;
+  constructor(options: KtDocTagOptions<TBuilder>) {
+    super(options);
+    this.tag = options.tag;
+    this.args = options.args ?? [];
+    this.description = options.description;
+  }
+
+  protected override onWrite(builder: TBuilder): void {
+    builder.append('@', this.tag);
+    this.args.forEach((a) => builder.append(' ', a));
+    builder.appendIf(!!this.description, ' ', this.description);
+  }
+}
+
+type _KtDocTagOpt<TBuilder extends SourceBuilder> = Prettify<Omit<KtDocTagOptions<TBuilder>, 'tag'>>;
 
 type _KtDocTagArgsMap<TBuilder extends SourceBuilder> = {
   suppress(options?: _KtDocTagOpt<TBuilder>): never;
@@ -64,11 +89,11 @@ type _KtDocTagArgs<
     : never
   : [options?: _KtDocTagOpt<TBuilder>];
 
-export function ktDocTag<
+function createDocTag<
   TTagName extends StringSuggestions<keyof _KtDocTagArgsMap<TBuilder>>,
-  TBuilder extends SourceBuilder = KtDefaultBuilder
+  TBuilder extends SourceBuilder = KotlinFileBuilder
 >(tag: TTagName, ...args: _KtDocTagArgs<TTagName, TBuilder>): KtDocTag<TBuilder>;
-export function ktDocTag<TBuilder extends SourceBuilder = KtDefaultBuilder>(
+function createDocTag<TBuilder extends SourceBuilder = KotlinFileBuilder>(
   tag: string,
   ...args: unknown[]
 ): KtDocTag<TBuilder> {
@@ -90,26 +115,16 @@ export function ktDocTag<TBuilder extends SourceBuilder = KtDefaultBuilder>(
     }
   }
 
-  return {
-    ...ktNode(ktDocTagNodeKind, opt),
-    tag,
-    args: params,
-    description: opt.description ?? null,
-  };
+  return new KtDocTag({ ...opt, tag, args: params });
 }
 
-export function isKtDocTag(node: unknown): node is KtDocTag<never> {
-  return isKtNode(node, ktDocTagNodeKind);
-}
-
-export function writeKtDocTag<TBuilder extends SourceBuilder = KtDefaultBuilder>(
+const writeDocTags = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
   builder: TBuilder,
-  node: KtDocTag<TBuilder>
-): TBuilder {
-  return writeKtNode(builder, node, (b) =>
-    b
-      .append('@', node.tag)
-      .forEach(node.args, (b, a) => b.append(' ', a))
-      .appendIf(!!node.description, ' ', node.description)
-  );
-}
+  tags: SingleOrMultiple<KtDocTag<TBuilder> | AppendValue<TBuilder>>
+) => {
+  builder.forEach(toArray(tags), (b, t) => b.appendLine((b) => writeKt(b, t)));
+};
+
+export const ktDocTag = Object.assign(createDocTag, {
+  write: writeDocTags,
+});

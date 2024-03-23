@@ -5,4 +5,4 @@ export * from './lib/file-builder';
 export * from './lib/import-collection';
 export * from './lib/utils';
 export * from './lib/ast';
-export * as kt from './lib/references';
+export * as kt from './lib/ast/references';

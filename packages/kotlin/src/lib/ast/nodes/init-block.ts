@@ -1,33 +1,43 @@
-import { AppendValue, AstNodeOptions, SourceBuilder } from '@goast/core';
+import { AppendValue, AstNodeOptions, Prettify, SingleOrMultiple, SourceBuilder, toArray } from '@goast/core';
 
-import { KtDefaultBuilder, KtNode, isKtNode, ktNode, writeKtNode } from '../common';
+import { KotlinFileBuilder } from '../../file-builder';
+import { KtNode } from '../node';
+import { writeKt } from '../utils';
 
-export const ktInitBlockNodeKind = 'init-block' as const;
+type KtInitBlockOptions<TBuilder extends SourceBuilder> = AstNodeOptions<
+  KtInitBlock<TBuilder>,
+  typeof KtNode<TBuilder>,
+  'body'
+>;
 
-export type KtInitBlock<TBuilder extends SourceBuilder = KtDefaultBuilder> = KtNode<
-  typeof ktInitBlockNodeKind,
-  TBuilder
-> & {
-  body: AppendValue<TBuilder>;
+export class KtInitBlock<
+  TBuilder extends SourceBuilder = KotlinFileBuilder,
+  TInjects extends string = never
+> extends KtNode<TBuilder, TInjects> {
+  public body: AppendValue<TBuilder>;
+
+  constructor(options: KtInitBlockOptions<TBuilder>) {
+    super(options);
+    this.body = options.body;
+  }
+
+  protected override onWrite(builder: TBuilder): void {
+    builder.append('init ').parenthesize('{}', this.body, { multiline: !!this.body }).appendLine();
+  }
+}
+
+const createInitBlock = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+  body: KtInitBlock<TBuilder>['body'],
+  options?: Prettify<Omit<KtInitBlockOptions<TBuilder>, 'body'>>
+) => new KtInitBlock<TBuilder>({ ...options, body });
+
+const writeInitBlocks = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+  builder: TBuilder,
+  nodes: SingleOrMultiple<KtInitBlock<TBuilder> | AppendValue<TBuilder>>
+) => {
+  builder.forEach(toArray(nodes), writeKt, { separator: '\n' });
 };
 
-export function ktInitBlock<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  body: AppendValue<TBuilder>,
-  options?: AstNodeOptions<KtInitBlock<TBuilder>, 'body'>
-): KtInitBlock<TBuilder> {
-  return {
-    ...ktNode(ktInitBlockNodeKind, options),
-    body,
-  };
-}
-
-export function isKtInitBlock(value: unknown): value is KtInitBlock<never> {
-  return isKtNode(value, ktInitBlockNodeKind);
-}
-
-export function writeKtInitBlock<TBuilder extends SourceBuilder>(
-  builder: TBuilder,
-  node: KtInitBlock<TBuilder>
-): TBuilder {
-  return writeKtNode(builder, node, (b) => b.append('init ').parenthesize('{}', node.body, { multiline: !!node.body }));
-}
+export const ktInitBlock = Object.assign(createInitBlock, {
+  write: writeInitBlocks,
+});

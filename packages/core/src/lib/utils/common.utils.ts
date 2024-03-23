@@ -23,6 +23,20 @@ export function concatSingleOrMultiple<T>(...values: SingleOrMultiple<T>[]): Sin
   return result;
 }
 
+export function isIterable(value: unknown): value is Iterable<unknown> {
+  return typeof value === 'object' && value !== null && Symbol.iterator in value;
+}
+
+export function toArray<T>(value: T | T[] | Iterable<T>): T[] {
+  if (Array.isArray(value)) {
+    return value;
+  }
+  if (isIterable(value)) {
+    return Array.from(value);
+  }
+  return [value];
+}
+
 export function modify<T>(value: T, callback: (value: NonNullable<T>) => void): T {
   if (notNullish(value)) {
     callback(value);
@@ -65,4 +79,8 @@ export function transformEach<T, U>(values: Iterable<T>, callback: (value: T) =>
     result.push(callback(value));
   }
   return result;
+}
+
+export function asVoid(_: unknown): void {
+  // Do nothing
 }

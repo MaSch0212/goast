@@ -1,43 +1,59 @@
-import { AppendValue, AstNodeOptions, SourceBuilder } from '@goast/core';
+import { AppendValue, AstNodeOptions, Prettify, SingleOrMultiple, SourceBuilder, toArray } from '@goast/core';
 
-import { KtDefaultBuilder, KtNode, isKtNode, ktNode, writeKtNode } from '../common';
+import { KotlinFileBuilder } from '../../file-builder';
+import { KtNode } from '../node';
+import { writeKt } from '../utils';
 
-export const ktArgumentNodeKind = 'argument' as const;
+type KtArgumentOptions<TBuilder extends SourceBuilder> = AstNodeOptions<
+  KtArgument<TBuilder>,
+  typeof KtNode<TBuilder>,
+  'value'
+>;
 
-export type KtArgument<TBuilder extends SourceBuilder = KtDefaultBuilder> = KtNode<
-  typeof ktArgumentNodeKind,
-  TBuilder
-> & {
-  name: string | null;
-  value: AppendValue<TBuilder>;
+export class KtArgument<
+  TBuilder extends SourceBuilder = KotlinFileBuilder,
+  TInjects extends string = never
+> extends KtNode<TBuilder, TInjects> {
+  public name: string | null;
+  public value: AppendValue<TBuilder>;
+
+  constructor(options: KtArgumentOptions<TBuilder>) {
+    super(options);
+    this.name = options?.name ?? null;
+    this.value = options.value;
+  }
+
+  protected override onWrite(builder: TBuilder): void {
+    builder.appendIf(!!this.name, this.name, ' = ').append(this.value);
+  }
+}
+
+const createArgument = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+  value: AppendValue<TBuilder>,
+  options?: Prettify<Omit<KtArgumentOptions<TBuilder>, 'value'>>
+) => new KtArgument<TBuilder>({ ...options, value });
+
+type x = AppendValue<KotlinFileBuilder>;
+
+const createNamedArgument = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+  name: NonNullable<KtArgument<TBuilder>['name']>,
+  value: KtArgument<TBuilder>['value'],
+  options?: Prettify<Omit<KtArgumentOptions<TBuilder>, 'value' | 'name'>>
+) => new KtArgument<TBuilder>({ ...options, value, name });
+
+const writeArguments = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+  builder: TBuilder,
+  nodes: SingleOrMultiple<KtArgument<TBuilder> | AppendValue<TBuilder>>,
+  options?: { multiline: boolean }
+) => {
+  nodes = toArray(nodes);
+  const multiline = options?.multiline ?? nodes.length > 2;
+  builder.parenthesize('()', (b) => b.forEach(nodes, writeKt, { separator: multiline ? ',\n' : ', ' }), {
+    multiline,
+  });
 };
 
-export function ktArgument<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  value: AppendValue<TBuilder>,
-  options?: AstNodeOptions<KtArgument<TBuilder>, 'value'>
-): KtArgument<TBuilder> {
-  return {
-    ...ktNode(ktArgumentNodeKind, options),
-    name: options?.name ?? null,
-    value,
-  };
-}
-
-export function ktNamedArgument<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  name: string,
-  value: AppendValue<TBuilder>,
-  options?: AstNodeOptions<KtArgument<TBuilder>, 'name' | 'value'>
-): KtArgument<TBuilder> {
-  return ktArgument(value, { ...options, name });
-}
-
-export function isKtArgument(node: unknown): node is KtArgument<never> {
-  return isKtNode(node, ktArgumentNodeKind);
-}
-
-export function writeKtArgument<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  builder: TBuilder,
-  node: KtArgument<TBuilder>
-): TBuilder {
-  return writeKtNode(builder, node, (b) => b.appendIf(!!node.name, node.name, ' = ').append(node.value));
-}
+export const ktArgument = Object.assign(createArgument, {
+  named: createNamedArgument,
+  write: writeArguments,
+});

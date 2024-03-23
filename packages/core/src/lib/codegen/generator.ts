@@ -92,6 +92,7 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
         input = mergeDeep(input, result);
       }
     }
+
     return input;
   }
 

@@ -9,7 +9,7 @@ import { ktConstructor } from './constructor';
 import { ktFunction } from './function';
 import { ktGenericParameter } from './generic-parameter';
 import { ktInitBlock } from './init-block';
-import { ktClassParameter, ktParameter } from './parameter';
+import { ktParameter } from './parameter';
 import { ktProperty } from './property';
 import { KotlinFileBuilder } from '../../file-builder';
 
@@ -31,12 +31,14 @@ describe('ktClass', () => {
   });
 
   it('should write primary constructor without body', () => {
-    builder.append(ktClass('Foo', { primaryConstructor: ktConstructor([ktClassParameter('x', 'Int')], null) }));
+    builder.append(ktClass('Foo', { primaryConstructor: ktConstructor([ktParameter.class('x', 'Int')], null) }));
     expect(builder.toString(false)).toBe(`class Foo(x: Int)${EOL}`);
   });
 
   it('should write primary constructor with body', () => {
-    builder.append(ktClass('Foo', { primaryConstructor: ktConstructor([ktClassParameter('x', 'Int')], 'println(x)') }));
+    builder.append(
+      ktClass('Foo', { primaryConstructor: ktConstructor([ktParameter.class('x', 'Int')], 'println(x)') })
+    );
     expect(builder.toString(false)).toBe(
       `class Foo(x: Int) {${EOL}    init {${EOL}        println(x)${EOL}    }${EOL}}${EOL}`
     );
@@ -99,7 +101,7 @@ describe('ktClass', () => {
   it('should write primary constructor parameter description', () => {
     builder.append(
       ktClass('Foo', {
-        primaryConstructor: ktConstructor([ktClassParameter('x', 'Int', { description: 'The number' })]),
+        primaryConstructor: ktConstructor([ktParameter.class('x', 'Int', { description: 'The number' })]),
       })
     );
     expect(builder.toString(false)).toBe(`/**${EOL} * @param x The number${EOL} */${EOL}class Foo(x: Int)${EOL}`);
@@ -109,7 +111,7 @@ describe('ktClass', () => {
     builder.append(
       ktClass('Foo', {
         primaryConstructor: ktConstructor([
-          ktClassParameter('x', 'Int', { property: 'readonly', propertyDescription: 'The number' }),
+          ktParameter.class('x', 'Int', { property: 'readonly', propertyDescription: 'The number' }),
         ]),
       })
     );
@@ -121,7 +123,7 @@ describe('ktClass', () => {
   it('should ignore primary constructor parameter property description if property is not set', () => {
     builder.append(
       ktClass('Foo', {
-        primaryConstructor: ktConstructor([ktClassParameter('x', 'Int', { propertyDescription: 'The number' })]),
+        primaryConstructor: ktConstructor([ktParameter.class('x', 'Int', { propertyDescription: 'The number' })]),
       })
     );
     expect(builder.toString(false)).toBe(`class Foo(x: Int)${EOL}`);
@@ -133,7 +135,7 @@ describe('ktClass', () => {
   });
 
   it('should write modifiers', () => {
-    builder.append(ktClass('Foo', { accessibility: 'private', open: true, abstract: true }));
+    builder.append(ktClass('Foo', { accessModifier: 'private', open: true, abstract: true }));
     expect(builder.toString(false)).toBe(`private open abstract class Foo${EOL}`);
   });
 
@@ -171,14 +173,14 @@ describe('ktClass', () => {
     builder.append(
       ktClass('Foo', {
         generics: [ktGenericParameter('T'), ktGenericParameter('U')],
-        primaryConstructor: ktConstructor([ktClassParameter('x', 'Int')], null, {
+        primaryConstructor: ktConstructor([ktParameter.class('x', 'Int')], null, {
           delegateTarget: 'super',
           delegateArguments: ['x'],
         }),
         members: [ktProperty('y', { type: 'Int?' })],
         annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')],
         doc: ktDoc('This is a class'),
-        accessibility: 'private',
+        accessModifier: 'private',
         open: true,
         abstract: true,
         classKind: 'annotation',

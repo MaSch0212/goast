@@ -26,9 +26,7 @@ export function appendValueGroup<TBuilder extends StringBuilder = StringBuilder>
   };
 }
 
-export function isAppendValue<TBuilder extends StringBuilder = StringBuilder>(
-  value: unknown
-): value is AppendValue<TBuilder> {
+export function isAppendValue(value: unknown): value is AppendValue<never> {
   return (
     typeof value === 'string' ||
     typeof value === 'number' ||

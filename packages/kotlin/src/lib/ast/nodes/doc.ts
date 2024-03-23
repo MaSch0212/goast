@@ -1,58 +1,69 @@
-import { SourceBuilder, AppendValue, AstNodeOptions, createOverwriteProxy } from '@goast/core';
+import {
+  SourceBuilder,
+  AppendValue,
+  AstNodeOptions,
+  createOverwriteProxy,
+  Prettify,
+  Nullable,
+  SingleOrMultiple,
+  toArray,
+} from '@goast/core';
 
-import { KtDocTag, ktDocTag, writeKtDocTag } from './doc-tag';
+import { KtDocTag, ktDocTag } from './doc-tag';
 import { KtGenericParameter } from './generic-parameter';
 import { KtParameter } from './parameter';
-import { KtDefaultBuilder, KtNode, isKtNode, ktNode, writeKtNode } from '../common';
+import { KotlinFileBuilder } from '../../file-builder';
+import { KtNode } from '../node';
+import { writeKt } from '../utils';
 
-export const ktDocNodeKind = 'doc' as const;
+type KtDocOptions<TBuilder extends SourceBuilder> = AstNodeOptions<KtDoc<TBuilder>, typeof KtNode<TBuilder>>;
 
-export type KtDoc<TBuilder extends SourceBuilder = KtDefaultBuilder> = KtNode<typeof ktDocNodeKind, TBuilder> & {
-  description: AppendValue<TBuilder>;
-  tags: KtDocTag<TBuilder>[];
+export class KtDoc<TBuilder extends SourceBuilder = KotlinFileBuilder, TInjects extends string = never> extends KtNode<
+  TBuilder,
+  TInjects
+> {
+  public description: AppendValue<TBuilder>;
+  public tags: KtDocTag<TBuilder>[];
+
+  constructor(options: KtDocOptions<TBuilder>) {
+    super(options);
+    this.description = options.description;
+    this.tags = options.tags ?? [];
+  }
+
+  protected override onWrite(builder: TBuilder): void {
+    if (!this.description && this.tags.length === 0) return;
+    builder
+      .ensureCurrentLineEmpty()
+      .parenthesize(
+        ['/**', ' */'],
+        (b) =>
+          b.appendWithLinePrefix(' * ', (b) =>
+            b
+              .appendIf(!!this.description, this.description)
+              .appendLineIf(!!this.description && this.tags.length > 0, '\n')
+              .append((b) => ktDocTag.write(b, this.tags))
+          ),
+        { multiline: true, indent: false }
+      )
+      .appendLine();
+  }
+}
+
+const createDoc = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+  description?: Nullable<KtDocTag<TBuilder>['description']>,
+  tags?: Nullable<KtDoc<TBuilder>['tags']>,
+  options?: Prettify<Omit<KtDocOptions<TBuilder>, 'description' | 'tags'>>
+) => new KtDoc<TBuilder>({ ...options, description, tags: tags ?? undefined });
+
+const writeDocs = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+  builder: TBuilder,
+  nodes: SingleOrMultiple<KtDoc<TBuilder> | AppendValue<TBuilder>>
+) => {
+  builder.forEach(toArray(nodes), writeKt, { separator: '\n' });
 };
 
-export function ktDoc<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  description?: AppendValue<TBuilder>,
-  tags?: KtDocTag<TBuilder>[] | null,
-  options?: AstNodeOptions<KtDoc<TBuilder>, 'description' | 'tags'>
-): KtDoc<TBuilder> {
-  return {
-    ...ktNode(ktDocNodeKind, options),
-    description,
-    tags: tags ?? [],
-  };
-}
-
-export function isKtDoc(value: unknown): value is KtDoc<never> {
-  return isKtNode(value, ktDocNodeKind);
-}
-
-export function writeKtDoc<TBuilder extends SourceBuilder>(builder: TBuilder, node: KtDoc<TBuilder>): TBuilder {
-  return writeKtNode(
-    builder,
-    node,
-    !node.description && node.tags.length === 0
-      ? (b) => b
-      : (b) =>
-          b
-            .ensureCurrentLineEmpty()
-            .parenthesize(
-              ['/**', ' */'],
-              (b) =>
-                b.appendWithLinePrefix(' * ', (b) =>
-                  b
-                    .appendIf(!!node.description, node.description)
-                    .appendLineIf(!!node.description && node.tags.length > 0, '\n')
-                    .forEach(node.tags, (b, t) => writeKtDocTag(b, t), { separator: '\n' })
-                ),
-              { multiline: true, indent: false }
-            )
-            .appendLine()
-  );
-}
-
-export function getFullKtDoc<TBuilder extends SourceBuilder = KtDefaultBuilder>(
+function getDoc<TBuilder extends SourceBuilder = KotlinFileBuilder>(
   baseDoc: KtDoc<TBuilder> | null,
   options: {
     parameters?: KtParameter<TBuilder>[];
@@ -80,3 +91,8 @@ export function getFullKtDoc<TBuilder extends SourceBuilder = KtDefaultBuilder>(
   doc.tags.splice(0, 0, ...genericTags, ...paramTags, ...propertyTags);
   return doc;
 }
+
+export const ktDoc = Object.assign(createDoc, {
+  write: writeDocs,
+  get: getDoc,
+});

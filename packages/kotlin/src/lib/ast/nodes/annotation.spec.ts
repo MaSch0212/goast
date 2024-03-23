@@ -1,6 +1,6 @@
 import { EOL } from 'os';
 
-import { ktAnnotation, writeKtAnnotations } from './annotation';
+import { ktAnnotation } from './annotation';
 import { KotlinFileBuilder } from '../../file-builder';
 
 describe('ktAnnotation', () => {
@@ -39,12 +39,12 @@ describe('ktAnnotation', () => {
 
   describe('multiple', () => {
     it('should write annotations across multiple lines', () => {
-      writeKtAnnotations(builder, [ktAnnotation('Test'), ktAnnotation('Test')], true);
+      ktAnnotation.write(builder, [ktAnnotation('Test'), ktAnnotation('Test')], { multiline: true });
       expect(builder.toString(false)).toBe(`@Test${EOL}@Test${EOL}`);
     });
 
     it('should write annotations on the same line', () => {
-      writeKtAnnotations(builder, [ktAnnotation('Test'), ktAnnotation('Test')], false);
+      ktAnnotation.write(builder, [ktAnnotation('Test'), ktAnnotation('Test')], { multiline: false });
       expect(builder.toString(false)).toBe('@Test @Test ');
     });
   });

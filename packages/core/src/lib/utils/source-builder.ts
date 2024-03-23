@@ -174,15 +174,12 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
         }
 
         this._isLastLineEmpty = this._isCurrentLineEmpty;
-        super.appendSingle(this.__options.newLine);
-        if (this._linePrefix) {
-          this.appendIndent();
-          this._isLineIndented = true;
-          this._isCurrentLineEmpty = false;
-        } else {
-          this._isLineIndented = false;
-          this._isCurrentLineEmpty = true;
+        if (this._isCurrentLineEmpty && this._linePrefix) {
+          this.appendIndent(this._linePrefix.trimEnd());
         }
+        super.appendSingle(this.__options.newLine);
+        this._isLineIndented = false;
+        this._isCurrentLineEmpty = true;
 
         lineStartIndex = i + 1;
       }
@@ -192,7 +189,7 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
       }
     }
 
-    if (!this._isLineIndented && (lineStartIndex < value.length || this._linePrefix)) {
+    if (!this._isLineIndented && lineStartIndex < value.length) {
       this.appendIndent();
       this._isLineIndented = true;
     }
@@ -482,10 +479,10 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
     return this.forEachIf(condition, items, (builder, item) => builder.append(item), { separator });
   }
 
-  private appendIndent(): void {
+  private appendIndent(linePrefix?: string): void {
     super.appendSingle(this._indentString.repeat(this.currentIndentLevel));
-    if (this._linePrefix) {
-      super.appendSingle(this._linePrefix);
+    if (linePrefix ?? this._linePrefix) {
+      super.appendSingle(linePrefix ?? this._linePrefix);
     }
   }
 }

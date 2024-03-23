@@ -1,7 +1,7 @@
 import { EOL } from 'os';
 
 import { ktAnnotation, ktDoc } from '.';
-import { ktProperty, ktPropertyAccessor, writeKtPropertyAccessor } from './property';
+import { ktProperty } from './property';
 import { KotlinFileBuilder } from '../../file-builder';
 
 describe('ktProperty', () => {
@@ -72,12 +72,12 @@ describe('ktProperty', () => {
   });
 
   it('should write the getter if it exists', () => {
-    builder.append(ktProperty('x', { getter: ktPropertyAccessor() }));
+    builder.append(ktProperty('x', { getter: ktProperty.getter() }));
     expect(builder.toString(false)).toBe(`val x: Any?${EOL}    get${EOL}`);
   });
 
   it('should write the setter if it exists', () => {
-    builder.append(ktProperty('x', { setter: ktPropertyAccessor() }));
+    builder.append(ktProperty('x', { setter: ktProperty.setter() }));
     expect(builder.toString(false)).toBe(`var x: Any?${EOL}    set${EOL}`);
   });
 
@@ -101,8 +101,8 @@ describe('ktProperty', () => {
         abstract: true,
         delegate: 'lazy',
         delegateArguments: ['42', 'true'],
-        getter: ktPropertyAccessor(),
-        setter: ktPropertyAccessor(),
+        getter: ktProperty.getter(),
+        setter: ktProperty.setter(),
       })
     );
     expect(builder.toString(false)).toBe(
@@ -124,61 +124,55 @@ describe('ktPropertyAccessor', () => {
   });
 
   it('should write the kind of the accessor', () => {
-    writeKtPropertyAccessor(builder, ktPropertyAccessor(), 'get');
+    ktProperty.getter().write(builder);
     expect(builder.toString(false)).toBe('get');
   });
 
   it('should write the get body if it exists', () => {
-    writeKtPropertyAccessor(builder, ktPropertyAccessor({ body: 'println("Hello")' }), 'get');
+    ktProperty.getter({ body: 'println("Hello")' }).write(builder);
     expect(builder.toString(false)).toBe(`get() {${EOL}    println("Hello")${EOL}}`);
   });
 
   it('should write the get body with a single expression', () => {
-    writeKtPropertyAccessor(builder, ktPropertyAccessor({ body: '42', singleExpression: true }), 'get');
+    ktProperty.getter({ body: '42', singleExpression: true }).write(builder);
     expect(builder.toString(false)).toBe('get() = 42');
   });
 
   it('should write the set body if it exists', () => {
-    writeKtPropertyAccessor(builder, ktPropertyAccessor({ body: 'println("Hello")' }), 'set');
+    ktProperty.setter({ body: 'println("Hello")' }).write(builder);
     expect(builder.toString(false)).toBe(`set(value) {${EOL}    println("Hello")${EOL}}`);
   });
 
   it('should write the set body with a single expression', () => {
-    writeKtPropertyAccessor(builder, ktPropertyAccessor({ body: '42', singleExpression: true }), 'set');
+    ktProperty.setter({ body: '42', singleExpression: true }).write(builder);
     expect(builder.toString(false)).toBe('set(value) = 42');
   });
 
   it('should write all annotations', () => {
-    writeKtPropertyAccessor(
-      builder,
-      ktPropertyAccessor({ annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')] }),
-      'get'
-    );
+    ktProperty.getter({ annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')] }).write(builder);
     expect(builder.toString(false)).toBe(`@Inject${EOL}@Optional${EOL}get`);
   });
 
-  it('should write the accessibility if it exists', () => {
-    writeKtPropertyAccessor(builder, ktPropertyAccessor({ accessibility: 'private' }), 'get');
+  it('should write the accessModifier if it exists', () => {
+    ktProperty.getter({ accessModifier: 'private' }).write(builder);
     expect(builder.toString(false)).toBe('private get');
   });
 
   it('should write all the parts of the accessor', () => {
-    writeKtPropertyAccessor(
-      builder,
-      ktPropertyAccessor({
+    ktProperty
+      .getter({
         body: 'println("Hello")',
-        accessibility: 'private',
+        accessModifier: 'private',
         annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')],
-      }),
-      'get'
-    );
+      })
+      .write(builder);
     expect(builder.toString(false)).toBe(
       `@Inject${EOL}@Optional${EOL}private get() {${EOL}    println("Hello")${EOL}}`
     );
   });
 
   it('should render injections', () => {
-    writeKtPropertyAccessor(builder, ktPropertyAccessor({ inject: { before: ['before'], after: ['after'] } }), 'get');
+    ktProperty.getter({ inject: { before: ['before'], after: ['after'] } }).write(builder);
     expect(builder.toString(false)).toBe('beforegetafter');
   });
 });

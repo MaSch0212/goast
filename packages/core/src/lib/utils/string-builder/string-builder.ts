@@ -10,7 +10,7 @@ export type AppendParam<TBuilder extends StringBuilder, TAdditionalAppends> = Si
   | undefined
   | ((builder: TBuilder) => void)
   // eslint-disable-next-line @typescript-eslint/ban-types
-  | Exclude<TAdditionalAppends, Function>
+  | TAdditionalAppends
   | {
       __type: 'append-value-group';
       values: AppendParam<TBuilder, TAdditionalAppends>[];

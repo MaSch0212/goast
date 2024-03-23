@@ -1,6 +1,6 @@
 import { AppendParam, AppendValue, SourceBuilder, isAppendValue } from '@goast/core';
 
-import { KtWritableNode, isKtNode, writeKt } from './ast';
+import { KtNode } from './ast/node';
 import { KotlinGeneratorConfig, defaultKotlinGeneratorConfig } from './config';
 import { ImportCollection } from './import-collection';
 
@@ -11,7 +11,7 @@ type AnnotationArgument<T extends SourceBuilder> =
   | [value: AnnotationArgumentValue<T>, condition: boolean]
   | [key: string, value: AnnotationArgumentValue<T>, condition: boolean];
 
-export type KotlinAppends<TAdditionalAppends> = KtWritableNode<KotlinFileBuilder> | TAdditionalAppends;
+export type KotlinAppends<TAdditionalAppends> = KtNode<KotlinFileBuilder> | TAdditionalAppends;
 export type KotlinAppendParam<TBuilder extends KotlinFileBuilder, TAdditionalAppends> = AppendParam<
   TBuilder,
   KotlinAppends<TAdditionalAppends>
@@ -20,7 +20,7 @@ export type KotlinAppendParam<TBuilder extends KotlinFileBuilder, TAdditionalApp
 export function isKotlinAppendValue<TBuilder extends KotlinFileBuilder = KotlinFileBuilder>(
   value: unknown
 ): value is AppendValue<TBuilder> {
-  return isAppendValue(value) || isKtNode(value);
+  return isAppendValue(value) || value instanceof KtNode;
 }
 
 export class KotlinFileBuilder<TAdditionalAppends = never> extends SourceBuilder<KotlinAppends<TAdditionalAppends>> {
@@ -103,8 +103,8 @@ export class KotlinFileBuilder<TAdditionalAppends = never> extends SourceBuilder
 
   protected override appendSingle(value: KotlinAppendParam<this, TAdditionalAppends>): void {
     super.appendSingle(value);
-    if (isKtNode(value)) {
-      writeKt<this>(this, value as any);
+    if (value instanceof KtNode) {
+      value.write(this);
     }
   }
 }

@@ -1,7 +1,7 @@
 import { EOL } from 'os';
 
 import { ktAnnotation } from '.';
-import { ktClassParameter, ktParameter, writeKtParameters } from './parameter';
+import { ktParameter } from './parameter';
 import { KotlinFileBuilder } from '../../file-builder';
 
 describe('ktParameter', () => {
@@ -51,32 +51,32 @@ describe('ktParameter', () => {
 
   describe('multiple', () => {
     it('should write parenthesis if the node is empty', () => {
-      writeKtParameters(builder, []);
+      ktParameter.write(builder, []);
       expect(builder.toString(false)).toBe('()');
     });
 
     it('should write a single parameter', () => {
-      writeKtParameters(builder, [ktParameter('x', 'Int')]);
+      ktParameter.write(builder, [ktParameter('x', 'Int')]);
       expect(builder.toString(false)).toBe(`(x: Int)`);
     });
 
     it('should write all the parameters', () => {
-      writeKtParameters(builder, [ktParameter('x', 'Int'), ktParameter('y', 'String')]);
+      ktParameter.write(builder, [ktParameter('x', 'Int'), ktParameter('y', 'String')]);
       expect(builder.toString(false)).toBe(`(x: Int, y: String)`);
     });
 
     it('should multiline if there are more than 2 parameters', () => {
-      writeKtParameters(builder, [ktParameter('x', 'Int'), ktParameter('y', 'String'), ktParameter('z', 'Boolean')]);
+      ktParameter.write(builder, [ktParameter('x', 'Int'), ktParameter('y', 'String'), ktParameter('z', 'Boolean')]);
       expect(builder.toString(false)).toBe(`(${EOL}    x: Int,${EOL}    y: String,${EOL}    z: Boolean${EOL})`);
     });
 
     it('should multiline if there are annotations', () => {
-      writeKtParameters(builder, [ktParameter('x', 'Int', { annotations: [ktAnnotation('Inject')] })]);
+      ktParameter.write(builder, [ktParameter('x', 'Int', { annotations: [ktAnnotation('Inject')] })]);
       expect(builder.toString(false)).toBe(`(${EOL}    @Inject${EOL}    x: Int${EOL})`);
     });
 
     it('shoudl add spacing if one parameter has annotations', () => {
-      writeKtParameters(builder, [
+      ktParameter.write(builder, [
         ktParameter('x', 'Int'),
         ktParameter('y', 'String', { annotations: [ktAnnotation('Inject')] }),
       ]);
@@ -94,58 +94,60 @@ describe('ktClassParameter', () => {
 
   describe('single class parameter', () => {
     it('should write the name and type of the parameter', () => {
-      builder.append(ktClassParameter('x', 'Int'));
+      builder.append(ktParameter.class('x', 'Int'));
       expect(builder.toString(false)).toBe('x: Int');
     });
 
     it('should write the default if it exists', () => {
-      builder.append(ktClassParameter('x', 'Int', { default: '42' }));
+      builder.append(ktParameter.class('x', 'Int', { default: '42' }));
       expect(builder.toString(false)).toBe('x: Int = 42');
     });
 
     it('should write override if it exists', () => {
-      builder.append(ktClassParameter('x', 'Int', { override: true }));
+      builder.append(ktParameter.class('x', 'Int', { override: true }));
       expect(builder.toString(false)).toBe('override x: Int');
     });
 
     it('should write vararg if it exists', () => {
-      builder.append(ktClassParameter('x', 'Int', { vararg: true }));
+      builder.append(ktParameter.class('x', 'Int', { vararg: true }));
       expect(builder.toString(false)).toBe('vararg x: Int');
     });
 
     it('should write val keyword if readonly property', () => {
-      builder.append(ktClassParameter('x', 'Int', { property: 'readonly' }));
+      builder.append(ktParameter.class('x', 'Int', { property: 'readonly' }));
       expect(builder.toString(false)).toBe('val x: Int');
     });
 
     it('should write var keyword if mutable property', () => {
-      builder.append(ktClassParameter('x', 'Int', { property: 'mutable' }));
+      builder.append(ktParameter.class('x', 'Int', { property: 'mutable' }));
       expect(builder.toString(false)).toBe('var x: Int');
     });
 
-    it('should write accessibility if also property', () => {
-      builder.append(ktClassParameter('x', 'Int', { accessibility: 'private', property: 'mutable' }));
+    it('should write accessModifier if also property', () => {
+      builder.append(ktParameter.class('x', 'Int', { accessModifier: 'private', property: 'mutable' }));
       expect(builder.toString(false)).toBe('private var x: Int');
     });
 
-    it('should not write accessibility if no property', () => {
-      builder.append(ktClassParameter('x', 'Int', { accessibility: 'private' }));
+    it('should not write accessModifier if no property', () => {
+      builder.append(ktParameter.class('x', 'Int', { accessModifier: 'private' }));
       expect(builder.toString(false)).toBe('x: Int');
     });
 
     it('should write all annotations', () => {
-      builder.append(ktClassParameter('x', 'Int', { annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')] }));
+      builder.append(
+        ktParameter.class('x', 'Int', { annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')] })
+      );
       expect(builder.toString(false)).toBe(`@Inject${EOL}@Optional${EOL}x: Int`);
     });
 
     it('should write all the parts of the class parameter', () => {
       builder.append(
-        ktClassParameter('x', 'Int', {
+        ktParameter.class('x', 'Int', {
           default: '42',
           override: true,
           vararg: true,
           property: 'mutable',
-          accessibility: 'private',
+          accessModifier: 'private',
           annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')],
         })
       );
@@ -153,7 +155,7 @@ describe('ktClassParameter', () => {
     });
 
     it('should render injections', () => {
-      builder.append(ktClassParameter('x', 'Int', { inject: { before: ['before'], after: ['after'] } }));
+      builder.append(ktParameter.class('x', 'Int', { inject: { before: ['before'], after: ['after'] } }));
       expect(builder.toString(false)).toBe('beforex: Intafter');
     });
   });

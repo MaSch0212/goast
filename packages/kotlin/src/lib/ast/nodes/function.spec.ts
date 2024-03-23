@@ -40,7 +40,7 @@ describe('ktFunction', () => {
   });
 
   it('should write access modifiers if they exist', () => {
-    builder.append(ktFunction('foo', { accessibility: 'private' }));
+    builder.append(ktFunction('foo', { accessModifier: 'private' }));
     expect(builder.toString(false)).toBe('private fun foo() {}');
   });
 
@@ -122,7 +122,7 @@ describe('ktFunction', () => {
         returnType: 'Int',
         doc: ktDoc('This is a function'),
         body: 'println("Hello")',
-        accessibility: 'private',
+        accessModifier: 'private',
         annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')],
         receiverType: 'String',
         receiverAnnotations: [ktAnnotation('Fancy')],
@@ -148,7 +148,7 @@ describe('ktFunction', () => {
         doc: ktDoc('This is a function'),
         returnType: 'Int',
         body: 'println("Hello")',
-        accessibility: 'private',
+        accessModifier: 'private',
         annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')],
         receiverType: 'String',
         receiverAnnotations: [ktAnnotation('Fancy')],

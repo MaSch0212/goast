@@ -42,7 +42,7 @@ describe('ktInterface', () => {
   });
 
   it('should write access modifiers', () => {
-    builder.append(ktInterface('Foo', { accessibility: 'private' }));
+    builder.append(ktInterface('Foo', { accessModifier: 'private' }));
     expect(builder.toString(false)).toBe(`private interface Foo${EOL}`);
   });
 
@@ -66,7 +66,7 @@ describe('ktInterface', () => {
       ktInterface('Foo', {
         doc: ktDoc('This is a foo'),
         annotations: [ktAnnotation('Deprecated')],
-        accessibility: 'private',
+        accessModifier: 'private',
         extends: ['Bar', 'Baz'],
         generics: [ktGenericParameter('T')],
         members: ['// Comment 1', '// Comment 2'],

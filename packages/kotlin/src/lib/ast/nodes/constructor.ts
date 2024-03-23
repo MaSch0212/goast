@@ -2,87 +2,94 @@ import {
   AppendValue,
   AstNodeOptions,
   Nullable,
+  Prettify,
+  SingleOrMultiple,
   SourceBuilder,
   StringSuggestions,
   suggestionsAsString,
+  toArray,
 } from '@goast/core';
 
-import { KtAnnotation, writeKtAnnotations } from './annotation';
-import { KtArgument } from './argument';
-import { KtParameter, writeKtParameters } from './parameter';
-import { KtAccessibility, KtDefaultBuilder, KtNode, isKtNode, ktNode, writeKtNode } from '../common';
-import { writeKt } from '../writable-nodes';
+import { ktAnnotation, KtAnnotation } from './annotation';
+import { ktArgument, KtArgument } from './argument';
+import { ktParameter, KtParameter } from './parameter';
+import { KotlinFileBuilder } from '../../file-builder';
+import { KtAccessModifier } from '../common';
+import { KtNode } from '../node';
+import { writeKt } from '../utils';
 
-export const ktConstructorNodeKind = 'constructor' as const;
+type KtConstructorOptions<TBuilder extends SourceBuilder> = AstNodeOptions<
+  KtConstructor<TBuilder>,
+  typeof KtNode<TBuilder>,
+  never,
+  'writeAsPrimary'
+>;
 
-export type KtConstructor<TBuilder extends SourceBuilder = KtDefaultBuilder> = KtNode<
-  typeof ktConstructorNodeKind,
-  TBuilder
-> & {
-  accessibility: KtAccessibility;
-  annotations: KtAnnotation<TBuilder>[];
-  parameters: KtParameter<TBuilder>[];
-  body: AppendValue<TBuilder>;
-  delegateTarget: StringSuggestions<'this' | 'super'> | null;
-  delegateArguments: (KtArgument<TBuilder> | AppendValue<TBuilder>)[];
-};
+export class KtConstructor<
+  TBuilder extends SourceBuilder = KotlinFileBuilder,
+  TInjects extends string = never
+> extends KtNode<TBuilder, TInjects> {
+  public accessModifier: KtAccessModifier;
+  public annotations: KtAnnotation<TBuilder>[];
+  public parameters: KtParameter<TBuilder>[];
+  public body: AppendValue<TBuilder>;
+  public delegateTarget: StringSuggestions<'this' | 'super'> | null;
+  public delegateArguments: (KtArgument<TBuilder> | AppendValue<TBuilder>)[];
 
-export function ktConstructor<TBuilder extends SourceBuilder = KtDefaultBuilder>(
-  parameters?: Nullable<KtParameter<TBuilder>[]>,
-  body?: AppendValue<TBuilder>,
-  options?: AstNodeOptions<KtConstructor<TBuilder>, 'parameters' | 'body'>
-): KtConstructor<TBuilder> {
-  return {
-    ...ktNode(ktConstructorNodeKind, options),
-    parameters: parameters ?? [],
-    body,
-    accessibility: options?.accessibility ?? null,
-    annotations: options?.annotations ?? [],
-    delegateTarget: options?.delegateTarget ?? null,
-    delegateArguments: options?.delegateArguments ?? [],
-  };
-}
-
-export function isKtConstructor(node: unknown): node is KtConstructor<never> {
-  return isKtNode(node, ktConstructorNodeKind);
-}
-
-export function writeKtConstructor<TBuilder extends SourceBuilder>(
-  builder: TBuilder,
-  node: KtConstructor<TBuilder>
-): TBuilder {
-  return writeKtNode(builder, node, (b) =>
-    b
-      .append((b) => writeKtAnnotations(b, node.annotations, true))
-      .appendIf(!!node.accessibility, node.accessibility, ' ')
-      .append('constructor', (b) => writeKtParameters(b, node.parameters), ' ')
-      .appendIf(
-        !!node.delegateTarget,
-        ': ',
-        suggestionsAsString(node.delegateTarget),
-        (b) =>
-          b.parenthesize('()', (b) => b.forEach(node.delegateArguments, (b, a) => writeKt(b, a), { separator: ', ' })),
-        ' '
-      )
-      .parenthesize('{}', node.body, { multiline: !!node.body })
-  );
-}
-
-export function writeKtPrimaryConstructor<TBuilder extends SourceBuilder>(
-  builder: TBuilder,
-  node: KtConstructor<TBuilder>
-): TBuilder {
-  if (node.parameters.length === 0 && !node.accessibility && node.annotations.length === 0) {
-    return builder;
+  constructor(options: KtConstructorOptions<TBuilder>) {
+    super(options);
+    this.parameters = options.parameters ?? [];
+    this.body = options.body;
+    this.accessModifier = options.accessModifier ?? null;
+    this.annotations = options.annotations ?? [];
+    this.delegateTarget = options.delegateTarget ?? null;
+    this.delegateArguments = options.delegateArguments ?? [];
   }
 
-  const needsCtorKeyword = node.annotations.length > 0 || !!node.accessibility;
-  return writeKtNode(builder, node, (b) =>
-    b
+  protected override onWrite(builder: TBuilder): void {
+    builder
+      .append((b) => ktAnnotation.write(b, this.annotations, { multiline: true }))
+      .appendIf(!!this.accessModifier, this.accessModifier, ' ')
+      .append('constructor', (b) => ktParameter.write(b, this.parameters), ' ')
+      .appendIf(
+        !!this.delegateTarget,
+        ': ',
+        suggestionsAsString(this.delegateTarget),
+        (b) => ktArgument.write(b, this.delegateArguments),
+        ' '
+      )
+      .parenthesize('{}', this.body, { multiline: !!this.body })
+      .appendLine();
+  }
+
+  public writeAsPrimary(builder: TBuilder): void {
+    this.writeWithInjects(builder, () => this.onWriteAsPrimary(builder));
+  }
+
+  protected onWriteAsPrimary(builder: TBuilder): void {
+    const needsCtorKeyword = this.annotations.length > 0 || !!this.accessModifier;
+    builder
       .appendIf(needsCtorKeyword, ' ')
-      .append((b) => writeKtAnnotations(b, node.annotations, false))
-      .appendIf(!!node.accessibility, node.accessibility, ' ')
+      .append((b) => ktAnnotation.write(b, this.annotations))
+      .appendIf(!!this.accessModifier, this.accessModifier, ' ')
       .appendIf(needsCtorKeyword, 'constructor')
-      .appendIf(needsCtorKeyword || node.parameters.length > 0, (b) => writeKtParameters(b, node.parameters))
-  );
+      .appendIf(needsCtorKeyword || this.parameters.length > 0, (b) => ktParameter.write(b, this.parameters));
+  }
 }
+
+const createConstructor = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+  parameters?: Nullable<KtConstructor<TBuilder>['parameters']>,
+  body?: Nullable<KtConstructor<TBuilder>['body']>,
+  options?: Prettify<Omit<KtConstructorOptions<TBuilder>, 'parameters' | 'body'>>
+) => new KtConstructor<TBuilder>({ ...options, parameters: parameters ?? undefined, body });
+
+const writeConstructors = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+  builder: TBuilder,
+  constructors: SingleOrMultiple<KtConstructor<TBuilder> | AppendValue<TBuilder>>
+) => {
+  builder.forEach(toArray(constructors), writeKt, { separator: '\n' });
+};
+
+export const ktConstructor = Object.assign(createConstructor, {
+  write: writeConstructors,
+});
