@@ -17,7 +17,7 @@ export type TsIndexer<TBuilder extends SourceBuilder = TsDefaultBuilder> = TsNod
 export function tsIndexer<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   keyType: AppendValue<TBuilder>,
   valueType: AppendValue<TBuilder>,
-  options?: AstNodeOptions<TsIndexer<TBuilder>, 'key' | 'value'>
+  options?: AstNodeOptions<TsIndexer<TBuilder>, 'key' | 'value'>,
 ): TsIndexer<TBuilder> {
   return {
     ...tsNode(tsIndexerNodeKind, options),
@@ -29,19 +29,19 @@ export function tsIndexer<TBuilder extends SourceBuilder = TsDefaultBuilder>(
 }
 
 export function isTsIndexer<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  node: unknown
+  node: unknown,
 ): node is TsIndexer<TBuilder> {
   return isTsNode(node, tsIndexerNodeKind);
 }
 
 export function writeTsIndexer<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsIndexer<TBuilder>
+  node: TsIndexer<TBuilder>,
 ): TBuilder {
   return writeTsNode(builder, node, (b) =>
     b
       .appendIf(node.readonly, 'readonly ')
       .append('[', node.keyName, ': ', node.key, ']: ', node.value, ';')
-      .appendLine()
+      .appendLine(),
   );
 }

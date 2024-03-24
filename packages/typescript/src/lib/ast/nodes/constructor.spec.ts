@@ -32,7 +32,7 @@ it('should write the parameters', () => {
   builder.append(
     tsConstructor({
       parameters: [tsConstructorParameter('x'), tsConstructorParameter('y')],
-    })
+    }),
   );
   expect(builder.toString(false)).toBe(`constructor(x, y) {}${EOL}`);
 });
@@ -41,7 +41,7 @@ it('should write the description of the parameters when no documentation is prov
   builder.append(
     tsConstructor({
       parameters: [tsConstructorParameter('x', { description: 'description' }), tsConstructorParameter('y')],
-    })
+    }),
   );
   expect(builder.toString(false)).toBe(`/**${EOL} * @param x description${EOL} */${EOL}constructor(x, y) {}${EOL}`);
 });
@@ -54,10 +54,10 @@ it('should write the description of the parameter when documentation is provided
         tags: [tsDocTag('param', 'y', 'y-description'), tsDocTag('returns', 'r-description')],
       }),
       parameters: [tsConstructorParameter('x', { description: 'x-description' }), tsConstructorParameter('y')],
-    })
+    }),
   );
   expect(builder.toString(false)).toBe(
-    `/**${EOL} * description${EOL} * ${EOL} * @param x x-description${EOL} * @param y y-description${EOL} * @returns r-description${EOL} */${EOL}constructor(x, y) {}${EOL}`
+    `/**${EOL} * description${EOL} * ${EOL} * @param x x-description${EOL} * @param y y-description${EOL} * @returns r-description${EOL} */${EOL}constructor(x, y) {}${EOL}`,
   );
 });
 
@@ -72,9 +72,9 @@ it('should render injections', () => {
       inject: { before: ['before'], after: ['after'], beforeParams: ['beforeParams'], afterParams: ['afterParams'] },
       parameters: [tsConstructorParameter('x'), 'custom', tsConstructorParameter('y')],
       body: 'this.x = x;',
-    })
+    }),
   );
   expect(builder.toString(false)).toBe(
-    `beforeconstructorbeforeParams(x, custom, y)afterParams {${EOL}  this.x = x;${EOL}}${EOL}after`
+    `beforeconstructorbeforeParams(x, custom, y)afterParams {${EOL}  this.x = x;${EOL}}${EOL}after`,
   );
 });

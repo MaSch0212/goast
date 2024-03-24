@@ -18,7 +18,7 @@ export type TsObjectType<TBuilder extends SourceBuilder = TsDefaultBuilder> = Ts
 };
 
 export function tsObjectType<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  options?: AstNodeOptions<TsObjectType<TBuilder>>
+  options?: AstNodeOptions<TsObjectType<TBuilder>>,
 ): TsObjectType<TBuilder> {
   return {
     ...tsNode(tsObjectTypeNodeKind, options),
@@ -29,14 +29,14 @@ export function tsObjectType<TBuilder extends SourceBuilder = TsDefaultBuilder>(
 }
 
 export function isTsObjectType<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  value: unknown
+  value: unknown,
 ): value is TsObjectType<TBuilder> {
   return isTsNode(value, tsObjectTypeNodeKind);
 }
 
 export function writeTsObjectType<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsObjectType<TBuilder>
+  node: TsObjectType<TBuilder>,
 ): TBuilder {
   return writeTsNode(builder, node, (b) =>
     b.parenthesize(
@@ -49,7 +49,7 @@ export function writeTsObjectType<TBuilder extends SourceBuilder = TsDefaultBuil
           .forEach(node.methods, (b, m) => writeTs(b, m)),
       {
         multiline: !!node.indexer || node.properties.length > 0 || node.methods.length > 0,
-      }
-    )
+      },
+    ),
   );
 }

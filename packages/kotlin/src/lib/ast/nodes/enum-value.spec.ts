@@ -36,7 +36,7 @@ describe('ktEnumValue', () => {
     builder.append(
       ktEnumValue('FOO', {
         members: ['// Comment 1', '// Comment 2'],
-      })
+      }),
     );
     expect(builder.toString(false)).toBe(`FOO {${EOL}    // Comment 1${EOL}    // Comment 2${EOL}}`);
   });
@@ -48,10 +48,10 @@ describe('ktEnumValue', () => {
         annotations: [ktAnnotation('Deprecated')],
         arguments: ['x', 'y'],
         members: ['// Comment 1', '// Comment 2'],
-      })
+      }),
     );
     expect(builder.toString(false)).toBe(
-      `/**${EOL} * This is a foo${EOL} */${EOL}@Deprecated${EOL}FOO(x, y) {${EOL}    // Comment 1${EOL}    // Comment 2${EOL}}`
+      `/**${EOL} * This is a foo${EOL} */${EOL}@Deprecated${EOL}FOO(x, y) {${EOL}    // Comment 1${EOL}    // Comment 2${EOL}}`,
     );
   });
 

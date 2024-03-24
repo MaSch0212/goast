@@ -10,20 +10,20 @@ export type TsTuple<TBuilder extends SourceBuilder = TsDefaultBuilder> = TsNode<
 
 export function tsTuple<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   elements: AppendValue<TBuilder>[],
-  options?: AstNodeOptions<TsTuple<TBuilder>, 'elements'>
+  options?: AstNodeOptions<TsTuple<TBuilder>, 'elements'>,
 ): TsTuple<TBuilder> {
   return { ...tsNode(tsTupleNodeKind, options), elements };
 }
 
 export function isTsTuple<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  value: unknown
+  value: unknown,
 ): value is TsTuple<TBuilder> {
   return isTsNode(value, tsTupleNodeKind);
 }
 
 export function writeTsTuple<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsTuple<TBuilder>
+  node: TsTuple<TBuilder>,
 ): TBuilder {
   return builder
     .append('[')
@@ -31,7 +31,7 @@ export function writeTsTuple<TBuilder extends SourceBuilder = TsDefaultBuilder>(
       b
         .append(' ')
         .forEach(node.elements, (b, e) => b.append(e), { separator: ', ' })
-        .append(' ')
+        .append(' '),
     )
     .append(']');
 }

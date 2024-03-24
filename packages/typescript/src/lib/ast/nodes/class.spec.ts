@@ -39,10 +39,10 @@ it('should write the descriptions of the generics if they exist', () => {
   builder.append(
     tsClass('X', {
       generics: [tsGenericParameter('T', { description: 'description' }), tsGenericParameter('U')],
-    })
+    }),
   );
   expect(builder.toString(false)).toBe(
-    '/**' + EOL + ' * @template T description' + EOL + ' */' + EOL + 'class X<T, U> {}' + EOL
+    '/**' + EOL + ' * @template T description' + EOL + ' */' + EOL + 'class X<T, U> {}' + EOL,
   );
 });
 
@@ -94,7 +94,7 @@ it('should write all the parts of the class', () => {
       ctor: tsConstructor(),
       export: true,
       abstract: true,
-    })
+    }),
   );
   expect(builder.toString(false)).toBe(
     '/**' +
@@ -121,7 +121,7 @@ it('should write all the parts of the class', () => {
       '  y();' +
       EOL +
       '}' +
-      EOL
+      EOL,
   );
 });
 

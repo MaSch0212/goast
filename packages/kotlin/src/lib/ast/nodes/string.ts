@@ -1,24 +1,37 @@
 import {
   AppendValue,
   AstNodeOptions,
+  Nullable,
   Prettify,
   Separator,
   SingleOrMultiple,
   SourceBuilder,
+  notNullish,
   spliceString,
   toArray,
 } from '@goast/core';
 
-import { KotlinFileBuilder } from '../../file-builder';
 import { KtNode } from '../node';
 import { writeKt } from '../utils';
 
-type KtStringOptions<TBuilder extends SourceBuilder> = AstNodeOptions<KtString<TBuilder>, typeof KtNode<TBuilder>>;
+type Injects = never;
 
-export class KtString<
-  TBuilder extends SourceBuilder = KotlinFileBuilder,
-  TInjects extends string = never
-> extends KtNode<TBuilder, TInjects> {
+type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = AstNodeOptions<
+  typeof KtNode<TBuilder, TInjects | Injects>,
+  {
+    value?: Nullable<string>;
+    template?: Nullable<boolean>;
+    multiline?: Nullable<boolean>;
+    trimMargin?: Nullable<boolean>;
+    marginPrefix?: Nullable<string>;
+    autoAddMarginPrefix?: Nullable<boolean>;
+  }
+>;
+
+export class KtString<TBuilder extends SourceBuilder, TInjects extends string = never> extends KtNode<
+  TBuilder,
+  TInjects | Injects
+> {
   public value: string | null;
   public template: boolean;
   public multiline: boolean;
@@ -26,7 +39,7 @@ export class KtString<
   public marginPrefix: string | null;
   public autoAddMarginPrefix: boolean;
 
-  constructor(options: KtStringOptions<TBuilder>) {
+  constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.value = options?.value ?? null;
     this.template = options?.template ?? false;
@@ -69,7 +82,7 @@ export class KtString<
           .if(
             this.multiline && this.trimMargin && this.autoAddMarginPrefix,
             (b) => b.appendWithLinePrefix(this.marginPrefix ?? '|', value),
-            value
+            value,
           )
           .if(
             this.multiline,
@@ -81,10 +94,10 @@ export class KtString<
                   this.trimMargin,
                   '.trimMargin(',
                   this.marginPrefix ? (b) => new KtString<TBuilder>({ value: this.marginPrefix }).write(b) : null,
-                  ')'
+                  ')',
                 ),
-            '"'
-          )
+            '"',
+          ),
       );
   }
 
@@ -111,15 +124,16 @@ export class KtString<
 
 const createString = <TBuilder extends SourceBuilder>(
   value: KtString<TBuilder>['value'],
-  options?: Prettify<Omit<KtStringOptions<TBuilder>, 'value'>>
+  options?: Prettify<Omit<Options<TBuilder>, 'value'>>,
 ) => new KtString<TBuilder>({ ...options, value });
 
 const writeStrings = <TBuilder extends SourceBuilder>(
   builder: TBuilder,
-  nodes: SingleOrMultiple<KtString<TBuilder> | AppendValue<TBuilder>>,
-  options?: { separator: Separator<TBuilder, KtString<TBuilder> | AppendValue<TBuilder>> }
+  nodes: SingleOrMultiple<Nullable<KtString<TBuilder> | AppendValue<TBuilder>>>,
+  options?: { separator?: Separator<TBuilder, KtString<TBuilder> | AppendValue<TBuilder>> },
 ) => {
-  builder.forEach(toArray(nodes), writeKt, { separator: options?.separator });
+  const filteredNodes = toArray(nodes).filter(notNullish);
+  builder.forEach(filteredNodes, writeKt, { separator: options?.separator });
 };
 
 export const ktString = Object.assign(createString, {

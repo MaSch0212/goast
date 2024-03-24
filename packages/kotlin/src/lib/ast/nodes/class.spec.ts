@@ -37,10 +37,10 @@ describe('ktClass', () => {
 
   it('should write primary constructor with body', () => {
     builder.append(
-      ktClass('Foo', { primaryConstructor: ktConstructor([ktParameter.class('x', 'Int')], 'println(x)') })
+      ktClass('Foo', { primaryConstructor: ktConstructor([ktParameter.class('x', 'Int')], 'println(x)') }),
     );
     expect(builder.toString(false)).toBe(
-      `class Foo(x: Int) {${EOL}    init {${EOL}        println(x)${EOL}    }${EOL}}${EOL}`
+      `class Foo(x: Int) {${EOL}    init {${EOL}        println(x)${EOL}    }${EOL}}${EOL}`,
     );
   });
 
@@ -57,7 +57,7 @@ describe('ktClass', () => {
           '// Comment 1',
           appendValueGroup(['// Comment 2', '// Comment 3'], '\n'),
         ],
-      })
+      }),
     );
     expect(builder.toString(false)).toBe(
       normalizeEOL(
@@ -83,8 +83,8 @@ describe('ktClass', () => {
     // Comment 2
     // Comment 3
 }
-`
-      )
+`,
+      ),
     );
   });
 
@@ -102,7 +102,7 @@ describe('ktClass', () => {
     builder.append(
       ktClass('Foo', {
         primaryConstructor: ktConstructor([ktParameter.class('x', 'Int', { description: 'The number' })]),
-      })
+      }),
     );
     expect(builder.toString(false)).toBe(`/**${EOL} * @param x The number${EOL} */${EOL}class Foo(x: Int)${EOL}`);
   });
@@ -113,10 +113,10 @@ describe('ktClass', () => {
         primaryConstructor: ktConstructor([
           ktParameter.class('x', 'Int', { property: 'readonly', propertyDescription: 'The number' }),
         ]),
-      })
+      }),
     );
     expect(builder.toString(false)).toBe(
-      `/**${EOL} * @property x The number${EOL} */${EOL}class Foo(val x: Int)${EOL}`
+      `/**${EOL} * @property x The number${EOL} */${EOL}class Foo(val x: Int)${EOL}`,
     );
   });
 
@@ -124,7 +124,7 @@ describe('ktClass', () => {
     builder.append(
       ktClass('Foo', {
         primaryConstructor: ktConstructor([ktParameter.class('x', 'Int', { propertyDescription: 'The number' })]),
-      })
+      }),
     );
     expect(builder.toString(false)).toBe(`class Foo(x: Int)${EOL}`);
   });
@@ -154,7 +154,7 @@ describe('ktClass', () => {
       ktClass('Foo', {
         extends: 'Bar',
         primaryConstructor: ktConstructor([], null, { delegateTarget: 'super', delegateArguments: ['1337', '4711'] }),
-      })
+      }),
     );
     expect(builder.toString(false)).toBe(`class Foo : Bar(1337, 4711)${EOL}`);
   });
@@ -187,12 +187,12 @@ describe('ktClass', () => {
         extends: 'Bar',
         implements: ['Baz'],
         companionObject: ktObject(),
-      })
+      }),
     );
     expect(builder.toString(false)).toBe(
       normalizeEOL(
-        `/**${EOL} * This is a class${EOL} */${EOL}@Inject${EOL}@Optional${EOL}private open abstract annotation class Foo<T, U>(x: Int) : Bar(x), Baz {${EOL}    val y: Int?${EOL}${EOL}    companion object${EOL}}${EOL}`
-      )
+        `/**${EOL} * This is a class${EOL} */${EOL}@Inject${EOL}@Optional${EOL}private open abstract annotation class Foo<T, U>(x: Int) : Bar(x), Baz {${EOL}    val y: Int?${EOL}${EOL}    companion object${EOL}}${EOL}`,
+      ),
     );
   });
 });

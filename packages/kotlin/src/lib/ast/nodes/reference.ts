@@ -8,16 +8,23 @@ import {
   SingleOrMultiple,
   Separator,
   toArray,
+  notNullish,
 } from '@goast/core';
 
 import { KotlinFileBuilder } from '../../file-builder';
 import { KtNode } from '../node';
 import { writeKt } from '../utils';
 
-type KtReferenceOptions<TBuilder extends SourceBuilder> = AstNodeOptions<
-  KtReference<TBuilder>,
-  typeof KtNode<TBuilder>,
-  'name'
+type Injects = never;
+
+type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = AstNodeOptions<
+  typeof KtNode<TBuilder, TInjects | Injects>,
+  {
+    name: string;
+    packageName?: Nullable<string>;
+    generics?: Nullable<Nullable<AppendValue<TBuilder>>[]>;
+    nullable?: Nullable<boolean>;
+  }
 >;
 
 type _AddImportHandler<T> = {
@@ -27,7 +34,7 @@ type _AddImportHandler<T> = {
 
 export class KtReference<TBuilder extends SourceBuilder, TInjects extends string = never> extends KtNode<
   TBuilder,
-  TInjects
+  TInjects | Injects
 > {
   private static readonly addImportHandlers: _AddImportHandler<any>[] = [
     {
@@ -41,11 +48,11 @@ export class KtReference<TBuilder extends SourceBuilder, TInjects extends string
   public generics: AppendValue<TBuilder>[];
   public nullable: boolean;
 
-  constructor(options: KtReferenceOptions<TBuilder>) {
+  constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.name = options.name;
     this.packageName = options.packageName ?? null;
-    this.generics = options.generics ?? [];
+    this.generics = options.generics?.filter(notNullish) ?? [];
     this.nullable = options.nullable ?? false;
   }
 
@@ -64,49 +71,47 @@ export class KtReference<TBuilder extends SourceBuilder, TInjects extends string
   }
 
   public static registerAddImportHandler<TBuilder extends SourceBuilder>(
-    builderClass: abstract new (...args: any) => TBuilder,
-    handler: (builder: TBuilder, reference: KtReference<any>) => void
+    builderClass: _AddImportHandler<TBuilder>['builderClass'],
+    handler: _AddImportHandler<TBuilder>['handler'],
   ): void {
     KtReference.addImportHandlers.push({ builderClass, handler });
   }
 }
 
 const createReference = <TBuilder extends SourceBuilder>(
-  name: KtReference<TBuilder>['name'],
-  packageName?: Nullable<KtReference<TBuilder>['packageName']>,
-  options?: Prettify<Omit<KtReferenceOptions<TBuilder>, 'name' | 'packageName'>>
+  name: Options<TBuilder>['name'],
+  packageName?: Options<TBuilder>['packageName'],
+  options?: Prettify<Omit<Options<TBuilder>, 'name' | 'packageName'>>,
 ) => new KtReference<TBuilder>({ ...options, name, packageName });
 
-const createFactory = <TBuilder extends SourceBuilder = SourceBuilder>(
-  name: KtReference<TBuilder>['name'],
-  packageName?: Nullable<KtReference<TBuilder>['packageName']>,
-  options?: Prettify<Omit<KtReferenceOptions<TBuilder>, 'name' | 'packageName'>>
-) => {
-  return (nullable?: boolean) =>
-    createReference(name, packageName, { ...options, nullable: nullable ?? options?.nullable });
+const createFactory = (name: string, packageName?: Nullable<string>) => {
+  return <TBuilder extends SourceBuilder>(nullable?: boolean) =>
+    createReference<TBuilder>(name, packageName, { nullable });
 };
 
-const createGenericFactory = <TGenericCount extends number | number[], TBuilder extends SourceBuilder = SourceBuilder>(
-  name: KtReference<TBuilder>['name'],
-  packageName?: Nullable<KtReference<TBuilder>['packageName']>,
-  options?: Prettify<Omit<KtReferenceOptions<TBuilder>, 'name' | 'packageName'>>
+const createGenericFactory = <TGenericCount extends number | number[]>(
+  name: string,
+  packageName?: Nullable<string>,
 ) => {
   return Object.assign(
-    <B extends TBuilder>(generics: TupleWithCount<AppendValue<B>, TGenericCount>, nullable?: boolean) =>
-      createReference<B>(name, packageName, { ...options, generics, nullable: nullable ?? options?.nullable }),
+    <TBuilder extends SourceBuilder>(
+      generics: TupleWithCount<AppendValue<TBuilder>, TGenericCount>,
+      nullable?: boolean,
+    ) => createReference<TBuilder>(name, packageName, { generics, nullable }),
     {
-      infer: (nullable?: boolean) =>
-        createReference(name, packageName, { ...options, nullable: nullable ?? options?.nullable }),
-    }
+      infer: <TBuilder extends SourceBuilder>(nullable?: boolean) =>
+        createReference<TBuilder>(name, packageName, { nullable }),
+    },
   );
 };
 
 const writeReferences = <TBuilder extends SourceBuilder>(
   builder: TBuilder,
-  nodes: SingleOrMultiple<KtReference<TBuilder> | AppendValue<TBuilder>>,
-  options?: { separator: Separator<TBuilder, KtReference<TBuilder> | AppendValue<TBuilder>> }
+  nodes: SingleOrMultiple<Nullable<KtReference<TBuilder> | AppendValue<TBuilder>>>,
+  options?: { separator?: Separator<TBuilder, KtReference<TBuilder> | AppendValue<TBuilder>> },
 ) => {
-  builder.forEach(toArray(nodes), writeKt, { separator: options?.separator });
+  const filteredNodes = toArray(nodes).filter(notNullish);
+  builder.forEach(filteredNodes, writeKt, { separator: options?.separator });
 };
 
 export const ktReference = Object.assign(createReference, {

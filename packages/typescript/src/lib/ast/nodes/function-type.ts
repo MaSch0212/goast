@@ -16,7 +16,7 @@ export type TsFunctionType<TBuilder extends SourceBuilder = TsDefaultBuilder> = 
 };
 
 export function tsFunctionType<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  options: AstNodeOptions<TsFunctionType<TBuilder>, never, 'returnType'>
+  options: AstNodeOptions<TsFunctionType<TBuilder>, never, 'returnType'>,
 ): TsFunctionType<TBuilder> {
   return {
     ...tsNode(tsFunctionTypeNodeKind, options),
@@ -27,23 +27,23 @@ export function tsFunctionType<TBuilder extends SourceBuilder = TsDefaultBuilder
 }
 
 export function isTsFunctionType<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  node: unknown
+  node: unknown,
 ): node is TsFunctionType<TBuilder> {
   return isTsNode(node, tsFunctionTypeNodeKind);
 }
 
 export function writeTsFunctionType<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsFunctionType<TBuilder>
+  node: TsFunctionType<TBuilder>,
 ): TBuilder {
   return writeTsNode(builder, node, (b) =>
     b.parenthesize('()', (b) =>
       b
         .append(
           (b) => writeTsGenericParameters(b, node.generics),
-          (b) => writeTsParameters(b, node.parameters)
+          (b) => writeTsParameters(b, node.parameters),
         )
-        .append(' => ', node.returnType)
-    )
+        .append(' => ', node.returnType),
+    ),
   );
 }

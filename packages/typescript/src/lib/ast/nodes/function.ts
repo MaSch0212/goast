@@ -25,7 +25,7 @@ export type TsFunction<TBuilder extends SourceBuilder = TsDefaultBuilder> = TsNo
 
 export function tsFunction<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   name: string,
-  options?: AstNodeOptions<TsFunction<TBuilder>, 'name'>
+  options?: AstNodeOptions<TsFunction<TBuilder>, 'name'>,
 ): TsFunction<TBuilder> {
   return {
     ...tsNode('function', options),
@@ -41,31 +41,31 @@ export function tsFunction<TBuilder extends SourceBuilder = TsDefaultBuilder>(
 }
 
 export function isTsFunction<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  node: unknown
+  node: unknown,
 ): node is TsFunction<TBuilder> {
   return isTsNode(node, tsFunctionNodeKind);
 }
 
 export function writeTsFunction<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsFunction<TBuilder>
+  node: TsFunction<TBuilder>,
 ): TBuilder {
   return writeTsNode(builder, node, (b) =>
     b
       .append(
         (b) => writeTs(b, getFullTsDoc(node)),
-        (b) => writeTsDecorators(b, node.decorators, true)
+        (b) => writeTsDecorators(b, node.decorators, true),
       )
       .appendIf(node.export, 'export ')
       .append(
         'function ',
         node.name,
         (b) => writeTsGenericParameters(b, node.generics),
-        (b) => writeTsParameters(b, node.parameters)
+        (b) => writeTsParameters(b, node.parameters),
       )
       .appendIf(!!node.returnType, ': ', node.returnType)
       .append(' ')
       .parenthesize('{}', node.body, { multiline: !!node.body })
-      .appendLine()
+      .appendLine(),
   );
 }

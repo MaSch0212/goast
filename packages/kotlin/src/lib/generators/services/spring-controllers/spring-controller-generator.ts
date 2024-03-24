@@ -79,14 +79,14 @@ export class DefaultKotlinSpringControllerGenerator
   protected generateApiInterfaceDelegateAccessor(ctx: Context, builder: Builder): void {
     builder.appendLine(
       `fun getDelegate(): ${this.getApiDelegateInterfaceName(ctx)} = object : ${this.getApiDelegateInterfaceName(
-        ctx
-      )} {}`
+        ctx,
+      )} {}`,
     );
   }
 
   protected generateApiInterfaceMethods(ctx: Context, builder: Builder): void {
     builder.forEach(ctx.service.endpoints, (builder, endpoint) =>
-      builder.ensurePreviousLineEmpty().append((builder) => this.generateApiInterfaceMethod(ctx, builder, endpoint))
+      builder.ensurePreviousLineEmpty().append((builder) => this.generateApiInterfaceMethod(ctx, builder, endpoint)),
     );
   }
 
@@ -123,15 +123,15 @@ export class DefaultKotlinSpringControllerGenerator
                         .parenthesize('()', (builder) =>
                           builder
                             .append(`responseCode = ${this.toStringLiteral(ctx, response.statusCode?.toString())}, `)
-                            .append(`description = ${this.toStringLiteral(ctx, response.description?.trim())}`)
+                            .append(`description = ${this.toStringLiteral(ctx, response.description?.trim())}`),
                         ),
-                    { separator: ',\n' }
+                    { separator: ',\n' },
                   ),
-                { multiline: true }
+                { multiline: true },
               ),
             endpoint.responses.length > 0,
           ],
-        ])
+        ]),
       )
       .appendAnnotation('RequestMapping', 'org.springframework.web.bind.annotation', [
         ['method', '[RequestMethod.' + endpoint.method.toUpperCase() + ']'],
@@ -160,7 +160,7 @@ export class DefaultKotlinSpringControllerGenerator
     builder.forEach(
       parameters,
       (builder, parameter) => this.generateApiInterfaceMethodParameter(ctx, builder, endpoint, parameter),
-      { separator: ',\n' }
+      { separator: ',\n' },
     );
   }
 
@@ -172,7 +172,7 @@ export class DefaultKotlinSpringControllerGenerator
     ctx: Context,
     builder: Builder,
     endpoint: ApiEndpoint,
-    parameter: ApiParameter
+    parameter: ApiParameter,
   ): void {
     builder
       .append((builder) => this.generateApiInterfaceMethodParameterAnnotations(ctx, builder, endpoint, parameter))
@@ -184,7 +184,7 @@ export class DefaultKotlinSpringControllerGenerator
     ctx: Context,
     builder: Builder,
     endpoint: ApiEndpoint,
-    parameter: ApiParameter
+    parameter: ApiParameter,
   ): void {
     const parameterSchemaInfo = this.getSchemaInfo(ctx, parameter.schema);
 
@@ -234,7 +234,7 @@ export class DefaultKotlinSpringControllerGenerator
     ctx: Context,
     builder: Builder,
     endpoint: ApiEndpoint,
-    parameter: ApiParameter
+    parameter: ApiParameter,
   ): void {
     builder
       .append(toCasing(parameter.name, 'camel'))
@@ -281,7 +281,7 @@ export class DefaultKotlinSpringControllerGenerator
       .if(ctx.config.addJakartaValidationAnnotations, (builder) =>
         builder.appendAnnotation('Generated', 'jakarta.annotation', [
           ['value', '[' + this.toStringLiteral(ctx, 'com.goast.kotlin.spring-service-generator') + ']'],
-        ])
+        ]),
       )
       .appendAnnotation('Controller', 'org.springframework.stereotype')
       .appendAnnotation('RequestMapping', 'org.springframework.web.bind.annotation', [
@@ -319,9 +319,9 @@ export class DefaultKotlinSpringControllerGenerator
             .append('this.delegate = Optional.ofNullable(delegate).orElse')
             .addImport('Optional', 'java.util')
             .parenthesize('()', (builder) =>
-              builder.append('object : ').append(this.getApiDelegateInterfaceName(ctx)).append(' {}')
+              builder.append('object : ').append(this.getApiDelegateInterfaceName(ctx)).append(' {}'),
             ),
-        { multiline: true }
+        { multiline: true },
       )
       .appendLine()
       .appendLine()
@@ -371,7 +371,7 @@ export class DefaultKotlinSpringControllerGenerator
       .forEach(ctx.service.endpoints, (builder, endpoint) =>
         builder
           .ensurePreviousLineEmpty()
-          .append((builder) => this.generateApiDelegateInterfaceMethod(ctx, builder, endpoint))
+          .append((builder) => this.generateApiDelegateInterfaceMethod(ctx, builder, endpoint)),
       );
   }
 
@@ -389,7 +389,7 @@ export class DefaultKotlinSpringControllerGenerator
   protected generateApiDelegateInterfaceMethodAnnnotations(
     ctx: Context,
     builder: Builder,
-    endpoint: ApiEndpoint
+    endpoint: ApiEndpoint,
   ): void {
     // None for now.
   }
@@ -409,7 +409,7 @@ export class DefaultKotlinSpringControllerGenerator
     builder.forEach(
       parameters,
       (builder, parameter) => this.generateApiDelegateInterfaceMethodParameter(ctx, builder, endpoint, parameter),
-      { separator: ',\n' }
+      { separator: ',\n' },
     );
   }
 
@@ -421,15 +421,15 @@ export class DefaultKotlinSpringControllerGenerator
     ctx: Context,
     builder: Builder,
     endpoint: ApiEndpoint,
-    parameter: ApiParameter
+    parameter: ApiParameter,
   ): void {
     builder
       .append((builder) =>
-        this.generateApiDelegateInterfaceMethodParameterAnnotations(ctx, builder, endpoint, parameter)
+        this.generateApiDelegateInterfaceMethodParameterAnnotations(ctx, builder, endpoint, parameter),
       )
       .ensureCurrentLineEmpty()
       .append((builder) =>
-        this.generateApiDelegateInterfaceMethodParameterSignature(ctx, builder, endpoint, parameter)
+        this.generateApiDelegateInterfaceMethodParameterSignature(ctx, builder, endpoint, parameter),
       );
   }
 
@@ -437,7 +437,7 @@ export class DefaultKotlinSpringControllerGenerator
     ctx: Context,
     builder: Builder,
     endpoint: ApiEndpoint,
-    parameter: ApiParameter
+    parameter: ApiParameter,
   ): void {
     // None for now.
   }
@@ -446,7 +446,7 @@ export class DefaultKotlinSpringControllerGenerator
     ctx: Context,
     builder: Builder,
     endpoint: ApiEndpoint,
-    parameter: ApiParameter
+    parameter: ApiParameter,
   ): void {
     builder
       .append(toCasing(parameter.name, 'camel'))
@@ -476,7 +476,7 @@ export class DefaultKotlinSpringControllerGenerator
                 const xInfo = this.getSchemaInfo(ctx, x);
                 const yInfo = this.getSchemaInfo(ctx, y);
                 return xInfo.typeName === yInfo.typeName && xInfo.packageName === yInfo.packageName;
-              }) === i
+              }) === i,
           );
         if (responseSchemas.length === 1) {
           this.generateTypeUsage(ctx, builder, responseSchemas[0], true, 'Unit');
@@ -493,7 +493,7 @@ export class DefaultKotlinSpringControllerGenerator
     builder: Builder,
     schema: ApiSchema | undefined,
     arrayAsFlux: boolean,
-    fallback?: string
+    fallback?: string,
   ): void {
     if (schema && schema.kind === 'array') {
       const schemaInfo = this.getSchemaInfo(ctx, schema.items);
@@ -522,7 +522,7 @@ export class DefaultKotlinSpringControllerGenerator
     return modifyString(
       (ctx.service.$src ?? ctx.service.endpoints[0]?.$src)?.document.servers?.[0]?.url ?? '/',
       ctx.config.basePath,
-      ctx.service
+      ctx.service,
     );
   }
 
@@ -560,7 +560,7 @@ export class DefaultKotlinSpringControllerGenerator
 
   protected getAllParameters(ctx: Context, endpoint: ApiEndpoint): ApiParameter[] {
     const parameters = endpoint.parameters.filter(
-      (parameter) => parameter.target === 'query' || parameter.target === 'path'
+      (parameter) => parameter.target === 'query' || parameter.target === 'path',
     );
     if (endpoint.requestBody) {
       const schema = endpoint.requestBody.content[0].schema;

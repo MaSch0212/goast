@@ -44,7 +44,7 @@ describe('ktObject', () => {
     builder.append(
       ktObject({
         members: ['// Comment 1', '// Comment 2'],
-      })
+      }),
     );
     expect(builder.toString(false)).toBe(`object {${EOL}    // Comment 1${EOL}    // Comment 2${EOL}}`);
   });
@@ -58,10 +58,10 @@ describe('ktObject', () => {
         classArguments: ['1', '2'],
         implements: ['Bar', 'Baz'],
         members: ['// Comment 1', '// Comment 2'],
-      })
+      }),
     );
     expect(builder.toString(false)).toBe(
-      `data object Foo : Bar(1, 2), Bar, Baz {${EOL}    // Comment 1${EOL}    // Comment 2${EOL}}${EOL}`
+      `data object Foo : Bar(1, 2), Bar, Baz {${EOL}    // Comment 1${EOL}    // Comment 2${EOL}}${EOL}`,
     );
   });
 });

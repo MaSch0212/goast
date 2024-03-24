@@ -65,7 +65,7 @@ export class DefaultKotlinOkHttp3Generator
             .appendLine('client: OkHttpClient = ApiClient.defaultClient')
             .addImport('OkHttpClient', 'okhttp3')
             .addImport('ApiClient', ctx.infrastructurePackageName),
-        { multiline: true }
+        { multiline: true },
       )
       .append(' : ')
       .append('ApiClient(basePath, client)');
@@ -81,7 +81,7 @@ export class DefaultKotlinOkHttp3Generator
           .ensurePreviousLineEmpty()
           .append((builder) => this.generateApiClientHttpInfoMethod(ctx, builder, endpoint))
           .ensurePreviousLineEmpty()
-          .append((builder) => this.generateApiClientRequestConfigMethod(ctx, builder, endpoint))
+          .append((builder) => this.generateApiClientRequestConfigMethod(ctx, builder, endpoint)),
       )
       .ensurePreviousLineEmpty()
       .append((builder) => this.generateAdditionalMethods(ctx, builder));
@@ -108,11 +108,11 @@ export class DefaultKotlinOkHttp3Generator
             .appendLine(
               `System.getProperties().getProperty(ApiClient.baseUrlKey, ${this.toStringLiteral(
                 ctx,
-                this.getBasePath(ctx)
-              )})`
+                this.getBasePath(ctx),
+              )})`,
             )
             .addImport('ApiClient', ctx.infrastructurePackageName),
-        { multiline: true }
+        { multiline: true },
       );
   }
 
@@ -142,10 +142,10 @@ export class DefaultKotlinOkHttp3Generator
           .appendLine('@throws IllegalStateException If the request is not correctly configured')
           .appendLine('@throws IOException Rethrows the OkHttp execute method exception')
           .appendLine(
-            '@throws UnsupportedOperationException If the API returns an informational or redirection response'
+            '@throws UnsupportedOperationException If the API returns an informational or redirection response',
           )
           .appendLine('@throws ClientException If the API returns a client error response')
-          .appendLine('@throws ServerException If the API returns a server error response')
+          .appendLine('@throws ServerException If the API returns a server error response'),
       )
       .appendLine(' */');
   }
@@ -201,14 +201,14 @@ export class DefaultKotlinOkHttp3Generator
                 builder
                   .append('(localVarResponse as Success<*>).data as ')
                   .addImport('Success', ctx.infrastructurePackageName)
-                  .append((builder) => this.generateTypeUsage(ctx, builder, responseSchema))
+                  .append((builder) => this.generateTypeUsage(ctx, builder, responseSchema)),
             )
             .ensureCurrentLineEmpty()
             .appendLine(responseErrorHandlingCode)
             .addImport('ClientError', ctx.infrastructurePackageName)
             .addImport('ServerError', ctx.infrastructurePackageName)
             .addImport('ResponseType', ctx.infrastructurePackageName),
-        { multiline: true }
+        { multiline: true },
       );
   }
 
@@ -238,10 +238,10 @@ export class DefaultKotlinOkHttp3Generator
           .appendLine('@throws IllegalStateException If the request is not correctly configured')
           .appendLine('@throws IOException Rethrows the OkHttp execute method exception')
           .appendLine(
-            '@throws UnsupportedOperationException If the API returns an informational or redirection response'
+            '@throws UnsupportedOperationException If the API returns an informational or redirection response',
           )
           .appendLine('@throws ClientException If the API returns a client error response')
-          .appendLine('@throws ServerException If the API returns a server error response')
+          .appendLine('@throws ServerException If the API returns a server error response'),
       )
       .appendLine(' */');
   }
@@ -264,7 +264,7 @@ export class DefaultKotlinOkHttp3Generator
   protected generateApiClientHttpInfoMethodSignatureParameters(
     ctx: Context,
     builder: Builder,
-    endpoint: ApiEndpoint
+    endpoint: ApiEndpoint,
   ): void {
     this.generateParams(ctx, builder, endpoint, true);
   }
@@ -274,7 +274,7 @@ export class DefaultKotlinOkHttp3Generator
       .append('ApiResponse')
       .addImport('ApiResponse', ctx.infrastructurePackageName)
       .parenthesize('<>', (builder) =>
-        this.generateTypeUsage(ctx, builder, this.getResponseSchema(ctx, endpoint), 'Unit', true)
+        this.generateTypeUsage(ctx, builder, this.getResponseSchema(ctx, endpoint), 'Unit', true),
       );
   }
 
@@ -289,7 +289,7 @@ export class DefaultKotlinOkHttp3Generator
         builder
           .append((builder) => this.generateTypeUsage(ctx, builder, endpoint.requestBody?.content[0].schema, 'Unit'))
           .append(', ')
-          .append((builder) => this.generateTypeUsage(ctx, builder, this.getResponseSchema(ctx, endpoint), 'Unit'))
+          .append((builder) => this.generateTypeUsage(ctx, builder, this.getResponseSchema(ctx, endpoint), 'Unit')),
       )
       .parenthesize('()', (builder) => builder.append('localVariableConfig'), { multiline: true });
   }
@@ -310,7 +310,7 @@ export class DefaultKotlinOkHttp3Generator
   protected generateApiClientRequestConfigMethodDocumentation(
     ctx: Context,
     builder: Builder,
-    endpoint: ApiEndpoint
+    endpoint: ApiEndpoint,
   ): void {
     builder
       .appendLine('/**')
@@ -318,7 +318,7 @@ export class DefaultKotlinOkHttp3Generator
         builder
           .appendLine(`To obtain the request config of the operation ${toCasing(endpoint.name, 'camel')}`)
           .append((builder) => this.generateParamDocEntries(ctx, builder, endpoint))
-          .append('@return RequestConfig')
+          .append('@return RequestConfig'),
       )
       .appendLine(' */');
   }
@@ -326,7 +326,7 @@ export class DefaultKotlinOkHttp3Generator
   protected generateApiClientRequestConfigMethodAnnotations(
     ctx: Context,
     builder: Builder,
-    endpoint: ApiEndpoint
+    endpoint: ApiEndpoint,
   ): void {
     // No annotations needed
   }
@@ -336,7 +336,7 @@ export class DefaultKotlinOkHttp3Generator
       .append('private fun ')
       .append(toCasing(endpoint.name, 'camel'), 'RequestConfig')
       .parenthesize('()', (builder) =>
-        this.generateApiClientRequestConfigMethodSignatureParameters(ctx, builder, endpoint)
+        this.generateApiClientRequestConfigMethodSignatureParameters(ctx, builder, endpoint),
       )
       .append(': ')
       .append((builder) => this.generateApiClientRequestConfigMethodReturnType(ctx, builder, endpoint));
@@ -345,7 +345,7 @@ export class DefaultKotlinOkHttp3Generator
   protected generateApiClientRequestConfigMethodSignatureParameters(
     ctx: Context,
     builder: Builder,
-    endpoint: ApiEndpoint
+    endpoint: ApiEndpoint,
   ): void {
     this.generateParams(ctx, builder, endpoint, true);
   }
@@ -353,13 +353,13 @@ export class DefaultKotlinOkHttp3Generator
   protected generateApiClientRequestConfigMethodReturnType(
     ctx: Context,
     builder: Builder,
-    endpoint: ApiEndpoint
+    endpoint: ApiEndpoint,
   ): void {
     builder
       .append('RequestConfig')
       .addImport('RequestConfig', ctx.infrastructurePackageName)
       .parenthesize('<>', (builder) =>
-        this.generateTypeUsage(ctx, builder, endpoint.requestBody?.content[0].schema, 'Unit')
+        this.generateTypeUsage(ctx, builder, endpoint.requestBody?.content[0].schema, 'Unit'),
       );
   }
 
@@ -368,7 +368,7 @@ export class DefaultKotlinOkHttp3Generator
     builder
       .appendLineIf(
         !!endpoint.requestBody,
-        `val localVariableBody = ${toCasing(this.getRequestBodyParamName(ctx, endpoint), 'camel')}`
+        `val localVariableBody = ${toCasing(this.getRequestBodyParamName(ctx, endpoint), 'camel')}`,
       )
       .appendLine('val localVariableQuery: MultiValueMap = mutableMapOf<String, List<String>>()')
       .addImport('MultiValueMap', ctx.infrastructurePackageName)
@@ -387,22 +387,22 @@ export class DefaultKotlinOkHttp3Generator
                       builder.appendLine(
                         `put(${this.toStringLiteral(ctx, toCasing(param.name, 'camel'))}, listOf(${toCasing(
                           param.name,
-                          'camel'
-                        )}.toString()))`
+                          'camel',
+                        )}.toString()))`,
                       ),
-                    { multiline: true }
+                    { multiline: true },
                   )
-                  .appendLine()
+                  .appendLine(),
               ),
-            { multiline: true }
-          )
-        )
+            { multiline: true },
+          ),
+        ),
       )
       .ensureCurrentLineEmpty()
       .appendLine('val localVariableHeaders: MutableMap<String, String> = mutableMapOf()')
       .appendLineIf(
         endpoint.requestBody?.content[0] !== undefined,
-        `localVariableHeaders["Content-Type"] = "${endpoint.requestBody?.content[0].type}"`
+        `localVariableHeaders["Content-Type"] = "${endpoint.requestBody?.content[0].type}"`,
       )
       .appendLine()
       .append('return RequestConfig')
@@ -418,7 +418,7 @@ export class DefaultKotlinOkHttp3Generator
             .appendLine('headers = localVariableHeaders,')
             .appendLine('requiresAuthentication = false,')
             .appendLineIf(!!endpoint.requestBody, 'body = localVariableBody'),
-        { multiline: true }
+        { multiline: true },
       );
   }
 
@@ -430,7 +430,7 @@ export class DefaultKotlinOkHttp3Generator
     builder
       .appendLine('private fun encodeURIComponent(uriComponent: String): String =')
       .indent(
-        'HttpUrl.Builder().scheme("http").host("localhost").addPathSegment(uriComponent).build().encodedPathSegments[0]'
+        'HttpUrl.Builder().scheme("http").host("localhost").addPathSegment(uriComponent).build().encodedPathSegments[0]',
       )
       .addImport('HttpUrl', 'okhttp3');
   }
@@ -438,7 +438,7 @@ export class DefaultKotlinOkHttp3Generator
   protected generateParamDocEntries(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
     const parameters = this.getAllParameters(ctx, endpoint);
     builder.forEach(parameters, (builder, parameter) =>
-      builder.appendLine(`@param ${parameter.name} ${parameter.description ?? 'TODO: Provide description'}`)
+      builder.appendLine(`@param ${parameter.name} ${parameter.description ?? 'TODO: Provide description'}`),
     );
   }
 
@@ -446,7 +446,7 @@ export class DefaultKotlinOkHttp3Generator
     ctx: Context,
     builder: Builder,
     endpoint: ApiEndpoint,
-    includeTypeDefinition: boolean
+    includeTypeDefinition: boolean,
   ): void {
     const parameters = this.getAllParameters(ctx, endpoint);
     builder.forEach(
@@ -456,9 +456,9 @@ export class DefaultKotlinOkHttp3Generator
           builder
             .append(': ')
             .append((builder) => this.generateTypeUsage(ctx, builder, parameter.schema))
-            .appendIf(!parameter.required, '? = ', this.getDefaultValue(ctx, parameter.schema))
+            .appendIf(!parameter.required, '? = ', this.getDefaultValue(ctx, parameter.schema)),
         ),
-      { separator: ', ' }
+      { separator: ', ' },
     );
   }
 
@@ -467,7 +467,7 @@ export class DefaultKotlinOkHttp3Generator
     builder: Builder,
     schema: ApiSchema | undefined,
     fallback?: string,
-    nullable?: boolean
+    nullable?: boolean,
   ): void {
     if (schema && schema.kind === 'array') {
       const schemaInfo = this.getSchemaInfo(ctx, schema.items);
@@ -514,7 +514,7 @@ export class DefaultKotlinOkHttp3Generator
       .forEach((parameter) => {
         path = path.replace(
           `{${parameter.name}}`,
-          `\${encodeURIComponent(${toCasing(parameter.name, 'camel')}.toString())}`
+          `\${encodeURIComponent(${toCasing(parameter.name, 'camel')}.toString())}`,
         );
       });
     return path;
@@ -533,7 +533,7 @@ export class DefaultKotlinOkHttp3Generator
 
   protected getAllParameters(ctx: Context, endpoint: ApiEndpoint): ApiParameter[] {
     const parameters = endpoint.parameters.filter(
-      (parameter) => parameter.target === 'query' || parameter.target === 'path'
+      (parameter) => parameter.target === 'query' || parameter.target === 'path',
     );
     if (endpoint.requestBody) {
       const schema = endpoint.requestBody.content[0].schema;
@@ -567,7 +567,7 @@ export class DefaultKotlinOkHttp3Generator
     return modifyString(
       (ctx.service.$src ?? ctx.service.endpoints[0]?.$src)?.document.servers?.[0]?.url ?? '/',
       ctx.config.basePath,
-      ctx.service
+      ctx.service,
     );
   }
 

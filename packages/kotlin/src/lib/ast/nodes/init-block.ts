@@ -1,22 +1,33 @@
-import { AppendValue, AstNodeOptions, Prettify, SingleOrMultiple, SourceBuilder, toArray } from '@goast/core';
+import {
+  AppendValue,
+  AstNodeOptions,
+  Nullable,
+  Prettify,
+  SingleOrMultiple,
+  SourceBuilder,
+  notNullish,
+  toArray,
+} from '@goast/core';
 
-import { KotlinFileBuilder } from '../../file-builder';
 import { KtNode } from '../node';
 import { writeKt } from '../utils';
 
-type KtInitBlockOptions<TBuilder extends SourceBuilder> = AstNodeOptions<
-  KtInitBlock<TBuilder>,
-  typeof KtNode<TBuilder>,
-  'body'
+type Injects = never;
+
+type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = AstNodeOptions<
+  typeof KtNode<TBuilder, TInjects | Injects>,
+  {
+    body: AppendValue<TBuilder>;
+  }
 >;
 
-export class KtInitBlock<
-  TBuilder extends SourceBuilder = KotlinFileBuilder,
-  TInjects extends string = never
-> extends KtNode<TBuilder, TInjects> {
+export class KtInitBlock<TBuilder extends SourceBuilder, TInjects extends string = never> extends KtNode<
+  TBuilder,
+  TInjects | Injects
+> {
   public body: AppendValue<TBuilder>;
 
-  constructor(options: KtInitBlockOptions<TBuilder>) {
+  constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.body = options.body;
   }
@@ -26,16 +37,17 @@ export class KtInitBlock<
   }
 }
 
-const createInitBlock = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
-  body: KtInitBlock<TBuilder>['body'],
-  options?: Prettify<Omit<KtInitBlockOptions<TBuilder>, 'body'>>
+const createInitBlock = <TBuilder extends SourceBuilder>(
+  body: Options<TBuilder>['body'],
+  options?: Prettify<Omit<Options<TBuilder>, 'body'>>,
 ) => new KtInitBlock<TBuilder>({ ...options, body });
 
-const writeInitBlocks = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+const writeInitBlocks = <TBuilder extends SourceBuilder>(
   builder: TBuilder,
-  nodes: SingleOrMultiple<KtInitBlock<TBuilder> | AppendValue<TBuilder>>
+  nodes: SingleOrMultiple<Nullable<KtInitBlock<TBuilder> | AppendValue<TBuilder>>>,
 ) => {
-  builder.forEach(toArray(nodes), writeKt, { separator: '\n' });
+  const filteredNodes = toArray(nodes).filter(notNullish);
+  builder.forEach(filteredNodes, writeKt, { separator: '\n' });
 };
 
 export const ktInitBlock = Object.assign(createInitBlock, {

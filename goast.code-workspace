@@ -2,32 +2,32 @@
   "folders": [
     {
       "name": "🏠 Root",
-      "path": "."
+      "path": ".",
     },
     {
       "name": "🛝 Playground",
-      "path": "playground"
+      "path": "playground",
     },
     {
       "name": "🧪 Test",
-      "path": "test"
+      "path": "test",
     },
     {
       "name": "📦 Core",
-      "path": "packages/core/src"
+      "path": "packages/core/src",
     },
     {
       "name": "📦 CLI",
-      "path": "packages/cli/src"
+      "path": "packages/cli/src",
     },
     {
       "name": "📦 TypeScript",
-      "path": "packages/typescript/src"
+      "path": "packages/typescript/src",
     },
     {
       "name": "📦 Kotlin",
-      "path": "packages/kotlin/src"
-    }
+      "path": "packages/kotlin/src",
+    },
   ],
   "tasks": {
     "version": "2.0.0",
@@ -39,8 +39,8 @@
         "problemMatcher": [],
         "group": {
           "kind": "build",
-          "isDefault": true
-        }
+          "isDefault": true,
+        },
       },
       {
         "type": "shell",
@@ -49,29 +49,29 @@
         "problemMatcher": [],
         "group": {
           "kind": "test",
-          "isDefault": true
-        }
+          "isDefault": true,
+        },
       },
       {
         "type": "shell",
         "label": "🔎 Lint",
         "command": "pnpm run lint",
         "problemMatcher": [],
-        "group": "test"
+        "group": "test",
       },
       {
         "type": "shell",
         "label": "🛝 Run Playground",
         "command": "pnpm run pg",
         "problemMatcher": [],
-        "group": "test"
-      }
-    ]
+        "group": "test",
+      },
+    ],
   },
   "settings": {
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-      "source.fixAll": "explicit"
+      "source.fixAll": "explicit",
     },
     "explorer.fileNesting.enabled": true,
     "explorer.fileNesting.expand": false,
@@ -79,17 +79,17 @@
       "project.json": "package.json, tsconfig*.json, jest.*, .eslint*",
       "package.json": "tsconfig*.json, pnpm-lock.yaml, jest.*, .editorconfig, .prettier*, .npmrc, nx.json, .eslint*",
       "*.ts": "$(capture).spec.ts, $(capture).types.ts",
-      "*.js": "$(capture).js.map"
+      "*.js": "$(capture).js.map",
     },
     "task.autoDetect": "off",
     "[go]": {
       "editor.codeActionsOnSave": {
-        "source.fixAll": "explicit"
-      }
+        "source.fixAll": "explicit",
+      },
     },
-    "typescript.tsdk": "🏠 Root/node_modules/typescript/lib"
+    "typescript.tsdk": "🏠 Root/node_modules/typescript/lib",
   },
   "extensions": {
-    "recommendations": ["esbenp.prettier-vscode", "dbaeumer.vscode-eslint"]
-  }
+    "recommendations": ["esbenp.prettier-vscode", "dbaeumer.vscode-eslint"],
+  },
 }

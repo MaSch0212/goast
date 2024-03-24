@@ -2,9 +2,8 @@ import { AdditionalAppendsSymbol, AppendParam, StringBuilder } from './string-bu
 import { concatSingleOrMultiple } from '../common.utils';
 import { Nullable } from '../type.utils';
 
-export type AppendValue<TBuilder extends StringBuilder = StringBuilder> = AppendParam<
-  TBuilder,
-  Parameters<TBuilder[typeof AdditionalAppendsSymbol]>[0]
+export type AppendValue<TBuilder extends StringBuilder = StringBuilder> = NonNullable<
+  AppendParam<TBuilder, Parameters<TBuilder[typeof AdditionalAppendsSymbol]>[0]>
 >;
 export type AppendValueGroup<TBuilder extends StringBuilder = StringBuilder> = {
   __type: 'append-value-group';
@@ -17,7 +16,7 @@ export type TextOrBuilderFn<TBuilder> = string | ((builder: TBuilder) => void);
 
 export function appendValueGroup<TBuilder extends StringBuilder = StringBuilder>(
   values: AppendValue<TBuilder>[],
-  separator?: Nullable<string>
+  separator?: Nullable<string>,
 ): AppendValueGroup<TBuilder> {
   return {
     __type: 'append-value-group',
@@ -31,15 +30,13 @@ export function isAppendValue(value: unknown): value is AppendValue<never> {
     typeof value === 'string' ||
     typeof value === 'number' ||
     typeof value === 'boolean' ||
-    value === null ||
-    value === undefined ||
     typeof value === 'function' ||
     isAppendValueGroup(value)
   );
 }
 
 export function isAppendValueGroup<TBuilder extends StringBuilder = StringBuilder>(
-  value: unknown
+  value: unknown,
 ): value is AppendValueGroup<TBuilder> {
   return typeof value === 'object' && value !== null && '__type' in value && value.__type === 'append-value-group';
 }

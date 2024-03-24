@@ -16,7 +16,7 @@ export type TsVariable<TBuilder extends SourceBuilder = TsDefaultBuilder> = TsNo
 
 export function tsVariable<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   name: string,
-  options?: AstNodeOptions<TsVariable<TBuilder>, 'name'>
+  options?: AstNodeOptions<TsVariable<TBuilder>, 'name'>,
 ): TsVariable<TBuilder> {
   return {
     ...tsNode('variable', options),
@@ -30,14 +30,14 @@ export function tsVariable<TBuilder extends SourceBuilder = TsDefaultBuilder>(
 }
 
 export function isTsVariable<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  node: unknown
+  node: unknown,
 ): node is TsVariable<TBuilder> {
   return isTsNode(node, tsVariableNodeKind);
 }
 
 export function writeTsVariable<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsVariable<TBuilder>
+  node: TsVariable<TBuilder>,
 ): TBuilder {
   return writeTsNode(builder, node, (b) =>
     b
@@ -45,6 +45,6 @@ export function writeTsVariable<TBuilder extends SourceBuilder = TsDefaultBuilde
       .append(node.readonly ? 'const ' : 'let ', node.name)
       .appendIf(!!node.type, ': ', node.type)
       .appendIf(!!node.value, ' = ', node.value)
-      .appendLine(';')
+      .appendLine(';'),
   );
 }

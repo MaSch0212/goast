@@ -25,7 +25,7 @@ export type TsEnumValue<TBuilder extends SourceBuilder = TsDefaultBuilder> = TsN
 
 export function tsEnumValue<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   name: string,
-  options?: AstNodeOptions<TsEnumValue<TBuilder>, 'name'>
+  options?: AstNodeOptions<TsEnumValue<TBuilder>, 'name'>,
 ): TsEnumValue<TBuilder> {
   return {
     ...tsNode(tsEnumValueNodeKind, options),
@@ -37,7 +37,7 @@ export function tsEnumValue<TBuilder extends SourceBuilder = TsDefaultBuilder>(
 
 export function tsEnum<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   name: string,
-  options?: AstNodeOptions<TsEnum<TBuilder>, 'name'>
+  options?: AstNodeOptions<TsEnum<TBuilder>, 'name'>,
 ): TsEnum<TBuilder> {
   return {
     ...tsNode(tsEnumNodeKind, options),
@@ -50,7 +50,7 @@ export function tsEnum<TBuilder extends SourceBuilder = TsDefaultBuilder>(
 }
 
 export function isTsEnumValue<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  node: unknown
+  node: unknown,
 ): node is TsEnumValue<TBuilder> {
   return isTsNode(node, tsEnumValueNodeKind);
 }
@@ -61,14 +61,14 @@ export function isTsEnum<TBuilder extends SourceBuilder = TsDefaultBuilder>(node
 
 export function writeTsEnumValue<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsEnumValue<TBuilder>
+  node: TsEnumValue<TBuilder>,
 ): TBuilder {
   return writeTsNode(builder, node, (b) => b.append(node.name).appendIf(node.value !== null, ' = ', node.value));
 }
 
 export function writeTsEnum<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsEnum<TBuilder>
+  node: TsEnum<TBuilder>,
 ): TBuilder {
   return writeTsNode(builder, node, (b) =>
     b
@@ -81,8 +81,8 @@ export function writeTsEnum<TBuilder extends SourceBuilder = TsDefaultBuilder>(
           b.forEach(node.members, (b, m) => writeTs(b, m), {
             separator: ',\n',
           }),
-        { multiline: node.members.length > 0 }
+        { multiline: node.members.length > 0 },
       )
-      .appendLine()
+      .appendLine(),
   );
 }

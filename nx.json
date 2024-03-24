@@ -3,11 +3,7 @@
   "targetDefaults": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": [
-        "production",
-        "^production",
-        "{workspaceRoot}/configs/tsconfig/lib/tsconfig?(.lib).json"
-      ],
+      "inputs": ["production", "^production", "{workspaceRoot}/configs/tsconfig/lib/tsconfig?(.lib).json"],
       "cache": true
     },
     "@nx/jest:jest": {

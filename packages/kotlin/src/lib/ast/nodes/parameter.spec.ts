@@ -38,7 +38,7 @@ describe('ktParameter', () => {
           default: '42',
           vararg: true,
           annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')],
-        })
+        }),
       );
       expect(builder.toString(false)).toBe(`@Inject${EOL}@Optional${EOL}vararg x: Int = 42`);
     });
@@ -135,7 +135,7 @@ describe('ktClassParameter', () => {
 
     it('should write all annotations', () => {
       builder.append(
-        ktParameter.class('x', 'Int', { annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')] })
+        ktParameter.class('x', 'Int', { annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')] }),
       );
       expect(builder.toString(false)).toBe(`@Inject${EOL}@Optional${EOL}x: Int`);
     });
@@ -149,7 +149,7 @@ describe('ktClassParameter', () => {
           property: 'mutable',
           accessModifier: 'private',
           annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')],
-        })
+        }),
       );
       expect(builder.toString(false)).toBe(`@Inject${EOL}@Optional${EOL}private override vararg var x: Int = 42`);
     });

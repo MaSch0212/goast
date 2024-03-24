@@ -19,17 +19,17 @@ export const defaultSourceBuilderOptions: SourceBuilderOptions = {
 };
 
 type KnownParatheses = '()' | '[]' | '{}' | '<>';
-export type Paratheses =
+export type Paratheses<TBuilder extends StringBuilder> =
   | KnownParatheses
   | Omit<string, KnownParatheses>
-  | [open: Nullable<string>, close: Nullable<string>];
+  | [open: Nullable<AppendValue<TBuilder>>, close: Nullable<AppendValue<TBuilder>>];
 
 export type SeparatorBuidlerFn<TBuilder, TItem> = (
   builder: TBuilder,
   previousItem: TItem,
   nextItem: TItem,
   previousItemIndex: number,
-  nextItemIndex: number
+  nextItemIndex: number,
 ) => void;
 export type Separator<TBuilder, TItem> = string | SeparatorBuidlerFn<TBuilder, TItem>;
 
@@ -126,7 +126,7 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
    */
   public static override build(
     buildAction: AppendParam<SourceBuilder, never>,
-    options?: Partial<SourceBuilderOptions>
+    options?: Partial<SourceBuilderOptions>,
   ): string {
     const builder = new SourceBuilder(options);
     builder.append(buildAction);
@@ -311,7 +311,7 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
   public if(
     condition: Condition,
     builderFn: AppendParam<this, TAdditionalAppends>,
-    elseBuilderFn?: AppendParam<this, TAdditionalAppends>
+    elseBuilderFn?: AppendParam<this, TAdditionalAppends>,
   ): this {
     return evalCondition(condition) ? this.append(builderFn) : this.append(elseBuilderFn);
   }
@@ -319,19 +319,19 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
   public switch<T extends string | number>(
     value: T,
     cases: Record<T, AppendParam<this, TAdditionalAppends>>,
-    defaultBuilderFn?: AppendParam<this, TAdditionalAppends>
+    defaultBuilderFn?: AppendParam<this, TAdditionalAppends>,
   ): this;
   public switch<T>(
     value: T,
     cases: SwitchCase<T, this>[],
     defaultBuilderFn?: AppendParam<this, TAdditionalAppends>,
-    equals?: (a: T, b: T) => boolean
+    equals?: (a: T, b: T) => boolean,
   ): this;
   public switch<T>(
     value: T,
     cases: Record<string | number, AppendParam<this, TAdditionalAppends>> | SwitchCase<T, this>[],
     defaultBuilderFn?: AppendParam<this, TAdditionalAppends>,
-    equals?: (a: T, b: T) => boolean
+    equals?: (a: T, b: T) => boolean,
   ): this {
     if ((typeof value === 'string' || typeof value === 'number') && !Array.isArray(cases)) {
       return this.append(cases[value] ?? defaultBuilderFn);
@@ -374,7 +374,7 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
     return this.if(
       condition,
       (builder) => builder.indent(value),
-      (builder) => builder.append(value)
+      (builder) => builder.append(value),
     );
   }
 
@@ -386,14 +386,14 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
    * @returns A reference to this instance.
    */
   public parenthesize(
-    brackets: Paratheses,
+    brackets: Paratheses<this>,
     value: AppendParam<this, TAdditionalAppends>,
-    options?: ParenthesizeOptions
+    options?: ParenthesizeOptions,
   ): this {
     return this.if(
       options?.multiline ?? false,
       (b) => b.appendLine(brackets[0] ?? ''),
-      (b) => b.append(brackets[0] ?? '')
+      (b) => b.append(brackets[0] ?? ''),
     )
       .indentIf(options?.indent ?? true, value)
       .if(options?.multiline ?? false, (b) => b.ensureCurrentLineEmpty())
@@ -410,14 +410,14 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
    */
   public parenthesizeIf(
     condition: Condition,
-    brackets: Paratheses,
+    brackets: Paratheses<this>,
     value: AppendParam<this, TAdditionalAppends>,
-    options?: ParenthesizeOptions
+    options?: ParenthesizeOptions,
   ): this {
     return this.if(
       condition,
       (builder) => builder.parenthesize(brackets, value, options),
-      (builder) => builder.indentIf(options?.indent === true, value)
+      (builder) => builder.indentIf(options?.indent === true, value),
     );
   }
 
@@ -431,7 +431,7 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
   public forEach<T>(
     items: Iterable<T>,
     builderFn: (builder: this, item: T, index: number) => void,
-    options?: ForEachOptions<this, T>
+    options?: ForEachOptions<this, T>,
   ): this {
     const condition = options?.condition ?? true;
     if (options?.condition === false) return this;
@@ -462,7 +462,7 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
     condition: Condition,
     items: Iterable<T>,
     builderFn: (builder: this, item: T, index: number) => void,
-    options?: ForEachOptions<this, T>
+    options?: ForEachOptions<this, T>,
   ): this {
     return this.if(condition, (b) => b.forEach(items, builderFn, options));
   }
@@ -474,7 +474,7 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
   public appendSeparatedIf(
     condition: Condition,
     items: Iterable<AppendParam<this, TAdditionalAppends>>,
-    separator: string
+    separator: string,
   ): this {
     return this.forEachIf(condition, items, (builder, item) => builder.append(item), { separator });
   }

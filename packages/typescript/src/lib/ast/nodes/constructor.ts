@@ -23,7 +23,7 @@ export type TsConstructor<TBuilder extends SourceBuilder = TsDefaultBuilder> = T
 };
 
 export function tsConstructor<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  options?: AstNodeOptions<TsConstructor<TBuilder>>
+  options?: AstNodeOptions<TsConstructor<TBuilder>>,
 ): TsConstructor<TBuilder> {
   const base = tsNode(tsConstructorNodeKind, options);
   return {
@@ -41,14 +41,14 @@ export function tsConstructor<TBuilder extends SourceBuilder = TsDefaultBuilder>
 }
 
 export function isTsConstructor<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  node: unknown
+  node: unknown,
 ): node is TsConstructor<TBuilder> {
   return isTsNode(node, tsConstructorNodeKind);
 }
 
 export function writeTsConstructor<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsConstructor<TBuilder>
+  node: TsConstructor<TBuilder>,
 ): TBuilder {
   return writeTsNode(builder, node, (b) =>
     b
@@ -59,9 +59,9 @@ export function writeTsConstructor<TBuilder extends SourceBuilder = TsDefaultBui
         node.inject.beforeParams,
         (b) => writeTsConstructorParameters(b, node.parameters),
         node.inject.afterParams,
-        ' '
+        ' ',
       )
       .parenthesize('{}', node.body, { multiline: !!node.body })
-      .appendLine()
+      .appendLine(),
   );
 }

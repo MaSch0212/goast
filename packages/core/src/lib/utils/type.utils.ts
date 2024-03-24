@@ -13,6 +13,7 @@ export type Multiple<T> = T extends (infer U)[] ? U[] : T[];
 
 export type Nullable<T> = T | null | undefined;
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export interface Constructor<T, TArgs extends any[]> extends Function {
   new (...args: TArgs): T;
 }
@@ -38,7 +39,7 @@ export function stringUnionToArray<T>() {
 
 export type StringSuggestions<T extends string> = T | Omit<string, T>;
 export function suggestionsAsString<T>(
-  value: T
+  value: T,
 ): T extends StringSuggestions<infer U> ? Exclude<T, StringSuggestions<U>> | string : T {
   return value as any;
 }
@@ -53,36 +54,36 @@ export type ParametersWithOverloads<T extends (...args: any[]) => any> = T exten
 }
   ? A1 | A2 | A3 | A4 | A5 | A6
   : T extends {
-      (...args: infer A1): any;
-      (...args: infer A2): any;
-      (...args: infer A3): any;
-      (...args: infer A4): any;
-      (...args: infer A5): any;
-    }
-  ? A1 | A2 | A3 | A4 | A5
-  : T extends {
-      (...args: infer A1): any;
-      (...args: infer A2): any;
-      (...args: infer A3): any;
-      (...args: infer A4): any;
-    }
-  ? A1 | A2 | A3 | A4
-  : T extends {
-      (...args: infer A1): any;
-      (...args: infer A2): any;
-      (...args: infer A3): any;
-    }
-  ? A1 | A2 | A3
-  : T extends {
-      (...args: infer A1): any;
-      (...args: infer A2): any;
-    }
-  ? A1 | A2
-  : T extends {
-      (...args: infer A1): any;
-    }
-  ? A1
-  : never;
+        (...args: infer A1): any;
+        (...args: infer A2): any;
+        (...args: infer A3): any;
+        (...args: infer A4): any;
+        (...args: infer A5): any;
+      }
+    ? A1 | A2 | A3 | A4 | A5
+    : T extends {
+          (...args: infer A1): any;
+          (...args: infer A2): any;
+          (...args: infer A3): any;
+          (...args: infer A4): any;
+        }
+      ? A1 | A2 | A3 | A4
+      : T extends {
+            (...args: infer A1): any;
+            (...args: infer A2): any;
+            (...args: infer A3): any;
+          }
+        ? A1 | A2 | A3
+        : T extends {
+              (...args: infer A1): any;
+              (...args: infer A2): any;
+            }
+          ? A1 | A2
+          : T extends {
+                (...args: infer A1): any;
+              }
+            ? A1
+            : never;
 
 type _TupleOf<T, N extends number, R extends unknown[]> = R['length'] extends N ? R : _TupleOf<T, N, [T, ...R]>;
 export type TupleWithCount<T, N extends number | number[]> = N extends number
@@ -90,11 +91,11 @@ export type TupleWithCount<T, N extends number | number[]> = N extends number
     ? T[]
     : _TupleOf<T, N, []>
   : N extends [infer A, ...infer R]
-  ? A extends number
-    ? R extends number[]
-      ? TupleWithCount<T, A> | TupleWithCount<T, R>
+    ? A extends number
+      ? R extends number[]
+        ? TupleWithCount<T, A> | TupleWithCount<T, R>
+        : never
       : never
-    : never
-  : N extends []
-  ? never
-  : T[];
+    : N extends []
+      ? never
+      : T[];

@@ -1,24 +1,37 @@
-import { AppendValue, AstNodeOptions, Prettify, SingleOrMultiple, SourceBuilder, toArray } from '@goast/core';
+import {
+  AppendValue,
+  AstNodeOptions,
+  Nullable,
+  Prettify,
+  SingleOrMultiple,
+  SourceBuilder,
+  notNullish,
+  toArray,
+} from '@goast/core';
 
-import { KotlinFileBuilder } from '../../file-builder';
 import { KtNode } from '../node';
 import { writeKt } from '../utils';
 
-type KtGenericParameterOptions<TBuilder extends SourceBuilder> = AstNodeOptions<
-  KtGenericParameter<TBuilder>,
-  typeof KtNode<TBuilder>,
-  'name'
+type Injects = never;
+
+type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = AstNodeOptions<
+  typeof KtNode<TBuilder, TInjects | Injects>,
+  {
+    name: string;
+    description?: Nullable<AppendValue<TBuilder>>;
+    constraint?: Nullable<AppendValue<TBuilder>>;
+  }
 >;
 
-export class KtGenericParameter<
-  TBuilder extends SourceBuilder = KotlinFileBuilder,
-  TInjects extends string = never
-> extends KtNode<TBuilder, TInjects> {
+export class KtGenericParameter<TBuilder extends SourceBuilder, TInjects extends string = never> extends KtNode<
+  TBuilder,
+  TInjects | Injects
+> {
   public name: string;
-  public description: AppendValue<TBuilder>;
-  public constraint: AppendValue<TBuilder>;
+  public description: AppendValue<TBuilder> | null;
+  public constraint: AppendValue<TBuilder> | null;
 
-  constructor(options: KtGenericParameterOptions<TBuilder>) {
+  constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.name = options.name;
     this.description = options.description ?? null;
@@ -30,18 +43,18 @@ export class KtGenericParameter<
   }
 }
 
-const createGenericParameter = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
-  name: KtGenericParameter<TBuilder>['name'],
-  options?: Prettify<Omit<KtGenericParameterOptions<TBuilder>, 'name'>>
+const createGenericParameter = <TBuilder extends SourceBuilder>(
+  name: Options<TBuilder>['name'],
+  options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
 ) => new KtGenericParameter<TBuilder>({ ...options, name });
 
-const writeGenericParameters = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+const writeGenericParameters = <TBuilder extends SourceBuilder>(
   builder: TBuilder,
-  nodes: SingleOrMultiple<KtGenericParameter<TBuilder> | AppendValue<TBuilder>>
+  nodes: SingleOrMultiple<Nullable<KtGenericParameter<TBuilder> | AppendValue<TBuilder>>>,
 ) => {
-  nodes = toArray(nodes);
-  if (nodes.length === 0) return;
-  builder.parenthesize('<>', (b) => b.forEach(nodes, writeKt, { separator: ', ' }));
+  const filteredNodes = toArray(nodes).filter(notNullish);
+  if (filteredNodes.length === 0) return;
+  builder.parenthesize('<>', (b) => b.forEach(filteredNodes, writeKt, { separator: ', ' }));
 };
 
 export const ktGenericParameter = Object.assign(createGenericParameter, {

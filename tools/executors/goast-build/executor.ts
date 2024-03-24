@@ -94,7 +94,7 @@ function createTypeScriptProject(ctx: Context, moduleKind: ModuleKind, outDir: s
               containingFile,
               options,
               moduleResolutionHost,
-              undefined
+              undefined,
             ).resolvedModule;
             if (resolvedModule && options.paths?.hasOwnProperty(moduleName)) {
               resolvedModule.isExternalLibraryImport = true;
@@ -138,7 +138,7 @@ async function buildPackageJson(ctx: Context) {
     },
     ctx,
     target,
-    dependencies
+    dependencies,
   );
 
   const relativeIndex = removeTsExtension(getRelativeSourceFilePath(ctx, ctx.entryFile));
@@ -178,7 +178,7 @@ async function copyAssets(ctx: Context) {
   console.log('Copying assets...');
   const files = await glob(
     ctx.assets.map((x) => normalizePath(join(ctx.projectRoot, x))),
-    { nodir: true }
+    { nodir: true },
   );
   for (const file of files) {
     const targetDir = join(ctx.outputPath, relative(ctx.projectRoot, dirname(file)));

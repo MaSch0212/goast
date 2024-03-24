@@ -53,7 +53,7 @@ describe('single', () => {
         accessibility: 'public',
         readonly: true,
         optional: true,
-      })
+      }),
     );
     expect(builder.toString(false)).toBe('@decorator public readonly x?: number = 42');
   });

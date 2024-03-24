@@ -20,7 +20,7 @@ export type TsParameter<TBuilder extends SourceBuilder = TsDefaultBuilder> = TsN
 
 export function tsParameter<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   name: string,
-  options?: AstNodeOptions<TsParameter<TBuilder>, 'name'>
+  options?: AstNodeOptions<TsParameter<TBuilder>, 'name'>,
 ): TsParameter<TBuilder> {
   return {
     ...tsNode(tsParameterNodeKind, options),
@@ -34,27 +34,27 @@ export function tsParameter<TBuilder extends SourceBuilder = TsDefaultBuilder>(
 }
 
 export function isTsParameter<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  node: unknown
+  node: unknown,
 ): node is TsParameter<TBuilder> {
   return isTsNode(node, tsParameterNodeKind);
 }
 
 export function writeTsParameters<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  parameters: (TsParameter<TBuilder> | AppendValue<TBuilder>)[]
+  parameters: (TsParameter<TBuilder> | AppendValue<TBuilder>)[],
 ): TBuilder {
   return builder.parenthesize('()', (b) => b.forEach(parameters, (b, p) => writeTs(b, p), { separator: ', ' }));
 }
 
 export function writeTsParameter<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsParameter<TBuilder>
+  node: TsParameter<TBuilder>,
 ): TBuilder {
   return writeTsNode(builder, node, (b) =>
     writeTsDecorators(b, node.decorators, false)
       .append(node.name)
       .appendIf(node.optional, '?')
       .appendIf(!!node.type, ': ', node.type)
-      .appendIf(!!node.default, ' = ', node.default)
+      .appendIf(!!node.default, ' = ', node.default),
   );
 }

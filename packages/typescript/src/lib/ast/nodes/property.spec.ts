@@ -58,10 +58,10 @@ describe('property-method', () => {
           static: true,
           abstract: true,
           override: true,
-        })
+        }),
       );
       expect(builder.toString(false)).toBe(
-        `public static abstract override set x(value: number) {${EOL}  this.x = value;${EOL}}${EOL}`
+        `public static abstract override set x(value: number) {${EOL}  this.x = value;${EOL}}${EOL}`,
       );
     });
 
@@ -70,7 +70,7 @@ describe('property-method', () => {
         builder,
         'set',
         'x',
-        tsPropertyMethod({ inject: { before: ['before'], after: ['after'] } })
+        tsPropertyMethod({ inject: { before: ['before'], after: ['after'] } }),
       );
       expect(builder.toString(false)).toBe(`beforeset x(value);${EOL}after`);
     });
@@ -124,10 +124,10 @@ describe('property-method', () => {
           static: true,
           abstract: true,
           override: true,
-        })
+        }),
       );
       expect(builder.toString(false)).toBe(
-        `public static abstract override get x(): number {${EOL}  return this.x;${EOL}}${EOL}`
+        `public static abstract override get x(): number {${EOL}  return this.x;${EOL}}${EOL}`,
       );
     });
 
@@ -136,7 +136,7 @@ describe('property-method', () => {
         builder,
         'get',
         'x',
-        tsPropertyMethod({ inject: { before: ['before'], after: ['after'] } })
+        tsPropertyMethod({ inject: { before: ['before'], after: ['after'] } }),
       );
       expect(builder.toString(false)).toBe(`beforeget x();${EOL}after`);
     });
@@ -200,7 +200,7 @@ describe('property', () => {
         abstract: true,
         override: true,
         optional: true,
-      })
+      }),
     );
     expect(builder.toString(false)).toBe('public static abstract override readonly x?: number = 42;' + EOL);
   });
@@ -231,7 +231,7 @@ describe('property', () => {
         get: tsPropertyMethod(),
         set: tsPropertyMethod(),
         inject: { before: ['before'], after: ['after'] },
-      })
+      }),
     );
     expect(builder.toString(false)).toBe(`beforeget x();${EOL}set x(value);${EOL}after`);
   });

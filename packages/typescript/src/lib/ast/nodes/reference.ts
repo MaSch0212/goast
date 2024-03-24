@@ -16,7 +16,7 @@ export type TsReference<TBuilder extends SourceBuilder = TsDefaultBuilder> = TsN
 export function tsReference<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   name: string,
   moduleNameOrfilePath?: string | null,
-  options?: AstNodeOptions<TsReference<TBuilder>, 'name' | 'moduleNameOrfilePath'>
+  options?: AstNodeOptions<TsReference<TBuilder>, 'name' | 'moduleNameOrfilePath'>,
 ): TsReference<TBuilder> {
   return {
     ...tsNode(tsReferenceNodeKind, options),
@@ -27,14 +27,14 @@ export function tsReference<TBuilder extends SourceBuilder = TsDefaultBuilder>(
 }
 
 export function isTsReference<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  value: unknown
+  value: unknown,
 ): value is TsReference<TBuilder> {
   return isTsNode(value, tsReferenceNodeKind);
 }
 
 export function writeTsReference<TBuilder extends TsDefaultBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsReference<TBuilder>
+  node: TsReference<TBuilder>,
 ): TBuilder {
   return writeTsNode(builder, node, (b) => {
     b.append(node.name);

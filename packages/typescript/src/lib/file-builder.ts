@@ -13,7 +13,7 @@ export type TypeScriptAppendParam<TBuilder extends TypeScriptFileBuilder, TAddit
 >;
 
 export function isTypeScriptAppendValue<TBuilder extends TypeScriptFileBuilder = TypeScriptFileBuilder>(
-  value: unknown
+  value: unknown,
 ): value is AppendValue<TBuilder> {
   return isAppendValue(value) || isTsNode(value);
 }

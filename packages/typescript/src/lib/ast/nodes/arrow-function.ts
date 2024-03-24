@@ -17,7 +17,7 @@ export type TsArrowFunction<TBuilder extends SourceBuilder = TsDefaultBuilder> =
 };
 
 export function tsArrowFunction<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  options?: AstNodeOptions<TsArrowFunction<TBuilder>>
+  options?: AstNodeOptions<TsArrowFunction<TBuilder>>,
 ): TsArrowFunction<TBuilder> {
   return {
     ...tsNode(tsArrowFunctionNodeKind, options),
@@ -29,23 +29,23 @@ export function tsArrowFunction<TBuilder extends SourceBuilder = TsDefaultBuilde
 }
 
 export function isTsArrowFunction<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  node: unknown
+  node: unknown,
 ): node is TsArrowFunction<TBuilder> {
   return isTsNode(node, tsArrowFunctionNodeKind);
 }
 
 export function writeTsArrowFunction<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsArrowFunction<TBuilder>
+  node: TsArrowFunction<TBuilder>,
 ): TBuilder {
   return writeTsNode(builder, node, (b) =>
     b
       .append(
         (b) => writeTsGenericParameters(b, node.generics),
-        (b) => writeTsParameters(b, node.parameters)
+        (b) => writeTsParameters(b, node.parameters),
       )
       .appendIf(!!node.returnType, ': ', node.returnType)
       .append(' => ')
-      .parenthesize('{}', node.body, { multiline: !!node.body })
+      .parenthesize('{}', node.body, { multiline: !!node.body }),
   );
 }

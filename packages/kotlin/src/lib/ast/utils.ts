@@ -5,6 +5,7 @@ import {
   notNullish,
   isAppendValue,
   isAppendValueGroup,
+  Nullable,
 } from '@goast/core';
 
 import { KtNode } from './node';
@@ -29,7 +30,7 @@ export function getKotlinBuilderOptions(builder: SourceBuilder) {
 
 export function writeKt<TBuilder extends SourceBuilder>(
   builder: TBuilder,
-  node: AppendValue<TBuilder> | KtNode<TBuilder>
+  node: Nullable<AppendValue<TBuilder> | KtNode<TBuilder>>,
 ): void {
   if (node instanceof KtNode) {
     node.write(builder);
@@ -40,11 +41,11 @@ export function writeKt<TBuilder extends SourceBuilder>(
 
 export function writeKtMembers<TBuilder extends SourceBuilder>(
   builder: TBuilder,
-  members: (AppendValue<TBuilder> | KtNode<TBuilder>)[],
-  options?: { alreadyHasMembers?: boolean }
+  members: Nullable<AppendValue<TBuilder> | KtNode<TBuilder>>[],
+  options?: { alreadyHasMembers?: boolean },
 ): void {
-  members = members.filter(notNullish);
-  builder.forEach(members, (b, m, i) =>
+  const filteredMembers = members.filter(notNullish);
+  builder.forEach(filteredMembers, (b, m, i) =>
     b.if(
       () =>
         !(m instanceof KtProperty && !m.doc && m.annotations.length === 0) &&
@@ -54,8 +55,8 @@ export function writeKtMembers<TBuilder extends SourceBuilder>(
         b
           .if(i > 0 || !!options?.alreadyHasMembers, (b) => b.ensurePreviousLineEmpty())
           .append((b) => writeKt(b, m))
-          .if(i < members.length - 1, (b) => b.ensurePreviousLineEmpty()),
-      (b) => b.append((b) => writeKt(b, m)).ensureCurrentLineEmpty()
-    )
+          .if(i < filteredMembers.length - 1, (b) => b.ensurePreviousLineEmpty()),
+      (b) => b.append((b) => writeKt(b, m)).ensureCurrentLineEmpty(),
+    ),
   );
 }

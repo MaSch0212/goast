@@ -7,7 +7,7 @@ import { TsString, tsString } from './nodes/string';
 import { TsTuple, tsTuple } from './nodes/tuple';
 
 export function toTsNode<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  object: Record<string, unknown>
+  object: Record<string, unknown>,
 ): TsObject<TBuilder>;
 export function toTsNode<TBuilder extends SourceBuilder = TsDefaultBuilder>(tuple: unknown[]): TsTuple<TBuilder>;
 export function toTsNode<TBuilder extends SourceBuilder = TsDefaultBuilder>(string: string): TsString<TBuilder>;

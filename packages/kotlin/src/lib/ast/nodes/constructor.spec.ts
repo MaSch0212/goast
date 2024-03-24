@@ -54,10 +54,10 @@ describe('ktConstructor', () => {
         annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')],
         delegateTarget: 'this',
         delegateArguments: ['42', 'true'],
-      })
+      }),
     );
     expect(builder.toString(false)).toBe(
-      `@Inject${EOL}@Optional${EOL}private constructor(x: Int) : this(42, true) {${EOL}    println("Hello")${EOL}}${EOL}`
+      `@Inject${EOL}@Optional${EOL}private constructor(x: Int) : this(42, true) {${EOL}    println("Hello")${EOL}}${EOL}`,
     );
   });
 
@@ -91,7 +91,7 @@ describe('ktPrimaryConstructor', () => {
 
   it('should write annotations', () => {
     ktConstructor([], null, { annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')] }).writeAsPrimary(
-      builder
+      builder,
     );
     expect(builder.toString(false)).toBe(' @Inject @Optional constructor()');
   });

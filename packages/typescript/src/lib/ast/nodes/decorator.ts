@@ -15,7 +15,7 @@ export type TsDecorator<TBuilder extends SourceBuilder = TsDefaultBuilder> = TsN
 export function tsDecorator<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   fn: AppendValue<TBuilder>,
   params?: Nullable<AppendValue<TBuilder>[]>,
-  options?: AstNodeOptions<TsDecorator<TBuilder>, 'function' | 'parameters'>
+  options?: AstNodeOptions<TsDecorator<TBuilder>, 'function' | 'parameters'>,
 ): TsDecorator<TBuilder> {
   return {
     ...tsNode(tsDecoratorNodeKind, options),
@@ -25,7 +25,7 @@ export function tsDecorator<TBuilder extends SourceBuilder = TsDefaultBuilder>(
 }
 
 export function isTsDecorator<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  node: unknown
+  node: unknown,
 ): node is TsDecorator<TBuilder> {
   return isTsNode(node, tsDecoratorNodeKind);
 }
@@ -33,20 +33,20 @@ export function isTsDecorator<TBuilder extends SourceBuilder = TsDefaultBuilder>
 export function writeTsDecorators<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
   decorators: TsDecorator<TBuilder>[],
-  multiline: boolean
+  multiline: boolean,
 ): TBuilder {
   return builder.forEach(decorators, (b, d) => writeTsDecorator(b, d).if(multiline, '\n', ' '));
 }
 
 export function writeTsDecorator<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsDecorator<TBuilder>
+  node: TsDecorator<TBuilder>,
 ): TBuilder {
   return writeTsNode(builder, node, (b) =>
     b
       .append('@', node.function)
       .if(!!node.parameters, (b) =>
-        b.parenthesize('()', (b) => b.forEach(node.parameters ?? [], (b, p) => b.append(p), { separator: ', ' }))
-      )
+        b.parenthesize('()', (b) => b.forEach(node.parameters ?? [], (b, p) => b.append(p), { separator: ', ' })),
+      ),
   );
 }

@@ -26,7 +26,7 @@ describe('ktEnum', () => {
   it('should write documenation', () => {
     builder.append(ktEnum('Foo', [ktEnumValue('BAR')], { doc: ktDoc('This is a foo') }));
     expect(builder.toString(false)).toBe(
-      `/**${EOL} * This is a foo${EOL} */${EOL}enum class Foo {${EOL}    BAR${EOL}}${EOL}`
+      `/**${EOL} * This is a foo${EOL} */${EOL}enum class Foo {${EOL}    BAR${EOL}}${EOL}`,
     );
   });
 
@@ -44,17 +44,17 @@ describe('ktEnum', () => {
     builder.append(
       ktEnum('Foo', [ktEnumValue('BAR', { arguments: ['0', '1'] })], {
         primaryConstructor: ktConstructor([ktParameter('x', 'Int'), ktParameter('y', 'Int')]),
-      })
+      }),
     );
     expect(builder.toString(false)).toBe(`enum class Foo(x: Int, y: Int) {${EOL}    BAR(0, 1)${EOL}}${EOL}`);
   });
 
   it('should write members', () => {
     builder.append(
-      ktEnum('Foo', [ktEnumValue('BAR'), ktEnumValue('BAZ')], { members: ['// Comment 1', '// Comment 2'] })
+      ktEnum('Foo', [ktEnumValue('BAR'), ktEnumValue('BAZ')], { members: ['// Comment 1', '// Comment 2'] }),
     );
     expect(builder.toString(false)).toBe(
-      `enum class Foo {${EOL}    BAR, BAZ;${EOL}${EOL}    // Comment 1${EOL}    // Comment 2${EOL}}${EOL}`
+      `enum class Foo {${EOL}    BAR, BAZ;${EOL}${EOL}    // Comment 1${EOL}    // Comment 2${EOL}}${EOL}`,
     );
   });
 
@@ -78,10 +78,10 @@ describe('ktEnum', () => {
         implements: ['Bar', 'Baz'],
         members: ['// Comment 1', '// Comment 2'],
         companionObject: ktObject(),
-      })
+      }),
     );
     expect(builder.toString(false)).toBe(
-      `/**${EOL} * This is a foo${EOL} */${EOL}@Deprecated${EOL}private enum class Foo(x: Int, y: Int) : Bar, Baz {${EOL}    BAR(0, 1);${EOL}${EOL}    // Comment 1${EOL}    // Comment 2${EOL}${EOL}    companion object${EOL}}${EOL}`
+      `/**${EOL} * This is a foo${EOL} */${EOL}@Deprecated${EOL}private enum class Foo(x: Int, y: Int) : Bar, Baz {${EOL}    BAR(0, 1);${EOL}${EOL}    // Comment 1${EOL}    // Comment 2${EOL}${EOL}    companion object${EOL}}${EOL}`,
     );
   });
 

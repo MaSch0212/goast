@@ -593,14 +593,14 @@ describe('toCasing', () => {
 
   test('converts to custom case', () => {
     expect(toCasing('hello world', { casing: 'custom', wordSeparator: '.', wordCasing: 'first-upper' })).toBe(
-      'Hello.World'
+      'Hello.World',
     );
     expect(
       toCasing('HelloWorldTest', {
         casing: 'custom',
         wordSeparator: '#',
         wordCasing: 'first-lower',
-      })
+      }),
     ).toBe('hello#world#test');
   });
 

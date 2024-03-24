@@ -16,7 +16,7 @@ it('should write a custom tag', () => {
     .appendLine(tsDocTag('custom', { text: 'description' }))
     .append(tsDocTag('custom', { type: 'number', text: 'description' }));
   expect(builder.toString(false)).toBe(
-    `@custom${EOL}@custom {number}${EOL}@custom description${EOL}@custom {number} description`
+    `@custom${EOL}@custom {number}${EOL}@custom description${EOL}@custom {number} description`,
   );
 });
 

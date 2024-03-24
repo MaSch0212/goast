@@ -17,8 +17,8 @@ export type KotlinAppendParam<TBuilder extends KotlinFileBuilder, TAdditionalApp
   KotlinAppends<TAdditionalAppends>
 >;
 
-export function isKotlinAppendValue<TBuilder extends KotlinFileBuilder = KotlinFileBuilder>(
-  value: unknown
+export function isKotlinAppendValue<TBuilder extends KotlinFileBuilder>(
+  value: unknown,
 ): value is AppendValue<TBuilder> {
   return isAppendValue(value) || value instanceof KtNode;
 }
@@ -75,9 +75,9 @@ export class KotlinFileBuilder<TAdditionalAppends = never> extends SourceBuilder
               builder
                 .append(name ? `${name} = ` : '')
                 .append((builder) => (typeof value === 'string' ? builder.append(value) : value(builder))),
-            { separator: multiline ? ',\n' : ', ' }
+            { separator: multiline ? ',\n' : ', ' },
           )
-          .appendLineIf(multiline)
+          .appendLineIf(multiline),
       );
     }
 

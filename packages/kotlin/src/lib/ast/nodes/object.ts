@@ -1,34 +1,55 @@
-import { SourceBuilder, AppendValue, AstNodeOptions, notNullish, toArray, SingleOrMultiple } from '@goast/core';
+import {
+  SourceBuilder,
+  AppendValue,
+  AstNodeOptions,
+  notNullish,
+  toArray,
+  SingleOrMultiple,
+  Nullable,
+} from '@goast/core';
 
 import { KtFunction } from './function';
 import { KtInitBlock } from './init-block';
 import { KtProperty } from './property';
 import { KtReference } from './reference';
-import { KotlinFileBuilder } from '../../file-builder';
 import { KtNode } from '../node';
 import { writeKt, writeKtMembers } from '../utils';
 
-type KtObjectOptions<TBuilder extends SourceBuilder> = AstNodeOptions<KtObject<TBuilder>, typeof KtNode<TBuilder>>;
+type Injects = never;
 
-export class KtObject<
-  TBuilder extends SourceBuilder = KotlinFileBuilder,
-  TInjects extends string = never
-> extends KtNode<TBuilder, TInjects> {
+type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = AstNodeOptions<
+  typeof KtNode<TBuilder, TInjects | Injects>,
+  {
+    data?: boolean;
+    name?: Nullable<string>;
+    class?: KtReference<TBuilder> | AppendValue<TBuilder>;
+    classArguments?: Nullable<Nullable<AppendValue<TBuilder>>[]>;
+    implements?: Nullable<Nullable<KtReference<TBuilder> | AppendValue<TBuilder>>[]>;
+    members?: Nullable<
+      Nullable<KtInitBlock<TBuilder> | KtProperty<TBuilder> | KtFunction<TBuilder> | AppendValue<TBuilder>>[]
+    >;
+  }
+>;
+
+export class KtObject<TBuilder extends SourceBuilder, TInjects extends string = never> extends KtNode<
+  TBuilder,
+  TInjects | Injects
+> {
   public data: boolean;
   public name: string | null;
-  public class: KtReference<TBuilder> | AppendValue<TBuilder>;
+  public class: KtReference<TBuilder> | AppendValue<TBuilder> | null;
   public classArguments: AppendValue<TBuilder>[];
   public implements: (KtReference<TBuilder> | AppendValue<TBuilder>)[];
   public members: (KtInitBlock<TBuilder> | KtProperty<TBuilder> | KtFunction<TBuilder> | AppendValue<TBuilder>)[];
 
-  constructor(options: KtObjectOptions<TBuilder>) {
+  constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.data = options.data ?? false;
     this.name = options.name ?? null;
-    this.class = options.class;
-    this.classArguments = options.classArguments ?? [];
-    this.implements = options.implements ?? [];
-    this.members = options.members ?? [];
+    this.class = options.class ?? null;
+    this.classArguments = options.classArguments?.filter(notNullish) ?? [];
+    this.implements = options.implements?.filter(notNullish) ?? [];
+    this.members = options.members?.filter(notNullish) ?? [];
   }
 
   protected override onWrite(builder: TBuilder): void {
@@ -40,25 +61,27 @@ export class KtObject<
       .appendIf(
         !!this.class,
         (b) => writeKt(b, this.class),
-        (b) => b.parenthesize('()', (b) => b.forEach(this.classArguments, (b, a) => writeKt(b, a), { separator: ', ' }))
+        (b) =>
+          b.parenthesize('()', (b) => b.forEach(this.classArguments, (b, a) => writeKt(b, a), { separator: ', ' })),
       )
       .appendIf(!!this.class && this.implements.length > 0, ', ')
       .forEach(this.implements, (b, i) => writeKt(b, i), { separator: ', ' })
       .if(this.members.some(notNullish), (b) =>
-        b.append(' ').parenthesize('{}', (b) => writeKtMembers(b, this.members), { multiline: true })
+        b.append(' ').parenthesize('{}', (b) => writeKtMembers(b, this.members), { multiline: true }),
       )
       .appendLineIf(!!this.name);
   }
 }
 
-const createObject = <TBuilder extends SourceBuilder = KotlinFileBuilder>(options?: KtObjectOptions<TBuilder>) =>
+const createObject = <TBuilder extends SourceBuilder>(options?: Options<TBuilder>) =>
   new KtObject<TBuilder>(options ?? {});
 
-const writeObjects = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+const writeObjects = <TBuilder extends SourceBuilder>(
   builder: TBuilder,
-  nodes: SingleOrMultiple<KtObject<TBuilder> | AppendValue<TBuilder>>
+  nodes: SingleOrMultiple<Nullable<KtObject<TBuilder> | AppendValue<TBuilder>>>,
 ) => {
-  builder.forEach(toArray(nodes), writeKt, { separator: '\n' });
+  const filteredNodes = toArray(nodes).filter(notNullish);
+  builder.forEach(filteredNodes, writeKt, { separator: '\n' });
 };
 
 export const ktObject = Object.assign(createObject, {

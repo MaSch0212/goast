@@ -25,7 +25,7 @@ export type TsMethod<TBuilder extends SourceBuilder = TsDefaultBuilder> = TsNode
 
 export function tsMethod<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   name: string,
-  options?: AstNodeOptions<TsMethod<TBuilder>, 'name'>
+  options?: AstNodeOptions<TsMethod<TBuilder>, 'name'>,
 ): TsMethod<TBuilder> {
   return {
     ...tsNode(tsMethodNodeKind, options),
@@ -45,14 +45,14 @@ export function tsMethod<TBuilder extends SourceBuilder = TsDefaultBuilder>(
 }
 
 export function isTsMethod<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  node: unknown
+  node: unknown,
 ): node is TsMethod<TBuilder> {
   return isTsNode(node, tsMethodNodeKind);
 }
 
 export function writeTsMethod<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsMethod<TBuilder>
+  node: TsMethod<TBuilder>,
 ): TBuilder {
   return writeTsNode(builder, node, (b) =>
     writeTsDecorators(b, node.decorators, true)
@@ -64,14 +64,14 @@ export function writeTsMethod<TBuilder extends SourceBuilder = TsDefaultBuilder>
       .appendIf(node.optional, '?')
       .append(
         (b) => writeTsGenericParameters(b, node.generics),
-        (b) => writeTsParameters(b, node.parameters)
+        (b) => writeTsParameters(b, node.parameters),
       )
       .appendIf(!!node.returnType, ': ', node.returnType)
       .if(
         !!node.body,
         (b) => b.append(' ').parenthesize('{}', node.body, { multiline: true }),
-        (b) => b.append(';')
+        (b) => b.append(';'),
       )
-      .appendLine()
+      .appendLine(),
   );
 }

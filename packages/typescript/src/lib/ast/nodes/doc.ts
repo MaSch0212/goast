@@ -14,7 +14,7 @@ export type TsDoc<TBuilder extends SourceBuilder = TsDefaultBuilder> = TsNode<ty
 };
 
 export function tsDoc<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  options?: AstNodeOptions<TsDoc<TBuilder>>
+  options?: AstNodeOptions<TsDoc<TBuilder>>,
 ): TsDoc<TBuilder> {
   return {
     ...tsNode(tsDocNodeKind, options),
@@ -29,7 +29,7 @@ export function isTsDoc<TBuilder extends SourceBuilder = TsDefaultBuilder>(value
 
 export function writeTsDoc<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsDoc<TBuilder>
+  node: TsDoc<TBuilder>,
 ): TBuilder {
   return writeTsNode(
     builder,
@@ -46,23 +46,23 @@ export function writeTsDoc<TBuilder extends SourceBuilder = TsDefaultBuilder>(
                   b
                     .appendIf(!!node.description, node.description)
                     .appendLineIf(!!node.description && node.tags.length > 0, '\n')
-                    .forEach(node.tags, (b, t) => writeTsDocTag(b, t), { separator: '\n' })
+                    .forEach(node.tags, (b, t) => writeTsDocTag(b, t), { separator: '\n' }),
                 ),
-              { multiline: true, indent: false }
+              { multiline: true, indent: false },
             )
-            .appendLine()
+            .appendLine(),
   );
 }
 
 export function getFullTsDoc<
   TNode extends TsNode<string> & { doc: TsDoc<TBuilder> | null; parameters?: unknown[]; generics?: unknown[] },
-  TBuilder extends SourceBuilder = TsDefaultBuilder
+  TBuilder extends SourceBuilder = TsDefaultBuilder,
 >(node: TNode): TsDoc<TBuilder> | null {
   const paramsWithDesc =
     node.parameters
       ?.filter(
         (x): x is TsParameter<TBuilder> | TsConstructorParameter<TBuilder> =>
-          isTsParameter(x) || isTsConstructorParameter(x)
+          isTsParameter(x) || isTsConstructorParameter(x),
       )
       .filter((x) => x.description) ?? [];
   const genericsWithDesc =

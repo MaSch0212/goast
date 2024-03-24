@@ -80,7 +80,7 @@ export class OpenApiParser {
               } else {
                 return v;
               }
-            })
+            }),
           );
         } else {
           (result as any)[key] = await this.dereference(file, `${path}/${String(key)}`, v as Record<string, unknown>);
@@ -96,7 +96,7 @@ export class OpenApiParser {
 
   private async resolveReference<T extends OpenApiObject<string>>(
     file: string,
-    ref: OpenApiReference
+    ref: OpenApiReference,
   ): Promise<Deref<T> | undefined> {
     const [refFile, refPath] = ref.$ref.split('#');
 

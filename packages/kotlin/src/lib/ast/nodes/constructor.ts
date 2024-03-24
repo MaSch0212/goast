@@ -1,11 +1,11 @@
 import {
   AppendValue,
   AstNodeOptions,
+  notNullish,
   Nullable,
   Prettify,
   SingleOrMultiple,
   SourceBuilder,
-  StringSuggestions,
   suggestionsAsString,
   toArray,
 } from '@goast/core';
@@ -13,37 +13,45 @@ import {
 import { ktAnnotation, KtAnnotation } from './annotation';
 import { ktArgument, KtArgument } from './argument';
 import { ktParameter, KtParameter } from './parameter';
-import { KotlinFileBuilder } from '../../file-builder';
 import { KtAccessModifier } from '../common';
 import { KtNode } from '../node';
 import { writeKt } from '../utils';
 
-type KtConstructorOptions<TBuilder extends SourceBuilder> = AstNodeOptions<
-  KtConstructor<TBuilder>,
-  typeof KtNode<TBuilder>,
-  never,
-  'writeAsPrimary'
+type Injects = never;
+
+type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = AstNodeOptions<
+  typeof KtNode<TBuilder, TInjects | Injects>,
+  {
+    accessModifier?: Nullable<KtAccessModifier>;
+    annotations?: Nullable<Nullable<KtAnnotation<TBuilder>>[]>;
+    parameters?: Nullable<Nullable<KtParameter<TBuilder>>[]>;
+    body?: Nullable<AppendValue<TBuilder>>;
+    delegateTarget?: Nullable<DelegateTarget>;
+    delegateArguments?: Nullable<Nullable<KtArgument<TBuilder> | AppendValue<TBuilder>>[]>;
+  }
 >;
 
-export class KtConstructor<
-  TBuilder extends SourceBuilder = KotlinFileBuilder,
-  TInjects extends string = never
-> extends KtNode<TBuilder, TInjects> {
-  public accessModifier: KtAccessModifier;
+type DelegateTarget = 'this' | 'super';
+
+export class KtConstructor<TBuilder extends SourceBuilder, TInjects extends string = never> extends KtNode<
+  TBuilder,
+  TInjects | Injects
+> {
+  public accessModifier: KtAccessModifier | null;
   public annotations: KtAnnotation<TBuilder>[];
   public parameters: KtParameter<TBuilder>[];
-  public body: AppendValue<TBuilder>;
-  public delegateTarget: StringSuggestions<'this' | 'super'> | null;
+  public body: AppendValue<TBuilder> | null;
+  public delegateTarget: DelegateTarget | null;
   public delegateArguments: (KtArgument<TBuilder> | AppendValue<TBuilder>)[];
 
-  constructor(options: KtConstructorOptions<TBuilder>) {
+  constructor(options: Options<TBuilder, TInjects>) {
     super(options);
-    this.parameters = options.parameters ?? [];
-    this.body = options.body;
+    this.parameters = options.parameters?.filter(notNullish) ?? [];
+    this.body = options.body ?? null;
     this.accessModifier = options.accessModifier ?? null;
-    this.annotations = options.annotations ?? [];
+    this.annotations = options.annotations?.filter(notNullish) ?? [];
     this.delegateTarget = options.delegateTarget ?? null;
-    this.delegateArguments = options.delegateArguments ?? [];
+    this.delegateArguments = options.delegateArguments?.filter(notNullish) ?? [];
   }
 
   protected override onWrite(builder: TBuilder): void {
@@ -56,14 +64,16 @@ export class KtConstructor<
         ': ',
         suggestionsAsString(this.delegateTarget),
         (b) => ktArgument.write(b, this.delegateArguments),
-        ' '
+        ' ',
       )
       .parenthesize('{}', this.body, { multiline: !!this.body })
       .appendLine();
   }
 
   public writeAsPrimary(builder: TBuilder): void {
-    this.writeWithInjects(builder, () => this.onWriteAsPrimary(builder));
+    builder.append(this.inject.before);
+    this.onWriteAsPrimary(builder);
+    builder.append(this.inject.after);
   }
 
   protected onWriteAsPrimary(builder: TBuilder): void {
@@ -77,17 +87,18 @@ export class KtConstructor<
   }
 }
 
-const createConstructor = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
-  parameters?: Nullable<KtConstructor<TBuilder>['parameters']>,
-  body?: Nullable<KtConstructor<TBuilder>['body']>,
-  options?: Prettify<Omit<KtConstructorOptions<TBuilder>, 'parameters' | 'body'>>
+const createConstructor = <TBuilder extends SourceBuilder>(
+  parameters?: Options<TBuilder>['parameters'],
+  body?: Options<TBuilder>['body'],
+  options?: Prettify<Omit<Options<TBuilder>, 'parameters' | 'body'>>,
 ) => new KtConstructor<TBuilder>({ ...options, parameters: parameters ?? undefined, body });
 
-const writeConstructors = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+const writeConstructors = <TBuilder extends SourceBuilder>(
   builder: TBuilder,
-  constructors: SingleOrMultiple<KtConstructor<TBuilder> | AppendValue<TBuilder>>
+  nodes: SingleOrMultiple<Nullable<KtConstructor<TBuilder> | AppendValue<TBuilder>>>,
 ) => {
-  builder.forEach(toArray(constructors), writeKt, { separator: '\n' });
+  const filteredNodes = toArray(nodes).filter(notNullish);
+  builder.forEach(filteredNodes, writeKt, { separator: '\n' });
 };
 
 export const ktConstructor = Object.assign(createConstructor, {

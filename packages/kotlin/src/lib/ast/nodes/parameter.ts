@@ -1,46 +1,68 @@
-import { SourceBuilder, AppendValue, AstNodeOptions, Prettify, SingleOrMultiple, toArray } from '@goast/core';
+import {
+  SourceBuilder,
+  AppendValue,
+  AstNodeOptions,
+  Prettify,
+  SingleOrMultiple,
+  toArray,
+  notNullish,
+  Nullable,
+} from '@goast/core';
 
 import { ktAnnotation } from './annotation';
-import { KotlinFileBuilder } from '../../file-builder';
+import { KtReference } from './reference';
 import { KtAccessModifier } from '../common';
 import { KtNode } from '../node';
 import { writeKt } from '../utils';
+type Injects = never;
 
-type KtParameterOptions<TBuilder extends SourceBuilder> = AstNodeOptions<
-  KtParameter<TBuilder>,
-  typeof KtNode<TBuilder>,
-  'name' | 'type'
+type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = AstNodeOptions<
+  typeof KtNode<TBuilder, TInjects | Injects>,
+  {
+    name: string;
+    type: AppendValue<TBuilder> | KtReference<TBuilder>;
+    annotations?: Nullable<Nullable<AppendValue<TBuilder>>[]>;
+    default?: Nullable<AppendValue<TBuilder>>;
+    vararg?: Nullable<boolean>;
+    description?: Nullable<AppendValue<TBuilder>>;
+
+    // class parameter options
+    accessModifier?: Nullable<KtAccessModifier>;
+    property?: Nullable<'readonly' | 'mutable'>;
+    propertyDescription?: Nullable<AppendValue<TBuilder>>;
+    override?: Nullable<boolean>;
+  }
 >;
 
-export class KtParameter<
-  TBuilder extends SourceBuilder = KotlinFileBuilder,
-  TInjects extends string = never
-> extends KtNode<TBuilder, TInjects> {
+export class KtParameter<TBuilder extends SourceBuilder, TInjects extends string = never> extends KtNode<
+  TBuilder,
+  TInjects | Injects
+> {
   public name: string;
-  public type: AppendValue<TBuilder>;
+  public type: AppendValue<TBuilder> | KtReference<TBuilder>;
   public annotations: AppendValue<TBuilder>[];
-  public default: AppendValue<TBuilder>;
+  public default: AppendValue<TBuilder> | null;
   public vararg: boolean;
-  public description: AppendValue<TBuilder>;
+  public description: AppendValue<TBuilder> | null;
 
   // class parameter options
-  public accessModifier: KtAccessModifier;
+  public accessModifier: KtAccessModifier | null;
   public property: 'readonly' | 'mutable' | null;
-  public propertyDescription: AppendValue<TBuilder>;
+  public propertyDescription: AppendValue<TBuilder> | null;
   public override: boolean;
 
-  constructor(options: KtParameterOptions<TBuilder>) {
+  constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.name = options.name;
     this.type = options.type;
-    this.annotations = options.annotations ?? [];
-    this.default = options.default;
+    this.annotations = options.annotations?.filter(notNullish) ?? [];
+    this.default = options.default ?? null;
     this.vararg = options.vararg ?? false;
     this.description = options.description ?? null;
 
     this.accessModifier = options.accessModifier ?? null;
     this.property = options.property ?? null;
-    this.propertyDescription = options.propertyDescription;
+    this.propertyDescription = options.propertyDescription ?? null;
     this.override = options.override ?? false;
   }
 
@@ -51,45 +73,42 @@ export class KtParameter<
       .appendIf(!!this.override, 'override ')
       .appendIf(this.vararg, 'vararg ')
       .appendIf(!!this.property, this.property === 'mutable' ? 'var' : 'val', ' ')
-      .append(this.name, ': ', this.type)
+      .append(this.name, ': ', (b) => writeKt(b, this.type))
       .appendIf(!!this.default, ' = ', this.default);
   }
 }
 
-const createParameter = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+const createParameter = <TBuilder extends SourceBuilder>(
   name: KtParameter<TBuilder>['name'],
   type: KtParameter<TBuilder>['type'],
   options?: Prettify<
-    Omit<
-      KtParameterOptions<TBuilder>,
-      'name' | 'type' | 'accessModifier' | 'property' | 'propertyDescription' | 'override'
-    >
-  >
+    Omit<Options<TBuilder>, 'name' | 'type' | 'accessModifier' | 'property' | 'propertyDescription' | 'override'>
+  >,
 ) => new KtParameter<TBuilder>({ ...options, name, type });
 
-const createClassParameter = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+const createClassParameter = <TBuilder extends SourceBuilder>(
   name: KtParameter<TBuilder>['name'],
   type: KtParameter<TBuilder>['type'],
-  options?: Prettify<Omit<KtParameterOptions<TBuilder>, 'name' | 'type'>>
+  options?: Prettify<Omit<Options<TBuilder>, 'name' | 'type'>>,
 ) => new KtParameter<TBuilder>({ ...options, name, type });
 
-const writeKtParameters = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+const writeKtParameters = <TBuilder extends SourceBuilder>(
   builder: TBuilder,
-  parameters: SingleOrMultiple<KtParameter<TBuilder> | AppendValue<TBuilder>>
+  nodes: SingleOrMultiple<Nullable<KtParameter<TBuilder> | AppendValue<TBuilder>>>,
 ) => {
-  parameters = toArray(parameters);
+  const filteredNodes = toArray(nodes).filter(notNullish);
   const multiline =
-    parameters.length > 2 || parameters.some((p) => p instanceof KtParameter && p.annotations.length > 0);
-  const spacing = multiline && parameters.some((p) => p instanceof KtParameter && p.annotations.length > 0);
+    filteredNodes.length > 2 || filteredNodes.some((p) => p instanceof KtParameter && p.annotations.length > 0);
+  const spacing = multiline && filteredNodes.some((p) => p instanceof KtParameter && p.annotations.length > 0);
   builder.parenthesize(
     '()',
     (b) =>
       b.forEach(
-        parameters,
+        filteredNodes,
         (b, p, i) => b.if(i > 0 && spacing, (b) => b.ensurePreviousLineEmpty()).append((b) => writeKt(b, p)),
-        { separator: multiline ? ',\n' : ', ' }
+        { separator: multiline ? ',\n' : ', ' },
       ),
-    { multiline }
+    { multiline },
   );
 };
 

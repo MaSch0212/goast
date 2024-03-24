@@ -73,10 +73,10 @@ it('should write all the parts of the method', () => {
       abstract: true,
       override: true,
       optional: true,
-    })
+    }),
   );
   expect(builder.toString(false)).toBe(
-    `public static abstract override x?<T, U>(y, z): number {${EOL}  return 42;${EOL}}${EOL}`
+    `public static abstract override x?<T, U>(y, z): number {${EOL}  return 42;${EOL}}${EOL}`,
   );
 });
 

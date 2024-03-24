@@ -18,7 +18,7 @@ export type TsGenericParameter<TBuilder extends SourceBuilder = TsDefaultBuilder
 
 export function tsGenericParameter<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   name: string,
-  options?: AstNodeOptions<TsGenericParameter<TBuilder>, 'name'>
+  options?: AstNodeOptions<TsGenericParameter<TBuilder>, 'name'>,
 ): TsGenericParameter<TBuilder> {
   return {
     ...tsNode(tsGenericParameterNodeKind, options),
@@ -31,32 +31,32 @@ export function tsGenericParameter<TBuilder extends SourceBuilder = TsDefaultBui
 }
 
 export function isTsGenericParameter<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  node: unknown
+  node: unknown,
 ): node is TsGenericParameter<TBuilder> {
   return isTsNode(node, tsGenericParameterNodeKind);
 }
 
 export function writeTsGenericParameters<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  parameters: (TsGenericParameter<TBuilder> | AppendValue<TBuilder>)[]
+  parameters: (TsGenericParameter<TBuilder> | AppendValue<TBuilder>)[],
 ): TBuilder {
   if (parameters.length === 0) return builder;
   return builder.parenthesize('<>', (b) =>
     b.forEach(parameters, (b, p) => writeTs(b, p), {
       separator: ', ',
-    })
+    }),
   );
 }
 
 export function writeTsGenericParameter<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsGenericParameter<TBuilder>
+  node: TsGenericParameter<TBuilder>,
 ): TBuilder {
   return writeTsNode(builder, node, (b) =>
     b
       .appendIf(node.const, 'const ')
       .append(node.name)
       .appendIf(node.constraint !== null, ' extends ', node.constraint)
-      .appendIf(node.default !== null, ' = ', node.default)
+      .appendIf(node.default !== null, ' = ', node.default),
   );
 }

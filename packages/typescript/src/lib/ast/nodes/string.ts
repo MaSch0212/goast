@@ -11,7 +11,7 @@ export type TsString<TBuilder extends SourceBuilder = TsDefaultBuilder> = TsNode
 
 export function tsString<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   value: string,
-  options?: AstNodeOptions<TsString<TBuilder>, 'value'>
+  options?: AstNodeOptions<TsString<TBuilder>, 'value'>,
 ): TsString<TBuilder> {
   return {
     ...tsNode(tsStringNodeKind, options),
@@ -21,14 +21,14 @@ export function tsString<TBuilder extends SourceBuilder = TsDefaultBuilder>(
 }
 
 export function isTsString<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  value: unknown
+  value: unknown,
 ): value is TsString<TBuilder> {
   return isTsNode(value, tsStringNodeKind);
 }
 
 export function writeTsString<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsString<TBuilder>
+  node: TsString<TBuilder>,
 ): TBuilder {
   const builderOptions = getTypeScriptBuilderOptions(builder);
   let value = JSON.stringify(node.value);

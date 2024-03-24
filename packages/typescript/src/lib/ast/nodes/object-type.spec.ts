@@ -26,10 +26,10 @@ it('should write all the parts of the object type', () => {
     tsObjectType({
       properties: [tsProperty('x'), tsProperty('y')],
       methods: [tsMethod('x'), tsMethod('y')],
-    })
+    }),
   );
   expect(builder.toString(false)).toBe(
-    '{' + EOL + '  x;' + EOL + '  y;' + EOL + EOL + '  x();' + EOL + '  y();' + EOL + '}'
+    '{' + EOL + '  x;' + EOL + '  y;' + EOL + EOL + '  x();' + EOL + '  y();' + EOL + '}',
   );
 });
 

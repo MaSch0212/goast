@@ -20,46 +20,61 @@ import { KtInterface } from './interface';
 import { KtObject } from './object';
 import { KtProperty } from './property';
 import { KtReference } from './reference';
-import { KotlinFileBuilder } from '../../file-builder';
 import { KtAccessModifier } from '../common';
 import { KtNode } from '../node';
 import { writeKt, writeKtMembers } from '../utils';
 
-type KtEnumOptions<TBuilder extends SourceBuilder> = AstNodeOptions<KtEnum<TBuilder>, typeof KtNode<TBuilder>, 'name'>;
+type Injects = never;
 
-export class KtEnum<TBuilder extends SourceBuilder = KotlinFileBuilder, TInjects extends string = never> extends KtNode<
+type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = AstNodeOptions<
+  typeof KtNode<TBuilder, TInjects | Injects>,
+  {
+    name: string;
+    doc?: Nullable<KtDoc<TBuilder>>;
+    annotations?: Nullable<Nullable<KtAnnotation<TBuilder>>[]>;
+    accessModifier?: Nullable<KtAccessModifier>;
+    primaryConstructor?: Nullable<KtConstructor<TBuilder>>;
+    implements?: Nullable<Nullable<KtReference<TBuilder> | AppendValue<TBuilder>>[]>;
+    values?: Nullable<KtEnumValue<TBuilder>[]>;
+    members?: Nullable<Nullable<Member<TBuilder>>[]>;
+    companionObject?: Nullable<KtObject<TBuilder>>;
+  }
+>;
+
+type Member<TBuilder extends SourceBuilder> =
+  | KtConstructor<TBuilder>
+  | KtEnum<TBuilder>
+  | KtInitBlock<TBuilder>
+  | KtInterface<TBuilder>
+  | KtProperty<TBuilder>
+  | KtFunction<TBuilder>
+  | KtClass<TBuilder>
+  | AppendValue<TBuilder>;
+
+export class KtEnum<TBuilder extends SourceBuilder, TInjects extends string = never> extends KtNode<
   TBuilder,
-  TInjects
+  TInjects | Injects
 > {
   public name: string;
   public doc: KtDoc<TBuilder> | null;
   public annotations: KtAnnotation<TBuilder>[];
-  public accessModifier: KtAccessModifier;
+  public accessModifier: KtAccessModifier | null;
   public primaryConstructor: KtConstructor<TBuilder> | null;
   public implements: (KtReference<TBuilder> | AppendValue<TBuilder>)[];
   public values: KtEnumValue<TBuilder>[];
-  public members: (
-    | KtConstructor<TBuilder>
-    | KtEnum<TBuilder>
-    | KtInitBlock<TBuilder>
-    | KtInterface<TBuilder>
-    | KtProperty<TBuilder>
-    | KtFunction<TBuilder>
-    | KtClass<TBuilder>
-    | AppendValue<TBuilder>
-  )[];
+  public members: Member<TBuilder>[];
   public companionObject: KtObject<TBuilder> | null;
 
-  constructor(options: KtEnumOptions<TBuilder>) {
+  constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.name = options.name;
     this.doc = options.doc ?? null;
-    this.annotations = options.annotations ?? [];
+    this.annotations = options.annotations?.filter(notNullish) ?? [];
     this.accessModifier = options.accessModifier ?? null;
     this.primaryConstructor = options.primaryConstructor ?? null;
-    this.implements = options.implements ?? [];
+    this.implements = options.implements?.filter(notNullish) ?? [];
     this.values = options.values ?? [];
-    this.members = options.members ?? [];
+    this.members = options.members?.filter(notNullish) ?? [];
     this.companionObject = options.companionObject ?? null;
   }
 
@@ -84,7 +99,7 @@ export class KtEnum<TBuilder extends SourceBuilder = KotlinFileBuilder, TInjects
               b
                 .append((b) => ktEnumValue.write(b, this.values))
                 .appendIf(this.members.some(notNullish) || !!this.companionObject, ';', (b) =>
-                  b.ensurePreviousLineEmpty()
+                  b.ensurePreviousLineEmpty(),
                 )
                 .append((b) =>
                   writeKtMembers(b, [
@@ -94,31 +109,32 @@ export class KtEnum<TBuilder extends SourceBuilder = KotlinFileBuilder, TInjects
                       ? (b) =>
                           b
                             .if(!!this.primaryConstructor?.body || this.members.some(notNullish), (b) =>
-                              b.ensurePreviousLineEmpty()
+                              b.ensurePreviousLineEmpty(),
                             )
                             .append('companion ')
                             .append((b) => this.companionObject?.write(b))
                       : null,
-                  ])
+                  ]),
                 ),
-            { multiline: true }
-          )
+            { multiline: true },
+          ),
       )
       .appendLine();
   }
 }
 
-const createEnum = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
-  name: KtEnum<TBuilder>['name'],
-  values?: Nullable<KtEnum<TBuilder>['values']>,
-  options?: Prettify<Omit<KtEnumOptions<TBuilder>, 'name' | 'values'>>
+const createEnum = <TBuilder extends SourceBuilder>(
+  name: Options<TBuilder>['name'],
+  values?: Options<TBuilder>['values'],
+  options?: Prettify<Omit<Options<TBuilder>, 'name' | 'values'>>,
 ) => new KtEnum<TBuilder>({ ...options, name, values: values ?? undefined });
 
-const writeEnums = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+const writeEnums = <TBuilder extends SourceBuilder>(
   builder: TBuilder,
-  nodes: SingleOrMultiple<KtEnum<TBuilder> | AppendValue<TBuilder>>
+  nodes: SingleOrMultiple<Nullable<KtEnum<TBuilder> | AppendValue<TBuilder>>>,
 ) => {
-  builder.forEach(toArray(nodes), writeKt, { separator: '\n' });
+  const filteredNodes = toArray(nodes).filter(notNullish);
+  builder.forEach(filteredNodes, writeKt, { separator: '\n' });
 };
 
 export const ktEnum = Object.assign(createEnum, {

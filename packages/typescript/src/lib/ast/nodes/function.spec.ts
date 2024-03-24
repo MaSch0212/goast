@@ -49,10 +49,10 @@ it('should write all the parts of the function', () => {
       returnType: 'number',
       body: 'return 42;',
       export: true,
-    })
+    }),
   );
   expect(builder.toString(false)).toBe(
-    'export function X<T, U>(y, z): number {' + EOL + '  return 42;' + EOL + '}' + EOL
+    'export function X<T, U>(y, z): number {' + EOL + '  return 42;' + EOL + '}' + EOL,
   );
 });
 

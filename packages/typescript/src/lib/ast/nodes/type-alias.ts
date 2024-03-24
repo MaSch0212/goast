@@ -19,7 +19,7 @@ export type TsTypeAlias<TBuilder extends SourceBuilder = TsDefaultBuilder> = TsN
 
 export function tsTypeAlias<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   name: string,
-  options: AstNodeOptions<TsTypeAlias<TBuilder>, 'name', 'type'>
+  options: AstNodeOptions<TsTypeAlias<TBuilder>, 'name', 'type'>,
 ): TsTypeAlias<TBuilder> {
   return {
     ...tsNode(tsTypeAliasNodeKind, options),
@@ -32,19 +32,19 @@ export function tsTypeAlias<TBuilder extends SourceBuilder = TsDefaultBuilder>(
 }
 
 export function isTsTypeAlias<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  node: unknown
+  node: unknown,
 ): node is TsTypeAlias<TBuilder> {
   return isTsNode(node, tsTypeAliasNodeKind);
 }
 
 export function writeTsTypeAlias<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsTypeAlias<TBuilder>
+  node: TsTypeAlias<TBuilder>,
 ): TBuilder {
   return writeTsNode(builder, node, (b) =>
     b
       .appendIf(node.export, 'export ')
       .append('type ', node.name, (b) => writeTsGenericParameters(b, node.generics), ' = ', node.type, ';')
-      .appendLine()
+      .appendLine(),
   );
 }

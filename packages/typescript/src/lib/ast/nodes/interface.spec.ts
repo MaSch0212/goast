@@ -50,7 +50,7 @@ it('should write all the parts of the interface', () => {
       properties: [tsProperty('x'), tsProperty('y')],
       methods: [tsMethod('x'), tsMethod('y')],
       export: true,
-    })
+    }),
   );
   expect(builder.toString(false)).toBe(
     'export interface X<T, U> extends Y, Z {' +
@@ -66,7 +66,7 @@ it('should write all the parts of the interface', () => {
       '  y();' +
       EOL +
       '}' +
-      EOL
+      EOL,
   );
 });
 

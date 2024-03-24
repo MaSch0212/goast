@@ -4,7 +4,7 @@ export abstract class KtNode<TBuilder extends SourceBuilder, TInjects extends st
   TBuilder,
   TInjects
 > {
-  constructor(options: AstNodeOptions<typeof AstNode<TBuilder, TInjects>>) {
+  constructor(options: AstNodeOptions<KtNode<TBuilder>, typeof AstNode<TBuilder>>) {
     super(options);
   }
 }

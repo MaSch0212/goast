@@ -110,7 +110,7 @@ export class DefaultTypeScriptAngularServiceGenerator
           doc: tsDoc({ description: parameter.description }),
           type: schema ? (b) => b.appendModelUsage(ctx.input.models[schema.id]) : this.getAnyType(ctx),
           optional: !parameter.required,
-        })
+        }),
       );
     }
 
@@ -122,7 +122,7 @@ export class DefaultTypeScriptAngularServiceGenerator
           doc: tsDoc({ description: body.description }),
           type: schema ? (b) => b.appendModelUsage(ctx.input.models[schema.id]) : this.getAnyType(ctx),
           optional: !body.required,
-        })
+        }),
       );
     }
 
@@ -149,7 +149,7 @@ export class DefaultTypeScriptAngularServiceGenerator
     builder
       .append((builder) => this.generateConstructor(ctx, builder))
       .forEach(ctx.service.endpoints, (builder, endpoint) =>
-        builder.ensurePreviousLineEmpty().append((builder) => this.generateEndpoint(ctx, builder, endpoint))
+        builder.ensurePreviousLineEmpty().append((builder) => this.generateEndpoint(ctx, builder, endpoint)),
       );
   }
 
@@ -185,7 +185,7 @@ export class DefaultTypeScriptAngularServiceGenerator
       .appendParameters(
         'this.rootUrl',
         `${this.getServiceClassName(ctx)}.${this.getEndpointPathPropertyName(ctx, endpoint)}`,
-        this.toStringLiteral(ctx, endpoint.method)
+        this.toStringLiteral(ctx, endpoint.method),
       )
       .appendLine(';');
 
@@ -205,20 +205,20 @@ export class DefaultTypeScriptAngularServiceGenerator
                       parameter.style !== undefined
                         ? `style: ${this.toStringLiteral(ctx, parameter.style)}`
                         : undefined,
-                      parameter.explode !== undefined ? `explode: ${parameter.explode ? 'true' : 'false'}` : undefined
-                    )
+                      parameter.explode !== undefined ? `explode: ${parameter.explode ? 'true' : 'false'}` : undefined,
+                    ),
                 )
-                .appendLine(';')
+                .appendLine(';'),
           )
           .if(endpoint.requestBody !== undefined, (builder) =>
             builder
               .append('rb.body')
               .appendParameters(
                 'params.body',
-                this.toStringLiteral(ctx, endpoint.requestBody?.content[0]?.type ?? 'application/json')
+                this.toStringLiteral(ctx, endpoint.requestBody?.content[0]?.type ?? 'application/json'),
               )
-              .appendLine(';')
-          )
+              .appendLine(';'),
+          ),
       );
     }
 
@@ -235,9 +235,9 @@ export class DefaultTypeScriptAngularServiceGenerator
             builder.appendObjectLiteral(
               `responseType: ${this.toStringLiteral(ctx, responseType)}`,
               `accept: ${this.toStringLiteral(ctx, accept)}`,
-              'context: context'
-            )
-          )
+              'context: context',
+            ),
+          ),
       )
       .append('.pipe')
       .appendParameters(
@@ -247,7 +247,7 @@ export class DefaultTypeScriptAngularServiceGenerator
               parameters: ['r: any'],
               body: (builder) => builder.append('r instanceof ').appendExternalTypeUsage(this.httpResponseType),
               singleLine: true,
-            })
+            }),
           ),
         (builder) =>
           builder.appendExternalTypeUsage(this.rxjsMapType).appendParameters((builder) =>
@@ -259,7 +259,7 @@ export class DefaultTypeScriptAngularServiceGenerator
                       .append('r as ')
                       .appendExternalTypeUsage(this.getStrictHttpResponseType(ctx))
                       .appendGenericArguments((builder) =>
-                        this.generateEndpointSuccessResponseSchema(ctx, builder, endpoint)
+                        this.generateEndpointSuccessResponseSchema(ctx, builder, endpoint),
                       )
                 : (builder) =>
                     builder
@@ -267,7 +267,7 @@ export class DefaultTypeScriptAngularServiceGenerator
                         builder
                           .append('r as ')
                           .appendExternalTypeUsage(this.httpResponseType)
-                          .appendGenericArguments('any')
+                          .appendGenericArguments('any'),
                       )
                       .append('.clone')
                       .appendParameters((builder) => builder.appendObjectLiteral('body: undefined'))
@@ -275,8 +275,8 @@ export class DefaultTypeScriptAngularServiceGenerator
                       .appendExternalTypeUsage(this.getStrictHttpResponseType(ctx))
                       .appendGenericArguments('void'),
               singleLine: true,
-            })
-          )
+            }),
+          ),
       )
       .appendLine(';');
   }
@@ -298,7 +298,7 @@ export class DefaultTypeScriptAngularServiceGenerator
           .appendGenericArguments((builder) => this.generateEndpointSuccessResponseSchema(ctx, builder, endpoint))
           .append(') => r.body as ')
           .append((builder) => this.generateEndpointSuccessResponseSchema(ctx, builder, endpoint))
-          .append(')')
+          .append(')'),
       )
       .appendLine(';');
   }
@@ -344,7 +344,7 @@ export class DefaultTypeScriptAngularServiceGenerator
 
   protected getEndpointMethodParams(
     ctx: Context,
-    endpoint: ApiEndpoint
+    endpoint: ApiEndpoint,
   ): (TextOrBuilderFn<Builder> | TypeScriptParameterOptions)[] {
     const params: (TextOrBuilderFn<Builder> | TypeScriptParameterOptions)[] = [];
     if (this.hasEndpointParams(ctx, endpoint)) {
@@ -399,7 +399,7 @@ export class DefaultTypeScriptAngularServiceGenerator
           .appendGenericArguments((builder) =>
             builder
               .appendExternalTypeUsage(this.getStrictHttpResponseType(ctx))
-              .appendGenericArguments((builder) => this.generateEndpointSuccessResponseSchema(ctx, builder, endpoint))
+              .appendGenericArguments((builder) => this.generateEndpointSuccessResponseSchema(ctx, builder, endpoint)),
           ),
       body: (builder) => this.generateEndpointResponseMethodContent(ctx, builder, endpoint),
     };
@@ -416,7 +416,7 @@ export class DefaultTypeScriptAngularServiceGenerator
           ? 'This method provides access only to the response body.\n' +
             `To access the full response (for headers, for example), \`${this.getEndpointResponseMethodName(
               ctx,
-              endpoint
+              endpoint,
             )}()\` instead.`
           : undefined,
       ]
@@ -430,7 +430,7 @@ export class DefaultTypeScriptAngularServiceGenerator
               builder
                 .appendExternalTypeUsage(this.observableType)
                 .appendGenericArguments((builder) =>
-                  this.generateEndpointSuccessResponseSchema(ctx, builder, endpoint)
+                  this.generateEndpointSuccessResponseSchema(ctx, builder, endpoint),
                 ),
       body: (builder) => this.generateEndpointMethodContent(ctx, builder, endpoint),
     };
@@ -471,7 +471,7 @@ export class DefaultTypeScriptAngularServiceGenerator
     return resolve(
       ctx.config.outputDir,
       ctx.config.servicesDirPath,
-      `${toCasing(ctx.service.name, ctx.config.fileNameCasing)}.ts`
+      `${toCasing(ctx.service.name, ctx.config.fileNameCasing)}.ts`,
     );
   }
 
@@ -479,7 +479,7 @@ export class DefaultTypeScriptAngularServiceGenerator
     return resolve(
       ctx.config.outputDir,
       ctx.config.responseModelsDirPath ?? 'models/responses',
-      `${toCasing(ctx.service.name, ctx.config.responseModelsFileNameCasing)}.ts`
+      `${toCasing(ctx.service.name, ctx.config.responseModelsFileNameCasing)}.ts`,
     );
   }
 

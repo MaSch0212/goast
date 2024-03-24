@@ -28,7 +28,7 @@ export type TsInterface<TBuilder extends SourceBuilder = TsDefaultBuilder> = TsN
 
 export function tsInterface<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   name: string,
-  options?: AstNodeOptions<TsInterface<TBuilder>, 'name'>
+  options?: AstNodeOptions<TsInterface<TBuilder>, 'name'>,
 ): TsInterface<TBuilder> {
   return {
     ...tsNode(tsInterfaceNodeKind, options),
@@ -45,14 +45,14 @@ export function tsInterface<TBuilder extends SourceBuilder = TsDefaultBuilder>(
 }
 
 export function isTsInterface<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  value: unknown
+  value: unknown,
 ): value is TsInterface<TBuilder> {
   return isTsNode(value, tsInterfaceNodeKind);
 }
 
 export function writeTsInterface<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsInterface<TBuilder>
+  node: TsInterface<TBuilder>,
 ): TBuilder {
   return writeTsNode(builder, node, (b) =>
     writeTsDecorators(b, node.decorators, true)
@@ -60,7 +60,7 @@ export function writeTsInterface<TBuilder extends SourceBuilder = TsDefaultBuild
       .append('interface ')
       .append(node.name, (b) => writeTsGenericParameters(b, node.generics))
       .if(node.extends.length > 0, (b) =>
-        b.append(' extends ').forEach(node.extends, (b, e) => b.append(e), { separator: ', ' })
+        b.append(' extends ').forEach(node.extends, (b, e) => b.append(e), { separator: ', ' }),
       )
       .append(' ')
       .parenthesize(
@@ -70,8 +70,8 @@ export function writeTsInterface<TBuilder extends SourceBuilder = TsDefaultBuild
             .forEach(node.properties, (b, p) => writeTs(b, p))
             .appendLineIf(node.properties.length > 0 && node.methods.length > 0)
             .forEach(node.methods, (b, m) => writeTs(b, m), { separator: '\n' }),
-        { multiline: node.properties.length > 0 || node.methods.length > 0 }
+        { multiline: node.properties.length > 0 || node.methods.length > 0 },
       )
-      .appendLine()
+      .appendLine(),
   );
 }

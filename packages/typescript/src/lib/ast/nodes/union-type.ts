@@ -13,20 +13,20 @@ export type TsUnionType<TBuilder extends SourceBuilder = TsDefaultBuilder> = TsN
 
 export function tsUnionType<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   types: AppendValue<TBuilder>[],
-  options?: AstNodeOptions<TsUnionType<TBuilder>, 'types'>
+  options?: AstNodeOptions<TsUnionType<TBuilder>, 'types'>,
 ): TsUnionType<TBuilder> {
   return { ...tsNode(tsUnionNodeKind, options), types: types.filter(notNullish) };
 }
 
 export function isTsUnionType<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  value: unknown
+  value: unknown,
 ): value is TsUnionType<TBuilder> {
   return isTsNode(value, tsUnionNodeKind);
 }
 
 export function writeTsUnionType<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsUnionType<TBuilder>
+  node: TsUnionType<TBuilder>,
 ): TBuilder {
   const types: AppendValue<TBuilder>[] = node.types.length === 0 ? ['never'] : resolveNestedUnionTypes(node);
   const multiline = types.length > 2;
@@ -38,8 +38,8 @@ export function writeTsUnionType<TBuilder extends SourceBuilder = TsDefaultBuild
         b.appendIf(multiline, '| ').forEach(types, (b, t) => b.append(t), {
           separator: multiline ? '\n| ' : ' | ',
         }),
-      { indent: multiline, multiline }
-    )
+      { indent: multiline, multiline },
+    ),
   );
 }
 

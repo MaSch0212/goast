@@ -7,28 +7,36 @@ import {
   Nullable,
   SingleOrMultiple,
   toArray,
+  notNullish,
 } from '@goast/core';
 
 import { KtDocTag, ktDocTag } from './doc-tag';
 import { KtGenericParameter } from './generic-parameter';
 import { KtParameter } from './parameter';
-import { KotlinFileBuilder } from '../../file-builder';
 import { KtNode } from '../node';
 import { writeKt } from '../utils';
 
-type KtDocOptions<TBuilder extends SourceBuilder> = AstNodeOptions<KtDoc<TBuilder>, typeof KtNode<TBuilder>>;
+type Injects = never;
 
-export class KtDoc<TBuilder extends SourceBuilder = KotlinFileBuilder, TInjects extends string = never> extends KtNode<
+type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = AstNodeOptions<
+  typeof KtNode<TBuilder, TInjects | Injects>,
+  {
+    description?: Nullable<AppendValue<TBuilder>>;
+    tags?: Nullable<Nullable<KtDocTag<TBuilder>>[]>;
+  }
+>;
+
+export class KtDoc<TBuilder extends SourceBuilder, TInjects extends string = never> extends KtNode<
   TBuilder,
-  TInjects
+  TInjects | Injects
 > {
-  public description: AppendValue<TBuilder>;
+  public description: AppendValue<TBuilder> | null;
   public tags: KtDocTag<TBuilder>[];
 
-  constructor(options: KtDocOptions<TBuilder>) {
+  constructor(options: Options<TBuilder, TInjects>) {
     super(options);
-    this.description = options.description;
-    this.tags = options.tags ?? [];
+    this.description = options.description ?? null;
+    this.tags = options.tags?.filter(notNullish) ?? [];
   }
 
   protected override onWrite(builder: TBuilder): void {
@@ -42,37 +50,50 @@ export class KtDoc<TBuilder extends SourceBuilder = KotlinFileBuilder, TInjects 
             b
               .appendIf(!!this.description, this.description)
               .appendLineIf(!!this.description && this.tags.length > 0, '\n')
-              .append((b) => ktDocTag.write(b, this.tags))
+              .append((b) => ktDocTag.write(b, this.tags)),
           ),
-        { multiline: true, indent: false }
+        { multiline: true, indent: false },
       )
       .appendLine();
   }
 }
 
-const createDoc = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
-  description?: Nullable<KtDocTag<TBuilder>['description']>,
-  tags?: Nullable<KtDoc<TBuilder>['tags']>,
-  options?: Prettify<Omit<KtDocOptions<TBuilder>, 'description' | 'tags'>>
+const createDoc = <TBuilder extends SourceBuilder>(
+  description?: Options<TBuilder>['description'],
+  tags?: Options<TBuilder>['tags'],
+  options?: Prettify<Omit<Options<TBuilder>, 'description' | 'tags'>>,
 ) => new KtDoc<TBuilder>({ ...options, description, tags: tags ?? undefined });
 
-const writeDocs = <TBuilder extends SourceBuilder = KotlinFileBuilder>(
+const writeDocs = <TBuilder extends SourceBuilder>(
   builder: TBuilder,
-  nodes: SingleOrMultiple<KtDoc<TBuilder> | AppendValue<TBuilder>>
+  nodes: SingleOrMultiple<Nullable<KtDoc<TBuilder> | AppendValue<TBuilder>>>,
 ) => {
-  builder.forEach(toArray(nodes), writeKt, { separator: '\n' });
+  const filteredNodes = toArray(nodes).filter(notNullish);
+  builder.forEach(filteredNodes, writeKt, { separator: '\n' });
 };
 
-function getDoc<TBuilder extends SourceBuilder = KotlinFileBuilder>(
+function getDoc<TBuilder extends SourceBuilder>(
   baseDoc: KtDoc<TBuilder> | null,
   options: {
-    parameters?: KtParameter<TBuilder>[];
-    generics?: KtGenericParameter<TBuilder>[];
-  }
+    parameters?: Nullable<Nullable<KtParameter<TBuilder>>[]>;
+    generics?: Nullable<Nullable<KtGenericParameter<TBuilder>>[]>;
+  },
 ): KtDoc<TBuilder> | null {
-  const paramsWithDesc = options.parameters?.filter((x) => x.description) ?? [];
-  const classParamsWithPropertyDesc = options.parameters?.filter((x) => x.property && x.propertyDescription) ?? [];
-  const genericsWithDesc = options.generics?.filter((x) => x.description) ?? [];
+  const paramsWithDesc =
+    options.parameters
+      ?.filter(notNullish)
+      .filter((x): x is KtParameter<TBuilder> & { description: {} } => !!x.description) ?? [];
+  const classParamsWithPropertyDesc =
+    options.parameters
+      ?.filter(notNullish)
+      .filter(
+        (x): x is KtParameter<TBuilder> & { property: {}; propertyDescription: {} } =>
+          !!x.property && !!x.propertyDescription,
+      ) ?? [];
+  const genericsWithDesc =
+    options.generics
+      ?.filter(notNullish)
+      .filter((x): x is KtGenericParameter<TBuilder> & { description: {} } => !!x.description) ?? [];
   if (
     baseDoc === null &&
     paramsWithDesc.length === 0 &&
@@ -85,7 +106,7 @@ function getDoc<TBuilder extends SourceBuilder = KotlinFileBuilder>(
   const doc = baseDoc ? createOverwriteProxy(baseDoc) : ktDoc<TBuilder>();
   const paramTags = paramsWithDesc.map<KtDocTag<TBuilder>>((p) => ktDocTag('param', p.name, p.description));
   const propertyTags = classParamsWithPropertyDesc.map<KtDocTag<TBuilder>>((p) =>
-    ktDocTag('property', p.name, p.propertyDescription)
+    ktDocTag('property', p.name, p.propertyDescription),
   );
   const genericTags = genericsWithDesc.map<KtDocTag<TBuilder>>((p) => ktDocTag('param', p.name, p.description));
   doc.tags.splice(0, 0, ...genericTags, ...paramTags, ...propertyTags);

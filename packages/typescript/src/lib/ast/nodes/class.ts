@@ -29,7 +29,7 @@ export type TsClass<TBuilder extends SourceBuilder = TsDefaultBuilder> = TsNode<
 
 export function tsClass<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   name: string,
-  options?: AstNodeOptions<TsClass<TBuilder>, 'name'>
+  options?: AstNodeOptions<TsClass<TBuilder>, 'name'>,
 ): TsClass<TBuilder> {
   return {
     ...tsNode(tsClassNodeKind, options),
@@ -49,14 +49,14 @@ export function tsClass<TBuilder extends SourceBuilder = TsDefaultBuilder>(
 }
 
 export function isTsClass<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  value: unknown
+  value: unknown,
 ): value is TsClass<TBuilder> {
   return isTsNode(value, tsClassNodeKind);
 }
 
 export function writeTsClass<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsClass<TBuilder>
+  node: TsClass<TBuilder>,
 ): TBuilder {
   return writeTsNode(builder, node, (b) =>
     b
@@ -67,7 +67,7 @@ export function writeTsClass<TBuilder extends SourceBuilder = TsDefaultBuilder>(
       .append('class ', node.name, (b) => writeTsGenericParameters(b, node.generics))
       .appendIf(!!node.extends, ' extends ', node.extends)
       .if(node.implements.length > 0, (b) =>
-        b.append(' implements ').forEach(node.implements, (b, i) => b.append(i), { separator: ', ' })
+        b.append(' implements ').forEach(node.implements, (b, i) => b.append(i), { separator: ', ' }),
       )
       .append(' ')
       .parenthesize(
@@ -79,8 +79,8 @@ export function writeTsClass<TBuilder extends SourceBuilder = TsDefaultBuilder>(
             .append((b) => writeTs(b, node.ctor))
             .appendLineIf((!!node.ctor || node.properties.length > 0) && node.methods.length > 0)
             .forEach(node.methods, (b, m) => writeTs(b, m), { separator: '\n' }),
-        { multiline: node.properties.length > 0 || !!node.ctor || node.methods.length > 0 }
+        { multiline: node.properties.length > 0 || !!node.ctor || node.methods.length > 0 },
       )
-      .appendLine()
+      .appendLine(),
   );
 }

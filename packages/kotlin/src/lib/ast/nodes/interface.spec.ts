@@ -26,7 +26,7 @@ describe('ktInterface', () => {
     builder.append(
       ktInterface('Foo', {
         members: ['// Comment 1', '// Comment 2'],
-      })
+      }),
     );
     expect(builder.toString(false)).toBe(`interface Foo {${EOL}    // Comment 1${EOL}    // Comment 2${EOL}}${EOL}`);
   });
@@ -71,10 +71,10 @@ describe('ktInterface', () => {
         generics: [ktGenericParameter('T')],
         members: ['// Comment 1', '// Comment 2'],
         companionObject: ktObject(),
-      })
+      }),
     );
     expect(builder.toString(false)).toBe(
-      `/**${EOL} * This is a foo${EOL} */${EOL}@Deprecated${EOL}private interface Foo<T> : Bar, Baz {${EOL}    // Comment 1${EOL}    // Comment 2${EOL}${EOL}    companion object${EOL}}${EOL}`
+      `/**${EOL} * This is a foo${EOL} */${EOL}@Deprecated${EOL}private interface Foo<T> : Bar, Baz {${EOL}    // Comment 1${EOL}    // Comment 2${EOL}${EOL}    companion object${EOL}}${EOL}`,
     );
   });
 

@@ -11,7 +11,7 @@ describe('ktInitBlock', () => {
   });
 
   it('should write an empty init block', () => {
-    builder.append(ktInitBlock(null));
+    builder.append(ktInitBlock(''));
     expect(builder.toString(false)).toBe(`init {}${EOL}`);
   });
 

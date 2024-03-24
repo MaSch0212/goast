@@ -13,20 +13,20 @@ export type TsIntersectionType<TBuilder extends SourceBuilder = TsDefaultBuilder
 
 export function tsIntersectionType<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   types: AppendValue<TBuilder>[],
-  options?: AstNodeOptions<TsIntersectionType<TBuilder>, 'types'>
+  options?: AstNodeOptions<TsIntersectionType<TBuilder>, 'types'>,
 ): TsIntersectionType<TBuilder> {
   return { ...tsNode(tsIntersectionNodeKind, options), types: types.filter(notNullish) };
 }
 
 export function isTsIntersectionType<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  value: unknown
+  value: unknown,
 ): value is TsIntersectionType<TBuilder> {
   return isTsNode(value, tsIntersectionNodeKind);
 }
 
 export function writeTsIntersectionType<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsIntersectionType<TBuilder>
+  node: TsIntersectionType<TBuilder>,
 ): TBuilder {
   const types: AppendValue<TBuilder>[] = node.types.length === 0 ? ['unknown'] : resolveNestedIntersectionTypes(node);
   const multiline = types.length > 2;
@@ -38,13 +38,13 @@ export function writeTsIntersectionType<TBuilder extends SourceBuilder = TsDefau
         b.appendIf(multiline, '& ').forEach(types, (b, t) => b.append(t), {
           separator: multiline ? '\n& ' : ' & ',
         }),
-      { indent: multiline, multiline }
-    )
+      { indent: multiline, multiline },
+    ),
   );
 }
 
 function resolveNestedIntersectionTypes<TBuilder extends SourceBuilder>(
-  node: TsIntersectionType<TBuilder>
+  node: TsIntersectionType<TBuilder>,
 ): AppendValue<TBuilder>[] {
   const types: AppendValue<TBuilder>[] = [];
   for (const type of node.types) {

@@ -56,7 +56,7 @@ export function transform<T, U>(value: T, callback: (value: T) => U): U {
 type IterableItem<T> = T extends Iterable<infer U> ? U : never;
 export function modifyEach<T extends Iterable<unknown>>(
   values: T,
-  callback: (value: NonNullable<IterableItem<T>>) => void
+  callback: (value: NonNullable<IterableItem<T>>) => void,
 ): T {
   for (const value of values) {
     if (notNullish(value)) {

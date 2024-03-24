@@ -87,7 +87,7 @@ export class DefaultTypeScriptModelGenerator
     return tsEnum(this.getDeclarationTypeName(ctx, ctx.schema), {
       export: true,
       members: (ctx.schema.enum?.map((x) => String(x)) ?? []).map((x) =>
-        tsEnumValue(this.toEnumValueName(ctx, x), { value: this.toStringLiteral(ctx, x) })
+        tsEnumValue(this.toEnumValueName(ctx, x), { value: this.toStringLiteral(ctx, x) }),
       ),
     });
   }
@@ -114,7 +114,7 @@ export class DefaultTypeScriptModelGenerator
       ? tsIndexer(
           'string',
           schema.additionalProperties === true ? this.getAnyType(ctx) : this.getType(ctx, schema.additionalProperties),
-          { readonly: ctx.config.immutableTypes }
+          { readonly: ctx.config.immutableTypes },
         )
       : null;
   }
@@ -221,7 +221,7 @@ export class DefaultTypeScriptModelGenerator
           default:
             return 'never';
         }
-      })
+      }),
     );
   }
 
@@ -269,7 +269,7 @@ export class DefaultTypeScriptModelGenerator
     return resolve(
       ctx.config.outputDir,
       ctx.config.modelsDirPath,
-      `${toCasing(schema.name, ctx.config.fileNameCasing)}.ts`
+      `${toCasing(schema.name, ctx.config.fileNameCasing)}.ts`,
     );
   }
 }

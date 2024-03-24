@@ -13,6 +13,22 @@ import {
 } from './string.utils.types';
 import { Nullable } from './type.utils';
 
+export function lowercase<T extends string>(str: T): Lowercase<T> {
+  return str.toLowerCase() as Lowercase<T>;
+}
+
+export function uppercase<T extends string>(str: T): Uppercase<T> {
+  return str.toUpperCase() as Uppercase<T>;
+}
+
+export function capitalize<T extends string>(str: T): Capitalize<T> {
+  return (str.charAt(0).toUpperCase() + str.slice(1)) as Capitalize<T>;
+}
+
+export function uncapitalize<T extends string>(str: T): Uncapitalize<T> {
+  return (str.charAt(0).toLowerCase() + str.slice(1)) as Uncapitalize<T>;
+}
+
 /**
  * Gets the words from a string. Words are separated by capital letters. Leading numbers are removed. Non-alphanumerical characters are removed and interpreted as word seperators. Multiple uppercase letters are interpreted as one word.
  * @param str The string to get the words from.
@@ -136,7 +152,7 @@ export function toCamelCase(str: Nullable<string>, options?: Partial<CamelCaseOp
     .map((word, index) =>
       index === 0
         ? wordToCasing(word, opts.keepOriginalCase ? 'first-lower' : 'all-lower')
-        : wordToCasing(word, opts.keepOriginalCase ? 'first-upper' : 'first-upper-then-lower')
+        : wordToCasing(word, opts.keepOriginalCase ? 'first-upper' : 'first-upper-then-lower'),
     )
     .join('');
   return addPrefixAndSuffix(camelCase, opts);
@@ -181,7 +197,7 @@ export function toKebabCase(str: Nullable<string>, options?: Partial<KebabCaseOp
   const words = getWords(str);
   const kebabCase = words
     .map((word, index) =>
-      index === 0 ? wordToCasing(word, opts.firstWordCasing ?? opts.wordCasing) : wordToCasing(word, opts.wordCasing)
+      index === 0 ? wordToCasing(word, opts.firstWordCasing ?? opts.wordCasing) : wordToCasing(word, opts.wordCasing),
     )
     .join('-');
   return addPrefixAndSuffix(kebabCase, opts);
@@ -205,7 +221,7 @@ export function toSnakeCase(str: Nullable<string>, options?: Partial<SnakeCaseOp
   const words = getWords(str);
   const snakeCase = words
     .map((word, index) =>
-      index === 0 ? wordToCasing(word, opts.firstWordCasing ?? opts.wordCasing) : wordToCasing(word, opts.wordCasing)
+      index === 0 ? wordToCasing(word, opts.firstWordCasing ?? opts.wordCasing) : wordToCasing(word, opts.wordCasing),
     )
     .join('_');
   return addPrefixAndSuffix(snakeCase, opts);

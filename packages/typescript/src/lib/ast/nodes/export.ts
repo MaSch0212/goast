@@ -12,20 +12,20 @@ export type TsExport<TBuilder extends SourceBuilder = TsDefaultBuilder> = TsNode
 export function tsExport<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   name: string,
   filePath: string,
-  options?: AstNodeOptions<TsExport<TBuilder>, 'name' | 'filePath'>
+  options?: AstNodeOptions<TsExport<TBuilder>, 'name' | 'filePath'>,
 ): TsExport<TBuilder> {
   return { ...tsNode(tsExportNodeKind, options), name, filePath };
 }
 
 export function isTsExport<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  value: unknown
+  value: unknown,
 ): value is TsExport<TBuilder> {
   return isTsNode(value, tsExportNodeKind);
 }
 
 export function writeTsExport<TBuilder extends TsDefaultBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsExport<TBuilder>
+  node: TsExport<TBuilder>,
 ): TBuilder {
   return writeTsNode(builder, node, (b) => b.addExport(node.name, node.filePath));
 }

@@ -48,7 +48,7 @@ export type TsProperty<TBuilder extends SourceBuilder = TsDefaultBuilder> = TsNo
   );
 
 export function tsPropertyMethod<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  options?: AstNodeOptions<TsPropertyMethod<TBuilder>>
+  options?: AstNodeOptions<TsPropertyMethod<TBuilder>>,
 ): TsPropertyMethod<TBuilder> {
   return {
     ...tsNode(tsPropertyMethodNodeKind, options),
@@ -72,7 +72,7 @@ type _TsPropertyGetSetOpt<TBuilder extends SourceBuilder = TsDefaultBuilder> = A
 >;
 export function tsProperty<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   name: string,
-  options?: Prettify<_TsPropertyAutoOpt<TBuilder>> | Prettify<_TsPropertyGetSetOpt<TBuilder>>
+  options?: Prettify<_TsPropertyAutoOpt<TBuilder>> | Prettify<_TsPropertyGetSetOpt<TBuilder>>,
 ): TsProperty<TBuilder> {
   if (options && ('get' in options || 'set' in options)) {
     return {
@@ -104,21 +104,21 @@ export function tsProperty<TBuilder extends SourceBuilder = TsDefaultBuilder>(
 }
 
 export function isTsPropertyMethod<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  node: unknown
+  node: unknown,
 ): node is TsPropertyMethod<TBuilder> {
   return isTsNode(node, tsPropertyMethodNodeKind);
 }
 
 export function isTsProperty<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  node: unknown
+  node: unknown,
 ): node is TsProperty<TBuilder>;
 export function isTsProperty<
   TKind extends TsProperty['propertyKind'],
-  TBuilder extends SourceBuilder = TsDefaultBuilder
+  TBuilder extends SourceBuilder = TsDefaultBuilder,
 >(node: unknown, propertyKind: TKind): node is TsProperty<TBuilder> & { propertyKind: TKind };
 export function isTsProperty<
   TKind extends TsProperty['propertyKind'] = TsProperty['propertyKind'],
-  TBuilder extends SourceBuilder = TsDefaultBuilder
+  TBuilder extends SourceBuilder = TsDefaultBuilder,
 >(node: unknown, propertyKind?: TKind): boolean {
   return (
     isTsNode(node, tsPropertyNodeKind) &&
@@ -130,7 +130,7 @@ export function writeTsPropertyMethod<TBuilder extends SourceBuilder = TsDefault
   builder: TBuilder,
   kind: 'set' | 'get',
   name: string,
-  node: TsPropertyMethod<TBuilder>
+  node: TsPropertyMethod<TBuilder>,
 ): TBuilder {
   return writeTsNode(builder, node, (b) =>
     writeTsDecorators(b, node.decorators, true)
@@ -140,21 +140,21 @@ export function writeTsPropertyMethod<TBuilder extends SourceBuilder = TsDefault
       .appendIf(node.override, 'override ')
       .append(kind, ' ', name)
       .parenthesize('()', (b) =>
-        b.if(kind === 'set', (b) => b.append('value').appendIf(node.type !== null, ': ', node.type))
+        b.if(kind === 'set', (b) => b.append('value').appendIf(node.type !== null, ': ', node.type)),
       )
       .appendIf(kind === 'get' && node.type !== null, ': ', node.type)
       .if(
         node.body !== null,
         (b) => b.append(' ').parenthesize('{}', node.body, { multiline: true }),
-        (b) => b.append(';')
+        (b) => b.append(';'),
       )
-      .appendLine()
+      .appendLine(),
   );
 }
 
 export function writeTsProperty<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsProperty<TBuilder>
+  node: TsProperty<TBuilder>,
 ): TBuilder {
   if ('get' in node) {
     return writeTsNode(builder, node, (b) => {
@@ -178,7 +178,7 @@ export function writeTsProperty<TBuilder extends SourceBuilder = TsDefaultBuilde
         .appendIf(!!node.type, ': ', node.type)
         .appendIf(!!node.value, ' = ', node.value)
         .append(';')
-        .appendLine()
+        .appendLine(),
     );
   }
 }

@@ -68,7 +68,7 @@ export type TsWritableNode<TBuilder extends SourceBuilder = TsDefaultBuilder> =
 
 export function writeTs<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  value: AppendValue<TBuilder> | TsWritableNode<TBuilder>
+  value: AppendValue<TBuilder> | TsWritableNode<TBuilder>,
 ): TBuilder {
   if (isTsNode(value)) {
     switch (value.kind) {

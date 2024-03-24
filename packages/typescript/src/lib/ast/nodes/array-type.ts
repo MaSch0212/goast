@@ -14,7 +14,7 @@ export type TsArrayType<TBuilder extends SourceBuilder = TsDefaultBuilder> = TsN
 
 export function tsArrayType<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   type: AppendValue<TBuilder>,
-  options?: AstNodeOptions<TsArrayType<TBuilder>, 'type'>
+  options?: AstNodeOptions<TsArrayType<TBuilder>, 'type'>,
 ): TsArrayType<TBuilder> {
   return {
     ...tsNode(tsArrayTypeNodeKind, options),
@@ -24,16 +24,16 @@ export function tsArrayType<TBuilder extends SourceBuilder = TsDefaultBuilder>(
 }
 
 export function isTsArrayType<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  node: unknown
+  node: unknown,
 ): node is TsArrayType<TBuilder> {
   return isTsNode(node, tsArrayTypeNodeKind);
 }
 
 export function writeTsArrayType<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsArrayType<TBuilder>
+  node: TsArrayType<TBuilder>,
 ): TBuilder {
   return writeTsNode(builder, node, (b) =>
-    b.appendIf(node.readonly, 'readonly ').parenthesize('()', node.type, { indent: false }).append('[]')
+    b.appendIf(node.readonly, 'readonly ').parenthesize('()', node.type, { indent: false }).append('[]'),
   );
 }

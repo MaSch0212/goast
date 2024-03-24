@@ -103,10 +103,10 @@ describe('ktProperty', () => {
         delegateArguments: ['42', 'true'],
         getter: ktProperty.getter(),
         setter: ktProperty.setter(),
-      })
+      }),
     );
     expect(builder.toString(false)).toBe(
-      `/**${EOL} * Hello${EOL} */${EOL}@Inject${EOL}@Optional${EOL}const lateinit abstract override open var x: Int = 42 by lazy(42, true)${EOL}    get${EOL}    set${EOL}`
+      `/**${EOL} * Hello${EOL} */${EOL}@Inject${EOL}@Optional${EOL}const lateinit abstract override open var x: Int = 42 by lazy(42, true)${EOL}    get${EOL}    set${EOL}`,
     );
   });
 
@@ -167,7 +167,7 @@ describe('ktPropertyAccessor', () => {
       })
       .write(builder);
     expect(builder.toString(false)).toBe(
-      `@Inject${EOL}@Optional${EOL}private get() {${EOL}    println("Hello")${EOL}}`
+      `@Inject${EOL}@Optional${EOL}private get() {${EOL}    println("Hello")${EOL}}`,
     );
   });
 

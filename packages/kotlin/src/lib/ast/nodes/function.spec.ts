@@ -133,10 +133,10 @@ describe('ktFunction', () => {
         tailrec: true,
         operator: true,
         override: true,
-      })
+      }),
     );
     expect(builder.toString(false)).toBe(
-      `/**${EOL} * This is a function${EOL} */${EOL}@Inject${EOL}@Optional${EOL}private inline infix tailrec open override operator fun <T> @Fancy String.foo(x: Int): Int = println("Hello")`
+      `/**${EOL} * This is a function${EOL} */${EOL}@Inject${EOL}@Optional${EOL}private inline infix tailrec open override operator fun <T> @Fancy String.foo(x: Int): Int = println("Hello")`,
     );
   });
 
@@ -181,10 +181,10 @@ describe('ktFunction', () => {
           beforeDoc: '[bd]',
           afterDoc: '[ad]',
         },
-      })
+      }),
     );
     expect(builder.toString(false)).toBe(
-      `[bg][bd]${EOL}/**${EOL} * This is a function${EOL} */${EOL}[ad][ba]@Inject${EOL}@Optional${EOL}[aa]private [bk]inline infix tailrec open override operator [ak]fun [bgg]<T>[agg] [bra]@Fancy [ara][brt]String[art].[bn]foo[an][bp](x: Int)[ap]: [br]Int[ar] = println("Hello")[ag]`
+      `[bg][bd]${EOL}/**${EOL} * This is a function${EOL} */${EOL}[ad][ba]@Inject${EOL}@Optional${EOL}[aa]private [bk]inline infix tailrec open override operator [ak]fun [bgg]<T>[agg] [bra]@Fancy [ara][brt]String[art].[bn]foo[an][bp](x: Int)[ap]: [br]Int[ar] = println("Hello")[ag]`,
     );
   });
 });

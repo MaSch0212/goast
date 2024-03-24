@@ -14,21 +14,21 @@ export type TsNode<TKind extends string, TBuilder extends SourceBuilder = TsDefa
 export type TsAccessibility = 'public' | 'protected' | 'private' | null;
 export function tsNode<TKind extends string, TBuilder extends SourceBuilder = TsDefaultBuilder>(
   kind: TKind,
-  options?: AstNodeOptions<TsNode<TKind, TBuilder>>
+  options?: AstNodeOptions<TsNode<TKind, TBuilder>>,
 ): TsNode<TKind, TBuilder> {
   return astNode(tsLangKey, kind, options);
 }
 
 export function isTsNode<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  value: unknown
+  value: unknown,
 ): value is TsNode<string, TBuilder>;
 export function isTsNode<TKind extends string, TBuilder extends SourceBuilder = TsDefaultBuilder>(
   value: unknown,
-  kind: TKind
+  kind: TKind,
 ): value is TsNode<TKind, TBuilder>;
 export function isTsNode<TKind extends string, TBuilder extends SourceBuilder = TsDefaultBuilder>(
   value: unknown,
-  kind?: TKind
+  kind?: TKind,
 ): value is TsNode<TKind, TBuilder> {
   return kind === undefined ? isAstNode(value, tsLangKey) : isAstNode(value, tsLangKey, kind);
 }
@@ -49,7 +49,7 @@ export function getTypeScriptBuilderOptions(builder: StringBuilder) {
 export function writeTsNode<TNode extends TsNode<string, TBuilder>, TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
   node: TNode,
-  build: (builder: TBuilder) => void
+  build: (builder: TBuilder) => void,
 ) {
   return builder.append(node.inject.before, build, node.inject.after);
 }

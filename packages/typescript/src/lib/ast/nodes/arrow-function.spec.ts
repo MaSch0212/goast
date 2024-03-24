@@ -43,7 +43,7 @@ it('should write all the parts of the arrow function', () => {
       parameters: [tsParameter('x'), tsParameter('y')],
       returnType: 'number',
       body: 'return 42;',
-    })
+    }),
   );
   expect(builder.toString(false)).toBe('<T, U>(x, y): number => {' + EOL + '  return 42;' + EOL + '}');
 });

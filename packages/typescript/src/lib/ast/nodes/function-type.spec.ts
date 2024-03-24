@@ -19,7 +19,7 @@ it('should write the generics if they exist', () => {
     tsFunctionType({
       generics: [tsGenericParameter('T'), tsGenericParameter('U')],
       returnType: 'number',
-    })
+    }),
   );
   expect(builder.toString(false)).toBe('(<T, U>() => number)');
 });
@@ -30,7 +30,7 @@ it('should write all the parts of the function type', () => {
       generics: [tsGenericParameter('T'), tsGenericParameter('U')],
       parameters: [tsParameter('x'), tsParameter('y')],
       returnType: 'number',
-    })
+    }),
   );
   expect(builder.toString(false)).toBe('(<T, U>(x, y) => number)');
 });

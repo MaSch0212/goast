@@ -23,30 +23,30 @@ type _TsDocTagOpt<TBuilder extends SourceBuilder> = AstNodeOptions<TsDocTag<TBui
 type _TsDocTagArgsMap<TBuilder extends SourceBuilder> = {
   access(
     access: StringSuggestions<'package' | 'private' | 'protected' | 'public'>,
-    options?: _TsDocTagOpt<TBuilder>
+    options?: _TsDocTagOpt<TBuilder>,
   ): never;
   author(authorName: AppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
   author(
     authorName: AppendValue<TBuilder>,
     emailAddress: AppendValue<TBuilder>,
-    options?: _TsDocTagOpt<TBuilder>
+    options?: _TsDocTagOpt<TBuilder>,
   ): never;
   borrows(
     thatNamepath: AppendValue<TBuilder>,
     thisNamepath: AppendValue<TBuilder>,
-    options?: _TsDocTagOpt<TBuilder>
+    options?: _TsDocTagOpt<TBuilder>,
   ): never;
   params(
     paramName: AppendValue<TBuilder>,
     paramDescription: AppendValue<TBuilder>,
-    options?: _TsDocTagOpt<TBuilder>
+    options?: _TsDocTagOpt<TBuilder>,
   ): never;
   example(caption: AppendValue<TBuilder>, code: AppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
   example(code: AppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
   exports(
     moduleName: AppendValue<TBuilder>,
     exportName: AppendValue<TBuilder>,
-    options?: _TsDocTagOpt<TBuilder>
+    options?: _TsDocTagOpt<TBuilder>,
   ): never;
   kind(
     kindName: StringSuggestions<
@@ -62,7 +62,7 @@ type _TsDocTagArgsMap<TBuilder extends SourceBuilder> = {
       | 'namespace'
       | 'typedef'
     >,
-    options?: _TsDocTagOpt<TBuilder>
+    options?: _TsDocTagOpt<TBuilder>,
   ): never;
   license(identifier: AppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
   listens(eventName: AppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
@@ -75,7 +75,7 @@ type _TsDocTagArgsMap<TBuilder extends SourceBuilder> = {
 } & {
   [K in 'alias' | 'augments' | 'callback' | 'extends' | 'lends' | 'name' | 'see' | 'this']: (
     namePath: AppendValue<TBuilder>,
-    options?: _TsDocTagOpt<TBuilder>
+    options?: _TsDocTagOpt<TBuilder>,
   ) => never;
 } & {
   [K in
@@ -149,7 +149,7 @@ type _TsDocTagArgsMap<TBuilder extends SourceBuilder> = {
   [K in 'event' | 'fires']: (
     className: AppendValue<TBuilder>,
     eventName: AppendValue<TBuilder>,
-    options?: _TsDocTagOpt<TBuilder>
+    options?: _TsDocTagOpt<TBuilder>,
   ) => never;
 } & {
   [K in 'external' | 'host']: (nameOfExternal: AppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>) => never;
@@ -164,7 +164,7 @@ type _TsDocTagArgsMap<TBuilder extends SourceBuilder> = {
 
 type _TsDocTagArgs<
   TTagName extends StringSuggestions<keyof _TsDocTagArgsMap<TBuilder>>,
-  TBuilder extends SourceBuilder
+  TBuilder extends SourceBuilder,
 > = TTagName extends keyof _TsDocTagArgsMap<TBuilder>
   ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
     _TsDocTagArgsMap<TBuilder>[TTagName] extends (...args: any[]) => any
@@ -174,7 +174,7 @@ type _TsDocTagArgs<
 
 export function tsDocTag<
   TTagName extends StringSuggestions<keyof _TsDocTagArgsMap<TBuilder>>,
-  TBuilder extends SourceBuilder = TsDefaultBuilder
+  TBuilder extends SourceBuilder = TsDefaultBuilder,
 >(tag: TTagName, ...args: _TsDocTagArgs<TTagName, TBuilder>): TsDocTag<TBuilder>;
 export function tsDocTag<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   tag: string,
@@ -221,16 +221,16 @@ export function tsDocTag<TBuilder extends SourceBuilder = TsDefaultBuilder>(
 }
 
 export function isTsDocTag<TBuilder extends SourceBuilder = TsDefaultBuilder>(
-  value: unknown
+  value: unknown,
 ): value is TsDocTag<TBuilder> {
   return isTsNode(value, tsDocTagNodeKind);
 }
 
 export function writeTsDocTag<TBuilder extends SourceBuilder = TsDefaultBuilder>(
   builder: TBuilder,
-  node: TsDocTag<TBuilder>
+  node: TsDocTag<TBuilder>,
 ): TBuilder {
   return writeTsNode(builder, node, (b) =>
-    b.append('@', node.tag).appendIf(!!node.type, ' {', node.type, '}').appendIf(!!node.text, ' ', node.text)
+    b.append('@', node.tag).appendIf(!!node.type, ' {', node.type, '}').appendIf(!!node.text, ' ', node.text),
   );
 }

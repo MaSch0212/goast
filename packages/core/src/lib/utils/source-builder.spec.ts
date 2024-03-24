@@ -194,7 +194,7 @@ describe('SourceBuilder', () => {
         b.appendWithLinePrefix('// ', (b) => {
           b.appendLine('foo');
           b.appendLine('bar');
-        })
+        }),
       );
       expect(builder.toString()).toBe(`  // foo${EOL}  // bar${EOL}`);
     });
@@ -272,7 +272,7 @@ describe('SourceBuilder', () => {
     it('should append the content when condition function returns true', () => {
       sb.if(
         () => true,
-        (x) => x.append('stuff')
+        (x) => x.append('stuff'),
       );
       expect(sb.toString()).toBe(`stuff`);
     });
@@ -280,7 +280,7 @@ describe('SourceBuilder', () => {
     it('should not append the content when condition function returns false', () => {
       sb.if(
         () => false,
-        (x) => x.append('stuff')
+        (x) => x.append('stuff'),
       );
       expect(sb.toString()).toBe(``);
     });
@@ -289,7 +289,7 @@ describe('SourceBuilder', () => {
       sb.if(
         true,
         (x) => x.append('stuff'),
-        (x) => x.append('other stuff')
+        (x) => x.append('other stuff'),
       );
       expect(sb.toString()).toBe(`stuff`);
     });
@@ -298,7 +298,7 @@ describe('SourceBuilder', () => {
       sb.if(
         false,
         (x) => x.append('stuff'),
-        (x) => x.append('other stuff')
+        (x) => x.append('other stuff'),
       );
       expect(sb.toString()).toBe(`other stuff`);
     });
@@ -307,7 +307,7 @@ describe('SourceBuilder', () => {
       sb.if(
         () => true,
         (x) => x.append('stuff'),
-        (x) => x.append('other stuff')
+        (x) => x.append('other stuff'),
       );
       expect(sb.toString()).toBe(`stuff`);
     });
@@ -316,7 +316,7 @@ describe('SourceBuilder', () => {
       sb.if(
         () => false,
         (x) => x.append('stuff'),
-        (x) => x.append('other stuff')
+        (x) => x.append('other stuff'),
       );
       expect(sb.toString()).toBe(`other stuff`);
     });
@@ -377,7 +377,7 @@ describe('SourceBuilder', () => {
     it('should indent when condition function returns true', () => {
       sb.indentIf(
         () => true,
-        (x) => x.append('stuff')
+        (x) => x.append('stuff'),
       );
       expect(sb.toString()).toBe(`  stuff`);
     });
@@ -385,7 +385,7 @@ describe('SourceBuilder', () => {
     it('should not indent when condition function returns false', () => {
       sb.indentIf(
         () => false,
-        (x) => x.append('stuff')
+        (x) => x.append('stuff'),
       );
       expect(sb.toString()).toBe(`stuff`);
     });
@@ -463,7 +463,7 @@ describe('SourceBuilder', () => {
       sb.parenthesizeIf(
         () => true,
         '()',
-        (x) => x.append('stuff')
+        (x) => x.append('stuff'),
       );
       expect(sb.toString()).toBe(`(stuff)`);
     });
@@ -472,7 +472,7 @@ describe('SourceBuilder', () => {
       sb.parenthesizeIf(
         () => false,
         '()',
-        (x) => x.append('stuff')
+        (x) => x.append('stuff'),
       );
       expect(sb.toString()).toBe(`stuff`);
     });
@@ -497,7 +497,7 @@ describe('SourceBuilder', () => {
         () => true,
         '()',
         (x) => x.append('stuff'),
-        { multiline: true }
+        { multiline: true },
       );
       expect(sb.toString()).toBe(`(${EOL}  stuff${EOL})`);
     });
@@ -507,7 +507,7 @@ describe('SourceBuilder', () => {
         () => false,
         '()',
         (x) => x.append('stuff'),
-        { multiline: true }
+        { multiline: true },
       );
       expect(sb.toString()).toBe(`stuff`);
     });
