@@ -557,6 +557,11 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       return false;
     }
 
+    // Schemas representable by a simple Map type do not need its own type declaration
+    if (schema.kind === 'object' && schema.properties.size === 0 && schema.additionalProperties) {
+      return false;
+    }
+
     return true;
   }
 
