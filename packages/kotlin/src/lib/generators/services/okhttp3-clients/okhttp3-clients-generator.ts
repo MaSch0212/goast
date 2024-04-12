@@ -14,6 +14,7 @@ import {
   defaultKotlinOkHttp3ClientsGeneratorConfig,
 } from './models';
 import { KotlinOkHttp3Generator, DefaultKotlinOkHttp3Generator } from './okhttp3-client-generator';
+import { getReferenceFactories } from './refs';
 import { KotlinServicesGeneratorInput } from '../spring-controllers';
 
 type Input = KotlinOkHttp3ClientsGeneratorInput;
@@ -61,12 +62,14 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
 
   protected buildContext(
     context: OpenApiGeneratorContext<KotlinServicesGeneratorInput>,
-    config?: Partial<Config> | undefined
+    config?: Partial<Config> | undefined,
   ): Context {
     context.data.services = context.data.services.filter((x) => x.name !== 'exclude-from-generation');
     const providerContext = this.getProviderContext(context, config, defaultKotlinOkHttp3ClientsGeneratorConfig);
+    const infrastructurePackageName = this.getInfrastructurePackageName(providerContext.config);
     return Object.assign(providerContext, {
-      infrastructurePackageName: this.getInfrastructurePackageName(providerContext.config),
+      infrastructurePackageName,
+      refs: getReferenceFactories(infrastructurePackageName),
     });
   }
 

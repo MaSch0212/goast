@@ -1,6 +1,13 @@
 import { join } from 'path';
 
-import { OpenApiVersion, openApiV2FilesDir, openApiV3FilesDir, openApiV3_1FilesDir, verify } from '@goast/test/utils';
+import {
+  OpenApiVersion,
+  openApiV2FilesDir,
+  openApiV3FilesDir,
+  openApiV3_1FilesDir,
+  verify,
+  declutterApiData,
+} from '@goast/test/utils';
 
 import { OpenApiParser } from '../lib/parse/parser';
 import { toCustomCase } from '../lib/utils/string.utils';
@@ -12,7 +19,7 @@ const filePaths: { [P in OpenApiVersion]: string } = {
 };
 
 const testFilesAllVersions: string[] = ['simple-schemas.yml', 'detailed-schemas.yml', 'object-schemas.yml'];
-const testFilesV3x: string[] = ['oneof-schemas.yml'];
+const testFilesV3x: string[] = ['oneof-schemas.yml', 'discriminated-schemas.yml'];
 
 for (const [version, path] of Object.entries(filePaths)) {
   describe(`OpenAPI V${version}`, () => {
@@ -28,7 +35,8 @@ for (const [version, path] of Object.entries(filePaths)) {
           delete (schema.$src as any).document;
         }
 
-        await verify(data.schemas);
+        declutterApiData(data);
+        await verify(data);
       });
     }
   });

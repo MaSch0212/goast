@@ -5,6 +5,7 @@ import {
   OpenApiServicesGenerationProviderContext,
 } from '@goast/core';
 
+import { getReferenceFactories } from './refs';
 import { KotlinImport } from '../../../common-results';
 import { KotlinGeneratorConfig, defaultKotlinGeneratorConfig } from '../../../config';
 import { KotlinModelsGeneratorOutput } from '../../models';
@@ -46,6 +47,7 @@ export type KotlinOkHttp3ClientsGeneratorContext = OpenApiServicesGenerationProv
   KotlinOkHttp3ClientGeneratorOutput
 > & {
   infrastructurePackageName: string;
+  refs: ReturnType<typeof getReferenceFactories>;
 };
 
 export type KotlinOkHttp3ClientGeneratorContext = KotlinOkHttp3ClientsGeneratorContext & {

@@ -1,6 +1,11 @@
-import { ApiSchema, DefaultGenerationProviderConfig, OpenApiSchemasGenerationProviderContext } from '@goast/core';
+import {
+  ApiSchema,
+  DefaultGenerationProviderConfig,
+  OpenApiSchemasGenerationProviderContext,
+  SourceBuilder,
+} from '@goast/core';
 
-import { KotlinImport } from '../../common-results';
+import { kt } from '../../ast';
 import { KotlinGeneratorConfig, defaultKotlinGeneratorConfig } from '../../config';
 
 export type KotlinModelsGeneratorConfig = KotlinGeneratorConfig & {
@@ -33,9 +38,7 @@ export type KotlinModelsGeneratorOutput = {
   };
 };
 
-export type KotlinModelGeneratorOutput = KotlinImport & {
-  additionalImports: KotlinImport[];
-};
+export type KotlinModelGeneratorOutput = { type: kt.Reference<SourceBuilder> };
 
 export type KotlinModelsGeneratorContext = OpenApiSchemasGenerationProviderContext<
   KotlinModelsGeneratorInput,

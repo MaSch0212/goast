@@ -7,6 +7,8 @@ import { nxRootDir } from './paths';
 
 type VerifyError = 'no-expect-file' | 'verify-failed';
 
+export class MultipartData extends Array<[key: string, value: unknown]> {}
+
 export async function verify(data: unknown): Promise<void> {
   const { expectFile, actualFile } = await getVerifyFilePaths();
   const text = dataToText(data);
@@ -31,9 +33,32 @@ function cutString(text: string, length: number) {
 }
 
 function dataToText(data: unknown, depth: number = 100): string {
+  if (typeof data === 'string') {
+    return data;
+  }
+
+  if (data instanceof MultipartData) {
+    return data.map(([key, value]) => `${header(key)}${dataToText(value, depth)}\n${footer(key)}`).join('\n\n');
+  }
+
   let text = typeof data === 'string' ? data : util.inspect(data, { depth, sorted: true });
   text = text.replace(new RegExp(escapeRegExp(nxRootDir.replace(/\\/g, '\\\\')), 'g'), '<root>');
   return text;
+}
+
+function header(name: string): string {
+  const width = Math.max(40, name.length + 4);
+  return (
+    '' +
+    `┌${'─'.repeat(width - 2)}┐\n` +
+    `│ ${name}${' '.repeat(width - name.length - 4)} │\n` +
+    `├${'─'.repeat(width - 2)}┤\n`
+  );
+}
+
+function footer(name: string): string {
+  const width = Math.max(40, name.length + 4);
+  return `└${'─'.repeat(width - 2)}┘`;
 }
 
 async function getVerifyFilePaths(): Promise<{ expectFile: string; actualFile: string }> {

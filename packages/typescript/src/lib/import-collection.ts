@@ -3,12 +3,28 @@ import { extname } from 'path';
 import { SourceBuilderOptions, StringBuilder } from '@goast/core';
 
 import { TypeScriptImport, TypeScriptImportKind } from './common-results';
-import { TypeScriptFileBuilder } from './file-builder';
+import { defaultTypeScriptGeneratorConfig } from './config';
 import { ImportModuleTransformer, getModulePathRelativeToFile } from './utils';
+
+export type ImportExportCollectionOptions = {
+  filePath?: string;
+  importModuleTransformer: ImportModuleTransformer;
+  useSingleQuotes: boolean;
+};
+
+export const defaultImportExportCollectionOptions: ImportExportCollectionOptions = {
+  importModuleTransformer: defaultTypeScriptGeneratorConfig.importModuleTransformer,
+  useSingleQuotes: defaultTypeScriptGeneratorConfig.useSingleQuotes,
+};
 
 export class ImportExportCollection {
   private readonly _imports: Map<string, Set<string>> = new Map();
   private readonly _exports: Map<string, Set<string>> = new Map();
+  private readonly _options: ImportExportCollectionOptions;
+
+  constructor(options?: Partial<ImportExportCollectionOptions>) {
+    this._options = { ...defaultImportExportCollectionOptions, ...options };
+  }
 
   public get hasImports(): boolean {
     return this._imports.size > 0;
@@ -27,8 +43,8 @@ export class ImportExportCollection {
               kind: this.getImportKind(fromModule),
               modulePath: fromModule,
               name: importName,
-            } satisfies TypeScriptImport)
-        )
+            }) satisfies TypeScriptImport,
+        ),
       )
       .flat();
   }
@@ -56,36 +72,20 @@ export class ImportExportCollection {
     this._exports.clear();
   }
 
-  public toString(
-    options: Partial<SourceBuilderOptions>,
-    filePath: string | undefined,
-    importModuleTransformer: ImportModuleTransformer
-  ): string {
+  public toString(options: Partial<SourceBuilderOptions>): string {
     const builder = new StringBuilder(options);
-    this.writeTo(builder, filePath, importModuleTransformer);
+    this.writeTo(builder);
     return builder.toString();
   }
 
-  public writeTo(
-    builder: StringBuilder,
-    filePath: string | undefined,
-    importModuleTransformer: ImportModuleTransformer
-  ): void;
-  public writeTo(builder: TypeScriptFileBuilder): void;
-  public writeTo(builder: TypeScriptFileBuilder, filePath?: string, importModuleTransformer?: ImportModuleTransformer) {
-    if (!filePath) {
-      filePath = (builder as TypeScriptFileBuilder).filePath;
-    }
-    if (!importModuleTransformer) {
-      importModuleTransformer = (builder as TypeScriptFileBuilder).options.importModuleTransformer;
-      if (!importModuleTransformer) {
-        throw new Error('importModuleTransformer is required');
-      }
-    }
+  public writeTo(builder: StringBuilder) {
+    const { filePath, importModuleTransformer, useSingleQuotes } = this._options;
+
+    console.log(filePath);
 
     if (this._imports.size > 0) {
       const sortedImports = this.sortAndResolve(this._imports, filePath, importModuleTransformer);
-      this.writeImportsExports(builder, 'import', sortedImports);
+      this.writeImportsExports(builder, 'import', sortedImports, { useSingleQuotes });
     }
 
     if (this._imports.size > 0 && this._exports.size > 0) {
@@ -94,14 +94,15 @@ export class ImportExportCollection {
 
     if (this._exports.size > 0) {
       const sortedExports = this.sortAndResolve(this._exports, filePath, importModuleTransformer);
-      this.writeImportsExports(builder, 'export', sortedExports);
+      this.writeImportsExports(builder, 'export', sortedExports, { useSingleQuotes });
     }
   }
 
   protected writeImportsExports(
     builder: StringBuilder,
     keyword: 'import' | 'export',
-    data: (readonly [string, TypeScriptImportKind, string[]])[]
+    data: (readonly [string, TypeScriptImportKind, string[]])[],
+    options: { useSingleQuotes: boolean },
   ) {
     const moduleData: (readonly [string, TypeScriptImportKind, string[]])[] = [];
     const fileData: (readonly [string, TypeScriptImportKind, string[]])[] = [];
@@ -113,8 +114,10 @@ export class ImportExportCollection {
       }
     }
 
+    const quote = options.useSingleQuotes ? "'" : '"';
+
     for (const [fromModule, _, names] of moduleData) {
-      builder.appendLine(`${keyword} { ${names.join(', ')} } from '${fromModule}';`);
+      builder.appendLine(`${keyword} { ${names.join(', ')} } from ${quote}${fromModule}${quote};`);
     }
 
     if (moduleData.length > 0 && fileData.length > 0) {
@@ -122,20 +125,20 @@ export class ImportExportCollection {
     }
 
     for (const [fromModule, _, names] of fileData) {
-      builder.appendLine(`${keyword} { ${names.join(', ')} } from '${fromModule}';`);
+      builder.appendLine(`${keyword} { ${names.join(', ')} } from ${quote}${fromModule}${quote};`);
     }
   }
 
   protected sortAndResolve(
     data: Map<string, Set<string>>,
     filePath: string | undefined,
-    importModuleTransformer: ImportModuleTransformer
+    importModuleTransformer: ImportModuleTransformer,
   ): (readonly [string, TypeScriptImportKind, string[]])[] {
     return Array.from(data.entries())
       .sort(([fromModuleA], [fromModuleB]) => fromModuleA.localeCompare(fromModuleB))
       .map(
         ([fromModule, names]) =>
-          [...this.resolveModulePath(fromModule, filePath, importModuleTransformer), Array.from(names).sort()] as const
+          [...this.resolveModulePath(fromModule, filePath, importModuleTransformer), Array.from(names).sort()] as const,
       );
   }
 
@@ -147,7 +150,7 @@ export class ImportExportCollection {
   protected resolveModulePath(
     fromModule: string,
     filePath: string | undefined,
-    importModuleTransformer: ImportModuleTransformer
+    importModuleTransformer: ImportModuleTransformer,
   ): [string, TypeScriptImportKind] {
     const kind = this.getImportKind(fromModule);
     return [

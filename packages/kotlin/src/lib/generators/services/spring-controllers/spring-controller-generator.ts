@@ -1,13 +1,24 @@
+/* eslint-disable unused-imports/no-unused-vars */
 import { ensureDirSync, writeFileSync } from 'fs-extra';
 
-import { ApiEndpoint, ApiParameter, ApiSchema, notNullish, toCasing } from '@goast/core';
+import {
+  ApiEndpoint,
+  ApiParameter,
+  AppendValueGroup,
+  SourceBuilder,
+  appendValueGroup,
+  createOverwriteProxy,
+  notNullish,
+  toCasing,
+} from '@goast/core';
 
+import { DefaultKotlinSpringControllerGeneratorArgs as Args } from '.';
 import { KotlinServiceGeneratorContext, KotlinServiceGeneratorOutput } from './models';
+import { kt } from '../../../ast';
 import { KotlinImport } from '../../../common-results';
 import { KotlinFileBuilder } from '../../../file-builder';
 import { modifyString } from '../../../utils';
 import { KotlinFileGenerator } from '../../file-generator';
-import { KotlinModelGeneratorOutput } from '../../models';
 
 type Context = KotlinServiceGeneratorContext;
 type Output = KotlinServiceGeneratorOutput;
@@ -22,551 +33,497 @@ export class DefaultKotlinSpringControllerGenerator
   implements KotlinSpringControllerGenerator
 {
   generate(ctx: KotlinServiceGeneratorContext): KotlinServiceGeneratorOutput {
-    const packageName = this.getPackageName(ctx);
-    const dirPath = this.getDirectoryPath(ctx, packageName);
+    const packageName = this.getPackageName(ctx, {});
+    const dirPath = this.getDirectoryPath(ctx, { packageName });
     ensureDirSync(dirPath);
 
     console.log(`Generating service ${ctx.service.id} to ${dirPath}...`);
     return {
-      apiInterface: this.generateApiInterfaceFile(ctx, dirPath, packageName),
-      apiController: this.generateApiControllerFile(ctx, dirPath, packageName),
-      apiDelegate: this.generateApiDelegateInterfaceFile(ctx, dirPath, packageName),
+      apiInterface: this.generateApiInterfaceFile(ctx, { dirPath, packageName }),
+      apiController: this.generateApiControllerFile(ctx, { dirPath, packageName }),
+      apiDelegate: this.generateApiDelegateInterfaceFile(ctx, { dirPath, packageName }),
     };
   }
 
-  protected generateApiInterfaceFile(ctx: Context, dirPath: string, packageName: string): KotlinImport {
-    const typeName = this.getApiInterfaceName(ctx);
+  // #region API Interface
+  protected generateApiInterfaceFile(ctx: Context, args: Args.GenerateApiInterfaceFile): KotlinImport {
+    const { dirPath, packageName } = args;
+    const typeName = this.getApiInterfaceName(ctx, {});
     const fileName = `${typeName}.kt`;
     const filePath = `${dirPath}/${fileName}`;
     console.log(`  Generating API interface ${typeName} to ${fileName}...`);
 
     const builder = new KotlinFileBuilder(packageName, ctx.config);
-    this.generateApiInterfaceFileContent(ctx, builder);
-
+    builder.append(this.getApiInterfaceFileContent(ctx, { interfaceName: typeName }));
     writeFileSync(filePath, builder.toString());
 
-    return { typeName: builder.toString(), packageName };
+    return { typeName, packageName };
   }
 
-  protected generateApiInterfaceFileContent(ctx: Context, builder: Builder): void {
-    builder
-      .append((builder) => this.generateApiInterfaceAnnotations(ctx, builder))
-      .ensureCurrentLineEmpty()
-      .append((builder) => this.generateApiInterfaceSignature(ctx, builder))
-      .append(' ')
-      .parenthesize('{}', (builder) => this.generateApiInterfaceContent(ctx, builder), { multiline: true });
+  protected getApiInterfaceFileContent(ctx: Context, args: Args.GetApiinterfaceFileContent): AppendValueGroup<Builder> {
+    const { interfaceName } = args;
+
+    return appendValueGroup([this.getApiInterface(ctx, { interfaceName })], '\n');
   }
 
-  protected generateApiInterfaceAnnotations(ctx: Context, builder: Builder): void {
-    builder
-      .appendAnnotation('Validated', 'org.springframework.validation.annotation')
-      .appendAnnotation('RequestMapping', 'org.springframework.web.bind.annotation', [
-        this.getControllerRequestMapping(ctx, 'api'),
-      ]);
+  protected getApiInterface(ctx: Context, args: Args.GetApiInterface): kt.Interface<Builder> {
+    const { interfaceName } = args;
+
+    return kt.interface(interfaceName, {
+      annotations: this.getApiInterfaceAnnotations(ctx),
+      members: this.getApiInterfaceMembers(ctx),
+    });
   }
 
-  protected generateApiInterfaceSignature(ctx: Context, builder: Builder): void {
-    builder.append('interface ').append(this.getApiInterfaceName(ctx));
+  private getApiInterfaceAnnotations(ctx: Context): kt.Annotation<Builder>[] {
+    const validated = kt.annotation(kt.refs.spring.validated());
+    const requestMapping = kt.annotation(kt.refs.spring.requestMapping(), [
+      kt.argument(this.getControllerRequestMapping(ctx, { prefix: 'api' })),
+    ]);
+    return [validated, requestMapping];
   }
 
-  protected generateApiInterfaceContent(ctx: Context, builder: Builder): void {
-    builder
-      .append((builder) => this.generateApiInterfaceDelegateAccessor(ctx, builder))
-      .ensurePreviousLineEmpty()
-      .append((builder) => this.generateApiInterfaceMethods(ctx, builder));
-  }
+  private getApiInterfaceMembers(ctx: Context): kt.InterfaceMember<Builder>[] {
+    const members: kt.InterfaceMember<Builder>[] = [];
+    const delegateInterfaceName = this.getApiDelegateInterfaceName(ctx, {});
 
-  protected generateApiInterfaceDelegateAccessor(ctx: Context, builder: Builder): void {
-    builder.appendLine(
-      `fun getDelegate(): ${this.getApiDelegateInterfaceName(ctx)} = object : ${this.getApiDelegateInterfaceName(
-        ctx
-      )} {}`
+    members.push(
+      kt.function('getDelegate', {
+        returnType: delegateInterfaceName,
+        singleExpression: true,
+        body: kt.object({
+          implements: [delegateInterfaceName],
+        }),
+      }),
     );
+
+    ctx.service.endpoints.forEach((endpoint) => {
+      members.push(this.getApiInterfaceEndpointMethod(ctx, { endpoint }));
+    });
+
+    return members;
   }
 
-  protected generateApiInterfaceMethods(ctx: Context, builder: Builder): void {
-    builder.forEach(ctx.service.endpoints, (builder, endpoint) =>
-      builder.ensurePreviousLineEmpty().append((builder) => this.generateApiInterfaceMethod(ctx, builder, endpoint))
-    );
+  protected getApiInterfaceEndpointMethod(
+    ctx: Context,
+    args: Args.GetApiInterfaceEndpointMethod,
+  ): kt.Function<Builder> {
+    const { endpoint } = args;
+    const parameters = this.getAllParameters(ctx, { endpoint });
+
+    return kt.function(toCasing(endpoint.name, ctx.config.functionNameCasing), {
+      suspend: true,
+      annotations: this.getApiInterfaceEndpointMethodAnnnotations(ctx, endpoint),
+      parameters: parameters.map((parameter) => this.getApiInterfaceEndpointMethodParameter(ctx, endpoint, parameter)),
+      returnType: kt.refs.spring.responseEntity([this.getResponseType(ctx, { endpoint })]),
+      body: this.getApiInterfaceEndpointMethodBody(ctx, endpoint, parameters),
+    });
   }
 
-  protected generateApiInterfaceMethod(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
-    builder
-      .append((builder) => this.generateApiInterfaceMethodAnnnotations(ctx, builder, endpoint))
-      .ensureCurrentLineEmpty()
-      .append((builder) => this.generateApiInterfaceMethodSignature(ctx, builder, endpoint))
-      .append(' ')
-      .parenthesize('{}', (builder) => this.generateApiInterfaceMethodContent(ctx, builder, endpoint), {
-        multiline: true,
-      });
-  }
+  private getApiInterfaceEndpointMethodAnnnotations(ctx: Context, endpoint: ApiEndpoint): kt.Annotation<Builder>[] {
+    const operation = kt.annotation(kt.refs.swagger.operation(), [
+      kt.argument.named('summary', kt.string(endpoint.summary?.trim())),
+      kt.argument.named('operationId', kt.string(endpoint.name)),
+      kt.argument.named('description', kt.string(endpoint.description?.trim())),
+      kt.argument.named(
+        'responses',
+        kt.collectionLiteral(
+          endpoint.responses.map((response) =>
+            kt.call(kt.refs.swagger.apiResponse(), [
+              kt.argument.named('responseCode', kt.string(response.statusCode?.toString())),
+              kt.argument.named('description', kt.string(response.description?.trim())),
+            ]),
+          ),
+        ),
+      ),
+    ]);
 
-  protected generateApiInterfaceMethodAnnnotations(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
-    builder
-      .if(ctx.config.addSwaggerAnnotations, (builder) =>
-        builder.appendAnnotation('Operation', 'io.swagger.v3.oas.annotations', [
-          ['summary', this.toStringLiteral(ctx, endpoint.summary?.trim())],
-          ['operationId', this.toStringLiteral(ctx, endpoint.name)],
-          ['description', this.toStringLiteral(ctx, endpoint.description?.trim())],
-          [
-            'responses',
-            (builder) =>
-              builder.parenthesize(
-                '[]',
-                (builder) =>
-                  builder.forEach(
-                    endpoint.responses,
-                    (builder, response) =>
-                      builder
-                        .append('ApiResponse')
-                        .addImport('ApiResponse', 'io.swagger.v3.oas.annotations.responses')
-                        .parenthesize('()', (builder) =>
-                          builder
-                            .append(`responseCode = ${this.toStringLiteral(ctx, response.statusCode?.toString())}, `)
-                            .append(`description = ${this.toStringLiteral(ctx, response.description?.trim())}`)
-                        ),
-                    { separator: ',\n' }
-                  ),
-                { multiline: true }
-              ),
-            endpoint.responses.length > 0,
-          ],
-        ])
-      )
-      .appendAnnotation('RequestMapping', 'org.springframework.web.bind.annotation', [
-        ['method', '[RequestMethod.' + endpoint.method.toUpperCase() + ']'],
-        ['value', '[' + this.toStringLiteral(ctx, this.getEndpointPath(ctx, endpoint)) + ']'],
-        [
+    const requestMapping = kt.annotation(kt.refs.spring.requestMapping(), [
+      kt.argument.named(
+        'method',
+        kt.collectionLiteral([kt.call([kt.refs.spring.requestMethod(), endpoint.method.toUpperCase()])]),
+      ),
+      kt.argument.named('value', kt.collectionLiteral([kt.string(this.getEndpointPath(ctx, { endpoint }))])),
+    ]);
+    if (endpoint.requestBody && endpoint.requestBody.content.length > 0) {
+      requestMapping.arguments.push(
+        kt.argument.named(
           'consumes',
-          '[' + endpoint.requestBody?.content.map((x) => this.toStringLiteral(ctx, x.type)).join(', ') + ']',
-          !!endpoint.requestBody && endpoint.requestBody.content.length > 0,
-        ],
-      ])
-      .addImport('RequestMethod', 'org.springframework.web.bind.annotation');
-  }
-
-  protected generateApiInterfaceMethodSignature(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
-    builder
-      .append(`suspend fun ${toCasing(endpoint.name, 'camel')}`)
-      .parenthesize('()', (builder) => this.generateApiInterfaceMethodParameters(ctx, builder, endpoint), {
-        multiline: true,
-      })
-      .append(': ')
-      .append((builder) => this.generateApiInterfaceMethodReturnType(ctx, builder, endpoint));
-  }
-
-  protected generateApiInterfaceMethodParameters(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
-    const parameters = this.getAllParameters(ctx, endpoint);
-    builder.forEach(
-      parameters,
-      (builder, parameter) => this.generateApiInterfaceMethodParameter(ctx, builder, endpoint, parameter),
-      { separator: ',\n' }
-    );
-  }
-
-  protected generateApiInterfaceMethodReturnType(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
-    this.generateResponseEntityType(ctx, builder, endpoint);
-  }
-
-  protected generateApiInterfaceMethodParameter(
-    ctx: Context,
-    builder: Builder,
-    endpoint: ApiEndpoint,
-    parameter: ApiParameter
-  ): void {
-    builder
-      .append((builder) => this.generateApiInterfaceMethodParameterAnnotations(ctx, builder, endpoint, parameter))
-      .ensureCurrentLineEmpty()
-      .append((builder) => this.generateApiInterfaceMethodParameterSignature(ctx, builder, endpoint, parameter));
-  }
-
-  protected generateApiInterfaceMethodParameterAnnotations(
-    ctx: Context,
-    builder: Builder,
-    endpoint: ApiEndpoint,
-    parameter: ApiParameter
-  ): void {
-    const parameterSchemaInfo = this.getSchemaInfo(ctx, parameter.schema);
-
-    if (ctx.config.addSwaggerAnnotations) {
-      if (parameter.schema?.default !== undefined) {
-        builder.addImport('Schema', 'io.swagger.v3.oas.annotations.media');
-      }
-      builder.appendAnnotation('Parameter', 'io.swagger.v3.oas.annotations', [
-        ['description', this.toStringLiteral(ctx, parameter.description?.trim())],
-        ['required', parameter.required?.toString()],
-        [
-          'schema',
-          `Schema(defaultValue = ${this.toStringLiteral(ctx, String(parameter.schema?.default))})`,
-          parameter.schema?.default !== undefined,
-        ],
-      ]);
+          kt.collectionLiteral(endpoint.requestBody?.content.map((x) => kt.string(x.type))),
+        ),
+      );
     }
 
-    if (parameterSchemaInfo.packageName && ctx.config.addJakartaValidationAnnotations) {
-      builder.appendAnnotation('Valid', 'jakarta.validation');
+    return [operation, requestMapping];
+  }
+
+  private getApiInterfaceEndpointMethodParameter(
+    ctx: Context,
+    endpoint: ApiEndpoint,
+    parameter: ApiParameter,
+  ): kt.Parameter<Builder> {
+    const schemaType = this.getSchemaType(ctx, { schema: parameter.schema });
+    const result = kt.parameter(
+      toCasing(parameter.name, ctx.config.parameterNameCasing),
+      this.getParameterType(ctx, { endpoint, parameter }),
+      {},
+    );
+
+    if (ctx.config.addSwaggerAnnotations) {
+      const annotation = kt.annotation(kt.refs.swagger.parameter(), [
+        kt.argument.named('description', kt.string(parameter.description?.trim())),
+        kt.argument.named('required', parameter.required),
+      ]);
+      if (parameter.schema?.default !== undefined) {
+        annotation.arguments.push(
+          kt.argument.named(
+            'schema',
+            kt.call(
+              [kt.refs.swagger.schema()],
+              [kt.argument.named('defaultValue', kt.string(String(parameter.schema?.default)))],
+            ),
+          ),
+        );
+      }
+      result.annotations.push(annotation);
+    }
+
+    const isCorePackage = !schemaType?.packageName || /^(kotlin|java)(\..*|$)/.test(schemaType.packageName);
+    if (!isCorePackage && ctx.config.addJakartaValidationAnnotations) {
+      result.annotations.push(kt.annotation(kt.refs.jakarta.valid()));
     }
 
     if (parameter.target === 'body') {
-      builder.appendAnnotation('RequestBody', 'org.springframework.web.bind.annotation');
+      result.annotations.push(kt.annotation(kt.refs.spring.requestBody()));
     }
 
     if (parameter.target === 'query') {
-      builder.appendAnnotation('RequestParam', 'org.springframework.web.bind.annotation', [
-        ['value', this.toStringLiteral(ctx, parameter.name)],
-        ['required', parameter.required?.toString()],
-        [
-          'defaultValue',
-          this.toStringLiteral(ctx, String(parameter.schema?.default)),
-          parameter.schema?.default !== undefined,
-        ],
+      const annotation = kt.annotation(kt.refs.spring.requestParam(), [
+        kt.argument.named('value', kt.string(parameter.name)),
+        kt.argument.named('required', parameter.required),
       ]);
+      if (parameter.schema?.default !== undefined) {
+        annotation.arguments.push(kt.argument.named('defaultValue', kt.string(String(parameter.schema?.default))));
+      }
+      result.annotations.push(annotation);
     }
 
     if (parameter.target === 'path') {
-      builder.appendAnnotation('PathVariable', 'org.springframework.web.bind.annotation', [
-        this.toStringLiteral(ctx, parameter.name),
-      ]);
+      result.annotations.push(kt.annotation(kt.refs.spring.pathVariable(), [kt.string(parameter.name)]));
     }
+
+    return result;
   }
 
-  protected generateApiInterfaceMethodParameterSignature(
+  private getApiInterfaceEndpointMethodBody(
     ctx: Context,
-    builder: Builder,
     endpoint: ApiEndpoint,
-    parameter: ApiParameter
-  ): void {
-    builder
-      .append(toCasing(parameter.name, 'camel'))
-      .append(': ')
-      .append((builder) => this.generateTypeUsage(ctx, builder, parameter.schema, parameter.target === 'body'))
-      .append(!parameter.required && parameter.schema?.default === undefined && !parameter.schema?.nullable ? '?' : '');
+    parameters: ApiParameter[],
+  ): AppendValueGroup<Builder> {
+    return appendValueGroup(
+      [
+        (b) =>
+          b.append('return ').append(
+            kt.call(
+              [kt.call(kt.reference('getDelegate'), []), toCasing(endpoint.name, ctx.config.functionNameCasing)],
+              parameters.map((x) => toCasing(x.name, ctx.config.parameterNameCasing)),
+            ),
+          ),
+      ],
+      '\n',
+    );
   }
+  // #endregion
 
-  protected generateApiInterfaceMethodContent(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
-    const parameters = this.getAllParameters(ctx, endpoint);
-    builder
-      .append(`return getDelegate().${toCasing(endpoint.name, 'camel')}(`)
-      .forEach(parameters, (builder, parameter) => builder.append(toCasing(parameter.name, 'camel')), {
-        separator: ', ',
-      })
-      .append(')');
-  }
-
-  protected generateApiControllerFile(ctx: Context, dirPath: string, packageName: string): KotlinImport {
-    const typeName = this.getApiControllerName(ctx);
+  // #region API Controller
+  protected generateApiControllerFile(ctx: Context, args: Args.GenerateApiControllerFile): KotlinImport {
+    const { dirPath, packageName } = args;
+    const typeName = this.getApiControllerName(ctx, {});
     const fileName = `${typeName}.kt`;
     const filePath = `${dirPath}/${fileName}`;
     console.log(`  Generating API controller ${typeName} to ${fileName}...`);
 
     const builder = new KotlinFileBuilder(packageName, ctx.config);
-    this.generateApiControllerFileContent(ctx, builder);
-
+    builder.append(this.getApiControllerFileContent(ctx, { controllerName: typeName }));
     writeFileSync(filePath, builder.toString());
 
-    return { typeName: builder.toString(), packageName };
+    return { typeName, packageName };
   }
 
-  protected generateApiControllerFileContent(ctx: Context, builder: Builder): void {
-    builder
-      .append((builder) => this.generateApiControllerAnnotations(ctx, builder))
-      .ensureCurrentLineEmpty()
-      .append((builder) => this.generateApiControllerSignature(ctx, builder))
-      .append(' ')
-      .parenthesize('{}', (builder) => this.generateApiControllerContent(ctx, builder), { multiline: true });
+  protected getApiControllerFileContent(
+    ctx: Context,
+    args: Args.GetApiControllerFileContent,
+  ): AppendValueGroup<Builder> {
+    const { controllerName } = args;
+
+    return appendValueGroup([this.getApiController(ctx, { controllerName })], '\n');
   }
 
-  protected generateApiControllerAnnotations(ctx: Context, builder: Builder): void {
-    builder
-      .if(ctx.config.addJakartaValidationAnnotations, (builder) =>
-        builder.appendAnnotation('Generated', 'jakarta.annotation', [
-          ['value', '[' + this.toStringLiteral(ctx, 'com.goast.kotlin.spring-service-generator') + ']'],
-        ])
-      )
-      .appendAnnotation('Controller', 'org.springframework.stereotype')
-      .appendAnnotation('RequestMapping', 'org.springframework.web.bind.annotation', [
-        this.getControllerRequestMapping(ctx),
-      ]);
+  protected getApiController(ctx: Context, args: Args.GetApiController): kt.Class<Builder> {
+    const { controllerName } = args;
+
+    return kt.class(controllerName, {
+      annotations: this.getApiControllerAnnotations(ctx),
+      primaryConstructor: kt.constructor([
+        kt.parameter.class(
+          'delegate',
+          kt.reference(this.getApiDelegateInterfaceName(ctx, {}), null, { nullable: true }),
+          {
+            annotations: [kt.annotation(kt.refs.spring.autowired(), [kt.argument.named('required', 'false')])],
+          },
+        ),
+      ]),
+      implements: [this.getApiInterfaceName(ctx, {})],
+      members: this.getApiControllerMembers(ctx),
+    });
   }
 
-  protected generateApiControllerSignature(ctx: Context, builder: Builder): void {
-    builder
-      .append('class ')
-      .append(this.getApiControllerName(ctx))
-      .parenthesize('()', (builder) => this.generateApiControllerParameters(ctx, builder), { multiline: true })
-      .append(' : ')
-      .append(this.getApiInterfaceName(ctx));
+  private getApiControllerAnnotations(ctx: Context): kt.Annotation<Builder>[] {
+    const annotations: kt.Annotation<Builder>[] = [];
+    if (ctx.config.addJakartaValidationAnnotations) {
+      annotations.push(
+        kt.annotation(kt.refs.jakarta.generated(), [
+          kt.argument.named('value', kt.collectionLiteral([kt.string('com.goast.kotlin.spring-service-generator')])),
+        ]),
+      );
+    }
+    annotations.push(kt.annotation(kt.refs.spring.controller()));
+    annotations.push(kt.annotation(kt.refs.spring.requestMapping(), [this.getControllerRequestMapping(ctx, {})]));
+    return annotations;
   }
 
-  protected generateApiControllerParameters(ctx: Context, builder: Builder): void {
-    builder
-      .appendAnnotation('Autowired', 'org.springframework.beans.factory.annotation', [['required', 'false']])
-      .append('delegate: ')
-      .append(this.getApiDelegateInterfaceName(ctx))
-      .append('?');
-  }
+  private getApiControllerMembers(ctx: Context): kt.ClassMember<Builder>[] {
+    const delegateInterfaceName = this.getApiDelegateInterfaceName(ctx, {});
 
-  protected generateApiControllerContent(ctx: Context, builder: Builder): void {
-    builder
-      .append('private val delegate: ')
-      .appendLine(this.getApiDelegateInterfaceName(ctx))
-      .appendLine()
-      .append('init ')
-      .parenthesize(
-        '{}',
-        (builder) =>
-          builder
-            .append('this.delegate = Optional.ofNullable(delegate).orElse')
-            .addImport('Optional', 'java.util')
-            .parenthesize('()', (builder) =>
-              builder.append('object : ').append(this.getApiDelegateInterfaceName(ctx)).append(' {}')
+    const delegateProp = kt.property<Builder>('delegate', {
+      accessModifier: 'private',
+      type: kt.reference(delegateInterfaceName),
+    });
+
+    const initBlock = kt.initBlock<Builder>(
+      appendValueGroup(
+        [
+          (b) =>
+            b.append('this.delegate = ').append(
+              kt.call(
+                [kt.call([kt.refs.java.optional.infer(), 'ofNullable'], ['delegate']), 'orElse'],
+                [
+                  kt.object({
+                    implements: [delegateInterfaceName],
+                  }),
+                ],
+              ),
             ),
-        { multiline: true }
-      )
-      .appendLine()
-      .appendLine()
-      .appendLine(`override fun getDelegate(): ${this.getApiDelegateInterfaceName(ctx)} = delegate`);
-  }
+        ],
+        '\n',
+      ),
+    );
 
-  protected generateApiDelegateInterfaceFile(ctx: Context, dirPath: string, packageName: string): KotlinImport {
-    const typeName = this.getApiDelegateInterfaceName(ctx);
+    const getDelegateFun = kt.function<Builder>('getDelegate', {
+      override: true,
+      returnType: delegateInterfaceName,
+      singleExpression: true,
+      body: kt.reference('delegate'),
+    });
+
+    return [delegateProp, initBlock, getDelegateFun];
+  }
+  // #endregion
+
+  // #region API Delegate Interface
+  protected generateApiDelegateInterfaceFile(ctx: Context, args: Args.GenerateApiDelegateInterfaceFile): KotlinImport {
+    const { dirPath, packageName } = args;
+    const typeName = this.getApiDelegateInterfaceName(ctx, {});
     const fileName = `${typeName}.kt`;
     const filePath = `${dirPath}/${fileName}`;
     console.log(`  Generating API delegate ${typeName} to ${fileName}...`);
 
     const builder = new KotlinFileBuilder(packageName, ctx.config);
-    this.generateApiDelegateInterfaceFileContent(ctx, builder);
-
+    builder.append(this.getApiDelegateInterfaceFileContent(ctx, { delegateInterfaceName: typeName }));
     writeFileSync(filePath, builder.toString());
 
-    return { typeName: builder.toString(), packageName };
+    return { typeName, packageName };
   }
 
-  protected generateApiDelegateInterfaceFileContent(ctx: Context, builder: Builder): void {
-    builder
-      .append((builder) => this.generateApiDelegateInterfaceAnnotations(ctx, builder))
-      .ensureCurrentLineEmpty()
-      .append((builder) => this.generateApiDelegateInterfaceSignature(ctx, builder))
-      .append(' ')
-      .parenthesize('{}', (builder) => this.generateApiDelegateInterfaceContent(ctx, builder), { multiline: true });
+  protected getApiDelegateInterfaceFileContent(
+    ctx: Context,
+    args: Args.GetApiDelegateInterfaceFileContent,
+  ): AppendValueGroup<Builder> {
+    const { delegateInterfaceName } = args;
+
+    return appendValueGroup([this.getApiDelegateInterface(ctx, { delegateInterfaceName })], '\n');
   }
 
-  protected generateApiDelegateInterfaceAnnotations(ctx: Context, builder: Builder): void {
+  protected getApiDelegateInterface(ctx: Context, args: Args.GetApiDelegateInterface): kt.Interface<Builder> {
+    const { delegateInterfaceName } = args;
+
+    return kt.interface(delegateInterfaceName, {
+      annotations: this.getApiDelegateInterfaceAnnotations(ctx),
+      members: this.getApiDelegateInterfaceMembers(ctx),
+    });
+  }
+
+  private getApiDelegateInterfaceAnnotations(ctx: Context): kt.Annotation<Builder>[] {
+    const annotations: kt.Annotation<Builder>[] = [];
     if (ctx.config.addJakartaValidationAnnotations) {
-      builder.appendAnnotation('Generated', 'jakarta.annotation', [
-        ['value', '[' + this.toStringLiteral(ctx, 'com.goast.kotlin.spring-service-generator') + ']'],
-      ]);
-    }
-  }
-
-  protected generateApiDelegateInterfaceSignature(ctx: Context, builder: Builder): void {
-    builder.append('interface ').append(this.getApiDelegateInterfaceName(ctx));
-  }
-
-  protected generateApiDelegateInterfaceContent(ctx: Context, builder: Builder): void {
-    builder
-      .appendLine(`fun getRequest(): Optional<NativeWebRequest> = Optional.empty()`)
-      .addImport('Optional', 'java.util')
-      .addImport('NativeWebRequest', 'org.springframework.web.context.request')
-      .forEach(ctx.service.endpoints, (builder, endpoint) =>
-        builder
-          .ensurePreviousLineEmpty()
-          .append((builder) => this.generateApiDelegateInterfaceMethod(ctx, builder, endpoint))
+      annotations.push(
+        kt.annotation(kt.refs.jakarta.generated(), [
+          kt.argument.named('value', kt.collectionLiteral([kt.string('com.goast.kotlin.spring-service-generator')])),
+        ]),
       );
+    }
+    return annotations;
   }
 
-  protected generateApiDelegateInterfaceMethod(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
-    builder
-      .append((builder) => this.generateApiDelegateInterfaceMethodAnnnotations(ctx, builder, endpoint))
-      .ensureCurrentLineEmpty()
-      .append((builder) => this.generateApiDelegateInterfaceMethodSignature(ctx, builder, endpoint))
-      .append(' ')
-      .parenthesize('{}', (builder) => this.generateApiDelegateInterfaceMethodContent(ctx, builder, endpoint), {
-        multiline: true,
-      });
-  }
+  private getApiDelegateInterfaceMembers(ctx: Context): kt.InterfaceMember<Builder>[] {
+    const members: kt.InterfaceMember<Builder>[] = [];
 
-  protected generateApiDelegateInterfaceMethodAnnnotations(
-    ctx: Context,
-    builder: Builder,
-    endpoint: ApiEndpoint
-  ): void {
-    // None for now.
-  }
-
-  protected generateApiDelegateInterfaceMethodSignature(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
-    builder
-      .append(`suspend fun ${toCasing(endpoint.name, 'camel')}`)
-      .parenthesize('()', (builder) => this.generateApiDelegateInterfaceMethodParameters(ctx, builder, endpoint), {
-        multiline: true,
-      })
-      .append(': ')
-      .append((builder) => this.generateApiDelegateInterfaceMethodReturnType(ctx, builder, endpoint));
-  }
-
-  protected generateApiDelegateInterfaceMethodParameters(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
-    const parameters = this.getAllParameters(ctx, endpoint);
-    builder.forEach(
-      parameters,
-      (builder, parameter) => this.generateApiDelegateInterfaceMethodParameter(ctx, builder, endpoint, parameter),
-      { separator: ',\n' }
+    members.push(
+      kt.function('getRequest', {
+        returnType: kt.refs.java.optional([kt.refs.spring.nativeWebRequest()]),
+        singleExpression: true,
+        body: kt.call([kt.refs.java.optional.infer(), 'empty'], []),
+      }),
     );
+
+    ctx.service.endpoints.forEach((endpoint) => {
+      members.push(this.getApiDelegateInterfaceEndpointMethod(ctx, { endpoint }));
+    });
+
+    return members;
   }
 
-  protected generateApiDelegateInterfaceMethodReturnType(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
-    this.generateResponseEntityType(ctx, builder, endpoint);
-  }
-
-  protected generateApiDelegateInterfaceMethodParameter(
+  protected getApiDelegateInterfaceEndpointMethod(
     ctx: Context,
-    builder: Builder,
-    endpoint: ApiEndpoint,
-    parameter: ApiParameter
-  ): void {
-    builder
-      .append((builder) =>
-        this.generateApiDelegateInterfaceMethodParameterAnnotations(ctx, builder, endpoint, parameter)
-      )
-      .ensureCurrentLineEmpty()
-      .append((builder) =>
-        this.generateApiDelegateInterfaceMethodParameterSignature(ctx, builder, endpoint, parameter)
+    args: Args.GetApiDelegateInterfaceEndpointMethod,
+  ): kt.Function<Builder> {
+    const { endpoint } = args;
+    const parameters = this.getAllParameters(ctx, { endpoint });
+
+    return kt.function(toCasing(endpoint.name, ctx.config.functionNameCasing), {
+      suspend: true,
+      parameters: parameters.map((parameter) => {
+        return kt.parameter(
+          toCasing(parameter.name, ctx.config.parameterNameCasing),
+          this.getParameterType(ctx, { endpoint, parameter }),
+        );
+      }),
+      returnType: kt.refs.spring.responseEntity([this.getResponseType(ctx, { endpoint })]),
+      body: appendValueGroup(
+        [
+          appendValueGroup([
+            'return ',
+            kt.call(kt.refs.spring.responseEntity.infer(), [kt.call([kt.refs.spring.httpStatus(), 'NOT_IMPLEMENTED'])]),
+          ]),
+        ],
+        '\n',
+      ),
+    });
+  }
+  // #endregion
+
+  protected getParameterType(ctx: Context, args: Args.GetParameterType): kt.Type<Builder> {
+    const { parameter } = args;
+    const type = this.getTypeUsage(ctx, {
+      schema: parameter.schema,
+      nullable: (!parameter.required && parameter.schema?.default === undefined) || undefined,
+    });
+    return parameter.target === 'body' ? listToFlux(type) : type;
+  }
+
+  protected getResponseType(ctx: Context, args: Args.GetResponseType): kt.Type<Builder> {
+    const { endpoint } = args;
+    const responseSchemas = endpoint.responses
+      .flatMap((x) => x.contentOptions.flatMap((x) => x.schema))
+      .filter(notNullish)
+      .filter(
+        (x, i, a) =>
+          a.findIndex((y) => {
+            const xType = this.getSchemaType(ctx, { schema: x });
+            const yType = this.getSchemaType(ctx, { schema: y });
+            return xType?.name === yType?.name && xType?.packageName === yType?.packageName;
+          }) === i,
       );
-  }
 
-  protected generateApiDelegateInterfaceMethodParameterAnnotations(
-    ctx: Context,
-    builder: Builder,
-    endpoint: ApiEndpoint,
-    parameter: ApiParameter
-  ): void {
-    // None for now.
-  }
-
-  protected generateApiDelegateInterfaceMethodParameterSignature(
-    ctx: Context,
-    builder: Builder,
-    endpoint: ApiEndpoint,
-    parameter: ApiParameter
-  ): void {
-    builder
-      .append(toCasing(parameter.name, 'camel'))
-      .append(': ')
-      .append((builder) => this.generateTypeUsage(ctx, builder, parameter.schema, parameter.target === 'body'))
-      .append(!parameter.required && parameter.schema?.default === undefined && !parameter.schema?.nullable ? '?' : '');
-  }
-
-  protected generateApiDelegateInterfaceMethodContent(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
-    builder
-      .appendLine('return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)')
-      .addImport('ResponseEntity', 'org.springframework.http')
-      .addImport('HttpStatus', 'org.springframework.http');
-  }
-
-  protected generateResponseEntityType(ctx: Context, builder: Builder, endpoint: ApiEndpoint): void {
-    builder
-      .append('ResponseEntity')
-      .addImport('ResponseEntity', 'org.springframework.http')
-      .parenthesize('<>', (builder) => {
-        const responseSchemas = endpoint.responses
-          .flatMap((x) => x.contentOptions.flatMap((x) => x.schema))
-          .filter(notNullish)
-          .filter(
-            (x, i, a) =>
-              a.findIndex((y) => {
-                const xInfo = this.getSchemaInfo(ctx, x);
-                const yInfo = this.getSchemaInfo(ctx, y);
-                return xInfo.typeName === yInfo.typeName && xInfo.packageName === yInfo.packageName;
-              }) === i
-          );
-        if (responseSchemas.length === 1) {
-          this.generateTypeUsage(ctx, builder, responseSchemas[0], true, 'Unit');
-        } else if (responseSchemas.length === 0) {
-          builder.append('Unit');
-        } else {
-          builder.append('Any?');
-        }
-      });
-  }
-
-  protected generateTypeUsage(
-    ctx: Context,
-    builder: Builder,
-    schema: ApiSchema | undefined,
-    arrayAsFlux: boolean,
-    fallback?: string
-  ): void {
-    if (schema && schema.kind === 'array') {
-      const schemaInfo = this.getSchemaInfo(ctx, schema.items);
-      if (arrayAsFlux) {
-        builder.append(`Flux<${schemaInfo.typeName}>`).addImport('Flux', 'reactor.core.publisher');
-      } else {
-        builder.append(`List<${schemaInfo.typeName}>`);
-      }
-      builder.imports.addImports([schemaInfo, ...schemaInfo.additionalImports]);
-    } else if (schema || !fallback) {
-      const schemaInfo = this.getSchemaInfo(ctx, schema);
-      builder.append(schemaInfo.typeName);
-      builder.imports.addImports([schemaInfo, ...schemaInfo.additionalImports]);
+    if (responseSchemas.length === 1) {
+      return listToFlux(this.getTypeUsage(ctx, { schema: responseSchemas[0], fallback: kt.refs.unit() }));
+    } else if (responseSchemas.length === 0) {
+      return kt.refs.unit();
     } else {
-      builder.append(fallback);
+      return kt.refs.any({ nullable: true });
     }
   }
 
-  protected getControllerRequestMapping(ctx: Context, prefix?: string): string {
-    const basePath = this.getBasePath(ctx);
-    prefix ??= `openapi.${toCasing(ctx.service.name, 'camel')}`;
-    return this.toStringLiteral(ctx, `\${${prefix}.base-path:${basePath}}`);
+  protected getTypeUsage(ctx: Context, args: Args.GetTypeUsage<Builder>): kt.Type<Builder> {
+    const { schema, nullable, fallback } = args;
+    const type = this.getSchemaType(ctx, { schema });
+    return type
+      ? createOverwriteProxy(type, { nullable: nullable ?? type.nullable })
+      : fallback ?? kt.refs.any({ nullable });
   }
 
-  protected getBasePath(ctx: Context): string {
+  protected getSchemaType(ctx: Context, args: Args.GetSchemaType): kt.Reference<SourceBuilder> | undefined {
+    const { schema } = args;
+    return schema && ctx.input.models[schema.id].type;
+  }
+
+  protected getControllerRequestMapping(ctx: Context, args: Args.GetControllerRequestMapping): kt.String<Builder> {
+    let { prefix } = args;
+    const basePath = this.getBasePath(ctx, {});
+    prefix ??= `openapi.${toCasing(ctx.service.name, ctx.config.propertyNameCasing)}`;
+    return kt.string(`\${${prefix}.base-path:${basePath}}`);
+  }
+
+  protected getBasePath(ctx: Context, args: Args.GetBasePath): string {
     return modifyString(
       (ctx.service.$src ?? ctx.service.endpoints[0]?.$src)?.document.servers?.[0]?.url ?? '/',
       ctx.config.basePath,
-      ctx.service
+      ctx.service,
     );
   }
 
-  protected getEndpointPath(ctx: Context, endpoint: ApiEndpoint): string {
+  protected getEndpointPath(ctx: Context, args: Args.GetEndpointPath): string {
+    const { endpoint } = args;
     return modifyString(endpoint.path, ctx.config.pathModifier, endpoint);
   }
 
-  protected getDirectoryPath(ctx: Context, packageName: string): string {
+  protected getDirectoryPath(ctx: Context, args: Args.GetDirectoryPath): string {
+    const { packageName } = args;
     return `${ctx.config.outputDir}/${packageName.replace(/\./g, '/')}`;
   }
 
-  protected getPackageName(ctx: Context): string {
+  protected getPackageName(ctx: Context, args: Args.GetPackageName): string {
     const packageSuffix =
       typeof ctx.config.packageSuffix === 'string' ? ctx.config.packageSuffix : ctx.config.packageSuffix(ctx.service);
     return ctx.config.packageName + packageSuffix;
   }
 
-  protected getApiInterfaceName(ctx: Context): string {
-    return toCasing(ctx.service.name, 'pascal') + 'Api';
+  protected getApiInterfaceName(ctx: Context, args: Args.GetApiInterfaceName): string {
+    return toCasing(ctx.service.name + '_Api', ctx.config.typeNameCasing);
   }
 
-  protected getApiControllerName(ctx: Context): string {
-    return toCasing(ctx.service.name, 'pascal') + 'ApiController';
+  protected getApiControllerName(ctx: Context, args: Args.GetApiControllerName): string {
+    return toCasing(ctx.service.name + '_ApiController', ctx.config.typeNameCasing);
   }
 
-  protected getApiDelegateInterfaceName(ctx: Context): string {
-    return toCasing(ctx.service.name, 'pascal') + 'ApiDelegate';
+  protected getApiDelegateInterfaceName(ctx: Context, args: Args.GetApiDelegateInterfaceName): string {
+    return toCasing(ctx.service.name + '_ApiDelegate', ctx.config.typeNameCasing);
   }
 
-  protected getSchemaInfo(ctx: Context, schema: ApiSchema | undefined): KotlinModelGeneratorOutput {
-    return (
-      (schema && ctx.input.models[schema.id]) ?? { typeName: 'Any?', packageName: undefined, additionalImports: [] }
-    );
-  }
-
-  protected getAllParameters(ctx: Context, endpoint: ApiEndpoint): ApiParameter[] {
+  protected getAllParameters(ctx: Context, args: Args.GetAllParameters): ApiParameter[] {
+    const { endpoint } = args;
     const parameters = endpoint.parameters.filter(
-      (parameter) => parameter.target === 'query' || parameter.target === 'path'
+      (parameter) => parameter.target === 'query' || parameter.target === 'path',
     );
     if (endpoint.requestBody) {
       const schema = endpoint.requestBody.content[0].schema;
-      const schemaInfo = this.getSchemaInfo(ctx, schema);
-      const name = /^Any\??$/.test(schemaInfo.typeName) ? 'body' : schemaInfo.typeName;
+      const schemaType = this.getSchemaType(ctx, { schema });
+      const name =
+        !schemaType || /^Any\??$/.test(schemaType.name)
+          ? 'body'
+          : SourceBuilder.build((b) => kt.reference.write(b, schemaType));
       parameters.push({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         $src: undefined!,
         $ref: undefined,
         id: 'body',
@@ -585,12 +542,8 @@ export class DefaultKotlinSpringControllerGenerator
 
     return parameters;
   }
+}
 
-  protected sortParameters(ctx: Context, parameters: Iterable<ApiParameter>): ApiParameter[] {
-    return [...parameters].sort((a, b) => {
-      const aRequired = a.required ? 1 : 0;
-      const bRequired = b.required ? 1 : 0;
-      return aRequired - bRequired;
-    });
-  }
+export function listToFlux<T>(type: T): T {
+  return kt.refs.list.matches(type) ? (kt.refs.reactor.flux([type.generics[0]]) as T) : type;
 }

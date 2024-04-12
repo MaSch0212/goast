@@ -1,5 +1,7 @@
-import { SourceBuilder, SourceBuilderOptions } from '@goast/core';
+import { AppendParam, AppendValue, SourceBuilder, isAppendValue } from '@goast/core';
 
+import { KtNode } from './ast/node';
+import { KotlinGeneratorConfig, defaultKotlinGeneratorConfig } from './config';
 import { ImportCollection } from './import-collection';
 
 type AnnotationArgumentValue<T extends SourceBuilder> = string | ((builder: T) => void);
@@ -9,12 +11,28 @@ type AnnotationArgument<T extends SourceBuilder> =
   | [value: AnnotationArgumentValue<T>, condition: boolean]
   | [key: string, value: AnnotationArgumentValue<T>, condition: boolean];
 
-export class KotlinFileBuilder extends SourceBuilder {
+export type KotlinAppends<TAdditionalAppends> = KtNode<KotlinFileBuilder> | TAdditionalAppends;
+export type KotlinAppendParam<TBuilder extends KotlinFileBuilder, TAdditionalAppends> = AppendParam<
+  TBuilder,
+  KotlinAppends<TAdditionalAppends>
+>;
+
+export function isKotlinAppendValue<TBuilder extends KotlinFileBuilder>(
+  value: unknown,
+): value is AppendValue<TBuilder> {
+  return isAppendValue(value) || value instanceof KtNode;
+}
+
+export class KotlinFileBuilder<TAdditionalAppends = never> extends SourceBuilder<KotlinAppends<TAdditionalAppends>> {
   public readonly packageName: string | undefined;
   public readonly imports = new ImportCollection();
 
-  constructor(packageName: string | undefined, options: SourceBuilderOptions) {
-    super(options);
+  public override get options(): KotlinGeneratorConfig {
+    return super.options as KotlinGeneratorConfig;
+  }
+
+  constructor(packageName?: string, options?: KotlinGeneratorConfig) {
+    super(options ?? defaultKotlinGeneratorConfig);
     this.packageName = packageName;
   }
 
@@ -57,9 +75,9 @@ export class KotlinFileBuilder extends SourceBuilder {
               builder
                 .append(name ? `${name} = ` : '')
                 .append((builder) => (typeof value === 'string' ? builder.append(value) : value(builder))),
-            { separator: multiline ? ',\n' : ', ' }
+            { separator: multiline ? ',\n' : ', ' },
           )
-          .appendLineIf(multiline)
+          .appendLineIf(multiline),
       );
     }
 
@@ -81,5 +99,12 @@ export class KotlinFileBuilder extends SourceBuilder {
       .append(super.toString())
       .if(addPadding, (builder) => builder.ensureCurrentLineEmpty())
       .toString();
+  }
+
+  protected override appendSingle(value: KotlinAppendParam<this, TAdditionalAppends>): void {
+    super.appendSingle(value);
+    if (value instanceof KtNode) {
+      value.write(this);
+    }
   }
 }

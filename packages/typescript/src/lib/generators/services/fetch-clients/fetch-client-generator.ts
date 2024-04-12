@@ -2,7 +2,7 @@ import { dirname, resolve } from 'path';
 
 import { ensureDirSync, writeFileSync } from 'fs-extra';
 
-import { ApiEndpoint, ApiSchema, getEndpointUrlPreview, notNullish, toCasing } from '@goast/core';
+import { ApiEndpoint, ApiSchema, notNullish, toCasing } from '@goast/core';
 
 import { TypeScriptFetchClientGeneratorContext, TypeScriptFetchClientGeneratorOutput } from './models';
 import { TypeScriptFileBuilder } from '../../../file-builder';
@@ -81,7 +81,7 @@ export class DefaultTypeScriptFetchClientGenerator
 
   protected generateInterfaceContent(ctx: Context, builder: Builder) {
     builder.forEach(ctx.service.endpoints, (builder, endpoint) =>
-      this.generateInterfaceServiceMethod(ctx, builder, endpoint)
+      this.generateInterfaceServiceMethod(ctx, builder, endpoint),
     );
   }
 
@@ -106,7 +106,7 @@ export class DefaultTypeScriptFetchClientGenerator
         '{}',
         (builder) =>
           builder.appendLineIf(notNullish(baseUrl), 'baseUrl: ', this.toStringLiteral(ctx, baseUrl ?? ''), ','),
-        { indent: true, multiline: true }
+        { indent: true, multiline: true },
       );
   }
 
@@ -134,7 +134,7 @@ export class DefaultTypeScriptFetchClientGenerator
       .appendIf(this.shouldGenerateInterface(ctx), (builder) =>
         builder
           .addImport(this.getInterfaceName(ctx), this.getInterfaceFilePath(ctx))
-          .append(' implements ', this.getInterfaceName(ctx))
+          .append(' implements ', this.getInterfaceName(ctx)),
       );
   }
 
@@ -181,13 +181,13 @@ export class DefaultTypeScriptFetchClientGenerator
     const hasParams =
       endpoint.parameters.some((p) => p.target === 'path' || p.target === 'query') ||
       (!!endpoint.requestBody && endpoint.requestBody?.content.length > 0);
-    builder.appendComment('/***/', (builder) =>
-      builder
-        .appendLine(endpoint.description ?? '[No description was provided by the API]')
-        .appendLine(`@see ${getEndpointUrlPreview(endpoint)}`)
-        .appendLineIf(hasParams, `@param params Parameters for the endpoint.`)
-        .append(`@returns The response of the call to the endpoint.`)
-    );
+    // builder.appendComment('/***/', (builder) =>
+    //   builder
+    //     .appendLine(endpoint.description ?? '[No description was provided by the API]')
+    //     .appendLine(`@see ${getEndpointUrlPreview(endpoint)}`)
+    //     .appendLineIf(hasParams, `@param params Parameters for the endpoint.`)
+    //     .append(`@returns The response of the call to the endpoint.`)
+    // );
   }
 
   protected generateServiceMethodSignature(ctx: Context, builder: Builder, endpoint: ApiEndpoint) {
@@ -214,11 +214,11 @@ export class DefaultTypeScriptFetchClientGenerator
                   this.toPropertyName(ctx, parameter.name),
                   parameter.required ? ': ' : '?: ',
                   this.getTypeName(ctx, builder, parameter.schema?.id),
-                  ';'
-                )
+                  ';',
+                ),
               ),
-            { indent: true, multiline: true }
-          )
+            { indent: true, multiline: true },
+          ),
       )
       .appendLineIf(params.length > 0 && !!bodySchemaId, ',')
       .appendIf(!!bodySchemaId, (builder) => builder.append(`body: ${this.getTypeName(ctx, builder, bodySchemaId)}`))
@@ -253,11 +253,11 @@ export class DefaultTypeScriptFetchClientGenerator
                 .appendIf(parameter.target === 'query', `.withQueryParam`)
                 .parenthesize(
                   '()',
-                  `${this.toStringLiteral(ctx, parameter.name)}, params.${this.toPropertyName(ctx, parameter.name)}`
+                  `${this.toStringLiteral(ctx, parameter.name)}, params.${this.toPropertyName(ctx, parameter.name)}`,
                 )
-                .appendLine()
+                .appendLine(),
           )
-          .appendLine('.build();')
+          .appendLine('.build();'),
       )
       .append('const response = (this.options.fetch ?? fetch)')
       .parenthesize(
@@ -270,20 +270,20 @@ export class DefaultTypeScriptFetchClientGenerator
                 .appendLine('method: ', this.toStringLiteral(ctx, toCasing(endpoint.method, 'all-upper')), ',')
                 .appendLine('headers: this.options.headers,')
                 .appendLineIf(!!endpoint.requestBody?.content[0]?.schema, 'body: JSON.stringify(body),'),
-            { indent: true, multiline: true }
+            { indent: true, multiline: true },
           ),
-        { indent: false }
+        { indent: false },
       )
       .appendLine(';')
       .appendLine(
         "Object.defineProperty(response, 'isVoidResponse', { value: ",
         this.getResponseSchema(ctx, endpoint) ? 'false' : 'true',
-        ' });'
+        ' });',
       )
       .appendLine(
         'return response as unknown as ',
         (builder) => this.generateServiceMethodReturnValue(ctx, builder, endpoint),
-        ';'
+        ';',
       );
   }
 
@@ -326,7 +326,7 @@ export class DefaultTypeScriptFetchClientGenerator
     return resolve(
       ctx.config.outputDir,
       ctx.config.clientInterfaceDirPath ?? ctx.config.clientDirPath,
-      `${toCasing(ctx.service.name, ctx.config.interfaceFileNameCasing ?? ctx.config.fileNameCasing)}.ts`
+      `${toCasing(ctx.service.name, ctx.config.interfaceFileNameCasing ?? ctx.config.fileNameCasing)}.ts`,
     );
   }
 
@@ -334,7 +334,7 @@ export class DefaultTypeScriptFetchClientGenerator
     return resolve(
       ctx.config.outputDir,
       ctx.config.clientDirPath,
-      `${toCasing(ctx.service.name, ctx.config.fileNameCasing)}.ts`
+      `${toCasing(ctx.service.name, ctx.config.fileNameCasing)}.ts`,
     );
   }
 

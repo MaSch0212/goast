@@ -40,7 +40,7 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
 
   public use<PInput extends OpenApiGeneratorInput, POutput extends OpenApiGeneratorOutput, PConfig extends AnyConfig>(
     provider: ActionProvider<OpenApiGenerationProviderFn<VInput<PInput, TOutput>, POutput, PConfig>>,
-    config?: Partial<PConfig>
+    config?: Partial<PConfig>,
   ): _OpenApiGenerator<Merge<[TOutput, POutput]>> {
     this._providers.push({ provider: provider as any, config });
     return new _OpenApiGenerator<Merge<[TOutput, POutput]>>(this._config, [...this._providers], this._parser);
@@ -49,24 +49,24 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
   public useType<
     PInput extends OpenApiGeneratorInput,
     POutput extends OpenApiGeneratorOutput,
-    PConfig extends AnyConfig
+    PConfig extends AnyConfig,
   >(
     type: EmptyConstructor<OpenApiGenerationProvider<VInput<PInput, TOutput>, POutput, PConfig>>,
-    config?: Partial<PConfig>
+    config?: Partial<PConfig>,
   ): _OpenApiGenerator<Merge<[TOutput, POutput]>> {
     return this.use(ActionProvider.fromType(type, 'generate'), config);
   }
 
   public useFn<PInput extends TOutput, POutput extends OpenApiGeneratorOutput, PConfig extends AnyConfig>(
     fn: OpenApiGenerationProviderFn<VInput<PInput, TOutput>, POutput, PConfig>,
-    config?: Partial<PConfig>
+    config?: Partial<PConfig>,
   ): _OpenApiGenerator<Merge<[TOutput, POutput]>> {
     return this.use(ActionProvider.fromFn(fn), config);
   }
 
   public useValue<PInput extends TOutput, POutput extends OpenApiGeneratorOutput, PConfig extends AnyConfig>(
     value: OpenApiGenerationProvider<VInput<PInput, TOutput>, POutput, PConfig>,
-    config?: Partial<PConfig>
+    config?: Partial<PConfig>,
   ): _OpenApiGenerator<Merge<[TOutput, POutput]>> {
     return this.use(ActionProvider.fromValue(value, 'generate'), config);
   }
@@ -92,6 +92,7 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
         input = mergeDeep(input, result);
       }
     }
+
     return input;
   }
 
@@ -143,7 +144,7 @@ export abstract class OpenApiGenerationProviderBase<
   TInput extends OpenApiGeneratorInput,
   TOutput extends OpenApiGeneratorOutput,
   TConfig extends AnyConfig,
-  TContext extends OpenApiGenerationProviderContext<TInput, TConfig>
+  TContext extends OpenApiGenerationProviderContext<TInput, TConfig>,
 > implements OpenApiGenerationProvider<TInput, TOutput, TConfig>
 {
   public generate(context: OpenApiGeneratorContext<TInput>, config?: Partial<TConfig> | undefined): TOutput {
@@ -154,7 +155,7 @@ export abstract class OpenApiGenerationProviderBase<
   protected getProviderContext(
     context: OpenApiGeneratorContext<TInput>,
     config: Partial<TConfig> | undefined,
-    defaultConfig: DefaultGenerationProviderConfig<TConfig>
+    defaultConfig: DefaultGenerationProviderConfig<TConfig>,
   ): OpenApiGenerationProviderContext<TInput, TConfig> {
     const c = { ...context.config, ...defaultConfig, ...config } as unknown as OpenApiGeneratorConfig & TConfig;
     return Object.assign(context, {
@@ -164,7 +165,7 @@ export abstract class OpenApiGenerationProviderBase<
 
   protected abstract buildContext(
     context: OpenApiGeneratorContext<TInput>,
-    config?: Partial<TConfig> | undefined
+    config?: Partial<TConfig> | undefined,
   ): TContext;
 
   protected abstract onGenerate(ctx: TContext): TOutput;

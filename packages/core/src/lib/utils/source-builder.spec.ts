@@ -48,7 +48,7 @@ describe('SourceBuilder', () => {
       expect(result).toEqual('helloworld');
     });
 
-    it.only('should build a string using a callback function that receives a `SourceBuilder` instance and options', () => {
+    it('should build a string using a callback function that receives a `SourceBuilder` instance and options', () => {
       const buildAction = (builder: SourceBuilder) => {
         builder.appendLine('hello');
         builder.indent((b) => b.append('world'));
@@ -161,7 +161,7 @@ describe('SourceBuilder', () => {
   describe('prependLineIf', () => {
     it('should prepend the specified value with a line terminator if the condition is true', () => {
       const builder = new SourceBuilder().append('bar').prependLineIf(true, 'foo');
-      expect(builder.toString()).toBe('foo\nbar');
+      expect(builder.toString()).toBe(`foo${EOL}bar`);
     });
 
     it('should not prepend the specified value if the condition is false', () => {
@@ -186,7 +186,7 @@ describe('SourceBuilder', () => {
         b.appendLine('foo');
         b.appendLine('bar');
       });
-      expect(builder.toString()).toBe('// foo\n// bar\n');
+      expect(builder.toString()).toBe(`// foo${EOL}// bar${EOL}`);
     });
 
     it('should apply the provided builder function with the specified line prefix and indentation', () => {
@@ -194,21 +194,30 @@ describe('SourceBuilder', () => {
         b.appendWithLinePrefix('// ', (b) => {
           b.appendLine('foo');
           b.appendLine('bar');
-        })
+        }),
       );
-      expect(builder.toString()).toBe('  // foo\n  // bar\n');
+      expect(builder.toString()).toBe(`  // foo${EOL}  // bar${EOL}`);
+    });
+
+    it('should write indents after the prefix', () => {
+      const builder = new SourceBuilder().indent((b) =>
+        b.appendWithLinePrefix('// ', (b) => {
+          b.indent((b) => b.appendLine('foo'));
+        }),
+      );
+      expect(builder.toString()).toBe(`  //   foo${EOL}`);
     });
   });
 
   describe('appendLineWithLinePrefix', () => {
     it('should append the specified values as a new line with the specified line prefix', () => {
       const builder = new SourceBuilder().appendLineWithLinePrefix('// ', 'foo', 'bar');
-      expect(builder.toString()).toBe('// foo\n// bar\n');
+      expect(builder.toString()).toBe('// foobar' + EOL);
     });
 
     it('should handle null and undefined values', () => {
       const builder = new SourceBuilder().appendLineWithLinePrefix('// ', 'foo', null, undefined, 'bar');
-      expect(builder.toString()).toBe('// foo\n// bar\n');
+      expect(builder.toString()).toBe('// foobar' + EOL);
     });
   });
 
@@ -258,6 +267,20 @@ describe('SourceBuilder', () => {
     });
   });
 
+  describe('pretendPreviousLineEmpty', () => {
+    it('should pretend the previous line is empty', () => {
+      sb.appendLine('line1').append('a').pretendPreviousLineEmpty().ensurePreviousLineEmpty().append('b');
+      expect(sb.toString()).toBe(`line1${EOL}ab`);
+    });
+  });
+
+  describe('pretendCurrentLineEmpty', () => {
+    it('should pretend the previous line is empty', () => {
+      sb.append('a').pretendCurrentLineEmpty().ensureCurrentLineEmpty().append('b');
+      expect(sb.toString()).toBe(`ab`);
+    });
+  });
+
   describe('if', () => {
     it('should append the content when condition is true', () => {
       sb.if(true, (x) => x.append('stuff'));
@@ -272,7 +295,7 @@ describe('SourceBuilder', () => {
     it('should append the content when condition function returns true', () => {
       sb.if(
         () => true,
-        (x) => x.append('stuff')
+        (x) => x.append('stuff'),
       );
       expect(sb.toString()).toBe(`stuff`);
     });
@@ -280,7 +303,7 @@ describe('SourceBuilder', () => {
     it('should not append the content when condition function returns false', () => {
       sb.if(
         () => false,
-        (x) => x.append('stuff')
+        (x) => x.append('stuff'),
       );
       expect(sb.toString()).toBe(``);
     });
@@ -289,7 +312,7 @@ describe('SourceBuilder', () => {
       sb.if(
         true,
         (x) => x.append('stuff'),
-        (x) => x.append('other stuff')
+        (x) => x.append('other stuff'),
       );
       expect(sb.toString()).toBe(`stuff`);
     });
@@ -298,7 +321,7 @@ describe('SourceBuilder', () => {
       sb.if(
         false,
         (x) => x.append('stuff'),
-        (x) => x.append('other stuff')
+        (x) => x.append('other stuff'),
       );
       expect(sb.toString()).toBe(`other stuff`);
     });
@@ -307,7 +330,7 @@ describe('SourceBuilder', () => {
       sb.if(
         () => true,
         (x) => x.append('stuff'),
-        (x) => x.append('other stuff')
+        (x) => x.append('other stuff'),
       );
       expect(sb.toString()).toBe(`stuff`);
     });
@@ -316,7 +339,7 @@ describe('SourceBuilder', () => {
       sb.if(
         () => false,
         (x) => x.append('stuff'),
-        (x) => x.append('other stuff')
+        (x) => x.append('other stuff'),
       );
       expect(sb.toString()).toBe(`other stuff`);
     });
@@ -361,6 +384,19 @@ describe('SourceBuilder', () => {
       sb.indent('line1\nline2\n');
       expect(sb.toString()).toBe(`  line1${EOL}  line2${EOL}`);
     });
+
+    it('should nest indentations', () => {
+      sb.appendLine('(')
+        .indent((b1) => {
+          b1.appendLine('(')
+            .indent((b2) => {
+              b2.appendLine('line1');
+            })
+            .appendLine(')');
+        })
+        .appendLine(')');
+      expect(sb.toString()).toBe(`(${EOL}  (${EOL}    line1${EOL}  )${EOL})${EOL}`);
+    });
   });
 
   describe('indentIf', () => {
@@ -377,7 +413,7 @@ describe('SourceBuilder', () => {
     it('should indent when condition function returns true', () => {
       sb.indentIf(
         () => true,
-        (x) => x.append('stuff')
+        (x) => x.append('stuff'),
       );
       expect(sb.toString()).toBe(`  stuff`);
     });
@@ -385,7 +421,7 @@ describe('SourceBuilder', () => {
     it('should not indent when condition function returns false', () => {
       sb.indentIf(
         () => false,
-        (x) => x.append('stuff')
+        (x) => x.append('stuff'),
       );
       expect(sb.toString()).toBe(`stuff`);
     });
@@ -441,6 +477,19 @@ describe('SourceBuilder', () => {
       sb.parenthesize('()', (x) => x.append(`${EOL}stuff${EOL}`), { multiline: true, indent: false });
       expect(sb.toString()).toBe(`(${EOL}${EOL}stuff${EOL})`);
     });
+
+    it('should ignore first ensurePreviousLineEmpty', () => {
+      sb.parenthesize('()', (x) => x.ensurePreviousLineEmpty().append('stuff'), { multiline: true });
+      expect(sb.toString()).toBe(`(${EOL}  stuff${EOL})`);
+    });
+
+    it('should not ignore first ensurePreviousLineEmpty if disabled', () => {
+      sb.parenthesize('()', (x) => x.ensurePreviousLineEmpty().append('stuff'), {
+        multiline: true,
+        pretendEmpty: false,
+      });
+      expect(sb.toString()).toBe(`(${EOL}${EOL}  stuff${EOL})`);
+    });
   });
 
   describe('parenthesizeIf', () => {
@@ -463,7 +512,7 @@ describe('SourceBuilder', () => {
       sb.parenthesizeIf(
         () => true,
         '()',
-        (x) => x.append('stuff')
+        (x) => x.append('stuff'),
       );
       expect(sb.toString()).toBe(`(stuff)`);
     });
@@ -472,7 +521,7 @@ describe('SourceBuilder', () => {
       sb.parenthesizeIf(
         () => false,
         '()',
-        (x) => x.append('stuff')
+        (x) => x.append('stuff'),
       );
       expect(sb.toString()).toBe(`stuff`);
     });
@@ -497,7 +546,7 @@ describe('SourceBuilder', () => {
         () => true,
         '()',
         (x) => x.append('stuff'),
-        { multiline: true }
+        { multiline: true },
       );
       expect(sb.toString()).toBe(`(${EOL}  stuff${EOL})`);
     });
@@ -507,7 +556,7 @@ describe('SourceBuilder', () => {
         () => false,
         '()',
         (x) => x.append('stuff'),
-        { multiline: true }
+        { multiline: true },
       );
       expect(sb.toString()).toBe(`stuff`);
     });

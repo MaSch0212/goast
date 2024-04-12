@@ -6,6 +6,10 @@
   "description": "",
   "type": "object",
   "properties": {
+    "outputPath": {
+      "type": "string",
+      "description": "Output path for the build"
+    },
     "entryFile": {
       "type": "string",
       "description": "Entry point for the package",
@@ -14,9 +18,7 @@
     "additionalEntryPoints": {
       "type": "object",
       "description": "Additional entry points to be used for the build",
-      "additionalProperties": {
-        "type": "string"
-      }
+      "additionalProperties": true
     },
     "tsConfig": {
       "type": "string",
@@ -31,5 +33,5 @@
       }
     }
   },
-  "required": []
+  "required": ["outputPath"]
 }

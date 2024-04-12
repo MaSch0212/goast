@@ -1,9 +1,23 @@
 import { SourceBuilderOptions, StringBuilder } from '@goast/core';
 
 import { KotlinImport } from './common-results';
+import { defaultKotlinGeneratorConfig } from './config';
+
+export type ImportCollectionOptions = {
+  globalImports: string[];
+};
+
+export const defaultImportCollectionOptions: ImportCollectionOptions = {
+  globalImports: defaultKotlinGeneratorConfig.globalImports,
+};
 
 export class ImportCollection {
   private readonly _imports: Map<string, Set<string>> = new Map();
+  private readonly _options: ImportCollectionOptions;
+
+  constructor(options: Partial<ImportCollectionOptions> = {}) {
+    this._options = { ...defaultImportCollectionOptions, ...options };
+  }
 
   public get hasImports(): boolean {
     return this._imports.size > 0;
@@ -15,7 +29,7 @@ export class ImportCollection {
         Array.from(importNames).map((importName) => ({
           packageName: fromPackage,
           typeName: importName,
-        }))
+        })),
       )
       .flat();
   }
@@ -48,7 +62,7 @@ export class ImportCollection {
     this._imports.clear();
   }
 
-  public toString(options: Partial<SourceBuilderOptions>): string {
+  public toString(options?: Partial<SourceBuilderOptions>): string {
     const builder = new StringBuilder(options);
     this.writeTo(builder);
     return builder.toString();
@@ -56,24 +70,29 @@ export class ImportCollection {
 
   public writeTo(builder: StringBuilder) {
     if (this._imports.size > 0) {
-      const sortedImports = Array.from(this._imports.entries()).sort(([fromModuleA], [fromModuleB]) => {
-        if (isCoreImport(fromModuleA) && !isCoreImport(fromModuleB)) {
-          return 1;
-        } else if (!isCoreImport(fromModuleA) && isCoreImport(fromModuleB)) {
-          return -1;
-        }
-        return fromModuleA.localeCompare(fromModuleB);
-      });
-      for (const [fromPackage, importNames] of sortedImports) {
-        const sortedImportNames = Array.from(importNames).sort();
-        for (const importName of sortedImportNames) {
-          builder.appendLine(`import ${fromPackage}.${importName}`);
-        }
-      }
+      const globalPackages = this._options.globalImports
+        .filter((g) => g.endsWith('.*'))
+        .map((g) => g.substring(0, g.length - 2));
+      const globalImports = this._options.globalImports.filter((g) => !g.endsWith('.*'));
+
+      Array.from(this._imports.entries())
+        .filter(([packageName]) => !globalPackages.includes(packageName))
+        .flatMap(([packageName, importNames]) => Array.from(importNames).map((importName) => [packageName, importName]))
+        .map(([packageName, importName]) => `${packageName}.${importName}`)
+        .filter((importPath) => !globalImports.includes(importPath))
+        .sort((a, b) => {
+          if (isCoreImport(a) && !isCoreImport(b)) {
+            return 1;
+          } else if (!isCoreImport(a) && isCoreImport(b)) {
+            return -1;
+          }
+          return a.localeCompare(b);
+        })
+        .forEach((importPath) => builder.appendLine(`import ${importPath}`));
     }
   }
 }
 
-function isCoreImport(packageName: string): boolean {
-  return packageName.startsWith('kotlin.') || packageName.startsWith('java.') || packageName.startsWith('javax.');
+function isCoreImport(importPath: string): boolean {
+  return importPath.startsWith('kotlin.') || importPath.startsWith('java.') || importPath.startsWith('javax.');
 }

@@ -1,5 +1,9 @@
-export function createOverwriteProxy<T extends object>(target: T): T {
-  return new Proxy(target, new OverwriteProxyHandler());
+export function createOverwriteProxy<T extends object>(target: T, values?: Partial<T>): T {
+  const proxy = new Proxy(target, new OverwriteProxyHandler());
+  if (values) {
+    Object.assign(proxy, values);
+  }
+  return proxy;
 }
 
 class OverwriteProxyHandler<T extends object> implements ProxyHandler<T> {

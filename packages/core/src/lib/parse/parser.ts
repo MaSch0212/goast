@@ -62,10 +62,10 @@ export class OpenApiParser {
       document: existingDocument.dereferencedDocument,
       originalComponent: value,
     });
-    existingDocument.dereferencedComponents.set(path, result);
+    existingDocument.dereferencedComponents.set(path, result as Deref<OpenApiObject<string>>);
 
     if (value.$ref) {
-      result.$ref = await this.resolveReference<T>(file, value as OpenApiReference);
+      result.$ref = (await this.resolveReference<T>(file, value as OpenApiReference)) as any;
     }
     for (const key of Object.keys(value) as (keyof T)[]) {
       if (key === '$ref') continue;
@@ -80,7 +80,7 @@ export class OpenApiParser {
               } else {
                 return v;
               }
-            })
+            }),
           );
         } else {
           (result as any)[key] = await this.dereference(file, `${path}/${String(key)}`, v as Record<string, unknown>);
@@ -96,7 +96,7 @@ export class OpenApiParser {
 
   private async resolveReference<T extends OpenApiObject<string>>(
     file: string,
-    ref: OpenApiReference
+    ref: OpenApiReference,
   ): Promise<Deref<T> | undefined> {
     const [refFile, refPath] = ref.$ref.split('#');
 

@@ -2,7 +2,14 @@ import { dirname, resolve } from 'path';
 
 import { ensureDirSync, writeFileSync } from 'fs-extra';
 
-import { ApiSchema, OpenApiGeneratorContext, OpenApiSchemasGenerationProviderBase, Factory } from '@goast/core';
+import {
+  ApiSchema,
+  OpenApiGeneratorContext,
+  OpenApiSchemasGenerationProviderBase,
+  Factory,
+  AppendValueGroup,
+  appendValueGroup,
+} from '@goast/core';
 
 import { DefaultTypeScriptModelGenerator, TypeScriptModelGenerator } from './model-generator';
 import {
@@ -13,8 +20,8 @@ import {
   TypeScriptModelsGeneratorOutput,
   defaultTypeScriptModelsGeneratorConfig,
 } from './models';
+import { ts } from '../../ast';
 import { TypeScriptFileBuilder } from '../../file-builder';
-import { ImportExportCollection } from '../../import-collection';
 
 type Input = TypeScriptModelsGeneratorInput;
 type Output = TypeScriptModelsGeneratorOutput;
@@ -45,7 +52,7 @@ export class TypeScriptModelsGenerator extends OpenApiSchemasGenerationProviderB
 
   protected override buildContext(
     context: OpenApiGeneratorContext<TypeScriptModelsGeneratorInput>,
-    config?: Partial<Config> | undefined
+    config?: Partial<Config> | undefined,
   ): Context {
     return this.getProviderContext(context, config, defaultTypeScriptModelsGeneratorConfig);
   }
@@ -78,7 +85,7 @@ export class TypeScriptModelsGenerator extends OpenApiSchemasGenerationProviderB
     ensureDirSync(dirname(filePath));
 
     const builder = new TypeScriptFileBuilder(filePath, ctx.config);
-    this.generateIndexFileContent(ctx, builder);
+    builder.append(this.getIndexFileContent(ctx));
     writeFileSync(filePath, builder.toString());
 
     return filePath;
@@ -92,16 +99,9 @@ export class TypeScriptModelsGenerator extends OpenApiSchemasGenerationProviderB
     return ctx.config.indexFilePath !== null;
   }
 
-  protected generateIndexFileContent(ctx: Context, builder: TypeScriptFileBuilder) {
-    const exports = new ImportExportCollection();
-
-    for (const modelId in ctx.output.models) {
-      const model = ctx.output.models[modelId];
-      if (model.filePath) {
-        exports.addExport(model.component, model.filePath);
-      }
-    }
-
-    exports.writeTo(builder);
+  protected getIndexFileContent(ctx: Context): AppendValueGroup<TypeScriptFileBuilder> {
+    return appendValueGroup(
+      Object.values(ctx.output.models).map((x) => (x.filePath ? ts.export(x.component, x.filePath) : null)),
+    );
   }
 }

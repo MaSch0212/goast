@@ -1,5 +1,3 @@
-import { EOL } from 'os';
-
 import { isNullish } from './common.utils';
 import {
   WordCasing,
@@ -14,6 +12,22 @@ import {
   StringCasingWithOptions,
 } from './string.utils.types';
 import { Nullable } from './type.utils';
+
+export function lowercase<T extends string>(str: T): Lowercase<T> {
+  return str.toLowerCase() as Lowercase<T>;
+}
+
+export function uppercase<T extends string>(str: T): Uppercase<T> {
+  return str.toUpperCase() as Uppercase<T>;
+}
+
+export function capitalize<T extends string>(str: T): Capitalize<T> {
+  return (str.charAt(0).toUpperCase() + str.slice(1)) as Capitalize<T>;
+}
+
+export function uncapitalize<T extends string>(str: T): Uncapitalize<T> {
+  return (str.charAt(0).toLowerCase() + str.slice(1)) as Uncapitalize<T>;
+}
 
 /**
  * Gets the words from a string. Words are separated by capital letters. Leading numbers are removed. Non-alphanumerical characters are removed and interpreted as word seperators. Multiple uppercase letters are interpreted as one word.
@@ -138,7 +152,7 @@ export function toCamelCase(str: Nullable<string>, options?: Partial<CamelCaseOp
     .map((word, index) =>
       index === 0
         ? wordToCasing(word, opts.keepOriginalCase ? 'first-lower' : 'all-lower')
-        : wordToCasing(word, opts.keepOriginalCase ? 'first-upper' : 'first-upper-then-lower')
+        : wordToCasing(word, opts.keepOriginalCase ? 'first-upper' : 'first-upper-then-lower'),
     )
     .join('');
   return addPrefixAndSuffix(camelCase, opts);
@@ -183,7 +197,7 @@ export function toKebabCase(str: Nullable<string>, options?: Partial<KebabCaseOp
   const words = getWords(str);
   const kebabCase = words
     .map((word, index) =>
-      index === 0 ? wordToCasing(word, opts.firstWordCasing ?? opts.wordCasing) : wordToCasing(word, opts.wordCasing)
+      index === 0 ? wordToCasing(word, opts.firstWordCasing ?? opts.wordCasing) : wordToCasing(word, opts.wordCasing),
     )
     .join('-');
   return addPrefixAndSuffix(kebabCase, opts);
@@ -207,7 +221,7 @@ export function toSnakeCase(str: Nullable<string>, options?: Partial<SnakeCaseOp
   const words = getWords(str);
   const snakeCase = words
     .map((word, index) =>
-      index === 0 ? wordToCasing(word, opts.firstWordCasing ?? opts.wordCasing) : wordToCasing(word, opts.wordCasing)
+      index === 0 ? wordToCasing(word, opts.firstWordCasing ?? opts.wordCasing) : wordToCasing(word, opts.wordCasing),
     )
     .join('_');
   return addPrefixAndSuffix(snakeCase, opts);
@@ -248,129 +262,13 @@ export function escapeRegExp(str: string): string {
 }
 
 /**
- * Options for the StringBuilder class.
- * @default newLine = os.EOL
+ * Removes characters from a string and, if necessary, inserts new characters in their place, returning the spliced string.
+ * @param str The string to splice.
+ * @param start The index at which to start changing the string.
+ * @param deleteCount The number of characters to remove.
+ * @param insert The string to insert.
+ * @returns The spliced string.
  */
-export type StringBuilderOptions = {
-  readonly newLine: string;
-};
-
-export const defaultStringBuilderOptions: StringBuilderOptions = {
-  newLine: EOL,
-};
-
-export type BuilderFn<TBuilder extends StringBuilder> = (builder: TBuilder) => void;
-export type TextOrBuilderFn<TBuilder extends StringBuilder> = string | BuilderFn<TBuilder>;
-
-/**
- * Represents a mutable string of characters.
- */
-export class StringBuilder {
-  private readonly _options: StringBuilderOptions;
-  private _str: string = '';
-
-  public get options(): StringBuilderOptions {
-    return this._options;
-  }
-
-  /**
-   * Initializes a new instance of the StringBuilder class.
-   * @param options The options.
-   */
-  constructor(options?: Partial<StringBuilderOptions>) {
-    this._options = { ...defaultStringBuilderOptions, ...options };
-  }
-
-  /**
-   * Creates a new StringBuilder instance and appends the specified string to it.
-   * @param str The string to append.
-   * @param options The options.
-   * @returns A new StringBuilder instance.
-   */
-  public static fromString(str: string, options?: Partial<StringBuilderOptions>): StringBuilder {
-    const builder = new StringBuilder(options);
-    builder.append(str);
-    return builder;
-  }
-
-  /**
-   * Builds a string using a StringBuilder build action.
-   * @param buildAction The build action to perform on the StringBuilder instance.
-   * @param options The options for the StringBuilder instance.
-   * @returns The built string.
-   */
-  public static build(buildAction: (builder: StringBuilder) => void, options?: Partial<StringBuilderOptions>): string {
-    const builder = new StringBuilder(options);
-    buildAction(builder);
-    return builder.toString();
-  }
-
-  /**
-   * Appends one or more strings to the end of the current StringBuilder.
-   * @param value The string(s) to append.
-   * @returns The current StringBuilder.
-   */
-  public append(...value: Nullable<TextOrBuilderFn<this>>[]): this {
-    for (const part of value) {
-      if (!part) continue;
-      if (typeof part === 'string') {
-        this._str += part;
-      } else {
-        part(this);
-      }
-    }
-    return this;
-  }
-
-  /**
-   * Appends one or more strings to the end of the current StringBuilder, followed by a line terminator.
-   * @param value
-   * @returns
-   */
-  public appendLine(...value: Nullable<TextOrBuilderFn<this>>[]): this {
-    return this.append(...value, this._options.newLine);
-  }
-
-  /**
-   * Prepends one or more strings to the beginning of the current StringBuilder.
-   * @param value The string(s) to prepend.
-   * @returns The current StringBuilder.
-   */
-  public prepend(...value: Nullable<TextOrBuilderFn<StringBuilder>>[]): this {
-    for (const part of value.reverse()) {
-      if (isNullish(part)) continue;
-      if (typeof part === 'function') {
-        const builder = new StringBuilder(this.options);
-        part(builder);
-        this._str = builder.toString() + this._str;
-      } else if (part.length > 0) {
-        this._str = part + this._str;
-      }
-    }
-    return this;
-  }
-
-  /**
-   * Prepends one or more strings to the beginning of the current StringBuilder, followed by a line terminator.
-   * @param value The string(s) to prepend.
-   * @returns The current StringBuilder.
-   */
-  public prependLine(...value: Nullable<TextOrBuilderFn<StringBuilder>>[]): this {
-    return this.prepend(...value, this._options.newLine);
-  }
-
-  /**
-   * Converts the value of this instance to a string.
-   * @returns A string whose value is the same as this instance.
-   */
-  public toString(): string {
-    return this._str;
-  }
-
-  /**
-   * Removes all characters from the current StringBuilder.
-   */
-  public clear(): void {
-    this._str = '';
-  }
+export function spliceString(str: string, start: number, deleteCount: number, insert: string): string {
+  return str.slice(0, start) + insert + str.slice(start + deleteCount);
 }

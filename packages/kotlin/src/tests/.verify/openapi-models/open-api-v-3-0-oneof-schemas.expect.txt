@@ -1,0 +1,152 @@
+┌──────────────────────────────────────┐
+│ state                                │
+├──────────────────────────────────────┤
+{
+  models: {
+    'schema-1': {
+      __source__: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml#/components/schemas/EmptyOneOf',
+      type: KtReference {
+        classReference: false,
+        generics: [],
+        inject: {},
+        name: 'Any',
+        nullable: false,
+        packageName: 'kotlin',
+        subReference: null
+      }
+    },
+    'schema-10': {
+      __source__: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml#/components/schemas/MyString',
+      type: KtReference {
+        classReference: false,
+        generics: [],
+        inject: {},
+        name: 'String',
+        nullable: false,
+        packageName: 'kotlin',
+        subReference: null
+      }
+    },
+    'schema-11': {
+      __source__: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml#/components/schemas/MyString',
+      type: KtReference {
+        classReference: false,
+        generics: [],
+        inject: {},
+        name: 'String',
+        nullable: false,
+        packageName: 'kotlin',
+        subReference: null
+      }
+    },
+    'schema-12': {
+      __source__: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml#/components/schemas/WithReferences/oneOf/3',
+      type: KtReference {
+        classReference: false,
+        generics: [],
+        inject: {},
+        name: 'String',
+        nullable: false,
+        packageName: 'kotlin',
+        subReference: null
+      }
+    },
+    'schema-2': {
+      __source__: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml#/components/schemas/OneOfSimpleTypes',
+      type: KtReference {
+        classReference: false,
+        generics: [],
+        inject: {},
+        name: 'Any',
+        nullable: false,
+        packageName: 'kotlin',
+        subReference: null
+      }
+    },
+    'schema-3': {
+      __source__: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml#/components/schemas/OneOfSimpleTypes/oneOf/0',
+      type: KtReference {
+        classReference: false,
+        generics: [],
+        inject: {},
+        name: 'String',
+        nullable: false,
+        packageName: 'kotlin',
+        subReference: null
+      }
+    },
+    'schema-4': {
+      __source__: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml#/components/schemas/OneOfSimpleTypes/oneOf/1',
+      type: KtReference {
+        classReference: false,
+        generics: [],
+        inject: {},
+        name: 'Int',
+        nullable: false,
+        packageName: 'kotlin',
+        subReference: null
+      }
+    },
+    'schema-5': {
+      __source__: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml#/components/schemas/IgnoreType',
+      type: KtReference {
+        classReference: false,
+        generics: [],
+        inject: {},
+        name: 'Any',
+        nullable: false,
+        packageName: 'kotlin',
+        subReference: null
+      }
+    },
+    'schema-6': {
+      __source__: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml#/components/schemas/WithReferences',
+      type: KtReference {
+        classReference: false,
+        generics: [],
+        inject: {},
+        name: 'Any',
+        nullable: false,
+        packageName: 'kotlin',
+        subReference: null
+      }
+    },
+    'schema-7': {
+      __source__: '<root>\\test\\openapi-files\\v3\\oneof-schemas.yml#/components/schemas/EmptyOneOf',
+      type: KtReference {
+        classReference: false,
+        generics: [],
+        inject: {},
+        name: 'Any',
+        nullable: false,
+        packageName: 'kotlin',
+        subReference: null
+      }
+    },
+    'schema-8': {
+      __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/WithTitle',
+      type: KtReference {
+        classReference: false,
+        generics: [],
+        inject: {},
+        name: 'String',
+        nullable: false,
+        packageName: 'kotlin',
+        subReference: null
+      }
+    },
+    'schema-9': {
+      __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/WithTitle',
+      type: KtReference {
+        classReference: false,
+        generics: [],
+        inject: {},
+        name: 'String',
+        nullable: false,
+        packageName: 'kotlin',
+        subReference: null
+      }
+    }
+  }
+}
+└──────────────────────────────────────┘

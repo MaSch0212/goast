@@ -1,3 +1,4 @@
+/* eslint-disable unused-imports/no-unused-vars */
 import { dirname } from 'path';
 
 import { ensureDirSync, writeFileSync } from 'fs-extra';
@@ -5,14 +6,22 @@ import { ensureDirSync, writeFileSync } from 'fs-extra';
 import {
   ApiSchema,
   ApiSchemaProperty,
-  ObjectLikeApiSchema,
+  AppendValue,
+  AppendValueGroup,
+  SourceBuilder,
+  appendValueGroup,
   createOverwriteProxy,
   getSchemaReference,
+  modify,
+  modifyEach,
+  notNullish,
   resolveAnyOfAndAllOf,
   toCasing,
 } from '@goast/core';
 
+import { DefaultKotlinModelGeneratorArgs as Args } from '.';
 import { KotlinModelGeneratorContext, KotlinModelGeneratorOutput } from './models';
+import { kt } from '../../ast';
 import { KotlinFileBuilder } from '../../file-builder';
 import { KotlinFileGenerator } from '../file-generator';
 
@@ -25,10 +34,10 @@ export interface KotlinModelGenerator<TOutput extends Output = Output> {
 }
 
 export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Output> implements KotlinModelGenerator {
-  public generate(ctx: KotlinModelGeneratorContext): KotlinModelGeneratorOutput {
+  public generate(ctx: Context): KotlinModelGeneratorOutput {
     if (/\/(anyOf|allOf)(\/[0-9]+)?$/.test(ctx.schema.$src.path)) {
       // Do not generate types that are only used for anyOf and/or allOf
-      return { typeName: 'Any?', packageName: undefined, additionalImports: [] };
+      return { type: kt.refs.any({ nullable: true }) };
     }
 
     if (ctx.schema.id === ctx.schema.name) {
@@ -51,488 +60,420 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       }
     }
 
-    if (this.shouldGenerateTypeDeclaration(ctx, ctx.schema)) {
-      const typeName = this.getDeclarationTypeName(ctx, ctx.schema);
-      const packageName = this.getPackageName(ctx, ctx.schema);
+    if (this.shouldGenerateTypeDeclaration(ctx, { schema: ctx.schema })) {
+      const typeName = this.getDeclarationTypeName(ctx, { schema: ctx.schema });
+      const packageName = this.getPackageName(ctx, { schema: ctx.schema });
       const filePath = `${ctx.config.outputDir}/${packageName.replace(/\./g, '/')}/${typeName}.kt`;
       console.log(`Generating model ${packageName}.${typeName} to ${filePath}...`);
       ensureDirSync(dirname(filePath));
 
-      const builder = new KotlinFileBuilder(packageName, ctx.config);
-      this.generateFileContent(ctx, builder);
+      writeFileSync(
+        filePath,
+        new KotlinFileBuilder(packageName, ctx.config).append(this.getFileContent(ctx, {})).toString(),
+      );
 
-      writeFileSync(filePath, builder.toString());
-
-      return { typeName, packageName, additionalImports: [] };
+      return { type: kt.reference(typeName, packageName) };
     } else {
-      const builder = new KotlinFileBuilder(undefined, ctx.config);
-      this.generateType(ctx, builder, ctx.schema);
-      const additionalImports = builder.imports.imports;
-      builder.imports.clear();
-      return { typeName: builder.toString(false), packageName: undefined, additionalImports };
+      return { type: this.getType(ctx, { schema: ctx.schema }) };
     }
   }
 
-  protected generateFileContent(ctx: Context, builder: Builder): void {
-    const schema = this.normalizeSchema(ctx, ctx.schema);
-    if (schema.kind === 'object') {
-      this.generateObjectType(ctx, builder, schema);
-    } else if (schema.enum !== undefined && schema.enum.length > 0) {
-      this.generateEnum(ctx, builder, schema);
-    } else {
-      this.generateType(ctx, builder, schema);
-    }
-  }
-
-  protected generateTypeUsage(ctx: Context, builder: Builder, schema: ApiSchema): void {
-    schema = getSchemaReference(schema, ['description']);
-    if (this.shouldGenerateTypeDeclaration(ctx, schema)) {
-      const name = this.getDeclarationTypeName(ctx, schema);
-      const packageName = this.getPackageName(ctx, schema);
-      if (packageName) {
-        builder.addImport(name, packageName);
-      }
-      builder.append(name);
-    } else {
-      this.generateType(ctx, builder, schema);
-    }
-  }
-
-  protected generateObjectType(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
-    if (schema.properties.size === 0 && schema.additionalProperties) {
-      this.generateMapType(ctx, builder, schema);
-    } else {
-      this.generateObjectPackageMember(ctx, builder, schema);
-    }
-  }
-
-  protected generateObjectPackageMember(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
-    if (schema.discriminator) {
-      this.generateObjectInterface(ctx, builder, schema);
-    } else {
-      this.generateObjectDataClass(ctx, builder, schema);
-    }
-  }
-
-  protected generateObjectInterface(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
-    builder
-      .append((builder) => this.generateDocumentation(ctx, builder, schema))
-      .ensureCurrentLineEmpty()
-      .append((builder) => this.generateObjectInterfaceAnnotations(ctx, builder, schema))
-      .ensureCurrentLineEmpty()
-      .append((builder) => this.generateObjectInterfaceSignature(ctx, builder, schema))
-      .append(' ')
-      .parenthesize('{}', (builder) => this.generateObjectInterfaceMembers(ctx, builder, schema), { multiline: true });
-  }
-
-  protected generateObjectInterfaceAnnotations(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
-    if (schema.discriminator && ctx.config.addJacksonAnnotations) {
-      builder.appendAnnotation('JsonTypeInfo', 'com.fasterxml.jackson.annotation', [
-        ['use', 'JsonTypeInfo.Id.NAME'],
-        ['include', 'JsonTypeInfo.As.EXISTING_PROPERTY'],
-        ['property', this.toStringLiteral(ctx, schema.discriminator.propertyName)],
-        ['visible', 'true'],
-      ]);
-
-      const entries = Object.entries(schema.discriminator.mapping);
-      if (entries.length > 0) {
-        builder.appendAnnotation(
-          'JsonSubTypes',
-          'com.fasterxml.jackson.annotation',
-          entries.map(
-            ([value, schema]) =>
-              (builder) =>
-                builder.append(
-                  'JsonSubTypes.Type(value = ',
-                  (builder) => this.generateTypeUsage(ctx, builder, schema),
-                  `::class, name = ${this.toStringLiteral(ctx, value)})`
-                )
-          )
-        );
-      }
-    }
-  }
-
-  protected generateObjectInterfaceSignature(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
-    builder.append('interface ').append(this.getDeclarationTypeName(ctx, schema));
-  }
-
-  protected generateObjectInterfaceMembers(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
-    builder.forEach(this.sortProperties(ctx, schema, schema.properties.values()), (builder, property) =>
-      builder
-        .ensurePreviousLineEmpty()
-        .append((builder) => this.generateJsonPropertyAnnotation(ctx, builder, schema, property, 'get'))
-        .ensureCurrentLineEmpty()
-        .append(`val ${toCasing(property.name, 'camel')}: `)
-        .append((builder) => this.generateTypeUsage(ctx, builder, property.schema))
-        .if(!schema.required.has(property.name), (builder) => builder.appendIf(!property.schema.nullable, '?'))
+  protected getFileContent(ctx: Context, args: Args.GetFileContent): AppendValueGroup<Builder> {
+    return appendValueGroup<Builder>(
+      [this.getSchemaDeclaration(ctx, { schema: this.normalizeSchema(ctx, { schema: ctx.schema }) })],
+      '\n\n',
     );
   }
 
-  protected generateObjectDataClassProperty(
+  protected getSchemaDeclaration(ctx: Context, args: Args.GetSchemaDeclaration): AppendValue<Builder> {
+    const { schema } = args;
+
+    if (schema.kind === 'object') {
+      return schema.discriminator ? this.getInterface(ctx, { schema }) : this.getClass(ctx, { schema });
+    } else if (schema.enum !== undefined && schema.enum.length > 0) {
+      return this.getEnum(ctx, { schema });
+    }
+
+    return '// The generator was not able to generate this schema.\n// This should not happend. If you see this comment, please open an Issue on Github.';
+  }
+
+  protected getClass(ctx: Context, args: Args.GetClass): kt.Class<Builder> {
+    const { schema } = args;
+    const inheritedSchemas = this.getInheritedSchemas(ctx, { schema });
+    const parameters = this.getClassProperties(ctx, { schema });
+
+    return kt.class(this.getDeclarationTypeName(ctx, { schema }), {
+      doc: kt.doc(schema.description?.trim()),
+      classKind: parameters.length === 0 ? null : 'data',
+      implements: inheritedSchemas.map((schema) => this.getType(ctx, { schema })),
+      primaryConstructor: kt.constructor(
+        parameters.map((property) => this.getClassParameter(ctx, { ...args, inheritedSchemas, parameters, property })),
+      ),
+      members: [
+        ...(schema.additionalProperties !== undefined && schema.additionalProperties !== false
+          ? [
+              this.getAdditionalPropertiesProperty(ctx, { schema }),
+              this.getAdditionalPropertiesSetter(ctx, { schema }),
+              this.getAdditionalPropertiesGetter(ctx, { schema }),
+            ]
+          : []),
+      ],
+    });
+  }
+
+  protected getInterface(ctx: Context, args: Args.GetInterface): kt.Interface<Builder> {
+    const { schema } = args;
+
+    return kt.interface(this.getDeclarationTypeName(ctx, { schema }), {
+      doc: kt.doc(schema.description?.trim()),
+      annotations: [
+        this.getJacksonJsonTypeInfoAnnotation(ctx, { schema }),
+        this.getJacksonJsonSubTypesAnnotation(ctx, { schema }),
+      ].filter(notNullish),
+      members: this.sortProperties(ctx, { schema, properties: schema.properties.values() }).map((property) =>
+        this.getInterfaceProperty(ctx, { schema, property }),
+      ),
+    });
+  }
+
+  protected getEnum(ctx: Context, args: Args.GetEnum): kt.Enum<Builder> {
+    const { schema } = args;
+
+    return kt.enum(
+      this.getDeclarationTypeName(ctx, { schema }),
+      schema.enum?.map((x) =>
+        kt.enumValue(toCasing(String(x), ctx.config.enumValueNameCasing), {
+          annotations: [kt.annotation(kt.refs.jackson.jsonProperty(), [kt.argument(kt.string(String(x)))])],
+          arguments: [kt.argument(kt.string(String(x)))],
+        }),
+      ) ?? [],
+      {
+        doc: kt.doc(schema.description?.trim()),
+        primaryConstructor: kt.constructor([
+          kt.parameter.class(toCasing('value', ctx.config.propertyNameCasing), kt.refs.string(), {
+            property: 'readonly',
+          }),
+        ]),
+      },
+    );
+  }
+
+  protected getType(ctx: Context, args: Args.GetType): kt.Reference<SourceBuilder> {
+    const { schema } = args;
+
+    const generatedType = this.getGeneratedType(ctx, { schema, nullable: args.nullable });
+    if (generatedType) {
+      return generatedType;
+    }
+
+    const nullable = args.nullable ?? schema.nullable;
+    switch (schema.kind) {
+      case 'boolean':
+        return kt.refs.boolean({ nullable });
+      case 'integer':
+      case 'number':
+        switch (schema.format) {
+          case 'int32':
+            return kt.refs.int({ nullable });
+          case 'int64':
+            return kt.refs.long({ nullable });
+          case 'float':
+            return kt.refs.float({ nullable });
+          case 'double':
+            return kt.refs.double({ nullable });
+          default:
+            return schema.kind === 'integer' ? kt.refs.int({ nullable }) : kt.refs.double({ nullable });
+        }
+      case 'string':
+        switch (schema.format) {
+          case 'date-time':
+            return kt.refs.java.offsetDateTime({ nullable });
+          default:
+            return kt.refs.string({ nullable });
+        }
+      case 'null':
+        return kt.refs.nothing({ nullable });
+      case 'unknown':
+        return kt.refs.any({ nullable });
+      case 'array':
+        return kt.refs.list(
+          [schema.items ? this.getType(ctx, { schema: schema.items }) : kt.refs.any({ nullable: true })],
+          { nullable },
+        );
+      case 'object':
+        return schema.properties.size === 0 && schema.additionalProperties
+          ? kt.refs.map([kt.refs.string(), this.getAdditionalPropertiesType(ctx, { schema })], { nullable })
+          : kt.refs.any({ nullable });
+      default:
+        return kt.refs.any({ nullable });
+    }
+  }
+
+  protected getGeneratedType(ctx: Context, args: Args.GetGeneratedType): kt.Reference<SourceBuilder> | null {
+    const schema = getSchemaReference(args.schema, ['description']);
+    if (this.shouldGenerateTypeDeclaration(ctx, { schema })) {
+      return kt.reference(this.getDeclarationTypeName(ctx, { schema }), this.getPackageName(ctx, { schema }), {
+        nullable: args.nullable ?? schema.nullable,
+      });
+    }
+    return null;
+  }
+
+  protected getAdditionalPropertiesType(
     ctx: Context,
-    builder: Builder,
-    schema: ApiSchema<'object'>,
-    inheritedSchemas: ApiSchema[],
-    property: ApiSchemaProperty
-  ): void {
-    builder
-      .ensurePreviousLineEmpty()
-      .append((builder) => this.generateObjectDataClassParameterAnnotations(ctx, builder, schema, property))
-      .appendIf(
-        inheritedSchemas.some((x) => this.hasProperty(ctx, x, property.name)),
-        'override '
-      )
-      .append(`val ${toCasing(property.name, 'camel')}: `)
-      .append((builder) => this.generateTypeUsage(ctx, builder, property.schema))
-      .if(!schema.required.has(property.name), (builder) => builder.appendIf(!property.schema.nullable, '?'))
-      .appendIf(property.schema.default !== undefined || !schema.required.has(property.name), ' = ', (builder) =>
-        this.generateDefaultValue(ctx, builder, property.schema)
-      );
+    args: Args.GetAdditionalPropertiesType,
+  ): kt.Reference<SourceBuilder> {
+    const { schema } = args;
+
+    return typeof schema.additionalProperties === 'object'
+      ? this.getType(ctx, { schema: schema.additionalProperties })
+      : kt.refs.any({ nullable: true });
   }
 
-  protected generateObjectDataClass(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
-    const inheritedSchemas = this.getInheritedSchemas(ctx, schema);
-    const params = this.getClassProperties(ctx, schema);
-    builder
-      .append((builder) => this.generateDocumentation(ctx, builder, schema))
-      .append(params.length === 0 ? 'class' : 'data class', ' ')
-      .append(this.getDeclarationTypeName(ctx, schema))
-      .parenthesizeIf(
-        params.length > 0,
-        '()',
-        (builder) =>
-          builder.forEach(
-            params,
-            (builder, property) =>
-              this.generateObjectDataClassProperty(ctx, builder, schema, inheritedSchemas, property),
-            { separator: ',\n' }
-          ),
-        { multiline: true }
-      )
-      .if(inheritedSchemas.length > 0, (builder) =>
-        builder
-          .append(' : ')
-          .forEach(inheritedSchemas, (builder, schema) => this.generateTypeUsage(ctx, builder, schema), {
-            separator: ', ',
-          })
-      )
-      .append(' ')
-      .parenthesizeIf(
-        schema.additionalProperties !== undefined && schema.additionalProperties !== false,
-        '{}',
-        (builder) =>
-          builder.if(schema.additionalProperties !== undefined && schema.additionalProperties !== false, (builder) =>
-            builder
-              .if(ctx.config.addJacksonAnnotations, (builder) =>
-                builder.appendLine('@JsonIgnore').addImport('JsonIgnore', 'com.fasterxml.jackson.annotation')
-              )
-              .append('val additionalProperties: Mutable')
-              .append((builder) => this.generateMapType(ctx, builder, schema))
-              .appendLine(' = mutableMapOf()')
-              .appendLine()
-              .if(ctx.config.addJacksonAnnotations, (builder) =>
-                builder.appendLine('@JsonAnySetter').addImport('JsonAnySetter', 'com.fasterxml.jackson.annotation')
-              )
-              .append('fun set')
-              .parenthesize('()', (builder) =>
-                builder.append('name: String, value: ').if(
-                  schema.additionalProperties === true,
-                  (builder) => builder.append('Any?'),
-                  (builder) => this.generateTypeUsage(ctx, builder, schema.additionalProperties as ApiSchema)
-                )
-              )
-              .append(' ')
-              .parenthesize('{}', 'this.additionalProperties[name] = value', { multiline: true })
-              .appendLine()
-              .appendLine()
-              .if(ctx.config.addJacksonAnnotations, (builder) =>
-                builder.appendLine('@JsonAnyGetter').addImport('JsonAnyGetter', 'com.fasterxml.jackson.annotation')
-              )
-              .append('fun getMap(): ')
-              .append((builder) => this.generateMapType(ctx, builder, schema))
-              .append(' ')
-              .parenthesize('{}', 'return this.additionalProperties', { multiline: true })
-          ),
-        { multiline: true }
-      );
-  }
+  protected getDefaultValue(ctx: Context, args: Args.GetDefaultValue): kt.Value<Builder> {
+    const { schema } = args;
 
-  protected generateDefaultValue(ctx: Context, builder: Builder, schema: ApiSchema) {
     if (schema.default === null || schema.default === undefined) {
-      builder.append('null');
+      return 'null';
     } else {
       switch (schema.kind) {
         case 'boolean':
-          builder.append(Boolean(schema.default) || String(schema.default).toLowerCase() === 'true' ? 'true' : 'false');
-          break;
+          return Boolean(schema.default) || String(schema.default).toLowerCase() === 'true' ? 'true' : 'false';
         case 'integer':
         case 'number':
-          builder.append(String(schema.default));
-          break;
+          return String(schema.default);
         case 'string':
-          if (schema.enum && schema.enum.length > 0) {
-            builder
-              .append((builder) => this.generateTypeUsage(ctx, builder, schema))
-              .append('.')
-              .append(toCasing(String(schema.default), ctx.config.enumValueNameCasing));
-          } else {
-            builder.append(this.toStringLiteral(ctx, String(schema.default)));
-          }
-          break;
+          return schema.enum && schema.enum.length > 0
+            ? kt.call([this.getType(ctx, { schema }), toCasing(String(schema.default), ctx.config.enumValueNameCasing)])
+            : kt.string(String(schema.default));
         default:
-          builder.append('null');
-          break;
+          return 'null';
       }
     }
   }
 
-  protected generateObjectDataClassParameterAnnotations(
+  // #region Members
+  protected getClassParameter(ctx: Context, args: Args.GetClassParameter): kt.Parameter<Builder> {
+    const { schema, inheritedSchemas, property } = args;
+
+    return kt.parameter.class(
+      toCasing(property.name, ctx.config.propertyNameCasing),
+      this.getType(ctx, { schema: property.schema, nullable: schema.required.has(property.name) ? undefined : true }),
+      {
+        description: property.schema.description?.trim(),
+        annotations: [
+          this.getJakartaPatternAnnotation(ctx, { schema, property }),
+          this.getJakartaValidAnnotation(ctx, { schema, property }),
+          this.getSwaggerSchemaAnnotation(ctx, { schema, property }),
+          this.getJacksonJsonPropertyAnnotation(ctx, { schema, property }),
+          modify(this.getJacksonJsonIncludeAnnotation(ctx, { schema, property }), (x) => (x.target = 'get')),
+        ].filter(notNullish),
+        override: inheritedSchemas.some((schema) => this.hasProperty(ctx, { schema, propertyName: property.name })),
+        property: 'readonly',
+        default:
+          property.schema.default !== undefined || !schema.required.has(property.name)
+            ? this.getDefaultValue(ctx, { schema: property.schema })
+            : null,
+      },
+    );
+  }
+
+  protected getInterfaceProperty(ctx: Context, args: Args.GetInterfaceProperty): kt.Property<Builder> {
+    const { schema, property } = args;
+
+    return kt.property(toCasing(property.name, ctx.config.propertyNameCasing), {
+      doc: kt.doc(property.schema.description?.trim()),
+      annotations: modifyEach(
+        [
+          this.getJacksonJsonPropertyAnnotation(ctx, { schema, property }),
+          this.getJacksonJsonIncludeAnnotation(ctx, { schema, property }),
+        ].filter(notNullish),
+        (x) => (x.target = 'get'),
+      ),
+      type: this.getType(ctx, {
+        schema: property.schema,
+        nullable: schema.required.has(property.name) ? undefined : true,
+      }),
+    });
+  }
+
+  protected getAdditionalPropertiesProperty(
     ctx: Context,
-    builder: Builder,
-    schema: ApiSchema,
-    property: ApiSchemaProperty
-  ): void {
-    this.generatePropertyValidationAnnotations(ctx, builder, schema, property);
-    this.generatePropertySchemaAnnotation(ctx, builder, schema, property);
-    this.generateJsonPropertyAnnotation(ctx, builder, schema, property);
+    args: Args.GetAdditionalPropertiesProperty,
+  ): kt.Property<Builder> {
+    const { schema } = args;
+
+    return kt.property(toCasing('additionalProperties', ctx.config.propertyNameCasing), {
+      annotations: [kt.annotation(kt.refs.jackson.jsonIgnore())],
+      type: kt.reference('MutableMap', null, {
+        generics: ['String', this.getAdditionalPropertiesType(ctx, { schema })],
+      }),
+      default: 'mutableMapOf()',
+    });
   }
 
-  protected generatePropertyValidationAnnotations(
+  protected getAdditionalPropertiesSetter(
     ctx: Context,
-    builder: Builder,
-    schema: ApiSchema,
-    property: ApiSchemaProperty
-  ): void {
-    if (ctx.config.addJakartaValidationAnnotations) {
-      if (property.schema.kind === 'string' && property.schema.pattern) {
-        builder
-          .append('@get:Pattern(regexp = ')
-          .append(this.toStringLiteral(ctx, property.schema.pattern))
-          .append(')')
-          .addImport('Pattern', 'jakarta.validation.constraints')
-          .appendLine();
-      }
-      if (this.shouldGenerateTypeDeclaration(ctx, property.schema)) {
-        builder.append('@field:Valid').addImport('Valid', 'jakarta.validation').appendLine();
-      }
-    }
+    args: Args.GetAdditionalPropertiesSetter,
+  ): kt.Function<Builder> {
+    const { schema } = args;
+
+    return kt.function(toCasing('set', ctx.config.functionNameCasing), {
+      annotations: [kt.annotation(kt.refs.jackson.jsonAnySetter())],
+      parameters: [
+        kt.parameter(toCasing('name', ctx.config.parameterNameCasing), 'String'),
+        kt.parameter(
+          toCasing('value', ctx.config.parameterNameCasing),
+          this.getAdditionalPropertiesType(ctx, { schema }),
+        ),
+      ],
+      body: `this.${toCasing('additionalProperties', ctx.config.propertyNameCasing)}[name] = value`,
+    });
   }
 
-  protected generatePropertySchemaAnnotation(
+  protected getAdditionalPropertiesGetter(
     ctx: Context,
-    builder: Builder,
-    schema: ApiSchema,
-    property: ApiSchemaProperty
-  ): void {
-    if (ctx.config.addSwaggerAnnotations) {
-      const parts: Map<string, string> = new Map();
-      if (property.schema.example !== undefined) {
-        parts.set('example', this.toStringLiteral(ctx, String(property.schema.example)));
-      }
-      if (schema.required.has(property.name)) {
-        parts.set('required', 'true');
-      }
-      if (property.schema.description !== undefined) {
-        parts.set('description', this.toStringLiteral(ctx, property.schema.description));
-      }
+    args: Args.GetAdditionalPropertiesGetter,
+  ): kt.Function<Builder> {
+    const { schema } = args;
 
-      builder
-        .append('@Schema')
-        .addImport('Schema', 'io.swagger.v3.oas.annotations.media')
-        .parenthesizeIf(parts.size > 0, '()', (builder) =>
-          builder.forEach(parts.entries(), (builder, [key, value]) => builder.append(`${key} = ${value}`), {
-            separator: ', ',
-          })
-        )
-        .appendLine();
-    }
+    return kt.function(toCasing('getMap', ctx.config.functionNameCasing), {
+      annotations: [kt.annotation(kt.refs.jackson.jsonAnyGetter())],
+      returnType: kt.refs.map([kt.refs.string(), this.getAdditionalPropertiesType(ctx, { schema })]),
+      body: `return this.${toCasing('additionalProperties', ctx.config.propertyNameCasing)}`,
+    });
   }
+  // #endregion
 
-  protected generateJsonPropertyAnnotation(
+  // #region Annotations
+  protected getJacksonJsonTypeInfoAnnotation(
     ctx: Context,
-    builder: Builder,
-    schema: ApiSchema,
-    property: ApiSchemaProperty,
-    scope?: string
-  ): void {
-    builder
-      .if(ctx.config.addJacksonAnnotations, (builder) =>
-        builder
-          .append(`@${scope ? scope + ':' : ''}JsonProperty`)
-          .addImport('JsonProperty', 'com.fasterxml.jackson.annotation')
-          .parenthesize('()', (builder) =>
-            builder
-              .append(this.toStringLiteral(ctx, property.name))
-              .appendIf(schema.required.has(property.name), ', required = true')
-          )
-          .appendLine()
-      )
-      .if(property.schema.custom['exclude-when-null'] === true, (builder) =>
-        builder
-          .if(ctx.config.addJacksonAnnotations, (builder) =>
-            builder.append('@get:JsonInclude').addImport('JsonInclude', 'com.fasterxml.jackson.annotation')
-          )
-          .parenthesize('()', 'JsonInclude.Include.NON_NULL')
-          .appendLine()
-      );
+    args: Args.GetJacksonJsonTypeInfoAnnotation,
+  ): kt.Annotation<Builder> | null {
+    const { schema } = args;
+
+    return ctx.config.addJacksonAnnotations && schema.discriminator
+      ? kt.annotation(kt.refs.jackson.jsonTypeInfo(), [
+          kt.argument.named('use', 'JsonTypeInfo.Id.NAME'),
+          kt.argument.named('include', 'JsonTypeInfo.As.EXISTING_PROPERTY'),
+          kt.argument.named('property', kt.string(schema.discriminator.propertyName)),
+          kt.argument.named('visible', 'true'),
+        ])
+      : null;
   }
 
-  protected generateMapType(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
-    if (schema.additionalProperties === true) {
-      builder.append('Map<String, Any?>');
-    } else if (typeof schema.additionalProperties === 'object') {
-      const propertiesType = schema.additionalProperties;
-      builder
-        .append('Map')
-        .parenthesize('<>', (builder) =>
-          builder.append('String, ').append((builder) => this.generateTypeUsage(ctx, builder, propertiesType))
-        );
-    }
-  }
+  protected getJacksonJsonSubTypesAnnotation(
+    ctx: Context,
+    args: Args.GetJacksonJsonSubTypesAnnotation,
+  ): kt.Annotation<Builder> | null {
+    const { schema } = args;
 
-  protected generateType(ctx: Context, builder: Builder, schema: ApiSchema): void {
-    switch (schema.kind) {
-      case 'boolean':
-        builder.append('Boolean');
-        break;
-      case 'integer':
-      case 'number':
-        this.generateNumberType(ctx, builder, schema);
-        break;
-      case 'string':
-        if (schema.enum !== undefined && schema.enum.length > 0) {
-          this.generateEnum(ctx, builder, schema);
-        } else {
-          this.generateStringType(ctx, builder, schema);
-        }
-        break;
-      case 'null':
-        builder.append('Nothing');
-        break;
-      case 'unknown':
-        builder.append('Any');
-        break;
-      case 'array':
-        this.generateArrayType(ctx, builder, schema);
-        break;
-      case 'object':
-        this.generateObjectType(ctx, builder, schema);
-        break;
-      case 'combined':
-        builder.append('Any');
-        break;
-      case 'multi-type':
-        builder.append('Any');
-        break;
-      case 'oneOf':
-        builder.append('Any');
-        break;
-      default:
-        builder.append('Any');
-        break;
-    }
-
-    if (schema.nullable) {
-      builder.append('?');
-    }
-  }
-
-  protected generateNumberType(ctx: Context, builder: Builder, schema: ApiSchema<'number' | 'integer'>): void {
-    switch (schema.format) {
-      case 'int32':
-        builder.append('Int');
-        break;
-      case 'int64':
-        builder.append('Long');
-        break;
-      case 'float':
-        builder.append('Float');
-        break;
-      case 'double':
-        builder.append('Double');
-        break;
-      default:
-        builder.append(schema.kind === 'integer' ? 'Int' : 'Double');
-        break;
-    }
-  }
-
-  protected generateStringType(ctx: Context, builder: Builder, schema: ApiSchema<'string'>): void {
-    switch (schema.format) {
-      case 'date-time':
-        builder.append('OffsetDateTime').addImport('OffsetDateTime', 'java.time');
-        break;
-      default:
-        builder.append('String');
-        break;
-    }
-  }
-
-  protected generateEnum(ctx: Context, builder: Builder, schema: ApiSchema): void {
-    builder
-      .append((builder) => this.generateDocumentation(ctx, builder, schema))
-      .append('enum class ')
-      .append(this.getDeclarationTypeName(ctx, schema))
-      .append('(val value: String) ')
-      .parenthesize(
-        '{}',
-        (builder) =>
-          builder.forEach(
-            schema.enum ?? [],
-            (builder, value) =>
-              builder
-                .if(ctx.config.addJacksonAnnotations, (builder) =>
-                  builder
-                    .append('@JsonProperty')
-                    .addImport('JsonProperty', 'com.fasterxml.jackson.annotation')
-                    .parenthesize('()', this.toStringLiteral(ctx, String(value)))
-                    .appendLine()
-                )
-                .append(toCasing(String(value), 'snake'))
-                .parenthesize('()', this.toStringLiteral(ctx, String(value))),
-            { separator: (builder) => builder.appendLine(',').appendLine() }
+    if (!ctx.config.addJacksonAnnotations || !schema.discriminator) return null;
+    const entries = Object.entries(schema.discriminator.mapping);
+    return entries.length > 0
+      ? kt.annotation(
+          kt.refs.jackson.jsonSubTypes(),
+          entries.map(([value, schema]) =>
+            kt.argument(
+              kt.call(
+                [kt.refs.jackson.jsonSubTypes(), 'Type'],
+                [
+                  kt.argument.named(
+                    'value',
+                    modify(this.getType(ctx, { schema }), (x) => (x.classReference = true)),
+                  ),
+                  kt.argument.named('name', kt.string(value)),
+                ],
+              ),
+            ),
           ),
-        { multiline: true }
-      );
-  }
-
-  protected generateArrayType(ctx: Context, builder: Builder, schema: ApiSchema<'array'>): void {
-    builder.append('List').parenthesize('<>', (builder) =>
-      builder.if(
-        schema.items === undefined,
-        (builder) => builder.append('Any?'),
-        (builder) => this.generateTypeUsage(ctx, builder, schema.items!)
-      )
-    );
-  }
-
-  protected generateDocumentation(ctx: Context, builder: Builder, schema: ApiSchema): void {
-    const propertiesWithDescription = Array.from((schema as ObjectLikeApiSchema).properties?.values() ?? []).filter(
-      (p) => p.schema.description !== undefined
-    );
-    if (schema.description !== undefined || propertiesWithDescription.length > 0) {
-      builder
-        .ensurePreviousLineEmpty()
-        .appendLine('/**')
-        .appendWithLinePrefix(' * ', (builder) =>
-          builder
-            .appendLineIf(!!schema.description, schema.description)
-            .forEach(propertiesWithDescription, (builder, property) =>
-              builder.appendLine(`@param ${toCasing(property.name, 'camel')} ${property.schema.description?.trim()}`)
-            )
         )
-        .appendLine(' */');
-    }
+      : null;
   }
 
-  protected getPackageName(ctx: Context, schema: ApiSchema): string {
+  protected getJacksonJsonPropertyAnnotation(
+    ctx: Context,
+    args: Args.GetJacksonJsonPropertyAnnotation,
+  ): kt.Annotation<Builder> | null {
+    const { schema, property } = args;
+
+    return ctx.config.addJacksonAnnotations
+      ? kt.annotation(kt.refs.jackson.jsonProperty(), [
+          kt.argument(kt.string(property.name)),
+          schema.required.has(property.name) ? kt.argument.named('required', 'true') : null,
+        ])
+      : null;
+  }
+
+  protected getJacksonJsonIncludeAnnotation(
+    ctx: Context,
+    args: Args.GetJacksonJsonIncludeAnnotation,
+  ): kt.Annotation<Builder> | null {
+    const { property } = args;
+
+    return ctx.config.addJacksonAnnotations && property.schema.custom['exclude-when-null'] === true
+      ? kt.annotation(kt.refs.jackson.jsonInclude(), [
+          kt.argument(kt.call([kt.refs.jackson.jsonInclude(), 'Include', 'NON_NULL'])),
+        ])
+      : null;
+  }
+
+  protected getJakartaPatternAnnotation(
+    ctx: Context,
+    args: Args.GetJakartaPatternAnnotation,
+  ): kt.Annotation<Builder> | null {
+    const { property } = args;
+
+    return ctx.config.addJakartaValidationAnnotations && property.schema.kind === 'string' && property.schema.pattern
+      ? kt.annotation(kt.refs.jakarta.pattern(), [kt.argument.named('regexp', kt.string(property.schema.pattern))], {
+          target: 'get',
+        })
+      : null;
+  }
+
+  protected getJakartaValidAnnotation(
+    ctx: Context,
+    args: Args.GetJakartaValidAnnotation,
+  ): kt.Annotation<Builder> | null {
+    const { property } = args;
+
+    return ctx.config.addJakartaValidationAnnotations &&
+      this.shouldGenerateTypeDeclaration(ctx, { schema: property.schema })
+      ? kt.annotation(kt.refs.jakarta.valid(), [], { target: 'field' })
+      : null;
+  }
+
+  protected getSwaggerSchemaAnnotation(
+    ctx: Context,
+    args: Args.GetSwaggerSchemaAnnotation,
+  ): kt.Annotation<Builder> | null {
+    const { schema, property } = args;
+
+    return ctx.config.addSwaggerAnnotations
+      ? kt.annotation(kt.refs.swagger.schema(), [
+          property.schema.example !== undefined
+            ? kt.argument.named('example', kt.string(String(property.schema.example)))
+            : null,
+          schema.required.has(property.name) ? kt.argument.named('required', 'true') : null,
+          property.schema.description !== undefined
+            ? kt.argument.named('description', kt.string(property.schema.description))
+            : null,
+        ])
+      : null;
+  }
+  // #endregion
+
+  protected getPackageName(ctx: Context, args: Args.GetPackageName): string {
+    const { schema } = args;
+
     const packageSuffix =
       typeof ctx.config.packageSuffix === 'string' ? ctx.config.packageSuffix : ctx.config.packageSuffix(schema);
     return ctx.config.packageName + packageSuffix;
   }
 
-  protected shouldGenerateTypeDeclaration(ctx: Context, schema: ApiSchema): boolean {
+  protected shouldGenerateTypeDeclaration(ctx: Context, args: Args.ShouldGenerateTypeDeclaration): boolean {
+    let { schema } = args;
+
     // All enum types should have its own type declaration
     if (schema.enum !== undefined && schema.enum.length > 0) {
       return true;
@@ -552,7 +493,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     if (schema.kind === 'multi-type') {
       return false;
     }
-    schema = this.normalizeSchema(ctx, schema);
+    schema = this.normalizeSchema(ctx, { schema });
     if (schema.kind === 'combined' || schema.kind === 'oneOf') {
       return false;
     }
@@ -565,23 +506,25 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     return true;
   }
 
-  protected getDeclarationTypeName(ctx: Context, schema: ApiSchema): string {
-    return toCasing(schema.name, 'pascal');
+  protected getDeclarationTypeName(ctx: Context, args: Args.GetDeclarationTypeName): string {
+    return toCasing(args.schema.name, ctx.config.typeNameCasing);
   }
 
-  protected getInheritedSchemas(ctx: KotlinModelGeneratorContext, schema: ApiSchema) {
-    return schema.inheritedSchemas
-      .filter((x) => this.shouldGenerateTypeDeclaration(ctx, x) && !x.isNameGenerated)
+  protected getInheritedSchemas(ctx: Context, args: Args.GetInheritedSchemas) {
+    return args.schema.inheritedSchemas
+      .filter((schema) => this.shouldGenerateTypeDeclaration(ctx, { schema }) && !schema.isNameGenerated)
       .filter((item, index, self) => self.indexOf(item) === index);
   }
 
-  protected getClassProperties(ctx: Context, schema: ApiSchema<'object'>): ApiSchemaProperty[] {
-    const inheritedSchemas = this.getInheritedSchemas(ctx, schema);
+  protected getClassProperties(ctx: Context, args: Args.GetClassProperties): ApiSchemaProperty[] {
+    const { schema } = args;
+
+    const inheritedSchemas = this.getInheritedSchemas(ctx, { schema });
     const properties: ApiSchemaProperty[] = [];
     const appendedProperties: ApiSchemaProperty[] = [];
     for (const property of schema.properties.values()) {
       const discriminator = inheritedSchemas.find(
-        (x) => x.discriminator?.propertyName === property.name
+        (x) => x.discriminator?.propertyName === property.name,
       )?.discriminator;
       if (discriminator) {
         const schemaMappings = Object.entries(discriminator.mapping).filter(([_, v]) => v.id === schema.id);
@@ -598,24 +541,22 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       properties.push(property);
     }
 
-    return [...this.sortProperties(ctx, schema, properties), ...appendedProperties];
+    return [...this.sortProperties(ctx, { schema, properties }), ...appendedProperties];
   }
 
-  protected sortProperties(
-    ctx: Context,
-    schema: ApiSchema,
-    properties: Iterable<ApiSchemaProperty>
-  ): ApiSchemaProperty[] {
-    return [...properties].sort((a, b) => classify(a) - classify(b));
+  protected sortProperties(ctx: Context, args: Args.SortProperties): ApiSchemaProperty[] {
+    return [...args.properties].sort((a, b) => classify(a) - classify(b));
 
     function classify(p: ApiSchemaProperty) {
       if (p.schema.default !== undefined) return 1;
-      if (schema.required.has(p.name)) return 0;
+      if (args.schema.required.has(p.name)) return 0;
       return 2;
     }
   }
 
-  private normalizeSchema(ctx: Context, schema: ApiSchema): ApiSchema {
+  protected normalizeSchema(ctx: Context, args: Args.NormalizeSchema): ApiSchema {
+    let { schema } = args;
+
     if (schema.kind === 'oneOf') {
       schema =
         ctx.config.oneOfBehavior === 'treat-as-any-of'
@@ -633,11 +574,13 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     return schema;
   }
 
-  private hasProperty(ctx: Context, schema: ApiSchema, name: string): boolean {
+  protected hasProperty(ctx: Context, args: Args.HasProperty): boolean {
+    const { schema, propertyName } = args;
+
     return (
-      ('properties' in schema && schema.properties.has(name)) ||
-      ('anyOf' in schema && schema.anyOf.some((x) => this.hasProperty(ctx, x, name))) ||
-      ('allOf' in schema && schema.allOf.some((x) => this.hasProperty(ctx, x, name)))
+      ('properties' in schema && schema.properties.has(propertyName)) ||
+      ('anyOf' in schema && schema.anyOf.some((schema) => this.hasProperty(ctx, { schema, propertyName }))) ||
+      ('allOf' in schema && schema.allOf.some((schema) => this.hasProperty(ctx, { schema, propertyName })))
     );
   }
 }

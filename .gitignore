@@ -44,3 +44,5 @@ Thumbs.db
 /out
 
 **/.verify/**/*.actual.txt
+
+.nx/cache
