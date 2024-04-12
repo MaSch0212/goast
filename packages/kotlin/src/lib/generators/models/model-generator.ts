@@ -99,12 +99,8 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
   }
 
   protected generateObjectType(ctx: Context, builder: Builder, schema: ApiSchema<'object'>): void {
-    if (schema.properties.size === 0) {
-      if (schema.additionalProperties) {
-        this.generateMapType(ctx, builder, schema);
-      } else {
-        builder.append('Any');
-      }
+    if (schema.properties.size === 0 && schema.additionalProperties) {
+      this.generateMapType(ctx, builder, schema);
     } else {
       this.generateObjectPackageMember(ctx, builder, schema);
     }
@@ -558,16 +554,6 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     }
     schema = this.normalizeSchema(ctx, schema);
     if (schema.kind === 'combined' || schema.kind === 'oneOf') {
-      return false;
-    }
-
-    // Only object types with properties should have its own type declaration
-    if (
-      schema.kind === 'object' &&
-      schema.properties.size === 0 &&
-      schema.anyOf.length === 0 &&
-      schema.allOf.length === 0
-    ) {
       return false;
     }
 
