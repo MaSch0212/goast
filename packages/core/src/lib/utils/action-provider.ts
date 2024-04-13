@@ -47,7 +47,7 @@ export class ActionProvider<TAction extends (...args: any[]) => any> {
 
   public static fromType<T, TName extends FunctionNames<T>>(
     type: EmptyConstructor<T>,
-    functionName: TName
+    functionName: TName,
   ): ActionProvider<T[TName] extends (...args: any[]) => any ? T[TName] : never> {
     return new ActionProvider({ kind: 'ctor', factory: type, functionName: functionName as any });
   }
@@ -58,7 +58,7 @@ export class ActionProvider<TAction extends (...args: any[]) => any> {
 
   public static fromValue<T, TName extends FunctionNames<T>>(
     value: T,
-    functionName: TName
+    functionName: TName,
   ): ActionProvider<T[TName] extends (...args: any[]) => any ? T[TName] : never> {
     return new ActionProvider({ kind: 'value', value, functionName: functionName as any });
   }

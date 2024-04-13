@@ -26,7 +26,7 @@ async function getFilesImpl(
   dir: string,
   options: DirectoryScanOptions,
   files: string[],
-  currentDepth: number
+  currentDepth: number,
 ): Promise<void> {
   const dirFiles = await readdir(dir);
   for (const file of dirFiles) {

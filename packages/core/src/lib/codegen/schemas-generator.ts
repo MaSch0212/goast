@@ -14,7 +14,7 @@ export type OpenApiSchemasGenerationProviderContext<
   TInput extends OpenApiGeneratorInput,
   TOutput extends OpenApiGeneratorOutput,
   TConfig extends AnyConfig,
-  TSchemaOutput extends OpenApiGeneratorOutput
+  TSchemaOutput extends OpenApiGeneratorOutput,
 > = OpenApiGenerationProviderContext<TInput, TConfig> & {
   existingSchemaResults: Map<string, TSchemaOutput>;
   output: TOutput;
@@ -25,12 +25,12 @@ export abstract class OpenApiSchemasGenerationProviderBase<
   TOutput extends OpenApiGeneratorOutput,
   TConfig extends AnyConfig,
   TSchemaOutput extends OpenApiGeneratorOutput,
-  TContext extends OpenApiSchemasGenerationProviderContext<TInput, TOutput, TConfig, TSchemaOutput>
+  TContext extends OpenApiSchemasGenerationProviderContext<TInput, TOutput, TConfig, TSchemaOutput>,
 > extends OpenApiGenerationProviderBase<TInput, TOutput, TConfig, TContext> {
   protected override getProviderContext(
     context: OpenApiGeneratorContext<TInput>,
     config: Partial<TConfig> | undefined,
-    defaultConfig: DefaultGenerationProviderConfig<TConfig>
+    defaultConfig: DefaultGenerationProviderConfig<TConfig>,
   ): OpenApiSchemasGenerationProviderContext<TInput, TOutput, TConfig, TSchemaOutput> {
     const ctx = super.getProviderContext(context, config, defaultConfig);
     return Object.assign(ctx, {

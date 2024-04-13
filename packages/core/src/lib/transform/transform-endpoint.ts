@@ -41,7 +41,7 @@ export function transformEndpoint(context: OpenApiTransformerContext, endpointIn
     description: endpointInfo.operation.description,
     parameters: combineParameters(
       apiPath.parameters,
-      endpointInfo.operation.parameters?.map((p) => transformParameter(context, p)) ?? []
+      endpointInfo.operation.parameters?.map((p) => transformParameter(context, p)) ?? [],
     ),
     deprecated: endpointInfo.operation.deprecated ?? false,
     requestBody: endpointInfo.operation.requestBody
@@ -79,7 +79,7 @@ function transformApiPath(
   context: OpenApiTransformerContext,
   path: string,
   pathItem: Deref<OpenApiPathItem>,
-  isReference = false
+  isReference = false,
 ): ApiPath {
   const existingPath = context.paths.get(path);
   if (existingPath) return existingPath;
@@ -149,7 +149,7 @@ function transformParameter(context: OpenApiTransformerContext, parameter: Deref
 
 function transformRequestBody(
   context: OpenApiTransformerContext,
-  requestBody: Deref<OpenApiRequestBody>
+  requestBody: Deref<OpenApiRequestBody>,
 ): ApiRequestBody {
   const openApiObjectId = getOpenApiObjectIdentifier(requestBody);
   const existing = context.transformed.requestBodies.get(openApiObjectId);
@@ -174,7 +174,7 @@ function transformRequestBody(
 
 function transformResponses(
   context: OpenApiTransformerContext,
-  responses?: Record<string, Deref<OpenApiResponse>>
+  responses?: Record<string, Deref<OpenApiResponse>>,
 ): ApiResponse[] {
   if (!responses) return [];
   const result: ApiResponse[] = [];
@@ -188,7 +188,7 @@ function transformResponses(
 function transformResponse(
   context: OpenApiTransformerContext,
   response: Deref<OpenApiResponse>,
-  status: string
+  status: string,
 ): ApiResponse {
   const openApiObjectId = getOpenApiObjectIdentifier(response);
   const existing = context.transformed.responses.get(openApiObjectId);
@@ -214,7 +214,7 @@ function transformResponse(
 
 function transformContent(
   context: OpenApiTransformerContext,
-  content?: Record<string, Deref<OpenApiMediaType>>
+  content?: Record<string, Deref<OpenApiMediaType>>,
 ): ApiContent[] {
   if (!content) return [];
   const result: ApiContent[] = [];
@@ -228,7 +228,7 @@ function transformContent(
 function transformMediaType(
   context: OpenApiTransformerContext,
   mediaType: Deref<OpenApiMediaType>,
-  media: string
+  media: string,
 ): ApiContent {
   const openApiObjectId = getOpenApiObjectIdentifier(mediaType);
   const existing = context.transformed.content.get(openApiObjectId);
@@ -269,7 +269,7 @@ function isSchema(obj: Record<string, unknown>): obj is Deref<OpenApiSchema> {
 
 function transformHeaders(
   context: OpenApiTransformerContext,
-  headers?: Record<string, Deref<OpenApiHeader> | Deref<OpenApiSchema>>
+  headers?: Record<string, Deref<OpenApiHeader> | Deref<OpenApiSchema>>,
 ): ApiHeader[] {
   if (!headers) return [];
   const result: ApiHeader[] = [];
@@ -283,7 +283,7 @@ function transformHeaders(
 function transformHeader(
   context: OpenApiTransformerContext,
   header: Deref<OpenApiHeader> | Deref<OpenApiSchema>,
-  name: string
+  name: string,
 ): ApiHeader {
   const openApiObjectId = getOpenApiObjectIdentifier(header);
   const existing = context.transformed.headers.get(openApiObjectId);

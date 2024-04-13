@@ -5,7 +5,7 @@ import { toKotlinPropertyName, toKotlinStringLiteral } from '../utils';
 
 export abstract class KotlinFileGenerator<
   TContext extends OpenApiGenerationProviderContext<OpenApiGeneratorInput, KotlinGeneratorConfig>,
-  TOutput
+  TOutput,
 > {
   public abstract generate(context: TContext): TOutput;
 

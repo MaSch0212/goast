@@ -51,7 +51,7 @@ export class KotlinSpringControllersGenerator extends OpenApiServicesGenerationP
 
   protected buildContext(
     context: OpenApiGeneratorContext<KotlinServicesGeneratorInput>,
-    config?: Partial<Config> | undefined
+    config?: Partial<Config> | undefined,
   ): Context {
     context.data.services = context.data.services.filter((x) => x.name !== 'exclude-from-generation');
     return this.getProviderContext(context, config, defaultKotlinServicesGeneratorConfig);

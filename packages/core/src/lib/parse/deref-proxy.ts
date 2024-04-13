@@ -5,7 +5,7 @@ import { isNullish } from '../utils';
 export function createDerefProxy<T extends OpenApiObject<string>>(
   obj: T,
   source: DerefSource<T>,
-  ref?: Deref<T>
+  ref?: Deref<T>,
 ): Deref<T> {
   return new Proxy(obj, new DerefProxyHandler(source, ref)) as Deref<T>;
 }
@@ -15,7 +15,10 @@ const propertiesNotDerivedFromRef: PropertyKey[] = ['title'];
 class DerefProxyHandler<T extends OpenApiObject<string>> implements ProxyHandler<T> {
   private readonly _overwrittenValues: Record<PropertyKey, unknown> = {};
 
-  constructor(private readonly _source: DerefSource<T>, private _ref?: Deref<T>) {}
+  constructor(
+    private readonly _source: DerefSource<T>,
+    private _ref?: Deref<T>,
+  ) {}
 
   public get(target: T, prop: PropertyKey): unknown {
     if (prop === '$ref') {
@@ -55,7 +58,7 @@ class DerefProxyHandler<T extends OpenApiObject<string>> implements ProxyHandler
 
   public ownKeys(target: T): ArrayLike<string | symbol> {
     return Array.from(
-      new Set([...Object.keys(target), ...(!isNullish(this._ref) ? Object.keys(this._ref) : []), '$ref', '$src'])
+      new Set([...Object.keys(target), ...(!isNullish(this._ref) ? Object.keys(this._ref) : []), '$ref', '$src']),
     );
   }
 }

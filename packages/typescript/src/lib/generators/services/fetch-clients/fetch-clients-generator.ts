@@ -47,7 +47,7 @@ export class TypeScriptClientsGenerator extends OpenApiServicesGenerationProvide
 
   protected override buildContext(
     context: OpenApiGeneratorContext<Input>,
-    config?: Partial<Config> | undefined
+    config?: Partial<Config> | undefined,
   ): Context {
     return this.getProviderContext(context, config, defaultTypeScriptFetchClientsGeneratorConfig);
   }

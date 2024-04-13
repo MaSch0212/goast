@@ -8,7 +8,10 @@ import { ApiConfiguration } from './api-configuration';
  */
 @Injectable()
 export class BaseService {
-  constructor(protected config: ApiConfiguration, protected http: HttpClient) {}
+  constructor(
+    protected config: ApiConfiguration,
+    protected http: HttpClient,
+  ) {}
 
   private _rootUrl: string = '';
 

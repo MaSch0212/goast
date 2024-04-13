@@ -13,7 +13,7 @@ export type OpenApiServicesGenerationProviderContext<
   TInput extends OpenApiGeneratorInput,
   TOutput extends OpenApiGeneratorOutput,
   TConfig extends AnyConfig,
-  TServiceOutput extends OpenApiGeneratorOutput
+  TServiceOutput extends OpenApiGeneratorOutput,
 > = OpenApiGenerationProviderContext<TInput, TConfig> & {
   existingServiceResults: Map<string, TServiceOutput>;
   output: TOutput;
@@ -24,12 +24,12 @@ export abstract class OpenApiServicesGenerationProviderBase<
   TOutput extends OpenApiGeneratorOutput,
   TConfig extends AnyConfig,
   TServiceOutput extends OpenApiGeneratorOutput,
-  TContext extends OpenApiServicesGenerationProviderContext<TInput, TOutput, TConfig, TServiceOutput>
+  TContext extends OpenApiServicesGenerationProviderContext<TInput, TOutput, TConfig, TServiceOutput>,
 > extends OpenApiGenerationProviderBase<TInput, TOutput, TConfig, TContext> {
   protected override getProviderContext(
     context: OpenApiGeneratorContext<TInput>,
     config: Partial<TConfig> | undefined,
-    defaultConfig: DefaultGenerationProviderConfig<TConfig>
+    defaultConfig: DefaultGenerationProviderConfig<TConfig>,
   ): OpenApiServicesGenerationProviderContext<TInput, TOutput, TConfig, TServiceOutput> {
     const ctx = super.getProviderContext(context, config, defaultConfig);
     return Object.assign(ctx, {
@@ -53,7 +53,7 @@ export abstract class OpenApiServicesGenerationProviderBase<
     const result = this.generateService(ctx, service);
 
     addSourceIfTest(ctx.config, result, () =>
-      service.$src ? `${service.$src.file}#${service.$src.path}` : `tag:${service.name}`
+      service.$src ? `${service.$src.file}#${service.$src.path}` : `tag:${service.name}`,
     );
     this.addServiceResult(ctx, service, result);
     return result;

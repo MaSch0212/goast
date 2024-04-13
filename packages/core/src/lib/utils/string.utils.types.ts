@@ -48,14 +48,14 @@ export type StringCasingWithOptions<T extends StringCasing = StringCasing> = {
 export type CaseOptions<T extends StringCasing> = T extends 'camel'
   ? Partial<CamelCaseOptions>
   : T extends 'pascal'
-  ? Partial<PascalCaseOptions>
-  : T extends 'kebab'
-  ? Partial<KebabCaseOptions>
-  : T extends 'snake'
-  ? Partial<SnakeCaseOptions>
-  : T extends 'custom'
-  ? CustomCaseOptions
-  : never;
+    ? Partial<PascalCaseOptions>
+    : T extends 'kebab'
+      ? Partial<KebabCaseOptions>
+      : T extends 'snake'
+        ? Partial<SnakeCaseOptions>
+        : T extends 'custom'
+          ? CustomCaseOptions
+          : never;
 
 export type BaseCaseOptions = {
   /**

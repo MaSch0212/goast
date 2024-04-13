@@ -5,7 +5,7 @@ import { Deref, OpenApiObject } from '../parse';
 import { isNullish } from '../utils/common.utils';
 
 export function determineSchemaKind<
-  T extends { oneOf?: unknown; allOf?: unknown; anyOf?: unknown; type?: string | string[] }
+  T extends { oneOf?: unknown; allOf?: unknown; anyOf?: unknown; type?: string | string[] },
 >(schema: T): ApiSchemaKind {
   if (schema.oneOf) {
     return 'oneOf';
@@ -33,7 +33,7 @@ export function determineSchemaName(
     title?: string;
     $src: { path: string };
   },
-  id: string
+  id: string,
 ): { name: string; isGenerated: boolean } {
   if (schema.title) return { name: schema.title, isGenerated: false };
   if (!schema.$src) {
@@ -69,7 +69,7 @@ export function updateSchemaAccessibility(
   schema: {
     readOnly?: boolean;
     writeOnly?: boolean;
-  }
+  },
 ): ApiSchemaAccessibility {
   if (accessibility === 'none') return 'none';
   if (accessibility === 'readOnly') return schema.writeOnly === true ? 'none' : 'readOnly';
@@ -108,8 +108,8 @@ export function transformAdditionalProperties<TAdditionalProperties>(
   },
   transformSchema: (
     context: OpenApiTransformerContext,
-    schema: Exclude<TAdditionalProperties, undefined | boolean>
-  ) => ApiSchema
+    schema: Exclude<TAdditionalProperties, undefined | boolean>,
+  ) => ApiSchema,
 ): boolean | ApiSchema | undefined {
   if (isNullish(schema.additionalProperties)) return undefined;
   if (typeof schema.additionalProperties === 'boolean') return schema.additionalProperties;
@@ -119,7 +119,7 @@ export function transformAdditionalProperties<TAdditionalProperties>(
 export function transformSchemaProperties<TProperties>(
   context: OpenApiTransformerContext,
   schema: { properties?: Record<string, TProperties>; required?: string[] },
-  transformSchema: (context: OpenApiTransformerContext, schema: TProperties) => ApiSchema
+  transformSchema: (context: OpenApiTransformerContext, schema: TProperties) => ApiSchema,
 ): Map<string, ApiSchemaProperty> {
   const result = new Map<string, ApiSchemaProperty>();
   if (!schema.properties) return result;

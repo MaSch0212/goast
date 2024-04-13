@@ -30,7 +30,7 @@ describe('resolveAnyOfAndAllOf', () => {
           expect.objectContaining(createUnknownProperty('prop2')),
         ],
         required: ['prop0', 'prop1', 'prop2'],
-      })
+      }),
     );
 
     const result = resolveAnyOfAndAllOf(schema, true);
@@ -73,7 +73,7 @@ describe('resolveAnyOfAndAllOf', () => {
           expect.objectContaining(createUnknownProperty('prop3')),
         ],
         required: ['prop1'],
-      })
+      }),
     );
 
     const result = resolveAnyOfAndAllOf(schema, true);

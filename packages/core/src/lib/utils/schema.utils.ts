@@ -4,7 +4,7 @@ import { ApiSchema, ApiSchemaProperty } from '../transform';
 
 export function resolveAnyOfAndAllOf(
   schema: ApiSchema<'combined' | 'object'>,
-  ignoreNonObjectParts: boolean
+  ignoreNonObjectParts: boolean,
 ): ApiSchema<'object'> | undefined {
   if (!ignoreNonObjectParts && (hasInvalidSubSchema(schema.anyOf) || hasInvalidSubSchema(schema.allOf))) {
     return undefined;
@@ -34,7 +34,7 @@ function collectSubSchemaProperties(
   subSchemas: ApiSchema[],
   properties: Map<string, ApiSchemaProperty>,
   required: Set<string>,
-  optional: boolean
+  optional: boolean,
 ) {
   for (const subSchema of subSchemas) {
     if (subSchema.kind === 'object') {
@@ -60,7 +60,8 @@ function collectSubSchemaProperties(
 function hasInvalidSubSchema(subSchemas: ApiSchema[]): boolean {
   return subSchemas.some(
     (x) =>
-      x.kind !== 'object' && (x.kind !== 'combined' || (!hasInvalidSubSchema(x.allOf) && !hasInvalidSubSchema(x.anyOf)))
+      x.kind !== 'object' &&
+      (x.kind !== 'combined' || (!hasInvalidSubSchema(x.allOf) && !hasInvalidSubSchema(x.anyOf))),
   );
 }
 
@@ -73,7 +74,7 @@ function hasInvalidSubSchema(subSchemas: ApiSchema[]): boolean {
 export function getSchemaReference(schema: ApiSchema, propertiesToIgnore: (keyof OpenApiSchema)[]): ApiSchema {
   if (!schema.$ref) return schema;
   const hasPropertiesDefined = Object.keys(schema.$src.originalComponent).some(
-    (key) => isOpenApiObjectProperty(key) && !propertiesToIgnore.includes(key as keyof OpenApiSchema)
+    (key) => isOpenApiObjectProperty(key) && !propertiesToIgnore.includes(key as keyof OpenApiSchema),
   );
   return hasPropertiesDefined ? schema : getSchemaReference(schema.$ref, propertiesToIgnore);
 }

@@ -24,7 +24,7 @@ export function getModulePathRelativeToFile(from: string, to: string, transforme
 export function getModulePathRelativeToDirectory(
   from: string,
   to: string,
-  transformer: ImportModuleTransformer
+  transformer: ImportModuleTransformer,
 ): string {
   return transformModulePath(relative(from, to).replace(/\\/g, '/'), transformer);
 }

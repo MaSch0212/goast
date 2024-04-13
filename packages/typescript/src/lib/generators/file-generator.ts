@@ -5,7 +5,7 @@ import { toTypeScriptPropertyName, toTypeScriptStringLiteral } from '../utils';
 
 export abstract class TypeScriptFileGenerator<
   TContext extends OpenApiGenerationProviderContext<OpenApiGeneratorInput, TypeScriptGeneratorConfig>,
-  TOutput
+  TOutput,
 > {
   public abstract generate(context: TContext): TOutput;
 
@@ -24,7 +24,7 @@ export abstract class TypeScriptFileGenerator<
   protected toPropertyName(context: TContext, name: string, keepCasing: boolean = false): string {
     return toTypeScriptPropertyName(
       keepCasing ? name : toCasing(name, context.config.propertyNameCasing),
-      context.config.useSingleQuotes
+      context.config.useSingleQuotes,
     );
   }
 

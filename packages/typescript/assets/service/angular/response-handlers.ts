@@ -16,7 +16,7 @@ export class ResponseHandler<
   I extends Response,
   S extends I,
   E extends Handeled<Exclude<I['status'], S['status']>>,
-  O
+  O,
 > {
   private readonly _dummy?: E;
   private readonly _response: I;
@@ -29,7 +29,7 @@ export class ResponseHandler<
 
   public handle<T extends Exclude<S['status'], 'other'>, U = undefined>(
     status: T[] | T,
-    handler?: (r: PickRsp<S, T>, status: string) => U | PromiseLike<U>
+    handler?: (r: PickRsp<S, T>, status: string) => U | PromiseLike<U>,
   ) {
     const newThis = this.as<ExcludeRsp<S, T>, Handeled<T | keyof E>, RemoveVoid<U>>();
     const matches = Array.isArray(status)
@@ -98,12 +98,12 @@ export class UnhandeledResponseError extends Error {
 }
 
 export type ResponseHandlerFn<T extends Response, O> = (
-  handler: ResponseHandler<T, T, object, never>
+  handler: ResponseHandler<T, T, object, never>,
 ) => ResponseHandler<T, never, { [K in T['status']]: true }, O>;
 
 export function handleResponse<R extends Response, O>(
   response: Promise<StrictHttpResponse<unknown>>,
-  handler: ResponseHandlerFn<R, O>
+  handler: ResponseHandlerFn<R, O>,
 ): Promise<O> {
   return response
     .then(
@@ -111,7 +111,7 @@ export function handleResponse<R extends Response, O>(
         <R>{
           status: r.status.toString(),
           content: r.body,
-        }
+        },
     )
     .catch((e: HttpErrorResponse) => {
       if (!e.status) throw e;

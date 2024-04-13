@@ -13,7 +13,7 @@ export type OpenApiEndpointsGenerationProviderContext<
   TInput extends OpenApiGeneratorInput,
   TOutput extends OpenApiGeneratorOutput,
   TConfig extends AnyConfig,
-  TEndpointOutput extends OpenApiGeneratorOutput
+  TEndpointOutput extends OpenApiGeneratorOutput,
 > = OpenApiGenerationProviderContext<TInput, TConfig> & {
   existingEndpointResults: Map<string, TEndpointOutput>;
   output: TOutput;
@@ -24,12 +24,12 @@ export abstract class OpenApiEndpointsGenerationProviderBase<
   TOutput extends OpenApiGeneratorOutput,
   TConfig extends AnyConfig,
   TEndpointOutput extends OpenApiGeneratorOutput,
-  TContext extends OpenApiEndpointsGenerationProviderContext<TInput, TOutput, TConfig, TEndpointOutput>
+  TContext extends OpenApiEndpointsGenerationProviderContext<TInput, TOutput, TConfig, TEndpointOutput>,
 > extends OpenApiGenerationProviderBase<TInput, TOutput, TConfig, TContext> {
   protected override getProviderContext(
     context: OpenApiGeneratorContext<TInput>,
     config: Partial<TConfig> | undefined,
-    defaultConfig: DefaultGenerationProviderConfig<TConfig>
+    defaultConfig: DefaultGenerationProviderConfig<TConfig>,
   ): OpenApiEndpointsGenerationProviderContext<TInput, TOutput, TConfig, TEndpointOutput> {
     const ctx = super.getProviderContext(context, config, defaultConfig);
     return Object.assign(ctx, {

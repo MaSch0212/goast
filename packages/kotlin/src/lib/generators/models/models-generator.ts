@@ -38,7 +38,7 @@ export class KotlinModelsGenerator extends OpenApiSchemasGenerationProviderBase<
 
   protected override buildContext(
     context: OpenApiGeneratorContext<KotlinModelsGeneratorInput>,
-    config?: Partial<Config> | undefined
+    config?: Partial<Config> | undefined,
   ): Context {
     return this.getProviderContext(context, config, defaultKotlinModelsGeneratorConfig);
   }

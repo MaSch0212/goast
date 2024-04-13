@@ -20,7 +20,7 @@ export type OpenApiGenerationProviderContext<TInput extends OpenApiGeneratorInpu
 export interface OpenApiGenerationProvider<
   TInput extends OpenApiGeneratorInput = OpenApiGeneratorInput,
   TOutput extends OpenApiGeneratorOutput = OpenApiGeneratorOutput,
-  TConfig extends AnyConfig = AnyConfig
+  TConfig extends AnyConfig = AnyConfig,
 > {
   generate(
     ...args: Parameters<OpenApiGenerationProviderFn<TInput, TOutput, TConfig>>
@@ -30,5 +30,5 @@ export interface OpenApiGenerationProvider<
 export type OpenApiGenerationProviderFn<
   TInput extends OpenApiGeneratorInput = OpenApiGeneratorInput,
   TOutput extends OpenApiGeneratorOutput = OpenApiGeneratorOutput,
-  TConfig extends AnyConfig = AnyConfig
+  TConfig extends AnyConfig = AnyConfig,
 > = (context: OpenApiGeneratorContext<TInput>, config?: Partial<TConfig>) => TOutput;
