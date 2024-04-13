@@ -27,6 +27,7 @@ export {
   TsIntersectionType as IntersectionType,
   tsIntersectionType as intersectionType,
 } from './nodes/intersection-type';
+export { TsLookupType as LookupType, tsLookupType as lookupType } from './nodes/lookup-type';
 export { TsMethod as Method, tsMethod as method } from './nodes/method';
 export { TsObject as Object, tsObject as object } from './nodes/object';
 export { TsObjectType as ObjectType, tsObjectType as objectType } from './nodes/object-type';

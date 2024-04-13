@@ -13,6 +13,28 @@ import {
 } from './string.utils.types';
 import { Nullable } from './type.utils';
 
+export function adjustCasing(a: StringCasing, b: StringCasing): StringCasing;
+export function adjustCasing(
+  a: StringCasing | StringCasingWithOptions,
+  b: StringCasing | Partial<StringCasingWithOptions>,
+): StringCasingWithOptions;
+export function adjustCasing(
+  a: StringCasing | StringCasingWithOptions,
+  b: StringCasing | Partial<StringCasingWithOptions>,
+): StringCasing | StringCasingWithOptions {
+  if (typeof a === 'string') {
+    if (typeof b === 'string') {
+      return b;
+    } else {
+      return { casing: a, ...b };
+    }
+  } else if (typeof b === 'string') {
+    return { ...a, casing: b };
+  } else {
+    return { ...a, ...b };
+  }
+}
+
 export function lowercase<T extends string>(str: T): Lowercase<T> {
   return str.toLowerCase() as Lowercase<T>;
 }

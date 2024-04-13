@@ -79,12 +79,21 @@
         classReference: false,
         generics: [],
         inject: {},
-        name: 'Any',
+        name: 'MyObject',
         nullable: false,
-        packageName: 'kotlin',
+        packageName: 'com.openapi.generated.model',
         subReference: null
       }
     }
   }
 }
 └──────────────────────────────────────┘
+
+┌─────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/MyObject.kt │
+├─────────────────────────────────────────────┤
+package com.openapi.generated.model
+
+class MyObject
+
+└─────────────────────────────────────────────┘

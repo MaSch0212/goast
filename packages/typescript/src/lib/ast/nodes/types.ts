@@ -4,6 +4,7 @@ import type { TsClass } from './class';
 import type { TsFunction } from './function';
 import type { TsFunctionType } from './function-type';
 import type { TsIntersectionType } from './intersection-type';
+import type { TsLookupType } from './lookup-type';
 import type { TsObject } from './object';
 import type { TsObjectType } from './object-type';
 import type { TsReference } from './reference';
@@ -20,6 +21,7 @@ export type TsType<TBuilder extends SourceBuilder> =
   | TsFunctionType<TBuilder>
   | TsObjectType<TBuilder>
   | TsString<TBuilder>
+  | TsLookupType<TBuilder>
   | TsReference<TBuilder>;
 
 export type TsValue<TBuilder extends SourceBuilder> =

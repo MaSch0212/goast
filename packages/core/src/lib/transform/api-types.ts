@@ -28,20 +28,20 @@ export type ApiComponentSource<T> = DerefSource<T> & {
 export type Transformed<T> = T extends OpenApiTag
   ? ApiService
   : T extends OpenApiPathItem
-  ? ApiPath
-  : T extends OpenApiParameter
-  ? ApiParameter
-  : T extends OpenApiRequestBody
-  ? ApiRequestBody
-  : T extends OpenApiResponse
-  ? ApiResponse
-  : T extends OpenApiMediaType
-  ? ApiContent
-  : T extends OpenApiHeader
-  ? ApiHeader
-  : T extends OpenApiSchema
-  ? ApiSchema
-  : undefined;
+    ? ApiPath
+    : T extends OpenApiParameter
+      ? ApiParameter
+      : T extends OpenApiRequestBody
+        ? ApiRequestBody
+        : T extends OpenApiResponse
+          ? ApiResponse
+          : T extends OpenApiMediaType
+            ? ApiContent
+            : T extends OpenApiHeader
+              ? ApiHeader
+              : T extends OpenApiSchema
+                ? ApiSchema
+                : undefined;
 
 export type ApiComponent<T> = {
   id: string;
@@ -161,7 +161,7 @@ export type ApiSchemaBase = ApiSchemaComponent & {
   custom: Record<string, unknown>;
   not: ApiSchema | undefined;
   discriminator: ApiSchemaDiscriminator | undefined;
-  inheritedSchemas: ApiSchema[];
+  inheritedSchemas: (ApiSchema & { discriminator: NonNullable<ApiSchema['discriminator']> })[];
 };
 export type ApiSchema<T extends ApiSchemaKind = ApiSchemaKind> = ApiSchemaBase & ApiSchemaExtensions<T>;
 type AdditionalCombinedSchemaProperties = {
@@ -192,37 +192,38 @@ type AdditionalPrimitiveSchemaProperties = {
 export type ApiSchemaExtensions<T extends ApiSchemaKind> = T extends 'oneOf'
   ? { kind: 'oneOf'; oneOf: ApiSchema[] }
   : T extends 'multi-type'
-  ? {
-      kind: 'multi-type';
-      type: ApiSchemaType[];
-    } & AdditionalArraySchemaProperties &
-      AdditionalObjectSchemaProperties &
-      AdditionalNumberSchemaProperties &
-      AdditionalStringSchemaProperties &
-      AdditionalPrimitiveSchemaProperties
-  : T extends 'string'
-  ? { kind: 'string'; type: 'string' } & AdditionalStringSchemaProperties & AdditionalPrimitiveSchemaProperties
-  : T extends 'boolean'
-  ? { kind: 'boolean'; type: 'boolean' } & AdditionalPrimitiveSchemaProperties
-  : T extends 'null'
-  ? { kind: 'null'; type: 'null' }
-  : T extends 'number' | 'integer'
-  ? { kind: 'number' | 'integer'; type: T } & AdditionalNumberSchemaProperties & AdditionalPrimitiveSchemaProperties
-  : T extends 'array'
-  ? {
-      kind: 'array';
-      type: 'array';
-    } & AdditionalArraySchemaProperties
-  : T extends 'object'
-  ? {
-      kind: 'object';
-      type: 'object';
-    } & AdditionalObjectSchemaProperties
-  : T extends 'combined'
-  ? {
-      kind: 'combined';
-    } & AdditionalCombinedSchemaProperties
-  : { kind: 'unknown' };
+    ? {
+        kind: 'multi-type';
+        type: ApiSchemaType[];
+      } & AdditionalArraySchemaProperties &
+        AdditionalObjectSchemaProperties &
+        AdditionalNumberSchemaProperties &
+        AdditionalStringSchemaProperties &
+        AdditionalPrimitiveSchemaProperties
+    : T extends 'string'
+      ? { kind: 'string'; type: 'string' } & AdditionalStringSchemaProperties & AdditionalPrimitiveSchemaProperties
+      : T extends 'boolean'
+        ? { kind: 'boolean'; type: 'boolean' } & AdditionalPrimitiveSchemaProperties
+        : T extends 'null'
+          ? { kind: 'null'; type: 'null' }
+          : T extends 'number' | 'integer'
+            ? { kind: 'number' | 'integer'; type: T } & AdditionalNumberSchemaProperties &
+                AdditionalPrimitiveSchemaProperties
+            : T extends 'array'
+              ? {
+                  kind: 'array';
+                  type: 'array';
+                } & AdditionalArraySchemaProperties
+              : T extends 'object'
+                ? {
+                    kind: 'object';
+                    type: 'object';
+                  } & AdditionalObjectSchemaProperties
+                : T extends 'combined'
+                  ? {
+                      kind: 'combined';
+                    } & AdditionalCombinedSchemaProperties
+                  : { kind: 'unknown' };
 export type CombinedLikeApiSchema = ApiSchemaBase & {
   kind: 'combined' | 'object' | 'multi-type';
   type?: 'object' | string[];

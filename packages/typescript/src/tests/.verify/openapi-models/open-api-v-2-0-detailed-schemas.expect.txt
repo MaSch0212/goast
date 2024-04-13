@@ -73,7 +73,7 @@ export type WithAllCommon = string;
 ┌──────────────────────────────────────┐
 │ C:\src\goast\out\models\my-enum.ts   │
 ├──────────────────────────────────────┤
-export type MyEnum = string;
+export type MyEnum = ('one') | ('two') | ('three');
 
 └──────────────────────────────────────┘
 

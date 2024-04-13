@@ -9,9 +9,9 @@
         classReference: false,
         generics: [],
         inject: {},
-        name: 'Any',
+        name: 'EmptyObject',
         nullable: false,
-        packageName: 'kotlin',
+        packageName: 'com.openapi.generated.model',
         subReference: null
       }
     },
@@ -91,9 +91,9 @@
         classReference: false,
         generics: [],
         inject: {},
-        name: 'Any',
+        name: 'Schema15',
         nullable: false,
-        packageName: 'kotlin',
+        packageName: 'com.openapi.generated.model',
         subReference: null
       }
     },
@@ -240,9 +240,9 @@
         classReference: false,
         generics: [],
         inject: {},
-        name: 'Any',
+        name: 'Schema24',
         nullable: false,
-        packageName: 'kotlin',
+        packageName: 'com.openapi.generated.model',
         subReference: null
       }
     },
@@ -358,9 +358,9 @@
         classReference: false,
         generics: [],
         inject: {},
-        name: 'Any',
+        name: 'Schema32',
         nullable: false,
-        packageName: 'kotlin',
+        packageName: 'com.openapi.generated.model',
         subReference: null
       }
     },
@@ -452,9 +452,9 @@
         classReference: false,
         generics: [],
         inject: {},
-        name: 'Any',
+        name: 'Schema39',
         nullable: false,
-        packageName: 'kotlin',
+        packageName: 'com.openapi.generated.model',
         subReference: null
       }
     },
@@ -558,9 +558,9 @@
         classReference: false,
         generics: [],
         inject: {},
-        name: 'Any',
+        name: 'Schema46',
         nullable: false,
-        packageName: 'kotlin',
+        packageName: 'com.openapi.generated.model',
         subReference: null
       }
     },
@@ -664,9 +664,9 @@
         classReference: false,
         generics: [],
         inject: {},
-        name: 'Any',
+        name: 'Schema53',
         nullable: false,
-        packageName: 'kotlin',
+        packageName: 'com.openapi.generated.model',
         subReference: null
       }
     },
@@ -770,9 +770,9 @@
         classReference: false,
         generics: [],
         inject: {},
-        name: 'Any',
+        name: 'Schema60',
         nullable: false,
-        packageName: 'kotlin',
+        packageName: 'com.openapi.generated.model',
         subReference: null
       }
     },
@@ -864,9 +864,9 @@
         classReference: false,
         generics: [],
         inject: {},
-        name: 'Any',
-        nullable: true,
-        packageName: 'kotlin',
+        name: 'Schema67',
+        nullable: false,
+        packageName: 'com.openapi.generated.model',
         subReference: null
       }
     },
@@ -980,9 +980,9 @@
         classReference: false,
         generics: [],
         inject: {},
-        name: 'Any',
-        nullable: true,
-        packageName: 'kotlin',
+        name: 'Schema74',
+        nullable: false,
+        packageName: 'com.openapi.generated.model',
         subReference: null
       }
     },
@@ -1004,9 +1004,9 @@
         classReference: false,
         generics: [],
         inject: {},
-        name: 'Any',
+        name: 'EmptyObject',
         nullable: false,
-        packageName: 'kotlin',
+        packageName: 'com.openapi.generated.model',
         subReference: null
       }
     },
@@ -1052,9 +1052,9 @@
         classReference: false,
         generics: [],
         inject: {},
-        name: 'Any',
+        name: 'Schema8',
         nullable: false,
-        packageName: 'kotlin',
+        packageName: 'com.openapi.generated.model',
         subReference: null
       }
     },
@@ -1100,9 +1100,9 @@
         classReference: false,
         generics: [],
         inject: {},
-        name: 'Any',
+        name: 'EmptyObject',
         nullable: false,
-        packageName: 'kotlin',
+        packageName: 'com.openapi.generated.model',
         subReference: null
       }
     },
@@ -1160,9 +1160,9 @@
         classReference: false,
         generics: [],
         inject: {},
-        name: 'Any',
+        name: 'EmptyObject',
         nullable: false,
-        packageName: 'kotlin',
+        packageName: 'com.openapi.generated.model',
         subReference: null
       }
     },
@@ -1218,6 +1218,24 @@
 }
 └──────────────────────────────────────┘
 
+┌────────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/EmptyObject.kt │
+├────────────────────────────────────────────────┤
+package com.openapi.generated.model
+
+class EmptyObject
+
+└────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/Schema8.kt │
+├────────────────────────────────────────────┤
+package com.openapi.generated.model
+
+class Schema8
+
+└────────────────────────────────────────────┘
+
 ┌─────────────────────────────────────────────────────────┐
 │ out/com/openapi/generated/model/ObjectWithProperties.kt │
 ├─────────────────────────────────────────────────────────┤
@@ -1225,6 +1243,7 @@ package com.openapi.generated.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.Valid
 
 data class ObjectWithProperties(
     @Schema
@@ -1247,12 +1266,22 @@ data class ObjectWithProperties(
     @JsonProperty("e")
     val e: List<Any?>? = null,
 
+    @field:Valid
     @Schema
     @JsonProperty("f")
-    val f: Any? = null
+    val f: Schema8? = null
 )
 
 └─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/Schema15.kt │
+├─────────────────────────────────────────────┤
+package com.openapi.generated.model
+
+class Schema15
+
+└─────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────┐
 │ out/com/openapi/generated/model/ObjectWithRequiredProperties.kt │
@@ -1261,6 +1290,7 @@ package com.openapi.generated.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.Valid
 
 data class ObjectWithRequiredProperties(
     @Schema(required = true)
@@ -1283,12 +1313,22 @@ data class ObjectWithRequiredProperties(
     @JsonProperty("e", required = true)
     val e: List<Any?>,
 
+    @field:Valid
     @Schema(required = true)
     @JsonProperty("f", required = true)
-    val f: Any
+    val f: Schema15
 )
 
 └─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/Schema24.kt │
+├─────────────────────────────────────────────┤
+package com.openapi.generated.model
+
+class Schema24
+
+└─────────────────────────────────────────────┘
 
 ┌────────────────────────────────────────────────────────────────────────────────┐
 │ out/com/openapi/generated/model/ObjectWithPropertiesAndAdditionalProperties.kt │
@@ -1300,6 +1340,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.Valid
 
 data class ObjectWithPropertiesAndAdditionalProperties(
     @Schema
@@ -1322,9 +1363,10 @@ data class ObjectWithPropertiesAndAdditionalProperties(
     @JsonProperty("e")
     val e: List<Any?>? = null,
 
+    @field:Valid
     @Schema
     @JsonProperty("f")
-    val f: Any? = null
+    val f: Schema24? = null
 ) {
     @JsonIgnore
     val additionalProperties: MutableMap<String, String> = mutableMapOf()
@@ -1342,6 +1384,51 @@ data class ObjectWithPropertiesAndAdditionalProperties(
 
 └────────────────────────────────────────────────────────────────────────────────┘
 
+┌─────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/Schema32.kt │
+├─────────────────────────────────────────────┤
+package com.openapi.generated.model
+
+class Schema32
+
+└─────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/Schema39.kt │
+├─────────────────────────────────────────────┤
+package com.openapi.generated.model
+
+class Schema39
+
+└─────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/Schema46.kt │
+├─────────────────────────────────────────────┤
+package com.openapi.generated.model
+
+class Schema46
+
+└─────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/Schema53.kt │
+├─────────────────────────────────────────────┤
+package com.openapi.generated.model
+
+class Schema53
+
+└─────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/Schema60.kt │
+├─────────────────────────────────────────────┤
+package com.openapi.generated.model
+
+class Schema60
+
+└─────────────────────────────────────────────┘
+
 ┌──────────────────────────────────────────────────────────────────────┐
 │ out/com/openapi/generated/model/ObjectWithPropertiesAllOfAndAnyOf.kt │
 ├──────────────────────────────────────────────────────────────────────┤
@@ -1349,6 +1436,7 @@ package com.openapi.generated.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.Valid
 
 data class ObjectWithPropertiesAllOfAndAnyOf(
     @Schema(required = true)
@@ -1371,9 +1459,10 @@ data class ObjectWithPropertiesAllOfAndAnyOf(
     @JsonProperty("k", required = true)
     val k: List<Any?>,
 
+    @field:Valid
     @Schema(required = true)
     @JsonProperty("l", required = true)
-    val l: Any,
+    val l: Schema39,
 
     @Schema(required = true)
     @JsonProperty("m", required = true)
@@ -1395,9 +1484,10 @@ data class ObjectWithPropertiesAllOfAndAnyOf(
     @JsonProperty("q", required = true)
     val q: List<Any?>,
 
+    @field:Valid
     @Schema(required = true)
     @JsonProperty("r", required = true)
-    val r: Any,
+    val r: Schema46,
 
     @Schema(required = true)
     @JsonProperty("s", required = true)
@@ -1419,9 +1509,10 @@ data class ObjectWithPropertiesAllOfAndAnyOf(
     @JsonProperty("w", required = true)
     val w: List<Any?>,
 
+    @field:Valid
     @Schema(required = true)
     @JsonProperty("x", required = true)
-    val x: Any,
+    val x: Schema53,
 
     @Schema(required = true)
     @JsonProperty("y", required = true)
@@ -1443,12 +1534,22 @@ data class ObjectWithPropertiesAllOfAndAnyOf(
     @JsonProperty("cc", required = true)
     val cc: List<Any?>,
 
+    @field:Valid
     @Schema(required = true)
     @JsonProperty("dd", required = true)
-    val dd: Any
+    val dd: Schema60
 )
 
 └──────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/Schema67.kt │
+├─────────────────────────────────────────────┤
+package com.openapi.generated.model
+
+class Schema67
+
+└─────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────┐
 │ out/com/openapi/generated/model/ObjectWithNullableProperties.kt │
@@ -1457,6 +1558,7 @@ package com.openapi.generated.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.Valid
 
 data class ObjectWithNullableProperties(
     @Schema
@@ -1479,12 +1581,22 @@ data class ObjectWithNullableProperties(
     @JsonProperty("e")
     val e: List<Any?>? = null,
 
+    @field:Valid
     @Schema
     @JsonProperty("f")
-    val f: Any? = null
+    val f: Schema67? = null
 )
 
 └─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/Schema74.kt │
+├─────────────────────────────────────────────┤
+package com.openapi.generated.model
+
+class Schema74
+
+└─────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────────────────────────┐
 │ out/com/openapi/generated/model/ObjectWithNullablePropertiesAndRequiredProperties.kt │
@@ -1493,6 +1605,7 @@ package com.openapi.generated.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.Valid
 
 data class ObjectWithNullablePropertiesAndRequiredProperties(
     @Schema(required = true)
@@ -1515,9 +1628,10 @@ data class ObjectWithNullablePropertiesAndRequiredProperties(
     @JsonProperty("e", required = true)
     val e: List<Any?>?,
 
+    @field:Valid
     @Schema(required = true)
     @JsonProperty("f", required = true)
-    val f: Any?
+    val f: Schema74?
 )
 
 └──────────────────────────────────────────────────────────────────────────────────────┘
@@ -1529,11 +1643,13 @@ package com.openapi.generated.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.Valid
 
 data class ObjectWithReferencesInProperties(
+    @field:Valid
     @Schema
     @JsonProperty("a")
-    val a: Any? = null,
+    val a: EmptyObject? = null,
 
     @Schema
     @JsonProperty("b")

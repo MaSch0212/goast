@@ -1,5 +1,7 @@
 import { tsReference } from '../nodes/reference';
 
+export const any = tsReference.factory('any');
+export const unknown = tsReference.factory('unknown');
 export const array = tsReference.genericFactory<1>('Array');
 export const readonlyArray = tsReference.genericFactory<1>('ReadonlyArray');
 export const record = tsReference.genericFactory<2>('Record');

@@ -1,3 +1,5 @@
+export * from './array.utils';
+export * from './class.utils';
 export * from './common.utils';
 export * from './endpoint.utils';
 export * from './factory';
@@ -9,4 +11,3 @@ export * from './string-builder';
 export * from './string.utils';
 export * from './string.utils.types';
 export * from './type.utils';
-export * from './class.utils';

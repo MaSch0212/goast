@@ -4,10 +4,12 @@ import { ensureDirSync, writeFileSync } from 'fs-extra';
 
 import {
   ApiSchema,
+  AppendValueGroup,
   ArrayLikeApiSchema,
   CombinedLikeApiSchema,
   Nullable,
   ObjectLikeApiSchema,
+  appendValueGroup,
   getSchemaReference,
   notNullish,
   resolveAnyOfAndAllOf,
@@ -39,8 +41,7 @@ export class DefaultTypeScriptModelGenerator
       ensureDirSync(dirname(filePath));
 
       const builder = new TypeScriptFileBuilder(filePath, ctx.config);
-      this.generateFileContent(ctx, builder);
-
+      builder.append(this.getFileContent(ctx));
       writeFileSync(filePath, builder.toString());
 
       return { component: name, filePath, imports: [{ kind: 'file', name, modulePath: filePath }] };
@@ -53,20 +54,22 @@ export class DefaultTypeScriptModelGenerator
     }
   }
 
-  protected generateFileContent(ctx: Context, builder: Builder): void {
+  protected getFileContent(ctx: Context): AppendValueGroup<Builder> {
+    const content = appendValueGroup<Builder>([], '\n');
     const interfaceSchema = this.resolveInterfaceSchema(ctx);
     if (interfaceSchema) {
-      builder.append(this.getInterface(ctx, interfaceSchema));
+      content.values.push(this.getInterface(ctx, interfaceSchema));
     } else if (
       ctx.config.enumGeneration !== 'union' &&
       ctx.schema.kind === 'string' &&
       ctx.schema.enum !== undefined &&
       ctx.schema.enum.length > 0
     ) {
-      builder.append(this.getEnum(ctx));
+      content.values.push(this.getEnum(ctx));
     } else {
-      builder.append(this.getTypeAlias(ctx, ctx.schema));
+      content.values.push(this.getTypeAlias(ctx, ctx.schema));
     }
+    return content;
   }
 
   protected getEnum(ctx: Context) {
@@ -86,18 +89,35 @@ export class DefaultTypeScriptModelGenerator
     });
   }
 
-  protected getTypeAlias(ctx: Context, schema: ApiSchema) {
-    return ts.typeAlias(this.getDeclarationTypeName(ctx, schema), this.getType(ctx, schema, true), {
-      export: true,
-      doc: ts.doc({ description: schema.description }),
-    });
+  protected getTypeAlias(ctx: Context, schema: ApiSchema): ts.TypeAlias<Builder> {
+    const result = ts.typeAlias<Builder>(
+      this.getDeclarationTypeName(ctx, schema),
+      this.getType(ctx, schema, true) ?? this.getAnyType(ctx),
+      {
+        export: true,
+        doc: ts.doc({ description: schema.description }),
+      },
+    );
+
+    if (schema.discriminator && Object.keys(schema.discriminator.mapping).length > 0) {
+      const propertyValue = ts.unionType(Object.keys(schema.discriminator.mapping).map((x) => ts.string(x)));
+      result.generics.push(
+        ts.genericParameter(this.getDiscriminatorGenericParamName(ctx, schema), {
+          constraint: propertyValue,
+          default: propertyValue,
+        }),
+      );
+    }
+
+    return result;
   }
 
   protected getIndexer(ctx: Context, schema: ObjectLikeApiSchema) {
     return schema.additionalProperties
       ? ts.indexer(
           'string',
-          schema.additionalProperties === true ? this.getAnyType(ctx) : this.getType(ctx, schema.additionalProperties),
+          (schema.additionalProperties === true ? null : this.getType(ctx, schema.additionalProperties)) ??
+            this.getAnyType(ctx),
           { readonly: ctx.config.immutableTypes },
         )
       : null;
@@ -114,12 +134,32 @@ export class DefaultTypeScriptModelGenerator
     });
   }
 
-  protected getType(ctx: Context, schema: Nullable<ApiSchema>, skipSchemas = false): ts.Type<Builder> {
+  protected getType(ctx: Context, schema: Nullable<ApiSchema>, skipSchemas = false): ts.Type<Builder> | null {
     if (!schema) return this.getAnyType(ctx);
 
     schema = getSchemaReference(schema, ['description']);
     if (!skipSchemas && this.shouldGenerateTypeDeclaration(ctx, schema)) {
+      if (schema.id === ctx.schema.id) {
+        return null;
+      }
       return ts.reference(this.getDeclarationTypeName(ctx, schema), this.getFilePath(ctx, schema));
+    }
+
+    if (schema.id === ctx.schema.id && schema.inheritedSchemas.length > 0) {
+      return ts.intersectionType(
+        this.getInheritedSchemas(ctx, schema).map((x) => {
+          const mappingValue = Object.entries(x.discriminator.mapping).find(
+            ([_, value]) => value.id === schema.id,
+          )?.[0];
+          return ts.reference(this.getDeclarationTypeName(ctx, x), this.getFilePath(ctx, x), {
+            generics: [mappingValue !== undefined ? ts.string(mappingValue) : null],
+          });
+        }),
+      );
+    }
+
+    if (schema.enum) {
+      return ts.unionType(schema.enum.map((x) => ts.toNode(x)));
     }
 
     switch (schema.kind) {
@@ -150,7 +190,9 @@ export class DefaultTypeScriptModelGenerator
   }
 
   protected getArrayType(ctx: Context, schema: ArrayLikeApiSchema): ts.Type<Builder> {
-    return ts.arrayType(this.getType(ctx, schema.items), { readonly: ctx.config.immutableTypes });
+    return ts.arrayType(this.getType(ctx, schema.items) ?? this.getAnyType(ctx), {
+      readonly: ctx.config.immutableTypes,
+    });
   }
 
   protected getObjectType(ctx: Context, schema: ObjectLikeApiSchema): ts.Type<Builder> {
@@ -162,7 +204,31 @@ export class DefaultTypeScriptModelGenerator
     if (parts.length === 0) {
       parts.push(ts.objectType());
     }
-    return ts.intersectionType(parts);
+    const type = ts.intersectionType(parts);
+
+    if (schema.discriminator && Object.keys(schema.discriminator.mapping).length > 0) {
+      const discriminator = schema.discriminator;
+      return ts.intersectionType([
+        type,
+        ts.lookupType(
+          ts.objectType({
+            members: Object.entries(discriminator.mapping).map(([key, value]) =>
+              ts.property(key, {
+                type: ts.intersectionType([
+                  ts.objectType({
+                    members: [ts.property(discriminator.propertyName, { type: ts.string(key) })],
+                  }),
+                  this.getType(ctx, value, true),
+                ]),
+              }),
+            ),
+          }),
+          this.getDiscriminatorGenericParamName(ctx, schema as ApiSchema),
+        ),
+      ]);
+    }
+
+    return type;
   }
 
   protected getCombinedType(ctx: Context, schema: CombinedLikeApiSchema): ts.Type<Builder> {
@@ -216,7 +282,7 @@ export class DefaultTypeScriptModelGenerator
     }
 
     // All enum types should have its own type declaration
-    if (schema.kind === 'string' && schema.enum !== undefined && schema.enum.length > 0) {
+    if (schema.enum !== undefined && schema.enum.length > 0) {
       return true;
     }
 
@@ -247,6 +313,16 @@ export class DefaultTypeScriptModelGenerator
 
   protected getDeclarationTypeName(ctx: Context, schema: ApiSchema): string {
     return toCasing(schema.name, ctx.config.typeNameCasing);
+  }
+
+  protected getDiscriminatorGenericParamName(ctx: Context, schema: ApiSchema): string {
+    return toCasing(schema.discriminator?.propertyName, ctx.config.genericParamCasing);
+  }
+
+  protected getInheritedSchemas(ctx: Context, schema: ApiSchema) {
+    return schema.inheritedSchemas
+      .filter((schema) => this.shouldGenerateTypeDeclaration(ctx, schema) && !schema.isNameGenerated)
+      .filter((item, index, self) => self.indexOf(item) === index);
   }
 
   protected getFilePath(ctx: Context, schema: ApiSchema): string {

@@ -8,8 +8,9 @@ import { KotlinModelsGenerator, KotlinOkHttp3ClientsGenerator, KotlinSpringContr
 
 export async function main(): Promise<void> {
   const x = await new OpenApiGenerator({ outputDir: 'out' })
-    .useType(KotlinModelsGenerator)
-    .useType(KotlinOkHttp3ClientsGenerator)
-    .useType(KotlinSpringControllersGenerator)
+    // .useType(KotlinModelsGenerator)
+    // .useType(KotlinOkHttp3ClientsGenerator)
+    // .useType(KotlinSpringControllersGenerator)
+    .useType(TypeScriptModelsGenerator)
     .parseAndGenerateFromDir('.openapi');
 }

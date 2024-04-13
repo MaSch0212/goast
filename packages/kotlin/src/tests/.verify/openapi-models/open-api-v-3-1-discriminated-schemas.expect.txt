@@ -1,0 +1,248 @@
+┌──────────────────────────────────────┐
+│ state                                │
+├──────────────────────────────────────┤
+{
+  models: {
+    'schema-1': {
+      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Pet',
+      type: KtReference {
+        classReference: false,
+        generics: [],
+        inject: {},
+        name: 'Pet',
+        nullable: false,
+        packageName: 'com.openapi.generated.model',
+        subReference: null
+      }
+    },
+    'schema-10': {
+      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Dog/allOf/1',
+      type: KtReference {
+        classReference: false,
+        generics: [],
+        inject: {},
+        name: 'Any',
+        nullable: true,
+        packageName: 'kotlin',
+        subReference: null
+      }
+    },
+    'schema-11': {
+      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Dog/allOf/1/properties/packSize',
+      type: KtReference {
+        classReference: false,
+        generics: [],
+        inject: {},
+        name: 'Int',
+        nullable: false,
+        packageName: 'kotlin',
+        subReference: null
+      }
+    },
+    'schema-2': {
+      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Pet/properties/name',
+      type: KtReference {
+        classReference: false,
+        generics: [],
+        inject: {},
+        name: 'String',
+        nullable: false,
+        packageName: 'kotlin',
+        subReference: null
+      }
+    },
+    'schema-3': {
+      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Pet/properties/petType',
+      type: KtReference {
+        classReference: false,
+        generics: [],
+        inject: {},
+        name: 'String',
+        nullable: false,
+        packageName: 'kotlin',
+        subReference: null
+      }
+    },
+    'schema-4': {
+      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Dog',
+      type: KtReference {
+        classReference: false,
+        generics: [],
+        inject: {},
+        name: 'Dog',
+        nullable: false,
+        packageName: 'com.openapi.generated.model',
+        subReference: null
+      }
+    },
+    'schema-5': {
+      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Pet',
+      type: KtReference {
+        classReference: false,
+        generics: [],
+        inject: {},
+        name: 'Pet',
+        nullable: false,
+        packageName: 'com.openapi.generated.model',
+        subReference: null
+      }
+    },
+    'schema-6': {
+      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Cat',
+      type: KtReference {
+        classReference: false,
+        generics: [],
+        inject: {},
+        name: 'Cat',
+        nullable: false,
+        packageName: 'com.openapi.generated.model',
+        subReference: null
+      }
+    },
+    'schema-7': {
+      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Pet',
+      type: KtReference {
+        classReference: false,
+        generics: [],
+        inject: {},
+        name: 'Pet',
+        nullable: false,
+        packageName: 'com.openapi.generated.model',
+        subReference: null
+      }
+    },
+    'schema-8': {
+      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Cat/allOf/1',
+      type: KtReference {
+        classReference: false,
+        generics: [],
+        inject: {},
+        name: 'Any',
+        nullable: true,
+        packageName: 'kotlin',
+        subReference: null
+      }
+    },
+    'schema-9': {
+      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Cat/allOf/1/properties/huntingSkill',
+      type: KtReference {
+        classReference: false,
+        generics: [],
+        inject: {},
+        name: 'Schema9',
+        nullable: false,
+        packageName: 'com.openapi.generated.model',
+        subReference: null
+      }
+    }
+  }
+}
+└──────────────────────────────────────┘
+
+┌────────────────────────────────────────┐
+│ out/com/openapi/generated/model/Pet.kt │
+├────────────────────────────────────────┤
+package com.openapi.generated.model
+
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "petType",
+    visible = true
+)
+@JsonSubTypes(JsonSubTypes.Type(value = Dog::class, name = "dog"), JsonSubTypes.Type(value = Cat::class, name = "cat"))
+interface Pet {
+    @get:JsonProperty("name", required = true)
+    val name: String
+
+    @get:JsonProperty("petType", required = true)
+    val petType: String
+}
+
+└────────────────────────────────────────┘
+
+┌────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/Schema9.kt │
+├────────────────────────────────────────────┤
+package com.openapi.generated.model
+
+import com.fasterxml.jackson.annotation.JsonProperty
+
+/**
+ * The measured skill for hunting
+ */
+enum class Schema9(val value: String) {
+    @JsonProperty("clueless")
+    CLUELESS("clueless"),
+
+    @JsonProperty("lazy")
+    LAZY("lazy"),
+
+    @JsonProperty("adventurous")
+    ADVENTUROUS("adventurous"),
+
+    @JsonProperty("aggressive")
+    AGGRESSIVE("aggressive")
+}
+
+└────────────────────────────────────────────┘
+
+┌────────────────────────────────────────┐
+│ out/com/openapi/generated/model/Cat.kt │
+├────────────────────────────────────────┤
+package com.openapi.generated.model
+
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.Valid
+
+/**
+ * @param huntingSkill The measured skill for hunting
+ */
+data class Cat(
+    @Schema(required = true)
+    @JsonProperty("name", required = true)
+    override val name: String,
+
+    @field:Valid
+    @Schema(required = true, description = "The measured skill for hunting")
+    @JsonProperty("huntingSkill", required = true)
+    val huntingSkill: Schema9 = Schema9.LAZY,
+
+    @Schema(required = true)
+    @JsonProperty("petType", required = true)
+    override val petType: String = "cat"
+) : Pet
+
+└────────────────────────────────────────┘
+
+┌────────────────────────────────────────┐
+│ out/com/openapi/generated/model/Dog.kt │
+├────────────────────────────────────────┤
+package com.openapi.generated.model
+
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.swagger.v3.oas.annotations.media.Schema
+
+/**
+ * @param packSize the size of the pack the dog is from
+ */
+data class Dog(
+    @Schema(required = true)
+    @JsonProperty("name", required = true)
+    override val name: String,
+
+    @Schema(required = true, description = "the size of the pack the dog is from")
+    @JsonProperty("packSize", required = true)
+    val packSize: Int = 0,
+
+    @Schema(required = true)
+    @JsonProperty("petType", required = true)
+    override val petType: String = "dog"
+) : Pet
+
+└────────────────────────────────────────┘

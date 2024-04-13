@@ -21,7 +21,7 @@ const filePaths: { [P in OpenApiVersion]: string } = {
 };
 
 const testFilesAllVersions: string[] = ['simple-schemas.yml', 'detailed-schemas.yml', 'object-schemas.yml'];
-const testFilesV3x: string[] = ['oneof-schemas.yml'];
+const testFilesV3x: string[] = ['oneof-schemas.yml', 'discriminated-schemas.yml'];
 
 for (const [version, path] of Object.entries(filePaths)) {
   describe(`OpenAPI V${version}`, () => {

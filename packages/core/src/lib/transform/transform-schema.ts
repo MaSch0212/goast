@@ -14,7 +14,7 @@ import { createOverwriteProxy } from '../utils';
 
 export function transformSchema<T extends Deref<OpenApiSchema>>(
   context: OpenApiTransformerContext,
-  schema: T
+  schema: T,
 ): ApiSchema {
   if (!schema) {
     throw new Error('Schema is required.');
@@ -99,7 +99,7 @@ export function transformSchema<T extends Deref<OpenApiSchema>>(
 const schemaTransformers: {
   [K in ApiSchemaKind]: (
     schema: Deref<OpenApiSchema>,
-    context: OpenApiTransformerContext
+    context: OpenApiTransformerContext,
   ) => Omit<ApiSchemaExtensions<K>, 'kind'>;
 } = {
   oneOf: (schema, context) => ({
@@ -169,7 +169,11 @@ function resolveDescriminatorMapping(context: OpenApiTransformerContext, schema:
   for (const key of Object.keys(discriminator.mapping)) {
     const mappedSchemaRef = discriminator.mapping[key];
     const mappedSchema = transformSchema(context, mappedSchemaRef);
-    schema.discriminator!.mapping[key] = mappedSchema;
-    mappedSchema.inheritedSchemas.push(schema);
+    if (schema.discriminator) {
+      schema.discriminator.mapping[key] = mappedSchema;
+      mappedSchema.inheritedSchemas.push(
+        schema as ApiSchema & { discriminator: NonNullable<ApiSchema['discriminator']> },
+      );
+    }
   }
 }

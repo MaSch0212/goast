@@ -81,8 +81,6 @@ export class ImportExportCollection {
   public writeTo(builder: StringBuilder) {
     const { filePath, importModuleTransformer, useSingleQuotes } = this._options;
 
-    console.log(filePath);
-
     if (this._imports.size > 0) {
       const sortedImports = this.sortAndResolve(this._imports, filePath, importModuleTransformer);
       this.writeImportsExports(builder, 'import', sortedImports, { useSingleQuotes });

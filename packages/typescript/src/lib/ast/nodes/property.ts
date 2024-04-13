@@ -3,6 +3,7 @@ import { AstNodeOptions, Nullable, Prettify, SourceBuilder, notNullish } from '@
 import { TsDecorator, tsDecorator } from './decorator';
 import { TsDoc, tsDoc } from './doc';
 import { TsPropertyGetter, TsPropertySetter, createPropertyGetter, createPropertySetter } from './property-accessor';
+import { tsString } from './string';
 import { TsType, TsValue } from './types';
 import { TsAccessModifier } from '../common';
 import { TsNode } from '../node';
@@ -92,7 +93,7 @@ export class TsSimpleProperty<TBuilder extends SourceBuilder, TInjects extends s
     if (this.override) builder.append('override ');
     if (this.readonly) builder.append('readonly ');
 
-    builder.append(this.name);
+    writeTsNode(builder, /^[a-zA-Z_$][a-zA-Z_$0-9]*$/.test(this.name) ? this.name : tsString(this.name));
     if (this.optional) builder.append('?');
 
     if (this.type) {

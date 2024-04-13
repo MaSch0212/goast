@@ -15,6 +15,11 @@ describe('tsProperty', () => {
     expect(builder.toString(false)).toBe('x;' + EOL);
   });
 
+  it('should put name in quotes if needed', () => {
+    builder.append(tsProperty('x y'));
+    expect(builder.toString(false)).toBe("'x y';" + EOL);
+  });
+
   it('should write the type if it exists', () => {
     builder.append(tsProperty('x', { type: 'number' }));
     expect(builder.toString(false)).toBe('x: number;' + EOL);

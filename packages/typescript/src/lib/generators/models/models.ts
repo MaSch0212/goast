@@ -3,17 +3,12 @@ import {
   DefaultGenerationProviderConfig,
   OpenApiSchemasGenerationProviderContext,
   Nullable,
-  StringCasing,
-  StringCasingWithOptions,
 } from '@goast/core';
 
 import { TypeScriptComponentOutput } from '../../common-results';
 import { TypeScriptGeneratorConfig, defaultTypeScriptGeneratorConfig } from '../../config';
 
 export type TypeScriptModelGeneratorConfig = TypeScriptGeneratorConfig & {
-  fileNameCasing: StringCasing | StringCasingWithOptions;
-  typeNameCasing: StringCasing | StringCasingWithOptions;
-
   enumGeneration: 'union' | 'prefer-enum';
   immutableTypes: boolean;
   inlineUnnamedSchemas: boolean;
@@ -27,9 +22,6 @@ export type TypeScriptModelsGeneratorConfig = TypeScriptModelGeneratorConfig & {
 
 export const defaultTypeScriptModelGeneratorConfig: DefaultGenerationProviderConfig<TypeScriptModelGeneratorConfig> = {
   ...defaultTypeScriptGeneratorConfig,
-
-  fileNameCasing: 'kebab',
-  typeNameCasing: 'pascal',
 
   enumGeneration: 'union',
   immutableTypes: false,
