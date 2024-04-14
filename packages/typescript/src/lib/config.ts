@@ -12,11 +12,12 @@ export type TypeScriptGeneratorConfig = OpenApiGeneratorConfig & {
 
   fileNameCasing: StringCasing | StringCasingWithOptions;
   typeNameCasing: StringCasing | StringCasingWithOptions;
-  methodNameCasing: StringCasing | StringCasingWithOptions;
+  functionNameCasing: StringCasing | StringCasingWithOptions;
   propertyNameCasing: StringCasing | StringCasingWithOptions;
   enumValueNameCasing: StringCasing | StringCasingWithOptions;
-  constantCasing: StringCasing | StringCasingWithOptions;
-  genericParamCasing: StringCasing | StringCasingWithOptions;
+  constantNameCasing: StringCasing | StringCasingWithOptions;
+  paramNameCasing: StringCasing | StringCasingWithOptions;
+  genericParamNameCasing: StringCasing | StringCasingWithOptions;
 
   preferUnknown: boolean;
   useSingleQuotes: boolean;
@@ -30,11 +31,12 @@ export const defaultTypeScriptGeneratorConfig: DefaultGenerationProviderConfig<T
 
   fileNameCasing: 'kebab',
   typeNameCasing: 'pascal',
-  methodNameCasing: 'camel',
+  functionNameCasing: 'camel',
   propertyNameCasing: 'camel',
   enumValueNameCasing: 'pascal',
-  constantCasing: { casing: 'snake', wordCasing: 'all-upper' },
-  genericParamCasing: { casing: 'pascal', prefix: 'T' },
+  constantNameCasing: { casing: 'snake', wordCasing: 'all-upper' },
+  genericParamNameCasing: { casing: 'pascal', prefix: 'T' },
+  paramNameCasing: 'camel',
 
   preferUnknown: true,
   useSingleQuotes: true,

@@ -1,6 +1,4 @@
-import { dirname, resolve } from 'path';
-
-import { ensureDirSync, writeFileSync } from 'fs-extra';
+import { resolve } from 'path';
 
 import {
   ApiSchema,
@@ -46,7 +44,7 @@ export class TypeScriptModelsGenerator extends OpenApiSchemasGenerationProviderB
   protected override initResult(): Output {
     return {
       models: {},
-      modelIndexFilePath: undefined,
+      indexFiles: { models: undefined },
     };
   }
 
@@ -59,7 +57,7 @@ export class TypeScriptModelsGenerator extends OpenApiSchemasGenerationProviderB
 
   public override onGenerate(ctx: Context): Output {
     const output = super.onGenerate(ctx);
-    output.modelIndexFilePath = this.generateIndexFile(ctx);
+    output.indexFiles.models = this.generateIndexFile(ctx);
     return output;
   }
 
@@ -75,28 +73,19 @@ export class TypeScriptModelsGenerator extends OpenApiSchemasGenerationProviderB
     ctx.output.models[schema.id] = result;
   }
 
-  protected generateIndexFile(ctx: Context): string | undefined {
-    if (!this.shouldGenerateIndexFile(ctx)) {
-      return undefined;
-    }
-
+  protected generateIndexFile(ctx: Context): string | null {
     const filePath = this.getIndexFilePath(ctx);
-    console.log(`Generating model index file to ${filePath}...`);
-    ensureDirSync(dirname(filePath));
-
-    const builder = new TypeScriptFileBuilder(filePath, ctx.config);
-    builder.append(this.getIndexFileContent(ctx));
-    writeFileSync(filePath, builder.toString());
-
+    TypeScriptFileBuilder.tryGenerate({
+      logName: 'model index file',
+      filePath,
+      options: ctx.config,
+      generator: (b) => b.append(this.getIndexFileContent(ctx)),
+    });
     return filePath;
   }
 
-  protected getIndexFilePath(ctx: Context): string {
-    return resolve(ctx.config.outputDir, ctx.config.indexFilePath ?? 'models.ts');
-  }
-
-  protected shouldGenerateIndexFile(ctx: Context): boolean {
-    return ctx.config.indexFilePath !== null;
+  protected getIndexFilePath(ctx: Context): string | null {
+    return ctx.config.indexFilePath ? resolve(ctx.config.outputDir, ctx.config.indexFilePath) : null;
   }
 
   protected getIndexFileContent(ctx: Context): AppendValueGroup<TypeScriptFileBuilder> {

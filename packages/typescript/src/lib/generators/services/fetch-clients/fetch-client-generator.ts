@@ -5,6 +5,7 @@ import { ensureDirSync, writeFileSync } from 'fs-extra';
 import { ApiEndpoint, ApiSchema, notNullish, toCasing } from '@goast/core';
 
 import { TypeScriptFetchClientGeneratorContext, TypeScriptFetchClientGeneratorOutput } from './models';
+import { ts } from '../../../ast';
 import { TypeScriptFileBuilder } from '../../../file-builder';
 import { TypeScriptFileGenerator } from '../../file-generator';
 
@@ -104,8 +105,7 @@ export class DefaultTypeScriptFetchClientGenerator
       .append('export const ', this.getDefaultOptionsConstantName(ctx), ': FetchClientOptions = ')
       .parenthesize(
         '{}',
-        (builder) =>
-          builder.appendLineIf(notNullish(baseUrl), 'baseUrl: ', this.toStringLiteral(ctx, baseUrl ?? ''), ','),
+        (builder) => builder.appendLineIf(notNullish(baseUrl), 'baseUrl: ', ts.string(baseUrl ?? ''), ','),
         { indent: true, multiline: true },
       );
   }
@@ -211,7 +211,7 @@ export class DefaultTypeScriptFetchClientGenerator
             (builder) =>
               builder.forEach(params, (builder, parameter) =>
                 builder.appendLine(
-                  this.toPropertyName(ctx, parameter.name),
+                  toCasing(parameter.name, ctx.config.propertyNameCasing),
                   parameter.required ? ': ' : '?: ',
                   this.getTypeName(ctx, builder, parameter.schema?.id),
                   ';',
@@ -244,16 +244,18 @@ export class DefaultTypeScriptFetchClientGenerator
       .appendLine('const url = new UrlBuilder(this.options.baseUrl)')
       .indent((builder) =>
         builder
-          .appendLine(`.withPath(${this.toStringLiteral(ctx, endpoint.path)})`)
+          .appendLine('.withPath(', ts.string(endpoint.path), ')')
           .forEach(
             endpoint.parameters.filter((x) => x.target === 'path' || x.target === 'query'),
             (builder, parameter) =>
               builder
                 .appendIf(parameter.target === 'path', `.withPathParam`)
                 .appendIf(parameter.target === 'query', `.withQueryParam`)
-                .parenthesize(
-                  '()',
-                  `${this.toStringLiteral(ctx, parameter.name)}, params.${this.toPropertyName(ctx, parameter.name)}`,
+                .parenthesize('()', (b) =>
+                  b.append(
+                    ts.string(parameter.name),
+                    `, params.${toCasing(parameter.name, ctx.config.paramNameCasing)}`,
+                  ),
                 )
                 .appendLine(),
           )
@@ -267,7 +269,7 @@ export class DefaultTypeScriptFetchClientGenerator
             '{}',
             (builder) =>
               builder
-                .appendLine('method: ', this.toStringLiteral(ctx, toCasing(endpoint.method, 'all-upper')), ',')
+                .appendLine('method: ', ts.string(toCasing(endpoint.method, 'all-upper')), ',')
                 .appendLine('headers: this.options.headers,')
                 .appendLineIf(!!endpoint.requestBody?.content[0]?.schema, 'body: JSON.stringify(body),'),
             { indent: true, multiline: true },
@@ -287,7 +289,12 @@ export class DefaultTypeScriptFetchClientGenerator
       );
   }
 
-  protected getTypeName(ctx: Context, builder: Builder, schemaId: string | undefined, fallback?: string): string {
+  protected getTypeName(
+    ctx: Context,
+    builder: Builder,
+    schemaId: string | undefined,
+    fallback?: string,
+  ): string | ts.Reference<Builder> {
     if (!schemaId) {
       return fallback ? fallback : this.getAnyType(ctx);
     }
@@ -319,7 +326,7 @@ export class DefaultTypeScriptFetchClientGenerator
   }
 
   protected getDefaultOptionsConstantName(ctx: Context): string {
-    return toCasing(this.getClassName(ctx) + '-default-options', ctx.config.constantCasing);
+    return toCasing(this.getClassName(ctx) + '-default-options', ctx.config.constantNameCasing);
   }
 
   protected getInterfaceFilePath(ctx: Context): string {

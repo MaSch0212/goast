@@ -1,5 +1,8 @@
 import { AppendValue, Prettify, StringBuilder } from '../utils';
 
+const NODE_HISTORY_SYMBOL = Symbol('node-history');
+type BuilderWithHistory<T extends StringBuilder = StringBuilder> = T & { [NODE_HISTORY_SYMBOL]?: AstNode[] };
+
 export type AstNodeInject<TBuilder extends StringBuilder, TInjects extends string> = {
   [K in `${'after' | 'before'}${Capitalize<TInjects>}`]?: AppendValue<TBuilder>;
 };
@@ -17,9 +20,22 @@ export abstract class AstNode<TBuilder extends StringBuilder = StringBuilder, TI
   }
 
   public write(builder: TBuilder): void {
+    let history = (builder as BuilderWithHistory)[NODE_HISTORY_SYMBOL];
+    if (!history) {
+      history = [];
+      (builder as BuilderWithHistory)[NODE_HISTORY_SYMBOL] = history;
+    }
+
+    history.push(this);
     builder.append(this.inject.before);
     this.onWrite(builder);
     builder.append(this.inject.after);
+    history.pop();
+  }
+
+  protected getParentNode(builder: TBuilder): AstNode | undefined {
+    const history = (builder as BuilderWithHistory)[NODE_HISTORY_SYMBOL];
+    return history?.at(-2);
   }
 
   protected abstract onWrite(builder: TBuilder): void;

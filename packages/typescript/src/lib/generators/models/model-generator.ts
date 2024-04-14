@@ -1,6 +1,4 @@
-import { dirname, resolve } from 'path';
-
-import { ensureDirSync, writeFileSync } from 'fs-extra';
+import { resolve } from 'path';
 
 import {
   ApiSchema,
@@ -37,12 +35,13 @@ export class DefaultTypeScriptModelGenerator
     if (this.shouldGenerateTypeDeclaration(ctx, ctx.schema)) {
       const name = this.getDeclarationTypeName(ctx, ctx.schema);
       const filePath = this.getFilePath(ctx, ctx.schema);
-      console.log(`Generating model ${name} to ${filePath}...`);
-      ensureDirSync(dirname(filePath));
 
-      const builder = new TypeScriptFileBuilder(filePath, ctx.config);
-      builder.append(this.getFileContent(ctx));
-      writeFileSync(filePath, builder.toString());
+      TypeScriptFileBuilder.generate({
+        logName: `model ${name}`,
+        filePath,
+        options: ctx.config,
+        generator: (b) => b.append(this.getFileContent(ctx)),
+      });
 
       return { component: name, filePath, imports: [{ kind: 'file', name, modulePath: filePath }] };
     } else {
@@ -76,7 +75,7 @@ export class DefaultTypeScriptModelGenerator
     return ts.enum(this.getDeclarationTypeName(ctx, ctx.schema), {
       export: true,
       members: (ctx.schema.enum?.map((x) => String(x)) ?? []).map((x) =>
-        ts.enumValue(this.toEnumValueName(ctx, x), { value: this.toStringLiteral(ctx, x) }),
+        ts.enumValue(toCasing(x, ctx.config.enumValueNameCasing), { value: ts.string(x) }),
       ),
     });
   }
@@ -316,7 +315,7 @@ export class DefaultTypeScriptModelGenerator
   }
 
   protected getDiscriminatorGenericParamName(ctx: Context, schema: ApiSchema): string {
-    return toCasing(schema.discriminator?.propertyName, ctx.config.genericParamCasing);
+    return toCasing(schema.discriminator?.propertyName, ctx.config.genericParamNameCasing);
   }
 
   protected getInheritedSchemas(ctx: Context, schema: ApiSchema) {

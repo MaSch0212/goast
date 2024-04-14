@@ -31,7 +31,7 @@ export class TsUnionType<TBuilder extends SourceBuilder, TInjects extends string
     } else {
       const multiline = types.length > 3;
       if (multiline) {
-        builder.ensureCurrentLineEmpty().append('| ');
+        builder.appendLine().append('| ');
       }
       builder.forEach(types, (b, t) => b.parenthesize('()', (b) => writeTsNode(b, t)), {
         separator: multiline ? '\n| ' : ' | ',

@@ -101,7 +101,7 @@ const createFactory = (name: string, packageName?: Nullable<string>) => {
     <TBuilder extends SourceBuilder>(options?: Prettify<Omit<Options<TBuilder>, 'name' | 'packageName'>>) =>
       createReference<TBuilder>(name, packageName, options),
     {
-      typeName: name,
+      refName: name,
       packageName,
       matches: (value: unknown): value is KtReference<never> =>
         value instanceof KtReference && value.name === name && value.packageName === (packageName ?? null),
@@ -119,7 +119,7 @@ const createGenericFactory = <TGenericCount extends number | number[]>(
       options?: Prettify<Omit<Options<TBuilder>, 'name' | 'packageName' | 'generics'>>,
     ) => createReference<TBuilder>(name, packageName, { ...options, generics }),
     {
-      typeName: name,
+      refName: name,
       packageName,
       infer: <TBuilder extends SourceBuilder>(
         options?: Prettify<Omit<Options<TBuilder>, 'name' | 'packageName' | 'generics'>>,

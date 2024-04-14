@@ -43,7 +43,9 @@ export type TypeScriptModelsGeneratorOutput = {
   models: {
     [schemaId: string]: TypeScriptModelGeneratorOutput;
   };
-  modelIndexFilePath: Nullable<string>;
+  indexFiles: {
+    models: Nullable<string>;
+  };
 };
 
 export type TypeScriptModelGeneratorOutput = TypeScriptComponentOutput;

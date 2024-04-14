@@ -1,4 +1,8 @@
-import { AppendParam, AppendValue, SourceBuilder, isAppendValue } from '@goast/core';
+import { dirname } from 'path';
+
+import { ensureDirSync, writeFileSync } from 'fs-extra';
+
+import { AppendParam, AppendValue, Nullable, SourceBuilder, isAppendValue } from '@goast/core';
 
 import { TsNode } from './ast/node';
 import { TypeScriptGeneratorConfig, defaultTypeScriptGeneratorConfig } from './config';
@@ -83,5 +87,41 @@ export class TypeScriptFileBuilder<TAdditionalAppends = never> extends SourceBui
       this.addImport(i.name, i.modulePath);
     }
     return this;
+  }
+
+  public writeToFile(filePath?: string): void {
+    if (!filePath) filePath = this.filePath;
+    if (!filePath) throw new Error('File path is required');
+    ensureDirSync(dirname(filePath));
+    writeFileSync(filePath, this.toString());
+  }
+
+  public static generate(options: {
+    filePath: string;
+    logName?: Nullable<string>;
+    options?: TypeScriptGeneratorConfig;
+    generator: (builder: TypeScriptFileBuilder) => void;
+  }): void {
+    TypeScriptFileBuilder.tryGenerate(options);
+  }
+
+  public static tryGenerate({
+    filePath,
+    generator,
+    options,
+    logName,
+  }: {
+    filePath: Nullable<string>;
+    logName?: Nullable<string>;
+    options?: TypeScriptGeneratorConfig;
+    generator: (builder: TypeScriptFileBuilder) => void;
+  }) {
+    if (!filePath) return;
+    if (logName) {
+      console.log(`Generating ${logName} to ${filePath}...`);
+    }
+    const builder = new TypeScriptFileBuilder(filePath, options);
+    generator(builder);
+    builder.writeToFile();
   }
 }

@@ -11,6 +11,7 @@ import {
 import { TsDecorator, tsDecorator } from './decorator';
 import { TsDoc, tsDoc } from './doc';
 import { TsGenericParameter, tsGenericParameter } from './generic-parameter';
+import { TsObject } from './object';
 import { TsParameter, tsParameter } from './parameter';
 import { TsType } from './types';
 import { TsAccessModifier } from '../common';
@@ -71,6 +72,8 @@ export class TsMethod<TBuilder extends SourceBuilder, TInjects extends string = 
   }
 
   protected override onWrite(builder: TBuilder): void {
+    const isInObjectDeclaration = this.getParentNode(builder) instanceof TsObject;
+
     builder.append(this.inject.beforeDoc);
     tsDoc.write(builder, tsDoc.get(this.doc, { generics: this.generics, parameters: this.parameters }));
     builder.append(this.inject.afterDoc);
@@ -109,8 +112,12 @@ export class TsMethod<TBuilder extends SourceBuilder, TInjects extends string = 
       builder.append(this.inject.beforeBody);
       builder.parenthesize('{}', this.body, { multiline: !!this.body });
       builder.append(this.inject.afterBody);
-    } else {
+    } else if (!isInObjectDeclaration) {
       builder.append(';');
+    }
+
+    if (isInObjectDeclaration) {
+      builder.append(',');
     }
 
     builder.appendLine();

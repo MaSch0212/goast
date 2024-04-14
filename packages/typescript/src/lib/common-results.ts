@@ -4,6 +4,11 @@ export type TypeScriptComponentOutput = {
   imports: TypeScriptImport[];
 };
 
+export type TypeScriptExportOutput = {
+  component: string;
+  filePath: string;
+};
+
 export type TypeScriptImportKind = 'module' | 'file';
 
 export type TypeScriptImport = {

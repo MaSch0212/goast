@@ -2,6 +2,7 @@ import { AstNodeOptions, Nullable, Prettify, SourceBuilder, notNullish } from '@
 
 import { TsDecorator, tsDecorator } from './decorator';
 import { TsDoc, tsDoc } from './doc';
+import { TsObject } from './object';
 import { TsPropertyGetter, TsPropertySetter, createPropertyGetter, createPropertySetter } from './property-accessor';
 import { tsString } from './string';
 import { TsType, TsValue } from './types';
@@ -84,6 +85,8 @@ export class TsSimpleProperty<TBuilder extends SourceBuilder, TInjects extends s
   }
 
   protected override onWrite(builder: TBuilder): void {
+    const isInObjectDeclaration = this.getParentNode(builder) instanceof TsObject;
+
     tsDoc.write(builder, this.doc);
     tsDecorator.write(builder, this.decorators);
 
@@ -96,17 +99,17 @@ export class TsSimpleProperty<TBuilder extends SourceBuilder, TInjects extends s
     writeTsNode(builder, /^[a-zA-Z_$][a-zA-Z_$0-9]*$/.test(this.name) ? this.name : tsString(this.name));
     if (this.optional) builder.append('?');
 
-    if (this.type) {
+    if (this.type && !isInObjectDeclaration) {
       builder.append(': ');
       writeTsNode(builder, this.type);
     }
 
     if (this.value) {
-      builder.append(' = ');
+      builder.append(isInObjectDeclaration ? ': ' : ' = ');
       writeTsNode(builder, this.value);
     }
 
-    builder.append(';');
+    builder.append(isInObjectDeclaration ? ',' : ';');
 
     builder.appendLine();
   }

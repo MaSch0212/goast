@@ -1,185 +1,298 @@
-// import { readFileSync } from 'fs';
-// import { dirname, resolve } from 'path';
+import { dirname, resolve } from 'path';
 
-// import { ensureDirSync, writeFileSync } from 'fs-extra';
+import { copyFileSync, ensureDirSync } from 'fs-extra';
 
-// import {
-//   ApiService,
-//   Factory,
-//   OpenApiGeneratorContext,
-//   OpenApiServicesGenerationProviderBase,
-//   notNullish,
-// } from '@goast/core';
+import {
+  ApiService,
+  AppendValueGroup,
+  Factory,
+  OpenApiGeneratorContext,
+  OpenApiServicesGenerationProviderBase,
+  appendValueGroup,
+  toCasing,
+} from '@goast/core';
 
-// import {
-//   DefaultTypeScriptAngularServiceGenerator,
-//   TypeScriptAngularServiceGenerator,
-// } from './angular-service-generator';
-// import {
-//   TypeScriptAngularServicesGeneratorInput,
-//   TypeScriptAngularServicesGeneratorOutput,
-//   TypeScriptAngularServicesGeneratorConfig,
-//   TypeScriptAngularServiceGeneratorOutput,
-//   TypeScriptAngularServicesGeneratorContext,
-//   defaultTypeScriptAngularServicesGeneratorConfig,
-// } from './models';
-// import { TypeScriptFileBuilder } from '../../../file-builder';
-// import { ImportExportCollection } from '../../../import-collection';
-// import { modifyString } from '../../../utils';
+import {
+  DefaultTypeScriptAngularServiceGenerator,
+  TypeScriptAngularServiceGenerator,
+} from './angular-service-generator';
+import {
+  TypeScriptAngularServicesGeneratorInput,
+  TypeScriptAngularServicesGeneratorOutput,
+  TypeScriptAngularServicesGeneratorConfig,
+  TypeScriptAngularServiceGeneratorOutput,
+  TypeScriptAngularServicesGeneratorContext,
+  defaultTypeScriptAngularServicesGeneratorConfig,
+} from './models';
+import { getReferenceFactories } from './refs';
+import { ts } from '../../../ast';
+import { TypeScriptFileBuilder } from '../../../file-builder';
+import { modifyString } from '../../../utils';
 
-// type Input = TypeScriptAngularServicesGeneratorInput;
-// type Output = TypeScriptAngularServicesGeneratorOutput;
-// type Config = TypeScriptAngularServicesGeneratorConfig;
-// type ServiceOutput = TypeScriptAngularServiceGeneratorOutput;
-// type Context = TypeScriptAngularServicesGeneratorContext;
+type Input = TypeScriptAngularServicesGeneratorInput;
+type Output = TypeScriptAngularServicesGeneratorOutput;
+type Config = TypeScriptAngularServicesGeneratorConfig;
+type ServiceOutput = TypeScriptAngularServiceGeneratorOutput;
+type Context = TypeScriptAngularServicesGeneratorContext;
 
-// export class TypeScriptAngularServicesGenerator extends OpenApiServicesGenerationProviderBase<
-//   Input,
-//   Output,
-//   Config,
-//   ServiceOutput,
-//   Context
-// > {
-//   private readonly _clientGeneratorFactory: Factory<TypeScriptAngularServiceGenerator, []>;
+export class TypeScriptAngularServicesGenerator extends OpenApiServicesGenerationProviderBase<
+  Input,
+  Output,
+  Config,
+  ServiceOutput,
+  Context
+> {
+  private readonly _clientGeneratorFactory: Factory<TypeScriptAngularServiceGenerator, []>;
 
-//   constructor(clientGeneratorFactory?: Factory<TypeScriptAngularServiceGenerator, []>) {
-//     super();
-//     this._clientGeneratorFactory =
-//       clientGeneratorFactory ?? Factory.fromValue(new DefaultTypeScriptAngularServiceGenerator());
-//   }
+  constructor(clientGeneratorFactory?: Factory<TypeScriptAngularServiceGenerator, []>) {
+    super();
+    this._clientGeneratorFactory =
+      clientGeneratorFactory ?? Factory.fromValue(new DefaultTypeScriptAngularServiceGenerator());
+  }
 
-//   protected override initResult(): Output {
-//     return {
-//       services: {},
-//       servicesIndexFilePath: undefined,
-//       responseModelsIndexFilePath: undefined,
-//     };
-//   }
+  protected override initResult(): Output {
+    return {
+      services: {},
+      indexFiles: { services: undefined, responseModels: undefined },
+    };
+  }
 
-//   protected override buildContext(
-//     context: OpenApiGeneratorContext<Input>,
-//     config?: Partial<Config> | undefined
-//   ): Context {
-//     return this.getProviderContext(context, config, defaultTypeScriptAngularServicesGeneratorConfig);
-//   }
+  protected override buildContext(
+    context: OpenApiGeneratorContext<Input>,
+    config?: Partial<Config> | undefined,
+  ): Context {
+    const providerContext = this.getProviderContext(context, config, defaultTypeScriptAngularServicesGeneratorConfig);
+    return Object.assign(providerContext, {
+      refs: getReferenceFactories(providerContext.config),
+    });
+  }
 
-//   public override onGenerate(ctx: Context): Output {
-//     const output = super.onGenerate(ctx);
-//     this.copyUtilsFiles(ctx);
-//     output.servicesIndexFilePath = this.generateServicesIndexFile(ctx);
-//     return output;
-//   }
+  public override onGenerate(ctx: Context): Output {
+    const output = super.onGenerate(ctx);
+    this.generateUtilsFiles(ctx);
+    output.indexFiles = this.generateIndexFiles(ctx);
+    return output;
+  }
 
-//   protected override generateService(ctx: Context, service: ApiService): ServiceOutput {
-//     const clientGenerator = this._clientGeneratorFactory.create();
-//     return clientGenerator.generate({
-//       ...ctx,
-//       service,
-//     });
-//   }
+  protected override generateService(ctx: Context, service: ApiService): ServiceOutput {
+    const clientGenerator = this._clientGeneratorFactory.create();
+    return clientGenerator.generate({
+      ...ctx,
+      service,
+    });
+  }
 
-//   protected override addServiceResult(ctx: Context, service: ApiService, result: ServiceOutput): void {
-//     ctx.output.services[service.id] = result;
-//   }
+  protected override addServiceResult(ctx: Context, service: ApiService, result: ServiceOutput): void {
+    ctx.output.services[service.id] = result;
+  }
 
-//   protected generateServicesIndexFile(ctx: Context): string | undefined {
-//     if (!this.shouldGenerateServicesIndexFile(ctx)) {
-//       return undefined;
-//     }
+  // #region Utils
+  protected generateUtilsFiles(ctx: Context): void {
+    const sourceDir = resolve(dirname(require.resolve('@goast/typescript')), '../assets/client/angular');
+    const targetDir = resolve(ctx.config.outputDir, ctx.config.utilsDirPath);
+    ensureDirSync(targetDir);
 
-//     const filePath = this.getServicesIndexFilePath(ctx);
-//     console.log(`Generating index file to ${filePath}...`);
-//     ensureDirSync(dirname(filePath));
+    this.copyFile('request builder', sourceDir, targetDir, 'request-builder.ts');
 
-//     const builder = new TypeScriptFileBuilder(filePath, ctx.config);
-//     this.generateServicesIndexFileContent(ctx, builder);
-//     writeFileSync(filePath, builder.toString());
+    TypeScriptFileBuilder.generate({
+      logName: 'api configuration',
+      filePath: resolve(targetDir, 'api-configuration.ts'),
+      options: ctx.config,
+      generator: (b) => b.append(this.getApiConfigurationFileContent(ctx)),
+    });
 
-//     return filePath;
-//   }
+    TypeScriptFileBuilder.generate({
+      logName: 'api base service',
+      filePath: resolve(targetDir, 'api-base-service.ts'),
+      options: ctx.config,
+      generator: (b) => b.append(this.getApiBaseServiceFileContent(ctx)),
+    });
 
-//   protected getServicesIndexFilePath(ctx: Context): string {
-//     return resolve(ctx.config.outputDir, ctx.config.indexFilePath ?? 'clients.ts');
-//   }
+    if (!ctx.config.strictResponseTypes) {
+      TypeScriptFileBuilder.generate({
+        logName: 'http status codes',
+        filePath: resolve(targetDir, 'http-status-code.ts'),
+        options: ctx.config,
+        generator: (b) => b.append(this.getHttpStatusCodeFileContent(ctx)),
+      });
+    }
 
-//   protected shouldGenerateServicesIndexFile(ctx: Context): boolean {
-//     return notNullish(ctx.config.indexFilePath);
-//   }
+    if (ctx.config.provideKind === 'provide-fn') {
+      TypeScriptFileBuilder.generate({
+        logName: 'providers',
+        filePath: resolve(targetDir, 'provide.ts'),
+        options: ctx.config,
+        generator: (b) => b.append(this.getProvideFnFileContent(ctx)),
+      });
+    }
+  }
 
-//   protected generateServicesIndexFileContent(ctx: Context, builder: TypeScriptFileBuilder) {
-//     const exports = new ImportExportCollection();
+  protected getApiConfigurationFileContent(ctx: Context): AppendValueGroup<TypeScriptFileBuilder> {
+    return appendValueGroup(
+      [
+        ts.class(toCasing(`${ctx.config.domainName ?? ''}ApiConfiguration`, ctx.config.typeNameCasing), {
+          doc: ts.doc({ description: `${ctx.config.domainName ?? 'Global'} API Configuration.` }),
+          decorators: [
+            ts.decorator(ts.refs.angular.injectable(), [
+              ctx.config.provideKind === 'root' ? ts.toNode({ providedIn: 'root' }) : null,
+            ]),
+          ],
+          export: true,
+          members: [
+            ts.property('rootUrl', {
+              accessModifier: 'public',
+              type: ts.refs.string(),
+              value: ts.string(this.getRootUrl(ctx)),
+            }),
+          ],
+        }),
+      ],
+      '\n',
+    );
+  }
 
-//     for (const serviceId in ctx.output.services) {
-//       const service = ctx.output.services[serviceId];
-//       exports.addExport(service.component, service.filePath);
-//     }
+  protected getApiBaseServiceFileContent(ctx: Context): AppendValueGroup<TypeScriptFileBuilder> {
+    return appendValueGroup(
+      [
+        ts.class('ApiBaseService', {
+          doc: ts.doc({ description: 'Base class for API services.' }),
+          export: true,
+          abstract: true,
+          members: [
+            ts.property('config', {
+              accessModifier: 'protected',
+              value: (b) => b.append(ts.refs.angular.inject(), '(', ctx.refs.apiConfiguration(), ')'),
+            }),
+            ts.property('http', {
+              accessModifier: 'protected',
+              value: (b) => b.append(ts.refs.angular.inject(), '(', ts.refs.angular.httpClient(), ')'),
+            }),
+            ts.property('_rootUrl', { accessModifier: 'private', type: ts.refs.string(), value: ts.string('') }),
+            ts.property('rootUrl', {
+              doc: ts.doc({
+                description: `Gets or sets the root URL for API operations provided by this service.\nFalls back to \`${ctx.refs.apiConfiguration.refName}.rootUrl\` if not set in this service.`,
+              }),
+              accessModifier: 'public',
+              type: ts.refs.string(),
+              get: ts.property.getter({ body: 'return this._rootUrl || this.config.rootUrl;' }),
+              set: ts.property.setter({ body: 'this._rootUrl = value;' }),
+            }),
+          ],
+        }),
+      ],
+      '\n',
+    );
+  }
 
-//     exports.writeTo(builder);
-//   }
+  protected getHttpStatusCodeFileContent(ctx: Context): AppendValueGroup<TypeScriptFileBuilder> {
+    return appendValueGroup(
+      [
+        ts.typeAlias('HttpStatusCode', ts.unionType(ctx.config.possibleStatusCodes), {
+          doc: ts.doc({ description: 'The possible status codes that any API endpoint can return.' }),
+          export: true,
+        }),
+      ],
+      '\n',
+    );
+  }
 
-//   protected generateResponseModelsIndexFile(ctx: Context): string | undefined {
-//     if (!this.shouldGenerateResponseModelsIndexFile(ctx)) {
-//       return undefined;
-//     }
+  protected getProvideFnFileContent(ctx: Context): AppendValueGroup<TypeScriptFileBuilder> {
+    return appendValueGroup(
+      [
+        ts.function(toCasing(`provide_${ctx.config.domainName ?? ''}_Api`, ctx.config.functionNameCasing), {
+          doc: ts.doc({
+            description:
+              'Provides all the API services' + (ctx.config.domainName ? ` for ${ctx.config.domainName}` : '') + '.',
+          }),
+          export: true,
+          parameters: [ts.parameter('config', { type: ctx.refs.apiConfiguration(), optional: true })],
+          returnType: ts.refs.angular.provider(),
+          body: appendValueGroup([
+            'return ',
+            ts.tuple([
+              (b) =>
+                b.append(
+                  'config ? { provide: ',
+                  ctx.refs.apiConfiguration(),
+                  ', useValue: config } : ',
+                  ctx.refs.apiConfiguration(),
+                ),
+              ...Object.values(ctx.output.services).map((x) => ts.reference(x.component, x.filePath)),
+            ]),
+            ';',
+          ]),
+        }),
+      ],
+      '\n',
+    );
+  }
 
-//     const filePath = this.getResponseModelsIndexFilePath(ctx);
-//     console.log(`Generating response models index file to ${filePath}...`);
-//     ensureDirSync(dirname(filePath));
+  protected getRootUrl(ctx: Context): string {
+    return modifyString<[]>(
+      (ctx.data.services[0].$src ?? ctx.data.services[0].endpoints[0]?.$src)?.document.servers?.[0]?.url ?? '/',
+      ctx.config.rootUrl,
+    );
+  }
+  // #endregion
 
-//     const builder = new TypeScriptFileBuilder(filePath, ctx.config);
-//     this.generateResponseModelsIndexFileContent(ctx, builder);
-//     writeFileSync(filePath, builder.toString());
+  // #region Index
+  protected generateIndexFiles(ctx: Context): Output['indexFiles'] {
+    const servicesIndexFilePath = this.getServicesIndexFilePath(ctx);
+    const responseModelsIndexFilePath = this.getResponseModelsIndexFilePath(ctx);
 
-//     return filePath;
-//   }
+    TypeScriptFileBuilder.tryGenerate({
+      logName: 'services index file',
+      filePath: servicesIndexFilePath,
+      options: ctx.config,
+      generator: (b) => b.append(this.getServicesIndexFileContent(ctx)),
+    });
 
-//   protected getResponseModelsIndexFilePath(ctx: Context): string {
-//     return resolve(ctx.config.outputDir, ctx.config.responseModelsIndexFilePath ?? 'responses.ts');
-//   }
+    TypeScriptFileBuilder.tryGenerate({
+      logName: 'response models index file',
+      filePath: responseModelsIndexFilePath,
+      options: ctx.config,
+      generator: (b) => b.append(this.getResponseModelsIndexFileContent(ctx)),
+    });
 
-//   protected shouldGenerateResponseModelsIndexFile(ctx: Context): boolean {
-//     return notNullish(ctx.config.responseModelsDirPath) && notNullish(ctx.config.responseModelsIndexFilePath);
-//   }
+    return {
+      services: servicesIndexFilePath,
+      responseModels: responseModelsIndexFilePath,
+    };
+  }
 
-//   protected generateResponseModelsIndexFileContent(ctx: Context, builder: TypeScriptFileBuilder) {
-//     const exports = new ImportExportCollection();
+  protected getServicesIndexFileContent(ctx: Context): AppendValueGroup<TypeScriptFileBuilder> {
+    return appendValueGroup([
+      ts.export(ctx.refs.apiConfiguration.refName, ctx.refs.apiConfiguration.moduleNameOrfilePath),
+      ctx.config.provideKind === 'provide-fn'
+        ? ts.export(ctx.refs.provide.refName, ctx.refs.provide.moduleNameOrfilePath)
+        : null,
+      ...Object.values(ctx.output.services).map((x) => ts.export(x.component, x.filePath)),
+    ]);
+  }
 
-//     for (const serviceId in ctx.output.services) {
-//       const service = ctx.output.services[serviceId];
-//       for (const operationId in service.responseModels) {
-//         const responseModel = service.responseModels[operationId];
-//         if (responseModel.filePath) {
-//           exports.addExport(responseModel.component, responseModel.filePath);
-//         }
-//       }
-//     }
+  protected getResponseModelsIndexFileContent(ctx: Context): AppendValueGroup<TypeScriptFileBuilder> {
+    return appendValueGroup(
+      Object.values(ctx.output.services)
+        .flatMap((x) => Object.values(x.responseModels))
+        .map((x) => ts.export(x.component, x.filePath)),
+    );
+  }
 
-//     exports.writeTo(builder);
-//   }
+  protected getServicesIndexFilePath(ctx: Context): string | null {
+    return ctx.config.servicesIndexFilePath ? resolve(ctx.config.outputDir, ctx.config.servicesIndexFilePath) : null;
+  }
 
-//   protected copyUtilsFiles(ctx: Context): void {
-//     const sourceDir = resolve(dirname(require.resolve('@goast/typescript')), '../assets/service/angular');
-//     const targetDir = resolve(ctx.config.outputDir, ctx.config.utilsDirPath);
-//     ensureDirSync(targetDir);
+  protected getResponseModelsIndexFilePath(ctx: Context): string | null {
+    return ctx.config.responseModelsIndexFilePath
+      ? resolve(ctx.config.outputDir, ctx.config.responseModelsIndexFilePath)
+      : null;
+  }
+  // #endregion
 
-//     const files = ['api-configuration.ts', 'base-service.ts', 'request-builder.ts', 'strict-http-response.ts'];
-//     if (ctx.config.clientMethodFlavor === 'response-handler') {
-//       files.push('response-handler.ts');
-//     }
-
-//     const rootUrl = this.getRootUrl(ctx);
-//     for (const file of files) {
-//       const fileContent = readFileSync(resolve(sourceDir, file))
-//         .toString()
-//         .replace(/@ROOT_URL@/g, rootUrl);
-//       writeFileSync(resolve(targetDir, file), fileContent);
-//     }
-//   }
-
-//   protected getRootUrl(ctx: Context): string {
-//     return modifyString<[]>(
-//       (ctx.data.services[0].$src ?? ctx.data.services[0].endpoints[0]?.$src)?.document.servers?.[0]?.url ?? '/',
-//       ctx.config.rootUrl
-//     );
-//   }
-// }
+  private copyFile(logName: string, sourceDir: string, targetDir: string, fileName: string): void {
+    const source = resolve(sourceDir, fileName);
+    const target = resolve(targetDir, fileName);
+    console.log(`Generating ${logName} to ${target}...`);
+    copyFileSync(source, target);
+  }
+}

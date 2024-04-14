@@ -72,22 +72,49 @@ const createReference = <TBuilder extends SourceBuilder>(
   options?: Prettify<Omit<Options<TBuilder>, 'name' | 'moduleNameOrfilePath'>>,
 ) => new TsReference<TBuilder>({ ...options, name, moduleNameOrfilePath });
 
-const createFactory = (name: string, moduleNameOrfilePath?: Nullable<string>) => {
-  return <TBuilder extends SourceBuilder>() => createReference<TBuilder>(name, moduleNameOrfilePath);
-};
+function _createFactory(name: string, moduleNameOrfilePath?: Nullable<string>) {
+  return Object.assign(<TBuilder extends SourceBuilder>() => createReference<TBuilder>(name, moduleNameOrfilePath), {
+    refName: name,
+    moduleNameOrfilePath,
+  });
+}
+function createFactory(
+  name: string,
+  moduleNameOrfilePath: string,
+): ReturnType<typeof _createFactory> & { moduleNameOrfilePath: string };
+function createFactory(name: string, moduleNameOrfilePath?: Nullable<string>): ReturnType<typeof _createFactory>;
+function createFactory(name: string, moduleNameOrfilePath?: Nullable<string>) {
+  return _createFactory(name, moduleNameOrfilePath);
+}
 
-const createGenericFactory = <TGenericCount extends number | number[]>(
+function _createGenericFactory<TGenericCount extends number | number[]>(
   name: string,
   moduleNameOrfilePath?: Nullable<string>,
-) => {
+) {
   return Object.assign(
     <TBuilder extends SourceBuilder>(generics: TupleWithCount<TsType<TBuilder>, TGenericCount>) =>
       createReference<TBuilder>(name, moduleNameOrfilePath, { generics }),
     {
+      refName: name,
+      moduleNameOrfilePath,
       infer: <TBuilder extends SourceBuilder>() => createReference<TBuilder>(name, moduleNameOrfilePath),
     },
   );
-};
+}
+function createGenericFactory<TGenericCount extends number | number[]>(
+  name: string,
+  moduleNameOrfilePath: string,
+): ReturnType<typeof _createGenericFactory<TGenericCount>> & { moduleNameOrfilePath: string };
+function createGenericFactory<TGenericCount extends number | number[]>(
+  name: string,
+  moduleNameOrfilePath?: Nullable<string>,
+): ReturnType<typeof _createGenericFactory<TGenericCount>>;
+function createGenericFactory<TGenericCount extends number | number[]>(
+  name: string,
+  moduleNameOrfilePath?: Nullable<string>,
+) {
+  return _createGenericFactory<TGenericCount>(name, moduleNameOrfilePath);
+}
 
 export const tsReference = Object.assign(createReference, {
   factory: createFactory,

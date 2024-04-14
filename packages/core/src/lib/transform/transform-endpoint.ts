@@ -202,7 +202,7 @@ function transformResponse(
     },
     $ref: ref,
     id: context.idGenerator.generateId('response'),
-    statusCode: Number(status),
+    statusCode: Number(status) || undefined,
     description: response.description,
     headers: transformHeaders(context, response.headers),
     contentOptions: transformContent(context, response.content),

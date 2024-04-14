@@ -2,6 +2,7 @@ export * from './array.utils';
 export * from './class.utils';
 export * from './common.utils';
 export * from './endpoint.utils';
+export * from './error.utils';
 export * from './factory';
 export * from './generator.utils';
 export * from './object.utils';
