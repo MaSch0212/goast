@@ -24,7 +24,6 @@ export type TypeScriptGeneratorConfig = OpenApiGeneratorConfig & {
 };
 
 export const defaultTypeScriptGeneratorConfig: DefaultGenerationProviderConfig<TypeScriptGeneratorConfig> = {
-  charsTreatedAsEmptyLine: ['{'],
   indent: { type: 'spaces', count: 2 },
 
   importModuleTransformer: 'omit-extension',

@@ -304,3 +304,64 @@ export function trimIndent(str: string): string {
   if (indent.length === 0) return str;
   return str.replace(/^\r?\n/, '').replace(new RegExp(`^ {0,${indent.length}}`, 'gm'), '');
 }
+
+function isNonLineBreakWhitespaceChar(char: string): boolean {
+  return (
+    char === ' ' ||
+    char === '\t' ||
+    char === '\f' ||
+    char === '\v' ||
+    char === '\u00a0' ||
+    char === '\u1680' ||
+    char === '\u2000' ||
+    char === '\u2001' ||
+    char === '\u2002' ||
+    char === '\u2003' ||
+    char === '\u2004' ||
+    char === '\u2005' ||
+    char === '\u2006' ||
+    char === '\u2007' ||
+    char === '\u2008' ||
+    char === '\u2009' ||
+    char === '\u200a' ||
+    char === '\u2028' ||
+    char === '\u2029' ||
+    char === '\u202f' ||
+    char === '\u205f' ||
+    char === '\u3000' ||
+    char === '\ufeff'
+  );
+}
+export function trimEnd(str: string, includeNewLine: boolean = true) {
+  if (includeNewLine) return str.trimEnd();
+  let i = str.length;
+  for (; isNonLineBreakWhitespaceChar(str[i - 1]); i--);
+  return str.substring(0, i);
+}
+export function trimStart(str: string, includeNewLine: boolean = true) {
+  if (includeNewLine) return str.trimStart();
+  let i = 0;
+  for (; isNonLineBreakWhitespaceChar(str[i]); i++);
+  return str.substring(i);
+}
+export function trim(str: string, includeNewLine: boolean = true) {
+  if (includeNewLine) return str.trim();
+  let s = 0;
+  for (; isNonLineBreakWhitespaceChar(str[s]); s++);
+  let e = str.length;
+  for (; isNonLineBreakWhitespaceChar(str[e - 1]); e--);
+  return str.substring(s, e);
+}
+
+export function removeStr(str: string, rem: string): string {
+  let i = str.indexOf(rem);
+  if (i === -1) return str;
+  let result = '';
+  let s = 0;
+  while (i !== -1) {
+    result += str.substring(s, i);
+    s = i + rem.length;
+    i = str.indexOf(rem, s);
+  }
+  return result + str.substring(s);
+}

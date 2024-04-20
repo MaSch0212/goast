@@ -6,7 +6,7 @@ import {
   AppendValueGroup,
   adjustCasing,
   appendValueGroup,
-  builderTemplate,
+  builderTemplate as s,
   toCasing,
 } from '@goast/core';
 
@@ -77,7 +77,7 @@ export class DefaultTypeScriptEasyNetworkStubGenerator
             static: true,
             readonly: true,
             accessModifier: 'private',
-            value: builderTemplate`${ts.string(this.getStubRoute(ctx, endpoint))} as const`,
+            value: s`${ts.string(this.getStubRoute(ctx, endpoint))} as const`,
           }),
         ),
         '\n',
@@ -149,16 +149,15 @@ export class DefaultTypeScriptEasyNetworkStubGenerator
       returnType: 'this',
       body: appendValueGroup(
         [
-          builderTemplate`
-            this.stubWrapper.stub2<${requestType}>()(
+          s`this.stubWrapper.stub2<${requestType}>()(${s.indent`
               ${ts.string(endpoint.method.toUpperCase())},
               ${this.getStubClassName(ctx)}.${this.getEndpointPathPropertyName(ctx, endpoint)},
-              async (request) => {
-                if (this.stubWrapper.options.rememberRequests) {
-                  this.${this.getEndpointRequestsFieldName(ctx, endpoint)}.push(request);
+              async (request) => {${s.indent`
+                if (this.stubWrapper.options.rememberRequests) {${s.indent`
+                  this.${this.getEndpointRequestsFieldName(ctx, endpoint)}.push(request);`}
                 }
-                throw await response(${this.getResponderVariableName(ctx, endpoint)}, request);
-              }
+                throw await response(${this.getResponderVariableName(ctx, endpoint)}, request);`}
+              }`}
             );`,
           'return this;',
         ],

@@ -16,7 +16,6 @@ export type KotlinGeneratorConfig = OpenApiGeneratorConfig & {
 };
 
 export const defaultKotlinGeneratorConfig: DefaultGenerationProviderConfig<KotlinGeneratorConfig> = {
-  charsTreatedAsEmptyLine: ['{'],
   indent: { type: 'spaces', count: 4 },
 
   typeNameCasing: 'pascal',

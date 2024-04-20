@@ -13,12 +13,12 @@ beforeEach(() => {
 
 it('should write the properties if they exist', () => {
   builder.append(tsObject({ members: [tsProperty('x'), tsProperty('y')] }));
-  expect(builder.toString(false)).toBe('{' + EOL + '  x;' + EOL + '  y;' + EOL + '}');
+  expect(builder.toString(false)).toBe('{' + EOL + '  x,' + EOL + '  y,' + EOL + '}');
 });
 
 it('should write the methods if they exist', () => {
   builder.append(tsObject({ members: [tsMethod('x'), tsMethod('y')] }));
-  expect(builder.toString(false)).toBe('{' + EOL + '  x();' + EOL + '  y();' + EOL + '}');
+  expect(builder.toString(false)).toBe('{' + EOL + '  x(),' + EOL + '  y(),' + EOL + '}');
 });
 
 it('should write all the parts of the object', () => {
@@ -27,7 +27,7 @@ it('should write all the parts of the object', () => {
       members: [tsProperty('x'), tsProperty('y'), tsMethod('x'), tsMethod('y')],
     }),
   );
-  expect(builder.toString(false)).toBe('{' + EOL + '  x;' + EOL + '  y;' + EOL + '  x();' + EOL + '  y();' + EOL + '}');
+  expect(builder.toString(false)).toBe('{' + EOL + '  x,' + EOL + '  y,' + EOL + '  x(),' + EOL + '  y(),' + EOL + '}');
 });
 
 it('should render injections', () => {

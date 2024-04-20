@@ -2,7 +2,7 @@
 │ state                                │
 ├──────────────────────────────────────┤
 {
-  modelIndexFilePath: '<root>\\out\\models.ts',
+  indexFiles: { models: '<root>\\out\\models.ts' },
   models: {
     'schema-1': {
       __source__: '<root>\\test\\openapi-files\\v3\\discriminated-schemas.yml#/components/schemas/Pet',
@@ -153,7 +153,7 @@ export type Pet<TPetType extends ('dog') | ('cat') = ('dog') | ('cat')> = ({
 ┌──────────────────────────────────────┐
 │ C:\src\goast\out\models\schema-9.ts  │
 ├──────────────────────────────────────┤
-export type Schema9 = 
+export type Schema9 =
   | ('clueless')
   | ('lazy')
   | ('adventurous')

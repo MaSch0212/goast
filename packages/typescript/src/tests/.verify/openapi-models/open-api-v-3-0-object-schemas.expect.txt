@@ -2,7 +2,7 @@
 │ state                                │
 ├──────────────────────────────────────┤
 {
-  modelIndexFilePath: '<root>\\out\\models.ts',
+  indexFiles: { models: '<root>\\out\\models.ts' },
   models: {
     'schema-1': {
       __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/EmptyObject',
@@ -708,7 +708,7 @@ export type ObjectWithPropertiesAndAdditionalProperties = ({
 ┌─────────────────────────────────────────────────────────────────────┐
 │ C:\src\goast\out\models\object-with-properties-all-of-and-any-of.ts │
 ├─────────────────────────────────────────────────────────────────────┤
-export type ObjectWithPropertiesAllOfAndAnyOf = 
+export type ObjectWithPropertiesAllOfAndAnyOf =
   & ({
       a: string;
       b: number;
@@ -817,7 +817,7 @@ import { EmptyObject } from './empty-object';
 import { MyString } from './my-string';
 import { MyTitle } from './my-title';
 
-export type ObjectWithReferencesInAnyOf = 
+export type ObjectWithReferencesInAnyOf =
   & (Partial<EmptyObject>)
   & (Partial<MyTitle>)
   & (Partial<MyString>)
@@ -832,7 +832,7 @@ import { EmptyObject } from './empty-object';
 import { MyString } from './my-string';
 import { MyTitle } from './my-title';
 
-export type ObjectWithReferencesInAllOf = 
+export type ObjectWithReferencesInAllOf =
   & (EmptyObject)
   & (MyTitle)
   & (MyString)

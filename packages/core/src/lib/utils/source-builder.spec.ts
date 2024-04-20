@@ -1,6 +1,7 @@
 import { EOL } from 'os';
 
-import { SourceBuilder, SourceBuilderOptions } from './source-builder';
+import { SourceBuilder, SourceBuilderOptions, builderTemplate } from './source-builder';
+import { appendValueGroup } from './string-builder';
 
 describe('SourceBuilder', () => {
   let sb: SourceBuilder;
@@ -14,7 +15,6 @@ describe('SourceBuilder', () => {
       const options = sb.options;
       expect(options.indent).toEqual({ type: 'spaces', count: 2 });
       expect(options.newLine).toBe(EOL);
-      expect(options.charsTreatedAsEmptyLine).toEqual(['{']);
     });
   });
 
@@ -30,7 +30,6 @@ describe('SourceBuilder', () => {
       const options: Partial<SourceBuilderOptions> = {
         indent: { type: 'tabs' },
         newLine: '\n-',
-        charsTreatedAsEmptyLine: ['{', '}'],
       };
       const sb = SourceBuilder.fromString(str, options);
       expect(sb.toString()).toEqual(str);
@@ -56,7 +55,6 @@ describe('SourceBuilder', () => {
       const options: Partial<SourceBuilderOptions> = {
         indent: { type: 'spaces', count: 4 },
         newLine: '\r\n\t',
-        charsTreatedAsEmptyLine: ['{', '}'],
       };
       const result = SourceBuilder.build(buildAction, options);
       expect(result).toEqual(`hello${options.newLine}    world`);
@@ -239,12 +237,6 @@ describe('SourceBuilder', () => {
       sb.ensurePreviousLineEmpty();
       expect(sb.toString()).toBe(`line1${EOL}line2${EOL}${EOL}`);
     });
-
-    it('should not insert an empty line when empty by characters', () => {
-      sb.append('line1', EOL, '{ \t', EOL);
-      sb.ensurePreviousLineEmpty();
-      expect(sb.toString()).toBe(`line1${EOL}{ \t${EOL}`);
-    });
   });
 
   describe('ensureCurrentLineEmpty', () => {
@@ -258,12 +250,6 @@ describe('SourceBuilder', () => {
       sb.append('line1', EOL, 'line2', EOL);
       sb.ensureCurrentLineEmpty();
       expect(sb.toString()).toBe(`line1${EOL}line2${EOL}`);
-    });
-
-    it('should not insert an empty line when empty by characters', () => {
-      sb.append('line1', EOL, '{ \t');
-      sb.ensureCurrentLineEmpty();
-      expect(sb.toString()).toBe(`line1${EOL}{ \t`);
     });
   });
 
@@ -630,6 +616,38 @@ describe('SourceBuilder', () => {
     it('should not add the content for each item with the given string separator when condition is false', () => {
       sb.appendSeparatedIf(false, ['a', 'b', 'c'], ', ');
       expect(sb.toString()).toBe(``);
+    });
+  });
+});
+
+describe('builderTemplate', () => {
+  it('should resolve append values in a template string', () => {
+    const sb = new SourceBuilder();
+    sb.append(
+      builderTemplate`abc${'def'}ghi${123}jkl${(b) => b.append('mno')}pqr${appendValueGroup(['stu', 'vxw'])}yz`,
+    );
+    expect(sb.toString()).toEqual('abcdefghi123jklmnopqrstuvxwyz');
+  });
+
+  it('should remove indentation based on last line', () => {
+    const sb = new SourceBuilder();
+    sb.append(
+      builderTemplate`${'abc'}
+        ${123}
+         ghi`,
+    );
+    expect(sb.toString()).toEqual(`abc${EOL}123${EOL}ghi`);
+  });
+
+  describe('indent', () => {
+    it('should indent the content', () => {
+      const sb = new SourceBuilder();
+      sb.append(
+        builderTemplate.indent`${'abc'}
+          ${123}
+          ghi`,
+      );
+      expect(sb.toString()).toEqual(`  abc${EOL}  123${EOL}  ghi`);
     });
   });
 });

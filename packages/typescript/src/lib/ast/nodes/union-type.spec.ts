@@ -27,12 +27,12 @@ describe('tsUnionType', () => {
 
   it('should write the types on separate lines if there are more than 3', () => {
     builder.append(tsUnionType(['string', 'number', 'boolean', 'unknown']));
-    expect(builder.toString(false)).toBe(`| (string)${EOL}| (number)${EOL}| (boolean)${EOL}| (unknown)`);
+    expect(builder.toString(false)).toBe(`${EOL}| (string)${EOL}| (number)${EOL}| (boolean)${EOL}| (unknown)`);
   });
 
   it('should collapse nested union types', () => {
     builder.append(tsUnionType([tsUnionType(['string', 'number']), tsUnionType(['boolean', 'unknown'])]));
-    expect(builder.toString(false)).toBe(`| (string)${EOL}| (number)${EOL}| (boolean)${EOL}| (unknown)`);
+    expect(builder.toString(false)).toBe(`${EOL}| (string)${EOL}| (number)${EOL}| (boolean)${EOL}| (unknown)`);
   });
 
   it('should render injections', () => {

@@ -1,6 +1,13 @@
 import { resolve } from 'path';
 
-import { ApiEndpoint, ApiSchema, AppendValueGroup, appendValueGroup, builderTemplate, toCasing } from '@goast/core';
+import {
+  ApiEndpoint,
+  ApiSchema,
+  AppendValueGroup,
+  appendValueGroup,
+  builderTemplate as s,
+  toCasing,
+} from '@goast/core';
 
 import { TypeScriptAngularServiceGeneratorContext, TypeScriptAngularServiceGeneratorOutput } from './models';
 import { ts } from '../../../ast';
@@ -207,8 +214,7 @@ export class DefaultTypeScriptAngularServiceGenerator
       returnType,
       body: appendValueGroup(
         [
-          builderTemplate`
-            const rb = new ${ctx.refs.requestBuilder()}(this.rootUrl, ${this.getServiceClassName(ctx)}.${this.getEndpointPathPropertyName(ctx, endpoint)}, '${endpoint.method}');`,
+          s`const rb = new ${ctx.refs.requestBuilder()}(this.rootUrl, ${this.getServiceClassName(ctx)}.${this.getEndpointPathPropertyName(ctx, endpoint)}, '${endpoint.method}');`,
           hasParams
             ? (b) =>
                 b.appendIf(paramsOptional, 'if (params) ').parenthesizeIf(
@@ -225,11 +231,10 @@ export class DefaultTypeScriptAngularServiceGenerator
                               p.explode !== undefined ? ts.property('explode', { value: p.explode }) : null,
                             ],
                           });
-                          return builderTemplate<Builder>`
-                            rb.${p.target}(${ts.string(p.name)}, params.${toCasing(p.name, ctx.config.propertyNameCasing)}, ${options});`;
+                          return s<Builder>`rb.${p.target}(${ts.string(p.name)}, params.${toCasing(p.name, ctx.config.propertyNameCasing)}, ${options});`;
                         }),
                       endpoint.requestBody
-                        ? builderTemplate`rb.body(params.body, ${ts.string(endpoint.requestBody.content[0].type ?? 'application/json')});`
+                        ? s`rb.body(params.body, ${ts.string(endpoint.requestBody.content[0].type ?? 'application/json')});`
                         : null,
                     ],
                     '\n',
@@ -238,16 +243,15 @@ export class DefaultTypeScriptAngularServiceGenerator
                 )
             : null,
           '',
-          builderTemplate`
-            return ${ts.refs.rxjs.firstValueFrom()}(
-              this.http.request(rb.build({
+          s`return ${ts.refs.rxjs.firstValueFrom()}(${s.indent`
+              this.http.request(rb.build({${s.indent`
                 responseType: ${ts.string(responseType)},
                 accept: ${ts.string(accept)},
-                context,
-              })).pipe(
+                context,`}
+              })).pipe(${s.indent`
                 ${ts.refs.rxjs.filter()}((r: unknown) => r instanceof ${ts.refs.angular.httpResponse.infer()}),
-                ${ts.refs.rxjs.take()}(1),
-              )
+                ${ts.refs.rxjs.take()}(1),`}
+              )`}
             ) as unknown as ${returnType};`,
         ],
         '\n',

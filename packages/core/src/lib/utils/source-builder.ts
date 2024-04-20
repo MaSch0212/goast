@@ -3,19 +3,19 @@ import { EOL } from 'os';
 import { isNullish } from './common.utils';
 import { Condition, evalCondition } from './condition';
 import { AppendParam, AppendValue, StringBuilder, StringBuilderOptions } from './string-builder';
+import { BuilderFn } from './string-builder/string-builder';
+import { removeStr, trimEnd } from './string.utils';
 import { Nullable } from './type.utils';
 
 export type IndentOptions = { readonly type: 'tabs' } | { readonly type: 'spaces'; readonly count: number };
 
 export type SourceBuilderOptions = StringBuilderOptions & {
   indent: IndentOptions;
-  charsTreatedAsEmptyLine: string[];
 };
 
 export const defaultSourceBuilderOptions: SourceBuilderOptions = {
   indent: { type: 'spaces', count: 2 },
   newLine: EOL,
-  charsTreatedAsEmptyLine: ['{'],
 };
 
 type KnownParatheses = '()' | '[]' | '{}' | '<>';
@@ -88,7 +88,6 @@ type LinePrefixNode = {
  */
 export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAdditionalAppends> {
   private readonly __options: SourceBuilderOptions;
-  private readonly _emptyLineCharRegex: RegExp;
   private readonly _indentString: string;
 
   private _isLineIndented: boolean = false;
@@ -110,7 +109,6 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
   constructor(options?: Partial<SourceBuilderOptions>) {
     super(options);
     this.__options = { ...defaultSourceBuilderOptions, ...options };
-    this._emptyLineCharRegex = new RegExp(`[\\s${this.__options.charsTreatedAsEmptyLine.join('')}]`);
     this._indentString = this.__options.indent.type === 'tabs' ? '\t' : ' '.repeat(this.__options.indent.count);
   }
 
@@ -178,21 +176,21 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
           if (!this._isLineIndented) {
             this.appendIndent();
           }
-          super.appendSingle(value.substring(lineStartIndex, i).replace(/\r/g, ''));
+          this.str += removeStr(value.substring(lineStartIndex, i), '\r');
         }
 
         this._isLastLineEmpty = this._isCurrentLineEmpty;
         if (this._isCurrentLineEmpty && this._linePrefixNodes.some((x) => x.kind !== 'indent')) {
-          this.appendIndent(true);
+          this.appendIndent();
         }
-        super.appendSingle('\n');
+        this.str = trimEnd(this.str, false) + '\n';
         this._isLineIndented = false;
         this._isCurrentLineEmpty = true;
 
         lineStartIndex = i + 1;
       }
 
-      if (!this._emptyLineCharRegex.test(value[i])) {
+      if (value[i] !== '\r' && value[i] !== '\n' && value[i] !== ' ' && value[i] !== '\t') {
         this._isCurrentLineEmpty = false;
       }
     }
@@ -202,7 +200,7 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
       this._isLineIndented = true;
     }
 
-    super.appendSingle(value.substring(lineStartIndex).replace(/\r/g, ''));
+    this.str += removeStr(value.substring(lineStartIndex), '\r');
   }
 
   /**
@@ -539,11 +537,38 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
     return this;
   }
 
-  private appendIndent(trimEnd?: boolean): void {
-    let prefix = this._linePrefixNodes.map((n) => n.chars).join('');
-    if (trimEnd) {
-      prefix = prefix.trimEnd();
-    }
-    super.appendSingle(prefix);
+  private appendIndent(): void {
+    this.str += this._linePrefixNodes.map((n) => n.chars).join('');
   }
 }
+
+function _builderTemplate<T extends SourceBuilder>(
+  template: readonly string[] | ArrayLike<string>,
+  ...substitutions: AppendValue<T>[]
+): BuilderFn<T> {
+  return (b) => {
+    let lastLine: string | undefined = undefined;
+    for (let i = template.length - 1; i >= 0; i--) {
+      if (template[i].includes('\n')) {
+        lastLine = template[i];
+        break;
+      }
+    }
+    const indent = lastLine?.match(/\n( *).*$/)?.[1] ?? '';
+    const regex = new RegExp(`\\n {0,${indent.length}}`, 'g');
+
+    for (let i = 0; i < template.length; i++) {
+      b.append(template[i].replace(regex, '\n'));
+      if (i < substitutions.length) b.append(substitutions[i]);
+    }
+  };
+}
+
+export const builderTemplate = Object.assign(_builderTemplate, {
+  indent: <T extends SourceBuilder>(
+    template: readonly string[] | ArrayLike<string>,
+    ...substitutions: AppendValue<T>[]
+  ): BuilderFn<T> => {
+    return (b) => b.indent(_builderTemplate(template, ...substitutions));
+  },
+});

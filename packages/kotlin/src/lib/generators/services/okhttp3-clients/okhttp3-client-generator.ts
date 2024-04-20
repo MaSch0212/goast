@@ -10,6 +10,7 @@ import {
   AppendValueGroup,
   SourceBuilder,
   appendValueGroup,
+  builderTemplate as s,
   createOverwriteProxy,
   toCasing,
 } from '@goast/core';
@@ -158,37 +159,39 @@ export class DefaultKotlinOkHttp3Generator
 
     return appendValueGroup(
       [
-        appendValueGroup([
-          'val localVarResponse = ',
-          kt.call(
-            [toCasing(endpoint.name, ctx.config.functionNameCasing) + 'WithHttpInfo'],
-            parameters.map((x) => x.name),
-          ),
-        ]),
-        (b) =>
-          b.append('return when (localVarResponse.responseType) ').parenthesize(
-            '{}',
-            (b) => {
-              b.append(ctx.refs.responseType(), '.Success -> ');
-              if (responseSchema === undefined) {
-                b.append(kt.refs.unit());
-              } else {
-                b.append(
-                  '(localVarResponse as ',
-                  ctx.refs.success(['*']),
-                  ').data as ',
-                  this.getTypeUsage(ctx, { schema: responseSchema }),
-                );
-              }
-              b.ensureCurrentLineEmpty().appendLine(responseErrorHandlingCode);
-              kt.reference.import(b, [
-                ctx.refs.clientError.infer(),
-                ctx.refs.serverError.infer(),
-                ctx.refs.responseType(),
-              ]);
-            },
-            { multiline: true },
-          ),
+        s`val localVarResponse = ${kt.call(
+          [toCasing(endpoint.name + '_WithHttpInfo', ctx.config.functionNameCasing)],
+          parameters.map((x) => x.name),
+        )}`,
+        '',
+        s`return when (localVarResponse.responseType) {${s.indent`
+            ${ctx.refs.responseType()}.Success -> ${
+              responseSchema === undefined
+                ? kt.refs.unit()
+                : s`(localVarResponse as ${ctx.refs.success(['*'])}).data as ${this.getTypeUsage(ctx, {
+                    schema: responseSchema,
+                  })}`
+            }
+            ${ctx.refs.responseType()}.Informational -> throw ${kt.refs.java.unsupportedOperationException()}("Client does not support Informational responses.")
+            ${ctx.refs.responseType()}.Redirection -> throw ${kt.refs.java.unsupportedOperationException()}("Client does not support Redirection responses.")
+            ${ctx.refs.responseType()}.ClientError -> {${s.indent`
+              val localVarError = localVarResponse as ${ctx.refs.clientError(['*'])}
+              throw ${ctx.refs.clientException()}(${s.indent`
+                "Client error : \${localVarError.statusCode} \${localVarError.message.orEmpty()}",
+                localVarError.statusCode,
+                localVarResponse`}
+              )`}
+            }
+
+            ${ctx.refs.responseType()}.ServerError -> {${s.indent`
+              val localVarError = localVarResponse as ${ctx.refs.serverError(['*'])}
+              throw ${ctx.refs.serverException()}(${s.indent`
+                "Server error : \${localVarError.statusCode} \${localVarError.message.orEmpty()}",
+                localVarError.statusCode,
+                localVarResponse`}
+              )`}
+            }`}
+          }`,
       ],
       '\n',
     );
@@ -236,27 +239,21 @@ export class DefaultKotlinOkHttp3Generator
 
     return appendValueGroup(
       [
-        appendValueGroup([
-          `val localVariableConfig = `,
-          kt.call(
-            [toCasing(endpoint.name, 'camel') + 'RequestConfig'],
-            parameters.map((x) => x.name),
-          ),
-        ]),
-        appendValueGroup([
-          'return ',
-          kt.call(
-            [
-              kt.reference('request', null, {
-                generics: [
-                  this.getTypeUsage(ctx, { schema: endpoint.requestBody?.content[0].schema, fallback: kt.refs.unit() }),
-                  this.getTypeUsage(ctx, { schema: responseSchema, fallback: kt.refs.unit() }),
-                ],
-              }),
-            ],
-            ['localVariableConfig'],
-          ),
-        ]),
+        s`val localVariableConfig = ${kt.call(
+          [toCasing(endpoint.name, 'camel') + 'RequestConfig'],
+          parameters.map((x) => x.name),
+        )}`,
+        s`return ${kt.call(
+          [
+            kt.reference('request', null, {
+              generics: [
+                this.getTypeUsage(ctx, { schema: endpoint.requestBody?.content[0].schema, fallback: kt.refs.unit() }),
+                this.getTypeUsage(ctx, { schema: responseSchema, fallback: kt.refs.unit() }),
+              ],
+            }),
+          ],
+          ['localVariableConfig'],
+        )}`,
       ],
       '\n',
     );
@@ -301,38 +298,30 @@ export class DefaultKotlinOkHttp3Generator
       result.values.push(`val localVariableBody = ${bodyParamName}`);
     }
 
-    result.values.push((b) => {
-      b.append(
-        'val localVariableQuery: ',
-        ctx.refs.multiValueMap(),
-        ' = ',
-        kt.call([kt.refs.mutableMapOf([kt.refs.string(), kt.refs.list([kt.refs.string()])])], []),
-      );
-      if (queryParameters.length > 0) {
-        b.indent((b) =>
-          b
-            .appendLine()
-            .append('.apply ')
-            .parenthesize(
-              '{}',
-              (b) =>
-                queryParameters.forEach((param) => {
+    result.values.push(
+      s`val localVariableQuery: ${ctx.refs.multiValueMap()} = ${kt.call(
+        [kt.refs.mutableMapOf([kt.refs.string(), kt.refs.list([kt.refs.string()])])],
+        [],
+      )}${
+        queryParameters.length === 0
+          ? ''
+          : s.indent`
+            .apply {${s.indent`
+              ${appendValueGroup(
+                queryParameters.map((param) => {
                   const paramName = toCasing(param.name, ctx.config.parameterNameCasing);
-                  b.appendIf(!param.required, `if (${paramName} != null) `)
-                    .parenthesizeIf(
-                      !param.required,
-                      '{}',
-                      (b) =>
-                        b.appendLine(`put(${this.toStringLiteral(ctx, paramName)}, listOf(${paramName}.toString()))`),
-                      { multiline: true },
-                    )
-                    .ensureCurrentLineEmpty();
+                  const put = s<Builder>`put(${kt.string(paramName)}, listOf(${paramName}.toString()))`;
+                  return param.required
+                    ? put
+                    : s<Builder>`if (${paramName} != null) {${s.indent`
+                        ${put}`}
+                      }`;
                 }),
-              { multiline: true },
-            ),
-        );
-      }
-    });
+                '\n',
+              )}`}
+            }`
+      }`,
+    );
 
     result.values.push('val localVariableHeaders: MutableMap<String, String> = mutableMapOf()');
     if (endpoint.requestBody?.content[0] !== undefined) {
@@ -340,20 +329,17 @@ export class DefaultKotlinOkHttp3Generator
     }
 
     result.values.push(
-      appendValueGroup([
-        'return ',
-        kt.call(
-          [ctx.refs.requestConfig.infer()],
-          [
-            kt.argument.named('method', kt.call([ctx.refs.requestMethod(), endpoint.method.toUpperCase()])),
-            kt.argument.named('path', kt.string(this.getPathWithInterpolation(ctx, { endpoint }), { template: true })),
-            kt.argument.named('query', 'localVariableQuery'),
-            kt.argument.named('headers', 'localVariableHeaders'),
-            kt.argument.named('requiresAuthentication', 'false'),
-            endpoint.requestBody ? kt.argument.named('body', 'localVariableBody') : null,
-          ],
-        ),
-      ]),
+      s`return ${kt.call(
+        [ctx.refs.requestConfig.infer()],
+        [
+          kt.argument.named('method', kt.call([ctx.refs.requestMethod(), endpoint.method.toUpperCase()])),
+          kt.argument.named('path', kt.string(this.getPathWithInterpolation(ctx, { endpoint }), { template: true })),
+          kt.argument.named('query', 'localVariableQuery'),
+          kt.argument.named('headers', 'localVariableHeaders'),
+          kt.argument.named('requiresAuthentication', 'false'),
+          endpoint.requestBody ? kt.argument.named('body', 'localVariableBody') : null,
+        ],
+      )}`,
     );
 
     return result;
@@ -366,10 +352,7 @@ export class DefaultKotlinOkHttp3Generator
         parameters: [kt.parameter('uriComponent', kt.refs.string())],
         returnType: kt.refs.string(),
         singleExpression: true,
-        body: appendValueGroup([
-          kt.refs.okhttp3.httpUrl(),
-          '.Builder().scheme("http").host("localhost").addPathSegment(uriComponent).build().encodedPathSegments[0]',
-        ]),
+        body: s`${kt.refs.okhttp3.httpUrl()}.Builder().scheme("http").host("localhost").addPathSegment(uriComponent).build().encodedPathSegments[0]`,
       }),
     ];
   }
@@ -473,23 +456,3 @@ export class DefaultKotlinOkHttp3Generator
     return toCasing(ctx.service.name, ctx.config.typeNameCasing) + 'ApiClient';
   }
 }
-
-const responseErrorHandlingCode = `ResponseType.Informational -> throw UnsupportedOperationException("Client does not support Informational responses.")
-ResponseType.Redirection -> throw UnsupportedOperationException("Client does not support Redirection responses.")
-ResponseType.ClientError -> {
-    val localVarError = localVarResponse as ClientError<*>
-    throw ClientException(
-        "Client error : \${localVarError.statusCode} \${localVarError.message.orEmpty()}",
-        localVarError.statusCode,
-        localVarResponse
-    )
-}
-
-ResponseType.ServerError -> {
-    val localVarError = localVarResponse as ServerError<*>
-    throw ServerException(
-        "Server error : \${localVarError.statusCode} \${localVarError.message.orEmpty()}",
-        localVarError.statusCode,
-        localVarResponse
-    )
-}`;

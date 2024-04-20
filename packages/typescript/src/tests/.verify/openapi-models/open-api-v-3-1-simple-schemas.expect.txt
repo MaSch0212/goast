@@ -2,7 +2,7 @@
 │ state                                │
 ├──────────────────────────────────────┤
 {
-  modelIndexFilePath: '<root>\\out\\models.ts',
+  indexFiles: { models: '<root>\\out\\models.ts' },
   models: {
     'schema-1': {
       __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyString',

@@ -7,6 +7,7 @@ import {
   AppendValueGroup,
   SourceBuilder,
   appendValueGroup,
+  builderTemplate as s,
   createOverwriteProxy,
   notNullish,
   toCasing,
@@ -222,13 +223,10 @@ export class DefaultKotlinSpringControllerGenerator
   ): AppendValueGroup<Builder> {
     return appendValueGroup(
       [
-        (b) =>
-          b.append('return ').append(
-            kt.call(
-              [kt.call(kt.reference('getDelegate'), []), toCasing(endpoint.name, ctx.config.functionNameCasing)],
-              parameters.map((x) => toCasing(x.name, ctx.config.parameterNameCasing)),
-            ),
-          ),
+        s`return ${kt.call(
+          [kt.call(kt.reference('getDelegate'), []), toCasing(endpoint.name, ctx.config.functionNameCasing)],
+          parameters.map((x) => toCasing(x.name, ctx.config.parameterNameCasing)),
+        )}`,
       ],
       '\n',
     );
@@ -303,17 +301,7 @@ export class DefaultKotlinSpringControllerGenerator
     const initBlock = kt.initBlock<Builder>(
       appendValueGroup(
         [
-          (b) =>
-            b.append('this.delegate = ').append(
-              kt.call(
-                [kt.call([kt.refs.java.optional.infer(), 'ofNullable'], ['delegate']), 'orElse'],
-                [
-                  kt.object({
-                    implements: [delegateInterfaceName],
-                  }),
-                ],
-              ),
-            ),
+          s`this.delegate = ${kt.refs.java.optional.infer()}.ofNullable(delegate).orElse(object : ${delegateInterfaceName} {})`,
         ],
         '\n',
       ),
@@ -410,12 +398,7 @@ export class DefaultKotlinSpringControllerGenerator
       }),
       returnType: kt.refs.spring.responseEntity([this.getResponseType(ctx, { endpoint })]),
       body: appendValueGroup(
-        [
-          appendValueGroup([
-            'return ',
-            kt.call(kt.refs.spring.responseEntity.infer(), [kt.call([kt.refs.spring.httpStatus(), 'NOT_IMPLEMENTED'])]),
-          ]),
-        ],
+        [s`return ${kt.refs.spring.responseEntity.infer()}(${kt.refs.spring.httpStatus()}.NOT_IMPLEMENTED)`],
         '\n',
       ),
     });

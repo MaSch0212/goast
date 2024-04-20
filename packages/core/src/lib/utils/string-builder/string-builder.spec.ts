@@ -1,8 +1,7 @@
 import { EOL } from 'os';
 
 import { StringBuilderOptions } from './options';
-import { StringBuilder, builderTemplate } from './string-builder';
-import { appendValueGroup } from './utils';
+import { StringBuilder } from './string-builder';
 
 describe('fromString', () => {
   it('should create a StringBuilder instance with the given string', () => {
@@ -42,31 +41,6 @@ describe('build', () => {
     };
     const result = StringBuilder.build(buildAction, options);
     expect(result).toEqual(`hello${options.newLine}world`);
-  });
-});
-
-describe('builderTemplate', () => {
-  it('should resolve append values in a template string', () => {
-    const sb = new StringBuilder();
-    sb.append(
-      builderTemplate`abc${'def'}ghi${123}jkl${(b) => b.append('mno')}pqr${appendValueGroup(['stu', 'vxw'])}yz`,
-    );
-    expect(sb.toString()).toEqual('abcdefghi123jklmnopqrstuvxwyz');
-  });
-
-  it('should remove first line if it is empty', () => {
-    const sb = new StringBuilder();
-    sb.append(builderTemplate`\nabc`);
-    expect(sb.toString()).toEqual('abc');
-  });
-
-  it('should remove indentation based on last line', () => {
-    const sb = new StringBuilder();
-    sb.append(builderTemplate`
-      ${'abc'}
-      ${123}
-       ghi`);
-    expect(sb.toString()).toEqual(`abc${EOL}123${EOL}ghi`);
   });
 });
 

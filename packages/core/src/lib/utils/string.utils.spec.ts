@@ -8,6 +8,10 @@ import {
   toSnakeCase,
   toCasing,
   trimIndent,
+  trimEnd,
+  trimStart,
+  trim,
+  removeStr,
 } from './string.utils';
 import {
   WordCasing,
@@ -636,5 +640,48 @@ describe('trimIndent', () => {
 
   it('should remove the first line if it is empty', () => {
     expect(trimIndent('\n  line 1\n    line 2\n  line 3')).toBe('line 1\n  line 2\nline 3');
+  });
+});
+
+describe('trimEnd', () => {
+  it('should remove trailing whitespace', () => {
+    expect(trimEnd('  hello \r\n\t ')).toBe('  hello');
+  });
+
+  it('should not remove trailing new line characters if includeNewLine is false', () => {
+    expect(trimEnd('  hello \n\t ', false)).toBe('  hello \n');
+    expect(trimEnd('  hello \r\t ', false)).toBe('  hello \r');
+  });
+});
+
+describe('trimStart', () => {
+  it('should remove leading whitespace', () => {
+    expect(trimStart(' \r\n\t hello  ')).toBe('hello  ');
+  });
+
+  it('should not remove leading new line characters if includeNewLine is false', () => {
+    expect(trimStart(' \t\n hello  ', false)).toBe('\n hello  ');
+    expect(trimStart(' \t\r hello  ', false)).toBe('\r hello  ');
+  });
+});
+
+describe('trim', () => {
+  it('should remove leading and trailing whitespace', () => {
+    expect(trim(' \r\n\t hello \r\n\t ')).toBe('hello');
+  });
+
+  it('should not remove leading and trailing new line characters if includeNewLine is false', () => {
+    expect(trim(' \t\n hello \n\t ', false)).toBe('\n hello \n');
+    expect(trim(' \t\r hello \r\t ', false)).toBe('\r hello \r');
+  });
+});
+
+describe('removeStr', () => {
+  it('should remove the first occurrence of a string', () => {
+    expect(removeStr('hello world', 'world')).toBe('hello ');
+  });
+
+  it('should remove all occurrences of a string', () => {
+    expect(removeStr('hello world world!', 'world')).toBe('hello  !');
   });
 });

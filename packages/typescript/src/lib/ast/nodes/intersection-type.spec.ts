@@ -27,14 +27,14 @@ describe('tsIntersectionType', () => {
 
   it('should write the types on separate lines if there are more than 3', () => {
     builder.append(tsIntersectionType(['string', 'number', 'boolean', 'unknown']));
-    expect(builder.toString(false)).toBe(`& (string)${EOL}& (number)${EOL}& (boolean)${EOL}& (unknown)`);
+    expect(builder.toString(false)).toBe(`${EOL}& (string)${EOL}& (number)${EOL}& (boolean)${EOL}& (unknown)`);
   });
 
   it('should collapse nested intersection types', () => {
     builder.append(
       tsIntersectionType([tsIntersectionType(['string', 'number']), tsIntersectionType(['boolean', 'unknown'])]),
     );
-    expect(builder.toString(false)).toBe(`& (string)${EOL}& (number)${EOL}& (boolean)${EOL}& (unknown)`);
+    expect(builder.toString(false)).toBe(`${EOL}& (string)${EOL}& (number)${EOL}& (boolean)${EOL}& (unknown)`);
   });
 
   it('should render injections', () => {

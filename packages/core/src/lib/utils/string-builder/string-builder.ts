@@ -1,5 +1,4 @@
 import { StringBuilderOptions, defaultStringBuilderOptions } from './options';
-import { AppendValue } from './utils';
 import { isNullish } from '../common.utils';
 import { Nullable, SingleOrMultiple } from '../type.utils';
 
@@ -23,43 +22,11 @@ export type AppendParam<TBuilder extends StringBuilder, TAdditionalAppends> = Si
 export const AdditionalAppendsSymbol = Symbol('AdditionalAppends');
 
 /**
- * Allows for the creation of a builder function based on a template string.
- * This will also automatically remove leading identation based on the last line and removes the first line if it is empty.
- * @param template
- * @param substitutions
- * @returns
- */
-export function builderTemplate<T extends StringBuilder>(
-  template: readonly string[] | ArrayLike<string>,
-  ...substitutions: AppendValue<T>[]
-): BuilderFn<T> {
-  return (b) => {
-    let lastLine: string | undefined = undefined;
-    for (let i = template.length - 1; i >= 0; i--) {
-      if (template[i].includes('\n')) {
-        lastLine = template[i];
-        break;
-      }
-    }
-    const indent = lastLine?.match(/\n( *).*$/)?.[1] ?? '';
-    const regex = new RegExp(`\\n {0,${indent.length}}`, 'g');
-
-    for (let i = 0; i < template.length; i++) {
-      let str = template[i].replace(regex, '\n');
-      if (i === 0) str = str.replace(/^\r?\n/, '');
-
-      b.append(str);
-      if (i < substitutions.length) b.append(substitutions[i]);
-    }
-  };
-}
-
-/**
  * Represents a mutable string of characters.
  */
 export class StringBuilder<TAdditionalAppends = never> {
   private readonly _options: StringBuilderOptions;
-  private _str: string = '';
+  protected str: string = '';
 
   [AdditionalAppendsSymbol](_: TAdditionalAppends): void {
     throw new Error('This method should never be called.');
@@ -108,9 +75,9 @@ export class StringBuilder<TAdditionalAppends = never> {
         this.appendSingle(part);
       }
     } else if (typeof value === 'string') {
-      this._str += value;
+      this.str += value;
     } else if (typeof value === 'number' || typeof value === 'boolean') {
-      this._str += value.toString();
+      this.str += value.toString();
     } else if (typeof value === 'function') {
       (value as (builder: this) => void)(this);
     } else if (
@@ -162,11 +129,11 @@ export class StringBuilder<TAdditionalAppends = never> {
       if (typeof part === 'function') {
         const builder = new StringBuilder(this.options);
         part(builder);
-        this._str = builder._str + this._str;
+        this.str = builder.str + this.str;
       } else if (typeof part === 'string') {
-        this._str = part + this._str;
+        this.str = part + this.str;
       } else {
-        this._str = part.toString() + this._str;
+        this.str = part.toString() + this.str;
       }
     }
     return this;
@@ -186,13 +153,13 @@ export class StringBuilder<TAdditionalAppends = never> {
    * @returns A string whose value is the same as this instance.
    */
   public toString(): string {
-    return this._str.replace(/\r?\n/g, this._options.newLine);
+    return this.str.replace(/\r?\n/g, this._options.newLine);
   }
 
   /**
    * Removes all characters from the current StringBuilder.
    */
   public clear(): void {
-    this._str = '';
+    this.str = '';
   }
 }
