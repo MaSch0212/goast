@@ -1,5 +1,6 @@
 import type { TsArrayType } from './array-type';
 import type { TsArrowFunction } from './arrow-function';
+import type { TsCall } from './call';
 import type { TsClass } from './class';
 import type { TsFunction } from './function';
 import type { TsFunctionType } from './function-type';
@@ -10,6 +11,7 @@ import type { TsObjectType } from './object-type';
 import type { TsReference } from './reference';
 import type { TsString } from './string';
 import type { TsTuple } from './tuple';
+import type { TsTypeof } from './typeof';
 import type { TsUnionType } from './union-type';
 import type { BasicAppendValue, SourceBuilder } from '@goast/core';
 
@@ -22,6 +24,7 @@ export type TsType<TBuilder extends SourceBuilder> =
   | TsObjectType<TBuilder>
   | TsString<TBuilder>
   | TsLookupType<TBuilder>
+  | TsTypeof<TBuilder>
   | TsReference<TBuilder>;
 
 export type TsValue<TBuilder extends SourceBuilder> =
@@ -32,4 +35,5 @@ export type TsValue<TBuilder extends SourceBuilder> =
   | TsArrowFunction<TBuilder>
   | TsFunction<TBuilder>
   | TsClass<TBuilder>
+  | TsCall<TBuilder>
   | TsReference<TBuilder>;

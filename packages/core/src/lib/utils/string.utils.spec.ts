@@ -7,6 +7,7 @@ import {
   toPascalCase,
   toSnakeCase,
   toCasing,
+  trimIndent,
 } from './string.utils';
 import {
   WordCasing,
@@ -609,5 +610,31 @@ describe('toCasing', () => {
     expect(toCasing('Hello world', 'all-upper')).toBe('HELLOWORLD');
     expect(toCasing('hello world', 'first-upper')).toBe('Helloworld');
     expect(toCasing('hello world', 'first-lower-alternating')).toBe('hElLoWoRlD');
+  });
+});
+
+describe('trimIndent', () => {
+  it('should not change string if it has only one line', () => {
+    expect(trimIndent('some string')).toBe('some string');
+  });
+
+  it('should not change string if las line is not indented', () => {
+    expect(trimIndent('line 1\n  line 2\nline 3')).toBe('line 1\n  line 2\nline 3');
+  });
+
+  it('should trim the same amount of whitespace from the beginning of each line', () => {
+    expect(trimIndent('  line 1\n    line 2\n  line 3')).toBe('line 1\n  line 2\nline 3');
+  });
+
+  it('should trim as many whitespaces as possible', () => {
+    expect(trimIndent('  line 1\n line 2\n   line 3')).toBe('line 1\nline 2\nline 3');
+  });
+
+  it('should not change kind of new line characters', () => {
+    expect(trimIndent('  line 1\r\n    line 2\n  line 3')).toBe('line 1\r\n  line 2\nline 3');
+  });
+
+  it('should remove the first line if it is empty', () => {
+    expect(trimIndent('\n  line 1\n    line 2\n  line 3')).toBe('line 1\n  line 2\nline 3');
   });
 });

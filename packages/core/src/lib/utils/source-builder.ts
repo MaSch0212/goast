@@ -185,7 +185,7 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
         if (this._isCurrentLineEmpty && this._linePrefixNodes.some((x) => x.kind !== 'indent')) {
           this.appendIndent(true);
         }
-        super.appendSingle(this.__options.newLine);
+        super.appendSingle('\n');
         this._isLineIndented = false;
         this._isCurrentLineEmpty = true;
 

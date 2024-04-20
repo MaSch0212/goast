@@ -3,6 +3,7 @@ export { TsNode as Node } from './node';
 export { TsArgument as Argument, tsArgument as argument } from './nodes/argument';
 export { TsArrayType as ArrayType, tsArrayType as arrayType } from './nodes/array-type';
 export { TsArrowFunction as ArrowFunction, tsArrowFunction as arrowFunction } from './nodes/arrow-function';
+export { TsCall as Call, tsCall as call } from './nodes/call';
 export { TsClass as Class, tsClass as class } from './nodes/class';
 export { TsConstructor as Constructor, tsConstructor as constructor } from './nodes/constructor';
 export {
@@ -40,6 +41,7 @@ export { TsTypeAlias as TypeAlias, tsTypeAlias as typeAlias } from './nodes/type
 export { TsType as Type, TsValue as Value } from './nodes/types';
 export { TsUnionType as UnionType, tsUnionType as unionType } from './nodes/union-type';
 export { TsVariable as Variable, tsVariable as variable } from './nodes/variable';
+export { TsTypeof as Typeof, tsTypeof as typeof } from './nodes/typeof';
 export * as refs from './references';
 export { getTypeScriptBuilderOptions as getBuilderOptions } from './utils/get-type-script-builder-options';
 export { toTsNode as toNode } from './utils/to-ts-node';

@@ -11,6 +11,7 @@ type Injects = 'generics' | 'params' | 'returnType' | 'body';
 type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = AstNodeOptions<
   typeof TsNode<TBuilder, TInjects | Injects>,
   {
+    async?: Nullable<boolean>;
     generics?: Nullable<Nullable<TsGenericParameter<TBuilder> | BasicAppendValue<TBuilder>>[]>;
     parameters?: Nullable<Nullable<TsParameter<TBuilder> | BasicAppendValue<TBuilder>>[]>;
     returnType?: Nullable<TsType<TBuilder>>;
@@ -23,6 +24,7 @@ export class TsArrowFunction<TBuilder extends SourceBuilder, TInjects extends st
   TBuilder,
   TInjects | Injects
 > {
+  public async: boolean;
   public generics: (TsGenericParameter<TBuilder> | BasicAppendValue<TBuilder>)[];
   public parameters: (TsParameter<TBuilder> | BasicAppendValue<TBuilder>)[];
   public returnType: TsType<TBuilder> | null;
@@ -31,6 +33,7 @@ export class TsArrowFunction<TBuilder extends SourceBuilder, TInjects extends st
 
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
+    this.async = options.async ?? false;
     this.generics = options.generics?.filter(notNullish) ?? [];
     this.parameters = options.parameters?.filter(notNullish) ?? [];
     this.returnType = options.returnType ?? null;
@@ -39,6 +42,10 @@ export class TsArrowFunction<TBuilder extends SourceBuilder, TInjects extends st
   }
 
   protected override onWrite(builder: TBuilder): void {
+    if (this.async) {
+      builder.append('async ');
+    }
+
     builder.append(this.inject.beforeGenerics);
     tsGenericParameter.write(builder, this.generics);
     builder.append(this.inject.afterGenerics);

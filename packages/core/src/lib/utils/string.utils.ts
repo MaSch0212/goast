@@ -294,3 +294,13 @@ export function escapeRegExp(str: string): string {
 export function spliceString(str: string, start: number, deleteCount: number, insert: string): string {
   return str.slice(0, start) + insert + str.slice(start + deleteCount);
 }
+
+/**
+ * Removes leading indentation based on the last line. Also removes the first line if it is empty.
+ * @param str The string to trim.
+ */
+export function trimIndent(str: string): string {
+  const indent = str.match(/\n( *).*$/)?.[1] ?? '';
+  if (indent.length === 0) return str;
+  return str.replace(/^\r?\n/, '').replace(new RegExp(`^ {0,${indent.length}}`, 'gm'), '');
+}

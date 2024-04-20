@@ -96,7 +96,7 @@ export class TsSimpleProperty<TBuilder extends SourceBuilder, TInjects extends s
     if (this.override) builder.append('override ');
     if (this.readonly) builder.append('readonly ');
 
-    writeTsNode(builder, /^[a-zA-Z_$][a-zA-Z_$0-9]*$/.test(this.name) ? this.name : tsString(this.name));
+    writeTsNode(builder, /^([a-zA-Z_$][a-zA-Z_$0-9]*|[0-9]+)$/.test(this.name) ? this.name : tsString(this.name));
     if (this.optional) builder.append('?');
 
     if (this.type && !isInObjectDeclaration) {

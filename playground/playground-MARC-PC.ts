@@ -6,6 +6,7 @@ import { OpenApiGenerator, OpenApiParser, SourceBuilder } from '@goast/core';
 import {
   TypeScriptAngularServicesGenerator,
   TypeScriptClientsGenerator,
+  TypeScriptEasyNetworkStubsGenerator,
   TypeScriptModelsGenerator,
 } from '@goast/typescript';
 import { KotlinModelsGenerator, KotlinOkHttp3ClientsGenerator, KotlinSpringControllersGenerator } from '@goast/kotlin';
@@ -17,5 +18,6 @@ export async function main(): Promise<void> {
     // .useType(KotlinSpringControllersGenerator)
     .useType(TypeScriptModelsGenerator)
     .useType(TypeScriptAngularServicesGenerator)
+    .useType(TypeScriptEasyNetworkStubsGenerator)
     .parseAndGenerateFromDir('.openapi');
 }

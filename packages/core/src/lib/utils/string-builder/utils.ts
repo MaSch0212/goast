@@ -1,6 +1,7 @@
-import { AdditionalAppendsSymbol, AppendParam, BuilderFn, Primitive, StringBuilder } from './string-builder';
 import { concatSingleOrMultiple, notNullish } from '../common.utils';
 import { Nullable } from '../type.utils';
+
+import type { AdditionalAppendsSymbol, AppendParam, BuilderFn, Primitive, StringBuilder } from './string-builder';
 
 export type BasicAppendValue<TBuilder extends StringBuilder = StringBuilder> =
   | Primitive

@@ -14,10 +14,9 @@ import { ts } from '../../../ast';
 import { TypeScriptExportOutput } from '../../../common-results';
 import { TypeScriptGeneratorConfig, defaultTypeScriptGeneratorConfig } from '../../../config';
 import { TypeScriptFileBuilder } from '../../../file-builder';
-import { TypeScriptModelsGeneratorOutput } from '../../models';
+import { TypeScriptModelGeneratorOutput } from '../../models';
 
 export type TypeScriptAngularServicesGeneratorConfig = TypeScriptGeneratorConfig & {
-  fileNameCasing: StringCasing | StringCasingWithOptions;
   responseModelFileNameCasing: StringCasing | StringCasingWithOptions;
 
   /**
@@ -105,7 +104,11 @@ export const defaultTypeScriptAngularServicesGeneratorConfig: DefaultGenerationP
     utilsDirPath: 'utils',
   };
 
-export type TypeScriptAngularServicesGeneratorInput = TypeScriptModelsGeneratorOutput;
+export type TypeScriptAngularServicesGeneratorInput = {
+  models: {
+    [schemaId: string]: TypeScriptModelGeneratorOutput;
+  };
+};
 
 export type TypeScriptAngularServicesGeneratorOutput = {
   services: {

@@ -1,4 +1,5 @@
 import { StringBuilderOptions, defaultStringBuilderOptions } from './options';
+import { AppendValue } from './utils';
 import { isNullish } from '../common.utils';
 import { Nullable, SingleOrMultiple } from '../type.utils';
 
@@ -20,6 +21,38 @@ export type AppendParam<TBuilder extends StringBuilder, TAdditionalAppends> = Si
 >;
 
 export const AdditionalAppendsSymbol = Symbol('AdditionalAppends');
+
+/**
+ * Allows for the creation of a builder function based on a template string.
+ * This will also automatically remove leading identation based on the last line and removes the first line if it is empty.
+ * @param template
+ * @param substitutions
+ * @returns
+ */
+export function builderTemplate<T extends StringBuilder>(
+  template: readonly string[] | ArrayLike<string>,
+  ...substitutions: AppendValue<T>[]
+): BuilderFn<T> {
+  return (b) => {
+    let lastLine: string | undefined = undefined;
+    for (let i = template.length - 1; i >= 0; i--) {
+      if (template[i].includes('\n')) {
+        lastLine = template[i];
+        break;
+      }
+    }
+    const indent = lastLine?.match(/\n( *).*$/)?.[1] ?? '';
+    const regex = new RegExp(`\\n {0,${indent.length}}`, 'g');
+
+    for (let i = 0; i < template.length; i++) {
+      let str = template[i].replace(regex, '\n');
+      if (i === 0) str = str.replace(/^\r?\n/, '');
+
+      b.append(str);
+      if (i < substitutions.length) b.append(substitutions[i]);
+    }
+  };
+}
 
 /**
  * Represents a mutable string of characters.
@@ -115,7 +148,7 @@ export class StringBuilder<TAdditionalAppends = never> {
    * @returns
    */
   public appendLine(...value: Nullable<AppendParam<this, TAdditionalAppends>>[]): this {
-    return this.append(...value, this._options.newLine);
+    return this.append(...value, '\n');
   }
 
   /**
@@ -129,7 +162,7 @@ export class StringBuilder<TAdditionalAppends = never> {
       if (typeof part === 'function') {
         const builder = new StringBuilder(this.options);
         part(builder);
-        this._str = builder.toString() + this._str;
+        this._str = builder._str + this._str;
       } else if (typeof part === 'string') {
         this._str = part + this._str;
       } else {
@@ -145,7 +178,7 @@ export class StringBuilder<TAdditionalAppends = never> {
    * @returns The current StringBuilder.
    */
   public prependLine(...value: AppendParam<StringBuilder, never>[]): this {
-    return this.prepend(...value, this._options.newLine);
+    return this.prepend(...value, '\n');
   }
 
   /**
@@ -153,7 +186,7 @@ export class StringBuilder<TAdditionalAppends = never> {
    * @returns A string whose value is the same as this instance.
    */
   public toString(): string {
-    return this._str;
+    return this._str.replace(/\r?\n/g, this._options.newLine);
   }
 
   /**
