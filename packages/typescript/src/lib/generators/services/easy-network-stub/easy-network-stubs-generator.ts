@@ -8,7 +8,10 @@ import {
   Factory,
   OpenApiGeneratorContext,
   OpenApiServicesGenerationProviderBase,
+  adjustCasing,
   appendValueGroup,
+  toCasing,
+  builderTemplate as s,
 } from '@goast/core';
 
 import {
@@ -108,11 +111,88 @@ export class TypeScriptEasyNetworkStubsGenerator extends OpenApiServicesGenerati
   }
 
   protected getStubsIndexFileContent(ctx: Context): AppendValueGroup<TypeScriptFileBuilder> {
-    return appendValueGroup(Object.values(ctx.output.stubs).map((x) => ts.export(x.component, x.filePath)));
+    return appendValueGroup(
+      [
+        appendValueGroup(Object.values(ctx.output.stubs).map((x) => ts.export(x.component, x.filePath))),
+        this.getStubsClass(ctx),
+      ],
+      '\n',
+    );
+  }
+
+  protected getStubsClass(ctx: Context): ts.Class<TypeScriptFileBuilder> {
+    const fieldCasing = adjustCasing(ctx.config.propertyNameCasing, { prefix: '_' });
+    const serviceNames = Object.fromEntries(ctx.data.services.map((x) => [x.id, x.name]));
+    return ts.class(this.getStubsClassName(ctx), {
+      export: true,
+      members: [
+        ts.property('_stubWrapper', {
+          accessModifier: 'private',
+          readonly: true,
+          type: ctx.refs.easyNetworkStubWrapper(),
+        }),
+        ...Object.entries(ctx.output.stubs).map(([id, x]) =>
+          ts.property<TypeScriptFileBuilder>(toCasing(serviceNames[id], fieldCasing), {
+            accessModifier: 'private',
+            optional: true,
+            type: ctx.refs.easyNetworkStubGroup([ts.reference(x.component, x.filePath), 'this']),
+          }),
+        ),
+        ts.constructor({
+          parameters: [
+            ts.constructorParameter('stub', { type: ts.refs.easyNetworkStub.easyNetworkStub() }),
+            ts.constructorParameter('options', {
+              type: ts.refs.partial([ctx.refs.easyNetworkStubWrapperOptions()]),
+              optional: true,
+            }),
+          ],
+          body: appendValueGroup(
+            [s`this._stubWrapper = new ${ctx.refs.easyNetworkStubWrapper()}(stub, options);`],
+            '\n',
+          ),
+        }),
+        ts.property('requests', {
+          accessModifier: 'public',
+          type: ts.arrayType(ctx.refs.stubRequestItem(), { readonly: true }),
+          get: ts.property.getter({
+            body: appendValueGroup(['return this._stubWrapper.requests;'], '\n'),
+          }),
+        }),
+        ...Object.entries(ctx.output.stubs).map(([id, x]) =>
+          ts.property<TypeScriptFileBuilder>(toCasing(serviceNames[id], ctx.config.propertyNameCasing), {
+            accessModifier: 'public',
+            type: ctx.refs.easyNetworkStubGroup([ts.reference(x.component, x.filePath), 'this']),
+            get: ts.property.getter({
+              body: appendValueGroup(
+                [
+                  s`return this.${toCasing(serviceNames[id], fieldCasing)} ??= ${ctx.refs.createEasyNetworkStubGroup.infer()}(this, this._stubWrapper, ${ts.reference(x.component, x.filePath)});`,
+                ],
+                '\n',
+              ),
+            }),
+          }),
+        ),
+        ts.method('resetStubs', {
+          accessModifier: 'public',
+          returnType: 'this',
+          body: appendValueGroup(
+            [
+              ...Object.keys(ctx.output.stubs).map((id) => `this.${toCasing(serviceNames[id], fieldCasing)}?.reset();`),
+              'return this;',
+            ],
+            '\n',
+          ),
+        }),
+      ],
+    });
   }
 
   protected getStubsIndexFilePath(ctx: Context): string | null {
     return ctx.config.stubsIndexFilePath ? resolve(ctx.config.outputDir, ctx.config.stubsIndexFilePath) : null;
+  }
+
+  protected getStubsClassName(ctx: Context): string {
+    return toCasing(`${ctx.config.domainName ?? ''}_ApiStubs`, ctx.config.typeNameCasing);
   }
 
   private copyFile(logName: string, sourceDir: string, targetDir: string, fileName: string): void {

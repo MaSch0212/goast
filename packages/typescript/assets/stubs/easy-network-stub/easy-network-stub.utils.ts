@@ -226,6 +226,29 @@ export class EasyNetworkStubBase {
   }
 }
 
+export type EasyNetworkStubGroup<Group, GroupContainer> = Group & {
+  (stubActions: (stubs: Group) => void): GroupContainer;
+};
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+declare interface GroupType<T> extends Function {
+  new (stubWrapper: EasyNetworkStubWrapper): T;
+}
+
+export function createEasyNetworkStubGroup<GroupContainer, Group>(
+  container: GroupContainer,
+  stubWrapper: EasyNetworkStubWrapper,
+  groupType: GroupType<Group>,
+): EasyNetworkStubGroup<Group, GroupContainer> {
+  const group = new groupType(stubWrapper);
+  const groupFn = (stubActions: (stubs: Group) => void) => {
+    stubActions(group);
+    return container;
+  };
+  Object.setPrototypeOf(groupFn, groupType.prototype);
+  return Object.assign(groupFn, group);
+}
+
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }

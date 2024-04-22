@@ -15,6 +15,10 @@ import { TypeScriptModelGeneratorOutput } from '../../models';
 
 export type TypeScriptEasyNetworkStubsGeneratorConfig = TypeScriptGeneratorConfig & {
   /**
+   * The domain name of the API. Used as a prefix for exported components (e.g. `ApiConfiguration`).
+   */
+  domainName?: string;
+  /**
    * The default response types for status codes that are not defined in the OpenAPI specification.
    * @example
    * {

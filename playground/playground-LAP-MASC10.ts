@@ -37,8 +37,8 @@ export async function main(): Promise<void> {
     })
     .useType(TypeScriptModelsGenerator, { outputDir: clientOutDir, immutableTypes: true })
     .useType(TypeScriptClientsGenerator, { outputDir: clientOutDir, clientFileKind: 'class-and-interface' })
-    .useType(TypeScriptAngularServicesGenerator, { outputDir: clientOutDir })
-    .useType(TypeScriptEasyNetworkStubsGenerator, { outputDir: clientOutDir })
+    .useType(TypeScriptAngularServicesGenerator, { outputDir: clientOutDir, domainName: 'data' })
+    .useType(TypeScriptEasyNetworkStubsGenerator, { outputDir: clientOutDir, domainName: 'data' })
     .parseAndGenerateFromDir('.openapi');
   // console.log(x);
 }

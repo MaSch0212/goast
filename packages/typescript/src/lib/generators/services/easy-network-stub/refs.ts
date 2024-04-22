@@ -20,5 +20,7 @@ export function getReferenceFactories(options: TypeScriptEasyNetworkStubsGenerat
     getStubResponder: ts.reference.genericFactory<1>('getStubResponder', easyNetworkStubUtilsPath),
     easyNetworkStubWrapper: ts.reference.factory('EasyNetworkStubWrapper', easyNetworkStubUtilsPath),
     easyNetworkStubBase: ts.reference.factory('EasyNetworkStubBase', easyNetworkStubUtilsPath),
+    easyNetworkStubGroup: ts.reference.genericFactory<2>('EasyNetworkStubGroup', easyNetworkStubUtilsPath),
+    createEasyNetworkStubGroup: ts.reference.genericFactory<2>('createEasyNetworkStubGroup', easyNetworkStubUtilsPath),
   };
 }
