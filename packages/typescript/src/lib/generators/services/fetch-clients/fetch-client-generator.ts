@@ -1,8 +1,13 @@
-import { dirname, resolve } from 'path';
+import { resolve } from 'path';
 
-import { ensureDirSync, writeFileSync } from 'fs-extra';
-
-import { ApiEndpoint, ApiSchema, notNullish, toCasing } from '@goast/core';
+import {
+  ApiEndpoint,
+  ApiSchema,
+  toCasing,
+  AppendValueGroup,
+  appendValueGroup,
+  builderTemplate as s,
+} from '@goast/core';
 
 import { TypeScriptFetchClientGeneratorContext, TypeScriptFetchClientGeneratorOutput } from './models';
 import { ts } from '../../../ast';
@@ -28,13 +33,13 @@ export class DefaultTypeScriptFetchClientGenerator
     if (this.shouldGenerateInterface(ctx)) {
       const filePath = this.getInterfaceFilePath(ctx);
       const name = this.getInterfaceName(ctx);
-      console.log(`Generating interface ${name} in ${filePath}...`);
 
-      ensureDirSync(dirname(filePath));
-
-      builder = new TypeScriptFileBuilder(filePath, ctx.config);
-      this.generateInterface(ctx, builder);
-      writeFileSync(filePath, builder.toString());
+      TypeScriptFileBuilder.generate({
+        logName: `interface ${name}`,
+        filePath,
+        options: ctx.config,
+        generator: (b) => b.append(this.getInterfaceFileContent(ctx)),
+      });
 
       result.interface = { filePath, component: name, imports: [{ kind: 'file', name, modulePath: filePath }] };
     }
@@ -42,16 +47,13 @@ export class DefaultTypeScriptFetchClientGenerator
     if (this.shouldGenerateClass(ctx)) {
       const filePath = this.getClassFilePath(ctx);
       const name = this.getClassName(ctx);
-      console.log(`Generating class ${name} in ${filePath}...`);
 
-      ensureDirSync(dirname(filePath));
-
-      if (!builder || builder.filePath !== filePath) {
-        builder = new TypeScriptFileBuilder(filePath, ctx.config);
-      }
-      this.generateDefaultOptions(ctx, builder);
-      this.generateClass(ctx, builder);
-      writeFileSync(filePath, builder.toString());
+      TypeScriptFileBuilder.generate({
+        logName: `class ${name}`,
+        filePath,
+        options: ctx.config,
+        generator: (b) => b.append(this.getClassFileContent(ctx)),
+      });
 
       result.class = { filePath, component: name, imports: [{ kind: 'file', name, modulePath: filePath }] };
     }
@@ -59,254 +61,141 @@ export class DefaultTypeScriptFetchClientGenerator
     return result;
   }
 
-  protected generateInterface(ctx: Context, builder: Builder) {
-    builder
-      .ensurePreviousLineEmpty()
-      .append((builder) => this.generateInterfaceDocumentation(ctx, builder))
-      .ensureCurrentLineEmpty()
-      .append((builder) => this.generateInterfaceSignature(ctx, builder))
-      .append(' ')
-      .parenthesize('{}', (builder) => this.generateInterfaceContent(ctx, builder))
-      .appendLine();
+  // #region Interface
+  protected getInterfaceFileContent(ctx: Context): AppendValueGroup<Builder> {
+    return appendValueGroup([this.getInterface(ctx)], '\n');
   }
 
-  protected generateInterfaceDocumentation(ctx: Context, builder: Builder) {
-    if (ctx.service.description) {
-      builder.appendLine('/**').appendLineWithLinePrefix(' *', ctx.service.description).appendLine(' */');
-    }
+  protected getInterface(ctx: Context): ts.Interface<Builder> {
+    return ts.interface(this.getInterfaceName(ctx), {
+      doc: ts.doc({ description: ctx.service.description }),
+      export: true,
+      members: ctx.service.endpoints.map((endpoint) => this.getInterfaceEndpointMethod(ctx, endpoint)),
+    });
   }
 
-  protected generateInterfaceSignature(ctx: Context, builder: Builder) {
-    builder.append('export interface ').append(this.getInterfaceName(ctx));
+  protected getInterfaceEndpointMethod(ctx: Context, endpoint: ApiEndpoint): ts.Method<Builder> {
+    const params = endpoint.parameters.filter((x) => x.target === 'path' || x.target === 'query');
+    const bodySchema = endpoint.requestBody?.content[0]?.schema;
+    const responseSchema = this.getResponseSchema(ctx, endpoint);
+    return ts.method(toCasing(endpoint.name, ctx.config.methodCasing), {
+      doc: ts.doc({ description: endpoint.description }),
+      parameters: [
+        params.length > 0
+          ? ts.parameter('params', {
+              description: 'Parameters for the endpoint.',
+              type: ts.objectType({
+                members: params.map((x) =>
+                  ts.property(toCasing(x.name, ctx.config.propertyNameCasing), {
+                    type: this.getSchemaType(ctx, x.schema),
+                    optional: !x.required,
+                  }),
+                ),
+              }),
+            })
+          : null,
+        bodySchema &&
+          ts.parameter('body', {
+            description: 'Body for the endpoint.',
+            type: this.getSchemaType(ctx, bodySchema),
+          }),
+      ],
+      returnType: ts.refs.promise([ctx.refs.typedResponse([this.getSchemaType(ctx, responseSchema, ts.refs.void_())])]),
+    });
+  }
+  // #endregion
+
+  // #region Class
+  protected getClassFileContent(ctx: Context): AppendValueGroup<Builder> {
+    return appendValueGroup([this.getDefaultOptionsConstant(ctx), this.getClass(ctx)], '\n');
   }
 
-  protected generateInterfaceContent(ctx: Context, builder: Builder) {
-    builder.forEach(ctx.service.endpoints, (builder, endpoint) =>
-      this.generateInterfaceServiceMethod(ctx, builder, endpoint),
-    );
-  }
-
-  protected generateInterfaceServiceMethod(ctx: Context, builder: Builder, endpoint: ApiEndpoint) {
-    builder
-      .ensurePreviousLineEmpty()
-      .append((builder) => this.generateServiceMethodDocumentation(ctx, builder, endpoint))
-      .ensureCurrentLineEmpty()
-      .append((builder) => this.generateServiceMethodSignature(ctx, builder, endpoint))
-      .appendLine(';');
-  }
-
-  protected generateDefaultOptions(ctx: Context, builder: Builder) {
+  protected getDefaultOptionsConstant(ctx: Context): ts.Variable<Builder> {
     const baseUrl = ctx.service.endpoints
       .map((x) => x.$src?.document.servers?.find((x) => x.url)?.url)
       .find((x) => !!x);
-    builder
-      .ensurePreviousLineEmpty()
-      .addImport('FetchClientOptions', this.getUtilPath(ctx, 'types.ts'))
-      .append('export const ', this.getDefaultOptionsConstantName(ctx), ': FetchClientOptions = ')
-      .parenthesize(
-        '{}',
-        (builder) => builder.appendLineIf(notNullish(baseUrl), 'baseUrl: ', ts.string(baseUrl ?? ''), ','),
-        { indent: true, multiline: true },
-      );
+    return ts.variable(this.getDefaultOptionsConstantName(ctx), {
+      export: true,
+      readonly: true,
+      type: ctx.refs.fetchClientOptions(),
+      value: ts.object({
+        members: [baseUrl && ts.property('baseUrl', { value: ts.string(baseUrl) })],
+      }),
+    });
   }
 
-  protected generateClass(ctx: Context, builder: Builder) {
-    builder
-      .ensurePreviousLineEmpty()
-      .append((builder) => this.generateClassDocumentation(ctx, builder))
-      .ensureCurrentLineEmpty()
-      .append((builder) => this.generateClassSignature(ctx, builder))
-      .append(' ')
-      .parenthesize('{}', (builder) => this.generateClassContent(ctx, builder))
-      .appendLine();
-  }
-
-  protected generateClassDocumentation(ctx: Context, builder: Builder) {
-    if (ctx.service.description) {
-      builder.appendLine('/**').appendLineWithLinePrefix(' *', ctx.service.description).appendLine(' */');
-    }
-  }
-
-  protected generateClassSignature(ctx: Context, builder: Builder) {
-    builder
-      .append('export class ')
-      .append(this.getClassName(ctx))
-      .appendIf(this.shouldGenerateInterface(ctx), (builder) =>
-        builder
-          .addImport(this.getInterfaceName(ctx), this.getInterfaceFilePath(ctx))
-          .append(' implements ', this.getInterfaceName(ctx)),
-      );
-  }
-
-  protected generateClassContent(ctx: Context, builder: Builder) {
-    builder
-      .append((builder) => this.generateClassFields(ctx, builder))
-      .append((builder) => this.generateClassConstructor(ctx, builder))
-      .forEach(ctx.service.endpoints, (builder, endpoint) => this.generateClassServiceMethod(ctx, builder, endpoint));
-  }
-
-  protected generateClassFields(ctx: Context, builder: Builder) {
-    builder.ensureCurrentLineEmpty().appendLine('public options: FetchClientOptions;');
-  }
-
-  protected generateClassConstructor(ctx: Context, builder: Builder) {
-    builder
-      .ensurePreviousLineEmpty()
-      .append('constructor(options?: Partial<FetchClientOptions>)')
-      .parenthesize('{}', (builder) => this.generateClassConstructorContent(ctx, builder), {
-        indent: true,
-        multiline: true,
-      });
-  }
-
-  protected generateClassConstructorContent(ctx: Context, builder: Builder) {
-    builder.appendLine('this.options = { ...', this.getDefaultOptionsConstantName(ctx), ', ...options };');
-  }
-
-  protected generateClassServiceMethod(ctx: Context, builder: Builder, endpoint: ApiEndpoint) {
-    builder
-      .ensurePreviousLineEmpty()
-      .append((builder) => this.generateServiceMethodDocumentation(ctx, builder, endpoint))
-      .ensureCurrentLineEmpty()
-      .append((builder) => this.generateServiceMethodSignature(ctx, builder, endpoint))
-      .append(' ')
-      .parenthesize('{}', (builder) => this.generateServiceMethodContent(ctx, builder, endpoint), {
-        indent: true,
-        multiline: true,
-      })
-      .appendLine();
-  }
-
-  protected generateServiceMethodDocumentation(ctx: Context, builder: Builder, endpoint: ApiEndpoint) {
-    const hasParams =
-      endpoint.parameters.some((p) => p.target === 'path' || p.target === 'query') ||
-      (!!endpoint.requestBody && endpoint.requestBody?.content.length > 0);
-    // builder.appendComment('/***/', (builder) =>
-    //   builder
-    //     .appendLine(endpoint.description ?? '[No description was provided by the API]')
-    //     .appendLine(`@see ${getEndpointUrlPreview(endpoint)}`)
-    //     .appendLineIf(hasParams, `@param params Parameters for the endpoint.`)
-    //     .append(`@returns The response of the call to the endpoint.`)
-    // );
-  }
-
-  protected generateServiceMethodSignature(ctx: Context, builder: Builder, endpoint: ApiEndpoint) {
-    builder
-      .append(toCasing(endpoint.name, ctx.config.methodCasing))
-      .parenthesize('()', (builder) => this.generateServiceMethodParameters(ctx, builder, endpoint))
-      .append(': ')
-      .append((builder) => this.generateServiceMethodReturnValue(ctx, builder, endpoint));
-  }
-
-  protected generateServiceMethodParameters(ctx: Context, builder: Builder, endpoint: ApiEndpoint) {
-    const params = endpoint.parameters.filter((x) => x.target === 'path' || x.target === 'query');
-    const bodySchemaId = endpoint.requestBody?.content[0]?.schema?.id;
-    builder
-      .appendLineIf(params.length > 0 && !!bodySchemaId)
-      .if(params.length > 0, (builder) =>
-        builder
-          .append('params: ')
-          .parenthesize(
-            '{}',
-            (builder) =>
-              builder.forEach(params, (builder, parameter) =>
-                builder.appendLine(
-                  toCasing(parameter.name, ctx.config.propertyNameCasing),
-                  parameter.required ? ': ' : '?: ',
-                  this.getTypeName(ctx, builder, parameter.schema?.id),
-                  ';',
-                ),
-              ),
-            { indent: true, multiline: true },
+  protected getClass(ctx: Context): ts.Class<Builder> {
+    return ts.class(this.getClassName(ctx), {
+      doc: ts.doc({ description: ctx.service.description }),
+      export: true,
+      implements: this.shouldGenerateInterface(ctx)
+        ? [ts.reference(this.getInterfaceName(ctx), this.getInterfaceFilePath(ctx))]
+        : undefined,
+      members: [
+        ts.property('options', {
+          doc: ts.doc({ description: 'Options for the fetch client.' }),
+          accessModifier: 'public',
+          type: ctx.refs.fetchClientOptions(),
+        }),
+        ts.constructor({
+          parameters: [
+            ts.constructorParameter('options', {
+              type: ts.refs.partial([ctx.refs.fetchClientOptions()]),
+              optional: true,
+            }),
+          ],
+          body: appendValueGroup(
+            [s`this.options = { ...${this.getDefaultOptionsConstantName(ctx)}, ...options };`],
+            '\n',
           ),
-      )
-      .appendLineIf(params.length > 0 && !!bodySchemaId, ',')
-      .appendIf(!!bodySchemaId, (builder) => builder.append(`body: ${this.getTypeName(ctx, builder, bodySchemaId)}`))
-      .appendLineIf(params.length > 0 && !!bodySchemaId);
+        }),
+        ...ctx.service.endpoints.map((endpoint) => this.getServiceMethod(ctx, endpoint)),
+      ],
+    });
   }
 
-  protected generateServiceMethodReturnValue(ctx: Context, builder: Builder, endpoint: ApiEndpoint) {
-    builder
-      .append('Promise')
-      .parenthesize('<>', (builder) => this.generateTypedResponse(ctx, builder, this.getResponseSchema(ctx, endpoint)));
-  }
-
-  protected generateTypedResponse(ctx: Context, builder: Builder, schema: ApiSchema | undefined) {
-    builder
-      .addImport('TypedResponse', this.getUtilPath(ctx, 'types.ts'))
-      .append('TypedResponse')
-      .parenthesize('<>', (builder) => builder.append(this.getTypeName(ctx, builder, schema?.id, 'void')));
-  }
-
-  protected generateServiceMethodContent(ctx: Context, builder: Builder, endpoint: ApiEndpoint) {
-    builder
-      .addImport('UrlBuilder', this.getUtilPath(ctx, 'url-builder.ts'))
-      .appendLine('const url = new UrlBuilder(this.options.baseUrl)')
-      .indent((builder) =>
-        builder
-          .appendLine('.withPath(', ts.string(endpoint.path), ')')
-          .forEach(
-            endpoint.parameters.filter((x) => x.target === 'path' || x.target === 'query'),
-            (builder, parameter) =>
-              builder
-                .appendIf(parameter.target === 'path', `.withPathParam`)
-                .appendIf(parameter.target === 'query', `.withQueryParam`)
-                .parenthesize('()', (b) =>
+  protected getServiceMethod(ctx: Context, endpoint: ApiEndpoint): ts.Method<Builder> {
+    const method = this.getInterfaceEndpointMethod(ctx, endpoint);
+    method.accessModifier = 'public';
+    method.body = appendValueGroup(
+      [
+        s`const url = new ${ctx.refs.urlBuilder()}(this.options.baseUrl)${s.indent`
+          .withPath(${ts.string(endpoint.path)})${(b) =>
+            b.forEach(endpoint.parameters, (b, p) => {
+              switch (p.target) {
+                case 'path':
                   b.append(
-                    ts.string(parameter.name),
-                    `, params.${toCasing(parameter.name, ctx.config.paramNameCasing)}`,
-                  ),
-                )
-                .appendLine(),
-          )
-          .appendLine('.build();'),
-      )
-      .append('const response = (this.options.fetch ?? fetch)')
-      .parenthesize(
-        '()',
-        (builder) =>
-          builder.append('url, ').parenthesize(
-            '{}',
-            (builder) =>
-              builder
-                .appendLine('method: ', ts.string(toCasing(endpoint.method, 'all-upper')), ',')
-                .appendLine('headers: this.options.headers,')
-                .appendLineIf(!!endpoint.requestBody?.content[0]?.schema, 'body: JSON.stringify(body),'),
-            { indent: true, multiline: true },
-          ),
-        { indent: false },
-      )
-      .appendLine(';')
-      .appendLine(
-        "Object.defineProperty(response, 'isVoidResponse', { value: ",
-        this.getResponseSchema(ctx, endpoint) ? 'false' : 'true',
-        ' });',
-      )
-      .appendLine(
-        'return response as unknown as ',
-        (builder) => this.generateServiceMethodReturnValue(ctx, builder, endpoint),
-        ';',
-      );
+                    s<Builder>`\n.withPathParam(${ts.string(p.name)}, params.${toCasing(p.name, ctx.config.paramNameCasing)})`,
+                  );
+                  break;
+                case 'query':
+                  b.append(
+                    s<Builder>`\n.withQueryParam(${ts.string(p.name)}, params.${toCasing(p.name, ctx.config.paramNameCasing)})`,
+                  );
+                  break;
+              }
+            })}
+          .build();`}`,
+        s`const response = (this.options.fetch ?? fetch)(url, ${ts.object({
+          members: [
+            ts.property('method', { value: ts.string(toCasing(endpoint.method, 'all-upper')) }),
+            ts.property('headers', { value: 'this.options.headers' }),
+            endpoint.requestBody?.content[0]?.schema ? ts.property('body', { value: 'JSON.stringify(body)' }) : null,
+          ],
+        })});`,
+        s`Object.defineProperty(response, 'isVoidResponse', { value: ${this.getResponseSchema(ctx, endpoint) ? 'false' : 'true'} });`,
+        s`return response as unknown as ${method.returnType!};`,
+      ],
+      '\n',
+    );
+    return method;
   }
+  // #endregion
 
-  protected getTypeName(
-    ctx: Context,
-    builder: Builder,
-    schemaId: string | undefined,
-    fallback?: string,
-  ): string | ts.Reference<Builder> {
-    if (!schemaId) {
-      return fallback ? fallback : this.getAnyType(ctx);
-    }
-
-    const modelInfo = ctx.input.models[schemaId];
-    if (!modelInfo) {
-      return this.getAnyType(ctx);
-    }
-
-    modelInfo.imports.forEach((x) => builder.addImport(x.name, x.modulePath));
-
-    return modelInfo.component;
+  protected getSchemaType(ctx: Context, schema: ApiSchema | undefined, fallback?: ts.Type<Builder>): ts.Type<Builder> {
+    const output = schema && ctx.input.models[schema.id];
+    if (!output) return fallback ?? this.getAnyType(ctx);
+    return (b) => b.appendModelUsage(output);
   }
 
   protected shouldGenerateInterface(ctx: Context): boolean {

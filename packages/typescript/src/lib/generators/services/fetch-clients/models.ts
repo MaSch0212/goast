@@ -7,6 +7,7 @@ import {
   Nullable,
 } from '@goast/core';
 
+import { getReferenceFactories } from './refs';
 import { TypeScriptComponentOutput } from '../../../common-results';
 import { TypeScriptGeneratorConfig, defaultTypeScriptGeneratorConfig } from '../../../config';
 import { TypeScriptModelsGeneratorOutput } from '../../models/models';
@@ -66,7 +67,9 @@ export type TypeScriptFetchClientsGeneratorContext = OpenApiServicesGenerationPr
   TypeScriptFetchClientsGeneratorOutput,
   TypeScriptFetchClientsGeneratorConfig,
   TypeScriptFetchClientGeneratorOutput
->;
+> & {
+  refs: ReturnType<typeof getReferenceFactories>;
+};
 
 export type TypeScriptFetchClientGeneratorContext = TypeScriptFetchClientsGeneratorContext & {
   readonly service: ApiService;

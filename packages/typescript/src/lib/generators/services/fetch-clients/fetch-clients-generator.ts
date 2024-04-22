@@ -13,6 +13,7 @@ import {
   TypeScriptFetchClientsGeneratorOutput,
   defaultTypeScriptFetchClientsGeneratorConfig,
 } from './models';
+import { getReferenceFactories } from './refs';
 import { TypeScriptFileBuilder } from '../../../file-builder';
 import { ImportExportCollection } from '../../../import-collection';
 
@@ -49,7 +50,10 @@ export class TypeScriptClientsGenerator extends OpenApiServicesGenerationProvide
     context: OpenApiGeneratorContext<Input>,
     config?: Partial<Config> | undefined,
   ): Context {
-    return this.getProviderContext(context, config, defaultTypeScriptFetchClientsGeneratorConfig);
+    const providerContext = this.getProviderContext(context, config, defaultTypeScriptFetchClientsGeneratorConfig);
+    return Object.assign(providerContext, {
+      refs: getReferenceFactories(providerContext.config),
+    });
   }
 
   public override onGenerate(ctx: Context): Output {

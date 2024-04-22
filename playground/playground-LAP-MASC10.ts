@@ -8,13 +8,14 @@ import {
   TypeScriptAngularServicesGenerator,
   TypeScriptModelsGenerator,
   TypeScriptClientsGenerator,
+  TypeScriptEasyNetworkStubsGenerator,
 } from '@goast/typescript';
 
 export async function main(): Promise<void> {
   const packageName = 'com.serviceware.platform.engine.data';
   const outBaseDir = 'out';
-  const mainOutDir = path.join(outBaseDir, 'main', 'kotlin');
-  const testOutDir = path.join(outBaseDir, 'test', 'kotlin');
+  const mainOutDir = path.join(outBaseDir, 'server', 'main', 'kotlin');
+  const testOutDir = path.join(outBaseDir, 'server', 'test', 'kotlin');
   const clientOutDir = path.join(outBaseDir, 'client');
   const basePath = /\/api\/.*/;
 
@@ -36,6 +37,8 @@ export async function main(): Promise<void> {
     })
     .useType(TypeScriptModelsGenerator, { outputDir: clientOutDir, immutableTypes: true })
     .useType(TypeScriptClientsGenerator, { outputDir: clientOutDir, clientFileKind: 'class-and-interface' })
+    .useType(TypeScriptAngularServicesGenerator, { outputDir: clientOutDir })
+    .useType(TypeScriptEasyNetworkStubsGenerator, { outputDir: clientOutDir })
     .parseAndGenerateFromDir('.openapi');
   // console.log(x);
 }
