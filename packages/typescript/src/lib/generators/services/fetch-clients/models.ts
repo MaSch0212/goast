@@ -53,8 +53,9 @@ export type TypeScriptFetchClientsGeneratorOutput = {
   clients: {
     [serviceId: string]: TypeScriptFetchClientGeneratorOutput;
   };
-  clientIndexFilePath: string | undefined;
-  clientInterfaceIndexFilePath: string | undefined;
+  indexFiles: {
+    clients: Nullable<string>;
+  };
 };
 
 export type TypeScriptFetchClientGeneratorOutput = {

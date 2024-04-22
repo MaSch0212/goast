@@ -41,8 +41,9 @@ export class TypeScriptClientsGenerator extends OpenApiServicesGenerationProvide
   protected override initResult(): Output {
     return {
       clients: {},
-      clientIndexFilePath: undefined,
-      clientInterfaceIndexFilePath: undefined,
+      indexFiles: {
+        clients: undefined,
+      },
     };
   }
 
@@ -59,7 +60,7 @@ export class TypeScriptClientsGenerator extends OpenApiServicesGenerationProvide
   public override onGenerate(ctx: Context): Output {
     this.copyUtilsFiles(ctx);
     const output = super.onGenerate(ctx);
-    output.clientIndexFilePath = this.generateIndexFile(ctx);
+    output.indexFiles.clients = this.generateIndexFile(ctx);
     return output;
   }
 
