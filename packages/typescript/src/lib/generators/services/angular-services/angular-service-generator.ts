@@ -84,7 +84,12 @@ export class DefaultTypeScriptAngularServiceGenerator
             ...Object.entries(statusCodes).map(([key, value]) =>
               ts.intersectionType([
                 ts.refs.angular.httpResponse([value]),
-                ts.objectType({ members: [ts.property('status', { type: key })] }),
+                ts.objectType({
+                  members: [
+                    ts.property('status', { type: key }),
+                    ts.property('ok', { type: key.startsWith('2') ? 'true' : 'false' }),
+                  ],
+                }),
               ]),
             ),
             !ctx.config.strictResponseTypes
