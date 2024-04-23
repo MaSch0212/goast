@@ -66,6 +66,14 @@ export class DefaultTypeScriptModelGenerator
     ) {
       content.values.push(this.getEnum(ctx));
     } else {
+      if (ctx.schema.discriminator && Object.keys(ctx.schema.discriminator.mapping).length > 0) {
+        content.values.push(
+          ts.typeAlias(
+            this.getDiscriminatorTypeName(ctx, ctx.schema),
+            ts.unionType(Object.keys(ctx.schema.discriminator.mapping).map((x) => ts.string(x))),
+          ),
+        );
+      }
       content.values.push(this.getTypeAlias(ctx, ctx.schema));
     }
     return content;
@@ -99,7 +107,7 @@ export class DefaultTypeScriptModelGenerator
     );
 
     if (schema.discriminator && Object.keys(schema.discriminator.mapping).length > 0) {
-      const propertyValue = ts.unionType(Object.keys(schema.discriminator.mapping).map((x) => ts.string(x)));
+      const propertyValue = this.getDiscriminatorTypeName(ctx, ctx.schema);
       result.generics.push(
         ts.genericParameter(this.getDiscriminatorGenericParamName(ctx, schema), {
           constraint: propertyValue,
@@ -142,19 +150,6 @@ export class DefaultTypeScriptModelGenerator
         return null;
       }
       return ts.reference(this.getDeclarationTypeName(ctx, schema), this.getFilePath(ctx, schema));
-    }
-
-    if (schema.id === ctx.schema.id && schema.inheritedSchemas.length > 0) {
-      return ts.intersectionType(
-        this.getInheritedSchemas(ctx, schema).map((x) => {
-          const mappingValue = Object.entries(x.discriminator.mapping).find(
-            ([_, value]) => value.id === schema.id,
-          )?.[0];
-          return ts.reference(this.getDeclarationTypeName(ctx, x), this.getFilePath(ctx, x), {
-            generics: [mappingValue !== undefined ? ts.string(mappingValue) : null],
-          });
-        }),
-      );
     }
 
     if (schema.enum) {
@@ -217,7 +212,7 @@ export class DefaultTypeScriptModelGenerator
                   ts.objectType({
                     members: [ts.property(discriminator.propertyName, { type: ts.string(key) })],
                   }),
-                  this.getType(ctx, value, true),
+                  this.getType(ctx, value),
                 ]),
               }),
             ),
@@ -316,6 +311,10 @@ export class DefaultTypeScriptModelGenerator
 
   protected getDiscriminatorGenericParamName(ctx: Context, schema: ApiSchema): string {
     return toCasing(schema.discriminator?.propertyName, ctx.config.genericParamNameCasing);
+  }
+
+  protected getDiscriminatorTypeName(ctx: Context, schema: ApiSchema): string {
+    return toCasing(schema.name + '_Discriminator', ctx.config.typeNameCasing);
   }
 
   protected getInheritedSchemas(ctx: Context, schema: ApiSchema) {
