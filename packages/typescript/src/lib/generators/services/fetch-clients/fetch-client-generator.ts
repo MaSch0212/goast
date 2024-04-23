@@ -28,7 +28,6 @@ export class DefaultTypeScriptFetchClientGenerator
 {
   public generate(ctx: Context): Output {
     const result: Output = {};
-    let builder: Builder | undefined;
 
     if (this.shouldGenerateInterface(ctx)) {
       const filePath = this.getInterfaceFilePath(ctx);
@@ -41,7 +40,7 @@ export class DefaultTypeScriptFetchClientGenerator
         generator: (b) => b.append(this.getInterfaceFileContent(ctx)),
       });
 
-      result.interface = { filePath, component: name, imports: [{ kind: 'file', name, modulePath: filePath }] };
+      result.interface = { filePath, component: name };
     }
 
     if (this.shouldGenerateClass(ctx)) {
@@ -55,7 +54,7 @@ export class DefaultTypeScriptFetchClientGenerator
         generator: (b) => b.append(this.getClassFileContent(ctx)),
       });
 
-      result.class = { filePath, component: name, imports: [{ kind: 'file', name, modulePath: filePath }] };
+      result.class = { filePath, component: name };
     }
 
     return result;

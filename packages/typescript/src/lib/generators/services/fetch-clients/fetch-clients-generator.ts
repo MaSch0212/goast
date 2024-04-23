@@ -1,8 +1,16 @@
 import { dirname, resolve } from 'path';
 
-import { ensureDirSync, writeFileSync, copyFileSync, readdirSync } from 'fs-extra';
+import { ensureDirSync, copyFileSync, readdirSync } from 'fs-extra';
 
-import { ApiService, OpenApiGeneratorContext, OpenApiServicesGenerationProviderBase, Factory } from '@goast/core';
+import {
+  ApiService,
+  OpenApiGeneratorContext,
+  OpenApiServicesGenerationProviderBase,
+  Factory,
+  AppendValueGroup,
+  appendValueGroup,
+  notNullish,
+} from '@goast/core';
 
 import { DefaultTypeScriptFetchClientGenerator, TypeScriptFetchClientGenerator } from './fetch-client-generator';
 import {
@@ -14,8 +22,8 @@ import {
   defaultTypeScriptFetchClientsGeneratorConfig,
 } from './models';
 import { getReferenceFactories } from './refs';
+import { ts } from '../../../ast';
 import { TypeScriptFileBuilder } from '../../../file-builder';
-import { ImportExportCollection } from '../../../import-collection';
 
 type Input = TypeScriptFetchClientsGeneratorInput;
 type Output = TypeScriptFetchClientsGeneratorOutput;
@@ -76,44 +84,30 @@ export class TypeScriptClientsGenerator extends OpenApiServicesGenerationProvide
     ctx.output.clients[service.id] = result;
   }
 
-  protected generateIndexFile(ctx: Context): string | undefined {
-    if (!this.shouldGenerateIndexFile(ctx)) {
-      return undefined;
-    }
-
+  protected generateIndexFile(ctx: Context): string | null {
     const filePath = this.getIndexFilePath(ctx);
-    console.log(`Generating index file to ${filePath}...`);
-    ensureDirSync(dirname(filePath));
 
-    const builder = new TypeScriptFileBuilder(filePath, ctx.config);
-    this.generateIndexFileContent(ctx, builder);
-    writeFileSync(filePath, builder.toString());
+    TypeScriptFileBuilder.tryGenerate({
+      logName: 'clients index file',
+      filePath,
+      options: ctx.config,
+      generator: (b) => b.append(this.getIndexFileContent(ctx)),
+    });
 
     return filePath;
   }
 
-  protected getIndexFilePath(ctx: Context): string {
-    return resolve(ctx.config.outputDir, ctx.config.indexFilePath ?? 'clients.ts');
+  protected getIndexFilePath(ctx: Context): string | null {
+    return ctx.config.indexFilePath ? resolve(ctx.config.outputDir, ctx.config.indexFilePath) : null;
   }
 
-  protected shouldGenerateIndexFile(ctx: Context): boolean {
-    return ctx.config.indexFilePath !== null;
-  }
-
-  protected generateIndexFileContent(ctx: Context, builder: TypeScriptFileBuilder) {
-    const exports = new ImportExportCollection();
-
-    for (const clientId in ctx.output.clients) {
-      const client = ctx.output.clients[clientId];
-      if (client.class?.filePath) {
-        exports.addExport(client.class.component, client.class.filePath);
-      }
-      if (client.interface?.filePath) {
-        exports.addExport(client.interface.component, client.interface.filePath);
-      }
-    }
-
-    exports.writeTo(builder);
+  protected getIndexFileContent(ctx: Context): AppendValueGroup<TypeScriptFileBuilder> {
+    return appendValueGroup(
+      Object.values(ctx.output.clients)
+        .flatMap((c) => [c.class, c.interface])
+        .filter(notNullish)
+        .map((x) => ts.export(x.component, x.filePath)),
+    );
   }
 
   private copyUtilsFiles(ctx: Context): void {

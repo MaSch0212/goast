@@ -8,7 +8,7 @@ import {
 } from '@goast/core';
 
 import { getReferenceFactories } from './refs';
-import { TypeScriptComponentOutput } from '../../../common-results';
+import { TypeScriptExportOutput } from '../../../common-results';
 import { TypeScriptGeneratorConfig, defaultTypeScriptGeneratorConfig } from '../../../config';
 import { TypeScriptModelsGeneratorOutput } from '../../models/models';
 
@@ -59,8 +59,8 @@ export type TypeScriptFetchClientsGeneratorOutput = {
 };
 
 export type TypeScriptFetchClientGeneratorOutput = {
-  class?: Omit<TypeScriptComponentOutput, 'additionalImports'>;
-  interface?: Omit<TypeScriptComponentOutput, 'additionalImports'>;
+  class?: TypeScriptExportOutput;
+  interface?: TypeScriptExportOutput;
 };
 
 export type TypeScriptFetchClientsGeneratorContext = OpenApiServicesGenerationProviderContext<
