@@ -20,21 +20,21 @@ export async function main(): Promise<void> {
   const basePath = /\/api\/.*/;
 
   const x = await new OpenApiGenerator({ outputDir: outBaseDir })
-    .useType(KotlinModelsGenerator, {
-      packageName,
-      outputDir: mainOutDir,
-      packageSuffix: (schema) => '.' + toCamelCase(path.basename(schema.$src.file).replace(/\.ya?ml$/, '')) + '.model',
-    })
-    .useType(KotlinSpringControllersGenerator, {
-      basePath,
-      packageName,
-      outputDir: mainOutDir,
-    })
-    .useType(KotlinOkHttp3ClientsGenerator, {
-      basePath,
-      packageName,
-      outputDir: testOutDir,
-    })
+    // .useType(KotlinModelsGenerator, {
+    //   packageName,
+    //   outputDir: mainOutDir,
+    //   packageSuffix: (schema) => '.' + toCamelCase(path.basename(schema.$src.file).replace(/\.ya?ml$/, '')) + '.model',
+    // })
+    // .useType(KotlinSpringControllersGenerator, {
+    //   basePath,
+    //   packageName,
+    //   outputDir: mainOutDir,
+    // })
+    // .useType(KotlinOkHttp3ClientsGenerator, {
+    //   basePath,
+    //   packageName,
+    //   outputDir: testOutDir,
+    // })
     .useType(TypeScriptModelsGenerator, { outputDir: clientOutDir, immutableTypes: true })
     .useType(TypeScriptClientsGenerator, { outputDir: clientOutDir, clientFileKind: 'class-and-interface' })
     .useType(TypeScriptAngularServicesGenerator, { outputDir: clientOutDir, domainName: 'data' })

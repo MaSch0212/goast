@@ -65,15 +65,20 @@ export class DefaultTypeScriptModelGenerator
       ctx.schema.enum.length > 0
     ) {
       content.values.push(this.getEnum(ctx));
+    } else if (ctx.schema.discriminator && Object.keys(ctx.schema.discriminator.mapping).length > 0) {
+      content.values.push(
+        ts.typeAlias(
+          this.getDiscriminatorTypeName(ctx, ctx.schema),
+          ts.unionType(Object.keys(ctx.schema.discriminator.mapping).map((x) => ts.string(x))),
+        ),
+        ts.typeAlias(
+          this.getBaseTypeName(ctx, ctx.schema),
+          this.getType(ctx, ctx.schema, true) ?? this.getAnyType(ctx),
+          { export: true },
+        ),
+        this.getTypeAlias(ctx, ctx.schema),
+      );
     } else {
-      if (ctx.schema.discriminator && Object.keys(ctx.schema.discriminator.mapping).length > 0) {
-        content.values.push(
-          ts.typeAlias(
-            this.getDiscriminatorTypeName(ctx, ctx.schema),
-            ts.unionType(Object.keys(ctx.schema.discriminator.mapping).map((x) => ts.string(x))),
-          ),
-        );
-      }
       content.values.push(this.getTypeAlias(ctx, ctx.schema));
     }
     return content;
@@ -97,16 +102,18 @@ export class DefaultTypeScriptModelGenerator
   }
 
   protected getTypeAlias(ctx: Context, schema: ApiSchema): ts.TypeAlias<Builder> {
+    const isDiscriminated = schema.discriminator && Object.keys(schema.discriminator.mapping).length > 0;
     const result = ts.typeAlias<Builder>(
       this.getDeclarationTypeName(ctx, schema),
-      this.getType(ctx, schema, true) ?? this.getAnyType(ctx),
+      (isDiscriminated ? this.getDiscriminatorType(ctx, schema) : this.getType(ctx, schema, true)) ??
+        this.getAnyType(ctx),
       {
         export: true,
         doc: ts.doc({ description: schema.description }),
       },
     );
 
-    if (schema.discriminator && Object.keys(schema.discriminator.mapping).length > 0) {
+    if (isDiscriminated) {
       const propertyValue = this.getDiscriminatorTypeName(ctx, ctx.schema);
       result.generics.push(
         ts.genericParameter(this.getDiscriminatorGenericParamName(ctx, schema), {
@@ -145,6 +152,11 @@ export class DefaultTypeScriptModelGenerator
     if (!schema) return this.getAnyType(ctx);
 
     schema = getSchemaReference(schema, ['description']);
+
+    if (ctx.schema.inheritedSchemas.some((x) => x.id === schema.id)) {
+      return ts.reference(this.getBaseTypeName(ctx, schema), this.getFilePath(ctx, schema));
+    }
+
     if (!skipSchemas && this.shouldGenerateTypeDeclaration(ctx, schema)) {
       if (schema.id === ctx.schema.id) {
         return null;
@@ -198,12 +210,14 @@ export class DefaultTypeScriptModelGenerator
     if (parts.length === 0) {
       parts.push(ts.objectType());
     }
-    const type = ts.intersectionType(parts);
+    return ts.intersectionType(parts);
+  }
 
+  protected getDiscriminatorType(ctx: Context, schema: ApiSchema): ts.Type<Builder> {
     if (schema.discriminator && Object.keys(schema.discriminator.mapping).length > 0) {
       const discriminator = schema.discriminator;
       return ts.intersectionType([
-        type,
+        this.getBaseTypeName(ctx, schema as ApiSchema),
         ts.lookupType(
           ts.objectType({
             members: Object.entries(discriminator.mapping).map(([key, value]) =>
@@ -220,9 +234,9 @@ export class DefaultTypeScriptModelGenerator
           this.getDiscriminatorGenericParamName(ctx, schema as ApiSchema),
         ),
       ]);
+    } else {
+      return ts.refs.unknown();
     }
-
-    return type;
   }
 
   protected getCombinedType(ctx: Context, schema: CombinedLikeApiSchema): ts.Type<Builder> {
@@ -315,6 +329,10 @@ export class DefaultTypeScriptModelGenerator
 
   protected getDiscriminatorTypeName(ctx: Context, schema: ApiSchema): string {
     return toCasing(schema.name + '_Discriminator', ctx.config.typeNameCasing);
+  }
+
+  protected getBaseTypeName(ctx: Context, schema: ApiSchema): string {
+    return toCasing(schema.name + '_Base', ctx.config.typeNameCasing);
   }
 
   protected getInheritedSchemas(ctx: Context, schema: ApiSchema) {
