@@ -73,7 +73,7 @@ export class DefaultTypeScriptModelGenerator
         ),
         ts.typeAlias(
           this.getBaseTypeName(ctx, ctx.schema),
-          this.getType(ctx, ctx.schema, true) ?? this.getAnyType(ctx),
+          this.getType(ctx, ctx.schema, { skipSchemas: true }) ?? this.getAnyType(ctx),
           { export: true },
         ),
         this.getTypeAlias(ctx, ctx.schema),
@@ -105,7 +105,7 @@ export class DefaultTypeScriptModelGenerator
     const isDiscriminated = schema.discriminator && Object.keys(schema.discriminator.mapping).length > 0;
     const result = ts.typeAlias<Builder>(
       this.getDeclarationTypeName(ctx, schema),
-      (isDiscriminated ? this.getDiscriminatorType(ctx, schema) : this.getType(ctx, schema, true)) ??
+      (isDiscriminated ? this.getDiscriminatorType(ctx, schema) : this.getType(ctx, schema, { skipSchemas: true })) ??
         this.getAnyType(ctx),
       {
         export: true,
@@ -148,16 +148,20 @@ export class DefaultTypeScriptModelGenerator
     });
   }
 
-  protected getType(ctx: Context, schema: Nullable<ApiSchema>, skipSchemas = false): ts.Type<Builder> | null {
+  protected getType(
+    ctx: Context,
+    schema: Nullable<ApiSchema>,
+    options?: { skipSchemas?: boolean; useBaseType?: boolean },
+  ): ts.Type<Builder> | null {
     if (!schema) return this.getAnyType(ctx);
 
     schema = getSchemaReference(schema, ['description']);
 
-    if (ctx.schema.inheritedSchemas.some((x) => x.id === schema.id)) {
+    if (options?.useBaseType && ctx.schema.inheritedSchemas.some((x) => x.id === schema.id)) {
       return ts.reference(this.getBaseTypeName(ctx, schema), this.getFilePath(ctx, schema));
     }
 
-    if (!skipSchemas && this.shouldGenerateTypeDeclaration(ctx, schema)) {
+    if (!options?.skipSchemas && this.shouldGenerateTypeDeclaration(ctx, schema)) {
       if (schema.id === ctx.schema.id) {
         return null;
       }
@@ -243,9 +247,10 @@ export class DefaultTypeScriptModelGenerator
     if (schema.allOf.length === 0 && schema.anyOf.length === 0) {
       return this.getAnyType(ctx);
     }
+    const useBaseType = schema.id === ctx.schema.id;
     return ts.intersectionType([
-      ...schema.allOf.map((x) => this.getType(ctx, x)),
-      ...schema.anyOf.map((x) => ts.reference('Partial', null, { generics: [this.getType(ctx, x)] })),
+      ...schema.allOf.map((x) => this.getType(ctx, x, { useBaseType })),
+      ...schema.anyOf.map((x) => ts.reference('Partial', null, { generics: [this.getType(ctx, x, { useBaseType })] })),
     ]);
   }
 
