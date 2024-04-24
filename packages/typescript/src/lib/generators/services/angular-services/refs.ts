@@ -10,6 +10,9 @@ import type { TypeScriptAngularServicesGeneratorConfig } from './models';
 export function getReferenceFactories(options: TypeScriptAngularServicesGeneratorConfig) {
   const utilsDirPath = resolve(options.outputDir, options.utilsDirPath);
   return {
+    // angular-service.utils.ts
+    waitForResponse: ts.reference.genericFactory<1>('waitForResponse', join(utilsDirPath, 'angular-service.utils.ts')),
+
     // request-builder.ts
     requestBuilder: ts.reference.factory('RequestBuilder', join(utilsDirPath, 'request-builder.ts')),
 

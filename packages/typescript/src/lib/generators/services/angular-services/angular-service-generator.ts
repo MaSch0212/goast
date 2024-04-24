@@ -81,17 +81,19 @@ export class DefaultTypeScriptAngularServiceGenerator
         this.getResponseModelName(ctx, endpoint),
         ts.intersectionType([
           ts.unionType([
-            ...Object.entries(statusCodes).map(([key, value]) =>
-              ts.intersectionType([
-                ts.refs.angular.httpResponse([value]),
+            ...Object.entries(statusCodes).map(([key, value]) => {
+              const isSuccess = key.startsWith('2');
+              return ts.intersectionType<Builder>([
+                isSuccess ? ts.refs.angular.httpResponse([value]) : ts.refs.angular.httpErrorResponse(),
                 ts.objectType({
                   members: [
+                    isSuccess ? null : ts.property('error', { type: ts.unionType([value, ts.refs.null_()]) }),
                     ts.property('status', { type: key }),
-                    ts.property('ok', { type: key.startsWith('2') ? 'true' : 'false' }),
+                    ts.property('ok', { type: isSuccess ? 'true' : 'false' }),
                   ],
                 }),
-              ]),
-            ),
+              ]);
+            }),
             !ctx.config.strictResponseTypes
               ? ts.intersectionType([
                   ts.refs.angular.httpResponse([this.getAnyType(ctx)]),
@@ -200,9 +202,11 @@ export class DefaultTypeScriptAngularServiceGenerator
   protected getEndpointMethod(ctx: Context, endpoint: ApiEndpoint): ts.Method<Builder> {
     const hasParams = this.hasEndpointParams(ctx, endpoint);
     const paramsOptional = !endpoint.parameters.some((p) => p.required) && !endpoint.requestBody?.required;
-    const returnType = ts.refs.promise([
-      ts.reference(this.getResponseModelName(ctx, endpoint), this.getResponseModelFilePath(ctx)),
-    ]);
+    const responseModelType = ts.reference(
+      this.getResponseModelName(ctx, endpoint),
+      this.getResponseModelFilePath(ctx),
+    );
+    const returnType = ts.refs.promise([responseModelType]);
     const accept = this.getEndpointSuccessResponse(ctx, endpoint)?.contentOptions[0]?.type ?? '*/*';
     const responseType = accept.includes('json') ? 'json' : 'text';
     return ts.method<Builder>(this.getEndpointMethodName(ctx, endpoint), {
@@ -248,16 +252,13 @@ export class DefaultTypeScriptAngularServiceGenerator
                 )
             : null,
           '',
-          s`return ${ts.refs.rxjs.firstValueFrom()}(${s.indent`
+          s`return ${ctx.refs.waitForResponse([responseModelType])}(${s.indent`
               this.http.request(rb.build({${s.indent`
                 responseType: ${ts.string(responseType)},
                 accept: ${ts.string(accept)},
                 context,`}
-              })).pipe(${s.indent`
-                ${ts.refs.rxjs.filter()}((r: unknown) => r instanceof ${ts.refs.angular.httpResponse.infer()}),
-                ${ts.refs.rxjs.take()}(1),`}
-              )`}
-            ) as unknown as ${returnType};`,
+              }))`}
+            )`,
         ],
         '\n',
       ),

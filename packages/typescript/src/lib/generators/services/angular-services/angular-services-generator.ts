@@ -92,7 +92,8 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
     const targetDir = resolve(ctx.config.outputDir, ctx.config.utilsDirPath);
     ensureDirSync(targetDir);
 
-    this.copyFile('request builder', sourceDir, targetDir, 'request-builder.ts');
+    this.copyFile('Request Builder', sourceDir, targetDir, 'request-builder.ts');
+    this.copyFile('Angular Service Utils', sourceDir, targetDir, 'angular-service.utils.ts');
 
     TypeScriptFileBuilder.generate({
       logName: 'api configuration',

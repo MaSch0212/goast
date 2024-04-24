@@ -9,3 +9,4 @@ export const provider = tsReference.factory('Provider', '@angular/core');
 export const httpClient = tsReference.factory('HttpClient', '@angular/common/http');
 export const httpContext = tsReference.factory('HttpContext', '@angular/common/http');
 export const httpResponse = tsReference.genericFactory<1>('HttpResponse', '@angular/common/http');
+export const httpErrorResponse = tsReference.factory('HttpErrorResponse', '@angular/common/http');
