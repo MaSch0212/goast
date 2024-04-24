@@ -228,7 +228,12 @@ export class DefaultTypeScriptModelGenerator
               ts.property(key, {
                 type: ts.intersectionType([
                   ts.objectType({
-                    members: [ts.property(discriminator.propertyName, { type: ts.string(key) })],
+                    members: [
+                      ts.property(discriminator.propertyName, {
+                        type: ts.string(key),
+                        readonly: ctx.config.immutableTypes,
+                      }),
+                    ],
                   }),
                   this.getType(ctx, value),
                 ]),
