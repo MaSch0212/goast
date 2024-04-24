@@ -5,6 +5,7 @@ import {
   ApiSchema,
   AppendValueGroup,
   appendValueGroup,
+  Nullable,
   builderTemplate as s,
   toCasing,
 } from '@goast/core';
@@ -84,10 +85,10 @@ export class DefaultTypeScriptAngularServiceGenerator
             ...Object.entries(statusCodes).map(([key, value]) => {
               const isSuccess = key.startsWith('2');
               return ts.intersectionType<Builder>([
-                isSuccess ? ts.refs.angular.httpResponse([value]) : ts.refs.angular.httpErrorResponse(),
+                isSuccess ? ts.refs.angular.httpResponse([value.type]) : ts.refs.angular.httpErrorResponse(),
                 ts.objectType({
                   members: [
-                    isSuccess ? null : ts.property('error', { type: ts.unionType([value, ts.refs.null_()]) }),
+                    isSuccess ? null : ts.property('error', { type: ts.unionType([value.type, ts.refs.null_()]) }),
                     ts.property('status', { type: key }),
                     ts.property('ok', { type: isSuccess ? 'true' : 'false' }),
                   ],
@@ -124,15 +125,30 @@ export class DefaultTypeScriptAngularServiceGenerator
     return result;
   }
 
-  protected getEndpointStatusCodes(ctx: Context, endpoint: ApiEndpoint): Record<number, ts.Type<Builder>> {
+  protected getEndpointStatusCodes(
+    ctx: Context,
+    endpoint: ApiEndpoint,
+  ): Record<number, { parser: 'text' | 'json'; type: ts.Type<Builder> }> {
     return Object.fromEntries([
       ...Object.entries(ctx.config.defaultStatusCodeResponseTypes).map(([key, value]) => [
         key,
-        typeof value === 'function' ? this.getSchemaType(ctx, value(ctx.data.schemas)) : value,
+        {
+          parser: value?.parser ?? 'text',
+          type:
+            typeof value?.type === 'function'
+              ? this.getSchemaType(ctx, value.type(ctx.data.schemas))
+              : value ?? ts.refs.never(),
+        },
       ]),
       ...endpoint.responses
         .filter((x) => x.statusCode)
-        .map((x) => [x.statusCode, this.getSchemaType(ctx, x.contentOptions[0]?.schema, ts.refs.never())]),
+        .map((x) => [
+          x.statusCode,
+          {
+            parser: this.contentTypeToResponseType(x.contentOptions[0]?.type),
+            type: this.getSchemaType(ctx, x.contentOptions[0]?.schema, ts.refs.never()),
+          },
+        ]),
     ]);
   }
   // #endregion
@@ -208,7 +224,7 @@ export class DefaultTypeScriptAngularServiceGenerator
     );
     const returnType = ts.refs.promise([responseModelType]);
     const accept = this.getEndpointSuccessResponse(ctx, endpoint)?.contentOptions[0]?.type ?? '*/*';
-    const responseType = accept.includes('json') ? 'json' : 'text';
+    const responseType = this.contentTypeToResponseType(accept);
     return ts.method<Builder>(this.getEndpointMethodName(ctx, endpoint), {
       accessModifier: 'public',
       parameters: [
@@ -257,7 +273,18 @@ export class DefaultTypeScriptAngularServiceGenerator
                 responseType: ${ts.string(responseType)},
                 accept: ${ts.string(accept)},
                 context,`}
-              }))`}
+              })),
+              {${s.indent`
+                errorResponseTypes: ${ts.object({
+                  members: [
+                    ...Object.entries(this.getEndpointStatusCodes(ctx, endpoint))
+                      .filter(([key]) => !key.startsWith('2'))
+                      .map(([key, value]) => {
+                        return ts.property(key, { value: ts.string(value.parser) });
+                      }),
+                  ],
+                })}`}
+              }`}
             )`,
         ],
         '\n',
@@ -316,5 +343,9 @@ export class DefaultTypeScriptAngularServiceGenerator
     const output = schema && ctx.input.models[schema.id];
     if (!output) return fallback ?? this.getAnyType(ctx);
     return (b) => b.appendModelUsage(output);
+  }
+
+  private contentTypeToResponseType(contentType: Nullable<string>): 'text' | 'json' {
+    return contentType?.includes('json') ? 'json' : 'text';
   }
 }

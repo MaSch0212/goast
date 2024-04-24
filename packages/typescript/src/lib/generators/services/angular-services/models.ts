@@ -41,23 +41,32 @@ export type TypeScriptAngularServicesGeneratorConfig = TypeScriptGeneratorConfig
    * The default response types for status codes that are not defined in the OpenAPI specification.
    * @example
    * {
-   *   400: schemas =>
-   *     schemas.find(s => s.name === 'BadRequestResponse')
-   *       ?? throwExp('BadRequestResponse not found'),
-   *   404: 'never',
-   *   500: ts.refs.any(),
+   *   400: {
+   *     parser: 'json',
+   *     type: schemas =>
+   *       schemas.find(s => s.name === 'BadRequestResponse')
+   *         ?? throwExp('BadRequestResponse not found'),
+   *   },
+   *   404: null,
+   *   500: {
+   *     parser: 'json',
+   *     type: ts.refs.any(),
+   *   },
    * }
    * @default
    * {
-   *   401: ts.refs.never(),
-   *   403: ts.refs.never(),
-   *   500: ts.refs.never(),
+   *   401: null,
+   *   403: null,
+   *   500: null,
    * }
    */
   defaultStatusCodeResponseTypes: Record<
     number,
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    Exclude<ts.Type<TypeScriptFileBuilder>, Function> | ((schemas: readonly ApiSchema[]) => ApiSchema)
+    {
+      parser: 'text' | 'json';
+      // eslint-disable-next-line @typescript-eslint/ban-types
+      type: Exclude<ts.Type<TypeScriptFileBuilder>, Function> | ((schemas: readonly ApiSchema[]) => ApiSchema);
+    } | null
   >;
   /**
    * The possible status codes that any API endpoint can return.
@@ -87,9 +96,9 @@ export const defaultTypeScriptAngularServicesGeneratorConfig: DefaultGenerationP
     provideKind: 'provide-fn',
     strictResponseTypes: true,
     defaultStatusCodeResponseTypes: {
-      401: ts.refs.never(),
-      403: ts.refs.never(),
-      500: ts.refs.never(),
+      401: null,
+      403: null,
+      500: null,
     },
     possibleStatusCodes: [
       100, 101, 102, 103, 200, 201, 202, 203, 204, 205, 206, 207, 208, 226, 300, 301, 302, 303, 304, 305, 306, 307, 308,
