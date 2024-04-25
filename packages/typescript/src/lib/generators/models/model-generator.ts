@@ -102,10 +102,10 @@ export class DefaultTypeScriptModelGenerator
   }
 
   protected getTypeAlias(ctx: Context, schema: ApiSchema): ts.TypeAlias<Builder> {
-    const isDiscriminated = schema.discriminator && Object.keys(schema.discriminator.mapping).length > 0;
+    const hasDiscriminator = schema.discriminator && Object.keys(schema.discriminator.mapping).length > 0;
     const result = ts.typeAlias<Builder>(
       this.getDeclarationTypeName(ctx, schema),
-      (isDiscriminated ? this.getDiscriminatorType(ctx, schema) : this.getType(ctx, schema, { skipSchemas: true })) ??
+      (hasDiscriminator ? this.getDiscriminatorType(ctx, schema) : this.getType(ctx, schema, { skipSchemas: true })) ??
         this.getAnyType(ctx),
       {
         export: true,
@@ -113,7 +113,7 @@ export class DefaultTypeScriptModelGenerator
       },
     );
 
-    if (isDiscriminated) {
+    if (hasDiscriminator) {
       const propertyValue = this.getDiscriminatorTypeName(ctx, ctx.schema);
       result.generics.push(
         ts.genericParameter(this.getDiscriminatorGenericParamName(ctx, schema), {
@@ -121,6 +121,32 @@ export class DefaultTypeScriptModelGenerator
           default: propertyValue,
         }),
       );
+    }
+
+    const inheritedSchemas = this.getInheritedSchemas(ctx, schema);
+    if (inheritedSchemas.length > 0) {
+      const fixedProperties = inheritedSchemas.reduce(
+        (p, c) => {
+          const mappingValues = Object.entries(c.discriminator.mapping)
+            .filter(([_, value]) => value.id === schema.id)
+            .map(([key]) => ts.string(key));
+          if (c.discriminator.propertyName in p) {
+            p[c.discriminator.propertyName].types.push(...mappingValues);
+          } else {
+            p[c.discriminator.propertyName] = ts.unionType(mappingValues);
+          }
+          return p;
+        },
+        {} as Record<string, ts.UnionType<Builder>>,
+      );
+      result.type = ts.intersectionType([
+        result.type,
+        ts.objectType({
+          members: Object.entries(fixedProperties).map(([key, value]) =>
+            ts.property(key, { type: value, readonly: ctx.config.immutableTypes }),
+          ),
+        }),
+      ]);
     }
 
     return result;
