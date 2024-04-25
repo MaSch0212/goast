@@ -155,7 +155,7 @@ export class DefaultTypeScriptModelGenerator
   protected getIndexer(ctx: Context, schema: ObjectLikeApiSchema) {
     return schema.additionalProperties
       ? ts.indexer(
-          'string',
+          ts.refs.string(),
           (schema.additionalProperties === true ? null : this.getType(ctx, schema.additionalProperties)) ??
             this.getAnyType(ctx),
           { readonly: ctx.config.immutableTypes },
@@ -238,7 +238,11 @@ export class DefaultTypeScriptModelGenerator
       schema.allOf.length > 0 || schema.anyOf.length > 0 ? this.getCombinedType(ctx, schema) : null,
     ].filter(notNullish);
     if (parts.length === 0) {
-      parts.push(ts.objectType());
+      parts.push(
+        ts.objectType({
+          members: [ts.indexer(ts.refs.string(), ts.refs.never(), { readonly: ctx.config.immutableTypes })],
+        }),
+      );
     }
     return ts.intersectionType(parts);
   }
