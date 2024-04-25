@@ -140,7 +140,7 @@ export class DefaultTypeScriptModelGenerator
         {} as Record<string, ts.UnionType<Builder>>,
       );
       result.type = ts.intersectionType([
-        result.type,
+        ts.refs.omit([result.type, ts.unionType(Object.keys(fixedProperties).map((x) => ts.string(x)))]),
         ts.objectType({
           members: Object.entries(fixedProperties).map(([key, value]) =>
             ts.property(key, { type: value, readonly: ctx.config.immutableTypes }),
