@@ -202,10 +202,16 @@ export class DefaultTypeScriptEasyNetworkStubGenerator
     let path = endpoint.path;
     let isFirstQueryParam = true;
     for (const param of endpoint.parameters) {
-      const type = ((param.schema && ctx.input.models[param.schema.id]?.component) ?? ts.refs.unknown.name).replace(
+      let type = ((param.schema && ctx.input.models[param.schema.id]?.component) ?? ts.refs.unknown.name).replace(
         /^readonly /,
         '',
       );
+
+      const arrayMatch = /^\((.*)\)\[\]$/.exec(type);
+      if (arrayMatch !== null) {
+        type = `${arrayMatch[1]}[]`;
+      }
+
       if (param.target === 'path') {
         path = path.replace(`{${param.name}}`, `{${param.name}${param.required ? '' : '?'}:${type}}`);
       } else if (param.target === 'query') {
