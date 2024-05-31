@@ -253,7 +253,7 @@ export class DefaultTypeScriptAngularServiceGenerator
                           const options = ts.object({
                             members: [
                               p.style !== undefined ? ts.property('style', { value: ts.string(p.style) }) : null,
-                              p.explode !== undefined ? ts.property('explode', { value: p.explode }) : null,
+                              p.explode !== undefined ? ts.property('explode', { value: ts.toNode(p.explode) }) : null,
                             ],
                           });
                           return s<Builder>`rb.${p.target}(${ts.string(p.name)}, params.${toCasing(p.name, ctx.config.propertyNameCasing)}, ${options});`;
