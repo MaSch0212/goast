@@ -198,7 +198,12 @@ export class DefaultTypeScriptAngularServiceGenerator
   protected getClass(ctx: Context): ts.Class<Builder> {
     return ts.class<Builder>(this.getServiceClassName(ctx), {
       doc: ts.doc({ description: ctx.service.description }),
-      decorators: [ts.decorator(ts.refs.angular.injectable(), [ts.toNode({ providedIn: 'root' })])],
+      decorators: [
+        ts.decorator(
+          ts.refs.angular.injectable(),
+          ctx.config.provideKind === 'root' ? [ts.toNode({ providedIn: 'root' })] : [],
+        ),
+      ],
       export: true,
       extends: ctx.refs.apiBaseService(),
       members: [
