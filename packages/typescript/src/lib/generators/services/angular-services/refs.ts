@@ -11,6 +11,10 @@ export function getReferenceFactories(options: TypeScriptAngularServicesGenerato
   const utilsDirPath = resolve(options.outputDir, options.utilsDirPath);
   return {
     // angular-service.utils.ts
+    abortablePromise: ts.reference.genericFactory<1>(
+      'AbortablePromise',
+      join(utilsDirPath, 'angular-service.utils.ts'),
+    ),
     waitForResponse: ts.reference.genericFactory<1>('waitForResponse', join(utilsDirPath, 'angular-service.utils.ts')),
 
     // request-builder.ts
