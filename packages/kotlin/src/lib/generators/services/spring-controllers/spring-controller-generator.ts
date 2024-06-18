@@ -123,9 +123,9 @@ export class DefaultKotlinSpringControllerGenerator
 
   private getApiInterfaceEndpointMethodAnnnotations(ctx: Context, endpoint: ApiEndpoint): kt.Annotation<Builder>[] {
     const operation = kt.annotation(kt.refs.swagger.operation(), [
-      kt.argument.named('summary', kt.string(endpoint.summary?.trim())),
+      endpoint.summary ? kt.argument.named('summary', kt.string(endpoint.summary?.trim())) : null,
       kt.argument.named('operationId', kt.string(endpoint.name)),
-      kt.argument.named('description', kt.string(endpoint.description?.trim())),
+      endpoint.description ? kt.argument.named('description', kt.string(endpoint.description?.trim())) : null,
       kt.argument.named(
         'responses',
         kt.collectionLiteral(
