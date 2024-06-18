@@ -310,7 +310,8 @@ export class DefaultKotlinOkHttp3Generator
               ${appendValueGroup(
                 queryParameters.map((param) => {
                   const paramName = toCasing(param.name, ctx.config.parameterNameCasing);
-                  const put = s<Builder>`put(${kt.string(paramName)}, listOf(${paramName}.toString()))`;
+                  const toString = param.schema?.kind === 'array' ? '.joinToString()' : '.toString()';
+                  const put = s<Builder>`put(${kt.string(paramName)}, listOf(${paramName}${toString}))`;
                   return param.required
                     ? put
                     : s<Builder>`if (${paramName} != null) {${s.indent`
