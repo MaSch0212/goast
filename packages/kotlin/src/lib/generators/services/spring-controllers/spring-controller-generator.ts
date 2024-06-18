@@ -172,7 +172,7 @@ export class DefaultKotlinSpringControllerGenerator
 
     if (ctx.config.addSwaggerAnnotations) {
       const annotation = kt.annotation(kt.refs.swagger.parameter(), [
-        kt.argument.named('description', kt.string(parameter.description?.trim())),
+        parameter.description ? kt.argument.named('description', kt.string(parameter.description?.trim())) : null,
         kt.argument.named('required', parameter.required),
       ]);
       if (parameter.schema?.default !== undefined) {
