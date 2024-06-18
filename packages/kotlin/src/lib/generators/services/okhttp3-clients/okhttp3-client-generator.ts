@@ -225,7 +225,7 @@ export class DefaultKotlinOkHttp3Generator
         ),
       ),
       returnType: ctx.refs.apiResponse([
-        this.getTypeUsage(ctx, { schema: responseSchema, fallback: kt.refs.unit(), nullable: true }),
+        this.getTypeUsage(ctx, { schema: responseSchema, fallback: kt.refs.unit({ nullable: true }), nullable: true }),
       ]),
       body: this.getEndpointClientHttpInfoMethodBody(ctx, { endpoint, parameters, responseSchema }),
     });
