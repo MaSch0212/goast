@@ -132,7 +132,7 @@ export class DefaultKotlinSpringControllerGenerator
           endpoint.responses.map((response) =>
             kt.call(kt.refs.swagger.apiResponse(), [
               kt.argument.named('responseCode', kt.string(response.statusCode?.toString())),
-              kt.argument.named('description', kt.string(response.description?.trim())),
+              endpoint.description ? kt.argument.named('description', kt.string(response.description?.trim())) : null,
             ]),
           ),
         ),
