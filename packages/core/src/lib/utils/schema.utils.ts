@@ -1,6 +1,6 @@
 import { isOpenApiObjectProperty } from '../internal-utils';
 import { OpenApiSchema } from '../parse';
-import { ApiSchema, ApiSchemaProperty } from '../transform';
+import { ApiSchema, ApiSchemaProperty, ObjectLikeApiSchema } from '../transform';
 
 export function resolveAnyOfAndAllOf(
   schema: ApiSchema<'combined' | 'object'>,
@@ -14,7 +14,13 @@ export function resolveAnyOfAndAllOf(
   const properties = new Map<string, ApiSchemaProperty>();
   collectSubSchemaProperties(schema.allOf, properties, required, false);
   collectSubSchemaProperties(schema.anyOf, properties, required, true);
-  if (properties.size === 0) {
+
+  const initialAdditionalProperties = schema.kind === 'object' ? schema.additionalProperties : undefined;
+  let additionalProperties = initialAdditionalProperties;
+  additionalProperties = combineAdditionalProperties(schema.allOf, additionalProperties);
+  additionalProperties = combineAdditionalProperties(schema.anyOf, additionalProperties);
+
+  if (properties.size === 0 && initialAdditionalProperties === additionalProperties) {
     return undefined;
   }
 
@@ -26,7 +32,7 @@ export function resolveAnyOfAndAllOf(
     allOf: [],
     properties: properties,
     required: required,
-    additionalProperties: false, // TODO: check whether any of the sub-schemas has additionalProperties set to true or a schema and combine that
+    additionalProperties,
   };
 }
 
@@ -55,6 +61,59 @@ function collectSubSchemaProperties(
       collectSubSchemaProperties(subSchema.anyOf, properties, required, true);
     }
   }
+}
+
+function combineAdditionalProperties(
+  subSchemas: ApiSchema[],
+  current: ObjectLikeApiSchema['additionalProperties'],
+): ObjectLikeApiSchema['additionalProperties'] {
+  if (current === true) return true;
+
+  for (const subSchema of subSchemas) {
+    if (subSchema.kind === 'object' && subSchema.additionalProperties) {
+      if (subSchema.additionalProperties === true) return true;
+      if (!current) {
+        current = subSchema.additionalProperties;
+      } else if (current && current.id !== subSchema.additionalProperties.id) {
+        if (current.kind === 'oneOf') {
+          current.oneOf.push(subSchema.additionalProperties);
+        } else {
+          const id = `schema-${Math.random().toString(36).substring(2)}`;
+          current = {
+            $ref: undefined,
+            $src: current.$src,
+            id,
+            kind: 'oneOf',
+            name: id,
+            isNameGenerated: true,
+            description: undefined,
+            deprecated: false,
+            accessibility: 'all',
+            enum: undefined,
+            const: undefined,
+            default: undefined,
+            example: undefined,
+            nullable: false,
+            required: new Set(),
+            custom: {},
+            not: undefined,
+            discriminator: undefined,
+            inheritedSchemas: [],
+            oneOf: [current, subSchema.additionalProperties],
+          };
+        }
+      }
+    }
+
+    if (subSchema.kind === 'object' || subSchema.kind === 'combined') {
+      current = combineAdditionalProperties(subSchema.allOf, current);
+      current = combineAdditionalProperties(subSchema.anyOf, current);
+    }
+
+    if (current === true) return true;
+  }
+
+  return current;
 }
 
 function hasInvalidSubSchema(subSchemas: ApiSchema[]): boolean {

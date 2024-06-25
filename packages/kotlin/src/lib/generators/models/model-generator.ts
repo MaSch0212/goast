@@ -511,6 +511,11 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       return false;
     }
 
+    // Dynamically generated schemas do not have its own type declaration
+    if (!ctx.data.schemas.some((x) => x.id === schema.id)) {
+      return false;
+    }
+
     return true;
   }
 

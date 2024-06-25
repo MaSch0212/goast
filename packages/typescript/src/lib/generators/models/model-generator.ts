@@ -358,6 +358,11 @@ export class DefaultTypeScriptModelGenerator
       return false;
     }
 
+    // Dynamically generated schemas do not have its own type declaration
+    if (!ctx.data.schemas.some((x) => x.id === schema.id)) {
+      return false;
+    }
+
     // For all other types, check if the user has enabled inline unnamed schemas
     return !ctx.config.inlineUnnamedSchemas;
   }
