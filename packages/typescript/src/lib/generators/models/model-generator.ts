@@ -86,6 +86,10 @@ export class DefaultTypeScriptModelGenerator
 
   protected getEnum(ctx: Context) {
     return ts.enum(this.getDeclarationTypeName(ctx, ctx.schema), {
+      doc: ts.doc({
+        description: ctx.schema.description,
+        tags: [ctx.schema.deprecated ? ts.docTag('deprecated') : null],
+      }),
       export: true,
       members: (ctx.schema.enum?.map((x) => String(x)) ?? []).map((x) =>
         ts.enumValue(toCasing(x, ctx.config.enumValueNameCasing), { value: ts.string(x) }),
@@ -96,7 +100,10 @@ export class DefaultTypeScriptModelGenerator
   protected getInterface(ctx: Context, schema: ObjectLikeApiSchema) {
     return ts.interface(this.getDeclarationTypeName(ctx, ctx.schema), {
       export: true,
-      doc: ts.doc({ description: schema.description }),
+      doc: ts.doc({
+        description: schema.description,
+        tags: [ctx.schema.deprecated ? ts.docTag('deprecated') : null],
+      }),
       members: [...this.getProperties(ctx, schema), this.getIndexer(ctx, schema)],
     });
   }
@@ -109,7 +116,10 @@ export class DefaultTypeScriptModelGenerator
         this.getAnyType(ctx),
       {
         export: true,
-        doc: ts.doc({ description: schema.description }),
+        doc: ts.doc({
+          description: schema.description,
+          tags: [ctx.schema.deprecated ? ts.docTag('deprecated') : null],
+        }),
       },
     );
 
@@ -166,7 +176,10 @@ export class DefaultTypeScriptModelGenerator
   protected getProperties(ctx: Context, schema: ObjectLikeApiSchema) {
     return Array.from(schema.properties.values()).map((property) => {
       return ts.property(property.name, {
-        doc: ts.doc({ description: property.schema.description }),
+        doc: ts.doc({
+          description: property.schema.description,
+          tags: [property.schema.deprecated ? ts.docTag('deprecated') : null],
+        }),
         readonly: ctx.config.immutableTypes,
         optional: !schema.required.has(property.name),
         type: ts.unionType([this.getType(ctx, property.schema), property.schema.nullable ? 'null' : null]),

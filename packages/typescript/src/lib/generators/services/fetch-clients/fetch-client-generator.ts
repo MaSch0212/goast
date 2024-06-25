@@ -67,7 +67,14 @@ export class DefaultTypeScriptFetchClientGenerator
 
   protected getInterface(ctx: Context): ts.Interface<Builder> {
     return ts.interface(this.getInterfaceName(ctx), {
-      doc: ts.doc({ description: ctx.service.description }),
+      doc: ts.doc({
+        description: ctx.service.description,
+        tags: [
+          ctx.service.endpoints.length === 0 || ctx.service.endpoints.some((x) => !x.deprecated)
+            ? null
+            : ts.docTag('deprecated'),
+        ],
+      }),
       export: true,
       members: ctx.service.endpoints.map((endpoint) => this.getInterfaceEndpointMethod(ctx, endpoint)),
     });
@@ -78,7 +85,7 @@ export class DefaultTypeScriptFetchClientGenerator
     const bodySchema = endpoint.requestBody?.content[0]?.schema;
     const responseSchema = this.getResponseSchema(ctx, endpoint);
     return ts.method(toCasing(endpoint.name, ctx.config.methodCasing), {
-      doc: ts.doc({ description: endpoint.description }),
+      doc: ts.doc({ description: endpoint.description, tags: [endpoint.deprecated ? ts.docTag('deprecated') : null] }),
       parameters: [
         params.length > 0
           ? ts.parameter('params', {
@@ -86,6 +93,7 @@ export class DefaultTypeScriptFetchClientGenerator
               type: ts.objectType({
                 members: params.map((x) =>
                   ts.property(toCasing(x.name, ctx.config.propertyNameCasing), {
+                    doc: ts.doc({ tags: [x.deprecated ? ts.docTag('deprecated') : null] }),
                     type: this.getSchemaType(ctx, x.schema),
                     optional: !x.required,
                   }),
@@ -125,7 +133,14 @@ export class DefaultTypeScriptFetchClientGenerator
 
   protected getClass(ctx: Context): ts.Class<Builder> {
     return ts.class(this.getClassName(ctx), {
-      doc: ts.doc({ description: ctx.service.description }),
+      doc: ts.doc({
+        description: ctx.service.description,
+        tags: [
+          ctx.service.endpoints.length === 0 || ctx.service.endpoints.some((x) => !x.deprecated)
+            ? null
+            : ts.docTag('deprecated'),
+        ],
+      }),
       export: true,
       implements: this.shouldGenerateInterface(ctx)
         ? [ts.reference(this.getInterfaceName(ctx), this.getInterfaceFilePath(ctx))]

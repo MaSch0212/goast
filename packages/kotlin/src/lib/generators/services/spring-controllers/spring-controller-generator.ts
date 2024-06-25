@@ -137,6 +137,7 @@ export class DefaultKotlinSpringControllerGenerator
           ),
         ),
       ),
+      endpoint.deprecated !== undefined ? kt.argument.named('deprecated', kt.toNode(endpoint.deprecated)) : null,
     ]);
 
     const requestMapping = kt.annotation(kt.refs.spring.requestMapping(), [

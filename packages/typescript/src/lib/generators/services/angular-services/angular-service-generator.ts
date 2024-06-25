@@ -111,6 +111,10 @@ export class DefaultTypeScriptAngularServiceGenerator
           ts.objectType({ members: [ts.property('status', { type: 'TStatus' })] }),
         ]),
         {
+          doc: ts.doc({
+            description: `Response model for operation ${this.getEndpointMethodName(ctx, endpoint)}`,
+            tags: [endpoint.deprecated ? ts.docTag('deprecated') : null],
+          }),
           export: true,
           generics: [
             ts.genericParameter('TStatus', {
@@ -171,7 +175,10 @@ export class DefaultTypeScriptAngularServiceGenerator
       const schema = parameter.schema;
       type.members.push(
         ts.property(toCasing(parameter.name, ctx.config.propertyNameCasing), {
-          doc: ts.doc({ description: parameter.description }),
+          doc: ts.doc({
+            description: parameter.description,
+            tags: [parameter.deprecated ? ts.docTag('deprecated') : null],
+          }),
           type: schema ? (b) => b.appendModelUsage(ctx.input.models[schema.id]) : this.getAnyType(ctx),
           optional: !parameter.required,
         }),
@@ -197,7 +204,14 @@ export class DefaultTypeScriptAngularServiceGenerator
 
   protected getClass(ctx: Context): ts.Class<Builder> {
     return ts.class<Builder>(this.getServiceClassName(ctx), {
-      doc: ts.doc({ description: ctx.service.description }),
+      doc: ts.doc({
+        description: ctx.service.description,
+        tags: [
+          ctx.service.endpoints.length === 0 || ctx.service.endpoints.some((x) => !x.deprecated)
+            ? null
+            : ts.docTag('deprecated'),
+        ],
+      }),
       decorators: [
         ts.decorator(
           ts.refs.angular.injectable(),
@@ -241,6 +255,10 @@ export class DefaultTypeScriptAngularServiceGenerator
           : null,
         ts.parameter('context', { optional: true, type: ts.refs.angular.httpContext() }),
       ],
+      doc: ts.doc({
+        description: endpoint.description,
+        tags: [endpoint.deprecated ? ts.docTag('deprecated') : null],
+      }),
       returnType,
       body: appendValueGroup(
         [

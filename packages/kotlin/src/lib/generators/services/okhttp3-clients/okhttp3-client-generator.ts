@@ -57,6 +57,11 @@ export class DefaultKotlinOkHttp3Generator
 
   protected getClientClass(ctx: Context, args: Args.GetClientClass): kt.Class<Builder> {
     return kt.class(this.getApiClientName(ctx, {}), {
+      annotations: [
+        ctx.service.endpoints.length === 0 || ctx.service.endpoints.some((x) => !x.deprecated)
+          ? null
+          : kt.annotation(kt.refs.deprecated(), [kt.argument(kt.string(''))]),
+      ],
       extends: ctx.refs.apiClient(),
       primaryConstructor: kt.constructor(
         [
@@ -135,6 +140,7 @@ export class DefaultKotlinOkHttp3Generator
           ctx.refs.clientException({ classReference: true }),
           ctx.refs.serverException({ classReference: true }),
         ]),
+        endpoint.deprecated ? kt.annotation(kt.refs.deprecated(), [kt.argument(kt.string(''))]) : null,
       ],
       parameters: parameters.map((p) =>
         kt.parameter(
@@ -213,6 +219,7 @@ export class DefaultKotlinOkHttp3Generator
           kt.refs.java.illegalStateException({ classReference: true }),
           kt.refs.java.ioException({ classReference: true }),
         ]),
+        endpoint.deprecated ? kt.annotation(kt.refs.deprecated(), [kt.argument(kt.string(''))]) : null,
       ],
       parameters: parameters.map((p) =>
         kt.parameter(
@@ -270,6 +277,7 @@ export class DefaultKotlinOkHttp3Generator
     return kt.function(toCasing(args.endpoint.name, ctx.config.functionNameCasing) + 'RequestConfig', {
       accessModifier: 'private',
       doc: kt.doc(`To obtain the request config of the operation ${operationName}`),
+      annotations: [endpoint.deprecated ? kt.annotation(kt.refs.deprecated(), [kt.argument(kt.string(''))]) : null],
       parameters: parameters.map((p) =>
         kt.parameter(
           toCasing(p.name, ctx.config.parameterNameCasing),

@@ -12,6 +12,7 @@ export const double = ktReference.factory('Double', 'kotlin');
 export const boolean = ktReference.factory('Boolean', 'kotlin');
 export const lazyFun = ktReference.genericFactory<1>('lazy', 'kotlin');
 export const throws = ktReference.factory('Throws', 'kotlin');
+export const deprecated = ktReference.factory('Deprecated', 'kotlin');
 
 // kotlin.collections
 export const list = ktReference.genericFactory<1>('List', 'kotlin.collections');

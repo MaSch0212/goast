@@ -104,6 +104,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
 
     return kt.class(this.getDeclarationTypeName(ctx, { schema }), {
       doc: kt.doc(schema.description?.trim()),
+      annotations: [schema.deprecated ? kt.annotation(kt.refs.deprecated(), [kt.argument(kt.string(''))]) : null],
       classKind: parameters.length === 0 ? null : 'data',
       implements: inheritedSchemas.map((schema) => this.getType(ctx, { schema })),
       primaryConstructor: kt.constructor(
@@ -129,6 +130,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       annotations: [
         this.getJacksonJsonTypeInfoAnnotation(ctx, { schema }),
         this.getJacksonJsonSubTypesAnnotation(ctx, { schema }),
+        schema.deprecated ? kt.annotation(kt.refs.deprecated(), [kt.argument(kt.string(''))]) : null,
       ].filter(notNullish),
       members: this.sortProperties(ctx, { schema, properties: schema.properties.values() }).map((property) =>
         this.getInterfaceProperty(ctx, { schema, property }),
@@ -149,6 +151,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       ) ?? [],
       {
         doc: kt.doc(schema.description?.trim()),
+        annotations: [schema.deprecated ? kt.annotation(kt.refs.deprecated(), [kt.argument(kt.string(''))]) : null],
         primaryConstructor: kt.constructor([
           kt.parameter.class(toCasing('value', ctx.config.propertyNameCasing), kt.refs.string(), {
             property: 'readonly',
@@ -267,6 +270,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
           this.getSwaggerSchemaAnnotation(ctx, { schema, property }),
           this.getJacksonJsonPropertyAnnotation(ctx, { schema, property }),
           modify(this.getJacksonJsonIncludeAnnotation(ctx, { schema, property }), (x) => (x.target = 'get')),
+          property.schema.deprecated ? kt.annotation(kt.refs.deprecated(), [kt.argument(kt.string(''))]) : null,
         ].filter(notNullish),
         override: inheritedSchemas.some((schema) => this.hasProperty(ctx, { schema, propertyName: property.name })),
         property: 'readonly',
@@ -287,6 +291,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
         [
           this.getJacksonJsonPropertyAnnotation(ctx, { schema, property }),
           this.getJacksonJsonIncludeAnnotation(ctx, { schema, property }),
+          property.schema.deprecated ? kt.annotation(kt.refs.deprecated(), [kt.argument(kt.string(''))]) : null,
         ].filter(notNullish),
         (x) => (x.target = 'get'),
       ),
@@ -457,6 +462,9 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
           schema.required.has(property.name) ? kt.argument.named('required', 'true') : null,
           property.schema.description !== undefined
             ? kt.argument.named('description', kt.string(property.schema.description))
+            : null,
+          property.schema.deprecated !== undefined
+            ? kt.argument.named('deprecated', kt.toNode(property.schema.deprecated))
             : null,
         ])
       : null;
