@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpEvent, HttpResponse } from '@angular/common/http';
 import { Observable, Subscription, filter, take, map, catchError, EMPTY } from 'rxjs';
 
-export type AbortablePromise<T> = {
+export type AbortablePromise<T> = Omit<Promise<T>, 'then' | 'catch' | 'finally'> & {
   abort(): void;
   then<TResult1 = T, TResult2 = never>(
     onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
