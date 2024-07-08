@@ -2,6 +2,7 @@ import { resolve } from 'path';
 
 import {
   ApiSchema,
+  AppendValue,
   AppendValueGroup,
   ArrayLikeApiSchema,
   CombinedLikeApiSchema,
@@ -36,14 +37,26 @@ export class DefaultTypeScriptModelGenerator
       const name = this.getDeclarationTypeName(ctx, ctx.schema);
       const filePath = this.getFilePath(ctx, ctx.schema);
 
+      const fileContent = this.getFileContent(ctx);
       TypeScriptFileBuilder.generate({
         logName: `model ${name}`,
         filePath,
         options: ctx.config,
-        generator: (b) => b.append(this.getFileContent(ctx)),
+        generator: (b) => b.append(fileContent),
       });
 
-      return { component: name, filePath, imports: [{ kind: 'file', name, modulePath: filePath }] };
+      return {
+        component: name,
+        filePath,
+        imports: [{ kind: 'file', name, modulePath: filePath }],
+        additionalExports: fileContent.values
+          .filter(
+            (x): x is AppendValue<Builder> & { name: string; export: true } =>
+              typeof x === 'object' && x !== null && 'export' in x && x.export === true && 'name' in x,
+          )
+          .filter((x) => x.name !== name)
+          .map((x) => x.name),
+      };
     } else {
       const builder = new TypeScriptFileBuilder(undefined, ctx.config);
       builder.append(this.getType(ctx, ctx.schema));

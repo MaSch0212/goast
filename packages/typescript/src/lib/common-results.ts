@@ -2,6 +2,7 @@ export type TypeScriptComponentOutput = {
   component: string;
   filePath?: string;
   imports: TypeScriptImport[];
+  additionalExports?: string[];
 };
 
 export type TypeScriptExportOutput = {

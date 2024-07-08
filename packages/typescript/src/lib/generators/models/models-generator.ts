@@ -90,7 +90,11 @@ export class TypeScriptModelsGenerator extends OpenApiSchemasGenerationProviderB
 
   protected getIndexFileContent(ctx: Context): AppendValueGroup<TypeScriptFileBuilder> {
     return appendValueGroup(
-      Object.values(ctx.output.models).map((x) => (x.filePath ? ts.export(x.component, x.filePath) : null)),
+      Object.values(ctx.output.models).flatMap((x) => {
+        const { filePath } = x;
+        if (!filePath) return [];
+        return [ts.export(x.component, filePath), ...(x.additionalExports?.map((e) => ts.export(e, filePath)) ?? [])];
+      }),
     );
   }
 }
