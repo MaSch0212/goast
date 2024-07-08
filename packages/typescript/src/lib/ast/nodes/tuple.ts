@@ -10,6 +10,7 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   typeof TsNode<TBuilder, TInjects | Injects>,
   {
     elements: Nullable<TsType<TBuilder> | TsValue<TBuilder>>[];
+    asConst?: Nullable<boolean>;
   }
 >;
 
@@ -18,10 +19,12 @@ export class TsTuple<TBuilder extends SourceBuilder, TInjects extends string = n
   TInjects | Injects
 > {
   public elements: (TsType<TBuilder> | TsValue<TBuilder>)[];
+  public asConst: boolean;
 
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.elements = options.elements.filter(notNullish);
+    this.asConst = options.asConst ?? false;
   }
 
   protected override onWrite(builder: TBuilder): void {
@@ -32,6 +35,10 @@ export class TsTuple<TBuilder extends SourceBuilder, TInjects extends string = n
       builder.parenthesize('[]', (b) => writeTsNodes(b, this.elements, { separator: multiline ? ',\n' : ', ' }), {
         multiline,
       });
+    }
+
+    if (this.asConst) {
+      builder.append(' as const');
     }
   }
 }

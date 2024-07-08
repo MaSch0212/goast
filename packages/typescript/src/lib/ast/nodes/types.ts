@@ -20,6 +20,7 @@ export type TsType<TBuilder extends SourceBuilder> =
   | TsIntersectionType<TBuilder>
   | TsUnionType<TBuilder>
   | TsArrayType<TBuilder>
+  | TsTuple<TBuilder>
   | TsFunctionType<TBuilder>
   | TsObjectType<TBuilder>
   | TsString<TBuilder>

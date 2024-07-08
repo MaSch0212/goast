@@ -80,6 +80,9 @@ export class DefaultTypeScriptModelGenerator
       );
     } else {
       content.values.push(this.getTypeAlias(ctx, ctx.schema));
+      if (ctx.schema.enum) {
+        content.values.push(this.getEnumValuesVariable(ctx, ctx.schema));
+      }
     }
     return content;
   }
@@ -160,6 +163,19 @@ export class DefaultTypeScriptModelGenerator
     }
 
     return result;
+  }
+
+  protected getEnumValuesVariable(ctx: Context, schema: ApiSchema): ts.Variable<Builder> {
+    const enumTypeName = this.getDeclarationTypeName(ctx, schema);
+    const values = schema.enum?.map((x) => ts.toNode(x)) ?? [];
+    return ts.variable(toCasing(`${enumTypeName}-Values`, ctx.config.constantNameCasing), {
+      doc: ts.doc({
+        description: `All possible values of the enum \`${enumTypeName}\`.`,
+      }),
+      export: true,
+      readonly: true,
+      value: ts.tuple(values, { asConst: true }),
+    });
   }
 
   protected getIndexer(ctx: Context, schema: ObjectLikeApiSchema) {

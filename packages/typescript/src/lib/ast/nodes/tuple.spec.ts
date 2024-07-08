@@ -33,4 +33,9 @@ describe('tsTuple', () => {
       ),
     );
   });
+
+  it('should write as const', () => {
+    builder.append(tsTuple(['string', 'number'], { asConst: true }));
+    expect(builder.toString(false)).toBe('[string, number] as const');
+  });
 });

@@ -41,6 +41,7 @@ export class TsVariable<TBuilder extends SourceBuilder, TInjects extends string 
   }
 
   protected override onWrite(builder: TBuilder): void {
+    if (this.doc) writeTsNode(builder, this.doc);
     if (this.export) builder.append('export ');
 
     builder.append(this.readonly ? 'const ' : 'let ');
