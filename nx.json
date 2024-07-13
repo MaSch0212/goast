@@ -12,7 +12,8 @@
         "^production",
         "{workspaceRoot}/jest.preset.js",
         "{workspaceRoot}/configs/jest.config.ts",
-        "{workspaceRoot}/configs/tsconfig/lib/tsconfig?(.spec).json"
+        "{workspaceRoot}/configs/tsconfig/lib/tsconfig?(.spec).json",
+        "{workspaceRoot}/test/**/*"
       ],
       "cache": true,
       "options": {

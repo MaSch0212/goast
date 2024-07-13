@@ -4,7 +4,7 @@
 {
   models: {
     'schema-1': {
-      __source__: '<root>\\test\\openapi-files\\v2\\detailed-schemas.yml#/definitions/WithTitle',
+      __source__: '<root>/test/openapi-files/v2/detailed-schemas.yml#/definitions/WithTitle',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -16,7 +16,7 @@
       }
     },
     'schema-2': {
-      __source__: '<root>\\test\\openapi-files\\v2\\detailed-schemas.yml#/definitions/WithAllCommon',
+      __source__: '<root>/test/openapi-files/v2/detailed-schemas.yml#/definitions/WithAllCommon',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -28,7 +28,7 @@
       }
     },
     'schema-3': {
-      __source__: '<root>\\test\\openapi-files\\v2\\detailed-schemas.yml#/definitions/MyEnum',
+      __source__: '<root>/test/openapi-files/v2/detailed-schemas.yml#/definitions/MyEnum',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -40,7 +40,7 @@
       }
     },
     'schema-4': {
-      __source__: '<root>\\test\\openapi-files\\v2\\detailed-schemas.yml#/definitions/ReadOnly',
+      __source__: '<root>/test/openapi-files/v2/detailed-schemas.yml#/definitions/ReadOnly',
       type: KtReference {
         classReference: false,
         generics: [],

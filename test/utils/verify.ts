@@ -37,13 +37,24 @@ function dataToText(data: unknown, depth: number = 100): string {
     return data;
   }
 
+  let text: string;
+
   if (data instanceof MultipartData) {
-    return data.map(([key, value]) => `${header(key)}${dataToText(value, depth)}\n${footer(key)}`).join('\n\n');
+    text = data.map(([key, value]) => `${header(key)}${dataToText(value, depth)}\n${footer(key)}`).join('\n\n');
+  } else {
+    text = typeof data === 'string' ? data : util.inspect(data, { depth, sorted: true });
   }
 
-  let text = typeof data === 'string' ? data : util.inspect(data, { depth, sorted: true });
-  text = text.replace(new RegExp(escapeRegExp(nxRootDir.replace(/\\/g, '\\\\')), 'g'), '<root>');
-  return text;
+  return normalizePaths(text);
+}
+
+function normalizePaths(text: string): string {
+  const rootPathRegex = escapeRegExp(nxRootDir).replace(/\\\\/g, '(\\\\|\\\\\\\\|\\/)');
+  const pathRegex = new RegExp(`${rootPathRegex}[a-zA-Z0-9-_\\\\\\/.]*`, 'g');
+  return text.replace(
+    pathRegex,
+    (path) => '<root>/' + relative(nxRootDir, resolve(path.replace(/\\\\/g, '\\'))).replace(/\\/g, '/'),
+  );
 }
 
 function header(name: string): string {

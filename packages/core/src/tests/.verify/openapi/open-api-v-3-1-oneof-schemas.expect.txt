@@ -6,7 +6,7 @@
       '$src': {
         component: '13 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml',
+        file: '<root>/test/openapi-files/v3.1/oneof-schemas.yml',
         originalComponent: '13 inspect chars',
         path: '/components/schemas/EmptyOneOf'
       },
@@ -34,7 +34,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml',
+        file: '<root>/test/openapi-files/v3.1/oneof-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/components/schemas/OneOfSimpleTypes/oneOf/0'
       },
@@ -66,7 +66,7 @@
       '$src': {
         component: '19 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml',
+        file: '<root>/test/openapi-files/v3.1/oneof-schemas.yml',
         originalComponent: '19 inspect chars',
         path: '/components/schemas/OneOfSimpleTypes/oneOf/1'
       },
@@ -97,7 +97,7 @@
       '$src': {
         component: '54 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml',
+        file: '<root>/test/openapi-files/v3.1/oneof-schemas.yml',
         originalComponent: '54 inspect chars',
         path: '/components/schemas/OneOfSimpleTypes'
       },
@@ -125,7 +125,7 @@
       '$src': {
         component: '29 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml',
+        file: '<root>/test/openapi-files/v3.1/oneof-schemas.yml',
         originalComponent: '29 inspect chars',
         path: '/components/schemas/IgnoreType'
       },
@@ -153,7 +153,7 @@
       '$src': {
         component: '45 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml',
+        file: '<root>/test/openapi-files/v3.1/oneof-schemas.yml',
         originalComponent: '45 inspect chars',
         path: '/components/schemas/WithReferences/oneOf/0'
       },
@@ -181,7 +181,7 @@
       '$src': {
         component: '37 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
+        file: '<root>/test/openapi-files/v3.1/detailed-schemas.yml',
         originalComponent: '37 inspect chars',
         path: '/components/schemas/WithTitle'
       },
@@ -213,7 +213,7 @@
       '$src': {
         component: '64 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml',
+        file: '<root>/test/openapi-files/v3.1/oneof-schemas.yml',
         originalComponent: '64 inspect chars',
         path: '/components/schemas/WithReferences/oneOf/1'
       },
@@ -245,7 +245,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml',
+        file: '<root>/test/openapi-files/v3.1/simple-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/components/schemas/MyString'
       },
@@ -277,7 +277,7 @@
       '$src': {
         component: '61 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml',
+        file: '<root>/test/openapi-files/v3.1/oneof-schemas.yml',
         originalComponent: '61 inspect chars',
         path: '/components/schemas/WithReferences/oneOf/2'
       },
@@ -309,7 +309,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml',
+        file: '<root>/test/openapi-files/v3.1/oneof-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/components/schemas/WithReferences/oneOf/3'
       },
@@ -341,7 +341,7 @@
       '$src': {
         component: '229 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml',
+        file: '<root>/test/openapi-files/v3.1/oneof-schemas.yml',
         originalComponent: '229 inspect chars',
         path: '/components/schemas/WithReferences'
       },

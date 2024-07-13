@@ -4,7 +4,7 @@
 {
   models: {
     'schema-1': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WithTitle',
+      __source__: '<root>/test/openapi-files/v3.1/detailed-schemas.yml#/components/schemas/WithTitle',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -16,7 +16,7 @@
       }
     },
     'schema-2': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WithAllCommon',
+      __source__: '<root>/test/openapi-files/v3.1/detailed-schemas.yml#/components/schemas/WithAllCommon',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -28,7 +28,7 @@
       }
     },
     'schema-3': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/MyEnum',
+      __source__: '<root>/test/openapi-files/v3.1/detailed-schemas.yml#/components/schemas/MyEnum',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -40,7 +40,7 @@
       }
     },
     'schema-4': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WriteOnly',
+      __source__: '<root>/test/openapi-files/v3.1/detailed-schemas.yml#/components/schemas/WriteOnly',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -52,7 +52,7 @@
       }
     },
     'schema-5': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/ReadOnly',
+      __source__: '<root>/test/openapi-files/v3.1/detailed-schemas.yml#/components/schemas/ReadOnly',
       type: KtReference {
         classReference: false,
         generics: [],

@@ -4,7 +4,7 @@
 {
   models: {
     'schema-1': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/EmptyOneOf',
+      __source__: '<root>/test/openapi-files/v3.1/oneof-schemas.yml#/components/schemas/EmptyOneOf',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -16,7 +16,7 @@
       }
     },
     'schema-10': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyString',
+      __source__: '<root>/test/openapi-files/v3.1/simple-schemas.yml#/components/schemas/MyString',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -28,7 +28,7 @@
       }
     },
     'schema-11': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyString',
+      __source__: '<root>/test/openapi-files/v3.1/simple-schemas.yml#/components/schemas/MyString',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -40,7 +40,7 @@
       }
     },
     'schema-12': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/WithReferences/oneOf/3',
+      __source__: '<root>/test/openapi-files/v3.1/oneof-schemas.yml#/components/schemas/WithReferences/oneOf/3',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -52,7 +52,7 @@
       }
     },
     'schema-2': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/OneOfSimpleTypes',
+      __source__: '<root>/test/openapi-files/v3.1/oneof-schemas.yml#/components/schemas/OneOfSimpleTypes',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -64,7 +64,7 @@
       }
     },
     'schema-3': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/OneOfSimpleTypes/oneOf/0',
+      __source__: '<root>/test/openapi-files/v3.1/oneof-schemas.yml#/components/schemas/OneOfSimpleTypes/oneOf/0',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -76,7 +76,7 @@
       }
     },
     'schema-4': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/OneOfSimpleTypes/oneOf/1',
+      __source__: '<root>/test/openapi-files/v3.1/oneof-schemas.yml#/components/schemas/OneOfSimpleTypes/oneOf/1',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -88,7 +88,7 @@
       }
     },
     'schema-5': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/IgnoreType',
+      __source__: '<root>/test/openapi-files/v3.1/oneof-schemas.yml#/components/schemas/IgnoreType',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -100,7 +100,7 @@
       }
     },
     'schema-6': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/WithReferences',
+      __source__: '<root>/test/openapi-files/v3.1/oneof-schemas.yml#/components/schemas/WithReferences',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -112,7 +112,7 @@
       }
     },
     'schema-7': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\oneof-schemas.yml#/components/schemas/EmptyOneOf',
+      __source__: '<root>/test/openapi-files/v3.1/oneof-schemas.yml#/components/schemas/EmptyOneOf',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -124,7 +124,7 @@
       }
     },
     'schema-8': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WithTitle',
+      __source__: '<root>/test/openapi-files/v3.1/detailed-schemas.yml#/components/schemas/WithTitle',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -136,7 +136,7 @@
       }
     },
     'schema-9': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml#/components/schemas/WithTitle',
+      __source__: '<root>/test/openapi-files/v3.1/detailed-schemas.yml#/components/schemas/WithTitle',
       type: KtReference {
         classReference: false,
         generics: [],

@@ -6,7 +6,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3\\discriminated-schemas.yml',
+        file: '<root>/test/openapi-files/v3/discriminated-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/components/schemas/Pet/properties/name'
       },
@@ -38,7 +38,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3\\discriminated-schemas.yml',
+        file: '<root>/test/openapi-files/v3/discriminated-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/components/schemas/Pet/properties/petType'
       },
@@ -70,7 +70,7 @@
       '$src': {
         component: '38 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3\\discriminated-schemas.yml',
+        file: '<root>/test/openapi-files/v3/discriminated-schemas.yml',
         originalComponent: '38 inspect chars',
         path: '/components/schemas/Cat/allOf/0'
       },
@@ -109,7 +109,7 @@
       '$src': {
         component: '149 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3\\discriminated-schemas.yml',
+        file: '<root>/test/openapi-files/v3/discriminated-schemas.yml',
         originalComponent: '149 inspect chars',
         path: '/components/schemas/Cat/allOf/1/properties/huntingSkill'
       },
@@ -141,7 +141,7 @@
       '$src': {
         component: '261 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3\\discriminated-schemas.yml',
+        file: '<root>/test/openapi-files/v3/discriminated-schemas.yml',
         originalComponent: '261 inspect chars',
         path: '/components/schemas/Cat/allOf/1'
       },
@@ -176,7 +176,7 @@
       '$src': {
         component: '372 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3\\discriminated-schemas.yml',
+        file: '<root>/test/openapi-files/v3/discriminated-schemas.yml',
         originalComponent: '372 inspect chars',
         path: '/components/schemas/Cat'
       },
@@ -205,7 +205,7 @@
       '$src': {
         component: '38 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3\\discriminated-schemas.yml',
+        file: '<root>/test/openapi-files/v3/discriminated-schemas.yml',
         originalComponent: '38 inspect chars',
         path: '/components/schemas/Dog/allOf/0'
       },
@@ -244,7 +244,7 @@
       '$src': {
         component: '123 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3\\discriminated-schemas.yml',
+        file: '<root>/test/openapi-files/v3/discriminated-schemas.yml',
         originalComponent: '123 inspect chars',
         path: '/components/schemas/Dog/allOf/1/properties/packSize'
       },
@@ -275,7 +275,7 @@
       '$src': {
         component: '231 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3\\discriminated-schemas.yml',
+        file: '<root>/test/openapi-files/v3/discriminated-schemas.yml',
         originalComponent: '231 inspect chars',
         path: '/components/schemas/Dog/allOf/1'
       },
@@ -310,7 +310,7 @@
       '$src': {
         component: '346 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3\\discriminated-schemas.yml',
+        file: '<root>/test/openapi-files/v3/discriminated-schemas.yml',
         originalComponent: '346 inspect chars',
         path: '/components/schemas/Dog'
       },
@@ -339,7 +339,7 @@
       '$src': {
         component: '279 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3\\discriminated-schemas.yml',
+        file: '<root>/test/openapi-files/v3/discriminated-schemas.yml',
         originalComponent: '279 inspect chars',
         path: '/components/schemas/Pet'
       },

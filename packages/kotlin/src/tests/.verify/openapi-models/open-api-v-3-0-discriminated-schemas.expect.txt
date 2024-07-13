@@ -4,7 +4,7 @@
 {
   models: {
     'schema-1': {
-      __source__: '<root>\\test\\openapi-files\\v3\\discriminated-schemas.yml#/components/schemas/Pet',
+      __source__: '<root>/test/openapi-files/v3/discriminated-schemas.yml#/components/schemas/Pet',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -16,7 +16,7 @@
       }
     },
     'schema-10': {
-      __source__: '<root>\\test\\openapi-files\\v3\\discriminated-schemas.yml#/components/schemas/Dog/allOf/1',
+      __source__: '<root>/test/openapi-files/v3/discriminated-schemas.yml#/components/schemas/Dog/allOf/1',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -28,7 +28,7 @@
       }
     },
     'schema-11': {
-      __source__: '<root>\\test\\openapi-files\\v3\\discriminated-schemas.yml#/components/schemas/Dog/allOf/1/properties/packSize',
+      __source__: '<root>/test/openapi-files/v3/discriminated-schemas.yml#/components/schemas/Dog/allOf/1/properties/packSize',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -40,7 +40,7 @@
       }
     },
     'schema-2': {
-      __source__: '<root>\\test\\openapi-files\\v3\\discriminated-schemas.yml#/components/schemas/Pet/properties/name',
+      __source__: '<root>/test/openapi-files/v3/discriminated-schemas.yml#/components/schemas/Pet/properties/name',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -52,7 +52,7 @@
       }
     },
     'schema-3': {
-      __source__: '<root>\\test\\openapi-files\\v3\\discriminated-schemas.yml#/components/schemas/Pet/properties/petType',
+      __source__: '<root>/test/openapi-files/v3/discriminated-schemas.yml#/components/schemas/Pet/properties/petType',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -64,7 +64,7 @@
       }
     },
     'schema-4': {
-      __source__: '<root>\\test\\openapi-files\\v3\\discriminated-schemas.yml#/components/schemas/Dog',
+      __source__: '<root>/test/openapi-files/v3/discriminated-schemas.yml#/components/schemas/Dog',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -76,7 +76,7 @@
       }
     },
     'schema-5': {
-      __source__: '<root>\\test\\openapi-files\\v3\\discriminated-schemas.yml#/components/schemas/Pet',
+      __source__: '<root>/test/openapi-files/v3/discriminated-schemas.yml#/components/schemas/Pet',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -88,7 +88,7 @@
       }
     },
     'schema-6': {
-      __source__: '<root>\\test\\openapi-files\\v3\\discriminated-schemas.yml#/components/schemas/Cat',
+      __source__: '<root>/test/openapi-files/v3/discriminated-schemas.yml#/components/schemas/Cat',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -100,7 +100,7 @@
       }
     },
     'schema-7': {
-      __source__: '<root>\\test\\openapi-files\\v3\\discriminated-schemas.yml#/components/schemas/Pet',
+      __source__: '<root>/test/openapi-files/v3/discriminated-schemas.yml#/components/schemas/Pet',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -112,7 +112,7 @@
       }
     },
     'schema-8': {
-      __source__: '<root>\\test\\openapi-files\\v3\\discriminated-schemas.yml#/components/schemas/Cat/allOf/1',
+      __source__: '<root>/test/openapi-files/v3/discriminated-schemas.yml#/components/schemas/Cat/allOf/1',
       type: KtReference {
         classReference: false,
         generics: [],
@@ -124,7 +124,7 @@
       }
     },
     'schema-9': {
-      __source__: '<root>\\test\\openapi-files\\v3\\discriminated-schemas.yml#/components/schemas/Cat/allOf/1/properties/huntingSkill',
+      __source__: '<root>/test/openapi-files/v3/discriminated-schemas.yml#/components/schemas/Cat/allOf/1/properties/huntingSkill',
       type: KtReference {
         classReference: false,
         generics: [],

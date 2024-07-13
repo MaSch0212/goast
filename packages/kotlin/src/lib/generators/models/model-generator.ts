@@ -463,9 +463,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
           property.schema.description !== undefined
             ? kt.argument.named('description', kt.string(property.schema.description))
             : null,
-          property.schema.deprecated !== undefined
-            ? kt.argument.named('deprecated', kt.toNode(property.schema.deprecated))
-            : null,
+          property.schema.deprecated ? kt.argument.named('deprecated', kt.toNode(property.schema.deprecated)) : null,
         ])
       : null;
   }
