@@ -45,4 +45,4 @@ Thumbs.db
 
 **/.verify/**/*.actual.txt
 
-.nx/cache
+.nx
