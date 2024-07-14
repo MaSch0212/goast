@@ -1,7 +1,20 @@
 {
   "name": "@goast/kotlin",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "repository": "https://github.com/MaSch0212/goast.git",
+  "description": "Provides gOAst generators for generating Kotlin code from OpenAPI specifications.",
+  "keywords": [
+    "goast",
+    "openapi",
+    "swagger",
+    "api",
+    "generator",
+    "transformer",
+    "schema",
+    "kotlin",
+    "spring",
+    "okhttp"
+  ],
   "author": {
     "name": "Marc Schmidt (MaSch0212)",
     "url": "https://github.com/MaSch0212"
