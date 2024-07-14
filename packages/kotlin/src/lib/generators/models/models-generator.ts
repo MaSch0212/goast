@@ -32,7 +32,9 @@ export class KotlinModelsGenerator extends OpenApiSchemasGenerationProviderBase<
 
   protected override initResult(): Output {
     return {
-      models: {},
+      kotlin: {
+        models: {},
+      },
     };
   }
 
@@ -52,6 +54,6 @@ export class KotlinModelsGenerator extends OpenApiSchemasGenerationProviderBase<
   }
 
   protected override addSchemaResult(ctx: Context, schema: ApiSchema, result: SchemaOutput): void {
-    ctx.output.models[schema.id] = result;
+    ctx.output.kotlin.models[schema.id] = result;
   }
 }

@@ -2,137 +2,139 @@
 │ state                                │
 ├──────────────────────────────────────┤
 {
-  models: {
-    'schema-1': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Pet',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Pet',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-10': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Dog/allOf/1',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Any',
-        nullable: true,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-11': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Dog/allOf/1/properties/packSize',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Int',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-2': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Pet/properties/name',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-3': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Pet/properties/petType',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-4': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Dog',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Dog',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-5': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Pet',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Pet',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-6': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Cat',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Cat',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-7': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Pet',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Pet',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-8': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Cat/allOf/1',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Any',
-        nullable: true,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-9': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Cat/allOf/1/properties/huntingSkill',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Schema9',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
+  kotlin: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml#/components/schemas/Pet',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Pet',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml#/components/schemas/Dog/allOf/1',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml#/components/schemas/Dog/allOf/1/properties/packSize',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml#/components/schemas/Pet/properties/name',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml#/components/schemas/Pet/properties/petType',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml#/components/schemas/Dog',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Dog',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml#/components/schemas/Pet',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Pet',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml#/components/schemas/Cat',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Cat',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml#/components/schemas/Pet',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Pet',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml#/components/schemas/Cat/allOf/1',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml#/components/schemas/Cat/allOf/1/properties/huntingSkill',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Schema9',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
       }
     }
   }

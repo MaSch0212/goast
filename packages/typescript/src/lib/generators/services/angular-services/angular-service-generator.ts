@@ -141,7 +141,7 @@ export class DefaultTypeScriptAngularServiceGenerator
           type:
             typeof value?.type === 'function'
               ? this.getSchemaType(ctx, value.type(ctx.data.schemas))
-              : value ?? ts.refs.never(),
+              : (value ?? ts.refs.never()),
         },
       ]),
       ...endpoint.responses
@@ -179,7 +179,7 @@ export class DefaultTypeScriptAngularServiceGenerator
             description: parameter.description,
             tags: [parameter.deprecated ? ts.docTag('deprecated') : null],
           }),
-          type: schema ? (b) => b.appendModelUsage(ctx.input.models[schema.id]) : this.getAnyType(ctx),
+          type: schema ? (b) => b.appendModelUsage(ctx.input.typescript.models[schema.id]) : this.getAnyType(ctx),
           optional: !parameter.required,
         }),
       );
@@ -191,7 +191,7 @@ export class DefaultTypeScriptAngularServiceGenerator
       type.members.push(
         ts.property('body', {
           doc: ts.doc({ description: body.description }),
-          type: schema ? (b) => b.appendModelUsage(ctx.input.models[schema.id]) : this.getAnyType(ctx),
+          type: schema ? (b) => b.appendModelUsage(ctx.input.typescript.models[schema.id]) : this.getAnyType(ctx),
           optional: !body.required,
         }),
       );
@@ -345,16 +345,16 @@ export class DefaultTypeScriptAngularServiceGenerator
   protected getServiceFilePath(ctx: Context): string {
     return resolve(
       ctx.config.outputDir,
-      ctx.config.servicesDirPath,
-      `${toCasing(ctx.service.name, ctx.config.fileNameCasing)}.ts`,
+      ctx.config.servicesDir,
+      `${toCasing(ctx.service.name, ctx.config.serviceFileNameCasing ?? ctx.config.fileNameCasing)}.ts`,
     );
   }
 
   protected getResponseModelFilePath(ctx: Context): string {
     return resolve(
       ctx.config.outputDir,
-      ctx.config.responseModelsDirPath,
-      `${toCasing(ctx.service.name, ctx.config.responseModelFileNameCasing)}.ts`,
+      ctx.config.responseModelsDir,
+      `${toCasing(ctx.service.name, ctx.config.responseModelFileNameCasing ?? ctx.config.fileNameCasing)}.ts`,
     );
   }
 
@@ -363,7 +363,7 @@ export class DefaultTypeScriptAngularServiceGenerator
   }
 
   protected getSchemaType(ctx: Context, schema: ApiSchema | undefined, fallback?: ts.Type<Builder>): ts.Type<Builder> {
-    const output = schema && ctx.input.models[schema.id];
+    const output = schema && ctx.input.typescript.models[schema.id];
     if (!output) return fallback ?? this.getAnyType(ctx);
     return (b) => b.appendModelUsage(output);
   }

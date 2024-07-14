@@ -52,8 +52,10 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
 
   protected override initResult(): Output {
     return {
-      services: {},
-      indexFiles: { services: undefined, responseModels: undefined },
+      typescript: {
+        services: {},
+        indexFiles: { services: undefined, responseModels: undefined },
+      },
     };
   }
 
@@ -70,7 +72,7 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
   public override onGenerate(ctx: Context): Output {
     const output = super.onGenerate(ctx);
     this.generateUtilsFiles(ctx);
-    output.indexFiles = this.generateIndexFiles(ctx);
+    output.typescript.indexFiles = this.generateIndexFiles(ctx);
     return output;
   }
 
@@ -83,13 +85,13 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
   }
 
   protected override addServiceResult(ctx: Context, service: ApiService, result: ServiceOutput): void {
-    ctx.output.services[service.id] = result;
+    ctx.output.typescript.services[service.id] = result;
   }
 
   // #region Utils
   protected generateUtilsFiles(ctx: Context): void {
     const sourceDir = resolve(dirname(require.resolve('@goast/typescript')), '../assets/client/angular');
-    const targetDir = resolve(ctx.config.outputDir, ctx.config.utilsDirPath);
+    const targetDir = resolve(ctx.config.outputDir, ctx.config.utilsDir);
     ensureDirSync(targetDir);
 
     this.copyFile('Request Builder', sourceDir, targetDir, 'request-builder.ts');
@@ -218,7 +220,7 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
                   ', useValue: config } : ',
                   ctx.refs.apiConfiguration(),
                 ),
-              ...Object.values(ctx.output.services).map((x) => ts.reference(x.component, x.filePath)),
+              ...Object.values(ctx.output.typescript.services).map((x) => ts.reference(x.component, x.filePath)),
             ]),
             ';',
           ]),
@@ -237,7 +239,7 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
   // #endregion
 
   // #region Index
-  protected generateIndexFiles(ctx: Context): Output['indexFiles'] {
+  protected generateIndexFiles(ctx: Context): Output['typescript']['indexFiles'] {
     const servicesIndexFilePath = this.getServicesIndexFilePath(ctx);
     const responseModelsIndexFilePath = this.getResponseModelsIndexFilePath(ctx);
 
@@ -267,25 +269,25 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
       ctx.config.provideKind === 'provide-fn'
         ? ts.export(ctx.refs.provide.refName, ctx.refs.provide.moduleNameOrfilePath)
         : null,
-      ...Object.values(ctx.output.services).map((x) => ts.export(x.component, x.filePath)),
+      ...Object.values(ctx.output.typescript.services).map((x) => ts.export(x.component, x.filePath)),
     ]);
   }
 
   protected getResponseModelsIndexFileContent(ctx: Context): AppendValueGroup<TypeScriptFileBuilder> {
     return appendValueGroup(
-      Object.values(ctx.output.services)
+      Object.values(ctx.output.typescript.services)
         .flatMap((x) => Object.values(x.responseModels))
         .map((x) => ts.export(x.component, x.filePath)),
     );
   }
 
   protected getServicesIndexFilePath(ctx: Context): string | null {
-    return ctx.config.servicesIndexFilePath ? resolve(ctx.config.outputDir, ctx.config.servicesIndexFilePath) : null;
+    return ctx.config.servicesIndexFile ? resolve(ctx.config.outputDir, ctx.config.servicesIndexFile) : null;
   }
 
   protected getResponseModelsIndexFilePath(ctx: Context): string | null {
-    return ctx.config.responseModelsIndexFilePath
-      ? resolve(ctx.config.outputDir, ctx.config.responseModelsIndexFilePath)
+    return ctx.config.responseModelsIndexFile
+      ? resolve(ctx.config.outputDir, ctx.config.responseModelsIndexFile)
       : null;
   }
   // #endregion

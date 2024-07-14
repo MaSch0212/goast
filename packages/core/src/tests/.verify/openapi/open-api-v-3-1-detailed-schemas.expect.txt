@@ -6,7 +6,7 @@
       '$src': {
         component: '37 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
+        file: '<root>/test/openapi-files/v3.1/detailed-schemas.yml',
         originalComponent: '37 inspect chars',
         path: '/components/schemas/WithTitle'
       },
@@ -38,7 +38,7 @@
       '$src': {
         component: '267 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
+        file: '<root>/test/openapi-files/v3.1/detailed-schemas.yml',
         originalComponent: '267 inspect chars',
         path: '/components/schemas/WithAllCommon'
       },
@@ -70,7 +70,7 @@
       '$src': {
         component: '51 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
+        file: '<root>/test/openapi-files/v3.1/detailed-schemas.yml',
         originalComponent: '51 inspect chars',
         path: '/components/schemas/MyEnum'
       },
@@ -102,7 +102,7 @@
       '$src': {
         component: '35 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
+        file: '<root>/test/openapi-files/v3.1/detailed-schemas.yml',
         originalComponent: '35 inspect chars',
         path: '/components/schemas/WriteOnly'
       },
@@ -134,7 +134,7 @@
       '$src': {
         component: '34 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3.1\\detailed-schemas.yml',
+        file: '<root>/test/openapi-files/v3.1/detailed-schemas.yml',
         originalComponent: '34 inspect chars',
         path: '/components/schemas/ReadOnly'
       },

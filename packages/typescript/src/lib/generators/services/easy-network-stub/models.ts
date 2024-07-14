@@ -2,6 +2,7 @@ import {
   ApiSchema,
   ApiService,
   DefaultGenerationProviderConfig,
+  ExtendedStringCasing,
   Nullable,
   OpenApiServicesGenerationProviderContext,
 } from '@goast/core';
@@ -15,9 +16,11 @@ import { TypeScriptModelGeneratorOutput } from '../../models';
 
 export type TypeScriptEasyNetworkStubsGeneratorConfig = TypeScriptGeneratorConfig & {
   /**
-   * The domain name of the API. Used as a prefix for exported components (e.g. `ApiConfiguration`).
+   * The domain name of the API. Used as a prefix for exported components (e.g. `ApiStubs`).
+   * @default undefined
    */
-  domainName?: string;
+  domainName: Nullable<string>;
+
   /**
    * The default response types for status codes that are not defined in the OpenAPI specification.
    * @example
@@ -41,40 +44,64 @@ export type TypeScriptEasyNetworkStubsGeneratorConfig = TypeScriptGeneratorConfi
     Exclude<ts.Type<TypeScriptFileBuilder>, Function> | ((schemas: readonly ApiSchema[]) => ApiSchema)
   >;
 
-  stubsDirPath: string;
-  stubsIndexFilePath: Nullable<string>;
-  utilsDirPath: string;
+  /**
+   * The directory where the stubs should be saved. The path is relative to the output directory.
+   * @default 'stubs'
+   */
+  stubsDir: string;
+
+  /**
+   * The casing of the stub file names. If nullish, the `fileNameCasing` is used.
+   * @default { casing: 'kebab', suffix: '.stubs' }
+   */
+  stubFileNameCasing: Nullable<ExtendedStringCasing>;
+
+  /**
+   * The index file where all stubs should be exported. The path is relative to the output directory. If nullish, no index file will be generated.
+   * @default 'stubs.ts'
+   */
+  stubsIndexFile: Nullable<string>;
+
+  /**
+   * The directory where the utilies should be saved. The path is relative to the output directory.
+   * @default 'utils'
+   */
+  utilsDir: string;
 };
 
 export const defaultTypeScriptEasyNetworkStubsGeneratorConfig: DefaultGenerationProviderConfig<TypeScriptEasyNetworkStubsGeneratorConfig> =
   {
     ...defaultTypeScriptGeneratorConfig,
 
-    fileNameCasing: { casing: 'kebab', suffix: '.stubs' },
-
+    domainName: undefined,
     defaultStatusCodeResponseTypes: {
       401: ts.refs.never(),
       403: ts.refs.never(),
       500: ts.refs.never(),
     },
 
-    stubsDirPath: 'stubs',
-    stubsIndexFilePath: 'stubs.ts',
-    utilsDirPath: 'utils',
+    stubsDir: 'stubs',
+    stubFileNameCasing: { casing: 'kebab', suffix: '.stubs' },
+    stubsIndexFile: 'stubs.ts',
+    utilsDir: 'utils',
   };
 
 export type TypeScriptEasyNetworkStubsGeneratorInput = {
-  models: {
-    [schemaId: string]: TypeScriptModelGeneratorOutput;
+  typescript: {
+    models: {
+      [schemaId: string]: TypeScriptModelGeneratorOutput;
+    };
   };
 };
 
 export type TypeScriptEasyNetworkStubsGeneratorOutput = {
-  stubs: {
-    [serviceId: string]: TypeScriptEasyNetworkStubGeneratorOutput;
-  };
-  indexFiles: {
-    stubs: Nullable<string>;
+  typescript: {
+    stubs: {
+      [serviceId: string]: TypeScriptEasyNetworkStubGeneratorOutput;
+    };
+    indexFiles: {
+      stubs: Nullable<string>;
+    };
   };
 };
 

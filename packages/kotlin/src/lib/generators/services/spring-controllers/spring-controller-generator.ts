@@ -443,12 +443,12 @@ export class DefaultKotlinSpringControllerGenerator
     const type = this.getSchemaType(ctx, { schema });
     return type
       ? createOverwriteProxy(type, { nullable: nullable ?? type.nullable })
-      : fallback ?? kt.refs.any({ nullable });
+      : (fallback ?? kt.refs.any({ nullable }));
   }
 
   protected getSchemaType(ctx: Context, args: Args.GetSchemaType): kt.Reference<SourceBuilder> | undefined {
     const { schema } = args;
-    return schema && ctx.input.models[schema.id].type;
+    return schema && ctx.input.kotlin.models[schema.id].type;
   }
 
   protected getControllerRequestMapping(ctx: Context, args: Args.GetControllerRequestMapping): kt.String<Builder> {

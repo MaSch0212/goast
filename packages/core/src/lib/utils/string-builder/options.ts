@@ -1,13 +1,19 @@
 import { EOL } from 'os';
 
 /**
- * Options for the StringBuilder class.
- * @default newLine = os.EOL
+ * Options for the `StringBuilder` class.
  */
 export type StringBuilderOptions = {
+  /**
+   * The string to use for new lines.
+   * @default os.EOL
+   */
   readonly newLine: string;
 };
 
+/**
+ * Default options for the `StringBuilder` class.
+ */
 export const defaultStringBuilderOptions: StringBuilderOptions = {
   newLine: EOL,
 };

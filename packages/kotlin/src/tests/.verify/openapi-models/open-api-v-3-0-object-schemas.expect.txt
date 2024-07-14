@@ -2,1216 +2,1218 @@
 │ state                                │
 ├──────────────────────────────────────┤
 {
-  models: {
-    'schema-1': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/EmptyObject',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'EmptyObject',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-10': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/a',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-11': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/b',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Int',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-12': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/c',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Double',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-13': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/d',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Boolean',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-14': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/e',
-      type: KtReference {
-        classReference: false,
-        generics: [
-          KtReference {
-            classReference: false,
-            generics: [],
-            inject: {},
-            name: 'Any',
-            nullable: true,
-            packageName: 'kotlin',
-            subReference: null
-          }
-        ],
-        inject: {},
-        name: 'List',
-        nullable: false,
-        packageName: 'kotlin.collections',
-        subReference: null
-      }
-    },
-    'schema-15': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/f',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Schema15',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-16': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithAdditionalProperties',
-      type: KtReference {
-        classReference: false,
-        generics: [
-          KtReference {
-            classReference: false,
-            generics: [],
-            inject: {},
-            name: 'String',
-            nullable: false,
-            packageName: 'kotlin',
-            subReference: null
-          },
-          KtReference {
-            classReference: false,
-            generics: [],
-            inject: {},
-            name: 'String',
-            nullable: false,
-            packageName: 'kotlin',
-            subReference: null
-          }
-        ],
-        inject: {},
-        name: 'Map',
-        nullable: false,
-        packageName: 'kotlin.collections',
-        subReference: null
-      }
-    },
-    'schema-17': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithAdditionalProperties/additionalProperties',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-18': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'ObjectWithPropertiesAndAdditionalProperties',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-19': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/a',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-2': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithProperties',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'ObjectWithProperties',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-20': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/b',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Int',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-21': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/c',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Double',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-22': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/d',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Boolean',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-23': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/e',
-      type: KtReference {
-        classReference: false,
-        generics: [
-          KtReference {
-            classReference: false,
-            generics: [],
-            inject: {},
-            name: 'Any',
-            nullable: true,
-            packageName: 'kotlin',
-            subReference: null
-          }
-        ],
-        inject: {},
-        name: 'List',
-        nullable: false,
-        packageName: 'kotlin.collections',
-        subReference: null
-      }
-    },
-    'schema-24': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/f',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Schema24',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-25': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/additionalProperties',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-26': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'ObjectWithPropertiesAllOfAndAnyOf',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-27': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/a',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-28': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/b',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Int',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-29': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/c',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Double',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-3': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/a',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-30': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/d',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Boolean',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-31': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/e',
-      type: KtReference {
-        classReference: false,
-        generics: [
-          KtReference {
-            classReference: false,
-            generics: [],
-            inject: {},
-            name: 'Any',
-            nullable: true,
-            packageName: 'kotlin',
-            subReference: null
-          }
-        ],
-        inject: {},
-        name: 'List',
-        nullable: false,
-        packageName: 'kotlin.collections',
-        subReference: null
-      }
-    },
-    'schema-32': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/f',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Schema32',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-33': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Any',
-        nullable: true,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-34': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/g',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-35': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/h',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Int',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-36': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/i',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Double',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-37': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/j',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Boolean',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-38': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/k',
-      type: KtReference {
-        classReference: false,
-        generics: [
-          KtReference {
-            classReference: false,
-            generics: [],
-            inject: {},
-            name: 'Any',
-            nullable: true,
-            packageName: 'kotlin',
-            subReference: null
-          }
-        ],
-        inject: {},
-        name: 'List',
-        nullable: false,
-        packageName: 'kotlin.collections',
-        subReference: null
-      }
-    },
-    'schema-39': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/l',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Schema39',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-4': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/b',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Int',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-40': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Any',
-        nullable: true,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-41': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/m',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-42': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/n',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Int',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-43': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/o',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Double',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-44': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/p',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Boolean',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-45': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/q',
-      type: KtReference {
-        classReference: false,
-        generics: [
-          KtReference {
-            classReference: false,
-            generics: [],
-            inject: {},
-            name: 'Any',
-            nullable: true,
-            packageName: 'kotlin',
-            subReference: null
-          }
-        ],
-        inject: {},
-        name: 'List',
-        nullable: false,
-        packageName: 'kotlin.collections',
-        subReference: null
-      }
-    },
-    'schema-46': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/r',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Schema46',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-47': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Any',
-        nullable: true,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-48': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/s',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-49': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/t',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Int',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-5': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/c',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Double',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-50': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/u',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Double',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-51': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/v',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Boolean',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-52': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/w',
-      type: KtReference {
-        classReference: false,
-        generics: [
-          KtReference {
-            classReference: false,
-            generics: [],
-            inject: {},
-            name: 'Any',
-            nullable: true,
-            packageName: 'kotlin',
-            subReference: null
-          }
-        ],
-        inject: {},
-        name: 'List',
-        nullable: false,
-        packageName: 'kotlin.collections',
-        subReference: null
-      }
-    },
-    'schema-53': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/x',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Schema53',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-54': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Any',
-        nullable: true,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-55': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/y',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-56': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/z',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Int',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-57': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/aa',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Double',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-58': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/bb',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Boolean',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-59': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/cc',
-      type: KtReference {
-        classReference: false,
-        generics: [
-          KtReference {
-            classReference: false,
-            generics: [],
-            inject: {},
-            name: 'Any',
-            nullable: true,
-            packageName: 'kotlin',
-            subReference: null
-          }
-        ],
-        inject: {},
-        name: 'List',
-        nullable: false,
-        packageName: 'kotlin.collections',
-        subReference: null
-      }
-    },
-    'schema-6': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/d',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Boolean',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-60': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/dd',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Schema60',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-61': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'ObjectWithNullableProperties',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-62': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/a',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: true,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-63': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/b',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Int',
-        nullable: true,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-64': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/c',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Double',
-        nullable: true,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-65': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/d',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Boolean',
-        nullable: true,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-66': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/e',
-      type: KtReference {
-        classReference: false,
-        generics: [
-          KtReference {
-            classReference: false,
-            generics: [],
-            inject: {},
-            name: 'Any',
-            nullable: true,
-            packageName: 'kotlin',
-            subReference: null
-          }
-        ],
-        inject: {},
-        name: 'List',
-        nullable: true,
-        packageName: 'kotlin.collections',
-        subReference: null
-      }
-    },
-    'schema-67': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/f',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Schema67',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-68': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'ObjectWithNullablePropertiesAndRequiredProperties',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-69': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/a',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: true,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-7': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/e',
-      type: KtReference {
-        classReference: false,
-        generics: [
-          KtReference {
-            classReference: false,
-            generics: [],
-            inject: {},
-            name: 'Any',
-            nullable: true,
-            packageName: 'kotlin',
-            subReference: null
-          }
-        ],
-        inject: {},
-        name: 'List',
-        nullable: false,
-        packageName: 'kotlin.collections',
-        subReference: null
-      }
-    },
-    'schema-70': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/b',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Int',
-        nullable: true,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-71': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/c',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Double',
-        nullable: true,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-72': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/d',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Boolean',
-        nullable: true,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-73': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/e',
-      type: KtReference {
-        classReference: false,
-        generics: [
-          KtReference {
-            classReference: false,
-            generics: [],
-            inject: {},
-            name: 'Any',
-            nullable: true,
-            packageName: 'kotlin',
-            subReference: null
-          }
-        ],
-        inject: {},
-        name: 'List',
-        nullable: true,
-        packageName: 'kotlin.collections',
-        subReference: null
-      }
-    },
-    'schema-74': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/f',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Schema74',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-75': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithReferencesInProperties',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'ObjectWithReferencesInProperties',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-76': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/EmptyObject',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'EmptyObject',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-77': {
-      __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/WithTitle',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-78': {
-      __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/WithTitle',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-79': {
-      __source__: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml#/components/schemas/MyString',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-8': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithProperties/properties/f',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Schema8',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-80': {
-      __source__: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml#/components/schemas/MyString',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-81': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithReferencesInProperties/properties/d',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-82': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithReferencesInAnyOf',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'ObjectWithReferencesInAnyOf',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-83': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/EmptyObject',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'EmptyObject',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-84': {
-      __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/WithTitle',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-85': {
-      __source__: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml#/components/schemas/MyString',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-86': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithReferencesInAnyOf/anyOf/3',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Any',
-        nullable: true,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-87': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithReferencesInAllOf',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'ObjectWithReferencesInAllOf',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-88': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/EmptyObject',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'EmptyObject',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-89': {
-      __source__: '<root>\\test\\openapi-files\\v3\\detailed-schemas.yml#/components/schemas/WithTitle',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-9': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithRequiredProperties',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'ObjectWithRequiredProperties',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
-      }
-    },
-    'schema-90': {
-      __source__: '<root>\\test\\openapi-files\\v3\\simple-schemas.yml#/components/schemas/MyString',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-91': {
-      __source__: '<root>\\test\\openapi-files\\v3\\object-schemas.yml#/components/schemas/ObjectWithReferencesInAllOf/allOf/3',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Any',
-        nullable: true,
-        packageName: 'kotlin',
-        subReference: null
+  kotlin: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/EmptyObject',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'EmptyObject',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/a',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/b',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/c',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Double',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/d',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Boolean',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/e',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Any',
+              nullable: true,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithRequiredProperties/properties/f',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Schema15',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithAdditionalProperties',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'String',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            },
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'String',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'Map',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithAdditionalProperties/additionalProperties',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'ObjectWithPropertiesAndAdditionalProperties',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/a',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithProperties',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'ObjectWithProperties',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/b',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/c',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Double',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/d',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Boolean',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/e',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Any',
+              nullable: true,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-24': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/f',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Schema24',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-25': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAndAdditionalProperties/additionalProperties',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-26': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'ObjectWithPropertiesAllOfAndAnyOf',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-27': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/a',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-28': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/b',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-29': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/c',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Double',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithProperties/properties/a',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-30': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/d',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Boolean',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-31': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/e',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Any',
+              nullable: true,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-32': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/f',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Schema32',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-33': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-34': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/g',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-35': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/h',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-36': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/i',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Double',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-37': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/j',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Boolean',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-38': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/k',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Any',
+              nullable: true,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-39': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/l',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Schema39',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithProperties/properties/b',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-40': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-41': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/m',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-42': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/n',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-43': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/o',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Double',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-44': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/p',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Boolean',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-45': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/q',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Any',
+              nullable: true,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-46': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/r',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Schema46',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-47': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-48': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/s',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-49': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/t',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithProperties/properties/c',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Double',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-50': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/u',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Double',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-51': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/v',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Boolean',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-52': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/w',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Any',
+              nullable: true,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-53': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/x',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Schema53',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-54': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-55': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/y',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-56': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/z',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-57': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/aa',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Double',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-58': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/bb',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Boolean',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-59': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/cc',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Any',
+              nullable: true,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithProperties/properties/d',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Boolean',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-60': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/dd',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Schema60',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-61': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithNullableProperties',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'ObjectWithNullableProperties',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-62': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/a',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-63': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/b',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-64': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/c',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Double',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-65': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/d',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Boolean',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-66': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/e',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Any',
+              nullable: true,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: true,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-67': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithNullableProperties/properties/f',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Schema67',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-68': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'ObjectWithNullablePropertiesAndRequiredProperties',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-69': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/a',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithProperties/properties/e',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Any',
+              nullable: true,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-70': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/b',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-71': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/c',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Double',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-72': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/d',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Boolean',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-73': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/e',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Any',
+              nullable: true,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: true,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-74': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/f',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Schema74',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-75': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithReferencesInProperties',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'ObjectWithReferencesInProperties',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-76': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/EmptyObject',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'EmptyObject',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-77': {
+        __source__: '<root>/test/openapi-files/v3/detailed-schemas.yml#/components/schemas/WithTitle',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-78': {
+        __source__: '<root>/test/openapi-files/v3/detailed-schemas.yml#/components/schemas/WithTitle',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-79': {
+        __source__: '<root>/test/openapi-files/v3/simple-schemas.yml#/components/schemas/MyString',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithProperties/properties/f',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Schema8',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-80': {
+        __source__: '<root>/test/openapi-files/v3/simple-schemas.yml#/components/schemas/MyString',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-81': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithReferencesInProperties/properties/d',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-82': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithReferencesInAnyOf',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'ObjectWithReferencesInAnyOf',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-83': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/EmptyObject',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'EmptyObject',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-84': {
+        __source__: '<root>/test/openapi-files/v3/detailed-schemas.yml#/components/schemas/WithTitle',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-85': {
+        __source__: '<root>/test/openapi-files/v3/simple-schemas.yml#/components/schemas/MyString',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-86': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithReferencesInAnyOf/anyOf/3',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-87': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithReferencesInAllOf',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'ObjectWithReferencesInAllOf',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-88': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/EmptyObject',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'EmptyObject',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-89': {
+        __source__: '<root>/test/openapi-files/v3/detailed-schemas.yml#/components/schemas/WithTitle',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithRequiredProperties',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'ObjectWithRequiredProperties',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-90': {
+        __source__: '<root>/test/openapi-files/v3/simple-schemas.yml#/components/schemas/MyString',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-91': {
+        __source__: '<root>/test/openapi-files/v3/object-schemas.yml#/components/schemas/ObjectWithReferencesInAllOf/allOf/3',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
       }
     }
   }

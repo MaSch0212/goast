@@ -1,5 +1,7 @@
 import { dirname, relative } from 'path';
 
+import { Nullable } from '@goast/core';
+
 export type ImportModuleTransformer = 'omit-extension' | 'js-extension' | ((module: string) => string);
 
 function doubleQuotedToSingleQuoted(value: string): string {
@@ -47,7 +49,7 @@ function transformModulePath(modulePath: string, transformer: ImportModuleTransf
 
 export function modifyString<TArgs extends any[]>(
   value: string,
-  modifier: string | RegExp | ((value: string, ...args: TArgs) => string) | undefined,
+  modifier: Nullable<string | RegExp | ((value: string, ...args: TArgs) => string)>,
   ...args: TArgs
 ): string {
   if (typeof modifier === 'string') {

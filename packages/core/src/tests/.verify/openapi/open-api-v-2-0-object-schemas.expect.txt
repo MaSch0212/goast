@@ -6,7 +6,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/EmptyObject'
       },
@@ -39,7 +39,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/ObjectWithProperties/properties/a'
       },
@@ -71,7 +71,7 @@
       '$src': {
         component: '19 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '19 inspect chars',
         path: '/definitions/ObjectWithProperties/properties/b'
       },
@@ -102,7 +102,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/ObjectWithProperties/properties/c'
       },
@@ -133,7 +133,7 @@
       '$src': {
         component: '19 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '19 inspect chars',
         path: '/definitions/ObjectWithProperties/properties/d'
       },
@@ -162,7 +162,7 @@
       '$src': {
         component: '17 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '17 inspect chars',
         path: '/definitions/ObjectWithProperties/properties/e'
       },
@@ -193,7 +193,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/ObjectWithProperties/properties/f'
       },
@@ -226,7 +226,7 @@
       '$src': {
         component: '203 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '203 inspect chars',
         path: '/definitions/ObjectWithProperties'
       },
@@ -266,7 +266,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/ObjectWithRequiredProperties/properties/a'
       },
@@ -298,7 +298,7 @@
       '$src': {
         component: '19 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '19 inspect chars',
         path: '/definitions/ObjectWithRequiredProperties/properties/b'
       },
@@ -329,7 +329,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/ObjectWithRequiredProperties/properties/c'
       },
@@ -360,7 +360,7 @@
       '$src': {
         component: '19 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '19 inspect chars',
         path: '/definitions/ObjectWithRequiredProperties/properties/d'
       },
@@ -389,7 +389,7 @@
       '$src': {
         component: '17 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '17 inspect chars',
         path: '/definitions/ObjectWithRequiredProperties/properties/e'
       },
@@ -420,7 +420,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/ObjectWithRequiredProperties/properties/f'
       },
@@ -453,7 +453,7 @@
       '$src': {
         component: '249 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '249 inspect chars',
         path: '/definitions/ObjectWithRequiredProperties'
       },
@@ -493,7 +493,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/ObjectWithAdditionalProperties/additionalProperties'
       },
@@ -525,7 +525,7 @@
       '$src': {
         component: '60 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '60 inspect chars',
         path: '/definitions/ObjectWithAdditionalProperties'
       },
@@ -535,7 +535,7 @@
         '$src': {
           component: '18 inspect chars',
           document: '9 inspect chars',
-          file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+          file: '<root>/test/openapi-files/v2/object-schemas.yml',
           originalComponent: '18 inspect chars',
           path: '/definitions/ObjectWithAdditionalProperties/additionalProperties'
         },
@@ -589,7 +589,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/ObjectWithPropertiesAndAdditionalProperties/properties/a'
       },
@@ -621,7 +621,7 @@
       '$src': {
         component: '19 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '19 inspect chars',
         path: '/definitions/ObjectWithPropertiesAndAdditionalProperties/properties/b'
       },
@@ -652,7 +652,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/ObjectWithPropertiesAndAdditionalProperties/properties/c'
       },
@@ -683,7 +683,7 @@
       '$src': {
         component: '19 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '19 inspect chars',
         path: '/definitions/ObjectWithPropertiesAndAdditionalProperties/properties/d'
       },
@@ -712,7 +712,7 @@
       '$src': {
         component: '17 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '17 inspect chars',
         path: '/definitions/ObjectWithPropertiesAndAdditionalProperties/properties/e'
       },
@@ -743,7 +743,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/ObjectWithPropertiesAndAdditionalProperties/properties/f'
       },
@@ -776,7 +776,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/ObjectWithPropertiesAndAdditionalProperties/additionalProperties'
       },
@@ -808,7 +808,7 @@
       '$src': {
         component: '247 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '247 inspect chars',
         path: '/definitions/ObjectWithPropertiesAndAdditionalProperties'
       },
@@ -818,7 +818,7 @@
         '$src': {
           component: '18 inspect chars',
           document: '9 inspect chars',
-          file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+          file: '<root>/test/openapi-files/v2/object-schemas.yml',
           originalComponent: '18 inspect chars',
           path: '/definitions/ObjectWithPropertiesAndAdditionalProperties/additionalProperties'
         },
@@ -879,7 +879,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/ObjectWithPropertiesAllOf/properties/a'
       },
@@ -911,7 +911,7 @@
       '$src': {
         component: '19 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '19 inspect chars',
         path: '/definitions/ObjectWithPropertiesAllOf/properties/b'
       },
@@ -942,7 +942,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/ObjectWithPropertiesAllOf/properties/c'
       },
@@ -973,7 +973,7 @@
       '$src': {
         component: '19 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '19 inspect chars',
         path: '/definitions/ObjectWithPropertiesAllOf/properties/d'
       },
@@ -1002,7 +1002,7 @@
       '$src': {
         component: '17 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '17 inspect chars',
         path: '/definitions/ObjectWithPropertiesAllOf/properties/e'
       },
@@ -1033,7 +1033,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/ObjectWithPropertiesAllOf/properties/f'
       },
@@ -1066,7 +1066,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/g'
       },
@@ -1098,7 +1098,7 @@
       '$src': {
         component: '19 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '19 inspect chars',
         path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/h'
       },
@@ -1129,7 +1129,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/i'
       },
@@ -1160,7 +1160,7 @@
       '$src': {
         component: '19 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '19 inspect chars',
         path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/j'
       },
@@ -1189,7 +1189,7 @@
       '$src': {
         component: '17 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '17 inspect chars',
         path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/k'
       },
@@ -1220,7 +1220,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/ObjectWithPropertiesAllOf/allOf/0/properties/l'
       },
@@ -1253,7 +1253,7 @@
       '$src': {
         component: '203 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '203 inspect chars',
         path: '/definitions/ObjectWithPropertiesAllOf/allOf/0'
       },
@@ -1293,7 +1293,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/m'
       },
@@ -1325,7 +1325,7 @@
       '$src': {
         component: '19 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '19 inspect chars',
         path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/n'
       },
@@ -1356,7 +1356,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/o'
       },
@@ -1387,7 +1387,7 @@
       '$src': {
         component: '19 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '19 inspect chars',
         path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/p'
       },
@@ -1416,7 +1416,7 @@
       '$src': {
         component: '17 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '17 inspect chars',
         path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/q'
       },
@@ -1447,7 +1447,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/ObjectWithPropertiesAllOf/allOf/1/properties/r'
       },
@@ -1480,7 +1480,7 @@
       '$src': {
         component: '203 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '203 inspect chars',
         path: '/definitions/ObjectWithPropertiesAllOf/allOf/1'
       },
@@ -1520,7 +1520,7 @@
       '$src': {
         component: '840 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '840 inspect chars',
         path: '/definitions/ObjectWithPropertiesAllOf'
       },
@@ -1579,7 +1579,7 @@
       '$src': {
         component: '30 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '30 inspect chars',
         path: '/definitions/ObjectWithNullableProperties/properties/a'
       },
@@ -1611,7 +1611,7 @@
       '$src': {
         component: '31 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '31 inspect chars',
         path: '/definitions/ObjectWithNullableProperties/properties/b'
       },
@@ -1642,7 +1642,7 @@
       '$src': {
         component: '30 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '30 inspect chars',
         path: '/definitions/ObjectWithNullableProperties/properties/c'
       },
@@ -1673,7 +1673,7 @@
       '$src': {
         component: '31 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '31 inspect chars',
         path: '/definitions/ObjectWithNullableProperties/properties/d'
       },
@@ -1702,7 +1702,7 @@
       '$src': {
         component: '29 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '29 inspect chars',
         path: '/definitions/ObjectWithNullableProperties/properties/e'
       },
@@ -1733,7 +1733,7 @@
       '$src': {
         component: '30 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '30 inspect chars',
         path: '/definitions/ObjectWithNullableProperties/properties/f'
       },
@@ -1766,7 +1766,7 @@
       '$src': {
         component: '275 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '275 inspect chars',
         path: '/definitions/ObjectWithNullableProperties'
       },
@@ -1806,7 +1806,7 @@
       '$src': {
         component: '30 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '30 inspect chars',
         path: '/definitions/ObjectWithNullablePropertiesAndRequiredProperties/properties/a'
       },
@@ -1838,7 +1838,7 @@
       '$src': {
         component: '31 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '31 inspect chars',
         path: '/definitions/ObjectWithNullablePropertiesAndRequiredProperties/properties/b'
       },
@@ -1869,7 +1869,7 @@
       '$src': {
         component: '30 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '30 inspect chars',
         path: '/definitions/ObjectWithNullablePropertiesAndRequiredProperties/properties/c'
       },
@@ -1900,7 +1900,7 @@
       '$src': {
         component: '31 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '31 inspect chars',
         path: '/definitions/ObjectWithNullablePropertiesAndRequiredProperties/properties/d'
       },
@@ -1929,7 +1929,7 @@
       '$src': {
         component: '29 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '29 inspect chars',
         path: '/definitions/ObjectWithNullablePropertiesAndRequiredProperties/properties/e'
       },
@@ -1960,7 +1960,7 @@
       '$src': {
         component: '30 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '30 inspect chars',
         path: '/definitions/ObjectWithNullablePropertiesAndRequiredProperties/properties/f'
       },
@@ -1993,7 +1993,7 @@
       '$src': {
         component: '321 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '321 inspect chars',
         path: '/definitions/ObjectWithNullablePropertiesAndRequiredProperties'
       },
@@ -2033,7 +2033,7 @@
       '$src': {
         component: '39 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '39 inspect chars',
         path: '/definitions/ObjectWithReferencesInProperties/properties/a'
       },
@@ -2066,7 +2066,7 @@
       '$src': {
         component: '37 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\detailed-schemas.yml',
+        file: '<root>/test/openapi-files/v2/detailed-schemas.yml',
         originalComponent: '37 inspect chars',
         path: '/definitions/WithTitle'
       },
@@ -2098,7 +2098,7 @@
       '$src': {
         component: '57 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '57 inspect chars',
         path: '/definitions/ObjectWithReferencesInProperties/properties/b'
       },
@@ -2130,7 +2130,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml',
+        file: '<root>/test/openapi-files/v2/simple-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/MyString'
       },
@@ -2162,7 +2162,7 @@
       '$src': {
         component: '54 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '54 inspect chars',
         path: '/definitions/ObjectWithReferencesInProperties/properties/c'
       },
@@ -2194,7 +2194,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/ObjectWithReferencesInProperties/properties/d'
       },
@@ -2226,7 +2226,7 @@
       '$src': {
         component: '244 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '244 inspect chars',
         path: '/definitions/ObjectWithReferencesInProperties'
       },
@@ -2264,7 +2264,7 @@
       '$src': {
         component: '39 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '39 inspect chars',
         path: '/definitions/ObjectWithReferencesInAllOf/allOf/0'
       },
@@ -2297,7 +2297,7 @@
       '$src': {
         component: '57 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '57 inspect chars',
         path: '/definitions/ObjectWithReferencesInAllOf/allOf/1'
       },
@@ -2329,7 +2329,7 @@
       '$src': {
         component: '54 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '54 inspect chars',
         path: '/definitions/ObjectWithReferencesInAllOf/allOf/2'
       },
@@ -2361,7 +2361,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/definitions/ObjectWithReferencesInAllOf/allOf/3'
       },
@@ -2393,7 +2393,7 @@
       '$src': {
         component: '227 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '227 inspect chars',
         path: '/definitions/ObjectWithReferencesInAllOf'
       },
@@ -2426,7 +2426,7 @@
       '$src': {
         component: '58 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '58 inspect chars',
         path: '/definitions/ObjectWithDescription/properties/a'
       },
@@ -2458,7 +2458,7 @@
       '$src': {
         component: '86 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '86 inspect chars',
         path: '/definitions/ObjectWithDescription/properties/b'
       },
@@ -2489,7 +2489,7 @@
       '$src': {
         component: '254 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '254 inspect chars',
         path: '/definitions/ObjectWithDescription'
       },
@@ -2525,7 +2525,7 @@
       '$src': {
         component: '83 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v2\\object-schemas.yml',
+        file: '<root>/test/openapi-files/v2/object-schemas.yml',
         originalComponent: '83 inspect chars',
         path: '/definitions/ObjectWithMultilineDescription'
       },

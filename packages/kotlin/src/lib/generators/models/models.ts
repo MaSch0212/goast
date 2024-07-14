@@ -33,8 +33,10 @@ export const defaultKotlinModelsGeneratorConfig: DefaultGenerationProviderConfig
 export type KotlinModelsGeneratorInput = {};
 
 export type KotlinModelsGeneratorOutput = {
-  models: {
-    [schemaId: string]: KotlinModelGeneratorOutput;
+  kotlin: {
+    models: {
+      [schemaId: string]: KotlinModelGeneratorOutput;
+    };
   };
 };
 

@@ -2,128 +2,138 @@
 │ state                                │
 ├──────────────────────────────────────┤
 {
-  indexFiles: { models: '<root>\\out\\models.ts' },
-  models: {
-    'schema-1': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyString',
-      component: 'MyString',
-      filePath: '<root>\\out\\models\\my-string.ts',
-      imports: [
-        {
-          kind: 'file',
-          modulePath: '<root>\\out\\models\\my-string.ts',
-          name: 'MyString'
-        }
-      ]
-    },
-    'schema-2': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyInteger',
-      component: 'MyInteger',
-      filePath: '<root>\\out\\models\\my-integer.ts',
-      imports: [
-        {
-          kind: 'file',
-          modulePath: '<root>\\out\\models\\my-integer.ts',
-          name: 'MyInteger'
-        }
-      ]
-    },
-    'schema-3': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyNumber',
-      component: 'MyNumber',
-      filePath: '<root>\\out\\models\\my-number.ts',
-      imports: [
-        {
-          kind: 'file',
-          modulePath: '<root>\\out\\models\\my-number.ts',
-          name: 'MyNumber'
-        }
-      ]
-    },
-    'schema-4': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyBoolean',
-      component: 'MyBoolean',
-      filePath: '<root>\\out\\models\\my-boolean.ts',
-      imports: [
-        {
-          kind: 'file',
-          modulePath: '<root>\\out\\models\\my-boolean.ts',
-          name: 'MyBoolean'
-        }
-      ]
-    },
-    'schema-5': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyArray',
-      component: 'MyArray',
-      filePath: '<root>\\out\\models\\my-array.ts',
-      imports: [
-        {
-          kind: 'file',
-          modulePath: '<root>\\out\\models\\my-array.ts',
-          name: 'MyArray'
-        }
-      ]
-    },
-    'schema-6': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml#/components/schemas/MyObject',
-      component: 'MyObject',
-      filePath: '<root>\\out\\models\\my-object.ts',
-      imports: [
-        {
-          kind: 'file',
-          modulePath: '<root>\\out\\models\\my-object.ts',
-          name: 'MyObject'
-        }
-      ]
+  typescript: {
+    indexFiles: { models: '<root>/out/models.ts' },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/openapi-files/v3.1/simple-schemas.yml#/components/schemas/MyString',
+        additionalExports: [],
+        component: 'MyString',
+        filePath: '<root>/out/models/my-string.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>/out/models/my-string.ts',
+            name: 'MyString'
+          }
+        ]
+      },
+      'schema-2': {
+        __source__: '<root>/test/openapi-files/v3.1/simple-schemas.yml#/components/schemas/MyInteger',
+        additionalExports: [],
+        component: 'MyInteger',
+        filePath: '<root>/out/models/my-integer.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>/out/models/my-integer.ts',
+            name: 'MyInteger'
+          }
+        ]
+      },
+      'schema-3': {
+        __source__: '<root>/test/openapi-files/v3.1/simple-schemas.yml#/components/schemas/MyNumber',
+        additionalExports: [],
+        component: 'MyNumber',
+        filePath: '<root>/out/models/my-number.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>/out/models/my-number.ts',
+            name: 'MyNumber'
+          }
+        ]
+      },
+      'schema-4': {
+        __source__: '<root>/test/openapi-files/v3.1/simple-schemas.yml#/components/schemas/MyBoolean',
+        additionalExports: [],
+        component: 'MyBoolean',
+        filePath: '<root>/out/models/my-boolean.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>/out/models/my-boolean.ts',
+            name: 'MyBoolean'
+          }
+        ]
+      },
+      'schema-5': {
+        __source__: '<root>/test/openapi-files/v3.1/simple-schemas.yml#/components/schemas/MyArray',
+        additionalExports: [],
+        component: 'MyArray',
+        filePath: '<root>/out/models/my-array.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>/out/models/my-array.ts',
+            name: 'MyArray'
+          }
+        ]
+      },
+      'schema-6': {
+        __source__: '<root>/test/openapi-files/v3.1/simple-schemas.yml#/components/schemas/MyObject',
+        additionalExports: [],
+        component: 'MyObject',
+        filePath: '<root>/out/models/my-object.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>/out/models/my-object.ts',
+            name: 'MyObject'
+          }
+        ]
+      }
     }
   }
 }
 └──────────────────────────────────────┘
 
 ┌──────────────────────────────────────┐
-│ C:\src\goast\out\models\my-string.ts │
+│ <root>/out/models/my-string.ts       │
 ├──────────────────────────────────────┤
 export type MyString = string;
 
 └──────────────────────────────────────┘
 
-┌───────────────────────────────────────┐
-│ C:\src\goast\out\models\my-integer.ts │
-├───────────────────────────────────────┤
+┌──────────────────────────────────────┐
+│ <root>/out/models/my-integer.ts      │
+├──────────────────────────────────────┤
 export type MyInteger = number;
 
-└───────────────────────────────────────┘
+└──────────────────────────────────────┘
 
 ┌──────────────────────────────────────┐
-│ C:\src\goast\out\models\my-number.ts │
+│ <root>/out/models/my-number.ts       │
 ├──────────────────────────────────────┤
 export type MyNumber = number;
 
 └──────────────────────────────────────┘
 
-┌───────────────────────────────────────┐
-│ C:\src\goast\out\models\my-boolean.ts │
-├───────────────────────────────────────┤
+┌──────────────────────────────────────┐
+│ <root>/out/models/my-boolean.ts      │
+├──────────────────────────────────────┤
 export type MyBoolean = boolean;
 
-└───────────────────────────────────────┘
+└──────────────────────────────────────┘
 
 ┌──────────────────────────────────────┐
-│ C:\src\goast\out\models\my-array.ts  │
+│ <root>/out/models/my-array.ts        │
 ├──────────────────────────────────────┤
 export type MyArray = (unknown)[];
 
 └──────────────────────────────────────┘
 
 ┌──────────────────────────────────────┐
-│ C:\src\goast\out\models\my-object.ts │
+│ <root>/out/models/my-object.ts       │
 ├──────────────────────────────────────┤
-export type MyObject = {};
+export type MyObject = {
+    [key: string]: never;
+  };
 
 └──────────────────────────────────────┘
 
 ┌──────────────────────────────────────┐
-│ C:\src\goast\out\models.ts           │
+│ <root>/out/models.ts                 │
 ├──────────────────────────────────────┤
 export { MyArray } from './models/my-array';
 export { MyBoolean } from './models/my-boolean';

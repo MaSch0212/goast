@@ -431,8 +431,8 @@ export class DefaultTypeScriptModelGenerator
   protected getFilePath(ctx: Context, schema: ApiSchema): string {
     return resolve(
       ctx.config.outputDir,
-      ctx.config.modelsDirPath,
-      `${toCasing(schema.name, ctx.config.fileNameCasing)}.ts`,
+      ctx.config.modelsDir,
+      `${toCasing(schema.name, ctx.config.modelFileNameCasing ?? ctx.config.fileNameCasing)}.ts`,
     );
   }
 }

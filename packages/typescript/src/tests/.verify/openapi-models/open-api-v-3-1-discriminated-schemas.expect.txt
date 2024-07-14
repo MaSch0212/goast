@@ -2,189 +2,220 @@
 │ state                                │
 ├──────────────────────────────────────┤
 {
-  indexFiles: { models: '<root>\\out\\models.ts' },
-  models: {
-    'schema-1': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Pet',
-      component: 'Pet',
-      filePath: '<root>\\out\\models\\pet.ts',
-      imports: [
-        {
-          kind: 'file',
-          modulePath: '<root>\\out\\models\\pet.ts',
-          name: 'Pet'
-        }
-      ]
-    },
-    'schema-10': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Dog/allOf/1',
-      component: '{\n' +
-        '  /**\n' +
-        '   * the size of the pack the dog is from\n' +
-        '   */\n' +
-        '  packSize: number;\n' +
-        '}',
-      imports: []
-    },
-    'schema-11': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Dog/allOf/1/properties/packSize',
-      component: 'number',
-      imports: []
-    },
-    'schema-2': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Pet/properties/name',
-      component: 'string',
-      imports: []
-    },
-    'schema-3': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Pet/properties/petType',
-      component: 'string',
-      imports: []
-    },
-    'schema-4': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Dog',
-      component: 'Dog',
-      filePath: '<root>\\out\\models\\dog.ts',
-      imports: [
-        {
-          kind: 'file',
-          modulePath: '<root>\\out\\models\\dog.ts',
-          name: 'Dog'
-        }
-      ]
-    },
-    'schema-5': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Pet',
-      component: 'Pet',
-      filePath: '<root>\\out\\models\\pet.ts',
-      imports: [
-        {
-          kind: 'file',
-          modulePath: '<root>\\out\\models\\pet.ts',
-          name: 'Pet'
-        }
-      ]
-    },
-    'schema-6': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Cat',
-      component: 'Cat',
-      filePath: '<root>\\out\\models\\cat.ts',
-      imports: [
-        {
-          kind: 'file',
-          modulePath: '<root>\\out\\models\\cat.ts',
-          name: 'Cat'
-        }
-      ]
-    },
-    'schema-7': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Pet',
-      component: 'Pet',
-      filePath: '<root>\\out\\models\\pet.ts',
-      imports: [
-        {
-          kind: 'file',
-          modulePath: '<root>\\out\\models\\pet.ts',
-          name: 'Pet'
-        }
-      ]
-    },
-    'schema-8': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Cat/allOf/1',
-      component: '{\n' +
-        '  /**\n' +
-        '   * The measured skill for hunting\n' +
-        '   */\n' +
-        '  huntingSkill: Schema9;\n' +
-        '}',
-      imports: [
-        {
-          kind: 'file',
-          modulePath: '<root>\\out\\models\\schema-9.ts',
-          name: 'Schema9'
-        }
-      ]
-    },
-    'schema-9': {
-      __source__: '<root>\\test\\openapi-files\\v3.1\\discriminated-schemas.yml#/components/schemas/Cat/allOf/1/properties/huntingSkill',
-      component: 'Schema9',
-      filePath: '<root>\\out\\models\\schema-9.ts',
-      imports: [
-        {
-          kind: 'file',
-          modulePath: '<root>\\out\\models\\schema-9.ts',
-          name: 'Schema9'
-        }
-      ]
+  typescript: {
+    indexFiles: { models: '<root>/out/models.ts' },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml#/components/schemas/Pet',
+        additionalExports: [ 'PetBase' ],
+        component: 'Pet',
+        filePath: '<root>/out/models/pet.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>/out/models/pet.ts',
+            name: 'Pet'
+          }
+        ]
+      },
+      'schema-10': {
+        __source__: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml#/components/schemas/Dog/allOf/1',
+        component: '{\n' +
+          '  /**\n' +
+          '   * the size of the pack the dog is from\n' +
+          '   */\n' +
+          '  packSize: number;\n' +
+          '}',
+        imports: []
+      },
+      'schema-11': {
+        __source__: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml#/components/schemas/Dog/allOf/1/properties/packSize',
+        component: 'number',
+        imports: []
+      },
+      'schema-2': {
+        __source__: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml#/components/schemas/Pet/properties/name',
+        component: 'string',
+        imports: []
+      },
+      'schema-3': {
+        __source__: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml#/components/schemas/Pet/properties/petType',
+        component: 'string',
+        imports: []
+      },
+      'schema-4': {
+        __source__: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml#/components/schemas/Dog',
+        additionalExports: [],
+        component: 'Dog',
+        filePath: '<root>/out/models/dog.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>/out/models/dog.ts',
+            name: 'Dog'
+          }
+        ]
+      },
+      'schema-5': {
+        __source__: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml#/components/schemas/Pet',
+        additionalExports: [ 'PetBase' ],
+        component: 'Pet',
+        filePath: '<root>/out/models/pet.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>/out/models/pet.ts',
+            name: 'Pet'
+          }
+        ]
+      },
+      'schema-6': {
+        __source__: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml#/components/schemas/Cat',
+        additionalExports: [],
+        component: 'Cat',
+        filePath: '<root>/out/models/cat.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>/out/models/cat.ts',
+            name: 'Cat'
+          }
+        ]
+      },
+      'schema-7': {
+        __source__: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml#/components/schemas/Pet',
+        additionalExports: [ 'PetBase' ],
+        component: 'Pet',
+        filePath: '<root>/out/models/pet.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>/out/models/pet.ts',
+            name: 'Pet'
+          }
+        ]
+      },
+      'schema-8': {
+        __source__: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml#/components/schemas/Cat/allOf/1',
+        component: '{\n' +
+          '  /**\n' +
+          '   * The measured skill for hunting\n' +
+          '   */\n' +
+          '  huntingSkill: Schema9;\n' +
+          '}',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>/out/models/schema-9.ts',
+            name: 'Schema9'
+          }
+        ]
+      },
+      'schema-9': {
+        __source__: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml#/components/schemas/Cat/allOf/1/properties/huntingSkill',
+        additionalExports: [ 'SCHEMA_9_VALUES' ],
+        component: 'Schema9',
+        filePath: '<root>/out/models/schema-9.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>/out/models/schema-9.ts',
+            name: 'Schema9'
+          }
+        ]
+      }
     }
   }
 }
 └──────────────────────────────────────┘
 
 ┌──────────────────────────────────────┐
-│ C:\src\goast\out\models\pet.ts       │
+│ <root>/out/models/pet.ts             │
 ├──────────────────────────────────────┤
-import { Schema9 } from './schema-9';
+import { Cat } from './cat';
+import { Dog } from './dog';
 
-export type Pet<TPetType extends ('dog') | ('cat') = ('dog') | ('cat')> = ({
-      name: string;
-      petType: string;
-    }) & (({
+type PetDiscriminator = ('dog') | ('cat');
+
+export type PetBase = {
+    name: string;
+    petType: string;
+  };
+
+export type Pet<TPetType extends PetDiscriminator = PetDiscriminator> = (PetBase) & (({
         dog: ({
             petType: 'dog';
-          }) & ({
-            /**
-             * the size of the pack the dog is from
-             */
-            packSize: number;
-          });
+          }) & (Dog);
         cat: ({
             petType: 'cat';
-          }) & ({
-            /**
-             * The measured skill for hunting
-             */
-            huntingSkill: Schema9;
-          });
+          }) & (Cat);
       })[TPetType]);
 
 └──────────────────────────────────────┘
 
 ┌──────────────────────────────────────┐
-│ C:\src\goast\out\models\schema-9.ts  │
+│ <root>/out/models/schema-9.ts        │
 ├──────────────────────────────────────┤
+/**
+ * The measured skill for hunting
+ */
 export type Schema9 =
   | ('clueless')
   | ('lazy')
   | ('adventurous')
   | ('aggressive');
 
+/**
+ * All possible values of the enum `Schema9`.
+ */
+export const SCHEMA_9_VALUES = [
+  'clueless',
+  'lazy',
+  'adventurous',
+  'aggressive'
+] as const;
+
 └──────────────────────────────────────┘
 
 ┌──────────────────────────────────────┐
-│ C:\src\goast\out\models\cat.ts       │
+│ <root>/out/models/cat.ts             │
 ├──────────────────────────────────────┤
-import { Pet } from './pet';
+import { PetBase } from './pet';
+import { Schema9 } from './schema-9';
 
-export type Cat = Pet<'cat'>;
+export type Cat = (Omit<(PetBase) & ({
+          /**
+           * The measured skill for hunting
+           */
+          huntingSkill: Schema9;
+        }), 'petType'>) & ({
+      petType: 'cat';
+    });
 
 └──────────────────────────────────────┘
 
 ┌──────────────────────────────────────┐
-│ C:\src\goast\out\models\dog.ts       │
+│ <root>/out/models/dog.ts             │
 ├──────────────────────────────────────┤
-import { Pet } from './pet';
+import { PetBase } from './pet';
 
-export type Dog = Pet<'dog'>;
+export type Dog = (Omit<(PetBase) & ({
+          /**
+           * the size of the pack the dog is from
+           */
+          packSize: number;
+        }), 'petType'>) & ({
+      petType: 'dog';
+    });
 
 └──────────────────────────────────────┘
 
 ┌──────────────────────────────────────┐
-│ C:\src\goast\out\models.ts           │
+│ <root>/out/models.ts                 │
 ├──────────────────────────────────────┤
 export { Cat } from './models/cat';
 export { Dog } from './models/dog';
-export { Pet } from './models/pet';
-export { Schema9 } from './models/schema-9';
+export { Pet, PetBase } from './models/pet';
+export { SCHEMA_9_VALUES, Schema9 } from './models/schema-9';
 
 └──────────────────────────────────────┘

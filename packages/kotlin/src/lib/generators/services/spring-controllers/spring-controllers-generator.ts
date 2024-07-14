@@ -33,7 +33,9 @@ export class KotlinSpringControllersGenerator extends OpenApiServicesGenerationP
 
   protected initResult(): Output {
     return {
-      services: {},
+      kotlin: {
+        services: {},
+      },
     };
   }
 
@@ -46,7 +48,7 @@ export class KotlinSpringControllersGenerator extends OpenApiServicesGenerationP
   }
 
   protected addServiceResult(ctx: Context, service: ApiService, result: ServiceOutput): void {
-    ctx.output.services[service.id] = result;
+    ctx.output.kotlin.services[service.id] = result;
   }
 
   protected buildContext(

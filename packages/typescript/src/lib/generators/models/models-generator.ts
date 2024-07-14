@@ -43,8 +43,10 @@ export class TypeScriptModelsGenerator extends OpenApiSchemasGenerationProviderB
 
   protected override initResult(): Output {
     return {
-      models: {},
-      indexFiles: { models: undefined },
+      typescript: {
+        models: {},
+        indexFiles: { models: undefined },
+      },
     };
   }
 
@@ -57,7 +59,7 @@ export class TypeScriptModelsGenerator extends OpenApiSchemasGenerationProviderB
 
   public override onGenerate(ctx: Context): Output {
     const output = super.onGenerate(ctx);
-    output.indexFiles.models = this.generateIndexFile(ctx);
+    output.typescript.indexFiles.models = this.generateIndexFile(ctx);
     return output;
   }
 
@@ -70,7 +72,7 @@ export class TypeScriptModelsGenerator extends OpenApiSchemasGenerationProviderB
   }
 
   protected override addSchemaResult(ctx: Context, schema: ApiSchema, result: SchemaOutput): void {
-    ctx.output.models[schema.id] = result;
+    ctx.output.typescript.models[schema.id] = result;
   }
 
   protected generateIndexFile(ctx: Context): string | null {
@@ -85,12 +87,12 @@ export class TypeScriptModelsGenerator extends OpenApiSchemasGenerationProviderB
   }
 
   protected getIndexFilePath(ctx: Context): string | null {
-    return ctx.config.indexFilePath ? resolve(ctx.config.outputDir, ctx.config.indexFilePath) : null;
+    return ctx.config.modelsIndexFile ? resolve(ctx.config.outputDir, ctx.config.modelsIndexFile) : null;
   }
 
   protected getIndexFileContent(ctx: Context): AppendValueGroup<TypeScriptFileBuilder> {
     return appendValueGroup(
-      Object.values(ctx.output.models).flatMap((x) => {
+      Object.values(ctx.output.typescript.models).flatMap((x) => {
         const { filePath } = x;
         if (!filePath) return [];
         return [ts.export(x.component, filePath), ...(x.additionalExports?.map((e) => ts.export(e, filePath)) ?? [])];

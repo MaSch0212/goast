@@ -2,87 +2,89 @@
 │ state                                │
 ├──────────────────────────────────────┤
 {
-  models: {
-    'schema-1': {
-      __source__: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml#/definitions/MyString',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'String',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-2': {
-      __source__: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml#/definitions/MyInteger',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Int',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-3': {
-      __source__: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml#/definitions/MyNumber',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Double',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-4': {
-      __source__: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml#/definitions/MyBoolean',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'Boolean',
-        nullable: false,
-        packageName: 'kotlin',
-        subReference: null
-      }
-    },
-    'schema-5': {
-      __source__: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml#/definitions/MyArray',
-      type: KtReference {
-        classReference: false,
-        generics: [
-          KtReference {
-            classReference: false,
-            generics: [],
-            inject: {},
-            name: 'Any',
-            nullable: true,
-            packageName: 'kotlin',
-            subReference: null
-          }
-        ],
-        inject: {},
-        name: 'List',
-        nullable: false,
-        packageName: 'kotlin.collections',
-        subReference: null
-      }
-    },
-    'schema-6': {
-      __source__: '<root>\\test\\openapi-files\\v2\\simple-schemas.yml#/definitions/MyObject',
-      type: KtReference {
-        classReference: false,
-        generics: [],
-        inject: {},
-        name: 'MyObject',
-        nullable: false,
-        packageName: 'com.openapi.generated.model',
-        subReference: null
+  kotlin: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/openapi-files/v2/simple-schemas.yml#/definitions/MyString',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/openapi-files/v2/simple-schemas.yml#/definitions/MyInteger',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/openapi-files/v2/simple-schemas.yml#/definitions/MyNumber',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Double',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/openapi-files/v2/simple-schemas.yml#/definitions/MyBoolean',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Boolean',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/openapi-files/v2/simple-schemas.yml#/definitions/MyArray',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Any',
+              nullable: true,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/openapi-files/v2/simple-schemas.yml#/definitions/MyObject',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'MyObject',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
       }
     }
   }

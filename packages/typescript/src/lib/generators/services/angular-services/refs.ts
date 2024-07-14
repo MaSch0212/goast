@@ -8,7 +8,7 @@ import type { TypeScriptAngularServicesGeneratorConfig } from './models';
 
 // See packages/typescript/assets/client/angular for reference
 export function getReferenceFactories(options: TypeScriptAngularServicesGeneratorConfig) {
-  const utilsDirPath = resolve(options.outputDir, options.utilsDirPath);
+  const utilsDirPath = resolve(options.outputDir, options.utilsDir);
   return {
     // angular-service.utils.ts
     abortablePromise: ts.reference.genericFactory<1>(

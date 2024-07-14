@@ -31,7 +31,7 @@ type Config = TypeScriptFetchClientsGeneratorConfig;
 type ServiceOutput = TypeScriptFetchClientGeneratorOutput;
 type Context = TypeScriptFetchClientsGeneratorContext;
 
-export class TypeScriptClientsGenerator extends OpenApiServicesGenerationProviderBase<
+export class TypeScriptFetchClientsGenerator extends OpenApiServicesGenerationProviderBase<
   Input,
   Output,
   Config,
@@ -48,9 +48,12 @@ export class TypeScriptClientsGenerator extends OpenApiServicesGenerationProvide
 
   protected override initResult(): Output {
     return {
-      clients: {},
-      indexFiles: {
-        clients: undefined,
+      typescript: {
+        clients: {},
+        indexFiles: {
+          clients: undefined,
+          clientInterfaces: undefined,
+        },
       },
     };
   }
@@ -68,7 +71,8 @@ export class TypeScriptClientsGenerator extends OpenApiServicesGenerationProvide
   public override onGenerate(ctx: Context): Output {
     this.copyUtilsFiles(ctx);
     const output = super.onGenerate(ctx);
-    output.indexFiles.clients = this.generateIndexFile(ctx);
+    output.typescript.indexFiles.clients = this.generateIndexFile(ctx);
+    output.typescript.indexFiles.clientInterfaces = this.generateInterfaceIndexFile(ctx);
     return output;
   }
 
@@ -81,7 +85,7 @@ export class TypeScriptClientsGenerator extends OpenApiServicesGenerationProvide
   }
 
   protected override addServiceResult(ctx: Context, service: ApiService, result: ServiceOutput): void {
-    ctx.output.clients[service.id] = result;
+    ctx.output.typescript.clients[service.id] = result;
   }
 
   protected generateIndexFile(ctx: Context): string | null {
@@ -97,14 +101,51 @@ export class TypeScriptClientsGenerator extends OpenApiServicesGenerationProvide
     return filePath;
   }
 
+  protected generateInterfaceIndexFile(ctx: Context): string | null {
+    const filePath = this.getInterfaceIndexFilePath(ctx);
+    const clientsFilePath = this.getIndexFilePath(ctx);
+
+    if (filePath && filePath === clientsFilePath) {
+      return clientsFilePath;
+    }
+
+    TypeScriptFileBuilder.tryGenerate({
+      logName: 'client interfaces index file',
+      filePath,
+      options: ctx.config,
+      generator: (b) => b.append(this.getInterfaceIndexFileContent(ctx)),
+    });
+
+    return filePath;
+  }
+
   protected getIndexFilePath(ctx: Context): string | null {
-    return ctx.config.indexFilePath ? resolve(ctx.config.outputDir, ctx.config.indexFilePath) : null;
+    return ctx.config.clientsIndexFile ? resolve(ctx.config.outputDir, ctx.config.clientsIndexFile) : null;
+  }
+
+  protected getInterfaceIndexFilePath(ctx: Context): string | null {
+    return ctx.config.clientInterfacesIndexFile
+      ? resolve(ctx.config.outputDir, ctx.config.clientInterfacesIndexFile)
+      : null;
   }
 
   protected getIndexFileContent(ctx: Context): AppendValueGroup<TypeScriptFileBuilder> {
+    const cIndexPath = this.getIndexFilePath(ctx);
+    const iIndexPath = this.getInterfaceIndexFilePath(ctx);
     return appendValueGroup(
-      Object.values(ctx.output.clients)
-        .flatMap((c) => [c.class, c.interface])
+      (iIndexPath && iIndexPath === cIndexPath
+        ? Object.values(ctx.output.typescript.clients).flatMap((c) => [c.client, c.clientInterface])
+        : Object.values(ctx.output.typescript.clients).map((c) => c.client)
+      )
+        .filter(notNullish)
+        .map((x) => ts.export(x.component, x.filePath)),
+    );
+  }
+
+  protected getInterfaceIndexFileContent(ctx: Context): AppendValueGroup<TypeScriptFileBuilder> {
+    return appendValueGroup(
+      Object.values(ctx.output.typescript.clients)
+        .map((c) => c.clientInterface)
         .filter(notNullish)
         .map((x) => ts.export(x.component, x.filePath)),
     );
@@ -112,7 +153,7 @@ export class TypeScriptClientsGenerator extends OpenApiServicesGenerationProvide
 
   private copyUtilsFiles(ctx: Context): void {
     const sourceDir = resolve(dirname(require.resolve('@goast/typescript')), '../assets/client/fetch');
-    const targetDir = resolve(ctx.config.outputDir, ctx.config.utilsDirPath);
+    const targetDir = resolve(ctx.config.outputDir, ctx.config.utilsDir);
     ensureDirSync(targetDir);
 
     const files = readdirSync(sourceDir);

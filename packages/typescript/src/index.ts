@@ -1,3 +1,4 @@
+export * from './lib/ast';
 export * from './lib/common-results';
 export * from './lib/config';
 export * from './lib/generators';

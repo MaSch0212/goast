@@ -6,7 +6,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml',
+        file: '<root>/test/openapi-files/v3.1/simple-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/components/schemas/MyString'
       },
@@ -38,7 +38,7 @@
       '$src': {
         component: '19 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml',
+        file: '<root>/test/openapi-files/v3.1/simple-schemas.yml',
         originalComponent: '19 inspect chars',
         path: '/components/schemas/MyInteger'
       },
@@ -69,7 +69,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml',
+        file: '<root>/test/openapi-files/v3.1/simple-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/components/schemas/MyNumber'
       },
@@ -100,7 +100,7 @@
       '$src': {
         component: '19 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml',
+        file: '<root>/test/openapi-files/v3.1/simple-schemas.yml',
         originalComponent: '19 inspect chars',
         path: '/components/schemas/MyBoolean'
       },
@@ -129,7 +129,7 @@
       '$src': {
         component: '17 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml',
+        file: '<root>/test/openapi-files/v3.1/simple-schemas.yml',
         originalComponent: '17 inspect chars',
         path: '/components/schemas/MyArray'
       },
@@ -160,7 +160,7 @@
       '$src': {
         component: '18 inspect chars',
         document: '9 inspect chars',
-        file: '<root>\\test\\openapi-files\\v3.1\\simple-schemas.yml',
+        file: '<root>/test/openapi-files/v3.1/simple-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/components/schemas/MyObject'
       },
