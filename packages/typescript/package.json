@@ -1,7 +1,22 @@
 {
   "name": "@goast/typescript",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "repository": "https://github.com/MaSch0212/goast.git",
+  "description": "Provides gOAst generators for generating TypeScript code from OpenAPI specifications.",
+  "keywords": [
+    "goast",
+    "openapi",
+    "swagger",
+    "api",
+    "generator",
+    "transformer",
+    "schema",
+    "typescript",
+    "angular",
+    "stubs",
+    "easy-network-stub",
+    "fetch"
+  ],
   "author": {
     "name": "Marc Schmidt (MaSch0212)",
     "url": "https://github.com/MaSch0212"
