@@ -53,19 +53,43 @@ jobs:
           name: dist
 
       - name: Publish @goast/core
+        id: publish-core
         uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: dist/packages/core
 
+      - name: Create Tag for @goast/core
+        if: ${{ steps.publish-core.outputs.type }}
+        uses: cardinalby/git-tag-action@master
+        env:
+          TAG: core/v${{ steps.publish-core.outputs.version }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Publish @goast/kotlin
+        id: publish-kotlin
         uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: dist/packages/kotlin
 
+      - name: Create Tag for @goast/kotlin
+        if: ${{ steps.publish-kotlin.outputs.type }}
+        uses: cardinalby/git-tag-action@master
+        env:
+          TAG: kotlin/v${{ steps.publish-kotlin.outputs.version }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Publish @goast/typescript
+        id: publish-typescript
         uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: dist/packages/typescript
+
+      - name: Create Tag for @goast/typescript
+        if: ${{ steps.publish-typescript.outputs.type }}
+        uses: cardinalby/git-tag-action@master
+        env:
+          TAG: typescript/v${{ steps.publish-typescript.outputs.version }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
