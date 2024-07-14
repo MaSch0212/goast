@@ -130,7 +130,7 @@
 └──────────────────────────────────────┘
 
 ┌──────────────────────────────────────┐
-│ <root>/out/models/pet.ts       │
+│ <root>/out/models/pet.ts             │
 ├──────────────────────────────────────┤
 import { Cat } from './cat';
 import { Dog } from './dog';
@@ -154,7 +154,7 @@ export type Pet<TPetType extends PetDiscriminator = PetDiscriminator> = (PetBase
 └──────────────────────────────────────┘
 
 ┌──────────────────────────────────────┐
-│ <root>/out/models/schema-9.ts  │
+│ <root>/out/models/schema-9.ts        │
 ├──────────────────────────────────────┤
 /**
  * The measured skill for hunting
@@ -178,7 +178,7 @@ export const SCHEMA_9_VALUES = [
 └──────────────────────────────────────┘
 
 ┌──────────────────────────────────────┐
-│ <root>/out/models/cat.ts       │
+│ <root>/out/models/cat.ts             │
 ├──────────────────────────────────────┤
 import { PetBase } from './pet';
 import { Schema9 } from './schema-9';
@@ -195,7 +195,7 @@ export type Cat = (Omit<(PetBase) & ({
 └──────────────────────────────────────┘
 
 ┌──────────────────────────────────────┐
-│ <root>/out/models/dog.ts       │
+│ <root>/out/models/dog.ts             │
 ├──────────────────────────────────────┤
 import { PetBase } from './pet';
 
@@ -211,7 +211,7 @@ export type Dog = (Omit<(PetBase) & ({
 └──────────────────────────────────────┘
 
 ┌──────────────────────────────────────┐
-│ <root>/out/models.ts           │
+│ <root>/out/models.ts                 │
 ├──────────────────────────────────────┤
 export { Cat } from './models/cat';
 export { Dog } from './models/dog';

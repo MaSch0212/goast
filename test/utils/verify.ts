@@ -40,7 +40,12 @@ function dataToText(data: unknown, depth: number = 100): string {
   let text: string;
 
   if (data instanceof MultipartData) {
-    text = data.map(([key, value]) => `${header(key)}${dataToText(value, depth)}\n${footer(key)}`).join('\n\n');
+    text = data
+      .map(([key, value]) => {
+        const normalizedKey = normalizePaths(key);
+        return `${header(normalizedKey)}${dataToText(value, depth)}\n${footer(normalizedKey)}`;
+      })
+      .join('\n\n');
   } else {
     text = typeof data === 'string' ? data : util.inspect(data, { depth, sorted: true });
   }

@@ -63,24 +63,24 @@
 └──────────────────────────────────────┘
 
 ┌──────────────────────────────────────┐
-│ <root>/out/models/my-title.ts  │
+│ <root>/out/models/my-title.ts        │
 ├──────────────────────────────────────┤
 export type MyTitle = string;
 
 └──────────────────────────────────────┘
 
-┌────────────────────────────────────────────┐
+┌──────────────────────────────────────┐
 │ <root>/out/models/with-all-common.ts │
-├────────────────────────────────────────────┤
+├──────────────────────────────────────┤
 /**
  * My Description
  */
 export type WithAllCommon = string;
 
-└────────────────────────────────────────────┘
+└──────────────────────────────────────┘
 
 ┌──────────────────────────────────────┐
-│ <root>/out/models/my-enum.ts   │
+│ <root>/out/models/my-enum.ts         │
 ├──────────────────────────────────────┤
 export type MyEnum = ('one') | ('two') | ('three');
 
@@ -92,14 +92,14 @@ export const MY_ENUM_VALUES = ['one', 'two', 'three'] as const;
 └──────────────────────────────────────┘
 
 ┌──────────────────────────────────────┐
-│ <root>/out/models/read-only.ts │
+│ <root>/out/models/read-only.ts       │
 ├──────────────────────────────────────┤
 export type ReadOnly = string;
 
 └──────────────────────────────────────┘
 
 ┌──────────────────────────────────────┐
-│ <root>/out/models.ts           │
+│ <root>/out/models.ts                 │
 ├──────────────────────────────────────┤
 export { MY_ENUM_VALUES, MyEnum } from './models/my-enum';
 export { MyTitle } from './models/my-title';
