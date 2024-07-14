@@ -12,7 +12,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Enable Corepack
         run: corepack enable
@@ -56,7 +56,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Download dist
         uses: actions/download-artifact@v4
         with:
@@ -71,11 +76,10 @@ jobs:
           package: dist/packages/core
 
       - name: Create Tag for @goast/core
-        if: ${{ steps.publish-core.outputs.type }}
-        uses: cardinalby/git-tag-action@master
-        env:
-          TAG: core/v${{ steps.publish-core.outputs.version }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: rickstaa/action-create-tag@v1
+        with:
+          tag: core/v${{ steps.publish-core.outputs.version }}
+          tag_exists_error: false
 
       - name: Publish @goast/kotlin
         id: publish-kotlin
@@ -85,11 +89,10 @@ jobs:
           package: dist/packages/kotlin
 
       - name: Create Tag for @goast/kotlin
-        if: ${{ steps.publish-kotlin.outputs.type }}
-        uses: cardinalby/git-tag-action@master
-        env:
-          TAG: kotlin/v${{ steps.publish-kotlin.outputs.version }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: rickstaa/action-create-tag@v1
+        with:
+          tag: kotlin/v${{ steps.publish-kotlin.outputs.version }}
+          tag_exists_error: false
 
       - name: Publish @goast/typescript
         id: publish-typescript
@@ -99,8 +102,7 @@ jobs:
           package: dist/packages/typescript
 
       - name: Create Tag for @goast/typescript
-        if: ${{ steps.publish-typescript.outputs.type }}
-        uses: cardinalby/git-tag-action@master
-        env:
-          TAG: typescript/v${{ steps.publish-typescript.outputs.version }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: rickstaa/action-create-tag@v1
+        with:
+          tag: typescript/v${{ steps.publish-typescript.outputs.version }}
+          tag_exists_error: false
