@@ -24,7 +24,7 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
         run: pnpm run lint
@@ -61,6 +61,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dist
+          path: dist
 
       - name: Publish @goast/core
         id: publish-core
