@@ -2,72 +2,74 @@
 │ state                                │
 ├──────────────────────────────────────┤
 {
-  indexFiles: { models: '<root>/out/models.ts' },
-  models: {
-    'schema-1': {
-      __source__: '<root>/test/openapi-files/v3.1/detailed-schemas.yml#/components/schemas/WithTitle',
-      additionalExports: [],
-      component: 'MyTitle',
-      filePath: '<root>/out/models/my-title.ts',
-      imports: [
-        {
-          kind: 'file',
-          modulePath: '<root>/out/models/my-title.ts',
-          name: 'MyTitle'
-        }
-      ]
-    },
-    'schema-2': {
-      __source__: '<root>/test/openapi-files/v3.1/detailed-schemas.yml#/components/schemas/WithAllCommon',
-      additionalExports: [],
-      component: 'WithAllCommon',
-      filePath: '<root>/out/models/with-all-common.ts',
-      imports: [
-        {
-          kind: 'file',
-          modulePath: '<root>/out/models/with-all-common.ts',
-          name: 'WithAllCommon'
-        }
-      ]
-    },
-    'schema-3': {
-      __source__: '<root>/test/openapi-files/v3.1/detailed-schemas.yml#/components/schemas/MyEnum',
-      additionalExports: [ 'MY_ENUM_VALUES' ],
-      component: 'MyEnum',
-      filePath: '<root>/out/models/my-enum.ts',
-      imports: [
-        {
-          kind: 'file',
-          modulePath: '<root>/out/models/my-enum.ts',
-          name: 'MyEnum'
-        }
-      ]
-    },
-    'schema-4': {
-      __source__: '<root>/test/openapi-files/v3.1/detailed-schemas.yml#/components/schemas/WriteOnly',
-      additionalExports: [],
-      component: 'WriteOnly',
-      filePath: '<root>/out/models/write-only.ts',
-      imports: [
-        {
-          kind: 'file',
-          modulePath: '<root>/out/models/write-only.ts',
-          name: 'WriteOnly'
-        }
-      ]
-    },
-    'schema-5': {
-      __source__: '<root>/test/openapi-files/v3.1/detailed-schemas.yml#/components/schemas/ReadOnly',
-      additionalExports: [],
-      component: 'ReadOnly',
-      filePath: '<root>/out/models/read-only.ts',
-      imports: [
-        {
-          kind: 'file',
-          modulePath: '<root>/out/models/read-only.ts',
-          name: 'ReadOnly'
-        }
-      ]
+  typescript: {
+    indexFiles: { models: '<root>/out/models.ts' },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/openapi-files/v3.1/detailed-schemas.yml#/components/schemas/WithTitle',
+        additionalExports: [],
+        component: 'MyTitle',
+        filePath: '<root>/out/models/my-title.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>/out/models/my-title.ts',
+            name: 'MyTitle'
+          }
+        ]
+      },
+      'schema-2': {
+        __source__: '<root>/test/openapi-files/v3.1/detailed-schemas.yml#/components/schemas/WithAllCommon',
+        additionalExports: [],
+        component: 'WithAllCommon',
+        filePath: '<root>/out/models/with-all-common.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>/out/models/with-all-common.ts',
+            name: 'WithAllCommon'
+          }
+        ]
+      },
+      'schema-3': {
+        __source__: '<root>/test/openapi-files/v3.1/detailed-schemas.yml#/components/schemas/MyEnum',
+        additionalExports: [ 'MY_ENUM_VALUES' ],
+        component: 'MyEnum',
+        filePath: '<root>/out/models/my-enum.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>/out/models/my-enum.ts',
+            name: 'MyEnum'
+          }
+        ]
+      },
+      'schema-4': {
+        __source__: '<root>/test/openapi-files/v3.1/detailed-schemas.yml#/components/schemas/WriteOnly',
+        additionalExports: [],
+        component: 'WriteOnly',
+        filePath: '<root>/out/models/write-only.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>/out/models/write-only.ts',
+            name: 'WriteOnly'
+          }
+        ]
+      },
+      'schema-5': {
+        __source__: '<root>/test/openapi-files/v3.1/detailed-schemas.yml#/components/schemas/ReadOnly',
+        additionalExports: [],
+        component: 'ReadOnly',
+        filePath: '<root>/out/models/read-only.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<root>/out/models/read-only.ts',
+            name: 'ReadOnly'
+          }
+        ]
+      }
     }
   }
 }
