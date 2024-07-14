@@ -52,6 +52,7 @@ jobs:
 
   publish:
     name: Publish
+    needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: github.ref == 'refs/heads/main'
