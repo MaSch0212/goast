@@ -44,5 +44,6 @@ Thumbs.db
 /out
 
 **/.verify/**/*.actual.txt
+playground/playground*.ts
 
 .nx
