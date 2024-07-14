@@ -40,7 +40,7 @@ export class DefaultTypeScriptFetchClientGenerator
         generator: (b) => b.append(this.getInterfaceFileContent(ctx)),
       });
 
-      result.interface = { filePath, component: name };
+      result.clientInterface = { filePath, component: name };
     }
 
     if (this.shouldGenerateClass(ctx)) {
@@ -54,7 +54,7 @@ export class DefaultTypeScriptFetchClientGenerator
         generator: (b) => b.append(this.getClassFileContent(ctx)),
       });
 
-      result.class = { filePath, component: name };
+      result.client = { filePath, component: name };
     }
 
     return result;
@@ -84,7 +84,7 @@ export class DefaultTypeScriptFetchClientGenerator
     const params = endpoint.parameters.filter((x) => x.target === 'path' || x.target === 'query');
     const bodySchema = endpoint.requestBody?.content[0]?.schema;
     const responseSchema = this.getResponseSchema(ctx, endpoint);
-    return ts.method(toCasing(endpoint.name, ctx.config.methodCasing), {
+    return ts.method(toCasing(endpoint.name, ctx.config.functionNameCasing), {
       doc: ts.doc({ description: endpoint.description, tags: [endpoint.deprecated ? ts.docTag('deprecated') : null] }),
       parameters: [
         params.length > 0
@@ -198,7 +198,7 @@ export class DefaultTypeScriptFetchClientGenerator
           ],
         })});`,
         s`Object.defineProperty(response, 'isVoidResponse', { value: ${this.getResponseSchema(ctx, endpoint) ? 'false' : 'true'} });`,
-        s`return response as unknown as ${method.returnType!};`,
+        s`return response as unknown as ${method.returnType ?? 'unknown'};`,
       ],
       '\n',
     );
@@ -207,7 +207,7 @@ export class DefaultTypeScriptFetchClientGenerator
   // #endregion
 
   protected getSchemaType(ctx: Context, schema: ApiSchema | undefined, fallback?: ts.Type<Builder>): ts.Type<Builder> {
-    const output = schema && ctx.input.models[schema.id];
+    const output = schema && ctx.input.typescript.models[schema.id];
     if (!output) return fallback ?? this.getAnyType(ctx);
     return (b) => b.appendModelUsage(output);
   }
@@ -221,11 +221,11 @@ export class DefaultTypeScriptFetchClientGenerator
   }
 
   protected getInterfaceName(ctx: Context): string {
-    return toCasing(ctx.service.name, ctx.config.interfaceNameCasing);
+    return toCasing(ctx.service.name, ctx.config.clientInterfaceNameCasing ?? ctx.config.typeNameCasing);
   }
 
   protected getClassName(ctx: Context): string {
-    return toCasing(ctx.service.name, ctx.config.classNameCasing);
+    return toCasing(ctx.service.name, ctx.config.clientNameCasing ?? ctx.config.typeNameCasing);
   }
 
   protected getDefaultOptionsConstantName(ctx: Context): string {
@@ -235,21 +235,21 @@ export class DefaultTypeScriptFetchClientGenerator
   protected getInterfaceFilePath(ctx: Context): string {
     return resolve(
       ctx.config.outputDir,
-      ctx.config.clientInterfaceDirPath ?? ctx.config.clientDirPath,
-      `${toCasing(ctx.service.name, ctx.config.interfaceFileNameCasing ?? ctx.config.fileNameCasing)}.ts`,
+      ctx.config.clientInterfaceDir ?? ctx.config.clientDir,
+      `${toCasing(ctx.service.name, ctx.config.clientInterfaceFileNameCasing ?? ctx.config.fileNameCasing)}.ts`,
     );
   }
 
   protected getClassFilePath(ctx: Context): string {
     return resolve(
       ctx.config.outputDir,
-      ctx.config.clientDirPath,
-      `${toCasing(ctx.service.name, ctx.config.fileNameCasing)}.ts`,
+      ctx.config.clientDir,
+      `${toCasing(ctx.service.name, ctx.config.clientFileNameCasing ?? ctx.config.fileNameCasing)}.ts`,
     );
   }
 
   protected getUtilPath(ctx: Context, fileName: string) {
-    return resolve(ctx.config.outputDir, ctx.config.utilsDirPath, fileName);
+    return resolve(ctx.config.outputDir, ctx.config.utilsDir, fileName);
   }
 
   private getResponseSchema(ctx: Context, endpoint: ApiEndpoint) {

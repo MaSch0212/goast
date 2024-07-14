@@ -1,5 +1,7 @@
 # gOAst
 
+[![GitHub License](https://img.shields.io/github/license/MaSch0212/goast)](LICENSE)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/MaSch0212/goast/build.yml)](https://github.com/MaSch0212/goast/actions/workflows/build.yml)
 [![@goast/core NPM Version](https://img.shields.io/npm/v/%40goast%2Fcore?logo=npm&label=%40goast%2Fcore)](https://www.npmjs.com/package/@goast/core)
 [![@goast/typescript NPM Version](https://img.shields.io/npm/v/%40goast%2Ftypescript?logo=npm&label=%40goast%2Ftypescript)](https://www.npmjs.com/package/@goast/typescript)
 [![@goast/kotlin NPM Version](https://img.shields.io/npm/v/%40goast%2Fkotlin?logo=npm&label=%40goast%2Fkotlin)](https://www.npmjs.com/package/@goast/kotlin)
@@ -138,6 +140,10 @@ generator.useType(MyTypeScriptModelsGenerator, {
 | @goast/typescript | TypeScript generators for OpenAPI specifications                 | [NPM](https://www.npmjs.com/package/@goast/typescript) - [README](./packages/typescript/README.md) |
 | @goast/kotlin     | Kotlin generators for OpenAPI specifications                     | [NPM](https://www.npmjs.com/package/@goast/kotlin) - [README](./packages/kotlin/README.md)         |
 
+## Documentation 📖
+
+A more detailed documentation can be found in the [Wiki](https://github.com/MaSch0212/goast/wiki).
+
 ## Contributing 🧑🏻‍💻
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
@@ -150,6 +156,38 @@ Don't forget to give the project a star! Thanks again!
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
+
+## gOAst Development 🧑‍💻
+
+To contribute to the gOAst project, make sure you have the following prerequisites installed:
+
+- [**Git**](https://git-scm.com/)
+- [**Node.js**](https://nodejs.org/en) (v20 or higher) with corepack enabled
+- [**Visual Studio Code**](https://code.visualstudio.com/) (recommended) with the recommended extensions
+
+To set up the project for local development, follow these steps:
+
+1. Clone the repository (or your fork) using Git:
+   ```bash
+   git clone https://github.com/MaSch0212/goast.git
+   ```
+2. Install the project dependencies using `pnpm`:
+   ```bash
+   pnpm install
+   ```
+3. Adjust the `playground/playground.ts` file according to your needs.
+4. Run the `playground` or `pg` script:
+   ```bash
+   pnpm playground
+   ```
+
+### Other Scripts
+
+- `pnpm build` - Builds all packages.
+- `pnpm test` - Runs the unit tests for all packages.
+- `pnpm lint` - Lints all packages.
+- `pnpm format` - Formats all packages.
+- `pnpm format:check` - Checks the formatting of all packages.
 
 ## License 🔑
 

@@ -8,8 +8,8 @@
       "problemMatcher": [],
       "group": {
         "kind": "build",
-        "isDefault": true,
-      },
+        "isDefault": true
+      }
     },
     {
       "type": "shell",
@@ -18,22 +18,22 @@
       "problemMatcher": [],
       "group": {
         "kind": "test",
-        "isDefault": true,
-      },
+        "isDefault": true
+      }
     },
     {
       "type": "shell",
       "label": "🔎 Lint",
       "command": "pnpm run lint",
       "problemMatcher": [],
-      "group": "test",
+      "group": "test"
     },
     {
       "type": "shell",
       "label": "🛝 Run Playground",
       "command": "pnpm run pg",
       "problemMatcher": [],
-      "group": "test",
-    },
+      "group": "test"
+    }
   ]
 }

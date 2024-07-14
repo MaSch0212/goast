@@ -169,8 +169,8 @@ export class DefaultTypeScriptEasyNetworkStubGenerator
   protected getStubFilePath(ctx: Context): string {
     return resolve(
       ctx.config.outputDir,
-      ctx.config.stubsDirPath,
-      `${toCasing(ctx.service.name, ctx.config.fileNameCasing)}.ts`,
+      ctx.config.stubsDir,
+      `${toCasing(ctx.service.name, ctx.config.stubFileNameCasing ?? ctx.config.fileNameCasing)}.ts`,
     );
   }
 
@@ -202,10 +202,10 @@ export class DefaultTypeScriptEasyNetworkStubGenerator
     let path = endpoint.path;
     let isFirstQueryParam = true;
     for (const param of endpoint.parameters) {
-      let type = ((param.schema && ctx.input.models[param.schema.id]?.component) ?? ts.refs.unknown.name).replace(
-        /^readonly /,
-        '',
-      );
+      let type = (
+        (param.schema && ctx.input.typescript.models[param.schema.id]?.component) ??
+        ts.refs.unknown.name
+      ).replace(/^readonly /, '');
 
       const arrayMatch = /^\((.*)\)\[\]$/.exec(type);
       if (arrayMatch !== null) {
@@ -235,7 +235,7 @@ export class DefaultTypeScriptEasyNetworkStubGenerator
   }
 
   protected getSchemaType(ctx: Context, schema: ApiSchema | undefined, fallback?: ts.Type<Builder>): ts.Type<Builder> {
-    const output = schema && ctx.input.models[schema.id];
+    const output = schema && ctx.input.typescript.models[schema.id];
     if (!output) return fallback ?? this.getAnyType(ctx);
     return (b) => b.appendModelUsage(output);
   }

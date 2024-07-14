@@ -3,10 +3,15 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "pg": "ts-node .\\playground\\index.ts",
+    "postinstall": "pnpm run _ensure-playground",
+    "playground": "tsx ./playground/index.ts",
+    "pg": "pnpm run playground",
     "build": "nx run-many --target=build",
     "test": "nx run-many --target=test",
-    "lint": "nx run-many --target=lint"
+    "lint": "nx run-many --target=lint",
+    "format": "nx format",
+    "format:check": "nx format:check",
+    "_ensure-playground": "node ./tools/scripts/ensure-playground.mjs"
   },
   "private": true,
   "packageManager": "pnpm@9.5.0",
@@ -23,7 +28,7 @@
     "@nx/jest": "19.4.3",
     "@nx/js": "19.4.3",
     "@nx/workspace": "19.4.3",
-    "@swc-node/register": "^1.10.5",
+    "@swc-node/register": "^1.10.7",
     "@swc/core": "^1.6.13",
     "@types/fs-extra": "^11.0.4",
     "@types/jest": "^29.5.12",
@@ -44,9 +49,9 @@
     "prettier": "^3.3.3",
     "ts-jest": "29.2.2",
     "ts-morph": "^23.0.0",
-    "ts-node": "10.9.2",
     "tsc-alias": "^1.8.10",
     "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.16.2",
     "typescript": "~5.5.3"
   }
 }

@@ -1,21 +1,36 @@
-import { EOL } from 'os';
-
 import { isNullish } from './common.utils';
 import { Condition, evalCondition } from './condition';
-import { AppendParam, AppendValue, StringBuilder, StringBuilderOptions } from './string-builder';
+import {
+  AppendParam,
+  AppendValue,
+  defaultStringBuilderOptions,
+  StringBuilder,
+  StringBuilderOptions,
+} from './string-builder';
 import { BuilderFn } from './string-builder/string-builder';
 import { removeStr, trimEnd } from './string.utils';
 import { Nullable } from './type.utils';
 
 export type IndentOptions = { readonly type: 'tabs' } | { readonly type: 'spaces'; readonly count: number };
 
+/**
+ * Options for the `SourceBuilder` class.
+ */
 export type SourceBuilderOptions = StringBuilderOptions & {
+  /**
+   * The type of indentation to use.
+   * @default { type: 'spaces', count: 2 }
+   */
   indent: IndentOptions;
 };
 
+/**
+ * Default options for the `SourceBuilder` class.
+ */
 export const defaultSourceBuilderOptions: SourceBuilderOptions = {
+  ...defaultStringBuilderOptions,
+
   indent: { type: 'spaces', count: 2 },
-  newLine: EOL,
 };
 
 type KnownParatheses = '()' | '[]' | '{}' | '<>';

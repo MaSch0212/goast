@@ -2,9 +2,8 @@ import {
   ApiService,
   DefaultGenerationProviderConfig,
   OpenApiServicesGenerationProviderContext,
-  StringCasing,
-  StringCasingWithOptions,
   Nullable,
+  ExtendedStringCasing,
 } from '@goast/core';
 
 import { getReferenceFactories } from './refs';
@@ -13,54 +12,105 @@ import { TypeScriptGeneratorConfig, defaultTypeScriptGeneratorConfig } from '../
 import { TypeScriptModelsGeneratorOutput } from '../../models/models';
 
 export type TypeScriptFetchClientsGeneratorConfig = TypeScriptGeneratorConfig & {
-  fileNameCasing: StringCasing | StringCasingWithOptions;
-  interfaceFileNameCasing: Nullable<StringCasing | StringCasingWithOptions>;
+  /**
+   * The casing of the client file names. If nullish, the `fileNameCasing` is used.
+   * @default { casing: 'kebab', suffix: '-client' }
+   */
+  clientFileNameCasing: Nullable<ExtendedStringCasing>;
 
-  classNameCasing: StringCasing | StringCasingWithOptions;
-  interfaceNameCasing: StringCasing | StringCasingWithOptions;
-  methodCasing: StringCasing | StringCasingWithOptions;
+  /**
+   * The casing of the client interface file names. If nullish, the `fileNameCasing` is used.
+   * @default { casing: 'kebab', suffix: '-client' }
+   */
+  clientInterfaceFileNameCasing: Nullable<ExtendedStringCasing>;
 
+  /**
+   * The casing of the client names. If nullish, the `typeNameCasing` is used.
+   * @default { casing: 'pascal', suffix: 'Client' }
+   */
+  clientNameCasing: Nullable<ExtendedStringCasing>;
+
+  /**
+   * The casing of the client interface names. If nullish, the `typeNameCasing` is used.
+   * @default { prefix: 'I', casing: 'pascal', suffix: 'Client' }
+   */
+  clientInterfaceNameCasing: Nullable<ExtendedStringCasing>;
+
+  /**
+   * Determines how the client files should be generated.
+   * - `interface` - generates only the interface
+   * - `class` - generates only the class
+   * - `class-and-interface` - generates both the class and the interface
+   * @default 'class'
+   */
   clientFileKind: 'interface' | 'class' | 'class-and-interface';
-  clientDirPath: string;
-  clientInterfaceDirPath: Nullable<string>;
-  indexFilePath: Nullable<string>;
-  interfaceIndexFilePath: Nullable<string>;
-  utilsDirPath: string;
+
+  /**
+   * The directory where the client files should be saved. The path is relative to the output directory.
+   * @default 'clients'
+   */
+  clientDir: string;
+
+  /**
+   * The directory where the client interface files should be saved. The path is relative to the output directory.
+   * @default 'clients/interfaces'
+   */
+  clientInterfaceDir: Nullable<string>;
+
+  /**
+   * The index file where all clients should be exported. The path is relative to the output directory. If nullish, no index file will be generated.
+   * @default 'clients.ts'
+   */
+  clientsIndexFile: Nullable<string>;
+
+  /**
+   * The index file where all client interfaces should be exported. The path is relative to the output directory. If nullish, no index file will be generated.
+   * @default 'clients.ts'
+   */
+  clientInterfacesIndexFile: Nullable<string>;
+
+  /**
+   * The directory where the utilies should be saved. The path is relative to the output directory.
+   * @default 'utils'
+   */
+  utilsDir: string;
 };
 
 export const defaultTypeScriptFetchClientsGeneratorConfig: DefaultGenerationProviderConfig<TypeScriptFetchClientsGeneratorConfig> =
   {
     ...defaultTypeScriptGeneratorConfig,
 
-    fileNameCasing: { casing: 'kebab', suffix: '-client' },
-    interfaceFileNameCasing: null,
+    clientFileNameCasing: { casing: 'kebab', suffix: '-client' },
+    clientInterfaceFileNameCasing: undefined,
 
-    classNameCasing: { casing: 'pascal', suffix: 'Client' },
-    interfaceNameCasing: { prefix: 'I', casing: 'pascal', suffix: 'Client' },
-    methodCasing: 'camel',
+    clientNameCasing: { casing: 'pascal', suffix: 'Client' },
+    clientInterfaceNameCasing: { prefix: 'I', casing: 'pascal', suffix: 'Client' },
 
     clientFileKind: 'class',
-    clientDirPath: 'clients',
-    clientInterfaceDirPath: 'clients/interfaces',
-    indexFilePath: 'clients.ts',
-    interfaceIndexFilePath: 'clients.ts',
-    utilsDirPath: 'utils',
+    clientDir: 'clients',
+    clientInterfaceDir: 'clients/interfaces',
+    clientsIndexFile: 'clients.ts',
+    clientInterfacesIndexFile: 'clients.ts',
+    utilsDir: 'utils',
   };
 
 export type TypeScriptFetchClientsGeneratorInput = TypeScriptModelsGeneratorOutput;
 
 export type TypeScriptFetchClientsGeneratorOutput = {
-  clients: {
-    [serviceId: string]: TypeScriptFetchClientGeneratorOutput;
-  };
-  indexFiles: {
-    clients: Nullable<string>;
+  typescript: {
+    clients: {
+      [serviceId: string]: TypeScriptFetchClientGeneratorOutput;
+    };
+    indexFiles: {
+      clients: Nullable<string>;
+      clientInterfaces: Nullable<string>;
+    };
   };
 };
 
 export type TypeScriptFetchClientGeneratorOutput = {
-  class?: TypeScriptExportOutput;
-  interface?: TypeScriptExportOutput;
+  client?: TypeScriptExportOutput;
+  clientInterface?: TypeScriptExportOutput;
 };
 
 export type TypeScriptFetchClientsGeneratorContext = OpenApiServicesGenerationProviderContext<

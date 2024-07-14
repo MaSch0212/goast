@@ -5,7 +5,7 @@ import { ts } from '../../../ast';
 
 // See packages/typescript/assets/client/fetch for reference
 export function getReferenceFactories(options: TypeScriptFetchClientsGeneratorConfig) {
-  const utilsDirPath = resolve(options.outputDir, options.utilsDirPath);
+  const utilsDirPath = resolve(options.outputDir, options.utilsDir);
   const fetchClientUtilsPath = resolve(utilsDirPath, 'fetch-client.utils.ts');
 
   return {

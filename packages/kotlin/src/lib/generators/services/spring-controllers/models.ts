@@ -33,8 +33,10 @@ export const defaultKotlinServicesGeneratorConfig: DefaultGenerationProviderConf
 export type KotlinServicesGeneratorInput = KotlinModelsGeneratorOutput;
 
 export type KotlinServicesGeneratorOutput = {
-  services: {
-    [serviceId: string]: KotlinServiceGeneratorOutput;
+  kotlin: {
+    services: {
+      [serviceId: string]: KotlinServiceGeneratorOutput;
+    };
   };
 };
 

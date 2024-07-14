@@ -33,8 +33,10 @@ export const defaultKotlinOkHttp3ClientsGeneratorConfig: DefaultGenerationProvid
 export type KotlinOkHttp3ClientsGeneratorInput = KotlinModelsGeneratorOutput;
 
 export type KotlinOkHttp3ClientsGeneratorOutput = {
-  clients: {
-    [serviceId: string]: KotlinOkHttp3ClientGeneratorOutput;
+  kotlin: {
+    clients: {
+      [serviceId: string]: KotlinOkHttp3ClientGeneratorOutput;
+    };
   };
 };
 

@@ -5,7 +5,7 @@ import { ts } from '../../../ast';
 
 // See packages/typescript/assets/stubs/easy-network-stub for reference
 export function getReferenceFactories(options: TypeScriptEasyNetworkStubsGeneratorConfig) {
-  const utilsDirPath = resolve(options.outputDir, options.utilsDirPath);
+  const utilsDirPath = resolve(options.outputDir, options.utilsDir);
   const easyNetworkStubUtilsPath = join(utilsDirPath, 'easy-network-stub.utils.ts');
 
   return {

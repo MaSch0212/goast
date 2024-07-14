@@ -44,7 +44,9 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
 
   protected initResult(): Output {
     return {
-      clients: {},
+      kotlin: {
+        clients: {},
+      },
     };
   }
 
@@ -57,7 +59,7 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
   }
 
   protected addServiceResult(ctx: Context, service: ApiService, result: ServiceOutput): void {
-    ctx.output.clients[service.id] = result;
+    ctx.output.kotlin.clients[service.id] = result;
   }
 
   protected buildContext(

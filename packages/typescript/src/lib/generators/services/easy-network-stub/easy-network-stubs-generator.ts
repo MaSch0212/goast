@@ -53,8 +53,10 @@ export class TypeScriptEasyNetworkStubsGenerator extends OpenApiServicesGenerati
 
   protected override initResult(): Output {
     return {
-      stubs: {},
-      indexFiles: { stubs: undefined },
+      typescript: {
+        stubs: {},
+        indexFiles: { stubs: undefined },
+      },
     };
   }
 
@@ -71,7 +73,7 @@ export class TypeScriptEasyNetworkStubsGenerator extends OpenApiServicesGenerati
   public override onGenerate(ctx: Context): Output {
     const output = super.onGenerate(ctx);
     this.generateUtilsFiles(ctx);
-    output.indexFiles = this.generateIndexFiles(ctx);
+    output.typescript.indexFiles = this.generateIndexFiles(ctx);
     return output;
   }
 
@@ -84,18 +86,18 @@ export class TypeScriptEasyNetworkStubsGenerator extends OpenApiServicesGenerati
   }
 
   protected override addServiceResult(ctx: Context, service: ApiService, result: TypeScriptExportOutput): void {
-    ctx.output.stubs[service.id] = result;
+    ctx.output.typescript.stubs[service.id] = result;
   }
 
   protected generateUtilsFiles(ctx: Context): void {
     const sourceDir = resolve(dirname(require.resolve('@goast/typescript')), '../assets/stubs/easy-network-stub');
-    const targetDir = resolve(ctx.config.outputDir, ctx.config.utilsDirPath);
+    const targetDir = resolve(ctx.config.outputDir, ctx.config.utilsDir);
     ensureDirSync(targetDir);
 
     this.copyFile('easy-network-stub utils', sourceDir, targetDir, 'easy-network-stub.utils.ts');
   }
 
-  protected generateIndexFiles(ctx: Context): Output['indexFiles'] {
+  protected generateIndexFiles(ctx: Context): Output['typescript']['indexFiles'] {
     const stubsIndexFilePath = this.getStubsIndexFilePath(ctx);
 
     TypeScriptFileBuilder.tryGenerate({
@@ -113,7 +115,7 @@ export class TypeScriptEasyNetworkStubsGenerator extends OpenApiServicesGenerati
   protected getStubsIndexFileContent(ctx: Context): AppendValueGroup<TypeScriptFileBuilder> {
     return appendValueGroup(
       [
-        appendValueGroup(Object.values(ctx.output.stubs).map((x) => ts.export(x.component, x.filePath))),
+        appendValueGroup(Object.values(ctx.output.typescript.stubs).map((x) => ts.export(x.component, x.filePath))),
         this.getStubsClass(ctx),
       ],
       '\n',
@@ -131,7 +133,7 @@ export class TypeScriptEasyNetworkStubsGenerator extends OpenApiServicesGenerati
           readonly: true,
           type: ctx.refs.easyNetworkStubWrapper(),
         }),
-        ...Object.entries(ctx.output.stubs).map(([id, x]) =>
+        ...Object.entries(ctx.output.typescript.stubs).map(([id, x]) =>
           ts.property<TypeScriptFileBuilder>(toCasing(serviceNames[id], fieldCasing), {
             accessModifier: 'private',
             optional: true,
@@ -158,7 +160,7 @@ export class TypeScriptEasyNetworkStubsGenerator extends OpenApiServicesGenerati
             body: appendValueGroup(['return this._stubWrapper.requests;'], '\n'),
           }),
         }),
-        ...Object.entries(ctx.output.stubs).map(([id, x]) =>
+        ...Object.entries(ctx.output.typescript.stubs).map(([id, x]) =>
           ts.property<TypeScriptFileBuilder>(toCasing(serviceNames[id], ctx.config.propertyNameCasing), {
             accessModifier: 'public',
             type: ctx.refs.easyNetworkStubGroup([ts.reference(x.component, x.filePath), 'this']),
@@ -177,7 +179,9 @@ export class TypeScriptEasyNetworkStubsGenerator extends OpenApiServicesGenerati
           returnType: 'this',
           body: appendValueGroup(
             [
-              ...Object.keys(ctx.output.stubs).map((id) => `this.${toCasing(serviceNames[id], fieldCasing)}?.reset();`),
+              ...Object.keys(ctx.output.typescript.stubs).map(
+                (id) => `this.${toCasing(serviceNames[id], fieldCasing)}?.reset();`,
+              ),
               'return this;',
             ],
             '\n',
@@ -188,7 +192,7 @@ export class TypeScriptEasyNetworkStubsGenerator extends OpenApiServicesGenerati
   }
 
   protected getStubsIndexFilePath(ctx: Context): string | null {
-    return ctx.config.stubsIndexFilePath ? resolve(ctx.config.outputDir, ctx.config.stubsIndexFilePath) : null;
+    return ctx.config.stubsIndexFile ? resolve(ctx.config.outputDir, ctx.config.stubsIndexFile) : null;
   }
 
   protected getStubsClassName(ctx: Context): string {

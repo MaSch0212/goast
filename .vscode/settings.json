@@ -1,7 +1,7 @@
 {
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll": "explicit",
+    "source.fixAll": "explicit"
   },
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
@@ -9,13 +9,13 @@
     "project.json": "package.json, tsconfig*.json, jest.*, .eslint*",
     "package.json": "tsconfig*.json, pnpm-lock.yaml, jest.*, .editorconfig, .prettier*, .npmrc, nx.json, .eslint*",
     "*.ts": "$(capture).spec.ts, $(capture).types.ts",
-    "*.js": "$(capture).js.map",
+    "*.js": "$(capture).js.map"
   },
   "task.autoDetect": "off",
   "[go]": {
     "editor.codeActionsOnSave": {
-      "source.fixAll": "explicit",
-    },
+      "source.fixAll": "explicit"
+    }
   },
-  "typescript.tsdk": "🏠 Root/node_modules/typescript/lib",
+  "typescript.tsdk": "🏠 Root/node_modules/typescript/lib"
 }

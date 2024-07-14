@@ -45,6 +45,8 @@ export type StringCasingWithOptions<T extends StringCasing = StringCasing> = {
   casing: T;
 } & CaseOptions<T>;
 
+export type ExtendedStringCasing = StringCasing | StringCasingWithOptions;
+
 export type CaseOptions<T extends StringCasing> = T extends 'camel'
   ? Partial<CamelCaseOptions>
   : T extends 'pascal'

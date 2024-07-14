@@ -3,10 +3,9 @@ import {
   ApiSchema,
   ApiService,
   DefaultGenerationProviderConfig,
+  ExtendedStringCasing,
   Nullable,
   OpenApiServicesGenerationProviderContext,
-  StringCasing,
-  StringCasingWithOptions,
 } from '@goast/core';
 
 import { getReferenceFactories } from './refs';
@@ -17,26 +16,27 @@ import { TypeScriptFileBuilder } from '../../../file-builder';
 import { TypeScriptModelGeneratorOutput } from '../../models';
 
 export type TypeScriptAngularServicesGeneratorConfig = TypeScriptGeneratorConfig & {
-  responseModelFileNameCasing: StringCasing | StringCasingWithOptions;
-
   /**
    * How the services should be provided in the Angular application.
    * - `root` - provides all the services using `Injectable({ providedIn: 'root' })`
    * - `provide-fn` - generates a function `provideApiClients` that provides the services
-   * - `module` - generates an angular module `ApiClientModule` that provides the services
    * @default 'root'
    */
   provideKind: 'root' | 'provide-fn';
+
   /**
    * The domain name of the API. Used as a prefix for exported components (e.g. `ApiConfiguration`).
+   * @default undefined
    */
-  domainName?: string;
+  domainName: Nullable<string>;
+
   /**
    * Whether to use strict response types for the services.
    * If enabled only the status codes are included that are defined in the OpenAPI specification or the `defaultStatusCodeResponseTypes` option.
    * @default true
    */
   strictResponseTypes: boolean;
+
   /**
    * The default response types for status codes that are not defined in the OpenAPI specification.
    * @example
@@ -68,32 +68,76 @@ export type TypeScriptAngularServicesGeneratorConfig = TypeScriptGeneratorConfig
       type: Exclude<ts.Type<TypeScriptFileBuilder>, Function> | ((schemas: readonly ApiSchema[]) => ApiSchema);
     } | null
   >;
+
   /**
    * The possible status codes that any API endpoint can return.
-   * This is only used when `strictResponseTypes` is set to `false`;
+   * This is only used when `strictResponseTypes` is set to `false`.
    * @default
    * [100, 101, 102, 103, 200, 201, 202, 203, 204, 205, 206, 207, 208, 226, 300, 301, 302, 303, 304, 305, 306, 307, 308, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 421, 422, 423, 424, 425, 426, 428, 429, 431, 451, 500, 501, 502, 503, 504, 505, 506, 507, 508, 510, 511]
    */
   possibleStatusCodes: number[];
 
-  rootUrl?: string | RegExp | ((rootUrl: string) => string);
-  pathModifier?: RegExp | ((path: string, endpoint: ApiEndpoint) => string);
+  /**
+   * Explicitly set the root URL of the API. If `undefined`, the root URL is taken from the first `server` in the OpenAPI specification.
+   * @default undefined
+   */
+  rootUrl: Nullable<string | RegExp | ((rootUrl: string) => string)>;
 
-  servicesDirPath: string;
-  servicesIndexFilePath: Nullable<string>;
-  responseModelsDirPath: string;
-  responseModelsIndexFilePath: Nullable<string>;
-  utilsDirPath: string;
+  /**
+   * Modifier that is applied to the path of each endpoint.
+   * @default undefined
+   */
+  pathModifier: Nullable<RegExp | ((path: string, endpoint: ApiEndpoint) => string)>;
+
+  /**
+   * The directory where the services should be saved. The path is relative to the output directory.
+   * @default 'services'
+   */
+  servicesDir: string;
+
+  /**
+   * The casing of the file names for the services. If nullish, the `fileNameCasing` is used.
+   * @default { casing: 'kebab', suffix: '.service' }
+   */
+  serviceFileNameCasing: Nullable<ExtendedStringCasing>;
+
+  /**
+   * The path to the index file where all services should be exported. The path is relative to the output directory. If nullish, no index file will be generated.
+   * @default 'services.ts'
+   */
+  servicesIndexFile: Nullable<string>;
+
+  /**
+   * The directory where the response models should be saved. The path is relative to the output directory.
+   * @default 'models/responses'
+   */
+  responseModelsDir: string;
+
+  /**
+   * The casing of the file names for the response models. If nullish, the `fileNameCasing` is used.
+   * @default { casing: 'kebab', suffix: '-responses.model' }
+   */
+  responseModelFileNameCasing: Nullable<ExtendedStringCasing>;
+
+  /**
+   * The path to the index file where all response models should be exported. The path is relative to the output directory. If nullish, no index file will be generated.
+   * @default 'responses.ts'
+   */
+  responseModelsIndexFile: Nullable<string>;
+
+  /**
+   * The directory where the utilies should be saved. The path is relative to the output directory.
+   * @default 'utils'
+   */
+  utilsDir: string;
 };
 
 export const defaultTypeScriptAngularServicesGeneratorConfig: DefaultGenerationProviderConfig<TypeScriptAngularServicesGeneratorConfig> =
   {
     ...defaultTypeScriptGeneratorConfig,
 
-    fileNameCasing: { casing: 'kebab', suffix: '.service' },
-    responseModelFileNameCasing: { casing: 'kebab', suffix: '-responses.model' },
-
     provideKind: 'provide-fn',
+    domainName: undefined,
     strictResponseTypes: true,
     defaultStatusCodeResponseTypes: {
       401: null,
@@ -105,27 +149,35 @@ export const defaultTypeScriptAngularServicesGeneratorConfig: DefaultGenerationP
       400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 421, 422, 423, 424, 425,
       426, 428, 429, 431, 451, 500, 501, 502, 503, 504, 505, 506, 507, 508, 510, 511,
     ],
+    rootUrl: undefined,
+    pathModifier: undefined,
 
-    servicesDirPath: 'services',
-    servicesIndexFilePath: 'services.ts',
-    responseModelsDirPath: 'models/responses',
-    responseModelsIndexFilePath: 'responses.ts',
-    utilsDirPath: 'utils',
+    servicesDir: 'services',
+    serviceFileNameCasing: { casing: 'kebab', suffix: '.service' },
+    servicesIndexFile: 'services.ts',
+    responseModelsDir: 'models/responses',
+    responseModelFileNameCasing: { casing: 'kebab', suffix: '-responses.model' },
+    responseModelsIndexFile: 'responses.ts',
+    utilsDir: 'utils',
   };
 
 export type TypeScriptAngularServicesGeneratorInput = {
-  models: {
-    [schemaId: string]: TypeScriptModelGeneratorOutput;
+  typescript: {
+    models: {
+      [schemaId: string]: TypeScriptModelGeneratorOutput;
+    };
   };
 };
 
 export type TypeScriptAngularServicesGeneratorOutput = {
-  services: {
-    [serviceId: string]: TypeScriptAngularServiceGeneratorOutput;
-  };
-  indexFiles: {
-    services: Nullable<string>;
-    responseModels: Nullable<string>;
+  typescript: {
+    services: {
+      [serviceId: string]: TypeScriptAngularServiceGeneratorOutput;
+    };
+    indexFiles: {
+      services: Nullable<string>;
+      responseModels: Nullable<string>;
+    };
   };
 };
 
