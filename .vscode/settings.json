@@ -6,8 +6,8 @@
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
-    "project.json": "package.json, tsconfig*.json, jest.*, .eslint*",
-    "package.json": "tsconfig*.json, pnpm-lock.yaml, jest.*, .editorconfig, .prettier*, .npmrc, nx.json, .eslint*",
+    "project.json": "tsconfig*.json, jest.*, .eslint*",
+    "package.json": "project.json, tsconfig*.json, pnpm-lock.yaml, jest.*, .editorconfig, .prettier*, .npmrc, nx.json, .eslint*",
     "*.ts": "$(capture).spec.ts, $(capture).types.ts",
     "*.js": "$(capture).js.map"
   },
