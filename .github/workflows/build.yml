@@ -30,10 +30,19 @@ jobs:
         run: pnpm run lint
 
       - name: Test
+        id: test
         run: pnpm run test
 
       - name: Build
         run: pnpm run build
+
+      - name: Upload failed verify outputs
+        if: always() && (steps.test.outcome == 'failure')
+        uses: actions/upload-artifact@v2
+        with:
+          name: verify-outputs
+          path: packages/**/.verify/**/*
+          if-no-files-found: ignore
 
       - name: Upload dist
         uses: actions/upload-artifact@v2
