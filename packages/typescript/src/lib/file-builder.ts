@@ -7,7 +7,7 @@ import { AppendParam, AppendValue, Nullable, SourceBuilder, isAppendValue } from
 import { TsNode } from './ast/node';
 import { TypeScriptGeneratorConfig, defaultTypeScriptGeneratorConfig } from './config';
 import { TypeScriptModelGeneratorOutput } from './generators';
-import { ImportExportCollection } from './import-collection';
+import { ImportExportCollection, TypeScriptImportOptions } from './import-collection';
 
 export type TypeScriptAppends<TAdditionalAppends> = TsNode<TypeScriptFileBuilder> | TAdditionalAppends;
 export type TypeScriptAppendParam<TBuilder extends TypeScriptFileBuilder, TAdditionalAppends> = AppendParam<
@@ -41,8 +41,8 @@ export class TypeScriptFileBuilder<TAdditionalAppends = never> extends SourceBui
     });
   }
 
-  public addImport(name: string, moduleNameOrfilePath: string): this {
-    this.imports.addImport(name, moduleNameOrfilePath);
+  public addImport(name: string, moduleNameOrfilePath: string, options?: TypeScriptImportOptions): this {
+    this.imports.addImport(name, moduleNameOrfilePath, options);
     return this;
   }
 
@@ -58,6 +58,11 @@ export class TypeScriptFileBuilder<TAdditionalAppends = never> extends SourceBui
 
   public override toString(addPadding: boolean = true): string {
     const builder = new SourceBuilder(this.options);
+    if (this.filePath?.match(/\.[cm]?js$/)) {
+      builder.appendLine('// @ts-check');
+    }
+
+    builder.ensurePreviousLineEmpty();
     this.imports.writeTo(builder);
 
     const baseString = super.toString();
@@ -81,10 +86,10 @@ export class TypeScriptFileBuilder<TAdditionalAppends = never> extends SourceBui
     }
   }
 
-  public appendModelUsage(type: TypeScriptModelGeneratorOutput): this {
+  public appendModelUsage(type: TypeScriptModelGeneratorOutput, options?: TypeScriptImportOptions): this {
     this.append(type.component);
     for (const i of type.imports) {
-      this.addImport(i.name, i.modulePath);
+      this.addImport(i.name, i.modulePath, options);
     }
     return this;
   }

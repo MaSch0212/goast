@@ -11,9 +11,11 @@ export type TypeScriptExportOutput = {
 };
 
 export type TypeScriptImportKind = 'module' | 'file';
+export type TypeScriptImportType = 'import' | 'type-import' | 'js-doc';
 
 export type TypeScriptImport = {
   kind: TypeScriptImportKind;
+  type: TypeScriptImportType;
   modulePath: string;
   name: string;
 };
