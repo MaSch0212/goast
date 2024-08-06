@@ -162,15 +162,42 @@ const schemaTransformers: {
 
 function resolveDescriminatorMapping(context: OpenApiTransformerContext, schema: ApiSchema) {
   const discriminator = schema.$src.component.discriminator;
-  if (!discriminator || typeof discriminator === 'string' || !discriminator.mapping) return;
-  for (const key of Object.keys(discriminator.mapping)) {
-    const mappedSchemaRef = discriminator.mapping[key];
-    const mappedSchema = transformSchema(context, mappedSchemaRef);
-    if (schema.discriminator) {
-      schema.discriminator.mapping[key] = mappedSchema;
-      mappedSchema.inheritedSchemas.push(
-        schema as ApiSchema & { discriminator: NonNullable<ApiSchema['discriminator']> },
-      );
+  if (discriminator && typeof discriminator === 'object' && discriminator.mapping) {
+    for (const key of Object.keys(discriminator.mapping)) {
+      const mappedSchemaRef = discriminator.mapping[key];
+      const mappedSchema = transformSchema(context, mappedSchemaRef);
+      if (schema.discriminator) {
+        schema.discriminator.mapping[key] = mappedSchema;
+        mappedSchema.inheritedSchemas.push(
+          schema as ApiSchema & { discriminator: NonNullable<ApiSchema['discriminator']> },
+        );
+      }
     }
   }
+
+  if (schema.kind === 'combined' && schema.allOf) {
+    for (const s of schema.allOf) {
+      const base = findDiscriminatedSchema(s);
+      if (!base) continue;
+      if (base.discriminator && base.discriminator.propertyName) {
+        const existingMapping = Object.values(base.discriminator.mapping).find((x) => x.id === schema.id);
+        if (existingMapping) return;
+        const mappingKey = schema.isNameGenerated ? null : schema.name;
+        if (mappingKey && !base.discriminator.mapping[mappingKey]) {
+          base.discriminator.mapping[mappingKey] = schema;
+          schema.inheritedSchemas.push(base as ApiSchema & { discriminator: NonNullable<ApiSchema['discriminator']> });
+        }
+      }
+    }
+  }
+}
+
+function findDiscriminatedSchema(
+  schema: ApiSchema,
+): (ApiSchema & { discriminator: NonNullable<ApiSchema['discriminator']> }) | null {
+  const origDiscriminator = schema.$src.originalComponent.discriminator;
+  if (origDiscriminator && (typeof origDiscriminator === 'string' || origDiscriminator.propertyName)) {
+    return schema as ApiSchema & { discriminator: NonNullable<ApiSchema['discriminator']> };
+  }
+  return schema.$ref ? findDiscriminatedSchema(schema.$ref) : null;
 }
