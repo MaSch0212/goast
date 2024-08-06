@@ -32,6 +32,7 @@
     "@swc/core": "^1.6.13",
     "@types/fs-extra": "^11.0.4",
     "@types/jest": "^29.5.12",
+    "@types/k6": "^0.52.0",
     "@types/node": "^20.14.10",
     "@types/node-fetch": "^2.6.11",
     "@typescript-eslint/eslint-plugin": "7.16.0",

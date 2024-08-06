@@ -296,11 +296,7 @@ export class RequestBuilder {
    * @param {string} [contentType]
    */
   body(value, contentType = 'application/json') {
-    if (value instanceof Blob) {
-      this._bodyContentType = value.type;
-    } else {
-      this._bodyContentType = contentType;
-    }
+    this._bodyContentType = contentType;
     if (this._bodyContentType === 'application/x-www-form-urlencoded' && value !== null && typeof value === 'object') {
       // Handle URL-encoded data
       /** @type {[string, string][]} */
@@ -318,28 +314,8 @@ export class RequestBuilder {
         }
       }
       this._bodyContent = pairs.map((p) => `${encodeURIComponent(p[0])}=${encodeURIComponent(p[1])}`).join('&');
-    } else if (this._bodyContentType === 'multipart/form-data') {
-      // Handle multipart form data
-      const formData = new FormData();
-      if (value !== null && value !== undefined) {
-        for (const key of Object.keys(value)) {
-          const val = value[key];
-          if (val instanceof Array) {
-            for (const v of val) {
-              const toAppend = this.formDataValue(v);
-              if (toAppend !== null) {
-                formData.append(key, toAppend);
-              }
-            }
-          } else {
-            const toAppend = this.formDataValue(val);
-            if (toAppend !== null) {
-              formData.set(key, toAppend);
-            }
-          }
-        }
-      }
-      this._bodyContent = formData;
+    } else if (this._bodyContentType.indexOf('json') !== -1 && value !== null && typeof value === 'object') {
+      this._bodyContent = JSON.stringify(value);
     } else {
       // The body is the plain content
       this._bodyContent = value;
@@ -354,9 +330,6 @@ export class RequestBuilder {
   formDataValue(value) {
     if (value === null || value === undefined) {
       return null;
-    }
-    if (value instanceof Blob) {
-      return value;
     }
     if (typeof value === 'object') {
       return JSON.stringify(value);
@@ -376,6 +349,26 @@ export class RequestBuilder {
    * @returns {import('k6/http').Response}
    */
   build(options) {
+    // Perform the request
+    return http.request(...this.buildRequestParams(options));
+  }
+
+  /**
+   * Builds the request with the current set parameters
+   * @param {BuildOptions} [options]
+   * @returns {Promise<import('k6/http').Response>}
+   */
+  buildAsync(options) {
+    // Perform the request
+    return http.asyncRequest(...this.buildRequestParams(options));
+  }
+
+  /**
+   * @private
+   * @param {BuildOptions} [options]
+   * @returns {Parameters<typeof import('k6/http').request>}
+   */
+  buildRequestParams(options) {
     options = options || {};
 
     // Path parameters
@@ -402,18 +395,17 @@ export class RequestBuilder {
     }
 
     // Request content headers
-    if (this._bodyContentType && !(this._bodyContent instanceof FormData)) {
+    if (this._bodyContentType) {
       httpHeaders['Content-Type'] = this._bodyContentType;
     }
 
-    // Perform the request
-    return http.request(
+    return [
       this.method.toUpperCase(),
       url + httpParams,
       this._bodyContent,
       Object.assign({}, options.params, {
         headers: Object.assign({}, httpHeaders, options.params ? options.params.headers : {}),
       }),
-    );
+    ];
   }
 }

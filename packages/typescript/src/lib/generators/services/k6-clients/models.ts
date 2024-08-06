@@ -109,6 +109,12 @@ export type TypeScriptK6ClientsGeneratorConfig = TypeScriptGeneratorConfig & {
    * @default 'utils'
    */
   utilsDir: string;
+
+  /**
+   * Whether to generate clients calling the async API of k6.
+   * @default true
+   */
+  async: boolean;
 };
 
 export const defaultTypeScriptK6ClientsGeneratorConfig: DefaultGenerationProviderConfig<TypeScriptK6ClientsGeneratorConfig> =
@@ -136,6 +142,7 @@ export const defaultTypeScriptK6ClientsGeneratorConfig: DefaultGenerationProvide
     clientsIndexFile: 'clients.js',
     responseModelsIndexFile: 'responses.ts',
     utilsDir: 'utils',
+    async: true,
   };
 
 export type TypeScriptK6ClientsGeneratorInput = TypeScriptModelsGeneratorOutput;

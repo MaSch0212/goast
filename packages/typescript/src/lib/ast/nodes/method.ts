@@ -26,6 +26,7 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
     doc?: Nullable<TsDoc<TBuilder>>;
     decorators?: Nullable<Nullable<TsDecorator<TBuilder>>[]>;
     accessModifier?: Nullable<TsAccessModifier>;
+    async?: Nullable<boolean>;
     static?: Nullable<boolean>;
     abstract?: Nullable<boolean>;
     override?: Nullable<boolean>;
@@ -48,6 +49,7 @@ export class TsMethod<TBuilder extends SourceBuilder, TInjects extends string = 
   public static: boolean;
   public abstract: boolean;
   public override: boolean;
+  public async: boolean;
   public name: string;
   public optional: boolean;
   public generics: (TsGenericParameter<TBuilder> | BasicAppendValue<TBuilder>)[];
@@ -63,6 +65,7 @@ export class TsMethod<TBuilder extends SourceBuilder, TInjects extends string = 
     this.static = options.static ?? false;
     this.abstract = options.abstract ?? false;
     this.override = options.override ?? false;
+    this.async = options.async ?? false;
     this.name = options.name;
     this.optional = options.optional ?? false;
     this.generics = options.generics?.filter(notNullish) ?? [];
@@ -87,6 +90,7 @@ export class TsMethod<TBuilder extends SourceBuilder, TInjects extends string = 
     if (this.static) builder.append('static ');
     if (this.abstract) builder.append('abstract ');
     if (this.override) builder.append('override ');
+    if (this.async) builder.append('async ');
     builder.append(this.inject.afterModifiers);
 
     builder.append(this.inject.beforeName, this.name, this.inject.afterName);

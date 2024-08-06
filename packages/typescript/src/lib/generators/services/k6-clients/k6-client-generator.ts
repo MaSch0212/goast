@@ -84,12 +84,16 @@ export class DefaultTypeScriptK6ClientGenerator
           ts.unionType([
             ...Object.entries(statusCodes).map(([key, value]) => {
               return ts.intersectionType<Builder>([
-                ts.refs.k6.response(),
+                ts.refs.omit([ts.refs.k6.response(), ts.string('json')]),
                 ts.objectType({
                   members: [
                     ts.property('status', { type: key }),
                     ts.method('json', {
                       returnType: value.type,
+                    }),
+                    ts.method('json', {
+                      parameters: [ts.parameter('selector', { type: ts.refs.string() })],
+                      returnType: ts.refs.k6.jsonValue(),
                     }),
                   ],
                 }),
@@ -227,12 +231,22 @@ export class DefaultTypeScriptK6ClientGenerator
         ts.constructor({
           doc: ts.doc({
             description: 'Creates a new instance of the client.',
-            tags: [ts.docTag('param', 'rootUrl', { type: ts.refs.string(), text: 'The root URL for this client.' })],
+            tags: [
+              ts.docTag('param', 'rootUrl', 'The root URL for this client.', { type: ts.refs.string() }),
+              ts.docTag(
+                'param',
+                '[defaultK6ParamsFactory]',
+                'A factory function that returns the default K6 parameters.',
+                { type: ts.functionType({ returnType: ts.refs.k6.params({ importType: 'js-doc' }) }) },
+              ),
+            ],
           }),
-          parameters: [ts.constructorParameter('rootUrl')],
-          body: s`this.rootUrl = rootUrl;`,
+          parameters: [ts.constructorParameter('rootUrl'), ts.constructorParameter('defaultK6ParamsFactory')],
+          body: s`this.rootUrl = rootUrl;
+                  this._defaultK6ParamsFactory = defaultK6ParamsFactory;`,
         }),
         ...ctx.service.endpoints.map((e) => this.getEndpointMethod(ctx, e)),
+        this.getGetK6ParamsMethod(ctx),
       ],
     });
   }
@@ -249,6 +263,7 @@ export class DefaultTypeScriptK6ClientGenerator
     const accept = this.getEndpointSuccessResponse(ctx, endpoint)?.contentOptions[0]?.type ?? '*/*';
 
     return ts.method<Builder>(this.getEndpointMethodName(ctx, endpoint), {
+      async: ctx.config.async,
       parameters: [hasParams ? ts.parameter('params') : null, ts.parameter('k6Params')],
       doc: ts.doc({
         description: endpoint.description,
@@ -262,7 +277,7 @@ export class DefaultTypeScriptK6ClientGenerator
             type: ts.refs.k6.params({ importType: 'js-doc' }),
           }),
           ts.docTag('returns', {
-            type: returnType,
+            type: ctx.config.async ? ts.refs.promise([returnType]) : returnType,
           }),
           endpoint.deprecated ? ts.docTag('deprecated') : null,
         ],
@@ -299,14 +314,27 @@ export class DefaultTypeScriptK6ClientGenerator
             : null,
           '',
           s`return /** @type {${returnType}} */ (${s.indent`
-              rb.build({${s.indent`
+              ${ctx.config.async ? 'await rb.buildAsync' : 'rb.build'}({${s.indent`
                 accept: ${ts.string(accept)},
-                params: k6Params,`}
+                params: this.getK6Params(k6Params),`}
               })`}
             );`,
         ],
         '\n',
       ),
+    });
+  }
+
+  protected getGetK6ParamsMethod(ctx: Context): ts.Method<Builder> {
+    return ts.method('getK6Params', {
+      doc: ts.doc({
+        tags: [
+          ts.docTag('private'),
+          ts.docTag('param', '[k6Params]', { type: ts.refs.k6.params({ importType: 'js-doc' }) }),
+        ],
+      }),
+      parameters: [ts.parameter('k6Params')],
+      body: s`return Object.assign({}, this._defaultK6ParamsFactory ? this._defaultK6ParamsFactory() : {}, k6Params);`,
     });
   }
 
