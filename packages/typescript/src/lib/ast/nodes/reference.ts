@@ -1,6 +1,7 @@
 import { AstNodeOptions, Nullable, Prettify, SourceBuilder, TupleWithCount, notNullish } from '@goast/core';
 
 import { TsType } from './types';
+import { TypeScriptImportType } from '../../common-results';
 import { TypeScriptFileBuilder } from '../../file-builder';
 import { TsNode } from '../node';
 import { writeTsGenericParameters } from '../utils/write-ts-generic-parameters';
@@ -14,8 +15,12 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
     name: string;
     moduleNameOrfilePath?: Nullable<string>;
     generics?: Nullable<Nullable<TsType<TBuilder>>[]>;
+    importType?: Nullable<TypeScriptImportType>;
   }
 >;
+type FactoryOptions<TBuilder extends SourceBuilder> = {
+  importType?: Nullable<TypeScriptImportType>;
+};
 
 type _AddImportHandler<T> = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -32,19 +37,25 @@ export class TsReference<TBuilder extends SourceBuilder, TInjects extends string
   private static readonly addImportHandlers: _AddImportHandler<any>[] = [
     {
       builderClass: TypeScriptFileBuilder,
-      handler: (builder, reference) => builder.addImport(reference.name, reference.moduleNameOrfilePath),
+      handler: (builder: TypeScriptFileBuilder, reference) => {
+        if (reference.moduleNameOrfilePath) {
+          builder.addImport(reference.name, reference.moduleNameOrfilePath, { type: reference.importType });
+        }
+      },
     },
   ];
 
   public name: string;
   public moduleNameOrfilePath: string | null;
   public generics: TsType<TBuilder>[];
+  public importType: TypeScriptImportType;
 
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.name = options.name;
     this.moduleNameOrfilePath = options.moduleNameOrfilePath ?? null;
     this.generics = options.generics?.filter(notNullish) ?? [];
+    this.importType = options.importType ?? 'import';
   }
 
   protected override onWrite(builder: TBuilder): void {
@@ -73,10 +84,14 @@ const createReference = <TBuilder extends SourceBuilder>(
 ) => new TsReference<TBuilder>({ ...options, name, moduleNameOrfilePath });
 
 function _createFactory(name: string, moduleNameOrfilePath?: Nullable<string>) {
-  return Object.assign(<TBuilder extends SourceBuilder>() => createReference<TBuilder>(name, moduleNameOrfilePath), {
-    refName: name,
-    moduleNameOrfilePath,
-  });
+  return Object.assign(
+    <TBuilder extends SourceBuilder>(options?: FactoryOptions<TBuilder>) =>
+      createReference<TBuilder>(name, moduleNameOrfilePath, options),
+    {
+      refName: name,
+      moduleNameOrfilePath,
+    },
+  );
 }
 function createFactory(
   name: string,
@@ -92,8 +107,10 @@ function _createGenericFactory<TGenericCount extends number | number[]>(
   moduleNameOrfilePath?: Nullable<string>,
 ) {
   return Object.assign(
-    <TBuilder extends SourceBuilder>(generics: TupleWithCount<TsType<TBuilder>, TGenericCount>) =>
-      createReference<TBuilder>(name, moduleNameOrfilePath, { generics }),
+    <TBuilder extends SourceBuilder>(
+      generics: TupleWithCount<TsType<TBuilder>, TGenericCount>,
+      options?: FactoryOptions<TBuilder>,
+    ) => createReference<TBuilder>(name, moduleNameOrfilePath, { ...options, generics }),
     {
       refName: name,
       moduleNameOrfilePath,

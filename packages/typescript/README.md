@@ -35,6 +35,8 @@ main();
   - Depends on the output of the `TypeScriptModelsGenerator` generator.
 - [`TypeScriptEasyNetworkStubsGenerator`](https://github.com/MaSch0212/goast/wiki/TypeScript%20Easy%20Network%20Stubs%20Generator): Generates [easy-network-stub](https://github.com/LoaderB0T/easy-network-stub) classes from paths in the OpenAPI specification(s).
   - Depends on the output of the `TypeScriptModelsGenerator` generator.
+- [`TypeScriptK6ClientsGenerator`](https://github.com/MaSch0212/goast/wiki/TypeScript%20K6%20Clients%20Generator): Generates [k6](https://k6.io/) clients from paths in the OpenAPI specification(s).
+  - Depends on the output of the `TypeScriptModelsGenerator` generator.
 
 ## API Documentation 📖
 

@@ -48,7 +48,7 @@ export class DefaultTypeScriptModelGenerator
       return {
         component: name,
         filePath,
-        imports: [{ kind: 'file', name, modulePath: filePath }],
+        imports: [{ kind: 'file', name, modulePath: filePath, type: 'import' }],
         additionalExports: fileContent.values
           .filter(
             (x): x is AppendValue<Builder> & { name: string; export: true } =>

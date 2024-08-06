@@ -14,7 +14,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/pet.ts',
-            name: 'Pet'
+            name: 'Pet',
+            type: 'import'
           }
         ]
       },
@@ -52,7 +53,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/dog.ts',
-            name: 'Dog'
+            name: 'Dog',
+            type: 'import'
           }
         ]
       },
@@ -65,7 +67,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/pet.ts',
-            name: 'Pet'
+            name: 'Pet',
+            type: 'import'
           }
         ]
       },
@@ -78,7 +81,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/cat.ts',
-            name: 'Cat'
+            name: 'Cat',
+            type: 'import'
           }
         ]
       },
@@ -91,7 +95,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/pet.ts',
-            name: 'Pet'
+            name: 'Pet',
+            type: 'import'
           }
         ]
       },
@@ -107,7 +112,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/schema-9.ts',
-            name: 'Schema9'
+            name: 'Schema9',
+            type: 'import'
           }
         ]
       },
@@ -120,7 +126,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/schema-9.ts',
-            name: 'Schema9'
+            name: 'Schema9',
+            type: 'import'
           }
         ]
       }

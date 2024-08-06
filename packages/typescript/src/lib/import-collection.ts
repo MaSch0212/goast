@@ -2,7 +2,7 @@ import { extname } from 'path';
 
 import { SourceBuilderOptions, StringBuilder } from '@goast/core';
 
-import { TypeScriptImport, TypeScriptImportKind } from './common-results';
+import { TypeScriptImport, TypeScriptImportKind, TypeScriptImportType } from './common-results';
 import { defaultTypeScriptGeneratorConfig } from './config';
 import { ImportModuleTransformer, getModulePathRelativeToFile } from './utils';
 
@@ -17,8 +17,12 @@ export const defaultImportExportCollectionOptions: ImportExportCollectionOptions
   useSingleQuotes: defaultTypeScriptGeneratorConfig.useSingleQuotes,
 };
 
+export type TypeScriptImportOptions = { type?: TypeScriptImportType };
+
 export class ImportExportCollection {
   private readonly _imports: Map<string, Set<string>> = new Map();
+  private readonly _typeImports: Map<string, Set<string>> = new Map();
+  private readonly _jsDocImports: Map<string, Set<string>> = new Map();
   private readonly _exports: Map<string, Set<string>> = new Map();
   private readonly _options: ImportExportCollectionOptions;
 
@@ -27,7 +31,7 @@ export class ImportExportCollection {
   }
 
   public get hasImports(): boolean {
-    return this._imports.size > 0;
+    return this._imports.size > 0 || this._typeImports.size > 0 || this._jsDocImports.size > 0;
   }
 
   public get hasExports(): boolean {
@@ -35,12 +39,21 @@ export class ImportExportCollection {
   }
 
   public get imports(): TypeScriptImport[] {
-    return Array.from(this._imports.entries())
+    return [
+      ...this.toImport('import', this._imports),
+      ...this.toImport('type-import', this._typeImports),
+      ...this.toImport('js-doc', this._jsDocImports),
+    ];
+  }
+
+  private toImport(type: TypeScriptImportType, map: Map<string, Set<string>>): TypeScriptImport[] {
+    return Array.from(map.entries())
       .map(([fromModule, importNames]) =>
         Array.from(importNames).map(
           (importName) =>
             ({
               kind: this.getImportKind(fromModule),
+              type,
               modulePath: fromModule,
               name: importName,
             }) satisfies TypeScriptImport,
@@ -49,12 +62,24 @@ export class ImportExportCollection {
       .flat();
   }
 
-  public addImport(importName: string, fromModule: string): void {
-    const existingImport = this._imports.get(fromModule);
+  public addImport(importName: string, fromModule: string, options?: TypeScriptImportOptions): void {
+    const map = this.getImportMap(options?.type ?? 'import');
+    const existingImport = map.get(fromModule);
     if (existingImport) {
       existingImport.add(importName);
     } else {
-      this._imports.set(fromModule, new Set([importName]));
+      map.set(fromModule, new Set([importName]));
+    }
+  }
+
+  getImportMap(type: TypeScriptImportType) {
+    switch (type) {
+      case 'import':
+        return this._imports;
+      case 'type-import':
+        return this._typeImports;
+      case 'js-doc':
+        return this._jsDocImports;
     }
   }
 
@@ -80,17 +105,38 @@ export class ImportExportCollection {
 
   public writeTo(builder: StringBuilder) {
     const { filePath, importModuleTransformer, useSingleQuotes } = this._options;
+    let hasPrevious = false;
 
     if (this._imports.size > 0) {
       const sortedImports = this.sortAndResolve(this._imports, filePath, importModuleTransformer);
       this.writeImportsExports(builder, 'import', sortedImports, { useSingleQuotes });
+      hasPrevious = true;
     }
 
-    if (this._imports.size > 0 && this._exports.size > 0) {
-      builder.appendLine();
+    if (this._typeImports.size > 0) {
+      if (hasPrevious) {
+        builder.appendLine();
+      }
+      const sortedImports = this.sortAndResolve(this._typeImports, filePath, importModuleTransformer);
+      this.writeImportsExports(builder, 'import type', sortedImports, { useSingleQuotes });
+      hasPrevious = true;
+    }
+
+    if (this._jsDocImports.size > 0) {
+      if (hasPrevious) {
+        builder.appendLine();
+      }
+      const sortedImports = this.sortAndResolve(this._jsDocImports, filePath, importModuleTransformer);
+      builder.appendLine('/**');
+      this.writeImportsExports(builder, ' * @import', sortedImports, { useSingleQuotes });
+      builder.appendLine(' */');
+      hasPrevious = true;
     }
 
     if (this._exports.size > 0) {
+      if (hasPrevious) {
+        builder.appendLine();
+      }
       const sortedExports = this.sortAndResolve(this._exports, filePath, importModuleTransformer);
       this.writeImportsExports(builder, 'export', sortedExports, { useSingleQuotes });
     }
@@ -98,7 +144,7 @@ export class ImportExportCollection {
 
   protected writeImportsExports(
     builder: StringBuilder,
-    keyword: 'import' | 'export',
+    keyword: 'import' | 'export' | 'import type' | ' * @import',
     data: (readonly [string, TypeScriptImportKind, string[]])[],
     options: { useSingleQuotes: boolean },
   ) {

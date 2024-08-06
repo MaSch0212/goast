@@ -14,7 +14,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/my-title.ts',
-            name: 'MyTitle'
+            name: 'MyTitle',
+            type: 'import'
           }
         ]
       },
@@ -27,7 +28,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/with-all-common.ts',
-            name: 'WithAllCommon'
+            name: 'WithAllCommon',
+            type: 'import'
           }
         ]
       },
@@ -40,7 +42,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/my-enum.ts',
-            name: 'MyEnum'
+            name: 'MyEnum',
+            type: 'import'
           }
         ]
       },
@@ -53,7 +56,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/read-only.ts',
-            name: 'ReadOnly'
+            name: 'ReadOnly',
+            type: 'import'
           }
         ]
       }
