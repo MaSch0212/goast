@@ -1,12 +1,19 @@
 import { ApiSchemaKind, ApiSchemaAccessibility, ApiSchema, ApiSchemaProperty } from './api-types';
 import { OpenApiTransformerContext } from './types';
 import { isOpenApiObjectProperty } from '../internal-utils';
-import { Deref, OpenApiObject } from '../parse';
+import { Deref, OpenApiDocument, OpenApiHttpMethod, OpenApiObject } from '../parse';
+import { getDeepProperty } from '../utils';
 import { isNullish } from '../utils/common.utils';
 
 export function determineSchemaKind<
-  T extends { oneOf?: unknown; allOf?: unknown; anyOf?: unknown; type?: string | string[] },
->(schema: T): ApiSchemaKind {
+  T extends {
+    oneOf?: unknown;
+    allOf?: unknown;
+    anyOf?: unknown;
+    type?: string | string[];
+    properties?: Record<string, unknown>;
+  },
+>(ctx: OpenApiTransformerContext, schema: T): ApiSchemaKind {
   if (schema.oneOf) {
     return 'oneOf';
   } else if (schema.type !== 'object' && (schema.allOf || schema.anyOf)) {
@@ -25,13 +32,19 @@ export function determineSchemaKind<
     return schema.type;
   }
 
-  return 'unknown';
+  const treadAsObject =
+    ctx.config.unknownTypeBehavior === 'always-object' ||
+    (ctx.config.unknownTypeBehavior === 'object-if-properties' &&
+      schema.properties &&
+      Object.keys(schema.properties).length > 0);
+
+  return treadAsObject ? 'object' : 'unknown';
 }
 
 export function determineSchemaName(
   schema: {
     title?: string;
-    $src: { path: string };
+    $src: { path: string; document: Deref<OpenApiDocument> };
   },
   id: string,
 ): { name: string; isGenerated: boolean } {
@@ -43,11 +56,44 @@ export function determineSchemaName(
   if (schemaNameMatch) {
     return { name: schemaNameMatch[0], isGenerated: false };
   }
-  const responseMatch = schema.$src.path.match(/\/paths\/(?<path>.+)\/(?<method>.+)\/responses\/(?<status>\d+)\//);
 
+  const responseMatch = schema.$src.path.match(/\/paths\/(?<path>.+)\/(?<method>.+)\/responses\/(?<status>\d+)\//);
   if (responseMatch && responseMatch.groups) {
     const { path, method, status } = responseMatch.groups;
-    return { name: `${method}_${path.replace(/\//g, '_')}_${status}_Response`, isGenerated: true };
+    const operation = schema.$src.document.paths?.[path]?.[method as OpenApiHttpMethod] ?? {};
+    return {
+      name: `${determineEndpointName({ method, path: `/${path}`, operation })}_${status}_Response`,
+      isGenerated: true,
+    };
+  }
+
+  const responseCompMatch = schema.$src.path.match(/\/components\/responses\/([^/]+)\/content\/.+\/schema/);
+  if (responseCompMatch) {
+    return {
+      name: responseCompMatch[1].toLowerCase().endsWith('response')
+        ? responseCompMatch[1]
+        : responseCompMatch[1] + 'Response',
+      isGenerated: true,
+    };
+  }
+
+  const requestBodyMatch = schema.$src.path.match(/\/paths\/(?<path>.+)\/(?<method>.+)\/requestBody\//);
+  if (requestBodyMatch && requestBodyMatch.groups) {
+    const { path, method } = requestBodyMatch.groups;
+    const operation = schema.$src.document.paths?.[path]?.[method as OpenApiHttpMethod] ?? {};
+    return { name: `${determineEndpointName({ method, path: `/${path}`, operation })}_Request`, isGenerated: true };
+  }
+
+  const parentSchemaMatch = schema.$src.path.match(/(.*)\/properties\/([^/]*)$/);
+  if (parentSchemaMatch) {
+    const parentSchema = getDeepProperty(schema.$src.document, parentSchemaMatch[1].split('/').filter(Boolean));
+    const parentSchemaName = determineSchemaName(
+      { title: (parentSchema as any)?.title, $src: { path: parentSchemaMatch[1], document: schema.$src.document } },
+      id,
+    );
+    if (!parentSchemaName.isGenerated) {
+      return { name: `${parentSchemaName.name}_${parentSchemaMatch[2]}`, isGenerated: true };
+    }
   }
 
   return { name: id, isGenerated: true };

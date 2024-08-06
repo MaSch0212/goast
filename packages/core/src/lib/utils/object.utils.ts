@@ -6,6 +6,17 @@ export function createOverwriteProxy<T extends object>(target: T, values?: Parti
   return proxy;
 }
 
+export function getDeepProperty(obj: object, path: string[]): unknown {
+  let current = obj;
+  for (const key of path) {
+    if (!current || typeof current !== 'object') {
+      return undefined;
+    }
+    current = (current as any)[key];
+  }
+  return current;
+}
+
 class OverwriteProxyHandler<T extends object> implements ProxyHandler<T> {
   private readonly _overwrittenValues: Record<PropertyKey, unknown> = {};
 

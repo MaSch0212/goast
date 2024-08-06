@@ -8,7 +8,7 @@ import YAML from 'yaml';
 
 import { createDerefProxy } from './deref-proxy';
 import { OpenApiDocument, OpenApiObject, OpenApiReference, OpenApiSchema } from './openapi-types';
-import { Deref } from './types';
+import { defaultOpenApiParserOptions, Deref, OpenApiParserOptions } from './types';
 import { collectOpenApi } from '../collect/collector';
 import { ApiData } from '../transform';
 import { transformOpenApi } from '../transform/transformer';
@@ -23,6 +23,11 @@ type LoadedDocument = {
 
 export class OpenApiParser {
   private readonly _loadedDocuments = new Map<string, LoadedDocument>();
+  private readonly _config: OpenApiParserOptions;
+
+  constructor(config?: Partial<OpenApiParserOptions>) {
+    this._config = { ...defaultOpenApiParserOptions, ...config };
+  }
 
   public async parseApisAndTransform(...fileNames: (string | string[])[]): Promise<ApiData> {
     const flatFileNames = ([] as string[]).concat(...fileNames);
@@ -41,7 +46,7 @@ export class OpenApiParser {
 
   public transformApis(apis: Deref<OpenApiDocument>[]): ApiData {
     const collectedData = collectOpenApi(apis);
-    const transformedData = transformOpenApi(collectedData);
+    const transformedData = transformOpenApi(collectedData, this._config);
     return transformedData;
   }
 

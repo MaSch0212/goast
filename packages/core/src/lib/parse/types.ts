@@ -1,4 +1,5 @@
 import { OpenApiDiscriminator, OpenApiDocument, OpenApiReference, OpenApiSchema } from './openapi-types';
+import { defaultOpenApiTransformerOptions, OpenApiTransformerOptions } from '../transform/types';
 
 export type DerefSource<T> = {
   file: string;
@@ -19,3 +20,7 @@ type _Deref<T extends object> = T extends OpenApiDiscriminator
       $ref?: Deref<T>;
     };
 export type Deref<T> = T extends object ? (T extends (infer A)[] ? Deref<A>[] : _Deref<T>) : T;
+
+export type OpenApiParserOptions = OpenApiTransformerOptions;
+
+export const defaultOpenApiParserOptions = { ...defaultOpenApiTransformerOptions };

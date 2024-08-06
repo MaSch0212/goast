@@ -12,22 +12,19 @@ import { OpenApiTransformerContext, IncompleteApiSchema } from './types';
 import { Deref, OpenApiSchema } from '../parse';
 import { createOverwriteProxy } from '../utils';
 
-export function transformSchema<T extends Deref<OpenApiSchema>>(
-  context: OpenApiTransformerContext,
-  schema: T,
-): ApiSchema {
+export function transformSchema<T extends Deref<OpenApiSchema>>(ctx: OpenApiTransformerContext, schema: T): ApiSchema {
   if (!schema) {
     throw new Error('Schema is required.');
   }
   const schemaSource = `${schema.$src.file}:${schema.$src.path}`;
-  const existingSchema = context.schemas.get(schemaSource) ?? context.incompleteSchemas.get(schemaSource);
+  const existingSchema = ctx.schemas.get(schemaSource) ?? ctx.incompleteSchemas.get(schemaSource);
   if (existingSchema) return existingSchema as ApiSchema;
 
   const openApiObjectId = getOpenApiObjectIdentifier(schema);
-  const existing = context.transformed.schemas.get(openApiObjectId);
+  const existing = ctx.transformed.schemas.get(openApiObjectId);
   if (existing) return existing;
 
-  let kind = determineSchemaKind(schema);
+  let kind = determineSchemaKind(ctx, schema);
   let nullable = kind === 'null';
   if (kind === 'multi-type') {
     const types = schema.type as string[];
@@ -42,13 +39,13 @@ export function transformSchema<T extends Deref<OpenApiSchema>>(
       const newType = types.filter((t) => t !== 'null' && t !== null)[0];
       schema = createOverwriteProxy(schema);
       schema.type = newType;
-      kind = determineSchemaKind(schema);
+      kind = determineSchemaKind(ctx, schema);
     } else {
       schema.type = types.filter((t) => t !== 'null' && t !== null);
     }
   }
 
-  const id = context.idGenerator.generateId('schema');
+  const id = ctx.idGenerator.generateId('schema');
   const nameInfo = determineSchemaName(schema, id);
   const incompleteSchema: IncompleteApiSchema = {
     $src: {
@@ -69,7 +66,7 @@ export function transformSchema<T extends Deref<OpenApiSchema>>(
     nullable: nullable || schema.nullable === true,
     required: new Set(schema.required),
     custom: getCustomFields(schema),
-    not: schema.not ? transformSchema(context, schema.not) : undefined,
+    not: schema.not ? transformSchema(ctx, schema.not) : undefined,
     const: schema.const,
     discriminator: schema.discriminator
       ? {
@@ -80,19 +77,19 @@ export function transformSchema<T extends Deref<OpenApiSchema>>(
       : undefined,
     inheritedSchemas: [],
   };
-  context.incompleteSchemas.set(schemaSource, incompleteSchema);
+  ctx.incompleteSchemas.set(schemaSource, incompleteSchema);
 
   if (schema.$ref) {
-    incompleteSchema.$ref = transformSchema(context, schema.$ref);
+    incompleteSchema.$ref = transformSchema(ctx, schema.$ref);
   }
-  const extensions = schemaTransformers[kind](schema, context);
+  const extensions = schemaTransformers[kind](schema, ctx);
   const completeSchema = Object.assign(incompleteSchema, extensions) as IncompleteApiSchema &
     ApiSchemaExtensions<ApiSchemaKind>;
-  resolveDescriminatorMapping(context, completeSchema);
+  resolveDescriminatorMapping(ctx, completeSchema);
 
-  context.incompleteSchemas.delete(schemaSource);
-  context.transformed.schemas.set(openApiObjectId, completeSchema);
-  context.schemas.set(schemaSource, completeSchema);
+  ctx.incompleteSchemas.delete(schemaSource);
+  ctx.transformed.schemas.set(openApiObjectId, completeSchema);
+  ctx.schemas.set(schemaSource, completeSchema);
   return completeSchema;
 }
 
@@ -165,15 +162,60 @@ const schemaTransformers: {
 
 function resolveDescriminatorMapping(context: OpenApiTransformerContext, schema: ApiSchema) {
   const discriminator = schema.$src.component.discriminator;
-  if (!discriminator || typeof discriminator === 'string' || !discriminator.mapping) return;
-  for (const key of Object.keys(discriminator.mapping)) {
-    const mappedSchemaRef = discriminator.mapping[key];
-    const mappedSchema = transformSchema(context, mappedSchemaRef);
-    if (schema.discriminator) {
-      schema.discriminator.mapping[key] = mappedSchema;
-      mappedSchema.inheritedSchemas.push(
-        schema as ApiSchema & { discriminator: NonNullable<ApiSchema['discriminator']> },
-      );
+  if (discriminator && typeof discriminator === 'object' && discriminator.mapping) {
+    for (const key of Object.keys(discriminator.mapping)) {
+      const mappedSchemaRef = discriminator.mapping[key];
+      const mappedSchema = transformSchema(context, mappedSchemaRef);
+      if (schema.discriminator) {
+        schema.discriminator.mapping[key] = mappedSchema;
+        const hasInheritedSchema = mappedSchema.inheritedSchemas.some((x) => x.id === schema.id);
+        if (!hasInheritedSchema) {
+          mappedSchema.inheritedSchemas.push(
+            schema as ApiSchema & { discriminator: NonNullable<ApiSchema['discriminator']> },
+          );
+        }
+      }
     }
   }
+
+  if (schema.kind === 'combined' && schema.allOf) {
+    for (const s of schema.allOf) {
+      const base = findDiscriminatedSchema(s);
+      if (!base) continue;
+      if (base.discriminator && base.discriminator.propertyName) {
+        const origDiscriminator = base.$src.component.discriminator;
+        if (
+          origDiscriminator &&
+          typeof origDiscriminator === 'object' &&
+          origDiscriminator.mapping &&
+          Object.values(origDiscriminator.mapping).some(
+            (x) => x.$src.file === schema.$src.file && x.$src.path === schema.$src.path,
+          )
+        ) {
+          continue;
+        }
+
+        const mappingKey = schema.isNameGenerated ? null : schema.name;
+        if (!mappingKey) {
+          continue;
+        }
+
+        base.discriminator.mapping[mappingKey] = schema;
+        const hasInheritedSchema = schema.inheritedSchemas.some((x) => x.id === base.id);
+        if (!hasInheritedSchema) {
+          schema.inheritedSchemas.push(base as ApiSchema & { discriminator: NonNullable<ApiSchema['discriminator']> });
+        }
+      }
+    }
+  }
+}
+
+function findDiscriminatedSchema(
+  schema: ApiSchema,
+): (ApiSchema & { discriminator: NonNullable<ApiSchema['discriminator']> }) | null {
+  const origDiscriminator = schema.$src.originalComponent.discriminator;
+  if (origDiscriminator && (typeof origDiscriminator === 'string' || origDiscriminator.propertyName)) {
+    return schema as ApiSchema & { discriminator: NonNullable<ApiSchema['discriminator']> };
+  }
+  return schema.$ref ? findDiscriminatedSchema(schema.$ref) : null;
 }

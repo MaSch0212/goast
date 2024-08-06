@@ -40,26 +40,6 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       return { type: kt.refs.any({ nullable: true }) };
     }
 
-    if (ctx.schema.id === ctx.schema.name) {
-      // TODO: Add this to @goast/core
-      const match = ctx.schema.$src.path.match(/\/components\/responses\/([^/]+)\/content\/.+\/schema/);
-      if (match) {
-        ctx.schema.name = match[1].toLowerCase().endsWith('response') ? match[1] : match[1] + 'Response';
-      }
-    }
-
-    if (ctx.schema.isNameGenerated) {
-      // TODO: Change this in @goast/core
-      const match = ctx.schema.$src.path.match(/\/paths\/(?<path>.+)\/(?<method>.+)\/responses\/(?<status>\d+)\//);
-      if (match && match.groups) {
-        const { path, method, status } = match.groups;
-        const endpoint = ctx.data.endpoints.find((e) => e.path === path && e.method === method);
-        if (endpoint) {
-          ctx.schema.name = `${endpoint.name}${status}Response`;
-        }
-      }
-    }
-
     if (this.shouldGenerateTypeDeclaration(ctx, { schema: ctx.schema })) {
       const typeName = this.getDeclarationTypeName(ctx, { schema: ctx.schema });
       const packageName = this.getPackageName(ctx, { schema: ctx.schema });
@@ -249,6 +229,11 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
           return schema.enum && schema.enum.length > 0
             ? kt.call([this.getType(ctx, { schema }), toCasing(String(schema.default), ctx.config.enumValueNameCasing)])
             : kt.string(String(schema.default));
+        case 'array':
+          return kt.call(
+            kt.refs.listOf.infer(),
+            Array.isArray(schema.default) ? schema.default.map((x) => kt.toNode(x)) : [],
+          );
         default:
           return 'null';
       }
@@ -506,6 +491,10 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
 
     // Schemas representable by a simple Map type do not need its own type declaration
     if (schema.kind === 'object' && schema.properties.size === 0 && schema.additionalProperties) {
+      return false;
+    }
+
+    if (schema.kind === 'object' && ctx.config.emptyObjectTypeBehavior === 'use-any' && schema.properties.size === 0) {
       return false;
     }
 

@@ -92,7 +92,7 @@
           classReference: false,
           generics: [],
           inject: {},
-          name: 'Schema15',
+          name: 'ObjectWithRequiredPropertiesF',
           nullable: false,
           packageName: 'com.openapi.generated.model',
           subReference: null
@@ -241,7 +241,7 @@
           classReference: false,
           generics: [],
           inject: {},
-          name: 'Schema24',
+          name: 'ObjectWithPropertiesAndAdditionalPropertiesF',
           nullable: false,
           packageName: 'com.openapi.generated.model',
           subReference: null
@@ -359,7 +359,7 @@
           classReference: false,
           generics: [],
           inject: {},
-          name: 'Schema32',
+          name: 'ObjectWithPropertiesAllOfF',
           nullable: false,
           packageName: 'com.openapi.generated.model',
           subReference: null
@@ -665,7 +665,7 @@
           classReference: false,
           generics: [],
           inject: {},
-          name: 'Schema53',
+          name: 'ObjectWithNullablePropertiesF',
           nullable: false,
           packageName: 'com.openapi.generated.model',
           subReference: null
@@ -771,7 +771,7 @@
           classReference: false,
           generics: [],
           inject: {},
-          name: 'Schema60',
+          name: 'ObjectWithNullablePropertiesAndRequiredPropertiesF',
           nullable: false,
           packageName: 'com.openapi.generated.model',
           subReference: null
@@ -997,7 +997,7 @@
           classReference: false,
           generics: [],
           inject: {},
-          name: 'Schema8',
+          name: 'ObjectWithPropertiesF',
           nullable: false,
           packageName: 'com.openapi.generated.model',
           subReference: null
@@ -1029,14 +1029,14 @@ class EmptyObject
 
 └────────────────────────────────────────────────┘
 
-┌────────────────────────────────────────────┐
-│ out/com/openapi/generated/model/Schema8.kt │
-├────────────────────────────────────────────┤
+┌──────────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/ObjectWithPropertiesF.kt │
+├──────────────────────────────────────────────────────────┤
 package com.openapi.generated.model
 
-class Schema8
+class ObjectWithPropertiesF
 
-└────────────────────────────────────────────┘
+└──────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────┐
 │ out/com/openapi/generated/model/ObjectWithProperties.kt │
@@ -1071,19 +1071,19 @@ data class ObjectWithProperties(
     @field:Valid
     @Schema
     @JsonProperty("f")
-    val f: Schema8? = null
+    val f: ObjectWithPropertiesF? = null
 )
 
 └─────────────────────────────────────────────────────────┘
 
-┌─────────────────────────────────────────────┐
-│ out/com/openapi/generated/model/Schema15.kt │
-├─────────────────────────────────────────────┤
+┌──────────────────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/ObjectWithRequiredPropertiesF.kt │
+├──────────────────────────────────────────────────────────────────┤
 package com.openapi.generated.model
 
-class Schema15
+class ObjectWithRequiredPropertiesF
 
-└─────────────────────────────────────────────┘
+└──────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────┐
 │ out/com/openapi/generated/model/ObjectWithRequiredProperties.kt │
@@ -1118,19 +1118,19 @@ data class ObjectWithRequiredProperties(
     @field:Valid
     @Schema(required = true)
     @JsonProperty("f", required = true)
-    val f: Schema15
+    val f: ObjectWithRequiredPropertiesF
 )
 
 └─────────────────────────────────────────────────────────────────┘
 
-┌─────────────────────────────────────────────┐
-│ out/com/openapi/generated/model/Schema24.kt │
-├─────────────────────────────────────────────┤
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/ObjectWithPropertiesAndAdditionalPropertiesF.kt │
+├─────────────────────────────────────────────────────────────────────────────────┤
 package com.openapi.generated.model
 
-class Schema24
+class ObjectWithPropertiesAndAdditionalPropertiesF
 
-└─────────────────────────────────────────────┘
+└─────────────────────────────────────────────────────────────────────────────────┘
 
 ┌────────────────────────────────────────────────────────────────────────────────┐
 │ out/com/openapi/generated/model/ObjectWithPropertiesAndAdditionalProperties.kt │
@@ -1168,7 +1168,7 @@ data class ObjectWithPropertiesAndAdditionalProperties(
     @field:Valid
     @Schema
     @JsonProperty("f")
-    val f: Schema24? = null
+    val f: ObjectWithPropertiesAndAdditionalPropertiesF? = null
 ) {
     @JsonIgnore
     val additionalProperties: MutableMap<String, String> = mutableMapOf()
@@ -1186,14 +1186,14 @@ data class ObjectWithPropertiesAndAdditionalProperties(
 
 └────────────────────────────────────────────────────────────────────────────────┘
 
-┌─────────────────────────────────────────────┐
-│ out/com/openapi/generated/model/Schema32.kt │
-├─────────────────────────────────────────────┤
+┌───────────────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/ObjectWithPropertiesAllOfF.kt │
+├───────────────────────────────────────────────────────────────┤
 package com.openapi.generated.model
 
-class Schema32
+class ObjectWithPropertiesAllOfF
 
-└─────────────────────────────────────────────┘
+└───────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────┐
 │ out/com/openapi/generated/model/Schema39.kt │
@@ -1276,14 +1276,14 @@ data class ObjectWithPropertiesAllOf(
 
 └──────────────────────────────────────────────────────────────┘
 
-┌─────────────────────────────────────────────┐
-│ out/com/openapi/generated/model/Schema53.kt │
-├─────────────────────────────────────────────┤
+┌──────────────────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/ObjectWithNullablePropertiesF.kt │
+├──────────────────────────────────────────────────────────────────┤
 package com.openapi.generated.model
 
-class Schema53
+class ObjectWithNullablePropertiesF
 
-└─────────────────────────────────────────────┘
+└──────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────┐
 │ out/com/openapi/generated/model/ObjectWithNullableProperties.kt │
@@ -1318,19 +1318,19 @@ data class ObjectWithNullableProperties(
     @field:Valid
     @Schema
     @JsonProperty("f")
-    val f: Schema53? = null
+    val f: ObjectWithNullablePropertiesF? = null
 )
 
 └─────────────────────────────────────────────────────────────────┘
 
-┌─────────────────────────────────────────────┐
-│ out/com/openapi/generated/model/Schema60.kt │
-├─────────────────────────────────────────────┤
+┌───────────────────────────────────────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/ObjectWithNullablePropertiesAndRequiredPropertiesF.kt │
+├───────────────────────────────────────────────────────────────────────────────────────┤
 package com.openapi.generated.model
 
-class Schema60
+class ObjectWithNullablePropertiesAndRequiredPropertiesF
 
-└─────────────────────────────────────────────┘
+└───────────────────────────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────────────────────────┐
 │ out/com/openapi/generated/model/ObjectWithNullablePropertiesAndRequiredProperties.kt │
@@ -1365,7 +1365,7 @@ data class ObjectWithNullablePropertiesAndRequiredProperties(
     @field:Valid
     @Schema(required = true)
     @JsonProperty("f", required = true)
-    val f: Schema60?
+    val f: ObjectWithNullablePropertiesAndRequiredPropertiesF?
 )
 
 └──────────────────────────────────────────────────────────────────────────────────────┘
