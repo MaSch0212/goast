@@ -40,26 +40,6 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       return { type: kt.refs.any({ nullable: true }) };
     }
 
-    if (ctx.schema.id === ctx.schema.name) {
-      // TODO: Add this to @goast/core
-      const match = ctx.schema.$src.path.match(/\/components\/responses\/([^/]+)\/content\/.+\/schema/);
-      if (match) {
-        ctx.schema.name = match[1].toLowerCase().endsWith('response') ? match[1] : match[1] + 'Response';
-      }
-    }
-
-    if (ctx.schema.isNameGenerated) {
-      // TODO: Change this in @goast/core
-      const match = ctx.schema.$src.path.match(/\/paths\/(?<path>.+)\/(?<method>.+)\/responses\/(?<status>\d+)\//);
-      if (match && match.groups) {
-        const { path, method, status } = match.groups;
-        const endpoint = ctx.data.endpoints.find((e) => e.path === path && e.method === method);
-        if (endpoint) {
-          ctx.schema.name = `${endpoint.name}${status}Response`;
-        }
-      }
-    }
-
     if (this.shouldGenerateTypeDeclaration(ctx, { schema: ctx.schema })) {
       const typeName = this.getDeclarationTypeName(ctx, { schema: ctx.schema });
       const packageName = this.getPackageName(ctx, { schema: ctx.schema });
