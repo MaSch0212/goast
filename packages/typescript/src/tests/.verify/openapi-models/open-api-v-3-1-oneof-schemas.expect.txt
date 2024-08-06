@@ -14,7 +14,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/empty-one-of.ts',
-            name: 'EmptyOneOf'
+            name: 'EmptyOneOf',
+            type: 'import'
           }
         ]
       },
@@ -27,7 +28,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/my-string.ts',
-            name: 'MyString'
+            name: 'MyString',
+            type: 'import'
           }
         ]
       },
@@ -40,7 +42,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/my-string.ts',
-            name: 'MyString'
+            name: 'MyString',
+            type: 'import'
           }
         ]
       },
@@ -58,7 +61,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/one-of-simple-types.ts',
-            name: 'OneOfSimpleTypes'
+            name: 'OneOfSimpleTypes',
+            type: 'import'
           }
         ]
       },
@@ -81,7 +85,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/ignore-type.ts',
-            name: 'IgnoreType'
+            name: 'IgnoreType',
+            type: 'import'
           }
         ]
       },
@@ -94,7 +99,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/with-references.ts',
-            name: 'WithReferences'
+            name: 'WithReferences',
+            type: 'import'
           }
         ]
       },
@@ -107,7 +113,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/empty-one-of.ts',
-            name: 'EmptyOneOf'
+            name: 'EmptyOneOf',
+            type: 'import'
           }
         ]
       },
@@ -120,7 +127,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/my-title.ts',
-            name: 'MyTitle'
+            name: 'MyTitle',
+            type: 'import'
           }
         ]
       },
@@ -133,7 +141,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/my-title.ts',
-            name: 'MyTitle'
+            name: 'MyTitle',
+            type: 'import'
           }
         ]
       }

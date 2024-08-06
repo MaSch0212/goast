@@ -14,7 +14,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/empty-object.ts',
-            name: 'EmptyObject'
+            name: 'EmptyObject',
+            type: 'import'
           }
         ]
       },
@@ -57,7 +58,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/object-with-additional-properties.ts',
-            name: 'ObjectWithAdditionalProperties'
+            name: 'ObjectWithAdditionalProperties',
+            type: 'import'
           }
         ]
       },
@@ -75,7 +77,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/object-with-properties-and-additional-properties.ts',
-            name: 'ObjectWithPropertiesAndAdditionalProperties'
+            name: 'ObjectWithPropertiesAndAdditionalProperties',
+            type: 'import'
           }
         ]
       },
@@ -93,7 +96,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/object-with-properties.ts',
-            name: 'ObjectWithProperties'
+            name: 'ObjectWithProperties',
+            type: 'import'
           }
         ]
       },
@@ -136,7 +140,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/object-with-properties-all-of-and-any-of.ts',
-            name: 'ObjectWithPropertiesAllOfAndAnyOf'
+            name: 'ObjectWithPropertiesAllOfAndAnyOf',
+            type: 'import'
           }
         ]
       },
@@ -375,7 +380,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/object-with-nullable-properties.ts',
-            name: 'ObjectWithNullableProperties'
+            name: 'ObjectWithNullableProperties',
+            type: 'import'
           }
         ]
       },
@@ -418,7 +424,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/object-with-nullable-properties-and-required-properties.ts',
-            name: 'ObjectWithNullablePropertiesAndRequiredProperties'
+            name: 'ObjectWithNullablePropertiesAndRequiredProperties',
+            type: 'import'
           }
         ]
       },
@@ -466,7 +473,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/object-with-references-in-properties.ts',
-            name: 'ObjectWithReferencesInProperties'
+            name: 'ObjectWithReferencesInProperties',
+            type: 'import'
           }
         ]
       },
@@ -479,7 +487,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/empty-object.ts',
-            name: 'EmptyObject'
+            name: 'EmptyObject',
+            type: 'import'
           }
         ]
       },
@@ -492,7 +501,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/my-title.ts',
-            name: 'MyTitle'
+            name: 'MyTitle',
+            type: 'import'
           }
         ]
       },
@@ -505,7 +515,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/my-title.ts',
-            name: 'MyTitle'
+            name: 'MyTitle',
+            type: 'import'
           }
         ]
       },
@@ -518,7 +529,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/my-string.ts',
-            name: 'MyString'
+            name: 'MyString',
+            type: 'import'
           }
         ]
       },
@@ -536,7 +548,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/my-string.ts',
-            name: 'MyString'
+            name: 'MyString',
+            type: 'import'
           }
         ]
       },
@@ -554,7 +567,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/object-with-references-in-any-of.ts',
-            name: 'ObjectWithReferencesInAnyOf'
+            name: 'ObjectWithReferencesInAnyOf',
+            type: 'import'
           }
         ]
       },
@@ -567,7 +581,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/empty-object.ts',
-            name: 'EmptyObject'
+            name: 'EmptyObject',
+            type: 'import'
           }
         ]
       },
@@ -580,7 +595,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/my-title.ts',
-            name: 'MyTitle'
+            name: 'MyTitle',
+            type: 'import'
           }
         ]
       },
@@ -593,7 +609,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/my-string.ts',
-            name: 'MyString'
+            name: 'MyString',
+            type: 'import'
           }
         ]
       },
@@ -611,7 +628,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/object-with-references-in-all-of.ts',
-            name: 'ObjectWithReferencesInAllOf'
+            name: 'ObjectWithReferencesInAllOf',
+            type: 'import'
           }
         ]
       },
@@ -624,7 +642,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/empty-object.ts',
-            name: 'EmptyObject'
+            name: 'EmptyObject',
+            type: 'import'
           }
         ]
       },
@@ -637,7 +656,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/my-title.ts',
-            name: 'MyTitle'
+            name: 'MyTitle',
+            type: 'import'
           }
         ]
       },
@@ -650,7 +670,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/object-with-required-properties.ts',
-            name: 'ObjectWithRequiredProperties'
+            name: 'ObjectWithRequiredProperties',
+            type: 'import'
           }
         ]
       },
@@ -663,7 +684,8 @@
           {
             kind: 'file',
             modulePath: '<root>/out/models/my-string.ts',
-            name: 'MyString'
+            name: 'MyString',
+            type: 'import'
           }
         ]
       },

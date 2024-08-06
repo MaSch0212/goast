@@ -23,7 +23,9 @@ describe('tsReference', () => {
 
   it('should add the import if module name of file path is provided', () => {
     builder.append(tsReference('X', 'module'));
-    expect(builder.imports.imports).toEqual(<TypeScriptImport[]>[{ kind: 'module', modulePath: 'module', name: 'X' }]);
+    expect(builder.imports.imports).toEqual(<TypeScriptImport[]>[
+      { kind: 'module', modulePath: 'module', name: 'X', type: 'import' },
+    ]);
     expect(builder.toString(false)).toBe(`import { X } from 'module';${EOL}X`);
   });
 
