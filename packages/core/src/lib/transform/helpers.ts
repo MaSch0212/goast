@@ -44,11 +44,17 @@ export function determineSchemaName(
   if (schemaNameMatch) {
     return { name: schemaNameMatch[0], isGenerated: false };
   }
-  const responseMatch = schema.$src.path.match(/\/paths\/(?<path>.+)\/(?<method>.+)\/responses\/(?<status>\d+)\//);
 
+  const responseMatch = schema.$src.path.match(/\/paths\/(?<path>.+)\/(?<method>.+)\/responses\/(?<status>\d+)\//);
   if (responseMatch && responseMatch.groups) {
     const { path, method, status } = responseMatch.groups;
     return { name: `${method}_${path.replace(/\//g, '_')}_${status}_Response`, isGenerated: true };
+  }
+
+  const requestBodyMatch = schema.$src.path.match(/\/paths\/(?<path>.+)\/(?<method>.+)\/requestBody\//);
+  if (requestBodyMatch && requestBodyMatch.groups) {
+    const { path, method } = requestBodyMatch.groups;
+    return { name: `${method}_${path.replace(/\//g, '_')}_Request`, isGenerated: true };
   }
 
   const parentSchemaMatch = schema.$src.path.match(/(.*)\/properties\/([^/]*)$/);
