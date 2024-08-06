@@ -110,7 +110,14 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
 
 export class OpenApiGenerator extends _OpenApiGenerator<{}> {
   constructor(config?: Partial<OpenApiGeneratorConfig>) {
-    super({ ...defaultOpenApiGeneratorConfig, ...config }, [], new OpenApiParser());
+    super(...OpenApiGenerator.getCtorArgs(config));
+  }
+
+  private static getCtorArgs(
+    config?: Partial<OpenApiGeneratorConfig>,
+  ): ConstructorParameters<typeof _OpenApiGenerator> {
+    const c = { ...defaultOpenApiGeneratorConfig, ...config };
+    return [c, [], new OpenApiParser(c)];
   }
 }
 

@@ -3,11 +3,13 @@ import { IdGenerator } from './helpers';
 import { transformDocument } from './transform-document';
 import { transformEndpoint } from './transform-endpoint';
 import { transformSchema } from './transform-schema';
-import { OpenApiTransformerContext } from './types';
+import { defaultOpenApiTransformerOptions, OpenApiTransformerContext, OpenApiTransformerOptions } from './types';
 import { OpenApiCollectorData } from '../collect';
 
-export function transformOpenApi(data: OpenApiCollectorData): ApiData {
+export function transformOpenApi(data: OpenApiCollectorData, options?: Partial<OpenApiTransformerOptions>): ApiData {
   const context: OpenApiTransformerContext = {
+    config: { ...defaultOpenApiTransformerOptions, ...options },
+
     idGenerator: new IdGenerator(),
     input: data,
     incompleteSchemas: new Map(),
