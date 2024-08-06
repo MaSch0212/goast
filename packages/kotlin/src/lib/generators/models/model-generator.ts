@@ -249,6 +249,11 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
           return schema.enum && schema.enum.length > 0
             ? kt.call([this.getType(ctx, { schema }), toCasing(String(schema.default), ctx.config.enumValueNameCasing)])
             : kt.string(String(schema.default));
+        case 'array':
+          return kt.call(
+            kt.refs.listOf.infer(),
+            Array.isArray(schema.default) ? schema.default.map((x) => kt.toNode(x)) : [],
+          );
         default:
           return 'null';
       }
