@@ -168,9 +168,12 @@ function resolveDescriminatorMapping(context: OpenApiTransformerContext, schema:
       const mappedSchema = transformSchema(context, mappedSchemaRef);
       if (schema.discriminator) {
         schema.discriminator.mapping[key] = mappedSchema;
-        mappedSchema.inheritedSchemas.push(
-          schema as ApiSchema & { discriminator: NonNullable<ApiSchema['discriminator']> },
-        );
+        const hasInheritedSchema = mappedSchema.inheritedSchemas.some((x) => x.id === schema.id);
+        if (!hasInheritedSchema) {
+          mappedSchema.inheritedSchemas.push(
+            schema as ApiSchema & { discriminator: NonNullable<ApiSchema['discriminator']> },
+          );
+        }
       }
     }
   }
@@ -180,11 +183,26 @@ function resolveDescriminatorMapping(context: OpenApiTransformerContext, schema:
       const base = findDiscriminatedSchema(s);
       if (!base) continue;
       if (base.discriminator && base.discriminator.propertyName) {
-        const existingMapping = Object.values(base.discriminator.mapping).find((x) => x.id === schema.id);
-        if (existingMapping) return;
+        const origDiscriminator = base.$src.component.discriminator;
+        if (
+          origDiscriminator &&
+          typeof origDiscriminator === 'object' &&
+          origDiscriminator.mapping &&
+          Object.values(origDiscriminator.mapping).some(
+            (x) => x.$src.file === schema.$src.file && x.$src.path === schema.$src.path,
+          )
+        ) {
+          continue;
+        }
+
         const mappingKey = schema.isNameGenerated ? null : schema.name;
-        if (mappingKey && !base.discriminator.mapping[mappingKey]) {
-          base.discriminator.mapping[mappingKey] = schema;
+        if (!mappingKey) {
+          continue;
+        }
+
+        base.discriminator.mapping[mappingKey] = schema;
+        const hasInheritedSchema = schema.inheritedSchemas.some((x) => x.id === base.id);
+        if (!hasInheritedSchema) {
           schema.inheritedSchemas.push(base as ApiSchema & { discriminator: NonNullable<ApiSchema['discriminator']> });
         }
       }

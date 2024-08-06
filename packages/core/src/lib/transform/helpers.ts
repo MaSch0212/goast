@@ -61,7 +61,10 @@ export function determineSchemaName(
   if (responseMatch && responseMatch.groups) {
     const { path, method, status } = responseMatch.groups;
     const operation = schema.$src.document.paths?.[path]?.[method as OpenApiHttpMethod] ?? {};
-    return { name: `${determineEndpointName({ method, path, operation })}_${status}_Response`, isGenerated: true };
+    return {
+      name: `${determineEndpointName({ method, path: `/${path}`, operation })}_${status}_Response`,
+      isGenerated: true,
+    };
   }
 
   const responseCompMatch = schema.$src.path.match(/\/components\/responses\/([^/]+)\/content\/.+\/schema/);
@@ -78,7 +81,7 @@ export function determineSchemaName(
   if (requestBodyMatch && requestBodyMatch.groups) {
     const { path, method } = requestBodyMatch.groups;
     const operation = schema.$src.document.paths?.[path]?.[method as OpenApiHttpMethod] ?? {};
-    return { name: `${determineEndpointName({ method, path, operation })}_Request`, isGenerated: true };
+    return { name: `${determineEndpointName({ method, path: `/${path}`, operation })}_Request`, isGenerated: true };
   }
 
   const parentSchemaMatch = schema.$src.path.match(/(.*)\/properties\/([^/]*)$/);

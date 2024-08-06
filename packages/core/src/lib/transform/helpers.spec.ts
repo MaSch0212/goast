@@ -10,37 +10,40 @@ import {
   transformSchemaProperties,
 } from './helpers';
 import { OpenApiTransformerContext } from './types';
+import { Deref, OpenApiDocument } from '../parse';
 
 describe('determineSchemaKind', () => {
+  const ctx = { config: { unknownTypeBehavior: 'keep-unknown' } } as OpenApiTransformerContext;
+
   test('returns "oneOf" if schema has "oneOf" property', () => {
     const schema = { oneOf: [{}] };
-    expect(determineSchemaKind(schema)).toBe('oneOf');
+    expect(determineSchemaKind(ctx, schema)).toBe('oneOf');
   });
 
   test('returns "combined" if schema has "allOf" or "anyOf" property', () => {
     const schema = { allOf: [{}], anyOf: [{}] };
-    expect(determineSchemaKind(schema)).toBe('combined');
+    expect(determineSchemaKind(ctx, schema)).toBe('combined');
   });
 
   test('returns "multi-type" if schema has "type" property as an array', () => {
     const schema = { type: ['string', 'number'] };
-    expect(determineSchemaKind(schema)).toBe('multi-type');
+    expect(determineSchemaKind(ctx, schema)).toBe('multi-type');
   });
 
   test('returns the value of "type" property if it is a string', () => {
     const schema = { type: 'string' };
-    expect(determineSchemaKind(schema)).toBe('string');
+    expect(determineSchemaKind(ctx, schema)).toBe('string');
   });
 
   test('returns "unknown" if schema has no recognizable properties', () => {
     const schema = {};
-    expect(determineSchemaKind(schema)).toBe('unknown');
+    expect(determineSchemaKind(ctx, schema)).toBe('unknown');
   });
 });
 
 describe('determineSchemaName', () => {
   test('returns the schema title if it exists', () => {
-    const schema = { title: 'TestSchema', $src: { path: '/test/schema' } };
+    const schema = { title: 'TestSchema', $src: { path: '/test/schema', document: {} as Deref<OpenApiDocument> } };
     expect(determineSchemaName(schema, 'TestId')).toEqual({
       name: 'TestSchema',
       isGenerated: false,
@@ -48,7 +51,7 @@ describe('determineSchemaName', () => {
   });
 
   test('returns the schema name extracted from $src.path if it starts with "/components/schemas/"', () => {
-    const schema = { $src: { path: '/components/schemas/TestSchema' } };
+    const schema = { $src: { path: '/components/schemas/TestSchema', document: {} as Deref<OpenApiDocument> } };
     expect(determineSchemaName(schema, 'TestId')).toEqual({
       name: 'TestSchema',
       isGenerated: false,
@@ -56,7 +59,7 @@ describe('determineSchemaName', () => {
   });
 
   test('returns the schema name extracted from $src.path if it starts with "/definitions/"', () => {
-    const schema = { $src: { path: '/definitions/TestSchema' } };
+    const schema = { $src: { path: '/definitions/TestSchema', document: {} as Deref<OpenApiDocument> } };
     expect(determineSchemaName(schema, 'TestId')).toEqual({
       name: 'TestSchema',
       isGenerated: false,
@@ -65,16 +68,19 @@ describe('determineSchemaName', () => {
 
   test('returns a generated name based on the $src.path for response schemas', () => {
     const schema = {
-      $src: { path: '/paths/users/{userId}/email-verification/{token}/get/responses/200/' },
+      $src: {
+        path: '/paths/users/{userId}/email-verification/{token}/get/responses/200/',
+        document: {} as Deref<OpenApiDocument>,
+      },
     };
     expect(determineSchemaName(schema, 'TestId')).toEqual({
-      name: 'get_users_{userId}_email-verification_{token}_200_Response',
+      name: 'get_users_:userId_email-verification_:token_200_Response',
       isGenerated: true,
     });
   });
 
   test('returns the provided id if no other name can be determined', () => {
-    const schema = { $src: { path: '/test/schema' } };
+    const schema = { $src: { path: '/test/schema', document: {} as Deref<OpenApiDocument> } };
     expect(determineSchemaName(schema, 'TestId')).toEqual({ name: 'TestId', isGenerated: true });
   });
 });
