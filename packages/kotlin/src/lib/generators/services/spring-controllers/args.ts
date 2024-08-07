@@ -1,5 +1,6 @@
-import { ApiEndpoint, ApiParameter, ApiSchema, SourceBuilder } from '@goast/core';
+import { ApiEndpoint, ApiSchema, SourceBuilder } from '@goast/core';
 
+import { ApiParameterWithMultipartInfo } from './spring-controller-generator';
 import { kt } from '../../../ast';
 
 // #region API Interface
@@ -39,7 +40,7 @@ export type GetApiDelegateInterface = { delegateInterfaceName: string };
 export type GetApiDelegateInterfaceEndpointMethod = { endpoint: ApiEndpoint };
 // #endregion
 
-export type GetParameterType = { endpoint: ApiEndpoint; parameter: ApiParameter };
+export type GetParameterType = { endpoint: ApiEndpoint; parameter: ApiParameterWithMultipartInfo };
 
 export type GetResponseType = { endpoint: ApiEndpoint };
 
