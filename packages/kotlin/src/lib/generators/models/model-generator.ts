@@ -503,6 +503,11 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       return false;
     }
 
+    // multipart schemas should not have its own type declaration
+    if (schema.$src.path.endsWith('/requestBody/content/multipart/form-data/schema')) {
+      return false;
+    }
+
     return true;
   }
 
