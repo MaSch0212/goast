@@ -13,13 +13,16 @@ import {
   builderTemplate as s,
   createOverwriteProxy,
   toCasing,
+  resolveAnyOfAndAllOf,
 } from '@goast/core';
 
 import { DefaultKotlinOkHttp3GeneratorArgs as Args } from '.';
 import { KotlinOkHttp3ClientGeneratorContext, KotlinOkHttp3ClientGeneratorOutput } from './models';
 import { kt } from '../../../ast';
+import { KtValue } from '../../../ast/nodes/types';
 import { KotlinImport } from '../../../common-results';
 import { KotlinFileBuilder } from '../../../file-builder';
+import { ApiParameterWithMultipartInfo } from '../../../types';
 import { modifyString } from '../../../utils';
 import { KotlinFileGenerator } from '../../file-generator';
 
@@ -145,7 +148,7 @@ export class DefaultKotlinOkHttp3Generator
       parameters: parameters.map((p) =>
         kt.parameter(
           toCasing(p.name, ctx.config.parameterNameCasing),
-          this.getTypeUsage(ctx, { schema: p.schema, nullable: !p.required }),
+          this.getParameterType(ctx, { endpoint, parameter: p }),
           {
             description: p.description,
             default: !p.required ? kt.toNode(p.schema?.default) : null,
@@ -224,7 +227,7 @@ export class DefaultKotlinOkHttp3Generator
       parameters: parameters.map((p) =>
         kt.parameter(
           toCasing(p.name, ctx.config.parameterNameCasing),
-          this.getTypeUsage(ctx, { schema: p.schema, nullable: !p.required }),
+          this.getParameterType(ctx, { endpoint, parameter: p }),
           {
             description: p.description,
             default: !p.required ? kt.toNode(p.schema?.default) : null,
@@ -254,7 +257,7 @@ export class DefaultKotlinOkHttp3Generator
           [
             kt.reference('request', null, {
               generics: [
-                this.getTypeUsage(ctx, { schema: endpoint.requestBody?.content[0].schema, fallback: kt.refs.unit() }),
+                this.getRequestBodyType(ctx, { endpoint }),
                 this.getTypeUsage(ctx, { schema: responseSchema, fallback: kt.refs.unit() }),
               ],
             }),
@@ -272,7 +275,6 @@ export class DefaultKotlinOkHttp3Generator
   ): kt.Function<Builder> {
     const { endpoint, parameters } = args;
     const operationName = toCasing(endpoint.name, ctx.config.functionNameCasing);
-    const requestSchema = endpoint.requestBody?.content[0].schema;
 
     return kt.function(toCasing(args.endpoint.name, ctx.config.functionNameCasing) + 'RequestConfig', {
       accessModifier: 'private',
@@ -281,15 +283,15 @@ export class DefaultKotlinOkHttp3Generator
       parameters: parameters.map((p) =>
         kt.parameter(
           toCasing(p.name, ctx.config.parameterNameCasing),
-          this.getTypeUsage(ctx, { schema: p.schema, nullable: !p.required }),
+          this.getParameterType(ctx, { endpoint, parameter: p }),
           {
             description: p.description,
             default: !p.required ? kt.toNode(p.schema?.default) : null,
           },
         ),
       ),
-      returnType: ctx.refs.requestConfig([this.getTypeUsage(ctx, { schema: requestSchema, fallback: kt.refs.unit() })]),
-      body: this.getEndpointClientRequestConfigMethodBody(ctx, { endpoint }),
+      returnType: ctx.refs.requestConfig([this.getRequestBodyType(ctx, { endpoint })]),
+      body: this.getEndpointClientRequestConfigMethodBody(ctx, { endpoint, parameters }),
     });
   }
 
@@ -297,13 +299,25 @@ export class DefaultKotlinOkHttp3Generator
     ctx: Context,
     args: Args.GetEndpointClientRequestConfigMethodBody,
   ): AppendValueGroup<Builder> {
-    const { endpoint } = args;
-    const queryParameters = endpoint.parameters.filter((x) => x.target === 'query');
+    const { endpoint, parameters } = args;
+    const queryParameters = parameters.filter((x) => x.target === 'query');
     const result = appendValueGroup<Builder>([], '\n');
 
     if (endpoint.requestBody) {
-      const bodyParamName = toCasing(this.getRequestBodyParamName(ctx, { endpoint }), ctx.config.parameterNameCasing);
-      result.values.push(`val localVariableBody = ${bodyParamName}`);
+      if (endpoint.requestBody.content[0]?.type === 'multipart/form-data') {
+        const partConfigs = parameters
+          .filter((x) => x.multipart)
+          .map<KtValue<Builder>>((param) => {
+            const paramName = toCasing(param.name, ctx.config.parameterNameCasing);
+            return s`"${param.multipart?.name ?? ''}" to ${ctx.refs.partConfig.infer()}(body = ${paramName})`;
+          });
+        result.values.push(
+          s`val localVariableBody = ${kt.call(kt.refs.mapOf([kt.refs.string(), ctx.refs.partConfig(['*'])]), partConfigs)}`,
+        );
+      } else {
+        const bodyParamName = toCasing(this.getRequestBodyParamName(ctx, { endpoint }), ctx.config.parameterNameCasing);
+        result.values.push(`val localVariableBody = ${bodyParamName}`);
+      }
     }
 
     result.values.push(
@@ -366,6 +380,25 @@ export class DefaultKotlinOkHttp3Generator
     ];
   }
 
+  protected getParameterType(ctx: Context, args: Args.GetParameterType): kt.Type<Builder> {
+    const { parameter } = args;
+    if (parameter.multipart?.isFile) {
+      return kt.refs.java.file();
+    }
+    return this.getTypeUsage(ctx, {
+      schema: parameter.schema,
+      nullable: !parameter.required,
+    });
+  }
+
+  protected getRequestBodyType(ctx: Context, args: Args.GetRequestBodyType): kt.Type<Builder> {
+    const { endpoint } = args;
+    const content = endpoint.requestBody?.content[0];
+    return content?.type === 'multipart/form-data'
+      ? kt.refs.map([kt.refs.string(), ctx.refs.partConfig(['*'])])
+      : this.getTypeUsage(ctx, { schema: content?.schema, fallback: kt.refs.unit() });
+  }
+
   protected getTypeUsage(ctx: Context, args: Args.GetTypeUsage<Builder>): kt.Type<Builder> {
     const { schema, nullable, fallback } = args;
     const type = this.getSchemaType(ctx, { schema });
@@ -405,29 +438,52 @@ export class DefaultKotlinOkHttp3Generator
     return schema && ctx.input.kotlin.models[schema.id].type;
   }
 
-  protected getAllParameters(ctx: Context, args: Args.GetAllParameters): ApiParameter[] {
+  protected getAllParameters(ctx: Context, args: Args.GetAllParameters): ApiParameterWithMultipartInfo[] {
     const { endpoint } = args;
     const parameters = endpoint.parameters.filter(
       (parameter) => parameter.target === 'query' || parameter.target === 'path',
     );
     if (endpoint.requestBody) {
-      const schema = endpoint.requestBody.content[0].schema;
-      parameters.push({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        $src: undefined!,
-        $ref: undefined,
-        id: 'body',
-        name: this.getRequestBodyParamName(ctx, { endpoint }),
-        target: 'body',
-        schema,
-        required: endpoint.requestBody.required,
-        description: endpoint.requestBody.description,
-        allowEmptyValue: undefined,
-        allowReserved: undefined,
-        deprecated: false,
-        explode: undefined,
-        style: undefined,
-      });
+      const content = endpoint.requestBody.content[0];
+      let schema = content.schema;
+
+      if (content.type === 'multipart/form-data') {
+        if (schema && schema.kind === 'object') {
+          schema = resolveAnyOfAndAllOf(schema, true) ?? schema;
+          const properties = schema.properties ?? {};
+          for (const [name, property] of properties.entries()) {
+            parameters.push(
+              Object.assign(
+                this.createApiParameter({
+                  id: `multipart-${name}`,
+                  name,
+                  target: 'body',
+                  schema: property.schema,
+                  required: schema.required.has(name),
+                  description: property.schema.description,
+                }),
+                {
+                  multipart: {
+                    name,
+                    isFile: property.schema.kind === 'string' && property.schema.format === 'binary',
+                  },
+                },
+              ),
+            );
+          }
+        }
+      } else {
+        parameters.push(
+          this.createApiParameter({
+            id: 'body',
+            name: this.getRequestBodyParamName(ctx, { endpoint }),
+            target: 'body',
+            schema,
+            required: endpoint.requestBody.required,
+            description: endpoint.requestBody.description,
+          }),
+        );
+      }
     }
 
     return parameters.sort((a, b) => (a.required === b.required ? 0 : a.required ? -1 : 1));
@@ -463,5 +519,22 @@ export class DefaultKotlinOkHttp3Generator
 
   protected getApiClientName(ctx: Context, args: Args.GetApiClientName): string {
     return toCasing(ctx.service.name, ctx.config.typeNameCasing) + 'ApiClient';
+  }
+
+  private createApiParameter(data: Partial<ApiParameter> & Pick<ApiParameter, 'id' | 'name' | 'target'>): ApiParameter {
+    return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      $src: undefined!,
+      $ref: undefined,
+      schema: undefined,
+      required: false,
+      description: undefined,
+      allowEmptyValue: undefined,
+      allowReserved: undefined,
+      deprecated: false,
+      explode: undefined,
+      style: undefined,
+      ...data,
+    };
   }
 }

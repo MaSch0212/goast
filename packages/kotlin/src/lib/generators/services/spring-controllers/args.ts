@@ -1,6 +1,7 @@
-import { ApiEndpoint, ApiParameter, ApiSchema, SourceBuilder } from '@goast/core';
+import { ApiEndpoint, ApiSchema, SourceBuilder } from '@goast/core';
 
 import { kt } from '../../../ast';
+import { ApiParameterWithMultipartInfo } from '../../../types';
 
 // #region API Interface
 export type GenerateApiInterfaceFile = {
@@ -39,7 +40,7 @@ export type GetApiDelegateInterface = { delegateInterfaceName: string };
 export type GetApiDelegateInterfaceEndpointMethod = { endpoint: ApiEndpoint };
 // #endregion
 
-export type GetParameterType = { endpoint: ApiEndpoint; parameter: ApiParameter };
+export type GetParameterType = { endpoint: ApiEndpoint; parameter: ApiParameterWithMultipartInfo };
 
 export type GetResponseType = { endpoint: ApiEndpoint };
 

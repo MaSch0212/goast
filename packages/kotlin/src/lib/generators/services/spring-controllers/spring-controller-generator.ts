@@ -11,6 +11,7 @@ import {
   createOverwriteProxy,
   notNullish,
   toCasing,
+  resolveAnyOfAndAllOf,
 } from '@goast/core';
 
 import { DefaultKotlinSpringControllerGeneratorArgs as Args } from '.';
@@ -18,6 +19,7 @@ import { KotlinServiceGeneratorContext, KotlinServiceGeneratorOutput } from './m
 import { kt } from '../../../ast';
 import { KotlinImport } from '../../../common-results';
 import { KotlinFileBuilder } from '../../../file-builder';
+import { ApiParameterWithMultipartInfo } from '../../../types';
 import { modifyString } from '../../../utils';
 import { KotlinFileGenerator } from '../../file-generator';
 
@@ -162,7 +164,7 @@ export class DefaultKotlinSpringControllerGenerator
   private getApiInterfaceEndpointMethodParameter(
     ctx: Context,
     endpoint: ApiEndpoint,
-    parameter: ApiParameter,
+    parameter: ApiParameterWithMultipartInfo,
   ): kt.Parameter<Builder> {
     const schemaType = this.getSchemaType(ctx, { schema: parameter.schema });
     const result = kt.parameter(
@@ -173,6 +175,7 @@ export class DefaultKotlinSpringControllerGenerator
 
     if (ctx.config.addSwaggerAnnotations) {
       const annotation = kt.annotation(kt.refs.swagger.parameter(), [
+        parameter.multipart ? kt.argument.named('name', kt.string(parameter.multipart.name)) : null,
         parameter.description ? kt.argument.named('description', kt.string(parameter.description?.trim())) : null,
         kt.argument.named('required', parameter.required),
       ]);
@@ -195,7 +198,7 @@ export class DefaultKotlinSpringControllerGenerator
       result.annotations.push(kt.annotation(kt.refs.jakarta.valid()));
     }
 
-    if (parameter.target === 'body') {
+    if (parameter.target === 'body' && !parameter.multipart) {
       result.annotations.push(kt.annotation(kt.refs.spring.requestBody()));
     }
 
@@ -212,6 +215,15 @@ export class DefaultKotlinSpringControllerGenerator
 
     if (parameter.target === 'path') {
       result.annotations.push(kt.annotation(kt.refs.spring.pathVariable(), [kt.string(parameter.name)]));
+    }
+
+    if (parameter.multipart) {
+      result.annotations.push(
+        kt.annotation(kt.refs.spring.requestPart(), [
+          kt.argument.named('value', kt.string(parameter.multipart.name)),
+          kt.argument.named('required', parameter.required),
+        ]),
+      );
     }
 
     return result;
@@ -408,6 +420,9 @@ export class DefaultKotlinSpringControllerGenerator
 
   protected getParameterType(ctx: Context, args: Args.GetParameterType): kt.Type<Builder> {
     const { parameter } = args;
+    if (parameter.multipart?.isFile) {
+      return kt.refs.reactor.mono([kt.refs.spring.filePart()]);
+    }
     const type = this.getTypeUsage(ctx, {
       schema: parameter.schema,
       nullable: (!parameter.required && parameter.schema?.default === undefined) || undefined,
@@ -494,37 +509,77 @@ export class DefaultKotlinSpringControllerGenerator
     return toCasing(ctx.service.name + '_ApiDelegate', ctx.config.typeNameCasing);
   }
 
-  protected getAllParameters(ctx: Context, args: Args.GetAllParameters): ApiParameter[] {
+  protected getAllParameters(ctx: Context, args: Args.GetAllParameters): ApiParameterWithMultipartInfo[] {
     const { endpoint } = args;
     const parameters = endpoint.parameters.filter(
       (parameter) => parameter.target === 'query' || parameter.target === 'path',
     );
     if (endpoint.requestBody) {
-      const schema = endpoint.requestBody.content[0].schema;
-      const schemaType = this.getSchemaType(ctx, { schema });
-      const name =
-        !schemaType || /^Any\??$/.test(schemaType.name)
-          ? 'body'
-          : SourceBuilder.build((b) => kt.reference.write(b, schemaType));
-      parameters.push({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        $src: undefined!,
-        $ref: undefined,
-        id: 'body',
-        name,
-        target: 'body',
-        schema,
-        required: endpoint.requestBody.required,
-        description: endpoint.requestBody.description,
-        allowEmptyValue: undefined,
-        allowReserved: undefined,
-        deprecated: false,
-        explode: undefined,
-        style: undefined,
-      });
+      const content = endpoint.requestBody.content[0];
+      let schema = content.schema;
+
+      if (content.type === 'multipart/form-data') {
+        if (schema && schema.kind === 'object') {
+          schema = resolveAnyOfAndAllOf(schema, true) ?? schema;
+          const properties = schema.properties ?? {};
+          for (const [name, property] of properties.entries()) {
+            parameters.push(
+              Object.assign(
+                this.createApiParameter({
+                  id: `multipart-${name}`,
+                  name,
+                  target: 'body',
+                  schema: property.schema,
+                  required: schema.required.has(name),
+                  description: property.schema.description,
+                }),
+                {
+                  multipart: {
+                    name,
+                    isFile: property.schema.kind === 'string' && property.schema.format === 'binary',
+                  },
+                },
+              ),
+            );
+          }
+        }
+      } else {
+        const schemaType = this.getSchemaType(ctx, { schema });
+        const name =
+          !schemaType || /^Any\??$/.test(schemaType.name)
+            ? 'body'
+            : SourceBuilder.build((b) => kt.reference.write(b, schemaType));
+        parameters.push(
+          this.createApiParameter({
+            id: 'body',
+            name,
+            target: 'body',
+            schema,
+            required: endpoint.requestBody.required,
+            description: endpoint.requestBody.description,
+          }),
+        );
+      }
     }
 
     return parameters;
+  }
+
+  private createApiParameter(data: Partial<ApiParameter> & Pick<ApiParameter, 'id' | 'name' | 'target'>): ApiParameter {
+    return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      $src: undefined!,
+      $ref: undefined,
+      schema: undefined,
+      required: false,
+      description: undefined,
+      allowEmptyValue: undefined,
+      allowReserved: undefined,
+      deprecated: false,
+      explode: undefined,
+      style: undefined,
+      ...data,
+    };
   }
 }
 

@@ -1,6 +1,7 @@
 import { ApiEndpoint, ApiParameter, ApiSchema, SourceBuilder } from '@goast/core';
 
 import { kt } from '../../../ast';
+import { ApiParameterWithMultipartInfo } from '../../../types';
 
 export type GetClientFileContent = {};
 
@@ -41,9 +42,14 @@ export type GetEndpointClientRequestConfigMethod = {
 
 export type GetEndpointClientRequestConfigMethodBody = {
   endpoint: ApiEndpoint;
+  parameters: ApiParameterWithMultipartInfo[];
 };
 
 export type GetAdditionalClientMembers = {};
+
+export type GetParameterType = { endpoint: ApiEndpoint; parameter: ApiParameterWithMultipartInfo };
+
+export type GetRequestBodyType = { endpoint: ApiEndpoint };
 
 export type GetTypeUsage<TBuilder extends SourceBuilder> = {
   schema: ApiSchema | undefined;
