@@ -1,7 +1,7 @@
 import { ApiEndpoint, ApiParameter, ApiSchema, SourceBuilder } from '@goast/core';
 
-import { ApiParameterWithMultipartInfo } from './okhttp3-client-generator';
 import { kt } from '../../../ast';
+import { ApiParameterWithMultipartInfo } from '../../../types';
 
 export type GetClientFileContent = {};
 

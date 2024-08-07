@@ -19,14 +19,13 @@ import { KotlinServiceGeneratorContext, KotlinServiceGeneratorOutput } from './m
 import { kt } from '../../../ast';
 import { KotlinImport } from '../../../common-results';
 import { KotlinFileBuilder } from '../../../file-builder';
+import { ApiParameterWithMultipartInfo } from '../../../types';
 import { modifyString } from '../../../utils';
 import { KotlinFileGenerator } from '../../file-generator';
 
 type Context = KotlinServiceGeneratorContext;
 type Output = KotlinServiceGeneratorOutput;
 type Builder = KotlinFileBuilder;
-
-export type ApiParameterWithMultipartInfo = ApiParameter & { multipart?: { name: string; isFile: boolean } };
 
 export interface KotlinSpringControllerGenerator<TOutput extends Output = Output> {
   generate(ctx: Context): TOutput;

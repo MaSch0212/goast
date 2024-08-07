@@ -22,14 +22,13 @@ import { kt } from '../../../ast';
 import { KtValue } from '../../../ast/nodes/types';
 import { KotlinImport } from '../../../common-results';
 import { KotlinFileBuilder } from '../../../file-builder';
+import { ApiParameterWithMultipartInfo } from '../../../types';
 import { modifyString } from '../../../utils';
 import { KotlinFileGenerator } from '../../file-generator';
 
 type Context = KotlinOkHttp3ClientGeneratorContext;
 type Output = KotlinOkHttp3ClientGeneratorOutput;
 type Builder = KotlinFileBuilder;
-
-export type ApiParameterWithMultipartInfo = ApiParameter & { multipart?: { name: string; isFile: boolean } };
 
 export interface KotlinOkHttp3Generator<TOutput extends Output = Output> {
   generate(ctx: Context): TOutput;
@@ -439,7 +438,7 @@ export class DefaultKotlinOkHttp3Generator
     return schema && ctx.input.kotlin.models[schema.id].type;
   }
 
-  protected getAllParameters(ctx: Context, args: Args.GetAllParameters): ApiParameter[] {
+  protected getAllParameters(ctx: Context, args: Args.GetAllParameters): ApiParameterWithMultipartInfo[] {
     const { endpoint } = args;
     const parameters = endpoint.parameters.filter(
       (parameter) => parameter.target === 'query' || parameter.target === 'path',

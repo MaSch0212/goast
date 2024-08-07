@@ -1,7 +1,7 @@
 import { ApiEndpoint, ApiSchema, SourceBuilder } from '@goast/core';
 
-import { ApiParameterWithMultipartInfo } from './spring-controller-generator';
 import { kt } from '../../../ast';
+import { ApiParameterWithMultipartInfo } from '../../../types';
 
 // #region API Interface
 export type GenerateApiInterfaceFile = {
