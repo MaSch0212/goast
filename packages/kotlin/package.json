@@ -1,6 +1,6 @@
 {
   "name": "@goast/kotlin",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "repository": "https://github.com/MaSch0212/goast.git",
   "description": "Provides gOAst generators for generating Kotlin code from OpenAPI specifications.",
   "keywords": [
