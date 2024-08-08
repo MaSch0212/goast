@@ -421,7 +421,7 @@ export class DefaultKotlinSpringControllerGenerator
   protected getParameterType(ctx: Context, args: Args.GetParameterType): kt.Type<Builder> {
     const { parameter } = args;
     if (parameter.multipart?.isFile) {
-      return kt.refs.reactor.mono([kt.refs.spring.filePart()]);
+      return kt.refs.spring.filePart();
     }
     const type = this.getTypeUsage(ctx, {
       schema: parameter.schema,
