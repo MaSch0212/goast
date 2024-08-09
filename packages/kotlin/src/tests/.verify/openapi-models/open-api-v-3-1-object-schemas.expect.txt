@@ -1442,6 +1442,31 @@ import jakarta.validation.Valid
 
 data class ObjectWithPropertiesAllOfAndAnyOf(
     @Schema(required = true)
+    @JsonProperty("a", required = true)
+    val a: String,
+
+    @Schema(required = true)
+    @JsonProperty("b", required = true)
+    val b: Int,
+
+    @Schema(required = true)
+    @JsonProperty("c", required = true)
+    val c: Double,
+
+    @Schema(required = true)
+    @JsonProperty("d", required = true)
+    val d: Boolean,
+
+    @Schema(required = true)
+    @JsonProperty("e", required = true)
+    val e: List<Any?>,
+
+    @field:Valid
+    @Schema(required = true)
+    @JsonProperty("f", required = true)
+    val f: ObjectWithPropertiesAllOfAndAnyOfF,
+
+    @Schema(required = true)
     @JsonProperty("g", required = true)
     val g: String,
 

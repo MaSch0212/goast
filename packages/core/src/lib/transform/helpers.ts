@@ -12,12 +12,15 @@ export function determineSchemaKind<
     anyOf?: unknown;
     type?: string | string[];
     properties?: Record<string, unknown>;
+    additionalProperties?: unknown;
   },
 >(ctx: OpenApiTransformerContext, schema: T): ApiSchemaKind {
   if (schema.oneOf) {
     return 'oneOf';
   } else if (schema.type !== 'object' && (schema.allOf || schema.anyOf)) {
-    return 'combined';
+    const hasProperties =
+      (schema.properties && Object.keys(schema.properties).length > 0) || schema.additionalProperties;
+    return hasProperties ? 'object' : 'combined';
   } else if (Array.isArray(schema.type)) {
     return 'multi-type';
   } else if (
