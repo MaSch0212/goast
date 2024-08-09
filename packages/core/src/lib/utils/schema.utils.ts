@@ -12,6 +12,9 @@ export function resolveAnyOfAndAllOf(
 
   const required = new Set(schema.required);
   const properties = new Map<string, ApiSchemaProperty>();
+  if ('properties' in schema) {
+    schema.properties.forEach((prop) => properties.set(prop.name, prop));
+  }
   collectSubSchemaProperties(schema.allOf, properties, required, false);
   collectSubSchemaProperties(schema.anyOf, properties, required, true);
 

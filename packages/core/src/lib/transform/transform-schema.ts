@@ -93,6 +93,25 @@ export function transformSchema<T extends Deref<OpenApiSchema>>(ctx: OpenApiTran
   return completeSchema;
 }
 
+function allExtensionsTransformer(schema: Deref<OpenApiSchema>, context: OpenApiTransformerContext) {
+  return {
+    oneOf: schema.oneOf?.map((s) => transformSchema(context, s)) ?? [],
+    format: schema.format,
+    pattern: schema.pattern,
+    minLength: schema.minLength,
+    maxLength: schema.maxLength,
+    minimum: schema.minimum,
+    maximum: schema.maximum,
+    properties: transformSchemaProperties<Deref<OpenApiSchema>>(context, schema, transformSchema),
+    additionalProperties: transformAdditionalProperties(context, schema, transformSchema),
+    allOf: schema.allOf?.map((s) => transformSchema(context, s)) ?? [],
+    anyOf: schema.anyOf?.map((s) => transformSchema(context, s)) ?? [],
+    items: schema.items ? transformSchema(context, schema.items) : undefined,
+    minItems: schema.minItems,
+    maxItems: schema.maxItems,
+  };
+}
+
 const schemaTransformers: {
   [K in ApiSchemaKind]: (
     schema: Deref<OpenApiSchema>,
@@ -100,61 +119,35 @@ const schemaTransformers: {
   ) => Omit<ApiSchemaExtensions<K>, 'kind'>;
 } = {
   oneOf: (schema, context) => ({
-    oneOf: schema.oneOf?.map((s) => transformSchema(context, s)) ?? [],
+    ...allExtensionsTransformer(schema, context),
   }),
-  string: (schema) => ({
+  string: (schema, context) => ({
     type: 'string',
-    format: schema.format,
-    pattern: schema.pattern,
-    minLength: schema.minLength,
-    maxLength: schema.maxLength,
+    ...allExtensionsTransformer(schema, context),
   }),
-  number: (schema) => ({
+  number: (schema, context) => ({
     type: 'number',
-    format: schema.format,
-    minimum: schema.minimum,
-    maximum: schema.maximum,
+    ...allExtensionsTransformer(schema, context),
   }),
-  boolean: (schema) => ({ type: 'boolean', format: schema.format }),
+  boolean: (schema, context) => ({ type: 'boolean', ...allExtensionsTransformer(schema, context) }),
   object: (schema, context) => ({
     type: 'object',
-    properties: transformSchemaProperties<Deref<OpenApiSchema>>(context, schema, transformSchema),
-    format: schema.format,
-    additionalProperties: transformAdditionalProperties(context, schema, transformSchema),
-    allOf: schema.allOf?.map((s) => transformSchema(context, s)) ?? [],
-    anyOf: schema.anyOf?.map((s) => transformSchema(context, s)) ?? [],
+    ...allExtensionsTransformer(schema, context),
   }),
-  integer: (schema) => ({
+  integer: (schema, context) => ({
     type: 'integer',
-    format: schema.format,
-    minimum: schema.minimum,
-    maximum: schema.maximum,
+    ...allExtensionsTransformer(schema, context),
   }),
   array: (schema, context) => ({
     type: 'array',
-    items: schema.items ? transformSchema(context, schema.items) : undefined,
-    minItems: schema.minItems,
-    maxItems: schema.maxItems,
+    ...allExtensionsTransformer(schema, context),
   }),
   combined: (schema, context) => ({
-    allOf: schema.allOf?.map((s) => transformSchema(context, s)) ?? [],
-    anyOf: schema.anyOf?.map((s) => transformSchema(context, s)) ?? [],
+    ...allExtensionsTransformer(schema, context),
   }),
   'multi-type': (schema, context) => ({
     type: schema.type as string[],
-    items: schema.items ? transformSchema(context, schema.items) : undefined,
-    minItems: schema.minItems,
-    maxItems: schema.maxItems,
-    minimum: schema.minimum,
-    maximum: schema.maximum,
-    format: schema.format,
-    properties: transformSchemaProperties<Deref<OpenApiSchema>>(context, schema, transformSchema),
-    additionalProperties: transformAdditionalProperties(context, schema, transformSchema),
-    allOf: schema.allOf?.map((s) => transformSchema(context, s)) ?? [],
-    anyOf: schema.anyOf?.map((s) => transformSchema(context, s)) ?? [],
-    maxLength: schema.maxLength,
-    minLength: schema.minLength,
-    pattern: schema.pattern,
+    ...allExtensionsTransformer(schema, context),
   }),
   null: () => ({ type: 'null' }),
   unknown: () => ({}),
