@@ -114,9 +114,9 @@ export class OpenApiParser {
 
     const doc = await this.loadDocument(absoluteRefFile);
 
-    const value = getDeepProperty(doc.document, refPath.replace(/[/]/g, '.'));
+    const value = refPath ? getDeepProperty(doc.document, refPath.replace(/[/]/g, '.')) : doc.document;
     if (value && typeof value === 'object') {
-      return this.dereference(absoluteRefFile, refPath, value as T);
+      return this.dereference(absoluteRefFile, refPath ?? '/', value as T);
     }
 
     return undefined;

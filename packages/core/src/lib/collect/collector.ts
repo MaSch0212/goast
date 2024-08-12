@@ -26,6 +26,8 @@ export function collectOpenApi(apis: Deref<OpenApiDocument>[]): OpenApiCollector
   return data;
 }
 
+const jsonSchemaProperties = ['$id', 'allOf', 'anyOf', 'oneOf', 'enum', 'not', 'properties', 'title', 'type'];
+
 function collectDocument(data: OpenApiCollectorData, documents: Collect<OpenApiDocument>) {
   collect(data, documents, (data, document) => {
     data.documents.push(document);
@@ -38,6 +40,10 @@ function collectDocument(data: OpenApiCollectorData, documents: Collect<OpenApiD
     collectRecord<Deref<OpenApiResponse>>(data, document.components?.responses, collectResponse);
     collectRecord<Deref<OpenApiResponse>>(data, document.responses, collectResponse);
     collectRecord<Deref<OpenApiHeader>>(data, document.components?.headers, collectHeader);
+
+    if (Object.keys(document).some((key) => jsonSchemaProperties.includes(key))) {
+      collectSchema(data, document as Deref<OpenApiSchema>);
+    }
   });
 }
 

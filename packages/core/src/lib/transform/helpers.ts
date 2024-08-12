@@ -1,7 +1,9 @@
+import { parse as parsePath } from 'path';
+
 import { ApiSchemaKind, ApiSchemaAccessibility, ApiSchema, ApiSchemaProperty } from './api-types';
 import { OpenApiTransformerContext } from './types';
 import { isOpenApiObjectProperty } from '../internal-utils';
-import { Deref, OpenApiDocument, OpenApiHttpMethod, OpenApiObject } from '../parse';
+import { Deref, DerefSource, OpenApiHttpMethod, OpenApiObject } from '../parse';
 import { getDeepProperty } from '../utils';
 import { isNullish } from '../utils/common.utils';
 
@@ -47,7 +49,7 @@ export function determineSchemaKind<
 export function determineSchemaName(
   schema: {
     title?: string;
-    $src: { path: string; document: Deref<OpenApiDocument> };
+    $src: DerefSource<any>;
   },
   id: string,
 ): { name: string; isGenerated: boolean } {
@@ -55,6 +57,9 @@ export function determineSchemaName(
   if (!schema.$src) {
     console.log('woot?');
   }
+
+  if (schema.$src.path === '/') return { name: parsePath(schema.$src.file).name, isGenerated: true };
+
   const schemaNameMatch = schema.$src.path.match(/(?<=\/components\/schemas\/|\/definitions\/)[^/]+$/i);
   if (schemaNameMatch) {
     return { name: schemaNameMatch[0], isGenerated: false };
@@ -91,7 +96,15 @@ export function determineSchemaName(
   if (parentSchemaMatch) {
     const parentSchema = getDeepProperty(schema.$src.document, parentSchemaMatch[1].split('/').filter(Boolean));
     const parentSchemaName = determineSchemaName(
-      { title: (parentSchema as any)?.title, $src: { path: parentSchemaMatch[1], document: schema.$src.document } },
+      {
+        title: (parentSchema as any)?.title,
+        $src: {
+          file: schema.$src.file,
+          path: parentSchemaMatch[1],
+          document: schema.$src.document,
+          originalComponent: parentSchema,
+        },
+      },
       id,
     );
     if (!parentSchemaName.isGenerated) {
