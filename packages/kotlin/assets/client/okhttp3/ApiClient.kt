@@ -85,7 +85,7 @@ open class ApiClient(val baseUrl: String, val client: OkHttpClient = defaultClie
                                     ("Content-Disposition" to "form-data; name=\"$name\"")
                                 addPart(
                                     partHeaders.toHeaders(),
-                                    Serializer.jacksonObjectMapper.writeValueAsString(content)
+                                    Serializer.jacksonObjectMapper.writeValueAsString(part.body)
                                         .toRequestBody(JsonMediaType.toMediaTypeOrNull())
                                 )
                             }
