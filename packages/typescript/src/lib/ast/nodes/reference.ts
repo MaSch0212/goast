@@ -83,10 +83,14 @@ const createReference = <TBuilder extends SourceBuilder>(
   options?: Prettify<Omit<Options<TBuilder>, 'name' | 'moduleNameOrfilePath'>>,
 ) => new TsReference<TBuilder>({ ...options, name, moduleNameOrfilePath });
 
-function _createFactory(name: string, moduleNameOrfilePath?: Nullable<string>) {
+function _createFactory(
+  name: string,
+  moduleNameOrfilePath?: Nullable<string>,
+  defaultOptions?: { importType?: Nullable<TypeScriptImportType> },
+) {
   return Object.assign(
     <TBuilder extends SourceBuilder>(options?: FactoryOptions<TBuilder>) =>
-      createReference<TBuilder>(name, moduleNameOrfilePath, options),
+      createReference<TBuilder>(name, moduleNameOrfilePath, { ...defaultOptions, ...options }),
     {
       refName: name,
       moduleNameOrfilePath,
@@ -96,21 +100,31 @@ function _createFactory(name: string, moduleNameOrfilePath?: Nullable<string>) {
 function createFactory(
   name: string,
   moduleNameOrfilePath: string,
+  defaultOptions?: { importType?: Nullable<TypeScriptImportType> },
 ): ReturnType<typeof _createFactory> & { moduleNameOrfilePath: string };
-function createFactory(name: string, moduleNameOrfilePath?: Nullable<string>): ReturnType<typeof _createFactory>;
-function createFactory(name: string, moduleNameOrfilePath?: Nullable<string>) {
-  return _createFactory(name, moduleNameOrfilePath);
+function createFactory(
+  name: string,
+  moduleNameOrfilePath?: Nullable<string>,
+  defaultOptions?: { importType?: Nullable<TypeScriptImportType> },
+): ReturnType<typeof _createFactory>;
+function createFactory(
+  name: string,
+  moduleNameOrfilePath?: Nullable<string>,
+  defaultOptions?: { importType?: Nullable<TypeScriptImportType> },
+) {
+  return _createFactory(name, moduleNameOrfilePath, defaultOptions);
 }
 
 function _createGenericFactory<TGenericCount extends number | number[]>(
   name: string,
   moduleNameOrfilePath?: Nullable<string>,
+  defaultOptions?: { importType?: Nullable<TypeScriptImportType> },
 ) {
   return Object.assign(
     <TBuilder extends SourceBuilder>(
       generics: TupleWithCount<TsType<TBuilder>, TGenericCount>,
       options?: FactoryOptions<TBuilder>,
-    ) => createReference<TBuilder>(name, moduleNameOrfilePath, { ...options, generics }),
+    ) => createReference<TBuilder>(name, moduleNameOrfilePath, { ...defaultOptions, ...options, generics }),
     {
       refName: name,
       moduleNameOrfilePath,
@@ -121,16 +135,19 @@ function _createGenericFactory<TGenericCount extends number | number[]>(
 function createGenericFactory<TGenericCount extends number | number[]>(
   name: string,
   moduleNameOrfilePath: string,
+  defaultOptions?: { importType?: Nullable<TypeScriptImportType> },
 ): ReturnType<typeof _createGenericFactory<TGenericCount>> & { moduleNameOrfilePath: string };
 function createGenericFactory<TGenericCount extends number | number[]>(
   name: string,
   moduleNameOrfilePath?: Nullable<string>,
+  defaultOptions?: { importType?: Nullable<TypeScriptImportType> },
 ): ReturnType<typeof _createGenericFactory<TGenericCount>>;
 function createGenericFactory<TGenericCount extends number | number[]>(
   name: string,
   moduleNameOrfilePath?: Nullable<string>,
+  defaultOptions?: { importType?: Nullable<TypeScriptImportType> },
 ) {
-  return _createGenericFactory<TGenericCount>(name, moduleNameOrfilePath);
+  return _createGenericFactory<TGenericCount>(name, moduleNameOrfilePath, defaultOptions);
 }
 
 export const tsReference = Object.assign(createReference, {

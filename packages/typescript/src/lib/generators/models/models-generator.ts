@@ -95,7 +95,14 @@ export class TypeScriptModelsGenerator extends OpenApiSchemasGenerationProviderB
       Object.values(ctx.output.typescript.models).flatMap((x) => {
         const { filePath } = x;
         if (!filePath) return [];
-        return [ts.export(x.component, filePath), ...(x.additionalExports?.map((e) => ts.export(e, filePath)) ?? [])];
+        return [
+          ts.export(x.component, filePath, {
+            kind: x.kind === 'type' || x.kind === 'interface' ? 'type-export' : 'export',
+          }),
+          ...(x.additionalExports?.map((e) =>
+            typeof e === 'string' ? ts.export(e, filePath) : ts.export(e.name, filePath, { kind: e.type }),
+          ) ?? []),
+        ];
       }),
     );
   }

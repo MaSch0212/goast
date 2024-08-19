@@ -277,7 +277,7 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
     return appendValueGroup(
       Object.values(ctx.output.typescript.services)
         .flatMap((x) => Object.values(x.responseModels))
-        .map((x) => ts.export(x.component, x.filePath)),
+        .map((x) => ts.export(x.component, x.filePath, { kind: 'type-export' })),
     );
   }
 

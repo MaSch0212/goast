@@ -1,4 +1,6 @@
-import { EasyNetworkStub, ErrorResponse, HttpMethod, RouteResponseCallback } from 'easy-network-stub';
+import { EasyNetworkStub } from 'easy-network-stub';
+
+import type { HttpMethod, RouteResponseCallback, ErrorResponse } from 'easy-network-stub';
 
 /**
  * Options for the `EasyNetworkStubWrapper`.

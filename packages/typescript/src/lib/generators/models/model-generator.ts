@@ -17,6 +17,7 @@ import {
 
 import { TypeScriptModelGeneratorContext, TypeScriptModelGeneratorOutput } from './models';
 import { ts } from '../../ast';
+import { TypeScriptComponentOutputKind } from '../../common-results';
 import { TypeScriptFileBuilder } from '../../file-builder';
 import { TypeScriptFileGenerator } from '../file-generator';
 
@@ -45,17 +46,32 @@ export class DefaultTypeScriptModelGenerator
         generator: (b) => b.append(fileContent),
       });
 
+      const exports = fileContent.values.filter(
+        (x): x is AppendValue<Builder> & { name: string; export: true } =>
+          typeof x === 'object' && x !== null && 'export' in x && x.export === true && 'name' in x,
+      );
+      const node = exports.find((x) => x.name === name);
       return {
         component: name,
         filePath,
-        imports: [{ kind: 'file', name, modulePath: filePath, type: 'import' }],
-        additionalExports: fileContent.values
-          .filter(
-            (x): x is AppendValue<Builder> & { name: string; export: true } =>
-              typeof x === 'object' && x !== null && 'export' in x && x.export === true && 'name' in x,
-          )
+        imports: [
+          {
+            kind: 'file',
+            name,
+            modulePath: filePath,
+            type: node instanceof ts.Interface || node instanceof ts.TypeAlias ? 'type-import' : 'import',
+          },
+        ],
+        additionalExports: exports
           .filter((x) => x.name !== name)
-          .map((x) => x.name),
+          .map(
+            (x) =>
+              ({
+                name: x.name,
+                type: x instanceof ts.TypeAlias || x instanceof ts.Interface ? 'type-export' : 'export',
+              }) as const,
+          ),
+        kind: this.getNodeKind(node),
       };
     } else {
       const builder = new TypeScriptFileBuilder(undefined, ctx.config);
@@ -64,6 +80,14 @@ export class DefaultTypeScriptModelGenerator
       builder.imports.clear();
       return { component: builder.toString(false), imports };
     }
+  }
+
+  protected getNodeKind(node: unknown): TypeScriptComponentOutputKind | undefined {
+    if (node instanceof ts.Interface) return 'interface';
+    if (node instanceof ts.TypeAlias) return 'type';
+    if (node instanceof ts.Enum) return 'enum';
+    if (node instanceof ts.Class) return 'class';
+    return undefined;
   }
 
   protected getFileContent(ctx: Context): AppendValueGroup<Builder> {
@@ -226,14 +250,18 @@ export class DefaultTypeScriptModelGenerator
     schema = getSchemaReference(schema, ['description']);
 
     if (options?.useBaseType && ctx.schema.inheritedSchemas.some((x) => x.id === schema.id)) {
-      return ts.reference(this.getBaseTypeName(ctx, schema), this.getFilePath(ctx, schema));
+      return ts.reference(this.getBaseTypeName(ctx, schema), this.getFilePath(ctx, schema), {
+        importType: 'type-import',
+      });
     }
 
     if (!options?.skipSchemas && this.shouldGenerateTypeDeclaration(ctx, schema)) {
       if (schema.id === ctx.schema.id) {
         return null;
       }
-      return ts.reference(this.getDeclarationTypeName(ctx, schema), this.getFilePath(ctx, schema));
+      return ts.reference(this.getDeclarationTypeName(ctx, schema), this.getFilePath(ctx, schema), {
+        importType: 'type-import',
+      });
     }
 
     if (schema.enum) {
