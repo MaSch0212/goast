@@ -14,6 +14,7 @@ export function getReferenceFactories(options: TypeScriptAngularServicesGenerato
     abortablePromise: ts.reference.genericFactory<1>(
       'AbortablePromise',
       join(utilsDirPath, 'angular-service.utils.ts'),
+      { importType: 'type-import' },
     ),
     waitForResponse: ts.reference.genericFactory<1>('waitForResponse', join(utilsDirPath, 'angular-service.utils.ts')),
 
@@ -30,7 +31,9 @@ export function getReferenceFactories(options: TypeScriptAngularServicesGenerato
     apiBaseService: ts.reference.factory('ApiBaseService', join(utilsDirPath, 'api-base-service.ts')),
 
     // http-status-code.ts - generated in angular-services-generator.ts
-    httpStatusCode: ts.reference.factory('HttpStatusCode', join(utilsDirPath, 'http-status-code.ts')),
+    httpStatusCode: ts.reference.factory('HttpStatusCode', join(utilsDirPath, 'http-status-code.ts'), {
+      importType: 'type-import',
+    }),
 
     // provide.ts - generated in angular-services-generator.ts
     provide: ts.reference.factory(

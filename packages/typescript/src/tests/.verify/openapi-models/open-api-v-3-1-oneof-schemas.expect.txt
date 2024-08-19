@@ -15,9 +15,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/empty-one-of.ts',
             name: 'EmptyOneOf',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-10': {
         __source__: '<root>/test/openapi-files/v3.1/simple-schemas.yml#/components/schemas/MyString',
@@ -29,9 +30,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/my-string.ts',
             name: 'MyString',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-11': {
         __source__: '<root>/test/openapi-files/v3.1/simple-schemas.yml#/components/schemas/MyString',
@@ -43,9 +45,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/my-string.ts',
             name: 'MyString',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-12': {
         __source__: '<root>/test/openapi-files/v3.1/oneof-schemas.yml#/components/schemas/WithReferences/oneOf/3',
@@ -62,9 +65,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/one-of-simple-types.ts',
             name: 'OneOfSimpleTypes',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-3': {
         __source__: '<root>/test/openapi-files/v3.1/oneof-schemas.yml#/components/schemas/OneOfSimpleTypes/oneOf/0',
@@ -86,9 +90,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/ignore-type.ts',
             name: 'IgnoreType',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-6': {
         __source__: '<root>/test/openapi-files/v3.1/oneof-schemas.yml#/components/schemas/WithReferences',
@@ -100,9 +105,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/with-references.ts',
             name: 'WithReferences',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-7': {
         __source__: '<root>/test/openapi-files/v3.1/oneof-schemas.yml#/components/schemas/EmptyOneOf',
@@ -114,9 +120,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/empty-one-of.ts',
             name: 'EmptyOneOf',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-8': {
         __source__: '<root>/test/openapi-files/v3.1/detailed-schemas.yml#/components/schemas/WithTitle',
@@ -128,9 +135,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/my-title.ts',
             name: 'MyTitle',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-9': {
         __source__: '<root>/test/openapi-files/v3.1/detailed-schemas.yml#/components/schemas/WithTitle',
@@ -142,9 +150,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/my-title.ts',
             name: 'MyTitle',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       }
     }
   }
@@ -189,9 +198,9 @@ export type MyString = string;
 ┌──────────────────────────────────────┐
 │ <root>/out/models/with-references.ts │
 ├──────────────────────────────────────┤
-import { EmptyOneOf } from './empty-one-of';
-import { MyString } from './my-string';
-import { MyTitle } from './my-title';
+import type { EmptyOneOf } from './empty-one-of';
+import type { MyString } from './my-string';
+import type { MyTitle } from './my-title';
 
 export type WithReferences =
   | (EmptyOneOf)
@@ -204,11 +213,11 @@ export type WithReferences =
 ┌──────────────────────────────────────┐
 │ <root>/out/models.ts                 │
 ├──────────────────────────────────────┤
-export { EmptyOneOf } from './models/empty-one-of';
-export { IgnoreType } from './models/ignore-type';
-export { MyString } from './models/my-string';
-export { MyTitle } from './models/my-title';
-export { OneOfSimpleTypes } from './models/one-of-simple-types';
-export { WithReferences } from './models/with-references';
+export type { EmptyOneOf } from './models/empty-one-of';
+export type { IgnoreType } from './models/ignore-type';
+export type { MyString } from './models/my-string';
+export type { MyTitle } from './models/my-title';
+export type { OneOfSimpleTypes } from './models/one-of-simple-types';
+export type { WithReferences } from './models/with-references';
 
 └──────────────────────────────────────┘

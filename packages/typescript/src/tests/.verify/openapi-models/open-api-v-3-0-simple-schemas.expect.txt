@@ -15,9 +15,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/my-string.ts',
             name: 'MyString',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-2': {
         __source__: '<root>/test/openapi-files/v3/simple-schemas.yml#/components/schemas/MyInteger',
@@ -29,9 +30,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/my-integer.ts',
             name: 'MyInteger',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-3': {
         __source__: '<root>/test/openapi-files/v3/simple-schemas.yml#/components/schemas/MyNumber',
@@ -43,9 +45,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/my-number.ts',
             name: 'MyNumber',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-4': {
         __source__: '<root>/test/openapi-files/v3/simple-schemas.yml#/components/schemas/MyBoolean',
@@ -57,9 +60,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/my-boolean.ts',
             name: 'MyBoolean',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-5': {
         __source__: '<root>/test/openapi-files/v3/simple-schemas.yml#/components/schemas/MyArray',
@@ -71,9 +75,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/my-array.ts',
             name: 'MyArray',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-6': {
         __source__: '<root>/test/openapi-files/v3/simple-schemas.yml#/components/schemas/MyObject',
@@ -85,9 +90,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/my-object.ts',
             name: 'MyObject',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       }
     }
   }
@@ -141,11 +147,11 @@ export type MyObject = {
 ┌──────────────────────────────────────┐
 │ <root>/out/models.ts                 │
 ├──────────────────────────────────────┤
-export { MyArray } from './models/my-array';
-export { MyBoolean } from './models/my-boolean';
-export { MyInteger } from './models/my-integer';
-export { MyNumber } from './models/my-number';
-export { MyObject } from './models/my-object';
-export { MyString } from './models/my-string';
+export type { MyArray } from './models/my-array';
+export type { MyBoolean } from './models/my-boolean';
+export type { MyInteger } from './models/my-integer';
+export type { MyNumber } from './models/my-number';
+export type { MyObject } from './models/my-object';
+export type { MyString } from './models/my-string';
 
 └──────────────────────────────────────┘

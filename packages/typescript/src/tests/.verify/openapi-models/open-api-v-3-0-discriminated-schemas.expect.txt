@@ -7,7 +7,7 @@
     models: {
       'schema-1': {
         __source__: '<root>/test/openapi-files/v3/discriminated-schemas.yml#/components/schemas/Pet',
-        additionalExports: [ 'PetBase' ],
+        additionalExports: [ { name: 'PetBase', type: 'type-export' } ],
         component: 'Pet',
         filePath: '<root>/out/models/pet.ts',
         imports: [
@@ -15,9 +15,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/pet.ts',
             name: 'Pet',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-10': {
         __source__: '<root>/test/openapi-files/v3/discriminated-schemas.yml#/components/schemas/Dog/allOf/1',
@@ -54,13 +55,14 @@
             kind: 'file',
             modulePath: '<root>/out/models/dog.ts',
             name: 'Dog',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-5': {
         __source__: '<root>/test/openapi-files/v3/discriminated-schemas.yml#/components/schemas/Pet',
-        additionalExports: [ 'PetBase' ],
+        additionalExports: [ { name: 'PetBase', type: 'type-export' } ],
         component: 'Pet',
         filePath: '<root>/out/models/pet.ts',
         imports: [
@@ -68,9 +70,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/pet.ts',
             name: 'Pet',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-6': {
         __source__: '<root>/test/openapi-files/v3/discriminated-schemas.yml#/components/schemas/Cat',
@@ -82,13 +85,14 @@
             kind: 'file',
             modulePath: '<root>/out/models/cat.ts',
             name: 'Cat',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-7': {
         __source__: '<root>/test/openapi-files/v3/discriminated-schemas.yml#/components/schemas/Pet',
-        additionalExports: [ 'PetBase' ],
+        additionalExports: [ { name: 'PetBase', type: 'type-export' } ],
         component: 'Pet',
         filePath: '<root>/out/models/pet.ts',
         imports: [
@@ -96,9 +100,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/pet.ts',
             name: 'Pet',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-8': {
         __source__: '<root>/test/openapi-files/v3/discriminated-schemas.yml#/components/schemas/Cat/allOf/1',
@@ -113,13 +118,13 @@
             kind: 'file',
             modulePath: '<root>/out/models/schema-9.ts',
             name: 'Schema9',
-            type: 'import'
+            type: 'type-import'
           }
         ]
       },
       'schema-9': {
         __source__: '<root>/test/openapi-files/v3/discriminated-schemas.yml#/components/schemas/Cat/allOf/1/properties/huntingSkill',
-        additionalExports: [ 'SCHEMA_9_VALUES' ],
+        additionalExports: [ { name: 'SCHEMA_9_VALUES', type: 'export' } ],
         component: 'Schema9',
         filePath: '<root>/out/models/schema-9.ts',
         imports: [
@@ -127,9 +132,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/schema-9.ts',
             name: 'Schema9',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       }
     }
   }
@@ -139,8 +145,8 @@
 ┌──────────────────────────────────────┐
 │ <root>/out/models/pet.ts             │
 ├──────────────────────────────────────┤
-import { Cat } from './cat';
-import { Dog } from './dog';
+import type { Cat } from './cat';
+import type { Dog } from './dog';
 
 type PetDiscriminator = ('dog') | ('cat');
 
@@ -187,8 +193,8 @@ export const SCHEMA_9_VALUES = [
 ┌──────────────────────────────────────┐
 │ <root>/out/models/cat.ts             │
 ├──────────────────────────────────────┤
-import { PetBase } from './pet';
-import { Schema9 } from './schema-9';
+import type { PetBase } from './pet';
+import type { Schema9 } from './schema-9';
 
 export type Cat = (Omit<(PetBase) & ({
           /**
@@ -204,7 +210,7 @@ export type Cat = (Omit<(PetBase) & ({
 ┌──────────────────────────────────────┐
 │ <root>/out/models/dog.ts             │
 ├──────────────────────────────────────┤
-import { PetBase } from './pet';
+import type { PetBase } from './pet';
 
 export type Dog = (Omit<(PetBase) & ({
           /**
@@ -220,9 +226,11 @@ export type Dog = (Omit<(PetBase) & ({
 ┌──────────────────────────────────────┐
 │ <root>/out/models.ts                 │
 ├──────────────────────────────────────┤
-export { Cat } from './models/cat';
-export { Dog } from './models/dog';
-export { Pet, PetBase } from './models/pet';
-export { SCHEMA_9_VALUES, Schema9 } from './models/schema-9';
+export { SCHEMA_9_VALUES } from './models/schema-9';
+
+export type { Cat } from './models/cat';
+export type { Dog } from './models/dog';
+export type { Pet, PetBase } from './models/pet';
+export type { Schema9 } from './models/schema-9';
 
 └──────────────────────────────────────┘

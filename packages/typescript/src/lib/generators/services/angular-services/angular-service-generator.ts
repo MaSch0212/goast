@@ -240,6 +240,7 @@ export class DefaultTypeScriptAngularServiceGenerator
     const responseModelType = ts.reference(
       this.getResponseModelName(ctx, endpoint),
       this.getResponseModelFilePath(ctx),
+      { importType: 'type-import' },
     );
     const returnType = ctx.refs.abortablePromise([responseModelType]);
     const accept = this.getEndpointSuccessResponse(ctx, endpoint)?.contentOptions[0]?.type ?? '*/*';

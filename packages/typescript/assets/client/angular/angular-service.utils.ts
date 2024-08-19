@@ -1,5 +1,7 @@
-import { HttpErrorResponse, HttpEvent, HttpResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Observable, Subscription, filter, take, map, catchError, EMPTY } from 'rxjs';
+
+import type { HttpEvent } from '@angular/common/http';
 
 export type AbortablePromise<T> = Omit<Promise<T>, 'then' | 'catch' | 'finally'> & {
   abort(): void;

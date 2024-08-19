@@ -15,9 +15,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/my-title.ts',
             name: 'MyTitle',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-2': {
         __source__: '<root>/test/openapi-files/v3.1/detailed-schemas.yml#/components/schemas/WithAllCommon',
@@ -29,13 +30,14 @@
             kind: 'file',
             modulePath: '<root>/out/models/with-all-common.ts',
             name: 'WithAllCommon',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-3': {
         __source__: '<root>/test/openapi-files/v3.1/detailed-schemas.yml#/components/schemas/MyEnum',
-        additionalExports: [ 'MY_ENUM_VALUES' ],
+        additionalExports: [ { name: 'MY_ENUM_VALUES', type: 'export' } ],
         component: 'MyEnum',
         filePath: '<root>/out/models/my-enum.ts',
         imports: [
@@ -43,9 +45,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/my-enum.ts',
             name: 'MyEnum',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-4': {
         __source__: '<root>/test/openapi-files/v3.1/detailed-schemas.yml#/components/schemas/WriteOnly',
@@ -57,9 +60,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/write-only.ts',
             name: 'WriteOnly',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-5': {
         __source__: '<root>/test/openapi-files/v3.1/detailed-schemas.yml#/components/schemas/ReadOnly',
@@ -71,9 +75,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/read-only.ts',
             name: 'ReadOnly',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       }
     }
   }
@@ -128,10 +133,12 @@ export type ReadOnly = string;
 ┌──────────────────────────────────────┐
 │ <root>/out/models.ts                 │
 ├──────────────────────────────────────┤
-export { MY_ENUM_VALUES, MyEnum } from './models/my-enum';
-export { MyTitle } from './models/my-title';
-export { ReadOnly } from './models/read-only';
-export { WithAllCommon } from './models/with-all-common';
-export { WriteOnly } from './models/write-only';
+export { MY_ENUM_VALUES } from './models/my-enum';
+
+export type { MyEnum } from './models/my-enum';
+export type { MyTitle } from './models/my-title';
+export type { ReadOnly } from './models/read-only';
+export type { WithAllCommon } from './models/with-all-common';
+export type { WriteOnly } from './models/write-only';
 
 └──────────────────────────────────────┘

@@ -10,8 +10,8 @@ export function getReferenceFactories(options: TypeScriptFetchClientsGeneratorCo
 
   return {
     // fetch-client.utils.ts
-    typedResponse: ts.reference.genericFactory<1>('TypedResponse', fetchClientUtilsPath),
-    fetchClientOptions: ts.reference.factory('FetchClientOptions', fetchClientUtilsPath),
+    typedResponse: ts.reference.genericFactory<1>('TypedResponse', fetchClientUtilsPath, { importType: 'type-import' }),
+    fetchClientOptions: ts.reference.factory('FetchClientOptions', fetchClientUtilsPath, { importType: 'type-import' }),
     urlBuilder: ts.reference.factory('UrlBuilder', fetchClientUtilsPath),
   };
 }

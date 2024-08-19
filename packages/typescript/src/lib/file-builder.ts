@@ -7,7 +7,7 @@ import { AppendParam, AppendValue, Nullable, SourceBuilder, isAppendValue } from
 import { TsNode } from './ast/node';
 import { TypeScriptGeneratorConfig, defaultTypeScriptGeneratorConfig } from './config';
 import { TypeScriptModelGeneratorOutput } from './generators';
-import { ImportExportCollection, TypeScriptImportOptions } from './import-collection';
+import { ImportExportCollection, TypeScriptExportOptions, TypeScriptImportOptions } from './import-collection';
 
 export type TypeScriptAppends<TAdditionalAppends> = TsNode<TypeScriptFileBuilder> | TAdditionalAppends;
 export type TypeScriptAppendParam<TBuilder extends TypeScriptFileBuilder, TAdditionalAppends> = AppendParam<
@@ -46,8 +46,8 @@ export class TypeScriptFileBuilder<TAdditionalAppends = never> extends SourceBui
     return this;
   }
 
-  public addExport(name: string, filePath: string): this {
-    this.imports.addExport(name, filePath);
+  public addExport(name: string, filePath: string, options?: TypeScriptExportOptions): this {
+    this.imports.addExport(name, filePath, options);
     return this;
   }
 
@@ -89,7 +89,7 @@ export class TypeScriptFileBuilder<TAdditionalAppends = never> extends SourceBui
   public appendModelUsage(type: TypeScriptModelGeneratorOutput, options?: TypeScriptImportOptions): this {
     this.append(type.component);
     for (const i of type.imports) {
-      this.addImport(i.name, i.modulePath, options);
+      this.addImport(i.name, i.modulePath, { ...i, ...options });
     }
     return this;
   }

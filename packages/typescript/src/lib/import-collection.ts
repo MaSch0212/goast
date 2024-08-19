@@ -2,7 +2,7 @@ import { extname } from 'path';
 
 import { SourceBuilderOptions, StringBuilder } from '@goast/core';
 
-import { TypeScriptImport, TypeScriptImportKind, TypeScriptImportType } from './common-results';
+import { TypeScriptExportType, TypeScriptImport, TypeScriptImportKind, TypeScriptImportType } from './common-results';
 import { defaultTypeScriptGeneratorConfig } from './config';
 import { ImportModuleTransformer, getModulePathRelativeToFile } from './utils';
 
@@ -18,12 +18,14 @@ export const defaultImportExportCollectionOptions: ImportExportCollectionOptions
 };
 
 export type TypeScriptImportOptions = { type?: TypeScriptImportType };
+export type TypeScriptExportOptions = { type?: TypeScriptExportType };
 
 export class ImportExportCollection {
   private readonly _imports: Map<string, Set<string>> = new Map();
   private readonly _typeImports: Map<string, Set<string>> = new Map();
   private readonly _jsDocImports: Map<string, Set<string>> = new Map();
   private readonly _exports: Map<string, Set<string>> = new Map();
+  private readonly _typeExports: Map<string, Set<string>> = new Map();
   private readonly _options: ImportExportCollectionOptions;
 
   constructor(options?: Partial<ImportExportCollectionOptions>) {
@@ -35,7 +37,7 @@ export class ImportExportCollection {
   }
 
   public get hasExports(): boolean {
-    return this._exports.size > 0;
+    return this._exports.size > 0 || this._typeExports.size > 0;
   }
 
   public get imports(): TypeScriptImport[] {
@@ -72,29 +74,22 @@ export class ImportExportCollection {
     }
   }
 
-  getImportMap(type: TypeScriptImportType) {
-    switch (type) {
-      case 'import':
-        return this._imports;
-      case 'type-import':
-        return this._typeImports;
-      case 'js-doc':
-        return this._jsDocImports;
-    }
-  }
-
-  public addExport(exportName: string, fromModule: string): void {
-    const existingExport = this._exports.get(fromModule);
+  public addExport(exportName: string, fromModule: string, options?: TypeScriptExportOptions): void {
+    const map = this.getExportMap(options?.type ?? 'export');
+    const existingExport = map.get(fromModule);
     if (existingExport) {
       existingExport.add(exportName);
     } else {
-      this._exports.set(fromModule, new Set([exportName]));
+      map.set(fromModule, new Set([exportName]));
     }
   }
 
   public clear(): void {
     this._imports.clear();
+    this._typeImports.clear();
+    this._jsDocImports.clear();
     this._exports.clear();
+    this._typeExports.clear();
   }
 
   public toString(options: Partial<SourceBuilderOptions>): string {
@@ -139,12 +134,22 @@ export class ImportExportCollection {
       }
       const sortedExports = this.sortAndResolve(this._exports, filePath, importModuleTransformer);
       this.writeImportsExports(builder, 'export', sortedExports, { useSingleQuotes });
+      hasPrevious = true;
+    }
+
+    if (this._typeExports.size > 0) {
+      if (hasPrevious) {
+        builder.appendLine();
+      }
+      const sortedExports = this.sortAndResolve(this._typeExports, filePath, importModuleTransformer);
+      this.writeImportsExports(builder, 'export type', sortedExports, { useSingleQuotes });
+      hasPrevious = true;
     }
   }
 
   protected writeImportsExports(
     builder: StringBuilder,
-    keyword: 'import' | 'export' | 'import type' | ' * @import',
+    keyword: 'import' | 'export' | 'import type' | 'export type' | ' * @import',
     data: (readonly [string, TypeScriptImportKind, string[]])[],
     options: { useSingleQuotes: boolean },
   ) {
@@ -203,5 +208,25 @@ export class ImportExportCollection {
         : fromModule,
       kind,
     ];
+  }
+
+  protected getImportMap(type: TypeScriptImportType) {
+    switch (type) {
+      case 'import':
+        return this._imports;
+      case 'type-import':
+        return this._typeImports;
+      case 'js-doc':
+        return this._jsDocImports;
+    }
+  }
+
+  protected getExportMap(type: TypeScriptExportType) {
+    switch (type) {
+      case 'export':
+        return this._exports;
+      case 'type-export':
+        return this._typeExports;
+    }
   }
 }

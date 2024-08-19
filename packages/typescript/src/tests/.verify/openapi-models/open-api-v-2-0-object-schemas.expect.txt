@@ -15,9 +15,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/empty-object.ts',
             name: 'EmptyObject',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-10': {
         __source__: '<root>/test/openapi-files/v2/object-schemas.yml#/definitions/ObjectWithRequiredProperties/properties/a',
@@ -59,9 +60,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/object-with-additional-properties.ts',
             name: 'ObjectWithAdditionalProperties',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-17': {
         __source__: '<root>/test/openapi-files/v2/object-schemas.yml#/definitions/ObjectWithAdditionalProperties/additionalProperties',
@@ -78,9 +80,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/object-with-properties-and-additional-properties.ts',
             name: 'ObjectWithPropertiesAndAdditionalProperties',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-19': {
         __source__: '<root>/test/openapi-files/v2/object-schemas.yml#/definitions/ObjectWithPropertiesAndAdditionalProperties/properties/a',
@@ -97,9 +100,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/object-with-properties.ts',
             name: 'ObjectWithProperties',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-20': {
         __source__: '<root>/test/openapi-files/v2/object-schemas.yml#/definitions/ObjectWithPropertiesAndAdditionalProperties/properties/b',
@@ -141,9 +145,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/object-with-properties-all-of.ts',
             name: 'ObjectWithPropertiesAllOf',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-27': {
         __source__: '<root>/test/openapi-files/v2/object-schemas.yml#/definitions/ObjectWithPropertiesAllOf/properties/a',
@@ -283,9 +288,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/object-with-nullable-properties.ts',
             name: 'ObjectWithNullableProperties',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-48': {
         __source__: '<root>/test/openapi-files/v2/object-schemas.yml#/definitions/ObjectWithNullableProperties/properties/a',
@@ -332,9 +338,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/object-with-nullable-properties-and-required-properties.ts',
             name: 'ObjectWithNullablePropertiesAndRequiredProperties',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-55': {
         __source__: '<root>/test/openapi-files/v2/object-schemas.yml#/definitions/ObjectWithNullablePropertiesAndRequiredProperties/properties/a',
@@ -381,9 +388,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/object-with-references-in-properties.ts',
             name: 'ObjectWithReferencesInProperties',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-62': {
         __source__: '<root>/test/openapi-files/v2/object-schemas.yml#/definitions/EmptyObject',
@@ -395,9 +403,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/empty-object.ts',
             name: 'EmptyObject',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-63': {
         __source__: '<root>/test/openapi-files/v2/detailed-schemas.yml#/definitions/WithTitle',
@@ -409,9 +418,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/my-title.ts',
             name: 'MyTitle',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-64': {
         __source__: '<root>/test/openapi-files/v2/detailed-schemas.yml#/definitions/WithTitle',
@@ -423,9 +433,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/my-title.ts',
             name: 'MyTitle',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-65': {
         __source__: '<root>/test/openapi-files/v2/simple-schemas.yml#/definitions/MyString',
@@ -437,9 +448,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/my-string.ts',
             name: 'MyString',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-66': {
         __source__: '<root>/test/openapi-files/v2/simple-schemas.yml#/definitions/MyString',
@@ -451,9 +463,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/my-string.ts',
             name: 'MyString',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-67': {
         __source__: '<root>/test/openapi-files/v2/object-schemas.yml#/definitions/ObjectWithReferencesInProperties/properties/d',
@@ -470,9 +483,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/object-with-references-in-all-of.ts',
             name: 'ObjectWithReferencesInAllOf',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-69': {
         __source__: '<root>/test/openapi-files/v2/object-schemas.yml#/definitions/EmptyObject',
@@ -484,9 +498,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/empty-object.ts',
             name: 'EmptyObject',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-7': {
         __source__: '<root>/test/openapi-files/v2/object-schemas.yml#/definitions/ObjectWithProperties/properties/e',
@@ -503,9 +518,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/my-title.ts',
             name: 'MyTitle',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-71': {
         __source__: '<root>/test/openapi-files/v2/simple-schemas.yml#/definitions/MyString',
@@ -517,9 +533,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/my-string.ts',
             name: 'MyString',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-72': {
         __source__: '<root>/test/openapi-files/v2/object-schemas.yml#/definitions/ObjectWithReferencesInAllOf/allOf/3',
@@ -536,9 +553,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/object-with-description.ts',
             name: 'ObjectWithDescription',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-74': {
         __source__: '<root>/test/openapi-files/v2/object-schemas.yml#/definitions/ObjectWithDescription/properties/a',
@@ -560,9 +578,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/object-with-multiline-description.ts',
             name: 'ObjectWithMultilineDescription',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       },
       'schema-8': {
         __source__: '<root>/test/openapi-files/v2/object-schemas.yml#/definitions/ObjectWithProperties/properties/f',
@@ -579,9 +598,10 @@
             kind: 'file',
             modulePath: '<root>/out/models/object-with-required-properties.ts',
             name: 'ObjectWithRequiredProperties',
-            type: 'import'
+            type: 'type-import'
           }
-        ]
+        ],
+        kind: 'type'
       }
     }
   }
@@ -739,9 +759,9 @@ export type MyString = string;
 ┌───────────────────────────────────────────────────────────┐
 │ <root>/out/models/object-with-references-in-properties.ts │
 ├───────────────────────────────────────────────────────────┤
-import { EmptyObject } from './empty-object';
-import { MyString } from './my-string';
-import { MyTitle } from './my-title';
+import type { EmptyObject } from './empty-object';
+import type { MyString } from './my-string';
+import type { MyTitle } from './my-title';
 
 export type ObjectWithReferencesInProperties = {
     a?: EmptyObject;
@@ -755,9 +775,9 @@ export type ObjectWithReferencesInProperties = {
 ┌───────────────────────────────────────────────────────┐
 │ <root>/out/models/object-with-references-in-all-of.ts │
 ├───────────────────────────────────────────────────────┤
-import { EmptyObject } from './empty-object';
-import { MyString } from './my-string';
-import { MyTitle } from './my-title';
+import type { EmptyObject } from './empty-object';
+import type { MyString } from './my-string';
+import type { MyTitle } from './my-title';
 
 export type ObjectWithReferencesInAllOf =
   & (EmptyObject)
@@ -804,19 +824,19 @@ export type ObjectWithMultilineDescription = {
 ┌──────────────────────────────────────┐
 │ <root>/out/models.ts                 │
 ├──────────────────────────────────────┤
-export { EmptyObject } from './models/empty-object';
-export { MyString } from './models/my-string';
-export { MyTitle } from './models/my-title';
-export { ObjectWithAdditionalProperties } from './models/object-with-additional-properties';
-export { ObjectWithDescription } from './models/object-with-description';
-export { ObjectWithMultilineDescription } from './models/object-with-multiline-description';
-export { ObjectWithNullablePropertiesAndRequiredProperties } from './models/object-with-nullable-properties-and-required-properties';
-export { ObjectWithNullableProperties } from './models/object-with-nullable-properties';
-export { ObjectWithPropertiesAllOf } from './models/object-with-properties-all-of';
-export { ObjectWithPropertiesAndAdditionalProperties } from './models/object-with-properties-and-additional-properties';
-export { ObjectWithProperties } from './models/object-with-properties';
-export { ObjectWithReferencesInAllOf } from './models/object-with-references-in-all-of';
-export { ObjectWithReferencesInProperties } from './models/object-with-references-in-properties';
-export { ObjectWithRequiredProperties } from './models/object-with-required-properties';
+export type { EmptyObject } from './models/empty-object';
+export type { MyString } from './models/my-string';
+export type { MyTitle } from './models/my-title';
+export type { ObjectWithAdditionalProperties } from './models/object-with-additional-properties';
+export type { ObjectWithDescription } from './models/object-with-description';
+export type { ObjectWithMultilineDescription } from './models/object-with-multiline-description';
+export type { ObjectWithNullablePropertiesAndRequiredProperties } from './models/object-with-nullable-properties-and-required-properties';
+export type { ObjectWithNullableProperties } from './models/object-with-nullable-properties';
+export type { ObjectWithPropertiesAllOf } from './models/object-with-properties-all-of';
+export type { ObjectWithPropertiesAndAdditionalProperties } from './models/object-with-properties-and-additional-properties';
+export type { ObjectWithProperties } from './models/object-with-properties';
+export type { ObjectWithReferencesInAllOf } from './models/object-with-references-in-all-of';
+export type { ObjectWithReferencesInProperties } from './models/object-with-references-in-properties';
+export type { ObjectWithRequiredProperties } from './models/object-with-required-properties';
 
 └──────────────────────────────────────┘
