@@ -17,5 +17,5 @@
       "source.fixAll": "explicit"
     }
   },
-  "typescript.tsdk": "🏠 Root/node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules\\typescript\\lib"
 }

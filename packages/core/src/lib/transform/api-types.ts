@@ -231,7 +231,8 @@ export type CombinedLikeApiSchema = ApiSchemaBase & {
 export type NumberLikeApiSchema = ApiSchemaBase & {
   kind: 'number' | 'integer' | 'multi-type';
   type: 'number' | 'integer' | string[];
-} & AdditionalNumberSchemaProperties;
+} & AdditionalNumberSchemaProperties &
+  AdditionalPrimitiveSchemaProperties;
 export type ArrayLikeApiSchema = ApiSchemaBase & {
   kind: 'array' | 'multi-type';
   type: 'array' | string[];
@@ -243,7 +244,8 @@ export type ObjectLikeApiSchema = ApiSchemaBase & {
 export type StringLikeApiSchema = ApiSchemaBase & {
   kind: 'string' | 'multi-type';
   type: 'string' | string[];
-} & AdditionalStringSchemaProperties;
+} & AdditionalStringSchemaProperties &
+  AdditionalPrimitiveSchemaProperties;
 export type PrimitiveLikeApiSchema = ApiSchemaBase & {
   kind: 'string' | 'number' | 'integer' | 'boolean' | 'null' | 'multi-type';
   type: 'string' | 'number' | 'integer' | 'boolean' | 'null' | string[];
