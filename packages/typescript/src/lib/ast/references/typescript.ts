@@ -31,3 +31,5 @@ export const nonNullable = tsReference.genericFactory<1>('NonNullable');
 export const parameters = tsReference.genericFactory<1>('Parameters');
 export const returnType = tsReference.genericFactory<1>('ReturnType');
 export const instanceType = tsReference.genericFactory<1>('InstanceType');
+
+export const blob = tsReference.factory('Blob');

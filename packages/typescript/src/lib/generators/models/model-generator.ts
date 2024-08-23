@@ -8,6 +8,7 @@ import {
   CombinedLikeApiSchema,
   Nullable,
   ObjectLikeApiSchema,
+  StringLikeApiSchema,
   appendValueGroup,
   getSchemaReference,
   notNullish,
@@ -275,7 +276,7 @@ export class DefaultTypeScriptModelGenerator
       case 'number':
         return 'number';
       case 'string':
-        return 'string';
+        return this.getStringType(ctx, schema);
       case 'null':
         return 'null';
       case 'unknown':
@@ -293,6 +294,13 @@ export class DefaultTypeScriptModelGenerator
       default:
         return this.getAnyType(ctx);
     }
+  }
+
+  protected getStringType(ctx: Context, schema: StringLikeApiSchema): ts.Type<Builder> {
+    if (schema.format === 'binary') {
+      return ts.refs.blob();
+    }
+    return 'string';
   }
 
   protected getArrayType(ctx: Context, schema: ArrayLikeApiSchema): ts.Type<Builder> {
@@ -374,7 +382,7 @@ export class DefaultTypeScriptModelGenerator
       schema.type.map((x) => {
         switch (x) {
           case 'string':
-            return 'string';
+            return this.getStringType(ctx, schema);
           case 'number':
           case 'integer':
             return 'number';
