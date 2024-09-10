@@ -243,7 +243,7 @@ export class DefaultTypeScriptAngularServiceGenerator
       { importType: 'type-import' },
     );
     const returnType = ctx.refs.abortablePromise([responseModelType]);
-    const accept = this.getEndpointSuccessResponse(ctx, endpoint)?.contentOptions[0]?.type ?? '*/*';
+    const accept = this.getEndpointSuccessResponseType(ctx, endpoint);
     const responseType = this.contentTypeToResponseType(accept);
     return ts.method<Builder>(this.getEndpointMethodName(ctx, endpoint), {
       accessModifier: 'public',
@@ -314,6 +314,19 @@ export class DefaultTypeScriptAngularServiceGenerator
         '\n',
       ),
     });
+  }
+
+  protected getEndpointSuccessResponseType(ctx: Context, endpoint: ApiEndpoint): string {
+    const response = this.getEndpointSuccessResponse(ctx, endpoint);
+    if (!response) return '*/*';
+
+    if (!ctx.config.defaultSuccessResponseType) return response.contentOptions[0]?.type ?? '*/*';
+
+    return (
+      response.contentOptions.find((x) => x.type === ctx.config.defaultSuccessResponseType)?.type ??
+      response.contentOptions[0]?.type ??
+      '*/*'
+    );
   }
 
   protected getEndpointSuccessResponse(ctx: Context, endpoint: ApiEndpoint) {
