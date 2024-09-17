@@ -345,7 +345,12 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     return ctx.config.addJacksonAnnotations && schema.discriminator
       ? kt.annotation(kt.refs.jackson.jsonTypeInfo(), [
           kt.argument.named('use', 'JsonTypeInfo.Id.NAME'),
-          kt.argument.named('include', 'JsonTypeInfo.As.EXISTING_PROPERTY'),
+          kt.argument.named(
+            'include',
+            'properties' in schema && schema.properties.has(schema.discriminator.propertyName)
+              ? 'JsonTypeInfo.As.EXISTING_PROPERTY'
+              : 'JsonTypeInfo.As.PROPERTY',
+          ),
           kt.argument.named('property', kt.string(schema.discriminator.propertyName)),
           kt.argument.named('visible', 'true'),
         ])
