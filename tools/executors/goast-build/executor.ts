@@ -35,7 +35,7 @@ async function prepare(options: ExecutorOptions, context: ExecutorContext): Prom
   if (!context.projectName) {
     throw new Error('Project name not found.');
   }
-  const project = context.workspace?.projects[context.projectName];
+  const project = context.projectsConfigurations.projects[context.projectName];
   if (!project) {
     throw new Error(`Project ${context.projectName} not found.`);
   }
