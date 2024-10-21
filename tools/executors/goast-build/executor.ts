@@ -8,7 +8,7 @@ import { dirname, join, relative } from 'path';
 import { DiagnosticCategory, EmitResult, ModuleKind, Project, getCompilerOptionsFromTsConfig } from 'ts-morph';
 import { EntryPoint, ExecutorOptions } from './schema';
 import { resolveModuleName } from 'typescript';
-import { replaceTscAliasPaths } from 'tsc-alias';
+import { replaceTscAliasPaths, prepareSingleFileReplaceTscAliasPaths } from 'tsc-alias';
 
 type Context = Required<Omit<ExecutorOptions, 'additionalEntryPoints'>> & {
   additionalEntryPoints: EntryPoint[];
@@ -73,13 +73,18 @@ async function buildTypeScript(ctx: Context) {
   const mjsProject = createTypeScriptProject(ctx, ModuleKind.ES2015, 'esm', false);
   await buildTypeScriptProject(mjsProject);
   console.log('  - Run tsc-alias...');
-  replaceTscAliasPaths({
-    configFile: ctx.tsConfig,
+  const tsConfig = fs.readJsonSync(ctx.tsConfig);
+  tsConfig.compilerOptions ??= {};
+  tsConfig.compilerOptions.paths = [];
+  await fs.writeJson(ctx.tsConfig + '.tmp', tsConfig, { spaces: 2 });
+  await replaceTscAliasPaths({
+    configFile: ctx.tsConfig + '.tmp',
     outDir: mjsProject.compilerOptions.get().outDir,
-    declarationDir: emitProject.compilerOptions.get().outDir,
+    declarationDir: mjsProject.compilerOptions.get().declarationDir,
     resolveFullPaths: true,
-    verbose: false,
+    verbose: true,
   });
+  fs.removeSync(ctx.tsConfig + '.tmp');
   console.log(`  - Done (ES2015)${EOL}`);
 }
 
