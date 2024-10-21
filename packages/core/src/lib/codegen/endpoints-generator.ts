@@ -1,13 +1,14 @@
-import { DefaultGenerationProviderConfig, OpenApiGenerationProviderBase } from './generator';
-import { addSourceIfTest } from './internal-utils';
-import {
-  OpenApiGeneratorInput,
-  OpenApiGeneratorOutput,
+import { type DefaultGenerationProviderConfig, OpenApiGenerationProviderBase } from './generator.ts';
+import { addSourceIfTest } from './internal-utils.ts';
+import type {
   AnyConfig,
   OpenApiGenerationProviderContext,
   OpenApiGeneratorContext,
-} from './types';
-import { ApiEndpoint } from '../transform';
+  OpenApiGeneratorInput,
+  OpenApiGeneratorOutput,
+} from './types.ts';
+import type { ApiEndpoint } from '../transform/index.ts';
+import type { MaybePromise } from '../utils/type.utils.ts';
 
 export type OpenApiEndpointsGenerationProviderContext<
   TInput extends OpenApiGeneratorInput,
@@ -38,19 +39,21 @@ export abstract class OpenApiEndpointsGenerationProviderBase<
     });
   }
 
-  protected override onGenerate(ctx: TContext): TOutput {
+  protected override async onGenerate(ctx: TContext): Promise<TOutput> {
     for (const endpoint of ctx.data.endpoints) {
-      this.getEndpointResult(ctx, endpoint);
+      await this.getEndpointResult(ctx, endpoint);
     }
+
+    await this.generateAdditionalFiles(ctx);
 
     return ctx.output;
   }
 
-  public getEndpointResult(ctx: TContext, endpoint: ApiEndpoint): TEndpointOutput {
+  public async getEndpointResult(ctx: TContext, endpoint: ApiEndpoint): Promise<TEndpointOutput> {
     const existingResult = ctx.existingEndpointResults.get(endpoint.id);
     if (existingResult) return existingResult;
 
-    const result = this.generateEndpoint(ctx, endpoint);
+    const result = await this.generateEndpoint(ctx, endpoint);
     addSourceIfTest(ctx.config, result, () => `${endpoint.$src.file}#${endpoint.$src.path}`);
     this.addEndpointResult(ctx, endpoint, result);
     return result;
@@ -58,7 +61,12 @@ export abstract class OpenApiEndpointsGenerationProviderBase<
 
   protected abstract initResult(ctx: OpenApiGenerationProviderContext<TInput, TConfig>): TOutput;
 
-  protected abstract generateEndpoint(ctx: TContext, endpoint: ApiEndpoint): TEndpointOutput;
+  protected abstract generateEndpoint(ctx: TContext, endpoint: ApiEndpoint): Promise<TEndpointOutput>;
 
   protected abstract addEndpointResult(ctx: TContext, endpoint: ApiEndpoint, result: TEndpointOutput): void;
+
+  // deno-lint-ignore no-unused-vars
+  protected generateAdditionalFiles(ctx: TContext): MaybePromise<void> {
+    // Override if needed
+  }
 }

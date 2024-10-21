@@ -1,7 +1,7 @@
-import { join, resolve } from 'path';
+import { join, resolve } from 'node:path';
 
-import { TypeScriptEasyNetworkStubsGeneratorConfig } from './models';
-import { ts } from '../../../ast';
+import type { TypeScriptEasyNetworkStubsGeneratorConfig } from './models.ts';
+import { ts } from '../../../ast/index.ts';
 
 // See packages/typescript/assets/stubs/easy-network-stub for reference
 export function getReferenceFactories(options: TypeScriptEasyNetworkStubsGeneratorConfig) {
@@ -20,7 +20,9 @@ export function getReferenceFactories(options: TypeScriptEasyNetworkStubsGenerat
     strictRouteResponseCallback: ts.reference.genericFactory<3>(
       'StrictRouteResponseCallback',
       easyNetworkStubUtilsPath,
-      { importType: 'type-import' },
+      {
+        importType: 'type-import',
+      },
     ),
     getStubResponder: ts.reference.genericFactory<1>('getStubResponder', easyNetworkStubUtilsPath),
     easyNetworkStubWrapper: ts.reference.factory('EasyNetworkStubWrapper', easyNetworkStubUtilsPath),

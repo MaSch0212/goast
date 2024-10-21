@@ -1,1 +1,1 @@
-export * as kt from './_index';
+export * as kt from './_index.ts';

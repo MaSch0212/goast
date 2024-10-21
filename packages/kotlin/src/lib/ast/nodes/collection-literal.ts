@@ -1,8 +1,8 @@
-import { SourceBuilder, AstNodeOptions, Nullable, notNullish } from '@goast/core';
+import { type AstNodeOptions, notNullish, type Nullable, type SourceBuilder } from '@goast/core';
 
-import { KtValue } from './types';
-import { KtNode } from '../node';
-import { writeKtNodes } from '../utils/write-kt-node';
+import type { KtValue } from './types.ts';
+import { KtNode } from '../node.ts';
+import { writeKtNodes } from '../utils/write-kt-node.ts';
 
 type Injects = never;
 

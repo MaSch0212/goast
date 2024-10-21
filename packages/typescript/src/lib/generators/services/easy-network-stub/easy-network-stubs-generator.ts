@@ -1,35 +1,38 @@
-import { dirname, resolve } from 'path';
+import { dirname, resolve } from 'node:path';
 
+// @deno-types="@types/fs-extra"
 import fs from 'fs-extra';
 
 import {
-  ApiService,
-  AppendValueGroup,
-  Factory,
-  OpenApiGeneratorContext,
-  OpenApiServicesGenerationProviderBase,
   adjustCasing,
+  type ApiService,
+  type AppendValueGroup,
   appendValueGroup,
-  toCasing,
   builderTemplate as s,
+  Factory,
+  type MaybePromise,
+  type OpenApiGeneratorContext,
+  OpenApiServicesGenerationProviderBase,
+  toCasing,
 } from '@goast/core';
 
 import {
   DefaultTypeScriptEasyNetworkStubGenerator,
-  TypeScriptEasyNetworkStubGenerator,
-} from './easy-network-stub-generator';
+  type TypeScriptEasyNetworkStubGenerator,
+} from './easy-network-stub-generator.ts';
 import {
-  TypeScriptEasyNetworkStubsGeneratorInput,
-  TypeScriptEasyNetworkStubsGeneratorOutput,
-  TypeScriptEasyNetworkStubsGeneratorConfig,
-  TypeScriptEasyNetworkStubGeneratorOutput,
-  TypeScriptEasyNetworkStubsGeneratorContext,
   defaultTypeScriptEasyNetworkStubsGeneratorConfig,
-} from './models';
-import { getReferenceFactories } from './refs';
-import { ts } from '../../../ast';
-import { TypeScriptExportOutput } from '../../../common-results';
-import { TypeScriptFileBuilder } from '../../../file-builder';
+  type TypeScriptEasyNetworkStubGeneratorOutput,
+  type TypeScriptEasyNetworkStubsGeneratorConfig,
+  type TypeScriptEasyNetworkStubsGeneratorContext,
+  type TypeScriptEasyNetworkStubsGeneratorInput,
+  type TypeScriptEasyNetworkStubsGeneratorOutput,
+} from './models.ts';
+import { getReferenceFactories } from './refs.ts';
+import { ts } from '../../../ast/index.ts';
+import type { TypeScriptExportOutput } from '../../../common-results.ts';
+import { TypeScriptFileBuilder } from '../../../file-builder.ts';
+import { copyAssetFile } from '../../../assets.ts';
 
 type Input = TypeScriptEasyNetworkStubsGeneratorInput;
 type Output = TypeScriptEasyNetworkStubsGeneratorOutput;
@@ -70,14 +73,12 @@ export class TypeScriptEasyNetworkStubsGenerator extends OpenApiServicesGenerati
     });
   }
 
-  public override onGenerate(ctx: Context): Output {
-    const output = super.onGenerate(ctx);
-    this.generateUtilsFiles(ctx);
-    output.typescript.indexFiles = this.generateIndexFiles(ctx);
-    return output;
+  protected override async generateAdditionalFiles(ctx: TypeScriptEasyNetworkStubsGeneratorContext): Promise<void> {
+    await this.generateUtilsFiles(ctx);
+    ctx.output.typescript.indexFiles = this.generateIndexFiles(ctx);
   }
 
-  protected override generateService(ctx: Context, service: ApiService): TypeScriptExportOutput {
+  protected override generateService(ctx: Context, service: ApiService): MaybePromise<TypeScriptExportOutput> {
     const clientGenerator = this._generatorFactory.create();
     return clientGenerator.generate({
       ...ctx,
@@ -89,12 +90,11 @@ export class TypeScriptEasyNetworkStubsGenerator extends OpenApiServicesGenerati
     ctx.output.typescript.stubs[service.id] = result;
   }
 
-  protected generateUtilsFiles(ctx: Context): void {
-    const sourceDir = resolve(dirname(require.resolve('@goast/typescript')), '../assets/stubs/easy-network-stub');
+  protected async generateUtilsFiles(ctx: Context): Promise<void> {
     const targetDir = resolve(ctx.config.outputDir, ctx.config.utilsDir);
-    fs.ensureDirSync(targetDir);
+    await fs.ensureDir(targetDir);
 
-    this.copyFile('easy-network-stub utils', sourceDir, targetDir, 'easy-network-stub.utils.ts');
+    await copyAssetFile('stubs/easy-network-stub/easy-network-stub.utils.ts', targetDir, 'easy-network-stub utils');
   }
 
   protected generateIndexFiles(ctx: Context): Output['typescript']['indexFiles'] {
@@ -138,7 +138,7 @@ export class TypeScriptEasyNetworkStubsGenerator extends OpenApiServicesGenerati
             accessModifier: 'private',
             optional: true,
             type: ctx.refs.easyNetworkStubGroup([ts.reference(x.component, x.filePath), 'this']),
-          }),
+          })
         ),
         ts.constructor({
           parameters: [
@@ -167,20 +167,30 @@ export class TypeScriptEasyNetworkStubsGenerator extends OpenApiServicesGenerati
             get: ts.property.getter({
               body: appendValueGroup(
                 [
-                  s`return this.${toCasing(serviceNames[id], fieldCasing)} ??= ${ctx.refs.createEasyNetworkStubGroup.infer()}(this, this._stubWrapper, ${ts.reference(x.component, x.filePath)});`,
+                  s`return this.${
+                    toCasing(
+                      serviceNames[id],
+                      fieldCasing,
+                    )
+                  } ??= ${ctx.refs.createEasyNetworkStubGroup.infer()}(this, this._stubWrapper, ${
+                    ts.reference(
+                      x.component,
+                      x.filePath,
+                    )
+                  });`,
                 ],
                 '\n',
               ),
             }),
-          }),
+          })
         ),
         ts.method('resetStubs', {
           accessModifier: 'public',
           returnType: 'this',
           body: appendValueGroup(
             [
-              ...Object.keys(ctx.output.typescript.stubs).map(
-                (id) => `this.${toCasing(serviceNames[id], fieldCasing)}?.reset();`,
+              ...Object.keys(ctx.output.typescript.stubs).map((id) =>
+                `this.${toCasing(serviceNames[id], fieldCasing)}?.reset();`
               ),
               'return this;',
             ],
@@ -197,12 +207,5 @@ export class TypeScriptEasyNetworkStubsGenerator extends OpenApiServicesGenerati
 
   protected getStubsClassName(ctx: Context): string {
     return toCasing(`${ctx.config.domainName ?? ''}_ApiStubs`, ctx.config.typeNameCasing);
-  }
-
-  private copyFile(logName: string, sourceDir: string, targetDir: string, fileName: string): void {
-    const source = resolve(sourceDir, fileName);
-    const target = resolve(targetDir, fileName);
-    console.log(`Generating ${logName} to ${target}...`);
-    fs.copyFileSync(source, target);
   }
 }

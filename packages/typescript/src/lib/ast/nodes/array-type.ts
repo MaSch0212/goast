@@ -1,8 +1,8 @@
-import { AstNodeOptions, Nullable, Prettify, SourceBuilder } from '@goast/core';
+import type { AstNodeOptions, Nullable, Prettify, SourceBuilder } from '@goast/core';
 
-import { TsType } from './types';
-import { TsNode } from '../node';
-import { writeTsNode, writeTsNodes } from '../utils/write-ts-nodes';
+import type { TsType } from './types.ts';
+import { TsNode } from '../node.ts';
+import { writeTsNode, writeTsNodes } from '../utils/write-ts-nodes.ts';
 
 type Injects = 'type';
 

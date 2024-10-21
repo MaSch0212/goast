@@ -1,15 +1,15 @@
-import { isNullish } from './common.utils';
-import { Condition, evalCondition } from './condition';
+import { isNullish } from './common.utils.ts';
+import { type Condition, evalCondition } from './condition.ts';
 import {
-  AppendParam,
-  AppendValue,
+  type AppendParam,
+  type AppendValue,
   defaultStringBuilderOptions,
   StringBuilder,
-  StringBuilderOptions,
-} from './string-builder';
-import { BuilderFn } from './string-builder/string-builder';
-import { removeStr, trimEnd } from './string.utils';
-import { Nullable } from './type.utils';
+  type StringBuilderOptions,
+} from './string-builder/index.ts';
+import type { BuilderFn } from './string-builder/string-builder.ts';
+import { removeStr, trimEnd } from './string.utils.ts';
+import type { Nullable } from './type.utils.ts';
 
 export type IndentOptions = { readonly type: 'tabs' } | { readonly type: 'spaces'; readonly count: number };
 
@@ -579,11 +579,16 @@ function _builderTemplate<T extends SourceBuilder>(
   };
 }
 
-export const builderTemplate = Object.assign(_builderTemplate, {
+const _builderTemplateExtensions = {
   indent: <T extends SourceBuilder>(
     template: readonly string[] | ArrayLike<string>,
     ...substitutions: AppendValue<T>[]
   ): BuilderFn<T> => {
     return (b) => b.indent(_builderTemplate(template, ...substitutions));
   },
-});
+} as const;
+
+export const builderTemplate: typeof _builderTemplate & typeof _builderTemplateExtensions = Object.assign(
+  _builderTemplate,
+  _builderTemplateExtensions,
+);

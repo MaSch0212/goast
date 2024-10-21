@@ -1,9 +1,9 @@
-import { AstNodeOptions, Prettify, SourceBuilder } from '@goast/core';
+import type { AstNodeOptions, Prettify, SourceBuilder } from '@goast/core';
 
-import { TsValue } from './types';
-import { TsNode } from '../node';
-import { writeTsNode } from '../utils/write-ts-nodes';
-import { writeTsParameters } from '../utils/write-ts-parameters';
+import type { TsValue } from './types.ts';
+import { TsNode } from '../node.ts';
+import { writeTsNode } from '../utils/write-ts-nodes.ts';
+import { writeTsParameters } from '../utils/write-ts-parameters.ts';
 
 type Injects = never;
 

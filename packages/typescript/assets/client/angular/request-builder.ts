@@ -1,4 +1,4 @@
-import { HttpRequest, HttpParams, HttpHeaders, HttpContext } from '@angular/common/http';
+import { type HttpContext, HttpHeaders, HttpParams, HttpRequest } from '@angular/common/http';
 
 import type { HttpParameterCodec } from '@angular/common/http';
 
@@ -148,8 +148,11 @@ class QueryParameter extends Parameter {
           params = params.append(this.name, this.serializeValue(v));
         }
       } else {
-        const separator =
-          this.options.style === 'spaceDelimited' ? ' ' : this.options.style === 'pipeDelimited' ? '|' : ',';
+        const separator = this.options.style === 'spaceDelimited'
+          ? ' '
+          : this.options.style === 'pipeDelimited'
+          ? '|'
+          : ',';
         return params.append(this.name, this.serializeValue(this.value, separator));
       }
     } else if (this.value !== null && typeof this.value === 'object') {

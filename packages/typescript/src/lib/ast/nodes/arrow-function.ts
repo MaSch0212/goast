@@ -1,10 +1,17 @@
-import { AppendValue, AstNodeOptions, BasicAppendValue, Nullable, SourceBuilder, notNullish } from '@goast/core';
+import {
+  type AppendValue,
+  type AstNodeOptions,
+  type BasicAppendValue,
+  notNullish,
+  type Nullable,
+  type SourceBuilder,
+} from '@goast/core';
 
-import { TsGenericParameter, tsGenericParameter } from './generic-parameter';
-import { TsParameter, tsParameter } from './parameter';
-import { TsType } from './types';
-import { TsNode } from '../node';
-import { writeTsNode, writeTsNodes } from '../utils/write-ts-nodes';
+import { type TsGenericParameter, tsGenericParameter } from './generic-parameter.ts';
+import { type TsParameter, tsParameter } from './parameter.ts';
+import type { TsType } from './types.ts';
+import { TsNode } from '../node.ts';
+import { writeTsNode, writeTsNodes } from '../utils/write-ts-nodes.ts';
 
 type Injects = 'generics' | 'params' | 'returnType' | 'body';
 

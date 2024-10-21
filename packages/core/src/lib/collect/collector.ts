@@ -1,6 +1,6 @@
-import { collect, collectRecord } from './helpers';
-import { OpenApiCollectorData } from './types';
-import {
+import { collect, collectRecord } from './helpers.ts';
+import type { OpenApiCollectorData } from './types.ts';
+import type {
   Deref,
   OpenApiDocument,
   OpenApiHeader,
@@ -10,7 +10,7 @@ import {
   OpenApiRequestBody,
   OpenApiResponse,
   OpenApiSchema,
-} from '../parse';
+} from '../parse/index.ts';
 
 type Collect<T> = Deref<T> | Deref<T>[] | undefined;
 

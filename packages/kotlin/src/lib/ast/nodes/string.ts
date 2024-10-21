@@ -1,8 +1,8 @@
-import { AstNodeOptions, Nullable, Prettify, SourceBuilder, spliceString } from '@goast/core';
+import { type AstNodeOptions, type Nullable, type Prettify, type SourceBuilder, spliceString } from '@goast/core';
 
-import { ktArgument } from './argument';
-import { KtNode } from '../node';
-import { writeKtNodes } from '../utils/write-kt-node';
+import { ktArgument } from './argument.ts';
+import { KtNode } from '../node.ts';
+import { writeKtNodes } from '../utils/write-kt-node.ts';
 
 type Injects = never;
 

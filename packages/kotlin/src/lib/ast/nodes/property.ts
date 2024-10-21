@@ -1,13 +1,20 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { SourceBuilder, AppendValue, AstNodeOptions, Prettify, notNullish, Nullable } from '@goast/core';
+import {
+  type AppendValue,
+  type AstNodeOptions,
+  notNullish,
+  type Nullable,
+  type Prettify,
+  type SourceBuilder,
+} from '@goast/core';
 
-import { ktAnnotation, KtAnnotation } from './annotation';
-import { KtArgument, ktArgument } from './argument';
-import { KtDoc } from './doc';
-import { KtType, KtValue } from './types';
-import { KtAccessModifier } from '../common';
-import { KtNode } from '../node';
-import { writeKtNode, writeKtNodes } from '../utils/write-kt-node';
+import { type KtAnnotation, ktAnnotation } from './annotation.ts';
+import { type KtArgument, ktArgument } from './argument.ts';
+import type { KtDoc } from './doc.ts';
+import type { KtType, KtValue } from './types.ts';
+import type { KtAccessModifier } from '../common.ts';
+import { KtNode } from '../node.ts';
+import { writeKtNode, writeKtNodes } from '../utils/write-kt-node.ts';
 
 type AccessorInjects = 'annotations' | 'modifiers' | 'params' | 'body';
 

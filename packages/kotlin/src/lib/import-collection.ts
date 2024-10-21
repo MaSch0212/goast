@@ -1,7 +1,7 @@
-import { SourceBuilderOptions, StringBuilder } from '@goast/core';
+import { type SourceBuilderOptions, StringBuilder } from '@goast/core';
 
-import { KotlinImport } from './common-results';
-import { defaultKotlinGeneratorConfig } from './config';
+import type { KotlinImport } from './common-results.ts';
+import { defaultKotlinGeneratorConfig } from './config.ts';
 
 export type ImportCollectionOptions = {
   globalImports: string[];
@@ -29,7 +29,7 @@ export class ImportCollection {
         Array.from(importNames).map((importName) => ({
           packageName: fromPackage,
           typeName: importName,
-        })),
+        }))
       )
       .flat();
   }

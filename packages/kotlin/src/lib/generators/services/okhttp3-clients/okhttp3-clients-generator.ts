@@ -1,21 +1,28 @@
-import { writeFileSync } from 'fs';
-import { dirname, resolve } from 'path';
+import { resolve } from 'node:path';
 
+// @deno-types="@types/fs-extra"
 import fs from 'fs-extra';
 
-import { ApiService, Factory, OpenApiGeneratorContext, OpenApiServicesGenerationProviderBase } from '@goast/core';
+import {
+  type ApiService,
+  Factory,
+  type MaybePromise,
+  type OpenApiGeneratorContext,
+  OpenApiServicesGenerationProviderBase,
+} from '@goast/core';
 
 import {
-  KotlinOkHttp3ClientGeneratorOutput,
-  KotlinOkHttp3ClientsGeneratorConfig,
-  KotlinOkHttp3ClientsGeneratorContext,
-  KotlinOkHttp3ClientsGeneratorInput,
-  KotlinOkHttp3ClientsGeneratorOutput,
   defaultKotlinOkHttp3ClientsGeneratorConfig,
-} from './models';
-import { KotlinOkHttp3Generator, DefaultKotlinOkHttp3Generator } from './okhttp3-client-generator';
-import { getReferenceFactories } from './refs';
-import { KotlinServicesGeneratorInput } from '../spring-controllers';
+  type KotlinOkHttp3ClientGeneratorOutput,
+  type KotlinOkHttp3ClientsGeneratorConfig,
+  type KotlinOkHttp3ClientsGeneratorContext,
+  type KotlinOkHttp3ClientsGeneratorInput,
+  type KotlinOkHttp3ClientsGeneratorOutput,
+} from './models.ts';
+import { DefaultKotlinOkHttp3Generator, type KotlinOkHttp3Generator } from './okhttp3-client-generator.ts';
+import { getReferenceFactories } from './refs.ts';
+import type { KotlinServicesGeneratorInput } from '../spring-controllers/index.ts';
+import { getAssetFileContent } from '../../../assets.ts';
 
 type Input = KotlinOkHttp3ClientsGeneratorInput;
 type Output = KotlinOkHttp3ClientsGeneratorOutput;
@@ -37,9 +44,8 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
     this._serviceGeneratorFactory = serviceGeneratorFactory ?? Factory.fromValue(new DefaultKotlinOkHttp3Generator());
   }
 
-  public override onGenerate(ctx: Context): Output {
-    this.copyInfrastructureFiles(ctx);
-    return super.onGenerate(ctx);
+  protected override async generateAdditionalFiles(ctx: KotlinOkHttp3ClientsGeneratorContext): Promise<void> {
+    await this.copyInfrastructureFiles(ctx);
   }
 
   protected initResult(): Output {
@@ -50,7 +56,7 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
     };
   }
 
-  protected generateService(ctx: Context, service: ApiService): ServiceOutput {
+  protected generateService(ctx: Context, service: ApiService): MaybePromise<ServiceOutput> {
     const serviceGenerator = this._serviceGeneratorFactory.create();
     return serviceGenerator.generate({
       ...ctx,
@@ -94,18 +100,29 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
     return config.packageName + packageSuffix;
   }
 
-  private copyInfrastructureFiles(ctx: Context): void {
-    const sourceDir = resolve(dirname(require.resolve('@goast/kotlin')), '../assets/client/okhttp3');
+  private async copyInfrastructureFiles(ctx: Context): Promise<void> {
     const targetDir = resolve(ctx.config.outputDir, ctx.infrastructurePackageName.replace(/\./g, '/'));
-    fs.ensureDirSync(targetDir);
+    await fs.ensureDir(targetDir);
 
-    const files = fs.readdirSync(sourceDir);
+    const files = [
+      'ApiAbstractions.kt',
+      'ApiClient.kt',
+      'ApiResponse.kt',
+      'Errors.kt',
+      'PartConfig.kt',
+      'RequestConfig.kt',
+      'RequestMethod.kt',
+      'ResponseExtensions.kt',
+      'Serializer.kt',
+    ];
+
     for (const file of files) {
-      const fileContent = fs
-        .readFileSync(resolve(sourceDir, file))
-        .toString()
+      const sourcePath = `client/okhttp3/${file}`;
+      const targetPath = resolve(targetDir, file);
+      console.log(`Copying asset file "${sourcePath}" to "${targetPath}"`);
+      const fileContent = (await getAssetFileContent(sourcePath))
         .replace(/@PACKAGE_NAME@/g, ctx.infrastructurePackageName);
-      writeFileSync(resolve(targetDir, file), fileContent);
+      fs.writeFileSync(targetPath, fileContent);
     }
   }
 }

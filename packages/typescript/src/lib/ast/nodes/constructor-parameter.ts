@@ -1,10 +1,10 @@
-import { AstNodeOptions, Nullable, Prettify, SourceBuilder } from '@goast/core';
+import type { AstNodeOptions, Nullable, Prettify, SourceBuilder } from '@goast/core';
 
-import { tsDecorator } from './decorator';
-import { TsParameter } from './parameter';
-import { TsAccessModifier } from '../common';
-import { writeTsNode } from '../utils/write-ts-nodes';
-import { writeTsParameters } from '../utils/write-ts-parameters';
+import { tsDecorator } from './decorator.ts';
+import { TsParameter } from './parameter.ts';
+import type { TsAccessModifier } from '../common.ts';
+import { writeTsNode } from '../utils/write-ts-nodes.ts';
+import { writeTsParameters } from '../utils/write-ts-parameters.ts';
 
 type Injects = 'modifiers';
 
@@ -16,10 +16,11 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
-export class TsConstructorParameter<
-  TBuilder extends SourceBuilder,
-  TInjects extends string = never,
-> extends TsParameter<TBuilder, TInjects | Injects> {
+export class TsConstructorParameter<TBuilder extends SourceBuilder, TInjects extends string = never>
+  extends TsParameter<
+    TBuilder,
+    TInjects | Injects
+  > {
   public accessModifier: TsAccessModifier | null;
   public readonly: boolean;
 

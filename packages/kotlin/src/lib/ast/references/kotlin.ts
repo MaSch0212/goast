@@ -1,4 +1,4 @@
-import { ktReference } from '../nodes/reference';
+import { ktReference } from '../nodes/reference.ts';
 
 // kotlin
 export const any = ktReference.factory('Any', 'kotlin');

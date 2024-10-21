@@ -1,13 +1,20 @@
-import { AppendValue, AstNodeOptions, Nullable, Prettify, SourceBuilder, notNullish } from '@goast/core';
+import {
+  type AppendValue,
+  type AstNodeOptions,
+  notNullish,
+  type Nullable,
+  type Prettify,
+  type SourceBuilder,
+} from '@goast/core';
 
-import { ktAnnotation, KtAnnotation } from './annotation';
-import { ktArgument, KtArgument } from './argument';
-import { KtDoc } from './doc';
-import { KtFunction } from './function';
-import { KtParameter } from './parameter';
-import { KtNode } from '../node';
-import { writeKtEnumValues } from '../utils/write-kt-enum-values';
-import { writeKtMembers } from '../utils/write-kt-members';
+import { type KtAnnotation, ktAnnotation } from './annotation.ts';
+import { type KtArgument, ktArgument } from './argument.ts';
+import type { KtDoc } from './doc.ts';
+import type { KtFunction } from './function.ts';
+import type { KtParameter } from './parameter.ts';
+import { KtNode } from '../node.ts';
+import { writeKtEnumValues } from '../utils/write-kt-enum-values.ts';
+import { writeKtMembers } from '../utils/write-kt-members.ts';
 
 type Injects = 'doc' | 'annotations' | 'name' | 'arguments' | 'body' | 'members';
 

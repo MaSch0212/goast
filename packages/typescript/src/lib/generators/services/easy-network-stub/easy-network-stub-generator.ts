@@ -1,33 +1,32 @@
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 
 import {
-  ApiEndpoint,
-  ApiSchema,
-  AppendValueGroup,
   adjustCasing,
+  type ApiEndpoint,
+  type ApiSchema,
+  type AppendValueGroup,
   appendValueGroup,
   builderTemplate as s,
+  type MaybePromise,
   toCasing,
 } from '@goast/core';
 
-import { TypeScriptEasyNetworkStubGeneratorContext, TypeScriptEasyNetworkStubGeneratorOutput } from './models';
-import { ts } from '../../../ast';
-import { TypeScriptFileBuilder } from '../../../file-builder';
-import { TypeScriptFileGenerator } from '../../file-generator';
+import type { TypeScriptEasyNetworkStubGeneratorContext, TypeScriptEasyNetworkStubGeneratorOutput } from './models.ts';
+import { ts } from '../../../ast/index.ts';
+import { TypeScriptFileBuilder } from '../../../file-builder.ts';
+import { TypeScriptFileGenerator } from '../../file-generator.ts';
 
 type Context = TypeScriptEasyNetworkStubGeneratorContext;
 type Output = TypeScriptEasyNetworkStubGeneratorOutput;
 type Builder = TypeScriptFileBuilder;
 
 export interface TypeScriptEasyNetworkStubGenerator<TOutput extends Output = Output> {
-  generate(ctx: Context): TOutput;
+  generate(ctx: Context): MaybePromise<TOutput>;
 }
 
-export class DefaultTypeScriptEasyNetworkStubGenerator
-  extends TypeScriptFileGenerator<Context, Output>
-  implements TypeScriptEasyNetworkStubGenerator
-{
-  public generate(ctx: Context): Output {
+export class DefaultTypeScriptEasyNetworkStubGenerator extends TypeScriptFileGenerator<Context, Output>
+  implements TypeScriptEasyNetworkStubGenerator {
+  public generate(ctx: Context): MaybePromise<Output> {
     const filePath = this.getStubFilePath(ctx);
     const name = this.getStubClassName(ctx);
 
@@ -58,7 +57,7 @@ export class DefaultTypeScriptEasyNetworkStubGenerator
         ctx.refs.getStubResponder([
           ts.objectType({
             members: Object.entries(this.getEndpointStatusCodes(ctx, endpoint)).map(([statusCode, type]) =>
-              ts.property<Builder>(statusCode, { type }),
+              ts.property<Builder>(statusCode, { type })
             ),
           }),
         ]),
@@ -78,7 +77,7 @@ export class DefaultTypeScriptEasyNetworkStubGenerator
             readonly: true,
             accessModifier: 'private',
             value: s`${ts.string(this.getStubRoute(ctx, endpoint))} as const`,
-          }),
+          })
         ),
         '\n',
         ...ctx.service.endpoints.map((endpoint) =>
@@ -87,7 +86,7 @@ export class DefaultTypeScriptEasyNetworkStubGenerator
             accessModifier: 'private',
             type: this.getEndpointRequestsType(ctx, endpoint),
             value: ts.tuple([]),
-          }),
+          })
         ),
         '\n',
         ...ctx.service.endpoints.map((endpoint) =>
@@ -98,7 +97,7 @@ export class DefaultTypeScriptEasyNetworkStubGenerator
             get: ts.property.getter({
               body: appendValueGroup([`return this.${this.getEndpointRequestsFieldName(ctx, endpoint)};`], '\n'),
             }),
-          }),
+          })
         ),
         ...ctx.service.endpoints.map((endpoint) => this.getEndpointStubMethod(ctx, endpoint)),
         ts.method('reset', {
@@ -107,8 +106,8 @@ export class DefaultTypeScriptEasyNetworkStubGenerator
           returnType: ts.refs.void_(),
           body: appendValueGroup(
             [
-              ...ctx.service.endpoints.map(
-                (endpoint) => `this.${this.getEndpointRequestsFieldName(ctx, endpoint)}.length = 0;`,
+              ...ctx.service.endpoints.map((endpoint) =>
+                `this.${this.getEndpointRequestsFieldName(ctx, endpoint)}.length = 0;`
               ),
               'super.reset();',
             ],
@@ -202,10 +201,11 @@ export class DefaultTypeScriptEasyNetworkStubGenerator
     let path = endpoint.path;
     let isFirstQueryParam = true;
     for (const param of endpoint.parameters) {
-      let type = (
-        (param.schema && ctx.input.typescript.models[param.schema.id]?.component) ??
-        ts.refs.unknown.name
-      ).replace(/^readonly /, '');
+      let type = ((param.schema && ctx.input.typescript.models[param.schema.id]?.component) ?? ts.refs.unknown.name)
+        .replace(
+          /^readonly /,
+          '',
+        );
 
       const arrayMatch = /^\((.*)\)\[\]$/.exec(type);
       if (arrayMatch !== null) {

@@ -1,32 +1,31 @@
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 
 import {
-  ApiEndpoint,
-  ApiSchema,
-  toCasing,
-  AppendValueGroup,
+  type ApiEndpoint,
+  type ApiSchema,
+  type AppendValueGroup,
   appendValueGroup,
   builderTemplate as s,
+  type MaybePromise,
+  toCasing,
 } from '@goast/core';
 
-import { TypeScriptFetchClientGeneratorContext, TypeScriptFetchClientGeneratorOutput } from './models';
-import { ts } from '../../../ast';
-import { TypeScriptFileBuilder } from '../../../file-builder';
-import { TypeScriptFileGenerator } from '../../file-generator';
+import type { TypeScriptFetchClientGeneratorContext, TypeScriptFetchClientGeneratorOutput } from './models.ts';
+import { ts } from '../../../ast/index.ts';
+import { TypeScriptFileBuilder } from '../../../file-builder.ts';
+import { TypeScriptFileGenerator } from '../../file-generator.ts';
 
 type Context = TypeScriptFetchClientGeneratorContext;
 type Output = TypeScriptFetchClientGeneratorOutput;
 type Builder = TypeScriptFileBuilder;
 
 export interface TypeScriptFetchClientGenerator<TOutput extends Output = Output> {
-  generate(ctx: Context): TOutput;
+  generate(ctx: Context): MaybePromise<TOutput>;
 }
 
-export class DefaultTypeScriptFetchClientGenerator
-  extends TypeScriptFileGenerator<Context, Output>
-  implements TypeScriptFetchClientGenerator
-{
-  public generate(ctx: Context): Output {
+export class DefaultTypeScriptFetchClientGenerator extends TypeScriptFileGenerator<Context, Output>
+  implements TypeScriptFetchClientGenerator {
+  public generate(ctx: Context): MaybePromise<Output> {
     const result: Output = {};
 
     if (this.shouldGenerateInterface(ctx)) {
@@ -89,23 +88,23 @@ export class DefaultTypeScriptFetchClientGenerator
       parameters: [
         params.length > 0
           ? ts.parameter('params', {
-              description: 'Parameters for the endpoint.',
-              type: ts.objectType({
-                members: params.map((x) =>
-                  ts.property(toCasing(x.name, ctx.config.propertyNameCasing), {
-                    doc: ts.doc({ tags: [x.deprecated ? ts.docTag('deprecated') : null] }),
-                    type: this.getSchemaType(ctx, x.schema),
-                    optional: !x.required,
-                  }),
-                ),
-              }),
-            })
+            description: 'Parameters for the endpoint.',
+            type: ts.objectType({
+              members: params.map((x) =>
+                ts.property(toCasing(x.name, ctx.config.propertyNameCasing), {
+                  doc: ts.doc({ tags: [x.deprecated ? ts.docTag('deprecated') : null] }),
+                  type: this.getSchemaType(ctx, x.schema),
+                  optional: !x.required,
+                })
+              ),
+            }),
+          })
           : null,
         bodySchema &&
-          ts.parameter('body', {
-            description: 'Body for the endpoint.',
-            type: this.getSchemaType(ctx, bodySchema),
-          }),
+        ts.parameter('body', {
+          description: 'Body for the endpoint.',
+          type: this.getSchemaType(ctx, bodySchema),
+        }),
       ],
       returnType: ts.refs.promise([ctx.refs.typedResponse([this.getSchemaType(ctx, responseSchema, ts.refs.void_())])]),
     });
@@ -118,9 +117,9 @@ export class DefaultTypeScriptFetchClientGenerator
   }
 
   protected getDefaultOptionsConstant(ctx: Context): ts.Variable<Builder> {
-    const baseUrl = ctx.service.endpoints
-      .map((x) => x.$src?.document.servers?.find((x) => x.url)?.url)
-      .find((x) => !!x);
+    const baseUrl = ctx.service.endpoints.map((x) => x.$src?.document.servers?.find((x) => x.url)?.url).find((x) =>
+      !!x
+    );
     return ts.variable(this.getDefaultOptionsConstantName(ctx), {
       export: true,
       readonly: true,
@@ -175,29 +174,37 @@ export class DefaultTypeScriptFetchClientGenerator
       [
         s`const url = new ${ctx.refs.urlBuilder()}(this.options.baseUrl)${s.indent`
           .withPath(${ts.string(endpoint.path)})${(b) =>
-            b.forEach(endpoint.parameters, (b, p) => {
-              switch (p.target) {
-                case 'path':
-                  b.append(
-                    s<Builder>`\n.withPathParam(${ts.string(p.name)}, params.${toCasing(p.name, ctx.config.paramNameCasing)})`,
-                  );
-                  break;
-                case 'query':
-                  b.append(
-                    s<Builder>`\n.withQueryParam(${ts.string(p.name)}, params.${toCasing(p.name, ctx.config.paramNameCasing)})`,
-                  );
-                  break;
-              }
-            })}
+          b.forEach(endpoint.parameters, (b, p) => {
+            switch (p.target) {
+              case 'path':
+                b.append(
+                  s<Builder>`\n.withPathParam(${ts.string(p.name)}, params.${
+                    toCasing(p.name, ctx.config.paramNameCasing)
+                  })`,
+                );
+                break;
+              case 'query':
+                b.append(
+                  s<Builder>`\n.withQueryParam(${ts.string(p.name)}, params.${
+                    toCasing(p.name, ctx.config.paramNameCasing)
+                  })`,
+                );
+                break;
+            }
+          })}
           .build();`}`,
-        s`const response = (this.options.fetch ?? fetch)(url, ${ts.object({
-          members: [
-            ts.property('method', { value: ts.string(toCasing(endpoint.method, 'all-upper')) }),
-            ts.property('headers', { value: 'this.options.headers' }),
-            endpoint.requestBody?.content[0]?.schema ? ts.property('body', { value: 'JSON.stringify(body)' }) : null,
-          ],
-        })});`,
-        s`Object.defineProperty(response, 'isVoidResponse', { value: ${this.getResponseSchema(ctx, endpoint) ? 'false' : 'true'} });`,
+        s`const response = (this.options.fetch ?? fetch)(url, ${
+          ts.object({
+            members: [
+              ts.property('method', { value: ts.string(toCasing(endpoint.method, 'all-upper')) }),
+              ts.property('headers', { value: 'this.options.headers' }),
+              endpoint.requestBody?.content[0]?.schema ? ts.property('body', { value: 'JSON.stringify(body)' }) : null,
+            ],
+          })
+        });`,
+        s`Object.defineProperty(response, 'isVoidResponse', { value: ${
+          this.getResponseSchema(ctx, endpoint) ? 'false' : 'true'
+        } });`,
         s`return response as unknown as ${method.returnType ?? 'unknown'};`,
       ],
       '\n',
@@ -253,8 +260,7 @@ export class DefaultTypeScriptFetchClientGenerator
   }
 
   private getResponseSchema(ctx: Context, endpoint: ApiEndpoint) {
-    const successResponse =
-      endpoint.responses.find((x) => x.statusCode === 200) ??
+    const successResponse = endpoint.responses.find((x) => x.statusCode === 200) ??
       endpoint.responses.find((x) => x.statusCode && x.statusCode > 200 && x.statusCode < 300);
     return successResponse?.contentOptions?.find((x) => x.schema !== undefined)?.schema;
   }

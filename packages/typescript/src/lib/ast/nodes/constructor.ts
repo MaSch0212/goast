@@ -1,11 +1,18 @@
-import { AppendValue, AstNodeOptions, BasicAppendValue, Nullable, SourceBuilder, notNullish } from '@goast/core';
+import {
+  type AppendValue,
+  type AstNodeOptions,
+  type BasicAppendValue,
+  notNullish,
+  type Nullable,
+  type SourceBuilder,
+} from '@goast/core';
 
-import { TsConstructorParameter } from './constructor-parameter';
-import { TsDecorator, tsDecorator } from './decorator';
-import { TsDoc, tsDoc } from './doc';
-import { tsParameter } from './parameter';
-import { TsNode } from '../node';
-import { writeTsNodes } from '../utils/write-ts-nodes';
+import type { TsConstructorParameter } from './constructor-parameter.ts';
+import { type TsDecorator, tsDecorator } from './decorator.ts';
+import { type TsDoc, tsDoc } from './doc.ts';
+import { tsParameter } from './parameter.ts';
+import { TsNode } from '../node.ts';
+import { writeTsNodes } from '../utils/write-ts-nodes.ts';
 
 type Injects = 'params' | 'doc' | 'decorators' | 'body';
 

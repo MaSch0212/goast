@@ -1,8 +1,12 @@
-import { dirname, relative } from 'path';
+import { dirname, relative } from 'node:path';
 
-import { Nullable } from '@goast/core';
+import type { Nullable } from '@goast/core';
 
-export type ImportModuleTransformer = 'omit-extension' | 'js-extension' | ((module: string) => string);
+export type ImportModuleTransformer =
+  | 'omit-extension'
+  | 'with-extension'
+  | 'js-extension'
+  | ((module: string) => string);
 
 function doubleQuotedToSingleQuoted(value: string): string {
   return `'${value.slice(1, -1).replace(/'/g, "\\'")}'`;
@@ -38,6 +42,8 @@ function transformModulePath(modulePath: string, transformer: ImportModuleTransf
 
   if (transformer === 'omit-extension') {
     return modulePath.replace(/\.[^/.]+$/, '');
+  } else if (transformer === 'with-extension') {
+    return modulePath;
   } else if (transformer === 'js-extension') {
     return modulePath.replace(/\.[^/.]+$/, '.js');
   } else if (typeof transformer === 'function') {

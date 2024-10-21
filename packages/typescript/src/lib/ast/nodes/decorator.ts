@@ -1,20 +1,20 @@
 import {
-  AppendValue,
-  AstNodeOptions,
-  BasicAppendValue,
-  Nullable,
-  Prettify,
-  SingleOrMultiple,
-  SourceBuilder,
+  type AppendValue,
+  type AstNodeOptions,
+  type BasicAppendValue,
   notNullish,
+  type Nullable,
+  type Prettify,
+  type SingleOrMultiple,
+  type SourceBuilder,
   toArray,
 } from '@goast/core';
 
-import { TsArgument, tsArgument } from './argument';
-import { TsReference } from './reference';
-import { TsValue } from './types';
-import { TsNode } from '../node';
-import { writeTsNode } from '../utils/write-ts-nodes';
+import { type TsArgument, tsArgument } from './argument.ts';
+import type { TsReference } from './reference.ts';
+import type { TsValue } from './types.ts';
+import { TsNode } from '../node.ts';
+import { writeTsNode } from '../utils/write-ts-nodes.ts';
 
 type Injects = 'function' | 'arguments';
 

@@ -1,3 +1,3 @@
-export * from './model-generator';
-export * from './models';
-export * from './models-generator';
+export * from './model-generator.ts';
+export * from './models.ts';
+export * from './models-generator.ts';

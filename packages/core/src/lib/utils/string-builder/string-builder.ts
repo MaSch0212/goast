@@ -1,6 +1,6 @@
-import { StringBuilderOptions, defaultStringBuilderOptions } from './options';
-import { isNullish } from '../common.utils';
-import { Nullable, SingleOrMultiple } from '../type.utils';
+import { defaultStringBuilderOptions, type StringBuilderOptions } from './options.ts';
+import { isNullish } from '../common.utils.ts';
+import type { Nullable, SingleOrMultiple } from '../type.utils.ts';
 
 export type BuilderFn<TBuilder extends StringBuilder> = (builder: TBuilder) => void;
 export type Primitive = string | number | boolean;
@@ -13,10 +13,10 @@ export type AppendParam<TBuilder extends StringBuilder, TAdditionalAppends> = Si
   // eslint-disable-next-line @typescript-eslint/ban-types
   | TAdditionalAppends
   | {
-      __type: 'append-value-group';
-      values: AppendParam<TBuilder, TAdditionalAppends>[];
-      separator: string | null;
-    }
+    __type: 'append-value-group';
+    values: AppendParam<TBuilder, TAdditionalAppends>[];
+    separator: string | null;
+  }
 >;
 
 export const AdditionalAppendsSymbol = Symbol('AdditionalAppends');

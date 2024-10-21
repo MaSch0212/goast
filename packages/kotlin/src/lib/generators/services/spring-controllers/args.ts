@@ -1,7 +1,7 @@
-import { ApiEndpoint, ApiSchema, SourceBuilder } from '@goast/core';
+import type { ApiEndpoint, ApiSchema, SourceBuilder } from '@goast/core';
 
-import { kt } from '../../../ast';
-import { ApiParameterWithMultipartInfo } from '../../../types';
+import type { kt } from '../../../ast/index.ts';
+import type { ApiParameterWithMultipartInfo } from '../../../types.ts';
 
 // #region API Interface
 export type GenerateApiInterfaceFile = {
@@ -54,18 +54,18 @@ export type GetSchemaType = { schema: ApiSchema | undefined };
 
 export type GetControllerRequestMapping = { prefix?: string };
 
-export type GetBasePath = {};
+export type GetBasePath = object;
 
 export type GetEndpointPath = { endpoint: ApiEndpoint };
 
 export type GetDirectoryPath = { packageName: string };
 
-export type GetPackageName = {};
+export type GetPackageName = object;
 
-export type GetApiInterfaceName = {};
+export type GetApiInterfaceName = object;
 
-export type GetApiDelegateInterfaceName = {};
+export type GetApiDelegateInterfaceName = object;
 
-export type GetApiControllerName = {};
+export type GetApiControllerName = object;
 
 export type GetAllParameters = { endpoint: ApiEndpoint };

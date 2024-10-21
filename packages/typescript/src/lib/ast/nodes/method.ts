@@ -1,22 +1,22 @@
 import {
-  AppendValue,
-  AstNodeOptions,
-  BasicAppendValue,
-  Nullable,
-  Prettify,
-  SourceBuilder,
+  type AppendValue,
+  type AstNodeOptions,
+  type BasicAppendValue,
   notNullish,
+  type Nullable,
+  type Prettify,
+  type SourceBuilder,
 } from '@goast/core';
 
-import { TsDecorator, tsDecorator } from './decorator';
-import { TsDoc, tsDoc } from './doc';
-import { TsGenericParameter, tsGenericParameter } from './generic-parameter';
-import { TsObject } from './object';
-import { TsParameter, tsParameter } from './parameter';
-import { TsType } from './types';
-import { TsAccessModifier } from '../common';
-import { TsNode } from '../node';
-import { writeTsNode, writeTsNodes } from '../utils/write-ts-nodes';
+import { type TsDecorator, tsDecorator } from './decorator.ts';
+import { type TsDoc, tsDoc } from './doc.ts';
+import { type TsGenericParameter, tsGenericParameter } from './generic-parameter.ts';
+import { TsObject } from './object.ts';
+import { type TsParameter, tsParameter } from './parameter.ts';
+import type { TsType } from './types.ts';
+import type { TsAccessModifier } from '../common.ts';
+import { TsNode } from '../node.ts';
+import { writeTsNode, writeTsNodes } from '../utils/write-ts-nodes.ts';
 
 type Injects = 'doc' | 'decorators' | 'modifiers' | 'name' | 'generics' | 'params' | 'returnType' | 'body';
 

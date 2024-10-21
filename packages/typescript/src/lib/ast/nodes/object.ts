@@ -1,11 +1,11 @@
-import { AstNodeOptions, BasicAppendValue, Nullable, SourceBuilder, notNullish } from '@goast/core';
+import { type AstNodeOptions, type BasicAppendValue, notNullish, type Nullable, type SourceBuilder } from '@goast/core';
 
-import { TsNode } from '../node';
-import { writeTsMembers } from '../utils/write-ts-members';
-import { writeTsNodes } from '../utils/write-ts-nodes';
+import { TsNode } from '../node.ts';
+import { writeTsMembers } from '../utils/write-ts-members.ts';
+import { writeTsNodes } from '../utils/write-ts-nodes.ts';
 
-import type { TsMethod } from './method';
-import type { TsProperty } from './property';
+import type { TsMethod } from './method.ts';
+import type { TsProperty } from './property.ts';
 
 type Injects = never;
 

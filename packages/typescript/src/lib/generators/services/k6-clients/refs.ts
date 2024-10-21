@@ -1,7 +1,7 @@
-import { join, resolve } from 'path';
+import { join, resolve } from 'node:path';
 
-import { TypeScriptK6ClientsGeneratorConfig } from './models';
-import { ts } from '../../../ast';
+import type { TypeScriptK6ClientsGeneratorConfig } from './models.ts';
+import { ts } from '../../../ast/index.ts';
 
 export function getReferenceFactories(options: TypeScriptK6ClientsGeneratorConfig) {
   const utilsDirPath = resolve(options.outputDir, options.utilsDir);

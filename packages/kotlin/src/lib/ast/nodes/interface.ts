@@ -1,27 +1,27 @@
 import {
-  SourceBuilder,
-  AppendValue,
-  AstNodeOptions,
-  notNullish,
-  Prettify,
-  Nullable,
-  BasicAppendValue,
+  type AppendValue,
+  type AstNodeOptions,
+  type BasicAppendValue,
   createOverwriteProxy,
+  notNullish,
+  type Nullable,
+  type Prettify,
+  type SourceBuilder,
 } from '@goast/core';
 
-import { ktAnnotation, KtAnnotation } from './annotation';
-import { KtClass } from './class';
-import { ktDoc, KtDoc } from './doc';
-import { KtEnum } from './enum';
-import { KtFunction } from './function';
-import { ktGenericParameter, KtGenericParameter } from './generic-parameter';
-import { KtObject } from './object';
-import { KtProperty } from './property';
-import { KtType } from './types';
-import { KtAccessModifier } from '../common';
-import { KtNode } from '../node';
-import { writeKtMembers } from '../utils/write-kt-members';
-import { writeKtNodes } from '../utils/write-kt-node';
+import { type KtAnnotation, ktAnnotation } from './annotation.ts';
+import type { KtClass } from './class.ts';
+import { type KtDoc, ktDoc } from './doc.ts';
+import type { KtEnum } from './enum.ts';
+import type { KtFunction } from './function.ts';
+import { type KtGenericParameter, ktGenericParameter } from './generic-parameter.ts';
+import type { KtObject } from './object.ts';
+import type { KtProperty } from './property.ts';
+import type { KtType } from './types.ts';
+import type { KtAccessModifier } from '../common.ts';
+import { KtNode } from '../node.ts';
+import { writeKtMembers } from '../utils/write-kt-members.ts';
+import { writeKtNodes } from '../utils/write-kt-node.ts';
 
 type Injects = 'doc' | 'annotations' | 'modifiers' | 'name' | 'generics' | 'extends' | 'body' | 'members';
 

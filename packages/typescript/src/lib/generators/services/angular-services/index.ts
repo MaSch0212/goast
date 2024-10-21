@@ -1,3 +1,3 @@
-export * from './angular-service-generator';
-export * from './angular-services-generator';
-export * from './models';
+export * from './angular-service-generator.ts';
+export * from './angular-services-generator.ts';
+export * from './models.ts';

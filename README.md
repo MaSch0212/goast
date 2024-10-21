@@ -6,14 +6,17 @@
 [![@goast/typescript NPM Version](https://img.shields.io/npm/v/%40goast%2Ftypescript?logo=npm&label=%40goast%2Ftypescript)](https://www.npmjs.com/package/@goast/typescript)
 [![@goast/kotlin NPM Version](https://img.shields.io/npm/v/%40goast%2Fkotlin?logo=npm&label=%40goast%2Fkotlin)](https://www.npmjs.com/package/@goast/kotlin)
 
-**gOAst** stands for **g**enerative **O**pen **A**PI **s**pecification **t**ransformer, a tool designed to transform OpenAPI specifications into various forms with flexibility and extensibility at its core.
+**gOAst** stands for **g**enerative **O**pen **A**PI **s**pecification **t**ransformer, a tool designed to transform
+OpenAPI specifications into various forms with flexibility and extensibility at its core.
 
 ## Motivation 💥
 
-While numerous OpenAPI generators exist, they often cater to specific languages or frameworks and lack the flexibility for customization or extension to meet unique requirements.
+While numerous OpenAPI generators exist, they often cater to specific languages or frameworks and lack the flexibility
+for customization or extension to meet unique requirements.
 
-**gOAst** aims to bridge this gap by offering a highly flexible and extensible platform for transforming OpenAPI specifications into any desired form.
-It not only includes a set of pre-built generators but also simplifies the process of creating new ones or extending existing functionalities.
+**gOAst** aims to bridge this gap by offering a highly flexible and extensible platform for transforming OpenAPI
+specifications into any desired form. It not only includes a set of pre-built generators but also simplifies the process
+of creating new ones or extending existing functionalities.
 
 ## Features 🔥
 
@@ -27,7 +30,8 @@ It not only includes a set of pre-built generators but also simplifies the proce
 
 ## How It Works 🔧
 
-**gOAst** employs a structured approach to transform OpenAPI specifications, making it easy to extend or generate new data forms:
+**gOAst** employs a structured approach to transform OpenAPI specifications, making it easy to extend or generate new
+data forms:
 
 1. **Parse OpenAPI Specification Files**
 
@@ -46,7 +50,8 @@ It not only includes a set of pre-built generators but also simplifies the proce
 
 4. **Generate Output using a Pipeline Approach**
    - Defines a transformation pipeline to produce the desired output.
-   - Generators can utilize information from previous steps and modify the output as needed, enhancing flexibility (e.g., a Service generator that relies on a Model generator).
+   - Generators can utilize information from previous steps and modify the output as needed, enhancing flexibility
+     (e.g., a Service generator that relies on a Model generator).
 
 ## Getting Started 🚀
 
@@ -64,16 +69,13 @@ import { TypeScriptModelsGenerator } from '@goast/typescript';
 
 async function main() {
   const generator = new OpenApiGenerator()
-
     // Add a generator using a class
     .useType(TypeScriptModelsGenerator)
-
     // Add a generator using a function
     .useFn((ctx, cfg) => {
       // Do the generation
       return {}; // Return information about the generated files so it can be used by other generators
     })
-
     // Add a generator using an object implementing `OpenApiGenerationProvider`
     .useValue({ generate: (ctx, cfg) => ({}) });
 
@@ -93,9 +95,9 @@ Outputs from a previous generator can be accessed by the `input` property of the
 
 ### Extending Generators
 
-All generators included with gOAst are implemented by classes.
-This allows for easy extension by creating a new class that extends the desired generator.
-Most generators consist of two classes. One for generation of one entity (e.g. a schema or endpoint) and one for the whole specification.
+All generators included with gOAst are implemented by classes. This allows for easy extension by creating a new class
+that extends the desired generator. Most generators consist of two classes. One for generation of one entity (e.g. a
+schema or endpoint) and one for the whole specification.
 
 In this example we are extending the model generator for typescript to modify the type names:
 
@@ -146,10 +148,11 @@ A more detailed documentation can be found in the [Wiki](https://github.com/MaSc
 
 ## Contributing 🧑🏻‍💻
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any
+contributions you make are **greatly appreciated**.
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also
+simply open an issue with the tag "enhancement". Don't forget to give the project a star! Thanks again!
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)

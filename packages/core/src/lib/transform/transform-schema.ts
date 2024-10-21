@@ -1,4 +1,4 @@
-import { ApiSchema, ApiSchemaExtensions, ApiSchemaKind } from './api-types';
+import type { ApiSchema, ApiSchemaExtensions, ApiSchemaKind } from './api-types.ts';
 import {
   determineSchemaAccessibility,
   determineSchemaKind,
@@ -7,10 +7,10 @@ import {
   getOpenApiObjectIdentifier,
   transformAdditionalProperties,
   transformSchemaProperties,
-} from './helpers';
-import { OpenApiTransformerContext, IncompleteApiSchema } from './types';
-import { Deref, OpenApiSchema } from '../parse';
-import { createOverwriteProxy } from '../utils';
+} from './helpers.ts';
+import type { IncompleteApiSchema, OpenApiTransformerContext } from './types.ts';
+import type { Deref, OpenApiSchema } from '../parse/index.ts';
+import { createOverwriteProxy } from '../utils/index.ts';
 
 export function transformSchema<T extends Deref<OpenApiSchema>>(ctx: OpenApiTransformerContext, schema: T): ApiSchema {
   if (!schema) {
@@ -70,10 +70,11 @@ export function transformSchema<T extends Deref<OpenApiSchema>>(ctx: OpenApiTran
     const: schema.const,
     discriminator: schema.discriminator
       ? {
-          propertyName:
-            typeof schema.discriminator === 'string' ? schema.discriminator : schema.discriminator.propertyName,
-          mapping: {},
-        }
+        propertyName: typeof schema.discriminator === 'string'
+          ? schema.discriminator
+          : schema.discriminator.propertyName,
+        mapping: {},
+      }
       : undefined,
     inheritedSchemas: [],
   };
@@ -83,8 +84,9 @@ export function transformSchema<T extends Deref<OpenApiSchema>>(ctx: OpenApiTran
     incompleteSchema.$ref = transformSchema(ctx, schema.$ref);
   }
   const extensions = schemaTransformers[kind](schema, ctx);
-  const completeSchema = Object.assign(incompleteSchema, extensions) as IncompleteApiSchema &
-    ApiSchemaExtensions<ApiSchemaKind>;
+  const completeSchema = Object.assign(incompleteSchema, extensions) as
+    & IncompleteApiSchema
+    & ApiSchemaExtensions<ApiSchemaKind>;
   resolveDescriminatorMapping(ctx, completeSchema);
 
   ctx.incompleteSchemas.delete(schemaSource);

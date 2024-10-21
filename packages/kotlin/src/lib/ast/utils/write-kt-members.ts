@@ -1,7 +1,7 @@
-import { SourceBuilder, Nullable, notNullish, isAppendValue, isAppendValueGroup } from '@goast/core';
+import { isAppendValue, isAppendValueGroup, notNullish, type Nullable, type SourceBuilder } from '@goast/core';
 
-import { KtAppendValue, writeKtNode } from './write-kt-node';
-import { KtProperty } from '../nodes/property';
+import { type KtAppendValue, writeKtNode } from './write-kt-node.ts';
+import { KtProperty } from '../nodes/property.ts';
 
 export function writeKtMembers<TBuilder extends SourceBuilder>(
   builder: TBuilder,
@@ -21,6 +21,5 @@ export function writeKtMembers<TBuilder extends SourceBuilder>(
           .append((b) => writeKtNode(b, m))
           .if(i < filteredMembers.length - 1, (b) => b.ensurePreviousLineEmpty()),
       (b) => b.append((b) => writeKtNode(b, m)).ensureCurrentLineEmpty(),
-    ),
-  );
+    ));
 }

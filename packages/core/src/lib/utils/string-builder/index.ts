@@ -1,3 +1,3 @@
-export * from './options';
-export { AppendParam, StringBuilder } from './string-builder';
-export * from './utils';
+export * from './options.ts';
+export { type AppendParam, StringBuilder } from './string-builder.ts';
+export * from './utils.ts';

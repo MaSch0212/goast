@@ -1,17 +1,17 @@
-import { isNullish } from './common.utils';
-import {
-  WordCasing,
-  StringCasing,
-  CaseOptions,
-  CamelCaseOptions,
-  PascalCaseOptions,
-  KebabCaseOptions,
-  SnakeCaseOptions,
-  CustomCaseOptions,
+import { isNullish } from './common.utils.ts';
+import type {
   BaseCaseOptions,
+  CamelCaseOptions,
+  CaseOptions,
+  CustomCaseOptions,
+  KebabCaseOptions,
+  PascalCaseOptions,
+  SnakeCaseOptions,
+  StringCasing,
   StringCasingWithOptions,
-} from './string.utils.types';
-import { Nullable } from './type.utils';
+  WordCasing,
+} from './string.utils.types.ts';
+import type { Nullable } from './type.utils.ts';
 
 export function adjustCasing(a: StringCasing, b: StringCasing): StringCasing;
 export function adjustCasing(
@@ -119,7 +119,10 @@ export function wordToCasing(str: Nullable<string>, casing: WordCasing): string 
   }
 }
 
-export function toCasing<T extends StringCasing>(str: Nullable<string>, casing: T | StringCasingWithOptions<T>) {
+export function toCasing<T extends StringCasing>(
+  str: Nullable<string>,
+  casing: T | StringCasingWithOptions<T>,
+): string {
   let options: CaseOptions<T> | undefined;
   let casingType: StringCasing;
   if (typeof casing === 'string') {
@@ -174,7 +177,7 @@ export function toCamelCase(str: Nullable<string>, options?: Partial<CamelCaseOp
     .map((word, index) =>
       index === 0
         ? wordToCasing(word, opts.keepOriginalCase ? 'first-lower' : 'all-lower')
-        : wordToCasing(word, opts.keepOriginalCase ? 'first-upper' : 'first-upper-then-lower'),
+        : wordToCasing(word, opts.keepOriginalCase ? 'first-upper' : 'first-upper-then-lower')
     )
     .join('');
   return addPrefixAndSuffix(camelCase, opts);
@@ -219,7 +222,7 @@ export function toKebabCase(str: Nullable<string>, options?: Partial<KebabCaseOp
   const words = getWords(str);
   const kebabCase = words
     .map((word, index) =>
-      index === 0 ? wordToCasing(word, opts.firstWordCasing ?? opts.wordCasing) : wordToCasing(word, opts.wordCasing),
+      index === 0 ? wordToCasing(word, opts.firstWordCasing ?? opts.wordCasing) : wordToCasing(word, opts.wordCasing)
     )
     .join('-');
   return addPrefixAndSuffix(kebabCase, opts);
@@ -243,7 +246,7 @@ export function toSnakeCase(str: Nullable<string>, options?: Partial<SnakeCaseOp
   const words = getWords(str);
   const snakeCase = words
     .map((word, index) =>
-      index === 0 ? wordToCasing(word, opts.firstWordCasing ?? opts.wordCasing) : wordToCasing(word, opts.wordCasing),
+      index === 0 ? wordToCasing(word, opts.firstWordCasing ?? opts.wordCasing) : wordToCasing(word, opts.wordCasing)
     )
     .join('_');
   return addPrefixAndSuffix(snakeCase, opts);
@@ -264,13 +267,12 @@ export function toSnakeCase(str: Nullable<string>, options?: Partial<SnakeCaseOp
  */
 export function toCustomCase(str: Nullable<string>, options: CustomCaseOptions): string {
   const words = getWords(str);
-  const wordMapFn: (word: string, index: number) => string =
-    typeof options.wordCasing === 'function'
-      ? (word, index) => wordToCasing(word, options.wordCasing(index))
-      : (word, index) =>
-          index === 0
-            ? wordToCasing(word, options.firstWordCasing ?? options.wordCasing)
-            : wordToCasing(word, options.wordCasing);
+  const wordMapFn: (word: string, index: number) => string = typeof options.wordCasing === 'function'
+    ? (word, index) => wordToCasing(word, options.wordCasing(index))
+    : (word, index) =>
+      index === 0
+        ? wordToCasing(word, options.firstWordCasing ?? options.wordCasing)
+        : wordToCasing(word, options.wordCasing);
   const customCase = words.map(wordMapFn).join(options.wordSeparator ?? '');
   return addPrefixAndSuffix(customCase, options);
 }
@@ -332,19 +334,19 @@ function isNonLineBreakWhitespaceChar(char: string): boolean {
     char === '\ufeff'
   );
 }
-export function trimEnd(str: string, includeNewLine: boolean = true) {
+export function trimEnd(str: string, includeNewLine: boolean = true): string {
   if (includeNewLine) return str.trimEnd();
   let i = str.length;
   for (; isNonLineBreakWhitespaceChar(str[i - 1]); i--);
   return str.substring(0, i);
 }
-export function trimStart(str: string, includeNewLine: boolean = true) {
+export function trimStart(str: string, includeNewLine: boolean = true): string {
   if (includeNewLine) return str.trimStart();
   let i = 0;
   for (; isNonLineBreakWhitespaceChar(str[i]); i++);
   return str.substring(i);
 }
-export function trim(str: string, includeNewLine: boolean = true) {
+export function trim(str: string, includeNewLine: boolean = true): string {
   if (includeNewLine) return str.trim();
   let s = 0;
   for (; isNonLineBreakWhitespaceChar(str[s]); s++);

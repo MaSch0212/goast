@@ -1,10 +1,15 @@
-import { extname } from 'path';
+import { extname } from 'node:path';
 
-import { SourceBuilderOptions, StringBuilder } from '@goast/core';
+import { type SourceBuilderOptions, StringBuilder } from '@goast/core';
 
-import { TypeScriptExportType, TypeScriptImport, TypeScriptImportKind, TypeScriptImportType } from './common-results';
-import { defaultTypeScriptGeneratorConfig } from './config';
-import { ImportModuleTransformer, getModulePathRelativeToFile } from './utils';
+import type {
+  TypeScriptExportType,
+  TypeScriptImport,
+  TypeScriptImportKind,
+  TypeScriptImportType,
+} from './common-results.ts';
+import { defaultTypeScriptGeneratorConfig } from './config.ts';
+import { getModulePathRelativeToFile, type ImportModuleTransformer } from './utils.ts';
 
 export type ImportExportCollectionOptions = {
   filePath?: string;
@@ -52,14 +57,13 @@ export class ImportExportCollection {
     return Array.from(map.entries())
       .map(([fromModule, importNames]) =>
         Array.from(importNames).map(
-          (importName) =>
-            ({
-              kind: this.getImportKind(fromModule),
-              type,
-              modulePath: fromModule,
-              name: importName,
-            }) satisfies TypeScriptImport,
-        ),
+          (importName) => ({
+            kind: this.getImportKind(fromModule),
+            type,
+            modulePath: fromModule,
+            name: importName,
+          } satisfies TypeScriptImport),
+        )
       )
       .flat();
   }

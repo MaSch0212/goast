@@ -1,14 +1,23 @@
-import { ApiService, Factory, OpenApiGeneratorContext, OpenApiServicesGenerationProviderBase } from '@goast/core';
+import {
+  type ApiService,
+  Factory,
+  type MaybePromise,
+  type OpenApiGeneratorContext,
+  OpenApiServicesGenerationProviderBase,
+} from '@goast/core';
 
 import {
-  KotlinServicesGeneratorInput,
-  KotlinServicesGeneratorOutput,
-  KotlinServicesGeneratorConfig,
-  KotlinServiceGeneratorOutput,
-  KotlinServicesGeneratorContext,
   defaultKotlinServicesGeneratorConfig,
-} from './models';
-import { KotlinSpringControllerGenerator, DefaultKotlinSpringControllerGenerator } from './spring-controller-generator';
+  type KotlinServiceGeneratorOutput,
+  type KotlinServicesGeneratorConfig,
+  type KotlinServicesGeneratorContext,
+  type KotlinServicesGeneratorInput,
+  type KotlinServicesGeneratorOutput,
+} from './models.ts';
+import {
+  DefaultKotlinSpringControllerGenerator,
+  type KotlinSpringControllerGenerator,
+} from './spring-controller-generator.ts';
 
 type Input = KotlinServicesGeneratorInput;
 type Output = KotlinServicesGeneratorOutput;
@@ -27,8 +36,8 @@ export class KotlinSpringControllersGenerator extends OpenApiServicesGenerationP
 
   constructor(serviceGeneratorFactory?: Factory<KotlinSpringControllerGenerator, []>) {
     super();
-    this._serviceGeneratorFactory =
-      serviceGeneratorFactory ?? Factory.fromValue(new DefaultKotlinSpringControllerGenerator());
+    this._serviceGeneratorFactory = serviceGeneratorFactory ??
+      Factory.fromValue(new DefaultKotlinSpringControllerGenerator());
   }
 
   protected initResult(): Output {
@@ -39,7 +48,7 @@ export class KotlinSpringControllersGenerator extends OpenApiServicesGenerationP
     };
   }
 
-  protected generateService(ctx: Context, service: ApiService): ServiceOutput {
+  protected generateService(ctx: Context, service: ApiService): MaybePromise<ServiceOutput> {
     const serviceGenerator = this._serviceGeneratorFactory.create();
     return serviceGenerator.generate({
       ...ctx,

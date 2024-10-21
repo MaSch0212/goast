@@ -1,8 +1,8 @@
-import { BasicAppendValue, SourceBuilder } from '@goast/core';
+import type { BasicAppendValue, SourceBuilder } from '@goast/core';
 
-import { KtCall, ktCall } from '../nodes/call';
-import { KtString, ktString } from '../nodes/string';
-import { listOf, mapOf } from '../references';
+import { type KtCall, ktCall } from '../nodes/call.ts';
+import { type KtString, ktString } from '../nodes/string.ts';
+import { listOf, mapOf } from '../references/index.ts';
 
 export function toKtNode<TBuilder extends SourceBuilder>(object: Record<string | number, unknown>): KtCall<TBuilder>;
 export function toKtNode<TBuilder extends SourceBuilder>(list: unknown[]): KtCall<TBuilder>;

@@ -1,5 +1,6 @@
-import { OpenApiGeneratorConfig } from './config';
-import { ApiData } from '../transform';
+import type { OpenApiGeneratorConfig } from './config.ts';
+import type { ApiData } from '../transform/index.ts';
+import type { MaybePromise } from '../utils/type.utils.ts';
 
 export type AnyConfig = Readonly<Record<string, unknown>>;
 export type OpenApiGeneratorInput = Record<string, unknown>;
@@ -10,12 +11,14 @@ export type OpenApiGeneratorContext<TInput extends OpenApiGeneratorInput = OpenA
   config: OpenApiGeneratorConfig;
 };
 
-export type OpenApiGenerationProviderContext<TInput extends OpenApiGeneratorInput, TConfig extends AnyConfig> = Omit<
-  OpenApiGeneratorContext<TInput>,
-  'config'
-> & {
-  config: OpenApiGeneratorConfig & TConfig;
-};
+export type OpenApiGenerationProviderContext<TInput extends OpenApiGeneratorInput, TConfig extends AnyConfig> =
+  & Omit<
+    OpenApiGeneratorContext<TInput>,
+    'config'
+  >
+  & {
+    config: OpenApiGeneratorConfig & TConfig;
+  };
 
 export interface OpenApiGenerationProvider<
   TInput extends OpenApiGeneratorInput = OpenApiGeneratorInput,
@@ -31,4 +34,4 @@ export type OpenApiGenerationProviderFn<
   TInput extends OpenApiGeneratorInput = OpenApiGeneratorInput,
   TOutput extends OpenApiGeneratorOutput = OpenApiGeneratorOutput,
   TConfig extends AnyConfig = AnyConfig,
-> = (context: OpenApiGeneratorContext<TInput>, config?: Partial<TConfig>) => TOutput;
+> = (context: OpenApiGeneratorContext<TInput>, config?: Partial<TConfig>) => MaybePromise<TOutput>;

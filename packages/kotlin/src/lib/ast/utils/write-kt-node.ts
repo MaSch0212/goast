@@ -1,6 +1,14 @@
-import { SourceBuilder, Nullable, AppendValue, Separator, SingleOrMultiple, toArray, notNullish } from '@goast/core';
+import {
+  type AppendValue,
+  notNullish,
+  type Nullable,
+  type Separator,
+  type SingleOrMultiple,
+  type SourceBuilder,
+  toArray,
+} from '@goast/core';
 
-import { KtNode } from '../node';
+import { KtNode } from '../node.ts';
 
 export type KtAppendValue<TBuilder extends SourceBuilder> = AppendValue<TBuilder> | KtNode<TBuilder>;
 

@@ -1,9 +1,9 @@
-import { AstNodeOptions, BasicAppendValue, Nullable, Prettify, SourceBuilder } from '@goast/core';
+import type { AstNodeOptions, BasicAppendValue, Nullable, Prettify, SourceBuilder } from '@goast/core';
 
-import { TsType } from './types';
-import { TsNode } from '../node';
-import { writeTsGenericParameters } from '../utils/write-ts-generic-parameters';
-import { writeTsNode } from '../utils/write-ts-nodes';
+import type { TsType } from './types.ts';
+import { TsNode } from '../node.ts';
+import { writeTsGenericParameters } from '../utils/write-ts-generic-parameters.ts';
+import { writeTsNode } from '../utils/write-ts-nodes.ts';
 
 type Injects = 'modifiers' | 'name' | 'constraint' | 'default';
 

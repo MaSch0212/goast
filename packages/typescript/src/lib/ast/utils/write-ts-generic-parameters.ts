@@ -1,7 +1,14 @@
-import { SourceBuilder, SingleOrMultiple, Nullable, AppendValue, toArray, notNullish } from '@goast/core';
+import {
+  type AppendValue,
+  notNullish,
+  type Nullable,
+  type SingleOrMultiple,
+  type SourceBuilder,
+  toArray,
+} from '@goast/core';
 
-import { writeTsNodes } from './write-ts-nodes';
-import { TsNode } from '../node';
+import { writeTsNodes } from './write-ts-nodes.ts';
+import type { TsNode } from '../node.ts';
 
 export function writeTsGenericParameters<TBuilder extends SourceBuilder>(
   builder: TBuilder,

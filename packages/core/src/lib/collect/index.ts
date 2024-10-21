@@ -1,3 +1,3 @@
-export * from './collector';
-export * from './helpers';
-export * from './types';
+export * from './collector.ts';
+export * from './helpers.ts';
+export * from './types.ts';

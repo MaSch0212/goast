@@ -1,14 +1,14 @@
-import {
+import type {
   ApiEndpoint,
   ApiService,
   DefaultGenerationProviderConfig,
   OpenApiServicesGenerationProviderContext,
 } from '@goast/core';
 
-import { getReferenceFactories } from './refs';
-import { KotlinImport } from '../../../common-results';
-import { KotlinGeneratorConfig, defaultKotlinGeneratorConfig } from '../../../config';
-import { KotlinModelsGeneratorOutput } from '../../models';
+import type { getReferenceFactories } from './refs.ts';
+import type { KotlinImport } from '../../../common-results.ts';
+import { defaultKotlinGeneratorConfig, type KotlinGeneratorConfig } from '../../../config.ts';
+import type { KotlinModelsGeneratorOutput } from '../../models/index.ts';
 
 export type KotlinOkHttp3ClientsGeneratorConfig = KotlinGeneratorConfig & {
   packageName: string;
@@ -21,14 +21,15 @@ export type KotlinOkHttp3ClientsGeneratorConfig = KotlinGeneratorConfig & {
   pathModifier?: RegExp | ((path: string, endpoint: ApiEndpoint) => string);
 };
 
-export const defaultKotlinOkHttp3ClientsGeneratorConfig: DefaultGenerationProviderConfig<KotlinOkHttp3ClientsGeneratorConfig> =
-  {
-    ...defaultKotlinGeneratorConfig,
+export const defaultKotlinOkHttp3ClientsGeneratorConfig: DefaultGenerationProviderConfig<
+  KotlinOkHttp3ClientsGeneratorConfig
+> = {
+  ...defaultKotlinGeneratorConfig,
 
-    packageName: 'com.openapi.generated',
-    packageSuffix: '.api.client',
-    infrastructurePackageName: { mode: 'append-full-package-name', value: '.infrastructure' },
-  };
+  packageName: 'com.openapi.generated',
+  packageSuffix: '.api.client',
+  infrastructurePackageName: { mode: 'append-full-package-name', value: '.infrastructure' },
+};
 
 export type KotlinOkHttp3ClientsGeneratorInput = KotlinModelsGeneratorOutput;
 
@@ -42,15 +43,17 @@ export type KotlinOkHttp3ClientsGeneratorOutput = {
 
 export type KotlinOkHttp3ClientGeneratorOutput = KotlinImport;
 
-export type KotlinOkHttp3ClientsGeneratorContext = OpenApiServicesGenerationProviderContext<
-  KotlinOkHttp3ClientsGeneratorInput,
-  KotlinOkHttp3ClientsGeneratorOutput,
-  KotlinOkHttp3ClientsGeneratorConfig,
-  KotlinOkHttp3ClientGeneratorOutput
-> & {
-  infrastructurePackageName: string;
-  refs: ReturnType<typeof getReferenceFactories>;
-};
+export type KotlinOkHttp3ClientsGeneratorContext =
+  & OpenApiServicesGenerationProviderContext<
+    KotlinOkHttp3ClientsGeneratorInput,
+    KotlinOkHttp3ClientsGeneratorOutput,
+    KotlinOkHttp3ClientsGeneratorConfig,
+    KotlinOkHttp3ClientGeneratorOutput
+  >
+  & {
+    infrastructurePackageName: string;
+    refs: ReturnType<typeof getReferenceFactories>;
+  };
 
 export type KotlinOkHttp3ClientGeneratorContext = KotlinOkHttp3ClientsGeneratorContext & {
   service: ApiService;

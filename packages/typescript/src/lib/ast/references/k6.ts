@@ -1,4 +1,4 @@
-import { tsReference } from '../nodes/reference';
+import { tsReference } from '../nodes/reference.ts';
 
 // k6
 export const jsonValue = tsReference.factory('JSONValue', 'k6');

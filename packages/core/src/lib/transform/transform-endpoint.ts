@@ -1,19 +1,19 @@
-import {
+import type {
+  ApiContent,
   ApiEndpoint,
-  ApiPath,
+  ApiHeader,
   ApiParameter,
   ApiParameterTarget,
+  ApiPath,
   ApiRequestBody,
   ApiResponse,
-  ApiContent,
-  ApiHeader,
-} from './api-types';
-import { determineEndpointName, getCustomFields, getOpenApiObjectIdentifier } from './helpers';
-import { transformSchema } from './transform-schema';
-import { OpenApiTransformerContext } from './types';
-import { OpenApiCollectorEndpointInfo } from '../collect';
-import { isOpenApiObjectProperty } from '../internal-utils';
-import {
+} from './api-types.ts';
+import { determineEndpointName, getCustomFields, getOpenApiObjectIdentifier } from './helpers.ts';
+import { transformSchema } from './transform-schema.ts';
+import type { OpenApiTransformerContext } from './types.ts';
+import type { OpenApiCollectorEndpointInfo } from '../collect/index.ts';
+import { isOpenApiObjectProperty } from '../internal-utils.ts';
+import type {
   Deref,
   OpenApiHeader,
   OpenApiMediaType,
@@ -22,7 +22,7 @@ import {
   OpenApiRequestBody,
   OpenApiResponse,
   OpenApiSchema,
-} from '../parse';
+} from '../parse/index.ts';
 
 export function transformEndpoint(context: OpenApiTransformerContext, endpointInfo: OpenApiCollectorEndpointInfo) {
   const apiPath = transformApiPath(context, endpointInfo.path, endpointInfo.pathItem);

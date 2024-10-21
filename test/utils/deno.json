@@ -1,0 +1,9 @@
+{
+  "name": "@goast/test-utils",
+  "version": "0.0.1",
+  "goastNpmOptions": {
+    "shimDeno": true,
+    "noReadme": true,
+    "private": true
+  }
+}

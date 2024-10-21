@@ -1,19 +1,19 @@
 import {
-  SourceBuilder,
-  AstNodeOptions,
+  type AstNodeOptions,
+  type BasicAppendValue,
   createOverwriteProxy,
-  Prettify,
-  Nullable,
-  notNullish,
-  BasicAppendValue,
   getIsInstanceOf,
+  notNullish,
+  type Nullable,
+  type Prettify,
+  type SourceBuilder,
 } from '@goast/core';
 
-import { KtDocTag, ktDocTag } from './doc-tag';
-import { KtGenericParameter } from './generic-parameter';
-import { KtParameter } from './parameter';
-import { KtNode } from '../node';
-import { writeKtNodes } from '../utils/write-kt-node';
+import { type KtDocTag, ktDocTag } from './doc-tag.ts';
+import { KtGenericParameter } from './generic-parameter.ts';
+import { KtParameter } from './parameter.ts';
+import { KtNode } from '../node.ts';
+import { writeKtNodes } from '../utils/write-kt-node.ts';
 
 type Injects = never;
 
@@ -71,21 +71,18 @@ function getDoc<TBuilder extends SourceBuilder>(
     generics?: Nullable<Nullable<KtGenericParameter<TBuilder> | BasicAppendValue<TBuilder>>[]>;
   },
 ): KtDoc<TBuilder> | null {
-  const paramsWithDesc =
-    options.parameters
-      ?.filter(getIsInstanceOf(KtParameter<TBuilder>))
-      .filter((x): x is KtParameter<TBuilder> & { description: {} } => !!x.description) ?? [];
-  const classParamsWithPropertyDesc =
-    options.parameters
-      ?.filter(getIsInstanceOf(KtParameter<TBuilder>))
-      .filter(
-        (x): x is KtParameter<TBuilder> & { property: {}; propertyDescription: {} } =>
-          !!x.property && !!x.propertyDescription,
-      ) ?? [];
-  const genericsWithDesc =
-    options.generics
-      ?.filter(getIsInstanceOf(KtGenericParameter<TBuilder>))
-      .filter((x): x is KtGenericParameter<TBuilder> & { description: {} } => !!x.description) ?? [];
+  const paramsWithDesc = options.parameters
+    ?.filter(getIsInstanceOf(KtParameter<TBuilder>))
+    .filter((x): x is KtParameter<TBuilder> & { description: {} } => !!x.description) ?? [];
+  const classParamsWithPropertyDesc = options.parameters
+    ?.filter(getIsInstanceOf(KtParameter<TBuilder>))
+    .filter(
+      (x): x is KtParameter<TBuilder> & { property: {}; propertyDescription: {} } =>
+        !!x.property && !!x.propertyDescription,
+    ) ?? [];
+  const genericsWithDesc = options.generics
+    ?.filter(getIsInstanceOf(KtGenericParameter<TBuilder>))
+    .filter((x): x is KtGenericParameter<TBuilder> & { description: {} } => !!x.description) ?? [];
   if (
     baseDoc === null &&
     paramsWithDesc.length === 0 &&
@@ -98,7 +95,7 @@ function getDoc<TBuilder extends SourceBuilder>(
   const doc = baseDoc ? createOverwriteProxy(baseDoc) : ktDoc<TBuilder>();
   const paramTags = paramsWithDesc.map<KtDocTag<TBuilder>>((p) => ktDocTag('param', p.name, p.description));
   const propertyTags = classParamsWithPropertyDesc.map<KtDocTag<TBuilder>>((p) =>
-    ktDocTag('property', p.name, p.propertyDescription),
+    ktDocTag('property', p.name, p.propertyDescription)
   );
   const genericTags = genericsWithDesc.map<KtDocTag<TBuilder>>((p) => ktDocTag('param', p.name, p.description));
   doc.tags.splice(0, 0, ...genericTags, ...paramTags, ...propertyTags);

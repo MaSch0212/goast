@@ -1,4 +1,4 @@
-import { tsReference } from '../nodes/reference';
+import { tsReference } from '../nodes/reference.ts';
 
 export const observable = tsReference.factory('Observable', 'rxjs');
 export const firstValueFrom = tsReference.factory('firstValueFrom', 'rxjs');

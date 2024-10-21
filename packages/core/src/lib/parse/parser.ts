@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import path from 'path';
-import { cwd } from 'process';
-
+import path from 'node:path';
+import { cwd } from 'node:process';
+// @deno-types="@types/fs-extra"
 import fs from 'fs-extra';
-import nodeFetch from 'node-fetch';
-import YAML from 'yaml';
 
-import { createDerefProxy } from './deref-proxy';
-import { OpenApiDocument, OpenApiObject, OpenApiReference, OpenApiSchema } from './openapi-types';
-import { defaultOpenApiParserOptions, Deref, OpenApiParserOptions } from './types';
-import { collectOpenApi } from '../collect/collector';
-import { ApiData } from '../transform';
-import { transformOpenApi } from '../transform/transformer';
-import { isNullish } from '../utils';
+import * as YAML from 'yaml';
+
+import { createDerefProxy } from './deref-proxy.ts';
+import type { OpenApiDocument, OpenApiObject, OpenApiReference, OpenApiSchema } from './openapi-types.ts';
+import { defaultOpenApiParserOptions, type Deref, type OpenApiParserOptions } from './types.ts';
+import { collectOpenApi } from '../collect/collector.ts';
+import type { ApiData } from '../transform/index.ts';
+import { transformOpenApi } from '../transform/transformer.ts';
+import { isNullish } from '../utils/index.ts';
 
 type LoadedDocument = {
   file: string;
@@ -168,7 +168,7 @@ export class OpenApiParser {
 
   private async getDocumentContent(fileOrUrl: string): Promise<string> {
     if (this.isUrl(fileOrUrl)) {
-      const res = await nodeFetch(fileOrUrl);
+      const res = await fetch(fileOrUrl);
       if (!res.ok) {
         throw new Error(`Unable to download ${fileOrUrl}: ${res.statusText}`);
       }

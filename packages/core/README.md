@@ -2,7 +2,8 @@
 
 [![@goast/core NPM Version](https://img.shields.io/npm/v/%40goast%2Fcore?logo=npm&label=%40goast%2Fcore)](https://www.npmjs.com/package/@goast/core)
 
-**gOAst** stands for **g**enerative **O**pen **A**PI **s**pecification **t**ransformer, a tool designed to transform OpenAPI specifications into various forms with flexibility and extensibility at its core.
+**gOAst** stands for **g**enerative **O**pen **A**PI **s**pecification **t**ransformer, a tool designed to transform
+OpenAPI specifications into various forms with flexibility and extensibility at its core.
 
 For more Information, please visit the [gOAst GitHub Repository](https://github.com/MaSch0212/goast/blob/main).
 
@@ -31,16 +32,13 @@ class MyGenerator implements OpenApiGenerationProvider {
 
 async function main() {
   const generator = new OpenApiGenerator()
-
     // Add a generator using a class
     .useType(MyGenerator)
-
     // Add a generator using a function
     .useFn((ctx, cfg) => {
       // Do the generation
       return {}; // Return information about the generated files so it can be used by other generators
     })
-
     // Add a generator using an object implementing `OpenApiGenerationProvider`
     .useValue({ generate: (ctx, cfg) => ({}) });
 

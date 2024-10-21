@@ -1,28 +1,31 @@
-import { dirname, resolve } from 'path';
+import { resolve } from 'node:path';
 
+// @deno-types="@types/fs-extra"
 import fs from 'fs-extra';
 
 import {
-  OpenApiServicesGenerationProviderBase,
-  Factory,
-  OpenApiGeneratorContext,
-  ApiService,
-  AppendValueGroup,
+  type ApiService,
+  type AppendValueGroup,
   appendValueGroup,
+  Factory,
+  type MaybePromise,
+  type OpenApiGeneratorContext,
+  OpenApiServicesGenerationProviderBase,
 } from '@goast/core';
 
-import { DefaultTypeScriptK6ClientGenerator, TypeScriptK6ClientGenerator } from './k6-client-generator';
+import { DefaultTypeScriptK6ClientGenerator, type TypeScriptK6ClientGenerator } from './k6-client-generator.ts';
 import {
-  TypeScriptK6ClientsGeneratorInput,
-  TypeScriptK6ClientsGeneratorOutput,
-  TypeScriptK6ClientsGeneratorConfig,
-  TypeScriptK6ClientGeneratorOutput,
-  TypeScriptK6ClientsGeneratorContext,
   defaultTypeScriptK6ClientsGeneratorConfig,
-} from './models';
-import { getReferenceFactories } from './refs';
-import { ts } from '../../../ast';
-import { TypeScriptFileBuilder } from '../../../file-builder';
+  type TypeScriptK6ClientGeneratorOutput,
+  type TypeScriptK6ClientsGeneratorConfig,
+  type TypeScriptK6ClientsGeneratorContext,
+  type TypeScriptK6ClientsGeneratorInput,
+  type TypeScriptK6ClientsGeneratorOutput,
+} from './models.ts';
+import { getReferenceFactories } from './refs.ts';
+import { ts } from '../../../ast/index.ts';
+import { TypeScriptFileBuilder } from '../../../file-builder.ts';
+import { copyAssetFile } from '../../../assets.ts';
 
 type Input = TypeScriptK6ClientsGeneratorInput;
 type Output = TypeScriptK6ClientsGeneratorOutput;
@@ -41,8 +44,8 @@ export class TypeScriptK6ClientsGenerator extends OpenApiServicesGenerationProvi
 
   constructor(clientGeneratorFactory?: Factory<TypeScriptK6ClientGenerator, []>) {
     super();
-    this._clientGeneratorFactory =
-      clientGeneratorFactory ?? Factory.fromValue(new DefaultTypeScriptK6ClientGenerator());
+    this._clientGeneratorFactory = clientGeneratorFactory ??
+      Factory.fromValue(new DefaultTypeScriptK6ClientGenerator());
   }
 
   protected override initResult(): Output {
@@ -67,14 +70,12 @@ export class TypeScriptK6ClientsGenerator extends OpenApiServicesGenerationProvi
     });
   }
 
-  public override onGenerate(ctx: Context): Output {
-    const output = super.onGenerate(ctx);
-    this.generateUtilsFiles(ctx);
-    output.typescript.indexFiles = this.generateIndexFiles(ctx);
-    return output;
+  protected override async generateAdditionalFiles(ctx: TypeScriptK6ClientsGeneratorContext): Promise<void> {
+    await this.generateUtilsFiles(ctx);
+    ctx.output.typescript.indexFiles = this.generateIndexFiles(ctx);
   }
 
-  protected override generateService(ctx: Context, service: ApiService): ServiceOutput {
+  protected override generateService(ctx: Context, service: ApiService): MaybePromise<ServiceOutput> {
     const clientGenerator = this._clientGeneratorFactory.create();
     return clientGenerator.generate({
       ...ctx,
@@ -86,12 +87,11 @@ export class TypeScriptK6ClientsGenerator extends OpenApiServicesGenerationProvi
     ctx.output.typescript.k6Clients[service.id] = result;
   }
 
-  protected generateUtilsFiles(ctx: Context): void {
-    const sourceDir = resolve(dirname(require.resolve('@goast/typescript')), '../assets/client/k6');
+  protected async generateUtilsFiles(ctx: Context): Promise<void> {
     const targetDir = resolve(ctx.config.outputDir, ctx.config.utilsDir);
-    fs.ensureDirSync(targetDir);
+    await fs.ensureDir(targetDir);
 
-    this.copyFile('Request Builder', sourceDir, targetDir, 'request-builder.js');
+    await copyAssetFile('client/k6/request-builder.js', targetDir, 'Request Builder');
 
     if (!ctx.config.strictResponseTypes) {
       TypeScriptFileBuilder.generate({
@@ -161,12 +161,5 @@ export class TypeScriptK6ClientsGenerator extends OpenApiServicesGenerationProvi
         .flatMap((x) => Object.values(x.responseModels))
         .map((x) => ts.export(x.component, x.filePath)),
     );
-  }
-
-  private copyFile(logName: string, sourceDir: string, targetDir: string, fileName: string): void {
-    const source = resolve(sourceDir, fileName);
-    const target = resolve(targetDir, fileName);
-    console.log(`Generating ${logName} to ${target}...`);
-    fs.copyFileSync(source, target);
   }
 }

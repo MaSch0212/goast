@@ -1,4 +1,11 @@
-import { Deref, OpenApiDocument, OpenApiHttpMethod, OpenApiOperation, OpenApiPathItem, OpenApiSchema } from '../parse';
+import type {
+  Deref,
+  OpenApiDocument,
+  OpenApiHttpMethod,
+  OpenApiOperation,
+  OpenApiPathItem,
+  OpenApiSchema,
+} from '../parse/index.ts';
 
 export type OpenApiCollectorEndpointInfo = {
   path: string;

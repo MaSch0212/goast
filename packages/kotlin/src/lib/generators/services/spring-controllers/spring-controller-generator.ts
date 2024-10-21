@@ -1,41 +1,40 @@
-/* eslint-disable unused-imports/no-unused-vars */
+// @deno-types="@types/fs-extra"
 import fs from 'fs-extra';
 
 import {
-  ApiEndpoint,
-  ApiParameter,
-  AppendValueGroup,
-  SourceBuilder,
+  type ApiEndpoint,
+  type ApiParameter,
+  type AppendValueGroup,
   appendValueGroup,
   builderTemplate as s,
   createOverwriteProxy,
+  type MaybePromise,
   notNullish,
-  toCasing,
   resolveAnyOfAndAllOf,
+  SourceBuilder,
+  toCasing,
 } from '@goast/core';
 
-import { DefaultKotlinSpringControllerGeneratorArgs as Args } from '.';
-import { KotlinServiceGeneratorContext, KotlinServiceGeneratorOutput } from './models';
-import { kt } from '../../../ast';
-import { KotlinImport } from '../../../common-results';
-import { KotlinFileBuilder } from '../../../file-builder';
-import { ApiParameterWithMultipartInfo } from '../../../types';
-import { modifyString } from '../../../utils';
-import { KotlinFileGenerator } from '../../file-generator';
+import type { DefaultKotlinSpringControllerGeneratorArgs as Args } from './index.ts';
+import type { KotlinServiceGeneratorContext, KotlinServiceGeneratorOutput } from './models.ts';
+import { kt } from '../../../ast/index.ts';
+import type { KotlinImport } from '../../../common-results.ts';
+import { KotlinFileBuilder } from '../../../file-builder.ts';
+import type { ApiParameterWithMultipartInfo } from '../../../types.ts';
+import { modifyString } from '../../../utils.ts';
+import { KotlinFileGenerator } from '../../file-generator.ts';
 
 type Context = KotlinServiceGeneratorContext;
 type Output = KotlinServiceGeneratorOutput;
 type Builder = KotlinFileBuilder;
 
 export interface KotlinSpringControllerGenerator<TOutput extends Output = Output> {
-  generate(ctx: Context): TOutput;
+  generate(ctx: Context): MaybePromise<TOutput>;
 }
 
-export class DefaultKotlinSpringControllerGenerator
-  extends KotlinFileGenerator<Context, Output>
-  implements KotlinSpringControllerGenerator
-{
-  generate(ctx: KotlinServiceGeneratorContext): KotlinServiceGeneratorOutput {
+export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<Context, Output>
+  implements KotlinSpringControllerGenerator {
+  generate(ctx: KotlinServiceGeneratorContext): MaybePromise<KotlinServiceGeneratorOutput> {
     const packageName = this.getPackageName(ctx, {});
     const dirPath = this.getDirectoryPath(ctx, { packageName });
     fs.ensureDirSync(dirPath);
@@ -135,7 +134,7 @@ export class DefaultKotlinSpringControllerGenerator
             kt.call(kt.refs.swagger.apiResponse(), [
               kt.argument.named('responseCode', kt.string(response.statusCode?.toString())),
               response.description ? kt.argument.named('description', kt.string(response.description?.trim())) : null,
-            ]),
+            ])
           ),
         ),
       ),
@@ -236,10 +235,12 @@ export class DefaultKotlinSpringControllerGenerator
   ): AppendValueGroup<Builder> {
     return appendValueGroup(
       [
-        s`return ${kt.call(
-          [kt.call(kt.reference('getDelegate'), []), toCasing(endpoint.name, ctx.config.functionNameCasing)],
-          parameters.map((x) => toCasing(x.name, ctx.config.parameterNameCasing)),
-        )}`,
+        s`return ${
+          kt.call(
+            [kt.call(kt.reference('getDelegate'), []), toCasing(endpoint.name, ctx.config.functionNameCasing)],
+            parameters.map((x) => toCasing(x.name, ctx.config.parameterNameCasing)),
+          )
+        }`,
       ],
       '\n',
     );
@@ -473,7 +474,7 @@ export class DefaultKotlinSpringControllerGenerator
     return kt.string(`\${${prefix}.base-path:${basePath}}`);
   }
 
-  protected getBasePath(ctx: Context, args: Args.GetBasePath): string {
+  protected getBasePath(ctx: Context, _args: Args.GetBasePath): string {
     return modifyString(
       (ctx.service.$src ?? ctx.service.endpoints[0]?.$src)?.document.servers?.[0]?.url ?? '/',
       ctx.config.basePath,
@@ -491,21 +492,22 @@ export class DefaultKotlinSpringControllerGenerator
     return `${ctx.config.outputDir}/${packageName.replace(/\./g, '/')}`;
   }
 
-  protected getPackageName(ctx: Context, args: Args.GetPackageName): string {
-    const packageSuffix =
-      typeof ctx.config.packageSuffix === 'string' ? ctx.config.packageSuffix : ctx.config.packageSuffix(ctx.service);
+  protected getPackageName(ctx: Context, _args: Args.GetPackageName): string {
+    const packageSuffix = typeof ctx.config.packageSuffix === 'string'
+      ? ctx.config.packageSuffix
+      : ctx.config.packageSuffix(ctx.service);
     return ctx.config.packageName + packageSuffix;
   }
 
-  protected getApiInterfaceName(ctx: Context, args: Args.GetApiInterfaceName): string {
+  protected getApiInterfaceName(ctx: Context, _args: Args.GetApiInterfaceName): string {
     return toCasing(ctx.service.name + '_Api', ctx.config.typeNameCasing);
   }
 
-  protected getApiControllerName(ctx: Context, args: Args.GetApiControllerName): string {
+  protected getApiControllerName(ctx: Context, _args: Args.GetApiControllerName): string {
     return toCasing(ctx.service.name + '_ApiController', ctx.config.typeNameCasing);
   }
 
-  protected getApiDelegateInterfaceName(ctx: Context, args: Args.GetApiDelegateInterfaceName): string {
+  protected getApiDelegateInterfaceName(ctx: Context, _args: Args.GetApiDelegateInterfaceName): string {
     return toCasing(ctx.service.name + '_ApiDelegate', ctx.config.typeNameCasing);
   }
 
@@ -545,10 +547,9 @@ export class DefaultKotlinSpringControllerGenerator
         }
       } else {
         const schemaType = this.getSchemaType(ctx, { schema });
-        const name =
-          !schemaType || /^Any\??$/.test(schemaType.name)
-            ? 'body'
-            : SourceBuilder.build((b) => kt.reference.write(b, schemaType));
+        const name = !schemaType || /^Any\??$/.test(schemaType.name)
+          ? 'body'
+          : SourceBuilder.build((b) => kt.reference.write(b, schemaType));
         parameters.push(
           this.createApiParameter({
             id: 'body',

@@ -1,10 +1,10 @@
-import { SourceBuilder, Nullable, AppendValue, notNullish, isAppendValue } from '@goast/core';
+import { type AppendValue, isAppendValue, notNullish, type Nullable, type SourceBuilder } from '@goast/core';
 
-import { writeTsNode } from './write-ts-nodes';
-import { TsNode } from '../node';
-import { tsDoc } from '../nodes/doc';
-import { TsMethod } from '../nodes/method';
-import { TsProperty } from '../nodes/property';
+import { writeTsNode } from './write-ts-nodes.ts';
+import type { TsNode } from '../node.ts';
+import { tsDoc } from '../nodes/doc.ts';
+import { TsMethod } from '../nodes/method.ts';
+import { TsProperty } from '../nodes/property.ts';
 
 export function writeTsMembers<TBuilder extends SourceBuilder>(
   builder: TBuilder,
@@ -24,6 +24,5 @@ export function writeTsMembers<TBuilder extends SourceBuilder>(
           .append((b) => writeTsNode(b, m))
           .if(i < filteredMembers.length - 1, (b) => b.ensurePreviousLineEmpty()),
       (b) => b.append((b) => writeTsNode(b, m)).ensureCurrentLineEmpty(),
-    ),
-  );
+    ));
 }

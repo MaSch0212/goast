@@ -1,33 +1,36 @@
-import { dirname, resolve } from 'path';
+import { basename, dirname, resolve } from 'node:path';
 
+// @deno-types="@types/fs-extra"
 import fs from 'fs-extra';
 
 import {
-  ApiService,
-  AppendValueGroup,
-  Factory,
-  OpenApiGeneratorContext,
-  OpenApiServicesGenerationProviderBase,
+  type ApiService,
+  type AppendValueGroup,
   appendValueGroup,
+  Factory,
+  type MaybePromise,
+  type OpenApiGeneratorContext,
+  OpenApiServicesGenerationProviderBase,
   toCasing,
 } from '@goast/core';
 
 import {
   DefaultTypeScriptAngularServiceGenerator,
-  TypeScriptAngularServiceGenerator,
-} from './angular-service-generator';
+  type TypeScriptAngularServiceGenerator,
+} from './angular-service-generator.ts';
 import {
-  TypeScriptAngularServicesGeneratorInput,
-  TypeScriptAngularServicesGeneratorOutput,
-  TypeScriptAngularServicesGeneratorConfig,
-  TypeScriptAngularServiceGeneratorOutput,
-  TypeScriptAngularServicesGeneratorContext,
   defaultTypeScriptAngularServicesGeneratorConfig,
-} from './models';
-import { getReferenceFactories } from './refs';
-import { ts } from '../../../ast';
-import { TypeScriptFileBuilder } from '../../../file-builder';
-import { modifyString } from '../../../utils';
+  type TypeScriptAngularServiceGeneratorOutput,
+  type TypeScriptAngularServicesGeneratorConfig,
+  type TypeScriptAngularServicesGeneratorContext,
+  type TypeScriptAngularServicesGeneratorInput,
+  type TypeScriptAngularServicesGeneratorOutput,
+} from './models.ts';
+import { getReferenceFactories } from './refs.ts';
+import { ts } from '../../../ast/index.ts';
+import { TypeScriptFileBuilder } from '../../../file-builder.ts';
+import { modifyString } from '../../../utils.ts';
+import { copyAssetFile } from '../../../assets.ts';
 
 type Input = TypeScriptAngularServicesGeneratorInput;
 type Output = TypeScriptAngularServicesGeneratorOutput;
@@ -46,8 +49,8 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
 
   constructor(clientGeneratorFactory?: Factory<TypeScriptAngularServiceGenerator, []>) {
     super();
-    this._clientGeneratorFactory =
-      clientGeneratorFactory ?? Factory.fromValue(new DefaultTypeScriptAngularServiceGenerator());
+    this._clientGeneratorFactory = clientGeneratorFactory ??
+      Factory.fromValue(new DefaultTypeScriptAngularServiceGenerator());
   }
 
   protected override initResult(): Output {
@@ -69,14 +72,12 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
     });
   }
 
-  public override onGenerate(ctx: Context): Output {
-    const output = super.onGenerate(ctx);
-    this.generateUtilsFiles(ctx);
-    output.typescript.indexFiles = this.generateIndexFiles(ctx);
-    return output;
+  protected override async generateAdditionalFiles(ctx: TypeScriptAngularServicesGeneratorContext): Promise<void> {
+    await this.generateUtilsFiles(ctx);
+    ctx.output.typescript.indexFiles = this.generateIndexFiles(ctx);
   }
 
-  protected override generateService(ctx: Context, service: ApiService): ServiceOutput {
+  protected override generateService(ctx: Context, service: ApiService): MaybePromise<ServiceOutput> {
     const clientGenerator = this._clientGeneratorFactory.create();
     return clientGenerator.generate({
       ...ctx,
@@ -89,13 +90,12 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
   }
 
   // #region Utils
-  protected generateUtilsFiles(ctx: Context): void {
-    const sourceDir = resolve(dirname(require.resolve('@goast/typescript')), '../assets/client/angular');
+  protected async generateUtilsFiles(ctx: Context): Promise<void> {
     const targetDir = resolve(ctx.config.outputDir, ctx.config.utilsDir);
-    fs.ensureDirSync(targetDir);
+    await fs.ensureDir(targetDir);
 
-    this.copyFile('Request Builder', sourceDir, targetDir, 'request-builder.ts');
-    this.copyFile('Angular Service Utils', sourceDir, targetDir, 'angular-service.utils.ts');
+    await copyAssetFile('client/angular/request-builder.ts', targetDir, 'Request Builder');
+    await copyAssetFile('client/angular/angular-service.utils.ts', targetDir, 'Angular Service Utils');
 
     TypeScriptFileBuilder.generate({
       logName: 'api configuration',
@@ -173,7 +173,8 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
             ts.property('_rootUrl', { accessModifier: 'private', type: ts.refs.string(), value: ts.string('') }),
             ts.property('rootUrl', {
               doc: ts.doc({
-                description: `Gets or sets the root URL for API operations provided by this service.\nFalls back to \`${ctx.refs.apiConfiguration.refName}.rootUrl\` if not set in this service.`,
+                description:
+                  `Gets or sets the root URL for API operations provided by this service.\nFalls back to \`${ctx.refs.apiConfiguration.refName}.rootUrl\` if not set in this service.`,
               }),
               accessModifier: 'public',
               type: ts.refs.string(),
@@ -204,8 +205,8 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
       [
         ts.function(toCasing(`provide_${ctx.config.domainName ?? ''}_Api`, ctx.config.functionNameCasing), {
           doc: ts.doc({
-            description:
-              'Provides all the API services' + (ctx.config.domainName ? ` for ${ctx.config.domainName}` : '') + '.',
+            description: 'Provides all the API services' +
+              (ctx.config.domainName ? ` for ${ctx.config.domainName}` : '') + '.',
           }),
           export: true,
           parameters: [ts.parameter('config', { type: ctx.refs.apiConfiguration(), optional: true })],
@@ -291,11 +292,4 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
       : null;
   }
   // #endregion
-
-  private copyFile(logName: string, sourceDir: string, targetDir: string, fileName: string): void {
-    const source = resolve(sourceDir, fileName);
-    const target = resolve(targetDir, fileName);
-    console.log(`Generating ${logName} to ${target}...`);
-    fs.copyFileSync(source, target);
-  }
 }

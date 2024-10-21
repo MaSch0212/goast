@@ -1,1 +1,1 @@
-export * as ts from './_index';
+export * as ts from './_index.ts';

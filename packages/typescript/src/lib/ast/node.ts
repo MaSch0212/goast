@@ -1,4 +1,4 @@
-import { AstNode, AstNodeOptions, SourceBuilder } from '@goast/core';
+import { AstNode, type AstNodeOptions, type SourceBuilder } from '@goast/core';
 
 export abstract class TsNode<TBuilder extends SourceBuilder, TInjects extends string = never> extends AstNode<
   TBuilder,

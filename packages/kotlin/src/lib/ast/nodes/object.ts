@@ -1,13 +1,13 @@
-import { SourceBuilder, AstNodeOptions, notNullish, Nullable, BasicAppendValue } from '@goast/core';
+import { type AstNodeOptions, type BasicAppendValue, notNullish, type Nullable, type SourceBuilder } from '@goast/core';
 
-import { KtArgument, ktArgument } from './argument';
-import { KtFunction } from './function';
-import { KtInitBlock } from './init-block';
-import { KtProperty } from './property';
-import { KtType, KtValue } from './types';
-import { KtNode } from '../node';
-import { writeKtMembers } from '../utils/write-kt-members';
-import { writeKtNode, writeKtNodes } from '../utils/write-kt-node';
+import { type KtArgument, ktArgument } from './argument.ts';
+import type { KtFunction } from './function.ts';
+import type { KtInitBlock } from './init-block.ts';
+import type { KtProperty } from './property.ts';
+import type { KtType, KtValue } from './types.ts';
+import { KtNode } from '../node.ts';
+import { writeKtMembers } from '../utils/write-kt-members.ts';
+import { writeKtNode, writeKtNodes } from '../utils/write-kt-node.ts';
 
 type Injects = 'modifiers' | 'name' | 'inheritList' | 'body' | 'members';
 

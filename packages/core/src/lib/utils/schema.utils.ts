@@ -1,6 +1,6 @@
-import { isOpenApiObjectProperty } from '../internal-utils';
-import { OpenApiSchema } from '../parse';
-import { ApiSchema, ApiSchemaProperty, ObjectLikeApiSchema } from '../transform';
+import { isOpenApiObjectProperty } from '../internal-utils.ts';
+import type { OpenApiSchema } from '../parse/index.ts';
+import type { ApiSchema, ApiSchemaProperty, ObjectLikeApiSchema } from '../transform/index.ts';
 
 export function resolveAnyOfAndAllOf(
   schema: ApiSchema<'combined' | 'object'>,

@@ -1,4 +1,4 @@
-import { tsReference } from '../nodes/reference';
+import { tsReference } from '../nodes/reference.ts';
 
 // @angular/core
 export const inject = tsReference.factory('inject', '@angular/core');

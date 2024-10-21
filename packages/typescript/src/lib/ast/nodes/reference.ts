@@ -1,11 +1,18 @@
-import { AstNodeOptions, Nullable, Prettify, SourceBuilder, TupleWithCount, notNullish } from '@goast/core';
+import {
+  type AstNodeOptions,
+  notNullish,
+  type Nullable,
+  type Prettify,
+  type SourceBuilder,
+  type TupleWithCount,
+} from '@goast/core';
 
-import { TsType } from './types';
-import { TypeScriptImportType } from '../../common-results';
-import { TypeScriptFileBuilder } from '../../file-builder';
-import { TsNode } from '../node';
-import { writeTsGenericParameters } from '../utils/write-ts-generic-parameters';
-import { writeTsNodes } from '../utils/write-ts-nodes';
+import type { TsType } from './types.ts';
+import type { TypeScriptImportType } from '../../common-results.ts';
+import { TypeScriptFileBuilder } from '../../file-builder.ts';
+import { TsNode } from '../node.ts';
+import { writeTsGenericParameters } from '../utils/write-ts-generic-parameters.ts';
+import { writeTsNodes } from '../utils/write-ts-nodes.ts';
 
 type Injects = never;
 

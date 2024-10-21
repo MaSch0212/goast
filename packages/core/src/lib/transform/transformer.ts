@@ -1,10 +1,14 @@
-import { ApiData } from './api-types';
-import { IdGenerator } from './helpers';
-import { transformDocument } from './transform-document';
-import { transformEndpoint } from './transform-endpoint';
-import { transformSchema } from './transform-schema';
-import { defaultOpenApiTransformerOptions, OpenApiTransformerContext, OpenApiTransformerOptions } from './types';
-import { OpenApiCollectorData } from '../collect';
+import type { ApiData } from './api-types.ts';
+import { IdGenerator } from './helpers.ts';
+import { transformDocument } from './transform-document.ts';
+import { transformEndpoint } from './transform-endpoint.ts';
+import { transformSchema } from './transform-schema.ts';
+import {
+  defaultOpenApiTransformerOptions,
+  type OpenApiTransformerContext,
+  type OpenApiTransformerOptions,
+} from './types.ts';
+import type { OpenApiCollectorData } from '../collect/index.ts';
 
 export function transformOpenApi(data: OpenApiCollectorData, options?: Partial<OpenApiTransformerOptions>): ApiData {
   const context: OpenApiTransformerContext = {

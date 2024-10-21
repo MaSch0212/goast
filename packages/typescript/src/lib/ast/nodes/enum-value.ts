@@ -1,17 +1,17 @@
-import {
-  SourceBuilder,
-  AstNodeOptions,
-  Nullable,
+import type {
   AppendValue,
-  SingleOrMultiple,
-  Prettify,
+  AstNodeOptions,
   BasicAppendValue,
+  Nullable,
+  Prettify,
+  SingleOrMultiple,
+  SourceBuilder,
 } from '@goast/core';
 
-import { TsDoc } from './doc';
-import { TsString } from './string';
-import { TsNode } from '../node';
-import { writeTsNode, writeTsNodes } from '../utils/write-ts-nodes';
+import type { TsDoc } from './doc.ts';
+import type { TsString } from './string.ts';
+import { TsNode } from '../node.ts';
+import { writeTsNode, writeTsNodes } from '../utils/write-ts-nodes.ts';
 
 type Injects = 'doc' | 'name' | 'value';
 

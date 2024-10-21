@@ -1,4 +1,4 @@
-import { ktReference } from '../nodes/reference';
+import { ktReference } from '../nodes/reference.ts';
 
 // org.springframework.beans.factory.annotation
 export const autowired = ktReference.factory('Autowired', 'org.springframework.beans.factory.annotation');

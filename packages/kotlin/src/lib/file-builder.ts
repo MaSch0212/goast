@@ -1,8 +1,8 @@
-import { AppendParam, AppendValue, SourceBuilder, isAppendValue } from '@goast/core';
+import { type AppendParam, type AppendValue, isAppendValue, SourceBuilder } from '@goast/core';
 
-import { KtNode } from './ast/node';
-import { KotlinGeneratorConfig, defaultKotlinGeneratorConfig } from './config';
-import { ImportCollection } from './import-collection';
+import { KtNode } from './ast/node.ts';
+import { defaultKotlinGeneratorConfig, type KotlinGeneratorConfig } from './config.ts';
+import { ImportCollection } from './import-collection.ts';
 
 type AnnotationArgumentValue<T extends SourceBuilder> = string | ((builder: T) => void);
 type AnnotationArgument<T extends SourceBuilder> =
@@ -63,8 +63,7 @@ export class KotlinFileBuilder<TAdditionalAppends = never> extends SourceBuilder
     this.append(`@${name}`).addImport(name, packageName);
 
     if (allArgs.length > 0) {
-      const multiline =
-        allArgs.some((x) => typeof x[1] !== 'string') ||
+      const multiline = allArgs.some((x) => typeof x[1] !== 'string') ||
         allArgs.reduce((c, [key, value]) => c + (key ? key.length + 3 : 0) + (value?.length ?? 0), 0) > 80;
       this.parenthesize('()', (builder) =>
         builder
@@ -77,8 +76,7 @@ export class KotlinFileBuilder<TAdditionalAppends = never> extends SourceBuilder
                 .append((builder) => (typeof value === 'string' ? builder.append(value) : value(builder))),
             { separator: multiline ? ',\n' : ', ' },
           )
-          .appendLineIf(multiline),
-      );
+          .appendLineIf(multiline));
     }
 
     this.appendLine();

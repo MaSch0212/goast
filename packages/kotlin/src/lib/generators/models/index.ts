@@ -1,4 +1,4 @@
-export * from './model-generator';
-export * from './models';
-export * from './models-generator';
-export * as DefaultKotlinModelGeneratorArgs from './args';
+export * from './model-generator.ts';
+export * from './models.ts';
+export * from './models-generator.ts';
+export * as DefaultKotlinModelGeneratorArgs from './args.ts';

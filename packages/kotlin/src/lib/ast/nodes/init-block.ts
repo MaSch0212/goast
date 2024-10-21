@@ -1,7 +1,7 @@
-import { AppendValue, AstNodeOptions, Prettify, SourceBuilder } from '@goast/core';
+import type { AppendValue, AstNodeOptions, Prettify, SourceBuilder } from '@goast/core';
 
-import { KtNode } from '../node';
-import { writeKtNodes } from '../utils/write-kt-node';
+import { KtNode } from '../node.ts';
+import { writeKtNodes } from '../utils/write-kt-node.ts';
 
 type Injects = never;
 

@@ -1,44 +1,42 @@
-/* eslint-disable unused-imports/no-unused-vars */
-import { writeFileSync } from 'fs';
-import { dirname } from 'path';
+import { dirname } from 'node:path';
 
+// @deno-types="@types/fs-extra"
 import fs from 'fs-extra';
 
 import {
-  ApiParameter,
-  ApiSchema,
-  AppendValueGroup,
-  SourceBuilder,
+  type ApiParameter,
+  type ApiSchema,
+  type AppendValueGroup,
   appendValueGroup,
   builderTemplate as s,
   createOverwriteProxy,
-  toCasing,
+  type MaybePromise,
   resolveAnyOfAndAllOf,
+  SourceBuilder,
+  toCasing,
 } from '@goast/core';
 
-import { DefaultKotlinOkHttp3GeneratorArgs as Args } from '.';
-import { KotlinOkHttp3ClientGeneratorContext, KotlinOkHttp3ClientGeneratorOutput } from './models';
-import { kt } from '../../../ast';
-import { KtValue } from '../../../ast/nodes/types';
-import { KotlinImport } from '../../../common-results';
-import { KotlinFileBuilder } from '../../../file-builder';
-import { ApiParameterWithMultipartInfo } from '../../../types';
-import { modifyString } from '../../../utils';
-import { KotlinFileGenerator } from '../../file-generator';
+import type { DefaultKotlinOkHttp3GeneratorArgs as Args } from './index.ts';
+import type { KotlinOkHttp3ClientGeneratorContext, KotlinOkHttp3ClientGeneratorOutput } from './models.ts';
+import { kt } from '../../../ast/index.ts';
+import type { KtValue } from '../../../ast/nodes/types.ts';
+import type { KotlinImport } from '../../../common-results.ts';
+import { KotlinFileBuilder } from '../../../file-builder.ts';
+import type { ApiParameterWithMultipartInfo } from '../../../types.ts';
+import { modifyString } from '../../../utils.ts';
+import { KotlinFileGenerator } from '../../file-generator.ts';
 
 type Context = KotlinOkHttp3ClientGeneratorContext;
 type Output = KotlinOkHttp3ClientGeneratorOutput;
 type Builder = KotlinFileBuilder;
 
 export interface KotlinOkHttp3Generator<TOutput extends Output = Output> {
-  generate(ctx: Context): TOutput;
+  generate(ctx: Context): MaybePromise<TOutput>;
 }
 
-export class DefaultKotlinOkHttp3Generator
-  extends KotlinFileGenerator<Context, Output>
-  implements KotlinOkHttp3Generator
-{
-  public generate(ctx: KotlinOkHttp3ClientGeneratorContext): KotlinImport {
+export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, Output>
+  implements KotlinOkHttp3Generator {
+  public generate(ctx: KotlinOkHttp3ClientGeneratorContext): MaybePromise<KotlinImport> {
     const typeName = this.getApiClientName(ctx, {});
     const packageName = this.getPackageName(ctx, {});
     const filePath = this.getFilePath(ctx, { packageName });
@@ -49,16 +47,16 @@ export class DefaultKotlinOkHttp3Generator
     const builder = new KotlinFileBuilder(packageName, ctx.config);
     builder.append(this.getClientFileContent(ctx, {}));
 
-    writeFileSync(filePath, builder.toString());
+    fs.writeFileSync(filePath, builder.toString());
 
     return { typeName, packageName };
   }
 
-  protected getClientFileContent(ctx: Context, args: Args.GetClientFileContent): AppendValueGroup<Builder> {
+  protected getClientFileContent(ctx: Context, _args: Args.GetClientFileContent): AppendValueGroup<Builder> {
     return appendValueGroup([this.getClientClass(ctx, {})]);
   }
 
-  protected getClientClass(ctx: Context, args: Args.GetClientClass): kt.Class<Builder> {
+  protected getClientClass(ctx: Context, _args: Args.GetClientClass): kt.Class<Builder> {
     return kt.class(this.getApiClientName(ctx, {}), {
       annotations: [
         ctx.service.endpoints.length === 0 || ctx.service.endpoints.some((x) => !x.deprecated)
@@ -80,14 +78,14 @@ export class DefaultKotlinOkHttp3Generator
       companionObject: this.getClientCompanionObject(ctx, {}),
       members: [
         ...ctx.service.endpoints.flatMap((endpoint) =>
-          this.getEndpointClientMembers(ctx, { endpoint, parameters: this.getAllParameters(ctx, { endpoint }) }),
+          this.getEndpointClientMembers(ctx, { endpoint, parameters: this.getAllParameters(ctx, { endpoint }) })
         ),
         ...this.getAdditionalClientMembers(ctx, {}),
       ],
     });
   }
 
-  protected getClientCompanionObject(ctx: Context, args: Args.GetClientCompanionObject): kt.Object<Builder> {
+  protected getClientCompanionObject(ctx: Context, _args: Args.GetClientCompanionObject): kt.Object<Builder> {
     const result = kt.object<Builder>();
 
     result.members.push(
@@ -153,7 +151,7 @@ export class DefaultKotlinOkHttp3Generator
             description: p.description,
             default: !p.required ? kt.toNode(p.schema?.default) : null,
           },
-        ),
+        )
       ),
       returnType: this.getTypeUsage(ctx, { schema: responseSchema, fallback: kt.refs.unit() }),
       body: this.getEndpointClientMethodBody(ctx, { endpoint, parameters, responseSchema }),
@@ -168,19 +166,23 @@ export class DefaultKotlinOkHttp3Generator
 
     return appendValueGroup(
       [
-        s`val localVarResponse = ${kt.call(
-          [toCasing(endpoint.name + '_WithHttpInfo', ctx.config.functionNameCasing)],
-          parameters.map((x) => x.name),
-        )}`,
+        s`val localVarResponse = ${
+          kt.call(
+            [toCasing(endpoint.name + '_WithHttpInfo', ctx.config.functionNameCasing)],
+            parameters.map((x) => x.name),
+          )
+        }`,
         '',
         s`return when (localVarResponse.responseType) {${s.indent`
             ${ctx.refs.responseType()}.Success -> ${
-              responseSchema === undefined
-                ? kt.refs.unit()
-                : s`(localVarResponse as ${ctx.refs.success(['*'])}).data as ${this.getTypeUsage(ctx, {
-                    schema: responseSchema,
-                  })}`
-            }
+          responseSchema === undefined
+            ? kt.refs.unit()
+            : s`(localVarResponse as ${ctx.refs.success(['*'])}).data as ${
+              this.getTypeUsage(ctx, {
+                schema: responseSchema,
+              })
+            }`
+        }
             ${ctx.refs.responseType()}.Informational -> throw ${kt.refs.java.unsupportedOperationException()}("Client does not support Informational responses.")
             ${ctx.refs.responseType()}.Redirection -> throw ${kt.refs.java.unsupportedOperationException()}("Client does not support Redirection responses.")
             ${ctx.refs.responseType()}.ClientError -> {${s.indent`
@@ -232,7 +234,7 @@ export class DefaultKotlinOkHttp3Generator
             description: p.description,
             default: !p.required ? kt.toNode(p.schema?.default) : null,
           },
-        ),
+        )
       ),
       returnType: ctx.refs.apiResponse([
         this.getTypeUsage(ctx, { schema: responseSchema, fallback: kt.refs.unit({ nullable: true }), nullable: true }),
@@ -249,21 +251,25 @@ export class DefaultKotlinOkHttp3Generator
 
     return appendValueGroup(
       [
-        s`val localVariableConfig = ${kt.call(
-          [toCasing(endpoint.name, 'camel') + 'RequestConfig'],
-          parameters.map((x) => x.name),
-        )}`,
-        s`return ${kt.call(
-          [
-            kt.reference('request', null, {
-              generics: [
-                this.getRequestBodyType(ctx, { endpoint }),
-                this.getTypeUsage(ctx, { schema: responseSchema, fallback: kt.refs.unit() }),
-              ],
-            }),
-          ],
-          ['localVariableConfig'],
-        )}`,
+        s`val localVariableConfig = ${
+          kt.call(
+            [toCasing(endpoint.name, 'camel') + 'RequestConfig'],
+            parameters.map((x) => x.name),
+          )
+        }`,
+        s`return ${
+          kt.call(
+            [
+              kt.reference('request', null, {
+                generics: [
+                  this.getRequestBodyType(ctx, { endpoint }),
+                  this.getTypeUsage(ctx, { schema: responseSchema, fallback: kt.refs.unit() }),
+                ],
+              }),
+            ],
+            ['localVariableConfig'],
+          )
+        }`,
       ],
       '\n',
     );
@@ -288,7 +294,7 @@ export class DefaultKotlinOkHttp3Generator
             description: p.description,
             default: !p.required ? kt.toNode(p.schema?.default) : null,
           },
-        ),
+        )
       ),
       returnType: ctx.refs.requestConfig([this.getRequestBodyType(ctx, { endpoint })]),
       body: this.getEndpointClientRequestConfigMethodBody(ctx, { endpoint, parameters }),
@@ -312,7 +318,9 @@ export class DefaultKotlinOkHttp3Generator
             return s`"${param.multipart?.name ?? ''}" to ${ctx.refs.partConfig.infer()}(body = ${paramName})`;
           });
         result.values.push(
-          s`val localVariableBody = ${kt.call(kt.refs.mapOf([kt.refs.string(), ctx.refs.partConfig(['*'])]), partConfigs)}`,
+          s`val localVariableBody = ${
+            kt.call(kt.refs.mapOf([kt.refs.string(), ctx.refs.partConfig(['*'])]), partConfigs)
+          }`,
         );
       } else {
         const bodyParamName = toCasing(this.getRequestBodyParamName(ctx, { endpoint }), ctx.config.parameterNameCasing);
@@ -321,27 +329,27 @@ export class DefaultKotlinOkHttp3Generator
     }
 
     result.values.push(
-      s`val localVariableQuery: ${ctx.refs.multiValueMap()} = ${kt.call(
-        [kt.refs.mutableMapOf([kt.refs.string(), kt.refs.list([kt.refs.string()])])],
-        [],
-      )}${
-        queryParameters.length === 0
-          ? ''
-          : s.indent`
+      s`val localVariableQuery: ${ctx.refs.multiValueMap()} = ${
+        kt.call(
+          [kt.refs.mutableMapOf([kt.refs.string(), kt.refs.list([kt.refs.string()])])],
+          [],
+        )
+      }${
+        queryParameters.length === 0 ? '' : s.indent`
             .apply {${s.indent`
-              ${appendValueGroup(
-                queryParameters.map((param) => {
-                  const paramName = toCasing(param.name, ctx.config.parameterNameCasing);
-                  const toString = param.schema?.kind === 'array' ? '.joinToString()' : '.toString()';
-                  const put = s<Builder>`put(${kt.string(paramName)}, listOf(${paramName}${toString}))`;
-                  return param.required
-                    ? put
-                    : s<Builder>`if (${paramName} != null) {${s.indent`
+              ${
+          appendValueGroup(
+            queryParameters.map((param) => {
+              const paramName = toCasing(param.name, ctx.config.parameterNameCasing);
+              const toString = param.schema?.kind === 'array' ? '.joinToString()' : '.toString()';
+              const put = s<Builder>`put(${kt.string(paramName)}, listOf(${paramName}${toString}))`;
+              return param.required ? put : s<Builder>`if (${paramName} != null) {${s.indent`
                         ${put}`}
                       }`;
-                }),
-                '\n',
-              )}`}
+            }),
+            '\n',
+          )
+        }`}
             }`
       }`,
     );
@@ -352,30 +360,36 @@ export class DefaultKotlinOkHttp3Generator
     }
 
     result.values.push(
-      s`return ${kt.call(
-        [ctx.refs.requestConfig.infer()],
-        [
-          kt.argument.named('method', kt.call([ctx.refs.requestMethod(), endpoint.method.toUpperCase()])),
-          kt.argument.named('path', kt.string(this.getPathWithInterpolation(ctx, { endpoint }), { template: true })),
-          kt.argument.named('query', 'localVariableQuery'),
-          kt.argument.named('headers', 'localVariableHeaders'),
-          kt.argument.named('requiresAuthentication', 'false'),
-          endpoint.requestBody ? kt.argument.named('body', 'localVariableBody') : null,
-        ],
-      )}`,
+      s`return ${
+        kt.call(
+          [ctx.refs.requestConfig.infer()],
+          [
+            kt.argument.named('method', kt.call([ctx.refs.requestMethod(), endpoint.method.toUpperCase()])),
+            kt.argument.named('path', kt.string(this.getPathWithInterpolation(ctx, { endpoint }), { template: true })),
+            kt.argument.named('query', 'localVariableQuery'),
+            kt.argument.named('headers', 'localVariableHeaders'),
+            kt.argument.named('requiresAuthentication', 'false'),
+            endpoint.requestBody ? kt.argument.named('body', 'localVariableBody') : null,
+          ],
+        )
+      }`,
     );
 
     return result;
   }
 
-  protected getAdditionalClientMembers(ctx: Context, args: Args.GetAdditionalClientMembers): kt.ClassMember<Builder>[] {
+  protected getAdditionalClientMembers(
+    _ctx: Context,
+    _args: Args.GetAdditionalClientMembers,
+  ): kt.ClassMember<Builder>[] {
     return [
       kt.function('encodeURIComponent', {
         accessModifier: 'private',
         parameters: [kt.parameter('uriComponent', kt.refs.string())],
         returnType: kt.refs.string(),
         singleExpression: true,
-        body: s`${kt.refs.okhttp3.httpUrl()}.Builder().scheme("http").host("localhost").addPathSegment(uriComponent).build().encodedPathSegments[0]`,
+        body:
+          s`${kt.refs.okhttp3.httpUrl()}.Builder().scheme("http").host("localhost").addPathSegment(uriComponent).build().encodedPathSegments[0]`,
       }),
     ];
   }
@@ -407,9 +421,10 @@ export class DefaultKotlinOkHttp3Generator
       : (fallback ?? kt.refs.any({ nullable }));
   }
 
-  protected getPackageName(ctx: Context, args: Args.GetPackageName): string {
-    const packageSuffix =
-      typeof ctx.config.packageSuffix === 'string' ? ctx.config.packageSuffix : ctx.config.packageSuffix(ctx.service);
+  protected getPackageName(ctx: Context, _args: Args.GetPackageName): string {
+    const packageSuffix = typeof ctx.config.packageSuffix === 'string'
+      ? ctx.config.packageSuffix
+      : ctx.config.packageSuffix(ctx.service);
     return ctx.config.packageName + packageSuffix;
   }
 
@@ -427,7 +442,7 @@ export class DefaultKotlinOkHttp3Generator
     return path;
   }
 
-  protected getResponseSchema(ctx: Context, args: Args.GetResponseSchema): ApiSchema | undefined {
+  protected getResponseSchema(_ctx: Context, args: Args.GetResponseSchema): ApiSchema | undefined {
     const { endpoint } = args;
     return endpoint.responses.find((x) => !x.statusCode || (x.statusCode >= 200 && x.statusCode < 300))
       ?.contentOptions[0]?.schema;
@@ -499,7 +514,7 @@ export class DefaultKotlinOkHttp3Generator
     );
   }
 
-  protected getBasePath(ctx: Context, args: Args.GetBasePath): string {
+  protected getBasePath(ctx: Context, _args: Args.GetBasePath): string {
     return modifyString(
       (ctx.service.$src ?? ctx.service.endpoints[0]?.$src)?.document.servers?.[0]?.url ?? '/',
       ctx.config.basePath,
@@ -517,7 +532,7 @@ export class DefaultKotlinOkHttp3Generator
     return `${ctx.config.outputDir}/${packageName.replace(/\./g, '/')}/${this.getApiClientName(ctx, {})}.kt`;
   }
 
-  protected getApiClientName(ctx: Context, args: Args.GetApiClientName): string {
+  protected getApiClientName(ctx: Context, _args: Args.GetApiClientName): string {
     return toCasing(ctx.service.name, ctx.config.typeNameCasing) + 'ApiClient';
   }
 

@@ -1,11 +1,11 @@
-import { parse as parsePath } from 'path';
+import { parse as parsePath } from 'node:path';
 
-import { ApiSchemaKind, ApiSchemaAccessibility, ApiSchema, ApiSchemaProperty } from './api-types';
-import { OpenApiTransformerContext } from './types';
-import { isOpenApiObjectProperty } from '../internal-utils';
-import { Deref, DerefSource, OpenApiHttpMethod, OpenApiObject } from '../parse';
-import { getDeepProperty } from '../utils';
-import { isNullish } from '../utils/common.utils';
+import type { ApiSchema, ApiSchemaAccessibility, ApiSchemaKind, ApiSchemaProperty } from './api-types.ts';
+import type { OpenApiTransformerContext } from './types.ts';
+import { isOpenApiObjectProperty } from '../internal-utils.ts';
+import type { Deref, DerefSource, OpenApiHttpMethod, OpenApiObject } from '../parse/index.ts';
+import { getDeepProperty } from '../utils/index.ts';
+import { isNullish } from '../utils/common.utils.ts';
 
 export function determineSchemaKind<
   T extends {
@@ -20,8 +20,8 @@ export function determineSchemaKind<
   if (schema.oneOf) {
     return 'oneOf';
   } else if (schema.type !== 'object' && (schema.allOf || schema.anyOf)) {
-    const hasProperties =
-      (schema.properties && Object.keys(schema.properties).length > 0) || schema.additionalProperties;
+    const hasProperties = (schema.properties && Object.keys(schema.properties).length > 0) ||
+      schema.additionalProperties;
     return hasProperties ? 'object' : 'combined';
   } else if (Array.isArray(schema.type)) {
     return 'multi-type';
@@ -37,8 +37,7 @@ export function determineSchemaKind<
     return schema.type;
   }
 
-  const treadAsObject =
-    ctx.config.unknownTypeBehavior === 'always-object' ||
+  const treadAsObject = ctx.config.unknownTypeBehavior === 'always-object' ||
     (ctx.config.unknownTypeBehavior === 'object-if-properties' &&
       schema.properties &&
       Object.keys(schema.properties).length > 0);

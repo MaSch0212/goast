@@ -1,12 +1,12 @@
-import {
+import type {
   ApiSchema,
   DefaultGenerationProviderConfig,
   OpenApiSchemasGenerationProviderContext,
   SourceBuilder,
 } from '@goast/core';
 
-import { kt } from '../../ast';
-import { KotlinGeneratorConfig, defaultKotlinGeneratorConfig } from '../../config';
+import type { kt } from '../../ast/index.ts';
+import { defaultKotlinGeneratorConfig, type KotlinGeneratorConfig } from '../../config.ts';
 
 export type KotlinModelsGeneratorConfig = KotlinGeneratorConfig & {
   /**

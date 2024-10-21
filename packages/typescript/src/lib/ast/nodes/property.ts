@@ -1,14 +1,19 @@
-import { AstNodeOptions, Nullable, Prettify, SourceBuilder, notNullish } from '@goast/core';
+import { type AstNodeOptions, notNullish, type Nullable, type Prettify, type SourceBuilder } from '@goast/core';
 
-import { TsDecorator, tsDecorator } from './decorator';
-import { TsDoc, tsDoc } from './doc';
-import { TsObject } from './object';
-import { TsPropertyGetter, TsPropertySetter, createPropertyGetter, createPropertySetter } from './property-accessor';
-import { tsString } from './string';
-import { TsType, TsValue } from './types';
-import { TsAccessModifier } from '../common';
-import { TsNode } from '../node';
-import { writeTsNode, writeTsNodes } from '../utils/write-ts-nodes';
+import { type TsDecorator, tsDecorator } from './decorator.ts';
+import { type TsDoc, tsDoc } from './doc.ts';
+import { TsObject } from './object.ts';
+import {
+  createPropertyGetter,
+  createPropertySetter,
+  type TsPropertyGetter,
+  type TsPropertySetter,
+} from './property-accessor.ts';
+import { tsString } from './string.ts';
+import type { TsType, TsValue } from './types.ts';
+import type { TsAccessModifier } from '../common.ts';
+import { TsNode } from '../node.ts';
+import { writeTsNode, writeTsNodes } from '../utils/write-ts-nodes.ts';
 
 type BaseInjects = never;
 
@@ -26,22 +31,20 @@ type BaseOptions<TBuilder extends SourceBuilder, TInjects extends string = never
   }
 >;
 
-type SimpleOptions<TBuilder extends SourceBuilder, TInjects extends string = never> = BaseOptions<
-  TBuilder,
-  TInjects
-> & {
-  value?: Nullable<TsValue<TBuilder>>;
-  readonly?: Nullable<boolean>;
-  optional?: Nullable<boolean>;
-};
+type SimpleOptions<TBuilder extends SourceBuilder, TInjects extends string = never> =
+  & BaseOptions<TBuilder, TInjects>
+  & {
+    value?: Nullable<TsValue<TBuilder>>;
+    readonly?: Nullable<boolean>;
+    optional?: Nullable<boolean>;
+  };
 
-type AccessorOptions<TBuilder extends SourceBuilder, TInjects extends string = never> = BaseOptions<
-  TBuilder,
-  TInjects
-> & {
-  get?: Nullable<TsPropertyGetter<TBuilder>>;
-  set?: Nullable<TsPropertySetter<TBuilder>>;
-};
+type AccessorOptions<TBuilder extends SourceBuilder, TInjects extends string = never> =
+  & BaseOptions<TBuilder, TInjects>
+  & {
+    get?: Nullable<TsPropertyGetter<TBuilder>>;
+    set?: Nullable<TsPropertySetter<TBuilder>>;
+  };
 
 export abstract class TsProperty<TBuilder extends SourceBuilder, TInjects extends string = never> extends TsNode<
   TBuilder,

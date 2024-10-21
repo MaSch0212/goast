@@ -1,6 +1,6 @@
-import { SourceBuilder, SingleOrMultiple, Nullable, toArray, notNullish } from '@goast/core';
+import { notNullish, type Nullable, type SingleOrMultiple, type SourceBuilder, toArray } from '@goast/core';
 
-import { KtAppendValue, writeKtNode } from './write-kt-node';
+import { type KtAppendValue, writeKtNode } from './write-kt-node.ts';
 
 export function writeKtEnumValues<TBuilder extends SourceBuilder>(
   builder: TBuilder,
@@ -14,8 +14,7 @@ export function writeKtEnumValues<TBuilder extends SourceBuilder>(
         ('doc' in v && v.doc) ||
         ('members' in v && Array.isArray(v.members) && v.members.some(notNullish))),
   );
-  const multiline =
-    spacing ||
+  const multiline = spacing ||
     filteredNodes.length > 4 ||
     filteredNodes.some(
       (v) => typeof v === 'object' && 'arguments' in v && Array.isArray(v.arguments) && v.arguments.length > 0,

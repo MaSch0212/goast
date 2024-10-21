@@ -1,15 +1,15 @@
-import {
+import type {
   ApiService,
   DefaultGenerationProviderConfig,
-  OpenApiServicesGenerationProviderContext,
-  Nullable,
   ExtendedStringCasing,
+  Nullable,
+  OpenApiServicesGenerationProviderContext,
 } from '@goast/core';
 
-import { getReferenceFactories } from './refs';
-import { TypeScriptExportOutput } from '../../../common-results';
-import { TypeScriptGeneratorConfig, defaultTypeScriptGeneratorConfig } from '../../../config';
-import { TypeScriptModelsGeneratorOutput } from '../../models/models';
+import type { getReferenceFactories } from './refs.ts';
+import type { TypeScriptExportOutput } from '../../../common-results.ts';
+import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from '../../../config.ts';
+import type { TypeScriptModelsGeneratorOutput } from '../../models/models.ts';
 
 export type TypeScriptFetchClientsGeneratorConfig = TypeScriptGeneratorConfig & {
   /**
@@ -76,23 +76,24 @@ export type TypeScriptFetchClientsGeneratorConfig = TypeScriptGeneratorConfig & 
   utilsDir: string;
 };
 
-export const defaultTypeScriptFetchClientsGeneratorConfig: DefaultGenerationProviderConfig<TypeScriptFetchClientsGeneratorConfig> =
-  {
-    ...defaultTypeScriptGeneratorConfig,
+export const defaultTypeScriptFetchClientsGeneratorConfig: DefaultGenerationProviderConfig<
+  TypeScriptFetchClientsGeneratorConfig
+> = {
+  ...defaultTypeScriptGeneratorConfig,
 
-    clientFileNameCasing: { casing: 'kebab', suffix: '-client' },
-    clientInterfaceFileNameCasing: undefined,
+  clientFileNameCasing: { casing: 'kebab', suffix: '-client' },
+  clientInterfaceFileNameCasing: undefined,
 
-    clientNameCasing: { casing: 'pascal', suffix: 'Client' },
-    clientInterfaceNameCasing: { prefix: 'I', casing: 'pascal', suffix: 'Client' },
+  clientNameCasing: { casing: 'pascal', suffix: 'Client' },
+  clientInterfaceNameCasing: { prefix: 'I', casing: 'pascal', suffix: 'Client' },
 
-    clientFileKind: 'class',
-    clientDir: 'clients',
-    clientInterfaceDir: 'clients/interfaces',
-    clientsIndexFile: 'clients.ts',
-    clientInterfacesIndexFile: 'clients.ts',
-    utilsDir: 'utils',
-  };
+  clientFileKind: 'class',
+  clientDir: 'clients',
+  clientInterfaceDir: 'clients/interfaces',
+  clientsIndexFile: 'clients.ts',
+  clientInterfacesIndexFile: 'clients.ts',
+  utilsDir: 'utils',
+};
 
 export type TypeScriptFetchClientsGeneratorInput = TypeScriptModelsGeneratorOutput;
 
@@ -113,14 +114,16 @@ export type TypeScriptFetchClientGeneratorOutput = {
   clientInterface?: TypeScriptExportOutput;
 };
 
-export type TypeScriptFetchClientsGeneratorContext = OpenApiServicesGenerationProviderContext<
-  TypeScriptFetchClientsGeneratorInput,
-  TypeScriptFetchClientsGeneratorOutput,
-  TypeScriptFetchClientsGeneratorConfig,
-  TypeScriptFetchClientGeneratorOutput
-> & {
-  refs: ReturnType<typeof getReferenceFactories>;
-};
+export type TypeScriptFetchClientsGeneratorContext =
+  & OpenApiServicesGenerationProviderContext<
+    TypeScriptFetchClientsGeneratorInput,
+    TypeScriptFetchClientsGeneratorOutput,
+    TypeScriptFetchClientsGeneratorConfig,
+    TypeScriptFetchClientGeneratorOutput
+  >
+  & {
+    refs: ReturnType<typeof getReferenceFactories>;
+  };
 
 export type TypeScriptFetchClientGeneratorContext = TypeScriptFetchClientsGeneratorContext & {
   readonly service: ApiService;

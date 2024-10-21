@@ -1,3 +1,3 @@
-export * from './easy-network-stub-generator';
-export * from './easy-network-stubs-generator';
-export * from './models';
+export * from './easy-network-stub-generator.ts';
+export * from './easy-network-stubs-generator.ts';
+export * from './models.ts';

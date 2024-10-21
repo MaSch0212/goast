@@ -1,4 +1,4 @@
-import { ktReference } from '../nodes/reference';
+import { ktReference } from '../nodes/reference.ts';
 
 // jakarta.annotation
 export const generated = ktReference.factory('Generated', 'jakarta.annotation');

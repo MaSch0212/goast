@@ -1,4 +1,4 @@
-import { ktReference } from '../nodes/reference';
+import { ktReference } from '../nodes/reference.ts';
 
 // io.swagger.v3.oas.annotations
 export const parameter = ktReference.factory('Parameter', 'io.swagger.v3.oas.annotations');

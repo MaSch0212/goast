@@ -1,4 +1,4 @@
-import { TypeScriptExportOptions } from './import-collection';
+import type { TypeScriptExportOptions } from './import-collection.ts';
 
 export type TypeScriptComponentOutputKind = 'interface' | 'type' | 'enum' | 'class' | 'function' | 'variable';
 export type TypeScriptComponentOutput = {

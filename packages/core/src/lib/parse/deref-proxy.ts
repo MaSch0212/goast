@@ -1,6 +1,6 @@
-import { OpenApiObject } from './openapi-types';
-import { Deref, DerefSource } from './types';
-import { isNullish } from '../utils';
+import type { OpenApiObject } from './openapi-types.ts';
+import type { Deref, DerefSource } from './types.ts';
+import { isNullish } from '../utils/index.ts';
 
 export function createDerefProxy<T extends OpenApiObject<string>>(
   obj: T,

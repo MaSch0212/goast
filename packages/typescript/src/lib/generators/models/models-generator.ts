@@ -1,25 +1,26 @@
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 
 import {
-  ApiSchema,
-  OpenApiGeneratorContext,
-  OpenApiSchemasGenerationProviderBase,
-  Factory,
-  AppendValueGroup,
+  type ApiSchema,
+  type AppendValueGroup,
   appendValueGroup,
+  Factory,
+  type MaybePromise,
+  type OpenApiGeneratorContext,
+  OpenApiSchemasGenerationProviderBase,
 } from '@goast/core';
 
-import { DefaultTypeScriptModelGenerator, TypeScriptModelGenerator } from './model-generator';
+import { DefaultTypeScriptModelGenerator, type TypeScriptModelGenerator } from './model-generator.ts';
 import {
-  TypeScriptModelGeneratorOutput,
-  TypeScriptModelsGeneratorConfig,
-  TypeScriptModelsGeneratorContext,
-  TypeScriptModelsGeneratorInput,
-  TypeScriptModelsGeneratorOutput,
   defaultTypeScriptModelsGeneratorConfig,
-} from './models';
-import { ts } from '../../ast';
-import { TypeScriptFileBuilder } from '../../file-builder';
+  type TypeScriptModelGeneratorOutput,
+  type TypeScriptModelsGeneratorConfig,
+  type TypeScriptModelsGeneratorContext,
+  type TypeScriptModelsGeneratorInput,
+  type TypeScriptModelsGeneratorOutput,
+} from './models.ts';
+import { ts } from '../../ast/index.ts';
+import { TypeScriptFileBuilder } from '../../file-builder.ts';
 
 type Input = TypeScriptModelsGeneratorInput;
 type Output = TypeScriptModelsGeneratorOutput;
@@ -57,13 +58,11 @@ export class TypeScriptModelsGenerator extends OpenApiSchemasGenerationProviderB
     return this.getProviderContext(context, config, defaultTypeScriptModelsGeneratorConfig);
   }
 
-  public override onGenerate(ctx: Context): Output {
-    const output = super.onGenerate(ctx);
-    output.typescript.indexFiles.models = this.generateIndexFile(ctx);
-    return output;
+  protected override generateAdditionalFiles(ctx: TypeScriptModelsGeneratorContext): MaybePromise<void> {
+    ctx.output.typescript.indexFiles.models = this.generateIndexFile(ctx);
   }
 
-  protected override generateSchema(ctx: Context, schema: ApiSchema): SchemaOutput {
+  protected override generateSchema(ctx: Context, schema: ApiSchema): MaybePromise<SchemaOutput> {
     const modelGenerator = this._modelGeneratorFactory.create();
     return modelGenerator.generate({
       ...ctx,
@@ -100,7 +99,7 @@ export class TypeScriptModelsGenerator extends OpenApiSchemasGenerationProviderB
             kind: x.kind === 'type' || x.kind === 'interface' ? 'type-export' : 'export',
           }),
           ...(x.additionalExports?.map((e) =>
-            typeof e === 'string' ? ts.export(e, filePath) : ts.export(e.name, filePath, { kind: e.type }),
+            typeof e === 'string' ? ts.export(e, filePath) : ts.export(e.name, filePath, { kind: e.type })
           ) ?? []),
         ];
       }),

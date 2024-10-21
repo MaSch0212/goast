@@ -1,4 +1,4 @@
-import { tsReference } from '../nodes/reference';
+import { tsReference } from '../nodes/reference.ts';
 
 export const any = tsReference.factory('any');
 export const unknown = tsReference.factory('unknown');

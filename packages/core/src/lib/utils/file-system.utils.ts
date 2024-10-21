@@ -1,8 +1,8 @@
-import { resolve } from 'path';
-
+import { resolve } from 'node:path';
+// @deno-types="@types/fs-extra"
 import fs from 'fs-extra';
 
-import { Nullable } from './type.utils';
+import type { Nullable } from './type.utils.ts';
 
 export type DirectoryScanOptions = {
   recursive: boolean;

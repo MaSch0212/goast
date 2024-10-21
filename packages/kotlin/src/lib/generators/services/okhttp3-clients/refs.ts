@@ -1,4 +1,4 @@
-import { kt } from '../../../ast';
+import { kt } from '../../../ast/index.ts';
 
 // See packages/kotlin/assets/client/okhttp3 for reference
 export function getReferenceFactories(infrastructurePackageName: string) {

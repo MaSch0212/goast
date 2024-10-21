@@ -1,13 +1,13 @@
-import {
-  OpenApiServicesGenerationProviderContext,
+import type {
+  ApiEndpoint,
   ApiService,
   DefaultGenerationProviderConfig,
-  ApiEndpoint,
+  OpenApiServicesGenerationProviderContext,
 } from '@goast/core';
 
-import { KotlinImport } from '../../../common-results';
-import { KotlinGeneratorConfig, defaultKotlinGeneratorConfig } from '../../../config';
-import { KotlinModelsGeneratorOutput } from '../../models';
+import type { KotlinImport } from '../../../common-results.ts';
+import { defaultKotlinGeneratorConfig, type KotlinGeneratorConfig } from '../../../config.ts';
+import type { KotlinModelsGeneratorOutput } from '../../models/index.ts';
 
 export type KotlinServicesGeneratorConfig = KotlinGeneratorConfig & {
   packageName: string;

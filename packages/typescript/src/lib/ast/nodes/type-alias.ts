@@ -1,10 +1,17 @@
-import { AstNodeOptions, BasicAppendValue, Nullable, Prettify, SourceBuilder, notNullish } from '@goast/core';
+import {
+  type AstNodeOptions,
+  type BasicAppendValue,
+  notNullish,
+  type Nullable,
+  type Prettify,
+  type SourceBuilder,
+} from '@goast/core';
 
-import { TsDoc } from './doc';
-import { TsGenericParameter, tsGenericParameter } from './generic-parameter';
-import { TsType } from './types';
-import { TsNode } from '../node';
-import { writeTsNode, writeTsNodes } from '../utils/write-ts-nodes';
+import type { TsDoc } from './doc.ts';
+import { type TsGenericParameter, tsGenericParameter } from './generic-parameter.ts';
+import type { TsType } from './types.ts';
+import { TsNode } from '../node.ts';
+import { writeTsNode, writeTsNodes } from '../utils/write-ts-nodes.ts';
 
 type Injects = never;
 

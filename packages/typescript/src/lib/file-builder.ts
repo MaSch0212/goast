@@ -1,13 +1,18 @@
-import { dirname } from 'path';
+import { dirname } from 'node:path';
 
+// @deno-types="@types/fs-extra"
 import fs from 'fs-extra';
 
-import { AppendParam, AppendValue, Nullable, SourceBuilder, isAppendValue } from '@goast/core';
+import { type AppendParam, type AppendValue, isAppendValue, type Nullable, SourceBuilder } from '@goast/core';
 
-import { TsNode } from './ast/node';
-import { TypeScriptGeneratorConfig, defaultTypeScriptGeneratorConfig } from './config';
-import { TypeScriptModelGeneratorOutput } from './generators';
-import { ImportExportCollection, TypeScriptExportOptions, TypeScriptImportOptions } from './import-collection';
+import { TsNode } from './ast/node.ts';
+import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from './config.ts';
+import type { TypeScriptModelGeneratorOutput } from './generators/index.ts';
+import {
+  ImportExportCollection,
+  type TypeScriptExportOptions,
+  type TypeScriptImportOptions,
+} from './import-collection.ts';
 
 export type TypeScriptAppends<TAdditionalAppends> = TsNode<TypeScriptFileBuilder> | TAdditionalAppends;
 export type TypeScriptAppendParam<TBuilder extends TypeScriptFileBuilder, TAdditionalAppends> = AppendParam<
@@ -21,9 +26,8 @@ export function isTypeScriptAppendValue<TBuilder extends TypeScriptFileBuilder =
   return isAppendValue(value) || value instanceof TsNode;
 }
 
-export class TypeScriptFileBuilder<TAdditionalAppends = never> extends SourceBuilder<
-  TypeScriptAppends<TAdditionalAppends>
-> {
+export class TypeScriptFileBuilder<TAdditionalAppends = never>
+  extends SourceBuilder<TypeScriptAppends<TAdditionalAppends>> {
   public readonly filePath: string | undefined;
   public readonly imports: ImportExportCollection;
 

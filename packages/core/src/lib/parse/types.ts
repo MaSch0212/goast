@@ -1,5 +1,5 @@
-import { OpenApiDiscriminator, OpenApiDocument, OpenApiReference, OpenApiSchema } from './openapi-types';
-import { defaultOpenApiTransformerOptions, OpenApiTransformerOptions } from '../transform/types';
+import type { OpenApiDiscriminator, OpenApiDocument, OpenApiReference, OpenApiSchema } from './openapi-types.ts';
+import { defaultOpenApiTransformerOptions, type OpenApiTransformerOptions } from '../transform/types.ts';
 
 export type DerefSource<T> = {
   file: string;
@@ -11,11 +11,12 @@ export type DerefSource<T> = {
 type _DerefDiscriminator = Omit<OpenApiDiscriminator, 'mapping'> & {
   mapping?: Record<string, Deref<OpenApiSchema>>;
 };
-type _Deref<T extends object> = T extends OpenApiDiscriminator
-  ? _DerefDiscriminator
-  : {
+type _Deref<T extends object> = T extends OpenApiDiscriminator ? _DerefDiscriminator
+  :
+    & {
       [K in keyof T as K extends keyof OpenApiReference ? never : K]: Deref<T[K]>;
-    } & {
+    }
+    & {
       $src: DerefSource<T>;
       $ref?: Deref<T>;
     };

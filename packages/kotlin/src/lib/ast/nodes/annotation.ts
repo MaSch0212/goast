@@ -1,10 +1,10 @@
-import { AstNodeOptions, notNullish, Nullable, Prettify, SourceBuilder } from '@goast/core';
+import { type AstNodeOptions, notNullish, type Nullable, type Prettify, type SourceBuilder } from '@goast/core';
 
-import { ktArgument, KtArgument } from './argument';
-import { KtType, KtValue } from './types';
-import { KtNode } from '../node';
-import { writeKtAnnotations } from '../utils/write-kt-annotations';
-import { writeKtNode } from '../utils/write-kt-node';
+import { type KtArgument, ktArgument } from './argument.ts';
+import type { KtType, KtValue } from './types.ts';
+import { KtNode } from '../node.ts';
+import { writeKtAnnotations } from '../utils/write-kt-annotations.ts';
+import { writeKtNode } from '../utils/write-kt-node.ts';
 
 type Injects = 'class' | 'target' | 'arguments';
 

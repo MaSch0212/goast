@@ -1,16 +1,23 @@
-import { AstNodeOptions, BasicAppendValue, Nullable, Prettify, SourceBuilder, notNullish } from '@goast/core';
+import {
+  type AstNodeOptions,
+  type BasicAppendValue,
+  notNullish,
+  type Nullable,
+  type Prettify,
+  type SourceBuilder,
+} from '@goast/core';
 
-import { TsConstructor } from './constructor';
-import { TsDecorator, tsDecorator } from './decorator';
-import { TsDoc, tsDoc } from './doc';
-import { TsGenericParameter, tsGenericParameter } from './generic-parameter';
-import { TsIndexer } from './indexer';
-import { TsMethod } from './method';
-import { TsProperty } from './property';
-import { TsReference } from './reference';
-import { TsNode } from '../node';
-import { writeTsMembers } from '../utils/write-ts-members';
-import { writeTsNode, writeTsNodes } from '../utils/write-ts-nodes';
+import type { TsConstructor } from './constructor.ts';
+import { type TsDecorator, tsDecorator } from './decorator.ts';
+import { type TsDoc, tsDoc } from './doc.ts';
+import { type TsGenericParameter, tsGenericParameter } from './generic-parameter.ts';
+import type { TsIndexer } from './indexer.ts';
+import type { TsMethod } from './method.ts';
+import type { TsProperty } from './property.ts';
+import type { TsReference } from './reference.ts';
+import { TsNode } from '../node.ts';
+import { writeTsMembers } from '../utils/write-ts-members.ts';
+import { writeTsNode, writeTsNodes } from '../utils/write-ts-nodes.ts';
 
 type Injects = 'doc' | 'decorators' | 'modifiers' | 'name' | 'generics' | 'extends' | 'implements' | 'body' | 'members';
 

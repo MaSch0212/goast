@@ -1,4 +1,4 @@
-import { tsReference } from '../nodes/reference';
+import { tsReference } from '../nodes/reference.ts';
 
 export const easyNetworkStub = tsReference.factory('EasyNetworkStub', 'easy-network-stub');
 export const httpMethod = tsReference.factory('HttpMethod', 'easy-network-stub', { importType: 'type-import' });

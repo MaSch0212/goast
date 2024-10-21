@@ -1,12 +1,19 @@
-import { SourceBuilder, AstNodeOptions, Nullable, Prettify, TupleWithCount, notNullish } from '@goast/core';
+import {
+  type AstNodeOptions,
+  notNullish,
+  type Nullable,
+  type Prettify,
+  type SourceBuilder,
+  type TupleWithCount,
+} from '@goast/core';
 
-import { ktGenericParameter } from './generic-parameter';
-import { KtType } from './types';
-import { KotlinFileBuilder } from '../../file-builder';
-import { KtNode } from '../node';
-import { writeKtNode, writeKtNodes } from '../utils/write-kt-node';
+import { ktGenericParameter } from './generic-parameter.ts';
+import type { KtType } from './types.ts';
+import { KotlinFileBuilder } from '../../file-builder.ts';
+import { KtNode } from '../node.ts';
+import { writeKtNode, writeKtNodes } from '../utils/write-kt-node.ts';
 
-import type { KtCall } from './call';
+import type { KtCall } from './call.ts';
 
 type Injects = never;
 

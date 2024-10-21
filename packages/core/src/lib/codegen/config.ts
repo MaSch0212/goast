@@ -1,9 +1,11 @@
-import { OpenApiParserOptions } from '../parse';
-import { defaultOpenApiTransformerOptions } from '../transform/types';
-import { SourceBuilderOptions, defaultSourceBuilderOptions } from '../utils/source-builder';
+import type { OpenApiParserOptions } from '../parse/index.ts';
+import { defaultOpenApiTransformerOptions } from '../transform/types.ts';
+import { defaultSourceBuilderOptions, type SourceBuilderOptions } from '../utils/source-builder.ts';
 
-export type OpenApiGeneratorConfig = SourceBuilderOptions &
-  OpenApiParserOptions & {
+export type OpenApiGeneratorConfig =
+  & SourceBuilderOptions
+  & OpenApiParserOptions
+  & {
     /**
      * The directory where the generated files should be saved.
      * @default 'generated'

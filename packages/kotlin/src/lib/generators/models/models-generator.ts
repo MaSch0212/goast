@@ -1,14 +1,20 @@
-import { ApiSchema, Factory, OpenApiGeneratorContext, OpenApiSchemasGenerationProviderBase } from '@goast/core';
-
-import { DefaultKotlinModelGenerator, KotlinModelGenerator } from './model-generator';
 import {
-  KotlinModelsGeneratorInput,
-  KotlinModelsGeneratorOutput,
-  KotlinModelsGeneratorConfig,
-  KotlinModelGeneratorOutput,
-  KotlinModelsGeneratorContext,
+  type ApiSchema,
+  Factory,
+  type MaybePromise,
+  type OpenApiGeneratorContext,
+  OpenApiSchemasGenerationProviderBase,
+} from '@goast/core';
+
+import { DefaultKotlinModelGenerator, type KotlinModelGenerator } from './model-generator.ts';
+import {
   defaultKotlinModelsGeneratorConfig,
-} from './models';
+  type KotlinModelGeneratorOutput,
+  type KotlinModelsGeneratorConfig,
+  type KotlinModelsGeneratorContext,
+  type KotlinModelsGeneratorInput,
+  type KotlinModelsGeneratorOutput,
+} from './models.ts';
 
 type Input = KotlinModelsGeneratorInput;
 type Output = KotlinModelsGeneratorOutput;
@@ -45,7 +51,7 @@ export class KotlinModelsGenerator extends OpenApiSchemasGenerationProviderBase<
     return this.getProviderContext(context, config, defaultKotlinModelsGeneratorConfig);
   }
 
-  protected override generateSchema(ctx: Context, schema: ApiSchema): SchemaOutput {
+  protected override generateSchema(ctx: Context, schema: ApiSchema): MaybePromise<SchemaOutput> {
     const modelGenerator = this._modelGeneratorFactory.create();
     return modelGenerator.generate({
       ...ctx,

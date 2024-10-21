@@ -6,16 +6,23 @@
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
-    "project.json": "tsconfig*.json, jest.*, .eslint*",
-    "package.json": "project.json, tsconfig*.json, pnpm-lock.yaml, jest.*, .editorconfig, .prettier*, .npmrc, nx.json, .eslint*",
-    "*.ts": "$(capture).spec.ts, $(capture).types.ts",
+    "deno.json": "deno.lock, .prettierrc, .prettierignore",
+    "*.ts": "$(capture).test.ts, $(capture).types.ts",
     "*.js": "$(capture).js.map"
   },
   "task.autoDetect": "off",
-  "[go]": {
-    "editor.codeActionsOnSave": {
-      "source.fixAll": "explicit"
-    }
+  "editor.defaultFormatter": "denoland.vscode-deno",
+  "[typescript]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
   },
   "typescript.tsdk": "node_modules\\typescript\\lib"
 }

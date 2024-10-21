@@ -34,6 +34,6 @@ export function isInstanceOf<T>(item: unknown, type: abstract new (...args: any[
   return item instanceof type;
 }
 
-export function getIsInstanceOf<T>(type: abstract new (...args: any[]) => T) {
-  return (item: unknown): item is T => item instanceof type;
+export function getIsInstanceOf<T>(type: abstract new (...args: any[]) => T): (item: unknown) => item is T {
+  return (item): item is T => item instanceof type;
 }

@@ -1,40 +1,41 @@
-/* eslint-disable unused-imports/no-unused-vars */
-import { dirname } from 'path';
+import { dirname } from 'node:path';
 
+// @deno-types="@types/fs-extra"
 import fs from 'fs-extra';
 
 import {
-  ApiSchema,
-  ApiSchemaProperty,
-  AppendValue,
-  AppendValueGroup,
-  SourceBuilder,
+  type ApiSchema,
+  type ApiSchemaProperty,
+  type AppendValue,
+  type AppendValueGroup,
   appendValueGroup,
   createOverwriteProxy,
   getSchemaReference,
+  type MaybePromise,
   modify,
   modifyEach,
   notNullish,
   resolveAnyOfAndAllOf,
+  type SourceBuilder,
   toCasing,
 } from '@goast/core';
 
-import { DefaultKotlinModelGeneratorArgs as Args } from '.';
-import { KotlinModelGeneratorContext, KotlinModelGeneratorOutput } from './models';
-import { kt } from '../../ast';
-import { KotlinFileBuilder } from '../../file-builder';
-import { KotlinFileGenerator } from '../file-generator';
+import type { DefaultKotlinModelGeneratorArgs as Args } from './index.ts';
+import type { KotlinModelGeneratorContext, KotlinModelGeneratorOutput } from './models.ts';
+import { kt } from '../../ast/index.ts';
+import { KotlinFileBuilder } from '../../file-builder.ts';
+import { KotlinFileGenerator } from '../file-generator.ts';
 
 type Context = KotlinModelGeneratorContext;
 type Output = KotlinModelGeneratorOutput;
 type Builder = KotlinFileBuilder;
 
 export interface KotlinModelGenerator<TOutput extends Output = Output> {
-  generate(ctx: Context): TOutput;
+  generate(ctx: Context): MaybePromise<TOutput>;
 }
 
 export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Output> implements KotlinModelGenerator {
-  public generate(ctx: Context): KotlinModelGeneratorOutput {
+  public generate(ctx: Context): MaybePromise<KotlinModelGeneratorOutput> {
     if (/\/(anyOf|allOf)(\/[0-9]+)?$/.test(ctx.schema.$src.path)) {
       // Do not generate types that are only used for anyOf and/or allOf
       return { type: kt.refs.any({ nullable: true }) };
@@ -58,7 +59,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     }
   }
 
-  protected getFileContent(ctx: Context, args: Args.GetFileContent): AppendValueGroup<Builder> {
+  protected getFileContent(ctx: Context, _args: Args.GetFileContent): AppendValueGroup<Builder> {
     return appendValueGroup<Builder>(
       [this.getSchemaDeclaration(ctx, { schema: this.normalizeSchema(ctx, { schema: ctx.schema }) })],
       '\n\n',
@@ -93,10 +94,10 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       members: [
         ...(schema.additionalProperties !== undefined && schema.additionalProperties !== false
           ? [
-              this.getAdditionalPropertiesProperty(ctx, { schema }),
-              this.getAdditionalPropertiesSetter(ctx, { schema }),
-              this.getAdditionalPropertiesGetter(ctx, { schema }),
-            ]
+            this.getAdditionalPropertiesProperty(ctx, { schema }),
+            this.getAdditionalPropertiesSetter(ctx, { schema }),
+            this.getAdditionalPropertiesGetter(ctx, { schema }),
+          ]
           : []),
       ],
     });
@@ -113,7 +114,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
         schema.deprecated ? kt.annotation(kt.refs.deprecated(), [kt.argument(kt.string(''))]) : null,
       ].filter(notNullish),
       members: this.sortProperties(ctx, { schema, properties: schema.properties.values() }).map((property) =>
-        this.getInterfaceProperty(ctx, { schema, property }),
+        this.getInterfaceProperty(ctx, { schema, property })
       ),
     });
   }
@@ -127,7 +128,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
         kt.enumValue(toCasing(String(x), ctx.config.enumValueNameCasing), {
           annotations: [kt.annotation(kt.refs.jackson.jsonProperty(), [kt.argument(kt.string(String(x)))])],
           arguments: [kt.argument(kt.string(String(x)))],
-        }),
+        })
       ) ?? [],
       {
         doc: kt.doc(schema.description?.trim()),
@@ -259,10 +260,9 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
         ].filter(notNullish),
         override: inheritedSchemas.some((schema) => this.hasProperty(ctx, { schema, propertyName: property.name })),
         property: 'readonly',
-        default:
-          property.schema.default !== undefined || !schema.required.has(property.name)
-            ? this.getDefaultValue(ctx, { schema: property.schema })
-            : null,
+        default: property.schema.default !== undefined || !schema.required.has(property.name)
+          ? this.getDefaultValue(ctx, { schema: property.schema })
+          : null,
       },
     );
   }
@@ -344,16 +344,16 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
 
     return ctx.config.addJacksonAnnotations && schema.discriminator
       ? kt.annotation(kt.refs.jackson.jsonTypeInfo(), [
-          kt.argument.named('use', 'JsonTypeInfo.Id.NAME'),
-          kt.argument.named(
-            'include',
-            'properties' in schema && schema.properties.has(schema.discriminator.propertyName)
-              ? 'JsonTypeInfo.As.EXISTING_PROPERTY'
-              : 'JsonTypeInfo.As.PROPERTY',
-          ),
-          kt.argument.named('property', kt.string(schema.discriminator.propertyName)),
-          kt.argument.named('visible', 'true'),
-        ])
+        kt.argument.named('use', 'JsonTypeInfo.Id.NAME'),
+        kt.argument.named(
+          'include',
+          'properties' in schema && schema.properties.has(schema.discriminator.propertyName)
+            ? 'JsonTypeInfo.As.EXISTING_PROPERTY'
+            : 'JsonTypeInfo.As.PROPERTY',
+        ),
+        kt.argument.named('property', kt.string(schema.discriminator.propertyName)),
+        kt.argument.named('visible', 'true'),
+      ])
       : null;
   }
 
@@ -367,22 +367,22 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     const entries = Object.entries(schema.discriminator.mapping);
     return entries.length > 0
       ? kt.annotation(
-          kt.refs.jackson.jsonSubTypes(),
-          entries.map(([value, schema]) =>
-            kt.argument(
-              kt.call(
-                [kt.refs.jackson.jsonSubTypes(), 'Type'],
-                [
-                  kt.argument.named(
-                    'value',
-                    modify(this.getType(ctx, { schema }), (x) => (x.classReference = true)),
-                  ),
-                  kt.argument.named('name', kt.string(value)),
-                ],
-              ),
+        kt.refs.jackson.jsonSubTypes(),
+        entries.map(([value, schema]) =>
+          kt.argument(
+            kt.call(
+              [kt.refs.jackson.jsonSubTypes(), 'Type'],
+              [
+                kt.argument.named(
+                  'value',
+                  modify(this.getType(ctx, { schema }), (x) => (x.classReference = true)),
+                ),
+                kt.argument.named('name', kt.string(value)),
+              ],
             ),
-          ),
-        )
+          )
+        ),
+      )
       : null;
   }
 
@@ -394,9 +394,9 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
 
     return ctx.config.addJacksonAnnotations
       ? kt.annotation(kt.refs.jackson.jsonProperty(), [
-          kt.argument(kt.string(property.name)),
-          schema.required.has(property.name) ? kt.argument.named('required', 'true') : null,
-        ])
+        kt.argument(kt.string(property.name)),
+        schema.required.has(property.name) ? kt.argument.named('required', 'true') : null,
+      ])
       : null;
   }
 
@@ -408,8 +408,8 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
 
     return ctx.config.addJacksonAnnotations && property.schema.custom['exclude-when-null'] === true
       ? kt.annotation(kt.refs.jackson.jsonInclude(), [
-          kt.argument(kt.call([kt.refs.jackson.jsonInclude(), 'Include', 'NON_NULL'])),
-        ])
+        kt.argument(kt.call([kt.refs.jackson.jsonInclude(), 'Include', 'NON_NULL'])),
+      ])
       : null;
   }
 
@@ -421,8 +421,8 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
 
     return ctx.config.addJakartaValidationAnnotations && property.schema.kind === 'string' && property.schema.pattern
       ? kt.annotation(kt.refs.jakarta.pattern(), [kt.argument.named('regexp', kt.string(property.schema.pattern))], {
-          target: 'get',
-        })
+        target: 'get',
+      })
       : null;
   }
 
@@ -433,7 +433,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     const { property } = args;
 
     return ctx.config.addJakartaValidationAnnotations &&
-      this.shouldGenerateTypeDeclaration(ctx, { schema: property.schema })
+        this.shouldGenerateTypeDeclaration(ctx, { schema: property.schema })
       ? kt.annotation(kt.refs.jakarta.valid(), [], { target: 'field' })
       : null;
   }
@@ -446,15 +446,15 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
 
     return ctx.config.addSwaggerAnnotations
       ? kt.annotation(kt.refs.swagger.schema(), [
-          property.schema.example !== undefined
-            ? kt.argument.named('example', kt.string(String(property.schema.example)))
-            : null,
-          schema.required.has(property.name) ? kt.argument.named('required', 'true') : null,
-          property.schema.description !== undefined
-            ? kt.argument.named('description', kt.string(property.schema.description))
-            : null,
-          property.schema.deprecated ? kt.argument.named('deprecated', kt.toNode(property.schema.deprecated)) : null,
-        ])
+        property.schema.example !== undefined
+          ? kt.argument.named('example', kt.string(String(property.schema.example)))
+          : null,
+        schema.required.has(property.name) ? kt.argument.named('required', 'true') : null,
+        property.schema.description !== undefined
+          ? kt.argument.named('description', kt.string(property.schema.description))
+          : null,
+        property.schema.deprecated ? kt.argument.named('deprecated', kt.toNode(property.schema.deprecated)) : null,
+      ])
       : null;
   }
   // #endregion
@@ -462,8 +462,9 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
   protected getPackageName(ctx: Context, args: Args.GetPackageName): string {
     const { schema } = args;
 
-    const packageSuffix =
-      typeof ctx.config.packageSuffix === 'string' ? ctx.config.packageSuffix : ctx.config.packageSuffix(schema);
+    const packageSuffix = typeof ctx.config.packageSuffix === 'string'
+      ? ctx.config.packageSuffix
+      : ctx.config.packageSuffix(schema);
     return ctx.config.packageName + packageSuffix;
   }
 
@@ -554,7 +555,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     return [...this.sortProperties(ctx, { schema, properties }), ...appendedProperties];
   }
 
-  protected sortProperties(ctx: Context, args: Args.SortProperties): ApiSchemaProperty[] {
+  protected sortProperties(_ctx: Context, args: Args.SortProperties): ApiSchemaProperty[] {
     return [...args.properties].sort((a, b) => classify(a) - classify(b));
 
     function classify(p: ApiSchemaProperty) {
@@ -568,10 +569,11 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     let { schema } = args;
 
     if (schema.kind === 'oneOf') {
-      schema =
-        ctx.config.oneOfBehavior === 'treat-as-any-of'
-          ? { ...(schema as any), kind: 'combined', anyOf: schema.oneOf, allOf: [], oneOf: undefined }
-          : { ...(schema as any), kind: 'combined', allOf: schema.oneOf, anyOf: [], oneOf: undefined };
+      schema = ctx.config.oneOfBehavior === 'treat-as-any-of'
+        // deno-lint-ignore no-explicit-any
+        ? { ...(schema as any), kind: 'combined', anyOf: schema.oneOf, allOf: [], oneOf: undefined }
+        // deno-lint-ignore no-explicit-any
+        : { ...(schema as any), kind: 'combined', allOf: schema.oneOf, anyOf: [], oneOf: undefined };
       ctx.schema = schema;
     }
     if (schema.kind === 'object' || schema.kind === 'combined') {

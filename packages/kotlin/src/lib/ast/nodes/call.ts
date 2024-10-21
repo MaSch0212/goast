@@ -1,9 +1,16 @@
-import { ArrayItem, AstNodeOptions, Nullable, Prettify, SourceBuilder, notNullish } from '@goast/core';
+import {
+  type ArrayItem,
+  type AstNodeOptions,
+  notNullish,
+  type Nullable,
+  type Prettify,
+  type SourceBuilder,
+} from '@goast/core';
 
-import { KtArgument, ktArgument } from './argument';
-import { KtType, KtValue } from './types';
-import { KtNode } from '../node';
-import { writeKtNode, writeKtNodes } from '../utils/write-kt-node';
+import { type KtArgument, ktArgument } from './argument.ts';
+import type { KtType, KtValue } from './types.ts';
+import { KtNode } from '../node.ts';
+import { writeKtNode, writeKtNodes } from '../utils/write-kt-node.ts';
 
 type Injects = never;
 

@@ -1,5 +1,5 @@
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { Observable, Subscription, filter, take, map, catchError, EMPTY } from 'rxjs';
+import { catchError, EMPTY, filter, map, type Observable, type Subscription, take } from 'rxjs';
 
 import type { HttpEvent } from '@angular/common/http';
 

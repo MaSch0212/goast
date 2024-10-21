@@ -1,4 +1,4 @@
-import { Nullable } from '@goast/core';
+import type { Nullable } from '@goast/core';
 
 export function toKotlinStringLiteral(value: Nullable<string>): string {
   if (!value) {

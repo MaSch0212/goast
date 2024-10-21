@@ -1,29 +1,35 @@
-import { dirname, resolve } from 'path';
+import { dirname, resolve } from 'node:path';
 
+// @deno-types="@types/fs-extra"
 import fs from 'fs-extra';
 
 import {
-  ApiService,
-  OpenApiGeneratorContext,
-  OpenApiServicesGenerationProviderBase,
-  Factory,
-  AppendValueGroup,
+  type ApiService,
+  type AppendValueGroup,
   appendValueGroup,
+  Factory,
+  type MaybePromise,
   notNullish,
+  type OpenApiGeneratorContext,
+  OpenApiServicesGenerationProviderBase,
 } from '@goast/core';
 
-import { DefaultTypeScriptFetchClientGenerator, TypeScriptFetchClientGenerator } from './fetch-client-generator';
 import {
-  TypeScriptFetchClientGeneratorOutput,
-  TypeScriptFetchClientsGeneratorConfig,
-  TypeScriptFetchClientsGeneratorContext,
-  TypeScriptFetchClientsGeneratorInput,
-  TypeScriptFetchClientsGeneratorOutput,
+  DefaultTypeScriptFetchClientGenerator,
+  type TypeScriptFetchClientGenerator,
+} from './fetch-client-generator.ts';
+import {
   defaultTypeScriptFetchClientsGeneratorConfig,
-} from './models';
-import { getReferenceFactories } from './refs';
-import { ts } from '../../../ast';
-import { TypeScriptFileBuilder } from '../../../file-builder';
+  type TypeScriptFetchClientGeneratorOutput,
+  type TypeScriptFetchClientsGeneratorConfig,
+  type TypeScriptFetchClientsGeneratorContext,
+  type TypeScriptFetchClientsGeneratorInput,
+  type TypeScriptFetchClientsGeneratorOutput,
+} from './models.ts';
+import { getReferenceFactories } from './refs.ts';
+import { ts } from '../../../ast/index.ts';
+import { TypeScriptFileBuilder } from '../../../file-builder.ts';
+import { copyAssetFile } from '../../../assets.ts';
 
 type Input = TypeScriptFetchClientsGeneratorInput;
 type Output = TypeScriptFetchClientsGeneratorOutput;
@@ -42,8 +48,8 @@ export class TypeScriptFetchClientsGenerator extends OpenApiServicesGenerationPr
 
   constructor(clientGeneratorFactory?: Factory<TypeScriptFetchClientGenerator, []>) {
     super();
-    this._clientGeneratorFactory =
-      clientGeneratorFactory ?? Factory.fromValue(new DefaultTypeScriptFetchClientGenerator());
+    this._clientGeneratorFactory = clientGeneratorFactory ??
+      Factory.fromValue(new DefaultTypeScriptFetchClientGenerator());
   }
 
   protected override initResult(): Output {
@@ -68,15 +74,13 @@ export class TypeScriptFetchClientsGenerator extends OpenApiServicesGenerationPr
     });
   }
 
-  public override onGenerate(ctx: Context): Output {
-    this.copyUtilsFiles(ctx);
-    const output = super.onGenerate(ctx);
-    output.typescript.indexFiles.clients = this.generateIndexFile(ctx);
-    output.typescript.indexFiles.clientInterfaces = this.generateInterfaceIndexFile(ctx);
-    return output;
+  protected override async generateAdditionalFiles(ctx: TypeScriptFetchClientsGeneratorContext): Promise<void> {
+    await this.copyUtilsFiles(ctx);
+    ctx.output.typescript.indexFiles.clients = this.generateIndexFile(ctx);
+    ctx.output.typescript.indexFiles.clientInterfaces = this.generateInterfaceIndexFile(ctx);
   }
 
-  protected override generateService(ctx: Context, service: ApiService): ServiceOutput {
+  protected override generateService(ctx: Context, service: ApiService): MaybePromise<ServiceOutput> {
     const clientGenerator = this._clientGeneratorFactory.create();
     return clientGenerator.generate({
       ...ctx,
@@ -135,8 +139,7 @@ export class TypeScriptFetchClientsGenerator extends OpenApiServicesGenerationPr
     return appendValueGroup(
       (iIndexPath && iIndexPath === cIndexPath
         ? Object.values(ctx.output.typescript.clients).flatMap((c) => [c.client, c.clientInterface])
-        : Object.values(ctx.output.typescript.clients).map((c) => c.client)
-      )
+        : Object.values(ctx.output.typescript.clients).map((c) => c.client))
         .filter(notNullish)
         .map((x) => ts.export(x.component, x.filePath)),
     );
@@ -151,14 +154,10 @@ export class TypeScriptFetchClientsGenerator extends OpenApiServicesGenerationPr
     );
   }
 
-  private copyUtilsFiles(ctx: Context): void {
-    const sourceDir = resolve(dirname(require.resolve('@goast/typescript')), '../assets/client/fetch');
+  private async copyUtilsFiles(ctx: Context): Promise<void> {
     const targetDir = resolve(ctx.config.outputDir, ctx.config.utilsDir);
-    fs.ensureDirSync(targetDir);
+    await fs.ensureDir(targetDir);
 
-    const files = fs.readdirSync(sourceDir);
-    for (const file of files) {
-      fs.copyFileSync(resolve(sourceDir, file), resolve(targetDir, file));
-    }
+    await copyAssetFile('client/fetch/fetch-client.utils.ts', targetDir);
   }
 }

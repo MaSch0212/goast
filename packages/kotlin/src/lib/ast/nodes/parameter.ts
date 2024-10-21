@@ -1,11 +1,18 @@
-import { SourceBuilder, AstNodeOptions, Prettify, notNullish, Nullable, BasicAppendValue } from '@goast/core';
+import {
+  type AstNodeOptions,
+  type BasicAppendValue,
+  notNullish,
+  type Nullable,
+  type Prettify,
+  type SourceBuilder,
+} from '@goast/core';
 
-import { KtAnnotation, ktAnnotation } from './annotation';
-import { KtType, KtValue } from './types';
-import { KtAccessModifier } from '../common';
-import { KtNode } from '../node';
-import { writeKtNode } from '../utils/write-kt-node';
-import { writeKtParameters } from '../utils/write-kt-parameters';
+import { type KtAnnotation, ktAnnotation } from './annotation.ts';
+import type { KtType, KtValue } from './types.ts';
+import type { KtAccessModifier } from '../common.ts';
+import { KtNode } from '../node.ts';
+import { writeKtNode } from '../utils/write-kt-node.ts';
+import { writeKtParameters } from '../utils/write-kt-parameters.ts';
 
 type Injects = 'modifiers' | 'annotations' | 'name' | 'type' | 'default';
 

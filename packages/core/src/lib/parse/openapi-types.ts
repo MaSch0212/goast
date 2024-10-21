@@ -4,8 +4,10 @@ export type OpenApiReference = {
    */
   $ref: string;
 };
-export type OpenApiObject<TMarker extends string> = Record<`x-${string}`, unknown> &
-  Partial<OpenApiReference> & {
+export type OpenApiObject<TMarker extends string> =
+  & Record<`x-${string}`, unknown>
+  & Partial<OpenApiReference>
+  & {
     __marker?: TMarker;
   };
 
@@ -288,29 +290,32 @@ export type OpenApiEncoding = OpenApiObject<'encoding'> & {
 };
 
 export type OpenApiHttpMethod = 'get' | 'put' | 'post' | 'delete' | 'options' | 'head' | 'patch' | 'trace';
-export type OpenApiPathItem = OpenApiObject<'path-item'> & {
-  /**
-   * An optional, string summary, intended to apply to all operations in this path.
-   */
-  summary?: string;
-  /**
-   * An optional, string description, intended to apply to all operations in this path. CommonMark syntax MAY be used for rich text representation.
-   */
-  description?: string;
-  /**
-   * Servers MAY be referenced here to override the servers defined at the OpenAPI Object's root level.
-   */
-  servers?: OpenApiServer[];
-  /**
-   * A list of parameters that are applicable for all the operations described under this path. These parameters can be overridden at the operation level, but cannot be removed there. The list MUST NOT include duplicated parameters. A unique parameter is defined by a combination of a name and location. The list can use the Reference Object to link to parameters that are defined at the OpenAPI Object's components/parameters.
-   */
-  parameters?: OpenApiParameter[];
-} & {
-  /**
-   * The list of operations available on the path.
-   */
-  [method in OpenApiHttpMethod]?: OpenApiOperation;
-};
+export type OpenApiPathItem =
+  & OpenApiObject<'path-item'>
+  & {
+    /**
+     * An optional, string summary, intended to apply to all operations in this path.
+     */
+    summary?: string;
+    /**
+     * An optional, string description, intended to apply to all operations in this path. CommonMark syntax MAY be used for rich text representation.
+     */
+    description?: string;
+    /**
+     * Servers MAY be referenced here to override the servers defined at the OpenAPI Object's root level.
+     */
+    servers?: OpenApiServer[];
+    /**
+     * A list of parameters that are applicable for all the operations described under this path. These parameters can be overridden at the operation level, but cannot be removed there. The list MUST NOT include duplicated parameters. A unique parameter is defined by a combination of a name and location. The list can use the Reference Object to link to parameters that are defined at the OpenAPI Object's components/parameters.
+     */
+    parameters?: OpenApiParameter[];
+  }
+  & {
+    /**
+     * The list of operations available on the path.
+     */
+    [method in OpenApiHttpMethod]?: OpenApiOperation;
+  };
 export type KnownOpenApiParameterTarget = 'path' | 'query' | 'header' | 'cookie' | 'body' | 'form';
 export type OpenApiParameterTarget = KnownOpenApiParameterTarget | string;
 export type OpenApiParameter = OpenApiParameterBase<'parameter'> & {

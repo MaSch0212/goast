@@ -1,6 +1,6 @@
-import { EasyNetworkStub } from 'easy-network-stub';
+import type { EasyNetworkStub } from 'easy-network-stub';
 
-import type { HttpMethod, RouteResponseCallback, ErrorResponse } from 'easy-network-stub';
+import type { ErrorResponse, HttpMethod, RouteResponseCallback } from 'easy-network-stub';
 
 /**
  * Options for the `EasyNetworkStubWrapper`.
@@ -74,9 +74,8 @@ export type StrictRouteResponseCallback<T, P extends string, R> = (
 
 type _UnionToIntersection<U> = (U extends any ? (x: U) => void : never) extends (x: infer I) => void ? I : never;
 type __StubResponder<T extends Record<number, unknown>, S> = S extends number
-  ? [T[S]] extends [never]
-    ? (statusCode: S) => ErrorResponse<T[S]>
-    : (statusCode: S, content: T[S]) => ErrorResponse<T[S]>
+  ? [T[S]] extends [never] ? (statusCode: S) => ErrorResponse<T[S]>
+  : (statusCode: S, content: T[S]) => ErrorResponse<T[S]>
   : never;
 type _StubResponder<T extends Record<number, unknown>> = _UnionToIntersection<__StubResponder<T, keyof T>>;
 const untypedResponder = (statusCode: number, content?: unknown) => ({ statusCode, content });

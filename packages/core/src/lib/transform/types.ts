@@ -1,19 +1,19 @@
-import {
+import type {
+  ApiContent,
+  ApiData,
+  ApiHeader,
+  ApiParameter,
+  ApiPath,
+  ApiRequestBody,
+  ApiResponse,
   ApiSchema,
   ApiSchemaExtensions,
   ApiSchemaKind,
-  ApiPath,
-  ApiData,
   ApiService,
-  ApiParameter,
-  ApiRequestBody,
-  ApiResponse,
-  ApiContent,
-  ApiHeader,
-} from './api-types';
-import { IdGenerator } from './helpers';
-import { OpenApiCollectorData } from '../collect/types';
-import { ArrayItem } from '../utils/type.utils';
+} from './api-types.ts';
+import type { IdGenerator } from './helpers.ts';
+import type { OpenApiCollectorData } from '../collect/types.ts';
+import type { ArrayItem } from '../utils/type.utils.ts';
 
 export type OpenApiTransformerOptions = {
   /**

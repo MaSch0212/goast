@@ -1,7 +1,7 @@
-import { ApiService } from './api-types';
-import { getOpenApiObjectIdentifier } from './helpers';
-import { OpenApiTransformerContext } from './types';
-import { Deref, OpenApiDocument, OpenApiTag } from '../parse';
+import type { ApiService } from './api-types.ts';
+import { getOpenApiObjectIdentifier } from './helpers.ts';
+import type { OpenApiTransformerContext } from './types.ts';
+import type { Deref, OpenApiDocument, OpenApiTag } from '../parse/index.ts';
 
 export function transformDocument(context: OpenApiTransformerContext, document: Deref<OpenApiDocument>) {
   for (const tag of document.tags ?? []) {

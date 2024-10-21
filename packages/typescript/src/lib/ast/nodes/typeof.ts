@@ -1,8 +1,8 @@
-import { SourceBuilder, AstNodeOptions } from '@goast/core';
+import type { AstNodeOptions, SourceBuilder } from '@goast/core';
 
-import { TsValue } from './types';
-import { TsNode } from '../node';
-import { writeTsNode, writeTsNodes } from '../utils/write-ts-nodes';
+import type { TsValue } from './types.ts';
+import { TsNode } from '../node.ts';
+import { writeTsNode, writeTsNodes } from '../utils/write-ts-nodes.ts';
 
 type Injects = 'value';
 

@@ -1,4 +1,4 @@
-import { AppendValue, Prettify, StringBuilder } from '../utils';
+import type { AppendValue, Prettify, StringBuilder } from '../utils/index.ts';
 
 const NODE_HISTORY_SYMBOL = Symbol('node-history');
 type BuilderWithHistory<T extends StringBuilder = StringBuilder> = T & { [NODE_HISTORY_SYMBOL]?: AstNode[] };

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { EmptyConstructor, FunctionNames } from './type.utils';
+import type { EmptyConstructor, FunctionNames } from './type.utils.ts';
 
 type MatchingFunctionNames<T, TAction> = {
   [K in keyof T]: T[K] extends TAction ? K : never;

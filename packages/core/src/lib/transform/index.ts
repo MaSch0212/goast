@@ -1,2 +1,2 @@
-export * from './api-types';
-export * from './transformer';
+export * from './api-types.ts';
+export * from './transformer.ts';

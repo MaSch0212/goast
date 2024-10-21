@@ -1,4 +1,4 @@
-import {
+import type {
   ApiSchema,
   ApiService,
   DefaultGenerationProviderConfig,
@@ -7,12 +7,12 @@ import {
   OpenApiServicesGenerationProviderContext,
 } from '@goast/core';
 
-import { getReferenceFactories } from './refs';
-import { ts } from '../../../ast';
-import { TypeScriptExportOutput } from '../../../common-results';
-import { TypeScriptGeneratorConfig, defaultTypeScriptGeneratorConfig } from '../../../config';
-import { TypeScriptFileBuilder } from '../../../file-builder';
-import { TypeScriptModelGeneratorOutput } from '../../models';
+import type { getReferenceFactories } from './refs.ts';
+import { ts } from '../../../ast/index.ts';
+import type { TypeScriptExportOutput } from '../../../common-results.ts';
+import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from '../../../config.ts';
+import type { TypeScriptFileBuilder } from '../../../file-builder.ts';
+import type { TypeScriptModelGeneratorOutput } from '../../models/index.ts';
 
 export type TypeScriptEasyNetworkStubsGeneratorConfig = TypeScriptGeneratorConfig & {
   /**
@@ -69,22 +69,23 @@ export type TypeScriptEasyNetworkStubsGeneratorConfig = TypeScriptGeneratorConfi
   utilsDir: string;
 };
 
-export const defaultTypeScriptEasyNetworkStubsGeneratorConfig: DefaultGenerationProviderConfig<TypeScriptEasyNetworkStubsGeneratorConfig> =
-  {
-    ...defaultTypeScriptGeneratorConfig,
+export const defaultTypeScriptEasyNetworkStubsGeneratorConfig: DefaultGenerationProviderConfig<
+  TypeScriptEasyNetworkStubsGeneratorConfig
+> = {
+  ...defaultTypeScriptGeneratorConfig,
 
-    domainName: undefined,
-    defaultStatusCodeResponseTypes: {
-      401: ts.refs.never(),
-      403: ts.refs.never(),
-      500: ts.refs.never(),
-    },
+  domainName: undefined,
+  defaultStatusCodeResponseTypes: {
+    401: ts.refs.never(),
+    403: ts.refs.never(),
+    500: ts.refs.never(),
+  },
 
-    stubsDir: 'stubs',
-    stubFileNameCasing: { casing: 'kebab', suffix: '.stubs' },
-    stubsIndexFile: 'stubs.ts',
-    utilsDir: 'utils',
-  };
+  stubsDir: 'stubs',
+  stubFileNameCasing: { casing: 'kebab', suffix: '.stubs' },
+  stubsIndexFile: 'stubs.ts',
+  utilsDir: 'utils',
+};
 
 export type TypeScriptEasyNetworkStubsGeneratorInput = {
   typescript: {
@@ -107,14 +108,16 @@ export type TypeScriptEasyNetworkStubsGeneratorOutput = {
 
 export type TypeScriptEasyNetworkStubGeneratorOutput = TypeScriptExportOutput;
 
-export type TypeScriptEasyNetworkStubsGeneratorContext = OpenApiServicesGenerationProviderContext<
-  TypeScriptEasyNetworkStubsGeneratorInput,
-  TypeScriptEasyNetworkStubsGeneratorOutput,
-  TypeScriptEasyNetworkStubsGeneratorConfig,
-  TypeScriptEasyNetworkStubGeneratorOutput
-> & {
-  refs: ReturnType<typeof getReferenceFactories>;
-};
+export type TypeScriptEasyNetworkStubsGeneratorContext =
+  & OpenApiServicesGenerationProviderContext<
+    TypeScriptEasyNetworkStubsGeneratorInput,
+    TypeScriptEasyNetworkStubsGeneratorOutput,
+    TypeScriptEasyNetworkStubsGeneratorConfig,
+    TypeScriptEasyNetworkStubGeneratorOutput
+  >
+  & {
+    refs: ReturnType<typeof getReferenceFactories>;
+  };
 
 export type TypeScriptEasyNetworkStubGeneratorContext = TypeScriptEasyNetworkStubsGeneratorContext & {
   readonly service: ApiService;

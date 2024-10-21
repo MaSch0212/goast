@@ -1,61 +1,61 @@
-export { KtAccessModifier as AccessModifier } from './common';
-export { KtNode as Node } from './node';
+export { type KtAccessModifier as AccessModifier } from './common.ts';
+export { KtNode as Node } from './node.ts';
 export {
   KtAnnotation as Annotation,
-  KtAnnotationTarget as AnnotationTarget,
   ktAnnotation as annotation,
-} from './nodes/annotation';
-export { KtArgument as Argument, ktArgument as argument } from './nodes/argument';
-export { KtCall as Call, ktCall as call } from './nodes/call';
+  type KtAnnotationTarget as AnnotationTarget,
+} from './nodes/annotation.ts';
+export { KtArgument as Argument, ktArgument as argument } from './nodes/argument.ts';
+export { KtCall as Call, ktCall as call } from './nodes/call.ts';
 export {
   KtClass as Class,
-  KtClassKind as ClassKind,
-  KtClassMember as ClassMember,
   ktClass as class,
-} from './nodes/class';
+  type KtClassKind as ClassKind,
+  type KtClassMember as ClassMember,
+} from './nodes/class.ts';
 export {
   KtCollectionLiteral as CollectionLiteral,
   ktCollectionLiteral as collectionLiteral,
-} from './nodes/collection-literal';
+} from './nodes/collection-literal.ts';
 export {
   KtConstructor as Constructor,
-  KtDelegateTarget as DelegateTarget,
   ktConstructor as constructor,
-} from './nodes/constructor';
-export { KtDoc as Doc, ktDoc as doc } from './nodes/doc';
-export { KtDocTag as DocTag, ktDocTag as docTag } from './nodes/doc-tag';
-export { KtEnum as Enum, KtEnumMember as EnumMember, ktEnum as enum } from './nodes/enum';
+  type KtDelegateTarget as DelegateTarget,
+} from './nodes/constructor.ts';
+export { KtDoc as Doc, ktDoc as doc } from './nodes/doc.ts';
+export { KtDocTag as DocTag, ktDocTag as docTag } from './nodes/doc-tag.ts';
+export { KtEnum as Enum, ktEnum as enum, type KtEnumMember as EnumMember } from './nodes/enum.ts';
 export {
   KtEnumValue as EnumValue,
-  KtEnumValueMember as EnumValueMember,
   ktEnumValue as enumValue,
-} from './nodes/enum-value';
-export { KtFunction as Function, ktFunction as function } from './nodes/function';
+  type KtEnumValueMember as EnumValueMember,
+} from './nodes/enum-value.ts';
+export { KtFunction as Function, ktFunction as function } from './nodes/function.ts';
 export {
   KtGenericParameter as GenericParameter,
   ktGenericParameter as genericParameter,
-} from './nodes/generic-parameter';
-export { KtInitBlock as InitBlock, ktInitBlock as initBlock } from './nodes/init-block';
+} from './nodes/generic-parameter.ts';
+export { KtInitBlock as InitBlock, ktInitBlock as initBlock } from './nodes/init-block.ts';
 export {
   KtInterface as Interface,
-  KtInterfaceMember as InterfaceMember,
   ktInterface as interface,
-} from './nodes/interface';
-export { KtLambda as Lambda, ktLambda as lambda } from './nodes/lambda';
-export { KtLambdaType as LambdaType, ktLambdaType as lambdaType } from './nodes/lambda-type';
-export { KtObject as Object, KtObjectMember as ObjectMember, ktObject as object } from './nodes/object';
-export { KtParameter as Parameter, ktParameter as parameter } from './nodes/parameter';
+  type KtInterfaceMember as InterfaceMember,
+} from './nodes/interface.ts';
+export { KtLambda as Lambda, ktLambda as lambda } from './nodes/lambda.ts';
+export { KtLambdaType as LambdaType, ktLambdaType as lambdaType } from './nodes/lambda-type.ts';
+export { KtObject as Object, ktObject as object, type KtObjectMember as ObjectMember } from './nodes/object.ts';
+export { KtParameter as Parameter, ktParameter as parameter } from './nodes/parameter.ts';
 export {
   KtProperty as Property,
+  ktProperty as property,
   KtPropertyAccessor as PropertyAccessor,
   KtPropertyGetter as PropertyGetter,
   KtPropertySetter as PropertySetter,
-  ktProperty as property,
-} from './nodes/property';
-export { KtReference as Reference, ktReference as reference } from './nodes/reference';
-export { KtString as String, ktString as string } from './nodes/string';
-export { KtType as Type, KtValue as Value } from './nodes/types';
-export * as refs from './references';
-export { getKotlinBuilderOptions as getBuilderOptions } from './utils/get-kotlin-builder-options';
-export { toKtNode as toNode } from './utils/to-kt-node';
-export { writeKtNode as writeNode, writeKtNodes as writeNodes } from './utils/write-kt-node';
+} from './nodes/property.ts';
+export { KtReference as Reference, ktReference as reference } from './nodes/reference.ts';
+export { KtString as String, ktString as string } from './nodes/string.ts';
+export { type KtType as Type, type KtValue as Value } from './nodes/types.ts';
+export * as refs from './references/index.ts';
+export { getKotlinBuilderOptions as getBuilderOptions } from './utils/get-kotlin-builder-options.ts';
+export { toKtNode as toNode } from './utils/to-kt-node.ts';
+export { writeKtNode as writeNode, writeKtNodes as writeNodes } from './utils/write-kt-node.ts';

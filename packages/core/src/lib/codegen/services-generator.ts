@@ -1,13 +1,14 @@
-import { DefaultGenerationProviderConfig, OpenApiGenerationProviderBase } from './generator';
-import { addSourceIfTest } from './internal-utils';
-import {
+import { type DefaultGenerationProviderConfig, OpenApiGenerationProviderBase } from './generator.ts';
+import { addSourceIfTest } from './internal-utils.ts';
+import type {
+  AnyConfig,
+  OpenApiGenerationProviderContext,
+  OpenApiGeneratorContext,
   OpenApiGeneratorInput,
   OpenApiGeneratorOutput,
-  AnyConfig,
-  OpenApiGeneratorContext,
-  OpenApiGenerationProviderContext,
-} from './types';
-import { ApiService } from '../transform';
+} from './types.ts';
+import type { ApiService } from '../transform/index.ts';
+import type { MaybePromise } from '../utils/type.utils.ts';
 
 export type OpenApiServicesGenerationProviderContext<
   TInput extends OpenApiGeneratorInput,
@@ -38,22 +39,26 @@ export abstract class OpenApiServicesGenerationProviderBase<
     });
   }
 
-  public override onGenerate(ctx: TContext): TOutput {
+  protected override async onGenerate(ctx: TContext): Promise<TOutput> {
     for (const service of ctx.data.services) {
-      this.getServiceResult(ctx, service);
+      await this.getServiceResult(ctx, service);
     }
+
+    await this.generateAdditionalFiles(ctx);
 
     return ctx.output;
   }
 
-  public getServiceResult(ctx: TContext, service: ApiService): TServiceOutput {
+  protected async getServiceResult(ctx: TContext, service: ApiService): Promise<TServiceOutput> {
     const existingResult = ctx.existingServiceResults.get(service.id);
     if (existingResult) return existingResult;
 
-    const result = this.generateService(ctx, service);
+    const result = await this.generateService(ctx, service);
 
-    addSourceIfTest(ctx.config, result, () =>
-      service.$src ? `${service.$src.file}#${service.$src.path}` : `tag:${service.name}`,
+    addSourceIfTest(
+      ctx.config,
+      result,
+      () => service.$src ? `${service.$src.file}#${service.$src.path}` : `tag:${service.name}`,
     );
     this.addServiceResult(ctx, service, result);
     return result;
@@ -61,7 +66,12 @@ export abstract class OpenApiServicesGenerationProviderBase<
 
   protected abstract initResult(ctx: OpenApiGenerationProviderContext<TInput, TConfig>): TOutput;
 
-  protected abstract generateService(ctx: TContext, service: ApiService): TServiceOutput;
+  protected abstract generateService(ctx: TContext, service: ApiService): MaybePromise<TServiceOutput>;
 
   protected abstract addServiceResult(ctx: TContext, service: ApiService, result: TServiceOutput): void;
+
+  // deno-lint-ignore no-unused-vars
+  protected generateAdditionalFiles(ctx: TContext): MaybePromise<void> {
+    // Override if needed
+  }
 }

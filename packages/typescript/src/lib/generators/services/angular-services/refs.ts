@@ -1,10 +1,10 @@
-import { join, resolve } from 'path';
+import { join, resolve } from 'node:path';
 
 import { toCasing } from '@goast/core';
 
-import { ts } from '../../../ast';
+import { ts } from '../../../ast/index.ts';
 
-import type { TypeScriptAngularServicesGeneratorConfig } from './models';
+import type { TypeScriptAngularServicesGeneratorConfig } from './models.ts';
 
 // See packages/typescript/assets/client/angular for reference
 export function getReferenceFactories(options: TypeScriptAngularServicesGeneratorConfig) {
@@ -14,7 +14,9 @@ export function getReferenceFactories(options: TypeScriptAngularServicesGenerato
     abortablePromise: ts.reference.genericFactory<1>(
       'AbortablePromise',
       join(utilsDirPath, 'angular-service.utils.ts'),
-      { importType: 'type-import' },
+      {
+        importType: 'type-import',
+      },
     ),
     waitForResponse: ts.reference.genericFactory<1>('waitForResponse', join(utilsDirPath, 'angular-service.utils.ts')),
 

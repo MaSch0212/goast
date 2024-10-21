@@ -1,19 +1,19 @@
 import {
-  SourceBuilder,
-  AstNodeOptions,
-  StringSuggestions,
-  ParametersWithOverloads,
-  Prettify,
-  SingleOrMultiple,
-  notNullish,
-  Nullable,
-  BasicAppendValue,
+  type AstNodeOptions,
+  type BasicAppendValue,
   basicAppendValueGroup,
+  notNullish,
+  type Nullable,
+  type ParametersWithOverloads,
+  type Prettify,
+  type SingleOrMultiple,
+  type SourceBuilder,
+  type StringSuggestions,
 } from '@goast/core';
 
-import { isKotlinAppendValue } from '../../file-builder';
-import { KtNode } from '../node';
-import { KtAppendValue, writeKtNodes } from '../utils/write-kt-node';
+import { isKotlinAppendValue } from '../../file-builder.ts';
+import { KtNode } from '../node.ts';
+import { type KtAppendValue, writeKtNodes } from '../utils/write-kt-node.ts';
 
 type Injects = never;
 
@@ -50,28 +50,33 @@ export class KtDocTag<TBuilder extends SourceBuilder, TInjects extends string = 
 
 type _KtDocTagOpt<TBuilder extends SourceBuilder> = Prettify<Omit<Options<TBuilder>, 'tag'>>;
 
-type _KtDocTagArgsMap<TBuilder extends SourceBuilder> = {
-  suppress(options?: _KtDocTagOpt<TBuilder>): never;
-} & {
-  [K in 'return' | 'constructor' | 'receiver' | 'author' | 'since']: (
-    description: BasicAppendValue<TBuilder>,
-    options?: _KtDocTagOpt<TBuilder>,
-  ) => never;
-} & {
-  [K in 'param' | 'property']: (
-    name: string,
-    description: BasicAppendValue<TBuilder>,
-    options?: _KtDocTagOpt<TBuilder>,
-  ) => never;
-} & {
-  [K in 'see' | 'sample']: (identifier: string, options?: _KtDocTagOpt<TBuilder>) => never;
-} & {
-  [K in 'throws' | 'exception']: (
-    $class: BasicAppendValue<TBuilder>,
-    description: BasicAppendValue<TBuilder>,
-    options?: _KtDocTagOpt<TBuilder>,
-  ) => never;
-};
+type _KtDocTagArgsMap<TBuilder extends SourceBuilder> =
+  & {
+    suppress(options?: _KtDocTagOpt<TBuilder>): never;
+  }
+  & {
+    [K in 'return' | 'constructor' | 'receiver' | 'author' | 'since']: (
+      description: BasicAppendValue<TBuilder>,
+      options?: _KtDocTagOpt<TBuilder>,
+    ) => never;
+  }
+  & {
+    [K in 'param' | 'property']: (
+      name: string,
+      description: BasicAppendValue<TBuilder>,
+      options?: _KtDocTagOpt<TBuilder>,
+    ) => never;
+  }
+  & {
+    [K in 'see' | 'sample']: (identifier: string, options?: _KtDocTagOpt<TBuilder>) => never;
+  }
+  & {
+    [K in 'throws' | 'exception']: (
+      $class: BasicAppendValue<TBuilder>,
+      description: BasicAppendValue<TBuilder>,
+      options?: _KtDocTagOpt<TBuilder>,
+    ) => never;
+  };
 
 const tagsWithDescription = [
   'return',
@@ -89,10 +94,10 @@ type _KtDocTagArgs<
   TTagName extends StringSuggestions<keyof _KtDocTagArgsMap<TBuilder>>,
   TBuilder extends SourceBuilder,
 > = TTagName extends keyof _KtDocTagArgsMap<TBuilder>
-  ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    _KtDocTagArgsMap<TBuilder>[TTagName] extends (...args: any[]) => any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ? _KtDocTagArgsMap<TBuilder>[TTagName] extends (...args: any[]) => any
     ? ParametersWithOverloads<_KtDocTagArgsMap<TBuilder>[TTagName]>
-    : never
+  : never
   : [options?: _KtDocTagOpt<TBuilder>];
 
 function createDocTag<

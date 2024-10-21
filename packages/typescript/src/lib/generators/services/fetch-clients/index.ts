@@ -1,3 +1,3 @@
-export * from './fetch-client-generator';
-export * from './fetch-clients-generator';
-export * from './models';
+export * from './fetch-client-generator.ts';
+export * from './fetch-clients-generator.ts';
+export * from './models.ts';

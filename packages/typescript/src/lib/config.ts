@@ -1,6 +1,6 @@
-import { DefaultGenerationProviderConfig, ExtendedStringCasing, OpenApiGeneratorConfig } from '@goast/core';
+import type { DefaultGenerationProviderConfig, ExtendedStringCasing, OpenApiGeneratorConfig } from '@goast/core';
 
-import { ImportModuleTransformer } from './utils';
+import type { ImportModuleTransformer } from './utils.ts';
 
 export type TypeScriptGeneratorConfig = OpenApiGeneratorConfig & {
   /**

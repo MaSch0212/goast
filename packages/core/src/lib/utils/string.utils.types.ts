@@ -47,17 +47,12 @@ export type StringCasingWithOptions<T extends StringCasing = StringCasing> = {
 
 export type ExtendedStringCasing = StringCasing | StringCasingWithOptions;
 
-export type CaseOptions<T extends StringCasing> = T extends 'camel'
-  ? Partial<CamelCaseOptions>
-  : T extends 'pascal'
-    ? Partial<PascalCaseOptions>
-    : T extends 'kebab'
-      ? Partial<KebabCaseOptions>
-      : T extends 'snake'
-        ? Partial<SnakeCaseOptions>
-        : T extends 'custom'
-          ? CustomCaseOptions
-          : never;
+export type CaseOptions<T extends StringCasing> = T extends 'camel' ? Partial<CamelCaseOptions>
+  : T extends 'pascal' ? Partial<PascalCaseOptions>
+  : T extends 'kebab' ? Partial<KebabCaseOptions>
+  : T extends 'snake' ? Partial<SnakeCaseOptions>
+  : T extends 'custom' ? CustomCaseOptions
+  : never;
 
 export type BaseCaseOptions = {
   /**
@@ -146,36 +141,39 @@ export type SnakeCaseOptions = BaseCaseOptions & {
   firstWordCasing?: WordCasing;
 };
 
-export type CustomCaseOptions = BaseCaseOptions & {
-  /**
-   * Specifies the separator between words.
-   * @default undefined
-   * @example
-   * toCustomCase('Foo bAR', { wordCasing: 'first-upper-then-lower', wordSeparator: '~' }) // => 'Foo~Bar'
-   */
-  wordSeparator?: string;
-} & (
+export type CustomCaseOptions =
+  & BaseCaseOptions
+  & {
+    /**
+     * Specifies the separator between words.
+     * @default undefined
+     * @example
+     * toCustomCase('Foo bAR', { wordCasing: 'first-upper-then-lower', wordSeparator: '~' }) // => 'Foo~Bar'
+     */
+    wordSeparator?: string;
+  }
+  & (
     | {
-        /**
-         * Specifies the casing of words.
-         * @example
-         * toCustomCase('Foo bAR', { wordCasing: 'first-upper-then-lower' }) // => 'FooBar'
-         */
-        wordCasing: WordCasing;
-        /**
-         * Specifies the casing of the first word. If undefined uses the casing option.
-         * @default undefined
-         * @example
-         * toCustomCase('Foo bAR', { wordCasing: 'first-upper-then-lower', firstWordCasing: 'all-upper' }) // => 'FOOBar'
-         */
-        firstWordCasing?: WordCasing;
-      }
+      /**
+       * Specifies the casing of words.
+       * @example
+       * toCustomCase('Foo bAR', { wordCasing: 'first-upper-then-lower' }) // => 'FooBar'
+       */
+      wordCasing: WordCasing;
+      /**
+       * Specifies the casing of the first word. If undefined uses the casing option.
+       * @default undefined
+       * @example
+       * toCustomCase('Foo bAR', { wordCasing: 'first-upper-then-lower', firstWordCasing: 'all-upper' }) // => 'FOOBar'
+       */
+      firstWordCasing?: WordCasing;
+    }
     | {
-        /**
-         * Specifies the casing of words.
-         * @example
-         * toCustomCase('Foo bAR baz', { wordCasing: (wordIndex) => (wordIndex % 2 === 0 ? 'all-upper' : 'all-lower') }) // => 'FOObarBAZ'
-         */
-        wordCasing: (wordIndex: number) => WordCasing;
-      }
+      /**
+       * Specifies the casing of words.
+       * @example
+       * toCustomCase('Foo bAR baz', { wordCasing: (wordIndex) => (wordIndex % 2 === 0 ? 'all-upper' : 'all-lower') }) // => 'FOObarBAZ'
+       */
+      wordCasing: (wordIndex: number) => WordCasing;
+    }
   );

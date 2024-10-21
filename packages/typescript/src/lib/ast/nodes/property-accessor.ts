@@ -1,12 +1,12 @@
-import { SourceBuilder, AstNodeOptions, AppendValue, Nullable, notNullish } from '@goast/core';
+import { type AppendValue, type AstNodeOptions, notNullish, type Nullable, type SourceBuilder } from '@goast/core';
 
-import { TsDecorator, tsDecorator } from './decorator';
-import { TsDoc, tsDoc } from './doc';
-import { TsProperty } from './property';
-import { TsType } from './types';
-import { TsAccessModifier } from '../common';
-import { TsNode } from '../node';
-import { writeTsNode } from '../utils/write-ts-nodes';
+import { type TsDecorator, tsDecorator } from './decorator.ts';
+import { type TsDoc, tsDoc } from './doc.ts';
+import type { TsProperty } from './property.ts';
+import type { TsType } from './types.ts';
+import type { TsAccessModifier } from '../common.ts';
+import { TsNode } from '../node.ts';
+import { writeTsNode } from '../utils/write-ts-nodes.ts';
 
 type Injects = never;
 
@@ -98,10 +98,11 @@ abstract class TsPropertyAccessor<TBuilder extends SourceBuilder, TInjects exten
   }
 }
 
-export class TsPropertySetter<
-  TBuilder extends SourceBuilder,
-  TInjects extends string = never,
-> extends TsPropertyAccessor<TBuilder, TInjects> {
+export class TsPropertySetter<TBuilder extends SourceBuilder, TInjects extends string = never>
+  extends TsPropertyAccessor<
+    TBuilder,
+    TInjects
+  > {
   protected override onWrite(builder: TBuilder): void {
     tsDoc.write(builder, this.doc);
     tsDecorator.write(builder, this.decorators);
@@ -131,10 +132,11 @@ export class TsPropertySetter<
   }
 }
 
-export class TsPropertyGetter<
-  TBuilder extends SourceBuilder,
-  TInjects extends string = never,
-> extends TsPropertyAccessor<TBuilder, TInjects> {
+export class TsPropertyGetter<TBuilder extends SourceBuilder, TInjects extends string = never>
+  extends TsPropertyAccessor<
+    TBuilder,
+    TInjects
+  > {
   protected override onWrite(builder: TBuilder): void {
     tsDoc.write(builder, this.doc);
     tsDecorator.write(builder, this.decorators);

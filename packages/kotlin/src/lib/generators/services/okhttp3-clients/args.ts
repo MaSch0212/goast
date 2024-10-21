@@ -1,13 +1,13 @@
-import { ApiEndpoint, ApiParameter, ApiSchema, SourceBuilder } from '@goast/core';
+import type { ApiEndpoint, ApiParameter, ApiSchema, SourceBuilder } from '@goast/core';
 
-import { kt } from '../../../ast';
-import { ApiParameterWithMultipartInfo } from '../../../types';
+import type { kt } from '../../../ast/index.ts';
+import type { ApiParameterWithMultipartInfo } from '../../../types.ts';
 
-export type GetClientFileContent = {};
+export type GetClientFileContent = object;
 
-export type GetClientClass = {};
+export type GetClientClass = object;
 
-export type GetClientCompanionObject = {};
+export type GetClientCompanionObject = object;
 
 export type GetEndpointClientMembers = { endpoint: ApiEndpoint; parameters: ApiParameter[] };
 
@@ -45,7 +45,7 @@ export type GetEndpointClientRequestConfigMethodBody = {
   parameters: ApiParameterWithMultipartInfo[];
 };
 
-export type GetAdditionalClientMembers = {};
+export type GetAdditionalClientMembers = object;
 
 export type GetParameterType = { endpoint: ApiEndpoint; parameter: ApiParameterWithMultipartInfo };
 
@@ -57,7 +57,7 @@ export type GetTypeUsage<TBuilder extends SourceBuilder> = {
   fallback?: kt.Type<TBuilder>;
 };
 
-export type GetPackageName = {};
+export type GetPackageName = object;
 
 export type GetPathWithInterpolation = { endpoint: ApiEndpoint };
 
@@ -69,10 +69,10 @@ export type GetAllParameters = { endpoint: ApiEndpoint };
 
 export type GetRequestBodyParamName = { endpoint: ApiEndpoint };
 
-export type GetBasePath = {};
+export type GetBasePath = object;
 
 export type GetEndpointPath = { endpoint: ApiEndpoint };
 
 export type GetFilePath = { packageName: string };
 
-export type GetApiClientName = {};
+export type GetApiClientName = object;

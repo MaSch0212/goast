@@ -1,7 +1,7 @@
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 
-import { TypeScriptFetchClientsGeneratorConfig } from './models';
-import { ts } from '../../../ast';
+import type { TypeScriptFetchClientsGeneratorConfig } from './models.ts';
+import { ts } from '../../../ast/index.ts';
 
 // See packages/typescript/assets/client/fetch for reference
 export function getReferenceFactories(options: TypeScriptFetchClientsGeneratorConfig) {

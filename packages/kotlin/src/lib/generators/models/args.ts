@@ -1,6 +1,6 @@
-import { ApiSchema, ApiSchemaProperty } from '@goast/core';
+import type { ApiSchema, ApiSchemaProperty } from '@goast/core';
 
-export type GetFileContent = {};
+export type GetFileContent = object;
 
 export type GetSchemaDeclaration = {
   schema: ApiSchema;

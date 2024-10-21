@@ -1,3 +1,3 @@
-export * from './openapi-types';
-export * from './parser';
-export * from './types';
+export * from './openapi-types.ts';
+export * from './parser.ts';
+export * from './types.ts';

@@ -1,7 +1,7 @@
-import { Nullable, SingleOrMultiple, SourceBuilder, notNullish, toArray } from '@goast/core';
+import { notNullish, type Nullable, type SingleOrMultiple, type SourceBuilder, toArray } from '@goast/core';
 
-import { KtAppendValue, writeKtNode, writeKtNodes } from './write-kt-node';
-import { KtLambda } from '../nodes/lambda';
+import { type KtAppendValue, writeKtNode, writeKtNodes } from './write-kt-node.ts';
+import { KtLambda } from '../nodes/lambda.ts';
 
 export function writeKtArguments<TBuilder extends SourceBuilder>(
   builder: TBuilder,

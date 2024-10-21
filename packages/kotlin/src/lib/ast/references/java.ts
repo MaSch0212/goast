@@ -1,4 +1,4 @@
-import { ktReference } from '../nodes/reference';
+import { ktReference } from '../nodes/reference.ts';
 
 // java.io
 export const file = ktReference.factory('File', 'java.io');

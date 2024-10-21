@@ -1,14 +1,15 @@
-import { DefaultGenerationProviderConfig, OpenApiGenerationProviderBase } from './generator';
-import { addSourceIfTest } from './internal-utils';
-import {
+import { type DefaultGenerationProviderConfig, OpenApiGenerationProviderBase } from './generator.ts';
+import { addSourceIfTest } from './internal-utils.ts';
+import type {
   AnyConfig,
   OpenApiGenerationProviderContext,
   OpenApiGeneratorContext,
   OpenApiGeneratorInput,
   OpenApiGeneratorOutput,
-} from './types';
-import { ApiSchema } from '../transform';
-import { getSchemaReference } from '../utils';
+} from './types.ts';
+import type { ApiSchema } from '../transform/index.ts';
+import { getSchemaReference } from '../utils/index.ts';
+import type { MaybePromise } from '../utils/type.utils.ts';
 
 export type OpenApiSchemasGenerationProviderContext<
   TInput extends OpenApiGeneratorInput,
@@ -39,24 +40,26 @@ export abstract class OpenApiSchemasGenerationProviderBase<
     });
   }
 
-  protected override onGenerate(ctx: TContext): TOutput {
+  protected override async onGenerate(ctx: TContext): Promise<TOutput> {
     for (const schema of ctx.data.schemas) {
-      this.getSchemaResult(ctx, schema);
+      await this.getSchemaResult(ctx, schema);
     }
+
+    await this.generateAdditionalFiles(ctx);
 
     return ctx.output;
   }
 
-  public getSchemaResult(ctx: TContext, schema: ApiSchema): TSchemaOutput {
+  public async getSchemaResult(ctx: TContext, schema: ApiSchema): Promise<TSchemaOutput> {
     const existingResult = ctx.existingSchemaResults.get(schema.id);
     if (existingResult) return existingResult;
 
     let result: TSchemaOutput;
     const reference = this.getSchemaReference(ctx, schema);
     if (reference) {
-      result = this.getSchemaResult(ctx, reference);
+      result = await this.getSchemaResult(ctx, reference);
     } else {
-      result = this.generateSchema(ctx, schema);
+      result = await this.generateSchema(ctx, schema);
     }
 
     addSourceIfTest(ctx.config, result, () => `${schema.$src.file}#${schema.$src.path}`);
@@ -65,6 +68,7 @@ export abstract class OpenApiSchemasGenerationProviderBase<
     return result;
   }
 
+  // deno-lint-ignore no-unused-vars
   protected getSchemaReference(ctx: TContext, schema: ApiSchema): ApiSchema | undefined {
     const ref = getSchemaReference(schema, ['description']);
     return ref.id !== schema.id ? ref : undefined;
@@ -72,7 +76,12 @@ export abstract class OpenApiSchemasGenerationProviderBase<
 
   protected abstract initResult(ctx: OpenApiGenerationProviderContext<TInput, TConfig>): TOutput;
 
-  protected abstract generateSchema(ctx: TContext, schema: ApiSchema): TSchemaOutput;
+  protected abstract generateSchema(ctx: TContext, schema: ApiSchema): MaybePromise<TSchemaOutput>;
 
   protected abstract addSchemaResult(ctx: TContext, schema: ApiSchema, result: TSchemaOutput): void;
+
+  // deno-lint-ignore no-unused-vars
+  protected generateAdditionalFiles(ctx: TContext): MaybePromise<void> {
+    // Override if needed
+  }
 }

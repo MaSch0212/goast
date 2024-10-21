@@ -1,9 +1,10 @@
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 
+// @deno-types="@types/fs-extra"
 import fs from 'fs-extra';
 
-import { OpenApiGeneratorConfig, defaultOpenApiGeneratorConfig } from './config';
-import {
+import { defaultOpenApiGeneratorConfig, type OpenApiGeneratorConfig } from './config.ts';
+import type {
   AnyConfig,
   OpenApiGenerationProvider,
   OpenApiGenerationProviderContext,
@@ -11,20 +12,19 @@ import {
   OpenApiGeneratorContext,
   OpenApiGeneratorInput,
   OpenApiGeneratorOutput,
-} from './types';
-import { OpenApiParser } from '../parse/parser';
-import { ApiData } from '../transform';
-import { ActionProvider } from '../utils/action-provider';
-import { DirectoryScanOptions, getFiles } from '../utils/file-system.utils';
-import { EmptyConstructor, Merge } from '../utils/type.utils';
+} from './types.ts';
+import { OpenApiParser } from '../parse/parser.ts';
+import type { ApiData } from '../transform/index.ts';
+import { ActionProvider } from '../utils/action-provider.ts';
+import { type DirectoryScanOptions, getFiles } from '../utils/file-system.utils.ts';
+import type { EmptyConstructor, Merge } from '../utils/type.utils.ts';
 
 type OpenApiGenerationProviders = {
   provider: ActionProvider<OpenApiGenerationProviderFn>;
   config: AnyConfig | undefined;
 }[];
 
-type VInput<TActual, TExpected> = TExpected extends TActual
-  ? TActual
+type VInput<TActual, TExpected> = TExpected extends TActual ? TActual
   : { __error: 'The current output of the generator does not satisfy the input of this generator.' };
 
 class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
@@ -87,7 +87,7 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
         config: this._config,
       };
 
-      const result = generator.provider.run(context, generator.config);
+      const result = await generator.provider.run(context, generator.config);
       if (result) {
         input = mergeDeep(input, result);
       }
@@ -110,14 +110,11 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
 
 export class OpenApiGenerator extends _OpenApiGenerator<{}> {
   constructor(config?: Partial<OpenApiGeneratorConfig>) {
-    super(...OpenApiGenerator.getCtorArgs(config));
-  }
-
-  private static getCtorArgs(
-    config?: Partial<OpenApiGeneratorConfig>,
-  ): ConstructorParameters<typeof _OpenApiGenerator> {
-    const c = { ...defaultOpenApiGeneratorConfig, ...config };
-    return [c, [], new OpenApiParser(c)];
+    super(
+      { ...defaultOpenApiGeneratorConfig, ...config },
+      [],
+      new OpenApiParser({ ...defaultOpenApiGeneratorConfig, ...config }),
+    );
   }
 }
 
@@ -144,19 +141,22 @@ function mergeDeep<T extends Record<string, unknown>, U extends Record<string, u
   return mergeDeep(target, ...sources);
 }
 
-export type DefaultGenerationProviderConfig<T extends AnyConfig> = Omit<T, keyof OpenApiGeneratorConfig> &
-  Partial<Pick<T, keyof OpenApiGeneratorConfig>>;
+export type DefaultGenerationProviderConfig<T extends AnyConfig> =
+  & Omit<T, keyof OpenApiGeneratorConfig>
+  & Partial<Pick<T, keyof OpenApiGeneratorConfig>>;
 
 export abstract class OpenApiGenerationProviderBase<
   TInput extends OpenApiGeneratorInput,
   TOutput extends OpenApiGeneratorOutput,
   TConfig extends AnyConfig,
   TContext extends OpenApiGenerationProviderContext<TInput, TConfig>,
-> implements OpenApiGenerationProvider<TInput, TOutput, TConfig>
-{
-  public generate(context: OpenApiGeneratorContext<TInput>, config?: Partial<TConfig> | undefined): TOutput {
-    const ctx = this.buildContext(context, config);
-    return this.onGenerate(ctx);
+> implements OpenApiGenerationProvider<TInput, TOutput, TConfig> {
+  public async generate(
+    context: OpenApiGeneratorContext<TInput>,
+    config?: Partial<TConfig> | undefined,
+  ): Promise<TOutput> {
+    const ctx = await this.buildContext(context, config);
+    return await this.onGenerate(ctx);
   }
 
   protected getProviderContext(
@@ -173,7 +173,7 @@ export abstract class OpenApiGenerationProviderBase<
   protected abstract buildContext(
     context: OpenApiGeneratorContext<TInput>,
     config?: Partial<TConfig> | undefined,
-  ): TContext;
+  ): TContext | Promise<TContext>;
 
-  protected abstract onGenerate(ctx: TContext): TOutput;
+  protected abstract onGenerate(ctx: TContext): TOutput | Promise<TOutput>;
 }

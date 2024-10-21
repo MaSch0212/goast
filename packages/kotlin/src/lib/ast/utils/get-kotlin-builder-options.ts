@@ -1,7 +1,7 @@
-import { SourceBuilder, defaultOpenApiGeneratorConfig } from '@goast/core';
+import { defaultOpenApiGeneratorConfig, type SourceBuilder } from '@goast/core';
 
-import { KotlinGeneratorConfig, defaultKotlinGeneratorConfig } from '../../config';
-import { KotlinFileBuilder } from '../../file-builder';
+import { defaultKotlinGeneratorConfig, type KotlinGeneratorConfig } from '../../config.ts';
+import { KotlinFileBuilder } from '../../file-builder.ts';
 
 const ktConfigSymbol = Symbol();
 type _BuilderWithConfig = SourceBuilder & { [ktConfigSymbol]?: KotlinGeneratorConfig };

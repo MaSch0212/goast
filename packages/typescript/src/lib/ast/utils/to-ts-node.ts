@@ -1,9 +1,9 @@
-import { SourceBuilder, BasicAppendValue } from '@goast/core';
+import type { BasicAppendValue, SourceBuilder } from '@goast/core';
 
-import { TsObject, tsObject } from '../nodes/object';
-import { tsProperty } from '../nodes/property';
-import { TsString, tsString } from '../nodes/string';
-import { TsTuple, tsTuple } from '../nodes/tuple';
+import { type TsObject, tsObject } from '../nodes/object.ts';
+import { tsProperty } from '../nodes/property.ts';
+import { type TsString, tsString } from '../nodes/string.ts';
+import { type TsTuple, tsTuple } from '../nodes/tuple.ts';
 
 export function toTsNode<TBuilder extends SourceBuilder>(object: Record<string, unknown>): TsObject<TBuilder>;
 export function toTsNode<TBuilder extends SourceBuilder>(tuple: unknown[]): TsTuple<TBuilder>;

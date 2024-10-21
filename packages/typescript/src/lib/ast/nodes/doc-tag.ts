@@ -1,19 +1,19 @@
 import {
-  AstNodeOptions,
-  BasicAppendValue,
-  Nullable,
-  ParametersWithOverloads,
-  Prettify,
-  SourceBuilder,
-  StringSuggestions,
+  type AstNodeOptions,
+  type BasicAppendValue,
   basicAppendValueGroup,
   notNullish,
+  type Nullable,
+  type ParametersWithOverloads,
+  type Prettify,
+  type SourceBuilder,
+  type StringSuggestions,
 } from '@goast/core';
 
-import { TsType } from './types';
-import { isTypeScriptAppendValue } from '../../file-builder';
-import { TsNode } from '../node';
-import { writeTsNode, writeTsNodes } from '../utils/write-ts-nodes';
+import type { TsType } from './types.ts';
+import { isTypeScriptAppendValue } from '../../file-builder.ts';
+import { TsNode } from '../node.ts';
+import { writeTsNode, writeTsNodes } from '../utils/write-ts-nodes.ts';
 
 type Injects = never;
 
@@ -57,173 +57,193 @@ export class TsDocTag<TBuilder extends SourceBuilder, TInjects extends string = 
 
 type _TsDocTagOpt<TBuilder extends SourceBuilder> = Prettify<Omit<Options<TBuilder>, 'tag'>>;
 
-type _TsDocTagArgsMap<TBuilder extends SourceBuilder> = {
-  access(
-    access: StringSuggestions<'package' | 'private' | 'protected' | 'public'>,
-    options?: _TsDocTagOpt<TBuilder>,
-  ): never;
-  author(authorName: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
-  author(
-    authorName: BasicAppendValue<TBuilder>,
-    emailAddress: BasicAppendValue<TBuilder>,
-    options?: _TsDocTagOpt<TBuilder>,
-  ): never;
-  borrows(
-    thatNamepath: BasicAppendValue<TBuilder>,
-    thisNamepath: BasicAppendValue<TBuilder>,
-    options?: _TsDocTagOpt<TBuilder>,
-  ): never;
-  params(
-    paramName: BasicAppendValue<TBuilder>,
-    paramDescription: BasicAppendValue<TBuilder>,
-    options?: _TsDocTagOpt<TBuilder>,
-  ): never;
-  example(
-    caption: BasicAppendValue<TBuilder>,
-    code: BasicAppendValue<TBuilder>,
-    options?: _TsDocTagOpt<TBuilder>,
-  ): never;
-  example(code: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
-  exports(
-    moduleName: BasicAppendValue<TBuilder>,
-    exportName: BasicAppendValue<TBuilder>,
-    options?: _TsDocTagOpt<TBuilder>,
-  ): never;
-  kind(
-    kindName: StringSuggestions<
-      | 'class'
-      | 'constant'
-      | 'event'
-      | 'external'
-      | 'file'
-      | 'function'
-      | 'member'
-      | 'mixin'
-      | 'module'
-      | 'namespace'
-      | 'typedef'
-    >,
-    options?: _TsDocTagOpt<TBuilder>,
-  ): never;
-  license(identifier: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
-  listens(eventName: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
-  mixes(otherObjectPath: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
-  mixin(mixinName: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
-  requires(moduleName: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
-  variation(variationNumber: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
-} & {
-  [K in 'virtual' | 'abstract']: (options?: _TsDocTagOpt<TBuilder>) => never;
-} & {
-  [K in 'alias' | 'augments' | 'callback' | 'extends' | 'lends' | 'name' | 'see' | 'this']: (
-    namePath: BasicAppendValue<TBuilder>,
-    options?: _TsDocTagOpt<TBuilder>,
-  ) => never;
-} & {
-  [K in
-    | 'async'
-    | 'generator'
-    | 'global'
-    | 'hideconstructor'
-    | 'ignore'
-    | 'inheritdoc'
-    | 'inner'
-    | 'instance'
-    | 'override'
-    | 'static'
-    | 'enum'
-    | 'package'
-    | 'private'
-    | 'protected'
-    | 'implements'
-    | 'type']: (options?: _TsDocTagOpt<TBuilder>) => never;
-} & {
-  [K in
-    | 'class'
-    | 'constructor'
-    | 'const'
-    | 'function'
-    | 'func'
-    | 'method'
-    | 'constant'
-    | 'member'
-    | 'constructs'
-    | 'interface'
-    | 'var'
-    | 'yield'
-    | 'yields'
-    | 'module'
-    | 'namespace'
-    | 'typedef']: {
-    (name: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
-    (options?: _TsDocTagOpt<TBuilder>): never;
-  };
-} & {
-  [K in
-    | 'return'
-    | 'returns'
-    | 'throws'
-    | 'exception'
-    | 'classdesc'
-    | 'copyright'
-    | 'deprecated'
-    | 'desc'
-    | 'description'
-    | 'file'
-    | 'fileoverview'
-    | 'overview'
-    | 'public'
-    | 'readonly'
-    | 'since'
-    | 'summary'
-    | 'todo'
-    | 'tutorial'
-    | 'version']: {
-    (description: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
-    (options?: _TsDocTagOpt<TBuilder>): never;
-  };
-} & {
-  [K in 'default' | 'defaultvalue']: {
-    (value: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
-    (options?: _TsDocTagOpt<TBuilder>): never;
-  };
-} & {
-  [K in 'event' | 'fires']: (
-    className: BasicAppendValue<TBuilder>,
-    eventName: BasicAppendValue<TBuilder>,
-    options?: _TsDocTagOpt<TBuilder>,
-  ) => never;
-} & {
-  [K in 'external' | 'host']: (nameOfExternal: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>) => never;
-} & {
-  [K in 'memberof' | 'memberof!']: (
-    parentNamepath: BasicAppendValue<TBuilder>,
-    options?: _TsDocTagOpt<TBuilder>,
-  ) => never;
-} & {
-  [K in 'param' | 'arg' | 'argument' | 'prop' | 'property' | 'template']: {
-    (
-      name: BasicAppendValue<TBuilder>,
-      description: BasicAppendValue<TBuilder>,
+type _TsDocTagArgsMap<TBuilder extends SourceBuilder> =
+  & {
+    access(
+      access: StringSuggestions<'package' | 'private' | 'protected' | 'public'>,
       options?: _TsDocTagOpt<TBuilder>,
     ): never;
-    (name: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
+    author(authorName: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
+    author(
+      authorName: BasicAppendValue<TBuilder>,
+      emailAddress: BasicAppendValue<TBuilder>,
+      options?: _TsDocTagOpt<TBuilder>,
+    ): never;
+    borrows(
+      thatNamepath: BasicAppendValue<TBuilder>,
+      thisNamepath: BasicAppendValue<TBuilder>,
+      options?: _TsDocTagOpt<TBuilder>,
+    ): never;
+    params(
+      paramName: BasicAppendValue<TBuilder>,
+      paramDescription: BasicAppendValue<TBuilder>,
+      options?: _TsDocTagOpt<TBuilder>,
+    ): never;
+    example(
+      caption: BasicAppendValue<TBuilder>,
+      code: BasicAppendValue<TBuilder>,
+      options?: _TsDocTagOpt<TBuilder>,
+    ): never;
+    example(code: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
+    exports(
+      moduleName: BasicAppendValue<TBuilder>,
+      exportName: BasicAppendValue<TBuilder>,
+      options?: _TsDocTagOpt<TBuilder>,
+    ): never;
+    kind(
+      kindName: StringSuggestions<
+        | 'class'
+        | 'constant'
+        | 'event'
+        | 'external'
+        | 'file'
+        | 'function'
+        | 'member'
+        | 'mixin'
+        | 'module'
+        | 'namespace'
+        | 'typedef'
+      >,
+      options?: _TsDocTagOpt<TBuilder>,
+    ): never;
+    license(identifier: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
+    listens(eventName: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
+    mixes(otherObjectPath: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
+    mixin(mixinName: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
+    requires(moduleName: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
+    variation(variationNumber: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
+  }
+  & {
+    [K in 'virtual' | 'abstract']: (options?: _TsDocTagOpt<TBuilder>) => never;
+  }
+  & {
+    [K in 'alias' | 'augments' | 'callback' | 'extends' | 'lends' | 'name' | 'see' | 'this']: (
+      namePath: BasicAppendValue<TBuilder>,
+      options?: _TsDocTagOpt<TBuilder>,
+    ) => never;
+  }
+  & {
+    [
+      K in
+        | 'async'
+        | 'generator'
+        | 'global'
+        | 'hideconstructor'
+        | 'ignore'
+        | 'inheritdoc'
+        | 'inner'
+        | 'instance'
+        | 'override'
+        | 'static'
+        | 'enum'
+        | 'package'
+        | 'private'
+        | 'protected'
+        | 'implements'
+        | 'type'
+    ]: (options?: _TsDocTagOpt<TBuilder>) => never;
+  }
+  & {
+    [
+      K in
+        | 'class'
+        | 'constructor'
+        | 'const'
+        | 'function'
+        | 'func'
+        | 'method'
+        | 'constant'
+        | 'member'
+        | 'constructs'
+        | 'interface'
+        | 'var'
+        | 'yield'
+        | 'yields'
+        | 'module'
+        | 'namespace'
+        | 'typedef'
+    ]: {
+      (name: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
+      (options?: _TsDocTagOpt<TBuilder>): never;
+    };
+  }
+  & {
+    [
+      K in
+        | 'return'
+        | 'returns'
+        | 'throws'
+        | 'exception'
+        | 'classdesc'
+        | 'copyright'
+        | 'deprecated'
+        | 'desc'
+        | 'description'
+        | 'file'
+        | 'fileoverview'
+        | 'overview'
+        | 'public'
+        | 'readonly'
+        | 'since'
+        | 'summary'
+        | 'todo'
+        | 'tutorial'
+        | 'version'
+    ]: {
+      (description: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
+      (options?: _TsDocTagOpt<TBuilder>): never;
+    };
+  }
+  & {
+    [K in 'default' | 'defaultvalue']: {
+      (value: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
+      (options?: _TsDocTagOpt<TBuilder>): never;
+    };
+  }
+  & {
+    [K in 'event' | 'fires']: (
+      className: BasicAppendValue<TBuilder>,
+      eventName: BasicAppendValue<TBuilder>,
+      options?: _TsDocTagOpt<TBuilder>,
+    ) => never;
+  }
+  & {
+    [K in 'external' | 'host']: (nameOfExternal: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>) => never;
+  }
+  & {
+    [K in 'memberof' | 'memberof!']: (
+      parentNamepath: BasicAppendValue<TBuilder>,
+      options?: _TsDocTagOpt<TBuilder>,
+    ) => never;
+  }
+  & {
+    [K in 'param' | 'arg' | 'argument' | 'prop' | 'property' | 'template']: {
+      (
+        name: BasicAppendValue<TBuilder>,
+        description: BasicAppendValue<TBuilder>,
+        options?: _TsDocTagOpt<TBuilder>,
+      ): never;
+      (name: BasicAppendValue<TBuilder>, options?: _TsDocTagOpt<TBuilder>): never;
+    };
   };
-};
 
 type _TsDocTagArgs<
   TTagName extends StringSuggestions<keyof _TsDocTagArgsMap<TBuilder>>,
   TBuilder extends SourceBuilder,
 > = TTagName extends keyof _TsDocTagArgsMap<TBuilder>
-  ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    _TsDocTagArgsMap<TBuilder>[TTagName] extends (...args: any[]) => any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ? _TsDocTagArgsMap<TBuilder>[TTagName] extends (...args: any[]) => any
     ? ParametersWithOverloads<_TsDocTagArgsMap<TBuilder>[TTagName]>
-    : never
+  : never
   : [options?: _TsDocTagOpt<TBuilder>];
 
 function createDocTag<
   TTagName extends StringSuggestions<keyof _TsDocTagArgsMap<TBuilder>>,
   TBuilder extends SourceBuilder,
->(tag: TTagName, ...args: _TsDocTagArgs<TTagName, TBuilder>): TsDocTag<TBuilder>;
+>(
+  tag: TTagName,
+  ...args: _TsDocTagArgs<TTagName, TBuilder>
+): TsDocTag<TBuilder>;
 function createDocTag<TBuilder extends SourceBuilder>(tag: string, ...args: unknown[]): TsDocTag<TBuilder> {
   let opt: _TsDocTagOpt<TBuilder> = {};
   if (args.length > 0) {

@@ -1,7 +1,7 @@
-import { SourceBuilder, StringBuilder, defaultOpenApiGeneratorConfig } from '@goast/core';
+import { defaultOpenApiGeneratorConfig, type SourceBuilder, type StringBuilder } from '@goast/core';
 
-import { TypeScriptGeneratorConfig, defaultTypeScriptGeneratorConfig } from '../../config';
-import { TypeScriptFileBuilder } from '../../file-builder';
+import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from '../../config.ts';
+import { TypeScriptFileBuilder } from '../../file-builder.ts';
 
 const tsConfigSymbol = Symbol();
 type _BuilderWithConfig = SourceBuilder & { [tsConfigSymbol]?: TypeScriptGeneratorConfig };

@@ -1,4 +1,4 @@
-import { SingleOrMultiple } from './type.utils';
+import type { SingleOrMultiple } from './type.utils.ts';
 
 export function isNullish(value: unknown): value is null | undefined {
   return value === null || value === undefined;

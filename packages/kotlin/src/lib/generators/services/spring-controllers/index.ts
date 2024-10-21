@@ -1,4 +1,4 @@
-export * from './models';
-export * from './spring-controller-generator';
-export * from './spring-controllers-generator';
-export * as DefaultKotlinSpringControllerGeneratorArgs from './args';
+export * from './models.ts';
+export * from './spring-controller-generator.ts';
+export * from './spring-controllers-generator.ts';
+export * as DefaultKotlinSpringControllerGeneratorArgs from './args.ts';

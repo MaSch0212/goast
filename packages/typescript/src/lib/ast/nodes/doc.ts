@@ -1,18 +1,18 @@
 import {
-  AstNodeOptions,
-  BasicAppendValue,
-  Nullable,
-  SourceBuilder,
+  type AstNodeOptions,
+  type BasicAppendValue,
   createOverwriteProxy,
   getIsInstanceOf,
   notNullish,
+  type Nullable,
+  type SourceBuilder,
 } from '@goast/core';
 
-import { TsDocTag, tsDocTag } from './doc-tag';
-import { TsGenericParameter } from './generic-parameter';
-import { TsParameter } from './parameter';
-import { TsNode } from '../node';
-import { writeTsNodes } from '../utils/write-ts-nodes';
+import { type TsDocTag, tsDocTag } from './doc-tag.ts';
+import { TsGenericParameter } from './generic-parameter.ts';
+import { TsParameter } from './parameter.ts';
+import { TsNode } from '../node.ts';
+import { writeTsNodes } from '../utils/write-ts-nodes.ts';
 
 type Injects = never;
 
@@ -24,10 +24,8 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
-export class TsDoc<TBuilder extends SourceBuilder, TInjects extends string = never> extends TsNode<
-  TBuilder,
-  TInjects | Injects
-> {
+export class TsDoc<TBuilder extends SourceBuilder, TInjects extends string = never>
+  extends TsNode<TBuilder, TInjects | Injects> {
   public description: BasicAppendValue<TBuilder> | null;
   public tags: TsDocTag<TBuilder>[];
 
@@ -72,14 +70,12 @@ function getDoc<TBuilder extends SourceBuilder>(
     generics?: Nullable<Nullable<TsGenericParameter<TBuilder> | BasicAppendValue<TBuilder>>[]>;
   },
 ): TsDoc<TBuilder> | null {
-  const paramsWithDesc =
-    options.parameters
-      ?.filter(getIsInstanceOf(TsParameter<TBuilder>))
-      .filter((x): x is TsParameter<TBuilder> & { description: {} } => !!x.description) ?? [];
-  const genericsWithDesc =
-    options.generics
-      ?.filter(getIsInstanceOf(TsGenericParameter<TBuilder>))
-      .filter((x): x is TsGenericParameter<TBuilder> & { description: {} } => !!x.description) ?? [];
+  const paramsWithDesc = options.parameters
+    ?.filter(getIsInstanceOf(TsParameter<TBuilder>))
+    .filter((x): x is TsParameter<TBuilder> & { description: {} } => !!x.description) ?? [];
+  const genericsWithDesc = options.generics
+    ?.filter(getIsInstanceOf(TsGenericParameter<TBuilder>))
+    .filter((x): x is TsGenericParameter<TBuilder> & { description: {} } => !!x.description) ?? [];
   if (paramsWithDesc.length === 0 && genericsWithDesc.length === 0) {
     return baseDoc;
   }

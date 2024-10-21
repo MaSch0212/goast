@@ -1,6 +1,6 @@
-import { OpenApiCollectorData } from './types';
-import { isOpenApiObjectProperty } from '../internal-utils';
-import { Nullable } from '../utils';
+import type { OpenApiCollectorData } from './types.ts';
+import { isOpenApiObjectProperty } from '../internal-utils.ts';
+import type { Nullable } from '../utils/index.ts';
 
 export function collect<T extends Record<`x-${string}`, unknown>>(
   data: OpenApiCollectorData,

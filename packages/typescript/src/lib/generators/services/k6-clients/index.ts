@@ -1,3 +1,3 @@
-export * from './k6-client-generator';
-export * from './k6-clients-generator';
-export * from './models';
+export * from './k6-client-generator.ts';
+export * from './k6-clients-generator.ts';
+export * from './models.ts';

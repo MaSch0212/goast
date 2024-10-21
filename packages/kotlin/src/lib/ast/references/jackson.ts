@@ -1,4 +1,4 @@
-import { ktReference } from '../nodes/reference';
+import { ktReference } from '../nodes/reference.ts';
 
 // com.fasterxml.jackson.annotation
 export const jsonTypeInfo = ktReference.factory('JsonTypeInfo', 'com.fasterxml.jackson.annotation');

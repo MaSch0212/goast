@@ -1,4 +1,4 @@
-import { ApiEndpoint } from '../transform';
+import type { ApiEndpoint } from '../transform/index.ts';
 
 export function getEndpointUrlPreview(endpoint: ApiEndpoint): string {
   let url = endpoint.path;
