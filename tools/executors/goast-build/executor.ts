@@ -8,6 +8,7 @@ import { dirname, join, relative } from 'path';
 import { DiagnosticCategory, EmitResult, ModuleKind, Project, getCompilerOptionsFromTsConfig } from 'ts-morph';
 import { EntryPoint, ExecutorOptions } from './schema';
 import { ResolvedModule, resolveModuleName } from 'typescript';
+import { replaceTscAliasPaths } from 'tsc-alias';
 
 type Context = Required<Omit<ExecutorOptions, 'additionalEntryPoints'>> & {
   additionalEntryPoints: EntryPoint[];
@@ -71,6 +72,14 @@ async function buildTypeScript(ctx: Context) {
   console.log('Building ES2015...');
   const mjsProject = createTypeScriptProject(ctx, ModuleKind.ES2015, 'esm', false);
   await buildTypeScriptProject(mjsProject);
+  console.log('  - Run tsc-alias...');
+  replaceTscAliasPaths({
+    configFile: ctx.tsConfig,
+    outDir: mjsProject.compilerOptions.get().outDir,
+    declarationDir: emitProject.compilerOptions.get().outDir,
+    resolveFullPaths: true,
+    verbose: false,
+  });
   console.log(`  - Done (ES2015)${EOL}`);
 }
 
