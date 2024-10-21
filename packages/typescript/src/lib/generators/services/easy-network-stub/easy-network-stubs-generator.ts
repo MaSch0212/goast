@@ -1,6 +1,6 @@
 import { dirname, resolve } from 'path';
 
-import { copyFileSync, ensureDirSync } from 'fs-extra';
+import fs from 'fs-extra';
 
 import {
   ApiService,
@@ -92,7 +92,7 @@ export class TypeScriptEasyNetworkStubsGenerator extends OpenApiServicesGenerati
   protected generateUtilsFiles(ctx: Context): void {
     const sourceDir = resolve(dirname(require.resolve('@goast/typescript')), '../assets/stubs/easy-network-stub');
     const targetDir = resolve(ctx.config.outputDir, ctx.config.utilsDir);
-    ensureDirSync(targetDir);
+    fs.ensureDirSync(targetDir);
 
     this.copyFile('easy-network-stub utils', sourceDir, targetDir, 'easy-network-stub.utils.ts');
   }
@@ -203,6 +203,6 @@ export class TypeScriptEasyNetworkStubsGenerator extends OpenApiServicesGenerati
     const source = resolve(sourceDir, fileName);
     const target = resolve(targetDir, fileName);
     console.log(`Generating ${logName} to ${target}...`);
-    copyFileSync(source, target);
+    fs.copyFileSync(source, target);
   }
 }

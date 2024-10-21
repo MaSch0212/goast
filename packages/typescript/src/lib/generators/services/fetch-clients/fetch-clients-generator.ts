@@ -1,6 +1,6 @@
 import { dirname, resolve } from 'path';
 
-import { ensureDirSync, copyFileSync, readdirSync } from 'fs-extra';
+import fs from 'fs-extra';
 
 import {
   ApiService,
@@ -154,11 +154,11 @@ export class TypeScriptFetchClientsGenerator extends OpenApiServicesGenerationPr
   private copyUtilsFiles(ctx: Context): void {
     const sourceDir = resolve(dirname(require.resolve('@goast/typescript')), '../assets/client/fetch');
     const targetDir = resolve(ctx.config.outputDir, ctx.config.utilsDir);
-    ensureDirSync(targetDir);
+    fs.ensureDirSync(targetDir);
 
-    const files = readdirSync(sourceDir);
+    const files = fs.readdirSync(sourceDir);
     for (const file of files) {
-      copyFileSync(resolve(sourceDir, file), resolve(targetDir, file));
+      fs.copyFileSync(resolve(sourceDir, file), resolve(targetDir, file));
     }
   }
 }

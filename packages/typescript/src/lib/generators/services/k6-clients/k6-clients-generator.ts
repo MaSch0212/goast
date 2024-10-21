@@ -1,6 +1,6 @@
 import { dirname, resolve } from 'path';
 
-import { ensureDirSync, copyFileSync } from 'fs-extra';
+import fs from 'fs-extra';
 
 import {
   OpenApiServicesGenerationProviderBase,
@@ -89,7 +89,7 @@ export class TypeScriptK6ClientsGenerator extends OpenApiServicesGenerationProvi
   protected generateUtilsFiles(ctx: Context): void {
     const sourceDir = resolve(dirname(require.resolve('@goast/typescript')), '../assets/client/k6');
     const targetDir = resolve(ctx.config.outputDir, ctx.config.utilsDir);
-    ensureDirSync(targetDir);
+    fs.ensureDirSync(targetDir);
 
     this.copyFile('Request Builder', sourceDir, targetDir, 'request-builder.js');
 
@@ -167,6 +167,6 @@ export class TypeScriptK6ClientsGenerator extends OpenApiServicesGenerationProvi
     const source = resolve(sourceDir, fileName);
     const target = resolve(targetDir, fileName);
     console.log(`Generating ${logName} to ${target}...`);
-    copyFileSync(source, target);
+    fs.copyFileSync(source, target);
   }
 }

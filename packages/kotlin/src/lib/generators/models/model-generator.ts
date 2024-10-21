@@ -1,7 +1,7 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import { dirname } from 'path';
 
-import { ensureDirSync, writeFileSync } from 'fs-extra';
+import fs from 'fs-extra';
 
 import {
   ApiSchema,
@@ -45,9 +45,9 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       const packageName = this.getPackageName(ctx, { schema: ctx.schema });
       const filePath = `${ctx.config.outputDir}/${packageName.replace(/\./g, '/')}/${typeName}.kt`;
       console.log(`Generating model ${packageName}.${typeName} to ${filePath}...`);
-      ensureDirSync(dirname(filePath));
+      fs.ensureDirSync(dirname(filePath));
 
-      writeFileSync(
+      fs.writeFileSync(
         filePath,
         new KotlinFileBuilder(packageName, ctx.config).append(this.getFileContent(ctx, {})).toString(),
       );

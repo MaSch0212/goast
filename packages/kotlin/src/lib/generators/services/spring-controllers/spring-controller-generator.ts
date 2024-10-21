@@ -1,5 +1,5 @@
 /* eslint-disable unused-imports/no-unused-vars */
-import { ensureDirSync, writeFileSync } from 'fs-extra';
+import fs from 'fs-extra';
 
 import {
   ApiEndpoint,
@@ -38,7 +38,7 @@ export class DefaultKotlinSpringControllerGenerator
   generate(ctx: KotlinServiceGeneratorContext): KotlinServiceGeneratorOutput {
     const packageName = this.getPackageName(ctx, {});
     const dirPath = this.getDirectoryPath(ctx, { packageName });
-    ensureDirSync(dirPath);
+    fs.ensureDirSync(dirPath);
 
     console.log(`Generating service ${ctx.service.id} to ${dirPath}...`);
     return {
@@ -58,7 +58,7 @@ export class DefaultKotlinSpringControllerGenerator
 
     const builder = new KotlinFileBuilder(packageName, ctx.config);
     builder.append(this.getApiInterfaceFileContent(ctx, { interfaceName: typeName }));
-    writeFileSync(filePath, builder.toString());
+    fs.writeFileSync(filePath, builder.toString());
 
     return { typeName, packageName };
   }
@@ -256,7 +256,7 @@ export class DefaultKotlinSpringControllerGenerator
 
     const builder = new KotlinFileBuilder(packageName, ctx.config);
     builder.append(this.getApiControllerFileContent(ctx, { controllerName: typeName }));
-    writeFileSync(filePath, builder.toString());
+    fs.writeFileSync(filePath, builder.toString());
 
     return { typeName, packageName };
   }
@@ -341,7 +341,7 @@ export class DefaultKotlinSpringControllerGenerator
 
     const builder = new KotlinFileBuilder(packageName, ctx.config);
     builder.append(this.getApiDelegateInterfaceFileContent(ctx, { delegateInterfaceName: typeName }));
-    writeFileSync(filePath, builder.toString());
+    fs.writeFileSync(filePath, builder.toString());
 
     return { typeName, packageName };
   }
