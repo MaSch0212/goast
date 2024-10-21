@@ -1,6 +1,6 @@
 {
   "name": "@goast/kotlin",
-  "version": "0.3.11",
+  "version": "0.3.12",
   "repository": "https://github.com/MaSch0212/goast.git",
   "description": "Provides gOAst generators for generating Kotlin code from OpenAPI specifications.",
   "keywords": [
@@ -20,5 +20,8 @@
     "url": "https://github.com/MaSch0212"
   },
   "license": "MIT",
-  "type": "commonjs"
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4"
+  }
 }

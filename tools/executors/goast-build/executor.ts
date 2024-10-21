@@ -35,7 +35,7 @@ async function prepare(options: ExecutorOptions, context: ExecutorContext): Prom
   if (!context.projectName) {
     throw new Error('Project name not found.');
   }
-  const project = context.workspace?.projects[context.projectName];
+  const project = context.projectsConfigurations.projects[context.projectName];
   if (!project) {
     throw new Error(`Project ${context.projectName} not found.`);
   }
@@ -162,6 +162,10 @@ async function buildPackageJson(ctx: Context) {
     addExport(ctx, packageJson, entryPoint);
   }
   packageJson.exports['./package.json'] = './package.json';
+  if (!packageJson.devDependencies) {
+    packageJson.devDependencies = {};
+  }
+  packageJson.devDependencies['@types/fs-extra'] = '^11.0.4';
   await writeJson(join(ctx.outputPath, 'package.json'), packageJson, { spaces: 2 });
   console.log(`  - Done (package.json)${EOL}`);
 }
