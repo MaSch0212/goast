@@ -1,13 +1,13 @@
 import { ExecutorContext, normalizePath } from '@nx/devkit';
 import { HelperDependency, getHelperDependency, updatePackageJson } from '@nx/js';
 import { checkDependencies } from '@nx/js/src/utils/check-dependencies';
-import { copyFile, emptyDir, ensureDir, readJson, rename, writeJson } from 'fs-extra';
+import fs from 'fs-extra';
 import { glob } from 'glob';
 import { EOL } from 'os';
 import { dirname, join, relative } from 'path';
 import { DiagnosticCategory, EmitResult, ModuleKind, Project, getCompilerOptionsFromTsConfig } from 'ts-morph';
 import { EntryPoint, ExecutorOptions } from './schema';
-import { ResolvedModule, resolveModuleName } from 'typescript';
+import { resolveModuleName } from 'typescript';
 import { replaceTscAliasPaths } from 'tsc-alias';
 
 type Context = Required<Omit<ExecutorOptions, 'additionalEntryPoints'>> & {
@@ -52,7 +52,7 @@ async function prepare(options: ExecutorOptions, context: ExecutorContext): Prom
     tsConfig: join(project.root, options.tsConfig || 'tsconfig.lib.json'),
   };
 
-  await emptyDir(ctx.outputPath);
+  await fs.emptyDir(ctx.outputPath);
 
   return Object.assign({}, context, ctx);
 }
@@ -66,7 +66,7 @@ async function buildTypeScript(ctx: Context) {
   console.log('Building CommonJS...');
   const cjsProject = createTypeScriptProject(ctx, ModuleKind.CommonJS, 'cjs', false);
   await buildTypeScriptProject(cjsProject);
-  await writeJson(join(cjsProject.compilerOptions.get().outDir, 'package.json'), { type: 'commonjs' });
+  await fs.writeJson(join(cjsProject.compilerOptions.get().outDir, 'package.json'), { type: 'commonjs' });
   console.log(`  - Done (CommonJS)${EOL}`);
 
   console.log('Building ES2015...');
@@ -151,7 +151,7 @@ async function buildPackageJson(ctx: Context) {
   );
 
   const relativeIndex = removeTsExtension(getRelativeSourceFilePath(ctx, ctx.entryFile));
-  const packageJson = await readJson(join(ctx.outputPath, 'package.json'));
+  const packageJson = await fs.readJson(join(ctx.outputPath, 'package.json'));
   packageJson.exports = {};
   packageJson.type = 'module';
   packageJson.module = `./esm/${relativeIndex}.js`;
@@ -166,7 +166,7 @@ async function buildPackageJson(ctx: Context) {
     packageJson.devDependencies = {};
   }
   packageJson.devDependencies['@types/fs-extra'] = '^11.0.4';
-  await writeJson(join(ctx.outputPath, 'package.json'), packageJson, { spaces: 2 });
+  await fs.writeJson(join(ctx.outputPath, 'package.json'), packageJson, { spaces: 2 });
   console.log(`  - Done (package.json)${EOL}`);
 }
 
@@ -195,8 +195,8 @@ async function copyAssets(ctx: Context) {
   );
   for (const file of files) {
     const targetDir = join(ctx.outputPath, relative(ctx.projectRoot, dirname(file)));
-    await ensureDir(targetDir);
-    await copyFile(file, join(ctx.outputPath, relative(ctx.projectRoot, file)));
+    await fs.ensureDir(targetDir);
+    await fs.copyFile(file, join(ctx.outputPath, relative(ctx.projectRoot, file)));
   }
   console.log(`  - Done (${files.length} asset(s))${EOL}`);
 }

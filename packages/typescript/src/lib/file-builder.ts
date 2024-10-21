@@ -1,6 +1,6 @@
 import { dirname } from 'path';
 
-import { ensureDirSync, writeFileSync } from 'fs-extra';
+import fs from 'fs-extra';
 
 import { AppendParam, AppendValue, Nullable, SourceBuilder, isAppendValue } from '@goast/core';
 
@@ -97,8 +97,8 @@ export class TypeScriptFileBuilder<TAdditionalAppends = never> extends SourceBui
   public writeToFile(filePath?: string): void {
     if (!filePath) filePath = this.filePath;
     if (!filePath) throw new Error('File path is required');
-    ensureDirSync(dirname(filePath));
-    writeFileSync(filePath, this.toString());
+    fs.ensureDirSync(dirname(filePath));
+    fs.writeFileSync(filePath, this.toString());
   }
 
   public static generate(options: {

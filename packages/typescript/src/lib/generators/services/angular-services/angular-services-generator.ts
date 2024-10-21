@@ -1,6 +1,6 @@
 import { dirname, resolve } from 'path';
 
-import { copyFileSync, ensureDirSync } from 'fs-extra';
+import fs from 'fs-extra';
 
 import {
   ApiService,
@@ -92,7 +92,7 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
   protected generateUtilsFiles(ctx: Context): void {
     const sourceDir = resolve(dirname(require.resolve('@goast/typescript')), '../assets/client/angular');
     const targetDir = resolve(ctx.config.outputDir, ctx.config.utilsDir);
-    ensureDirSync(targetDir);
+    fs.ensureDirSync(targetDir);
 
     this.copyFile('Request Builder', sourceDir, targetDir, 'request-builder.ts');
     this.copyFile('Angular Service Utils', sourceDir, targetDir, 'angular-service.utils.ts');
@@ -296,6 +296,6 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
     const source = resolve(sourceDir, fileName);
     const target = resolve(targetDir, fileName);
     console.log(`Generating ${logName} to ${target}...`);
-    copyFileSync(source, target);
+    fs.copyFileSync(source, target);
   }
 }

@@ -1,7 +1,7 @@
 import { writeFileSync } from 'fs';
 import { dirname, resolve } from 'path';
 
-import { ensureDirSync, readFileSync, readdirSync } from 'fs-extra';
+import fs from 'fs-extra';
 
 import { ApiService, Factory, OpenApiGeneratorContext, OpenApiServicesGenerationProviderBase } from '@goast/core';
 
@@ -97,11 +97,12 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
   private copyInfrastructureFiles(ctx: Context): void {
     const sourceDir = resolve(dirname(require.resolve('@goast/kotlin')), '../assets/client/okhttp3');
     const targetDir = resolve(ctx.config.outputDir, ctx.infrastructurePackageName.replace(/\./g, '/'));
-    ensureDirSync(targetDir);
+    fs.ensureDirSync(targetDir);
 
-    const files = readdirSync(sourceDir);
+    const files = fs.readdirSync(sourceDir);
     for (const file of files) {
-      const fileContent = readFileSync(resolve(sourceDir, file))
+      const fileContent = fs
+        .readFileSync(resolve(sourceDir, file))
         .toString()
         .replace(/@PACKAGE_NAME@/g, ctx.infrastructurePackageName);
       writeFileSync(resolve(targetDir, file), fileContent);

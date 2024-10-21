@@ -2,7 +2,7 @@
 import { writeFileSync } from 'fs';
 import { dirname } from 'path';
 
-import { ensureDirSync } from 'fs-extra';
+import fs from 'fs-extra';
 
 import {
   ApiParameter,
@@ -42,7 +42,7 @@ export class DefaultKotlinOkHttp3Generator
     const typeName = this.getApiClientName(ctx, {});
     const packageName = this.getPackageName(ctx, {});
     const filePath = this.getFilePath(ctx, { packageName });
-    ensureDirSync(dirname(filePath));
+    fs.ensureDirSync(dirname(filePath));
 
     console.log(`Generating client for service ${ctx.service.name} to ${filePath}...`);
 

@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 
-import { emptyDir, ensureDir } from 'fs-extra';
+import fs from 'fs-extra';
 
 import { OpenApiGeneratorConfig, defaultOpenApiGeneratorConfig } from './config';
 import {
@@ -74,9 +74,9 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
   public async generate<T extends ApiData>(data: T): Promise<TOutput> {
     const absOutputPath = resolve(this._config.outputDir);
     if (this._config.clearOutputDir) {
-      await emptyDir(absOutputPath);
+      await fs.emptyDir(absOutputPath);
     } else {
-      await ensureDir(absOutputPath);
+      await fs.ensureDir(absOutputPath);
     }
 
     let input = {} as TOutput;

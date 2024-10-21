@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 
-import { lstat, readdir } from 'fs-extra';
+import fs from 'fs-extra';
 
 import { Nullable } from './type.utils';
 
@@ -28,10 +28,10 @@ async function getFilesImpl(
   files: string[],
   currentDepth: number,
 ): Promise<void> {
-  const dirFiles = await readdir(dir);
+  const dirFiles = await fs.readdir(dir);
   for (const file of dirFiles) {
     const filePath = resolve(dir, file);
-    const stat = await lstat(filePath);
+    const stat = await fs.lstat(filePath);
     if (stat.isDirectory()) {
       if (options.recursive) {
         if (options.maxDepth && options.maxDepth > currentDepth) {

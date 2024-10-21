@@ -1,5 +1,5 @@
 import { dirname, join, relative, resolve, basename } from 'path';
-import { ensureDir, pathExists, readFile, remove, writeFile } from 'fs-extra';
+import fs from 'fs-extra';
 import * as util from 'util';
 import { spawn } from 'child_process';
 import { toCasing } from '@goast/core';
@@ -16,11 +16,11 @@ export async function verify(data: unknown): Promise<void> {
   const error = await verifyText(text, expectFile);
 
   if (error) {
-    await writeFile(actualFile, text);
+    await fs.writeFile(actualFile, text);
     openDiffTool(actualFile, expectFile);
     throw new Error(getErrorMessage(error, actualFile));
   } else {
-    await remove(actualFile);
+    await fs.remove(actualFile);
   }
 }
 
@@ -84,7 +84,7 @@ async function getVerifyFilePaths(): Promise<{ expectFile: string; actualFile: s
   }
 
   const verifyDir = join(dirname(testPath), '.verify', basename(testPath, '.spec.ts'));
-  await ensureDir(verifyDir);
+  await fs.ensureDir(verifyDir);
 
   const kebabTestName = cutString(toCasing(currentTestName, 'kebab'), 80);
   const verifyFileBase = join(verifyDir, kebabTestName);
@@ -95,14 +95,14 @@ async function getVerifyFilePaths(): Promise<{ expectFile: string; actualFile: s
 }
 
 async function verifyText(text: string, expectFile: string): Promise<VerifyError | undefined> {
-  if (await pathExists(expectFile)) {
-    const expected = (await readFile(expectFile)).toString();
+  if (await fs.pathExists(expectFile)) {
+    const expected = (await fs.readFile(expectFile)).toString();
 
     if (text.replace(/\r/g, '') !== expected.replace(/\r/g, '')) {
       return 'verify-failed';
     }
   } else {
-    await writeFile(expectFile, '');
+    await fs.writeFile(expectFile, '');
     return 'no-expect-file';
   }
 
