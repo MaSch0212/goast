@@ -14,7 +14,7 @@ describe('resolveAnyOfAndAllOf', () => {
     expect(result).toBeUndefined();
   });
 
-  // Find alternative for objectContaining in Deno
+  // TODO: Uncomment as soon as @std/expect has new version (https://github.com/denoland/std/pull/6065)
   // it('should resolve schema from allOf and anyOf', () => {
   //   const schema = createObjectSchema({
   //     name: 'root',
@@ -40,7 +40,7 @@ describe('resolveAnyOfAndAllOf', () => {
   //   expect(result).toEqual(expectedResult);
   // });
 
-  // Find alternative for objectContaining in Deno
+  // TODO: Uncomment as soon as @std/expect has new version (https://github.com/denoland/std/pull/6065)
   // it('should merge properties from allOf and anyOf recursively', () => {
   //   const schema = createCombinedSchema({
   //     name: 'root',

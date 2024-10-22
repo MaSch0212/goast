@@ -36,7 +36,7 @@ describe('SourceBuilder', () => {
       };
       const sb = SourceBuilder.fromString(str, options);
       expect(sb.toString()).toEqual(str);
-      // TODO: Find an alternative in Deno
+      // TODO: Uncomment as soon as @std/expect has new version (https://github.com/denoland/std/pull/6065)
       // expect(sb.options).toEqual(expect.objectContaining(options));
     });
   });
