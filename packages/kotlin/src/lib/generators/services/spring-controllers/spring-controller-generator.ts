@@ -124,23 +124,62 @@ export class DefaultKotlinSpringControllerGenerator
   }
 
   private getApiInterfaceEndpointMethodAnnnotations(ctx: Context, endpoint: ApiEndpoint): kt.Annotation<Builder>[] {
-    const operation = kt.annotation(kt.refs.swagger.operation(), [
-      endpoint.summary ? kt.argument.named('summary', kt.string(endpoint.summary?.trim())) : null,
-      kt.argument.named('operationId', kt.string(endpoint.name)),
-      endpoint.description ? kt.argument.named('description', kt.string(endpoint.description?.trim())) : null,
-      kt.argument.named(
-        'responses',
-        kt.collectionLiteral(
-          endpoint.responses.map((response) =>
-            kt.call(kt.refs.swagger.apiResponse(), [
-              kt.argument.named('responseCode', kt.string(response.statusCode?.toString())),
-              response.description ? kt.argument.named('description', kt.string(response.description?.trim())) : null,
-            ]),
-          ),
-        ),
-      ),
-      endpoint.deprecated !== undefined ? kt.argument.named('deprecated', kt.toNode(endpoint.deprecated)) : null,
-    ]);
+    const annotations: kt.Annotation<Builder>[] = [];
+
+    if (ctx.config.addSwaggerAnnotations) {
+      annotations.push(
+        kt.annotation(kt.refs.swagger.operation(), [
+          endpoint.summary ? kt.argument.named('summary', kt.string(endpoint.summary?.trim())) : null,
+          kt.argument.named('operationId', kt.string(endpoint.name)),
+          endpoint.description ? kt.argument.named('description', kt.string(endpoint.description?.trim())) : null,
+          endpoint.deprecated !== undefined ? kt.argument.named('deprecated', kt.toNode(endpoint.deprecated)) : null,
+        ]),
+      );
+
+      if (endpoint.responses.length > 0) {
+        annotations.push(
+          kt.annotation(kt.refs.swagger.apiResponses(), [
+            kt.argument.named(
+              'value',
+              kt.collectionLiteral(
+                endpoint.responses.map((response) =>
+                  kt.call(kt.refs.swagger.apiResponse(), [
+                    kt.argument.named('responseCode', kt.string(response.statusCode?.toString())),
+                    response.description
+                      ? kt.argument.named('description', kt.string(response.description?.trim()))
+                      : null,
+                    kt.argument.named(
+                      'content',
+                      kt.collectionLiteral(
+                        (response.contentOptions.length === 0
+                          ? [{ schema: undefined, type: undefined }]
+                          : response.contentOptions
+                        ).map((content) =>
+                          kt.call(kt.refs.swagger.content(), [
+                            content.type ? kt.argument.named('mediaType', kt.string(content.type)) : null,
+                            content.schema
+                              ? kt.argument.named(
+                                  'schema',
+                                  kt.call(kt.refs.swagger.schema(), [
+                                    kt.argument.named(
+                                      'implementation',
+                                      s<Builder>`${this.getSchemaType(ctx, { schema: content.schema }) ?? kt.refs.any()}::class`,
+                                    ),
+                                  ]),
+                                )
+                              : null,
+                          ]),
+                        ),
+                      ),
+                    ),
+                  ]),
+                ),
+              ),
+            ),
+          ]),
+        );
+      }
+    }
 
     const requestMapping = kt.annotation(kt.refs.spring.requestMapping(), [
       kt.argument.named(
@@ -157,8 +196,9 @@ export class DefaultKotlinSpringControllerGenerator
         ),
       );
     }
+    annotations.push(requestMapping);
 
-    return [operation, requestMapping];
+    return annotations;
   }
 
   private getApiInterfaceEndpointMethodParameter(
