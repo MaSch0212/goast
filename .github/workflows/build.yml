@@ -81,7 +81,7 @@ jobs:
         uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: npm/packages/core
+          package: npm/@goast/core
 
       - name: Create Tag for @goast/core
         uses: rickstaa/action-create-tag@v1
@@ -98,7 +98,7 @@ jobs:
         uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: npm/packages/kotlin
+          package: npm/@goast/kotlin
 
       - name: Create Tag for @goast/kotlin
         uses: rickstaa/action-create-tag@v1
@@ -115,7 +115,7 @@ jobs:
         uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: npm/packages/typescript
+          package: npm/@goast/typescript
 
       - name: Create Tag for @goast/typescript
         uses: rickstaa/action-create-tag@v1
