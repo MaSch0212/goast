@@ -214,7 +214,7 @@ export class ImportExportCollection {
     ];
   }
 
-  protected getImportMap(type: TypeScriptImportType) {
+  protected getImportMap(type: TypeScriptImportType): Map<string, Set<string>> {
     switch (type) {
       case 'import':
         return this._imports;
@@ -225,7 +225,7 @@ export class ImportExportCollection {
     }
   }
 
-  protected getExportMap(type: TypeScriptExportType) {
+  protected getExportMap(type: TypeScriptExportType): Map<string, Set<string>> {
     switch (type) {
       case 'export':
         return this._exports;

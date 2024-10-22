@@ -75,8 +75,11 @@ export class TsParameter<TBuilder extends SourceBuilder, TInjects extends string
 const createParameter = <TBuilder extends SourceBuilder>(
   name: Options<TBuilder>['name'],
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
-) => new TsParameter<TBuilder>({ ...options, name });
+): TsParameter<TBuilder> => new TsParameter<TBuilder>({ ...options, name });
 
-export const tsParameter = Object.assign(createParameter, {
-  write: writeTsParameters,
-});
+export const tsParameter: typeof createParameter & { write: typeof writeTsParameters } = Object.assign(
+  createParameter,
+  {
+    write: writeTsParameters,
+  },
+);

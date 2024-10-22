@@ -123,7 +123,7 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
     return content;
   }
 
-  protected getEnum(ctx: Context) {
+  protected getEnum(ctx: Context): ts.Enum<Builder> {
     return ts.enum(this.getDeclarationTypeName(ctx, ctx.schema), {
       doc: ts.doc({
         description: ctx.schema.description,
@@ -136,7 +136,7 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
     });
   }
 
-  protected getInterface(ctx: Context, schema: ObjectLikeApiSchema) {
+  protected getInterface(ctx: Context, schema: ObjectLikeApiSchema): ts.Interface<Builder> {
     return ts.interface(this.getDeclarationTypeName(ctx, ctx.schema), {
       export: true,
       doc: ts.doc({
@@ -211,7 +211,7 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
     });
   }
 
-  protected getIndexer(ctx: Context, schema: ObjectLikeApiSchema) {
+  protected getIndexer(ctx: Context, schema: ObjectLikeApiSchema): ts.Indexer<Builder> | null {
     return schema.additionalProperties
       ? ts.indexer(
         ts.refs.string(),
@@ -222,7 +222,7 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
       : null;
   }
 
-  protected getProperties(ctx: Context, schema: ObjectLikeApiSchema) {
+  protected getProperties(ctx: Context, schema: ObjectLikeApiSchema): ts.Property<Builder>[] {
     return Array.from(schema.properties.values()).map((property) => {
       return ts.property(property.name, {
         doc: ts.doc({
@@ -453,7 +453,7 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
     return toCasing(schema.name + '_Base', ctx.config.typeNameCasing);
   }
 
-  protected getInheritedSchemas(ctx: Context, schema: ApiSchema) {
+  protected getInheritedSchemas(ctx: Context, schema: ApiSchema): ApiSchema['inheritedSchemas'] {
     return schema.inheritedSchemas
       .filter((schema) => this.shouldGenerateTypeDeclaration(ctx, schema) && !schema.isNameGenerated)
       .filter((item, index, self) => self.indexOf(item) === index);

@@ -255,11 +255,11 @@ export class DefaultTypeScriptFetchClientGenerator extends TypeScriptFileGenerat
     );
   }
 
-  protected getUtilPath(ctx: Context, fileName: string) {
+  protected getUtilPath(ctx: Context, fileName: string): string {
     return resolve(ctx.config.outputDir, ctx.config.utilsDir, fileName);
   }
 
-  private getResponseSchema(ctx: Context, endpoint: ApiEndpoint) {
+  private getResponseSchema(_ctx: Context, endpoint: ApiEndpoint) {
     const successResponse = endpoint.responses.find((x) => x.statusCode === 200) ??
       endpoint.responses.find((x) => x.statusCode && x.statusCode > 200 && x.statusCode < 300);
     return successResponse?.contentOptions?.find((x) => x.schema !== undefined)?.schema;

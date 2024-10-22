@@ -2,6 +2,7 @@ import { resolve } from 'node:path';
 
 import {
   type ApiEndpoint,
+  type ApiResponse,
   type ApiSchema,
   type AppendValueGroup,
   appendValueGroup,
@@ -336,7 +337,7 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
     });
   }
 
-  protected getGetK6ParamsMethod(ctx: Context): ts.Method<Builder> {
+  protected getGetK6ParamsMethod(_ctx: Context): ts.Method<Builder> {
     return ts.method('getK6Params', {
       doc: ts.doc({
         tags: [
@@ -349,7 +350,7 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
     });
   }
 
-  protected getEndpointSuccessResponse(ctx: Context, endpoint: ApiEndpoint) {
+  protected getEndpointSuccessResponse(_ctx: Context, endpoint: ApiEndpoint): ApiResponse | undefined {
     return (
       endpoint.responses.find((x) => x.statusCode && x.statusCode >= 200 && x.statusCode < 300) ??
         endpoint.responses.find((x) => x.statusCode === undefined)
@@ -374,7 +375,7 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
     return toCasing(`${this.getEndpointMethodName(ctx, endpoint)}ApiResponse`, ctx.config.typeNameCasing);
   }
 
-  protected getEndpointParamsTypeName(ctx: Context, endpoint: ApiEndpoint) {
+  protected getEndpointParamsTypeName(ctx: Context, endpoint: ApiEndpoint): string {
     return toCasing(this.getEndpointMethodName(ctx, endpoint) + '_Params', ctx.config.typeNameCasing);
   }
 
@@ -402,7 +403,7 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
     );
   }
 
-  protected hasEndpointParams(_ctx: Context, endpoint: ApiEndpoint) {
+  protected hasEndpointParams(_ctx: Context, endpoint: ApiEndpoint): boolean {
     return endpoint.parameters.length > 0 || endpoint.requestBody !== undefined;
   }
 }

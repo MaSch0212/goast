@@ -35,8 +35,8 @@ export class TsTypeof<TBuilder extends SourceBuilder, TInjects extends string = 
 export const createTypeof = <TBuilder extends SourceBuilder>(
   value: Options<TBuilder>['value'],
   options?: Omit<Options<TBuilder>, 'value'>,
-) => new TsTypeof<TBuilder>({ ...options, value });
+): TsTypeof<TBuilder> => new TsTypeof<TBuilder>({ ...options, value });
 
-export const tsTypeof = Object.assign(createTypeof, {
+export const tsTypeof: typeof createTypeof & { write: typeof writeTsNodes } = Object.assign(createTypeof, {
   write: writeTsNodes,
 });

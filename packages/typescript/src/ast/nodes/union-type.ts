@@ -43,9 +43,9 @@ export class TsUnionType<TBuilder extends SourceBuilder, TInjects extends string
 const createUnionType = <TBuilder extends SourceBuilder>(
   types: Options<TBuilder>['types'],
   options?: Prettify<Omit<Options<TBuilder>, 'types'>>,
-) => new TsUnionType<TBuilder>({ ...options, types });
+): TsUnionType<TBuilder> => new TsUnionType<TBuilder>({ ...options, types });
 
-export const tsUnionType = Object.assign(createUnionType, {
+export const tsUnionType: typeof createUnionType & { write: typeof writeTsNodes } = Object.assign(createUnionType, {
   write: writeTsNodes,
 });
 

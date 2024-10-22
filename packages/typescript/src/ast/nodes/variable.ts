@@ -66,8 +66,8 @@ export class TsVariable<TBuilder extends SourceBuilder, TInjects extends string 
 const createVariable = <TBuilder extends SourceBuilder>(
   name: Options<TBuilder>['name'],
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
-) => new TsVariable<TBuilder>({ ...options, name });
+): TsVariable<TBuilder> => new TsVariable<TBuilder>({ ...options, name });
 
-export const tsVariable = Object.assign(createVariable, {
+export const tsVariable: typeof createVariable & { write: typeof writeTsNodes } = Object.assign(createVariable, {
   write: writeTsNodes,
 });

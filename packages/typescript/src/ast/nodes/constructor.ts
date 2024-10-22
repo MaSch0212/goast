@@ -66,9 +66,12 @@ export class TsConstructor<TBuilder extends SourceBuilder, TInjects extends stri
   }
 }
 
-const createConstructor = <TBuilder extends SourceBuilder>(options?: Options<TBuilder>) =>
+const createConstructor = <TBuilder extends SourceBuilder>(options?: Options<TBuilder>): TsConstructor<TBuilder> =>
   new TsConstructor<TBuilder>(options ?? {});
 
-export const tsConstructor = Object.assign(createConstructor, {
-  write: writeTsNodes,
-});
+export const tsConstructor: typeof createConstructor & { write: typeof writeTsNodes } = Object.assign(
+  createConstructor,
+  {
+    write: writeTsNodes,
+  },
+);

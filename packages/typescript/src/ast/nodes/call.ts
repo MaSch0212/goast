@@ -48,8 +48,8 @@ const createCall = <TBuilder extends SourceBuilder>(
   path: Options<TBuilder>['path'] | ArrayItem<Options<TBuilder>['path']>,
   args?: Options<TBuilder>['arguments'],
   options?: Prettify<Omit<Options<TBuilder>, 'path' | 'arguments'>>,
-) => new TsCall<TBuilder>({ ...options, path: Array.isArray(path) ? path : [path], arguments: args });
+): TsCall<TBuilder> => new TsCall<TBuilder>({ ...options, path: Array.isArray(path) ? path : [path], arguments: args });
 
-export const tsCall = Object.assign(createCall, {
+export const tsCall: typeof createCall & { write: typeof writeTsNodes } = Object.assign(createCall, {
   write: writeTsNodes,
 });

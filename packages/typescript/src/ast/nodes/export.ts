@@ -47,8 +47,8 @@ export const createExport = <TBuilder extends SourceBuilder>(
   name: Options<TBuilder>['name'],
   filePath: Options<TBuilder>['filePath'],
   options?: Prettify<Omit<Options<TBuilder>, 'name' | 'filePath'>>,
-) => new TsExport<TBuilder>({ ...options, name, filePath });
+): TsExport<TBuilder> => new TsExport<TBuilder>({ ...options, name, filePath });
 
-export const tsExport = Object.assign(createExport, {
+export const tsExport: typeof createExport & { write: typeof writeTsNodes } = Object.assign(createExport, {
   write: writeTsNodes,
 });

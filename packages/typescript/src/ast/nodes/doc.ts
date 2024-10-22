@@ -61,7 +61,8 @@ export class TsDoc<TBuilder extends SourceBuilder, TInjects extends string = nev
   }
 }
 
-const createDoc = <TBuilder extends SourceBuilder>(options?: Options<TBuilder>) => new TsDoc<TBuilder>(options ?? {});
+const createDoc = <TBuilder extends SourceBuilder>(options?: Options<TBuilder>): TsDoc<TBuilder> =>
+  new TsDoc<TBuilder>(options ?? {});
 
 function getDoc<TBuilder extends SourceBuilder>(
   baseDoc: TsDoc<TBuilder> | null,
@@ -90,7 +91,11 @@ function isDocEmpty(doc: Nullable<TsDoc<SourceBuilder>>): boolean {
   return !doc || (!doc.description && doc.tags.length === 0);
 }
 
-export const tsDoc = Object.assign(createDoc, {
+export const tsDoc: typeof createDoc & {
+  write: typeof writeTsNodes;
+  get: typeof getDoc;
+  isEmpty: typeof isDocEmpty;
+} = Object.assign(createDoc, {
   write: writeTsNodes,
   get: getDoc,
   isEmpty: isDocEmpty,

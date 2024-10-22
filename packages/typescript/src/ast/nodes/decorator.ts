@@ -57,13 +57,13 @@ const createDecorator = <TBuilder extends SourceBuilder>(
   fn: Options<TBuilder>['function'],
   args?: Options<TBuilder>['arguments'],
   options?: Prettify<Omit<Options<TBuilder>, 'function' | 'arguments'>>,
-) => new TsDecorator<TBuilder>({ ...options, function: fn, arguments: args });
+): TsDecorator<TBuilder> => new TsDecorator<TBuilder>({ ...options, function: fn, arguments: args });
 
 const writeDecorators = <TBuilder extends SourceBuilder>(
   builder: TBuilder,
   nodes: SingleOrMultiple<Nullable<TsDecorator<TBuilder> | AppendValue<TBuilder>>>,
   options?: { multiline?: boolean },
-) => {
+): void => {
   const filteredNodes = toArray(nodes).filter(notNullish);
   builder.forEach(filteredNodes, (b, d) => {
     writeTsNode(b, d);
@@ -71,6 +71,6 @@ const writeDecorators = <TBuilder extends SourceBuilder>(
   });
 };
 
-export const tsDecorator = Object.assign(createDecorator, {
+export const tsDecorator: typeof createDecorator & { write: typeof writeDecorators } = Object.assign(createDecorator, {
   write: writeDecorators,
 });

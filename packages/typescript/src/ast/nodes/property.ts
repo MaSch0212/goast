@@ -174,14 +174,18 @@ export class TsAccessorProperty<TBuilder extends SourceBuilder, TInjects extends
 const createProperty = <TBuilder extends SourceBuilder>(
   name: BaseOptions<TBuilder>['name'],
   options?: Prettify<Omit<SimpleOptions<TBuilder>, 'name'>> | Prettify<Omit<AccessorOptions<TBuilder>, 'name'>>,
-) => {
+): TsProperty<TBuilder> => {
   if (options && ('get' in options || 'set' in options)) {
     return new TsAccessorProperty({ ...options, name });
   }
   return new TsSimpleProperty({ ...options, name });
 };
 
-export const tsProperty = Object.assign(createProperty, {
+export const tsProperty: typeof createProperty & {
+  write: typeof writeTsNodes;
+  getter: typeof createPropertyGetter;
+  setter: typeof createPropertySetter;
+} = Object.assign(createProperty, {
   write: writeTsNodes,
   getter: createPropertyGetter,
   setter: createPropertySetter,

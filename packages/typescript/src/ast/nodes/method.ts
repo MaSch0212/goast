@@ -131,8 +131,8 @@ export class TsMethod<TBuilder extends SourceBuilder, TInjects extends string = 
 export const createMethod = <TBuilder extends SourceBuilder>(
   name: Options<TBuilder>['name'],
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
-) => new TsMethod<TBuilder>({ ...options, name });
+): TsMethod<TBuilder> => new TsMethod<TBuilder>({ ...options, name });
 
-export const tsMethod = Object.assign(createMethod, {
+export const tsMethod: typeof createMethod & { write: typeof writeTsNodes } = Object.assign(createMethod, {
   write: writeTsNodes,
 });

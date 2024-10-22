@@ -164,8 +164,10 @@ export class TsPropertyGetter<TBuilder extends SourceBuilder, TInjects extends s
   }
 }
 
-export const createPropertySetter = <TBuilder extends SourceBuilder>(options?: Options<TBuilder>) =>
-  new TsPropertySetter<TBuilder>(options ?? {});
+export const createPropertySetter = <TBuilder extends SourceBuilder>(
+  options?: Options<TBuilder>,
+): TsPropertySetter<TBuilder> => new TsPropertySetter<TBuilder>(options ?? {});
 
-export const createPropertyGetter = <TBuilder extends SourceBuilder>(options?: Options<TBuilder>) =>
-  new TsPropertyGetter<TBuilder>(options ?? {});
+export const createPropertyGetter = <TBuilder extends SourceBuilder>(
+  options?: Options<TBuilder>,
+): TsPropertyGetter<TBuilder> => new TsPropertyGetter<TBuilder>(options ?? {});

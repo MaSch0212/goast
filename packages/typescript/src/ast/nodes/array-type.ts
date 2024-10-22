@@ -42,8 +42,8 @@ export class TsArrayType<TBuilder extends SourceBuilder, TInjects extends string
 const createArrayType = <TBuilder extends SourceBuilder>(
   type: Options<TBuilder>['type'],
   options?: Prettify<Omit<Options<TBuilder>, 'type'>>,
-) => new TsArrayType<TBuilder>({ ...options, type });
+): TsArrayType<TBuilder> => new TsArrayType<TBuilder>({ ...options, type });
 
-export const tsArrayType = Object.assign(createArrayType, {
+export const tsArrayType: typeof createArrayType & { write: typeof writeTsNodes } = Object.assign(createArrayType, {
   write: writeTsNodes,
 });

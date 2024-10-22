@@ -42,8 +42,8 @@ export class TsString<TBuilder extends SourceBuilder, TInjects extends string = 
 const createString = <TBuilder extends SourceBuilder>(
   value: Options<TBuilder>['value'],
   options?: Prettify<Omit<Options<TBuilder>, 'value'>>,
-) => new TsString<TBuilder>({ ...options, value });
+): TsString<TBuilder> => new TsString<TBuilder>({ ...options, value });
 
-export const tsString = Object.assign(createString, {
+export const tsString: typeof createString & { write: typeof writeTsNodes } = Object.assign(createString, {
   write: writeTsNodes,
 });

@@ -70,8 +70,8 @@ export class TsEnum<TBuilder extends SourceBuilder, TInjects extends string = ne
 const createEnum = <TBuilder extends SourceBuilder>(
   name: Options<TBuilder>['name'],
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
-) => new TsEnum<TBuilder>({ ...options, name });
+): TsEnum<TBuilder> => new TsEnum<TBuilder>({ ...options, name });
 
-export const tsEnum = Object.assign(createEnum, {
+export const tsEnum: typeof createEnum & { write: typeof writeTsNodes } = Object.assign(createEnum, {
   write: writeTsNodes,
 });

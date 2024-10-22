@@ -80,9 +80,12 @@ export class TsArrowFunction<TBuilder extends SourceBuilder, TInjects extends st
   }
 }
 
-const createArrowFunction = <TBuilder extends SourceBuilder>(options?: Options<TBuilder>) =>
+const createArrowFunction = <TBuilder extends SourceBuilder>(options?: Options<TBuilder>): TsArrowFunction<TBuilder> =>
   new TsArrowFunction<TBuilder>(options ?? {});
 
-export const tsArrowFunction = Object.assign(createArrowFunction, {
-  write: writeTsNodes,
-});
+export const tsArrowFunction: typeof createArrowFunction & { write: typeof writeTsNodes } = Object.assign(
+  createArrowFunction,
+  {
+    write: writeTsNodes,
+  },
+);

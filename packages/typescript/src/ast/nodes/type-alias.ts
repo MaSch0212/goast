@@ -68,8 +68,8 @@ const createTypeAlias = <TBuilder extends SourceBuilder>(
   name: Options<TBuilder>['name'],
   type: Options<TBuilder>['type'],
   options?: Prettify<Omit<Options<TBuilder>, 'name' | 'type'>>,
-) => new TsTypeAlias<TBuilder>({ ...options, name, type });
+): TsTypeAlias<TBuilder> => new TsTypeAlias<TBuilder>({ ...options, name, type });
 
-export const tsTypeAlias = Object.assign(createTypeAlias, {
+export const tsTypeAlias: typeof createTypeAlias & { write: typeof writeTsNodes } = Object.assign(createTypeAlias, {
   write: writeTsNodes,
 });

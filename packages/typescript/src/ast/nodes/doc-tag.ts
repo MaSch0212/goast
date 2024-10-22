@@ -285,6 +285,6 @@ function createDocTag<TBuilder extends SourceBuilder>(tag: string, ...args: unkn
   });
 }
 
-export const tsDocTag = Object.assign(createDocTag, {
+export const tsDocTag: typeof createDocTag & { write: typeof writeTsNodes } = Object.assign(createDocTag, {
   write: writeTsNodes,
 });

@@ -46,8 +46,8 @@ export class TsTuple<TBuilder extends SourceBuilder, TInjects extends string = n
 const createTuple = <TBuilder extends SourceBuilder>(
   elements: Options<TBuilder>['elements'],
   options?: Prettify<Omit<Options<TBuilder>, 'elements'>>,
-) => new TsTuple<TBuilder>({ ...options, elements });
+): TsTuple<TBuilder> => new TsTuple<TBuilder>({ ...options, elements });
 
-export const tsTuple = Object.assign(createTuple, {
+export const tsTuple: typeof createTuple & { write: typeof writeTsNodes } = Object.assign(createTuple, {
   write: writeTsNodes,
 });

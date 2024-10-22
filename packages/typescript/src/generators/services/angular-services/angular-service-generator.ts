@@ -2,6 +2,7 @@ import { resolve } from 'node:path';
 
 import {
   type ApiEndpoint,
+  type ApiResponse,
   type ApiSchema,
   type AppendValueGroup,
   appendValueGroup,
@@ -342,7 +343,7 @@ export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGene
     );
   }
 
-  protected getEndpointSuccessResponse(ctx: Context, endpoint: ApiEndpoint) {
+  protected getEndpointSuccessResponse(_ctx: Context, endpoint: ApiEndpoint): ApiResponse | undefined {
     return (
       endpoint.responses.find((x) => x.statusCode && x.statusCode >= 200 && x.statusCode < 300) ??
         endpoint.responses.find((x) => x.statusCode === undefined)
@@ -357,7 +358,7 @@ export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGene
     return toCasing(`${this.getEndpointMethodName(ctx, endpoint)}ApiResponse`, ctx.config.typeNameCasing);
   }
 
-  protected getEndpointParamsTypeName(ctx: Context, endpoint: ApiEndpoint) {
+  protected getEndpointParamsTypeName(ctx: Context, endpoint: ApiEndpoint): string {
     return toCasing(this.getEndpointMethodName(ctx, endpoint) + '_Params', ctx.config.typeNameCasing);
   }
 
@@ -385,7 +386,7 @@ export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGene
     );
   }
 
-  protected hasEndpointParams(ctx: Context, endpoint: ApiEndpoint) {
+  protected hasEndpointParams(_ctx: Context, endpoint: ApiEndpoint): boolean {
     return endpoint.parameters.length > 0 || endpoint.requestBody !== undefined;
   }
 

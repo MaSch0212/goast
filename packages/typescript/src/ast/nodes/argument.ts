@@ -33,8 +33,8 @@ export class TsArgument<TBuilder extends SourceBuilder, TInjects extends string 
 const createArgument = <TBuilder extends SourceBuilder>(
   value: Options<TBuilder>['value'],
   options?: Prettify<Omit<Options<TBuilder>, 'value'>>,
-) => new TsArgument<TBuilder>({ ...options, value });
+): TsArgument<TBuilder> => new TsArgument<TBuilder>({ ...options, value });
 
-export const tsArgument = Object.assign(createArgument, {
+export const tsArgument: typeof createArgument & { write: typeof writeTsParameters } = Object.assign(createArgument, {
   write: writeTsParameters,
 });

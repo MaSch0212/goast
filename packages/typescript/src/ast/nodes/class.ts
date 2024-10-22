@@ -126,8 +126,8 @@ export class TsClass<TBuilder extends SourceBuilder, TInjects extends string = n
 const createClass = <TBuilder extends SourceBuilder>(
   name: Options<TBuilder>['name'],
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
-) => new TsClass<TBuilder>({ ...options, name });
+): TsClass<TBuilder> => new TsClass<TBuilder>({ ...options, name });
 
-export const tsClass = Object.assign(createClass, {
+export const tsClass: typeof createClass & { write: typeof writeTsNodes } = Object.assign(createClass, {
   write: writeTsNodes,
 });

@@ -49,9 +49,12 @@ export class TsFunctionType<TBuilder extends SourceBuilder, TInjects extends str
   }
 }
 
-const createFunctionType = <TBuilder extends SourceBuilder>(options?: Options<TBuilder>) =>
+const createFunctionType = <TBuilder extends SourceBuilder>(options?: Options<TBuilder>): TsFunctionType<TBuilder> =>
   new TsFunctionType<TBuilder>(options ?? {});
 
-export const tsFunctionType = Object.assign(createFunctionType, {
-  write: writeTsNodes,
-});
+export const tsFunctionType: typeof createFunctionType & { write: typeof writeTsNodes } = Object.assign(
+  createFunctionType,
+  {
+    write: writeTsNodes,
+  },
+);

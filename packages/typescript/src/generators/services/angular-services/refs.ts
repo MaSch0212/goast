@@ -7,7 +7,15 @@ import { ts } from '../../../ast/index.ts';
 import type { TypeScriptAngularServicesGeneratorConfig } from './models.ts';
 
 // See packages/typescript/assets/client/angular for reference
-export function getReferenceFactories(options: TypeScriptAngularServicesGeneratorConfig) {
+export function getReferenceFactories(options: TypeScriptAngularServicesGeneratorConfig): {
+  abortablePromise: ts.GenericModuleReferenceFactory<1>;
+  waitForResponse: ts.GenericModuleReferenceFactory<1>;
+  requestBuilder: ts.ModuleReferenceFactory;
+  apiConfiguration: ts.ModuleReferenceFactory;
+  apiBaseService: ts.ModuleReferenceFactory;
+  httpStatusCode: ts.ModuleReferenceFactory;
+  provide: ts.ModuleReferenceFactory;
+} {
   const utilsDirPath = resolve(options.outputDir, options.utilsDir);
   return {
     // angular-service.utils.ts

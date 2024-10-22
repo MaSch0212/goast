@@ -34,7 +34,14 @@ export { TsObjectType as ObjectType, tsObjectType as objectType } from './nodes/
 export { TsObject as Object, tsObject as object } from './nodes/object.ts';
 export { TsParameter as Parameter, tsParameter as parameter } from './nodes/parameter.ts';
 export { TsProperty as Property, tsProperty as property } from './nodes/property.ts';
-export { TsReference as Reference, tsReference as reference } from './nodes/reference.ts';
+export {
+  type TsGenericModuleReferenceFactory as GenericModuleReferenceFactory,
+  type TsGenericReferenceFactory as GenericReferenceFactory,
+  type TsModuleReferenceFactory as ModuleReferenceFactory,
+  TsReference as Reference,
+  tsReference as reference,
+  type TsReferenceFactory as ReferenceFactory,
+} from './nodes/reference.ts';
 export { TsString as String, tsString as string } from './nodes/string.ts';
 export { TsTuple as Tuple, tsTuple as tuple } from './nodes/tuple.ts';
 export { TsTypeAlias as TypeAlias, tsTypeAlias as typeAlias } from './nodes/type-alias.ts';

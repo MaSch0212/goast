@@ -13,7 +13,7 @@ import { writeTsNodes } from './write-ts-nodes.ts';
 export function writeTsGenericParameters<TBuilder extends SourceBuilder>(
   builder: TBuilder,
   nodes: SingleOrMultiple<Nullable<TsNode<TBuilder> | AppendValue<TBuilder>>>,
-) {
+): void {
   const filteredNodes = toArray(nodes).filter(notNullish);
   const multiline = filteredNodes.length > 2;
   builder.parenthesizeIf(

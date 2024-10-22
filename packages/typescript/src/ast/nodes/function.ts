@@ -100,8 +100,8 @@ export class TsFunction<TBuilder extends SourceBuilder, TInjects extends string 
 const createFunction = <TBuilder extends SourceBuilder>(
   name: Options<TBuilder>['name'],
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
-) => new TsFunction<TBuilder>({ ...options, name });
+): TsFunction<TBuilder> => new TsFunction<TBuilder>({ ...options, name });
 
-export const tsFunction = Object.assign(createFunction, {
+export const tsFunction: typeof createFunction & { write: typeof writeTsNodes } = Object.assign(createFunction, {
   write: writeTsNodes,
 });

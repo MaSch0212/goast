@@ -88,13 +88,39 @@ const createReference = <TBuilder extends SourceBuilder>(
   name: Options<TBuilder>['name'],
   moduleNameOrfilePath?: Options<TBuilder>['moduleNameOrfilePath'],
   options?: Prettify<Omit<Options<TBuilder>, 'name' | 'moduleNameOrfilePath'>>,
-) => new TsReference<TBuilder>({ ...options, name, moduleNameOrfilePath });
+): TsReference<TBuilder> => new TsReference<TBuilder>({ ...options, name, moduleNameOrfilePath });
+
+export type TsReferenceFactory =
+  & (<TBuilder extends SourceBuilder>(options?: FactoryOptions<TBuilder>) => TsReference<TBuilder>)
+  & {
+    refName: string;
+    moduleNameOrfilePath: Nullable<string>;
+  };
+export type TsModuleReferenceFactory = TsReferenceFactory & {
+  moduleNameOrfilePath: string;
+};
+
+export type TsGenericReferenceFactory<TGenericCount extends number | number[]> =
+  & (<TBuilder extends SourceBuilder>(
+    generics: TupleWithCount<TsType<TBuilder>, TGenericCount>,
+    options?: FactoryOptions<TBuilder>,
+  ) => TsReference<TBuilder>)
+  & {
+    refName: string;
+    moduleNameOrfilePath: Nullable<string>;
+    infer: <TBuilder extends SourceBuilder>() => TsReference<TBuilder>;
+  };
+export type TsGenericModuleReferenceFactory<TGenericCount extends number | number[]> =
+  & TsGenericReferenceFactory<TGenericCount>
+  & {
+    moduleNameOrfilePath: string;
+  };
 
 function _createFactory(
   name: string,
   moduleNameOrfilePath?: Nullable<string>,
   defaultOptions?: { importType?: Nullable<TypeScriptImportType> },
-) {
+): TsReferenceFactory {
   return Object.assign(
     <TBuilder extends SourceBuilder>(options?: FactoryOptions<TBuilder>) =>
       createReference<TBuilder>(name, moduleNameOrfilePath, { ...defaultOptions, ...options }),
@@ -108,17 +134,17 @@ function createFactory(
   name: string,
   moduleNameOrfilePath: string,
   defaultOptions?: { importType?: Nullable<TypeScriptImportType> },
-): ReturnType<typeof _createFactory> & { moduleNameOrfilePath: string };
+): TsModuleReferenceFactory;
 function createFactory(
   name: string,
   moduleNameOrfilePath?: Nullable<string>,
   defaultOptions?: { importType?: Nullable<TypeScriptImportType> },
-): ReturnType<typeof _createFactory>;
+): TsReferenceFactory;
 function createFactory(
   name: string,
   moduleNameOrfilePath?: Nullable<string>,
   defaultOptions?: { importType?: Nullable<TypeScriptImportType> },
-) {
+): TsReferenceFactory {
   return _createFactory(name, moduleNameOrfilePath, defaultOptions);
 }
 
@@ -126,7 +152,7 @@ function _createGenericFactory<TGenericCount extends number | number[]>(
   name: string,
   moduleNameOrfilePath?: Nullable<string>,
   defaultOptions?: { importType?: Nullable<TypeScriptImportType> },
-) {
+): TsGenericReferenceFactory<TGenericCount> {
   return Object.assign(
     <TBuilder extends SourceBuilder>(
       generics: TupleWithCount<TsType<TBuilder>, TGenericCount>,
@@ -143,21 +169,25 @@ function createGenericFactory<TGenericCount extends number | number[]>(
   name: string,
   moduleNameOrfilePath: string,
   defaultOptions?: { importType?: Nullable<TypeScriptImportType> },
-): ReturnType<typeof _createGenericFactory<TGenericCount>> & { moduleNameOrfilePath: string };
+): TsGenericModuleReferenceFactory<TGenericCount>;
 function createGenericFactory<TGenericCount extends number | number[]>(
   name: string,
   moduleNameOrfilePath?: Nullable<string>,
   defaultOptions?: { importType?: Nullable<TypeScriptImportType> },
-): ReturnType<typeof _createGenericFactory<TGenericCount>>;
+): TsGenericReferenceFactory<TGenericCount>;
 function createGenericFactory<TGenericCount extends number | number[]>(
   name: string,
   moduleNameOrfilePath?: Nullable<string>,
   defaultOptions?: { importType?: Nullable<TypeScriptImportType> },
-) {
+): TsGenericReferenceFactory<TGenericCount> {
   return _createGenericFactory<TGenericCount>(name, moduleNameOrfilePath, defaultOptions);
 }
 
-export const tsReference = Object.assign(createReference, {
+export const tsReference: typeof createReference & {
+  factory: typeof createFactory;
+  genericFactory: typeof createGenericFactory;
+  write: typeof writeTsNodes;
+} = Object.assign(createReference, {
   factory: createFactory,
   genericFactory: createGenericFactory,
   write: writeTsNodes,

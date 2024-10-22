@@ -43,11 +43,14 @@ export class TsIntersectionType<TBuilder extends SourceBuilder, TInjects extends
 const createIntersectionType = <TBuilder extends SourceBuilder>(
   types: Options<TBuilder>['types'],
   options?: Prettify<Omit<Options<TBuilder>, 'types'>>,
-) => new TsIntersectionType<TBuilder>({ ...options, types });
+): TsIntersectionType<TBuilder> => new TsIntersectionType<TBuilder>({ ...options, types });
 
-export const tsIntersectionType = Object.assign(createIntersectionType, {
-  write: writeTsNodes,
-});
+export const tsIntersectionType: typeof createIntersectionType & { write: typeof writeTsNodes } = Object.assign(
+  createIntersectionType,
+  {
+    write: writeTsNodes,
+  },
+);
 
 function resolveNestedIntersectionTypes<TBuilder extends SourceBuilder>(
   node: TsIntersectionType<TBuilder>,

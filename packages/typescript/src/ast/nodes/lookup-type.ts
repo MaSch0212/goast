@@ -46,8 +46,8 @@ const createLookupType = <TBuilder extends SourceBuilder>(
   type: Options<TBuilder>['type'],
   index: Options<TBuilder>['index'],
   options?: Omit<Options<TBuilder>, 'type' | 'index'>,
-) => new TsLookupType<TBuilder>({ ...options, type, index });
+): TsLookupType<TBuilder> => new TsLookupType<TBuilder>({ ...options, type, index });
 
-export const tsLookupType = Object.assign(createLookupType, {
+export const tsLookupType: typeof createLookupType & { write: typeof writeTsNodes } = Object.assign(createLookupType, {
   write: writeTsNodes,
 });

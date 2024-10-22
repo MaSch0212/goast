@@ -63,8 +63,9 @@ export class TsGenericParameter<TBuilder extends SourceBuilder, TInjects extends
 const createGenericParameter = <TBuilder extends SourceBuilder>(
   name: Options<TBuilder>['name'],
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
-) => new TsGenericParameter<TBuilder>({ ...options, name });
+): TsGenericParameter<TBuilder> => new TsGenericParameter<TBuilder>({ ...options, name });
 
-export const tsGenericParameter = Object.assign(createGenericParameter, {
-  write: writeTsGenericParameters,
-});
+export const tsGenericParameter: typeof createGenericParameter & { write: typeof writeTsGenericParameters } = Object
+  .assign(createGenericParameter, {
+    write: writeTsGenericParameters,
+  });

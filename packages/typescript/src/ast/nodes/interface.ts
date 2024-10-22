@@ -110,8 +110,8 @@ export class TsInterface<TBuilder extends SourceBuilder, TInjects extends string
 const createInterface = <TBuilder extends SourceBuilder>(
   name: Options<TBuilder>['name'],
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
-) => new TsInterface<TBuilder>({ ...options, name });
+): TsInterface<TBuilder> => new TsInterface<TBuilder>({ ...options, name });
 
-export const tsInterface = Object.assign(createInterface, {
+export const tsInterface: typeof createInterface & { write: typeof writeTsNodes } = Object.assign(createInterface, {
   write: writeTsNodes,
 });

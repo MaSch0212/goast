@@ -4,7 +4,11 @@ import { ts } from '../../../ast/index.ts';
 import type { TypeScriptFetchClientsGeneratorConfig } from './models.ts';
 
 // See packages/typescript/assets/client/fetch for reference
-export function getReferenceFactories(options: TypeScriptFetchClientsGeneratorConfig) {
+export function getReferenceFactories(options: TypeScriptFetchClientsGeneratorConfig): {
+  typedResponse: ts.GenericModuleReferenceFactory<1>;
+  fetchClientOptions: ts.ModuleReferenceFactory;
+  urlBuilder: ts.ModuleReferenceFactory;
+} {
   const utilsDirPath = resolve(options.outputDir, options.utilsDir);
   const fetchClientUtilsPath = resolve(utilsDirPath, 'fetch-client.utils.ts');
 

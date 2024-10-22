@@ -53,8 +53,8 @@ const createIndexer = <TBuilder extends SourceBuilder>(
   keyType: Options<TBuilder>['keyType'],
   valueType: Options<TBuilder>['valueType'],
   options?: Prettify<Omit<Options<TBuilder>, 'keyType' | 'valueType'>>,
-) => new TsIndexer<TBuilder>({ ...options, keyType, valueType });
+): TsIndexer<TBuilder> => new TsIndexer<TBuilder>({ ...options, keyType, valueType });
 
-export const tsIndexer = Object.assign(createIndexer, {
+export const tsIndexer: typeof createIndexer & { write: typeof writeTsNodes } = Object.assign(createIndexer, {
   write: writeTsNodes,
 });

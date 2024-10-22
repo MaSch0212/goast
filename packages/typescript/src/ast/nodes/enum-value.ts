@@ -58,15 +58,15 @@ export class TsEnumValue<TBuilder extends SourceBuilder, TInjects extends string
 const createEnumValue = <TBuilder extends SourceBuilder>(
   name: Options<TBuilder>['name'],
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
-) => new TsEnumValue<TBuilder>({ ...options, name });
+): TsEnumValue<TBuilder> => new TsEnumValue<TBuilder>({ ...options, name });
 
 const writeEnumValues = <TBuilder extends SourceBuilder>(
   builder: TBuilder,
   nodes: SingleOrMultiple<Nullable<TsEnumValue<TBuilder> | AppendValue<TBuilder>>>,
-) => {
+): void => {
   writeTsNodes(builder, nodes, { separator: ',\n' });
 };
 
-export const tsEnumValue = Object.assign(createEnumValue, {
+export const tsEnumValue: typeof createEnumValue & { write: typeof writeEnumValues } = Object.assign(createEnumValue, {
   write: writeEnumValues,
 });

@@ -4,7 +4,17 @@ import { ts } from '../../../ast/index.ts';
 import type { TypeScriptEasyNetworkStubsGeneratorConfig } from './models.ts';
 
 // See packages/typescript/assets/stubs/easy-network-stub for reference
-export function getReferenceFactories(options: TypeScriptEasyNetworkStubsGeneratorConfig) {
+export function getReferenceFactories(options: TypeScriptEasyNetworkStubsGeneratorConfig): {
+  easyNetworkStubWrapperOptions: ts.ModuleReferenceFactory;
+  stubRequestItem: ts.ModuleReferenceFactory;
+  stubRequestInfo: ts.GenericModuleReferenceFactory<2>;
+  strictRouteResponseCallback: ts.GenericModuleReferenceFactory<3>;
+  getStubResponder: ts.GenericModuleReferenceFactory<1>;
+  easyNetworkStubWrapper: ts.ModuleReferenceFactory;
+  easyNetworkStubBase: ts.ModuleReferenceFactory;
+  easyNetworkStubGroup: ts.GenericModuleReferenceFactory<2>;
+  createEasyNetworkStubGroup: ts.GenericModuleReferenceFactory<2>;
+} {
   const utilsDirPath = resolve(options.outputDir, options.utilsDir);
   const easyNetworkStubUtilsPath = join(utilsDirPath, 'easy-network-stub.utils.ts');
 

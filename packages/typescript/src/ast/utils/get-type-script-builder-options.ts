@@ -6,7 +6,7 @@ import { TypeScriptFileBuilder } from '../../file-builder.ts';
 const tsConfigSymbol = Symbol();
 type _BuilderWithConfig = SourceBuilder & { [tsConfigSymbol]?: TypeScriptGeneratorConfig };
 
-export function getTypeScriptBuilderOptions(builder: StringBuilder) {
+export function getTypeScriptBuilderOptions(builder: StringBuilder): TypeScriptGeneratorConfig {
   if (builder instanceof TypeScriptFileBuilder) {
     return builder.options;
   }
