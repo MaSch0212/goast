@@ -1,16 +1,19 @@
-import { dirname, join, relative, resolve, basename } from 'path';
+// @deno-types="@types/fs-extra"
 import fs from 'fs-extra';
-import * as util from 'util';
-import { spawn } from 'child_process';
-import { toCasing } from '@goast/core';
-import { nxRootDir } from './paths';
+import { basename, dirname, join, relative, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import * as util from 'node:util';
+import { spawn } from 'node:child_process';
+import { repoRootDir } from './paths.ts';
+import process from 'node:process';
+import { toKebabCase } from '@std/text';
 
 type VerifyError = 'no-expect-file' | 'verify-failed';
 
 export class MultipartData extends Array<[key: string, value: unknown]> {}
 
-export async function verify(data: unknown): Promise<void> {
-  const { expectFile, actualFile } = await getVerifyFilePaths();
+export async function verify(t: Deno.TestContext, data: unknown): Promise<void> {
+  const { expectFile, actualFile } = await getVerifyFilePaths(t);
   const text = dataToText(data);
 
   const error = await verifyText(text, expectFile);
@@ -19,7 +22,7 @@ export async function verify(data: unknown): Promise<void> {
     await fs.writeFile(actualFile, text);
     openDiffTool(actualFile, expectFile);
     throw new Error(getErrorMessage(error, actualFile));
-  } else {
+  } else if (await fs.exists(actualFile)) {
     await fs.remove(actualFile);
   }
 }
@@ -54,20 +57,18 @@ function dataToText(data: unknown, depth: number = 100): string {
 }
 
 function normalizePaths(text: string): string {
-  const rootPathRegex = escapeRegExp(nxRootDir).replace(/\\\\/g, '(\\\\|\\\\\\\\|\\/)');
+  const rootPathRegex = escapeRegExp(repoRootDir).replace(/\\\\/g, '(\\\\|\\\\\\\\|\\/)');
   const pathRegex = new RegExp(`${rootPathRegex}[a-zA-Z0-9-_\\\\\\/.]*`, 'g');
   return text.replace(
     pathRegex,
-    (path) => '<root>/' + relative(nxRootDir, resolve(path.replace(/\\\\/g, '\\'))).replace(/\\/g, '/'),
+    (path) => '<root>/' + relative(repoRootDir, resolve(path.replace(/\\\\/g, '\\'))).replace(/\\/g, '/'),
   );
 }
 
 function header(name: string): string {
   const width = Math.max(40, name.length + 4);
   return (
-    '' +
-    `┌${'─'.repeat(width - 2)}┐\n` +
-    `│ ${name}${' '.repeat(width - name.length - 4)} │\n` +
+    '' + `┌${'─'.repeat(width - 2)}┐\n` + `│ ${name}${' '.repeat(width - name.length - 4)} │\n` +
     `├${'─'.repeat(width - 2)}┤\n`
   );
 }
@@ -77,16 +78,17 @@ function footer(name: string): string {
   return `└${'─'.repeat(width - 2)}┘`;
 }
 
-async function getVerifyFilePaths(): Promise<{ expectFile: string; actualFile: string }> {
-  const { currentTestName, testPath } = expect.getState();
+async function getVerifyFilePaths(t: Deno.TestContext): Promise<{ expectFile: string; actualFile: string }> {
+  const currentTestName = getFullTestName(t);
+  const testPath = fileURLToPath(t.origin);
   if (!currentTestName || !testPath) {
     throw new Error('Unable to determine test name or path.');
   }
 
-  const verifyDir = join(dirname(testPath), '.verify', basename(testPath, '.spec.ts'));
+  const verifyDir = join(dirname(testPath), '.verify', basename(testPath).replace(/\.test\.[tj]s$/, ''));
   await fs.ensureDir(verifyDir);
 
-  const kebabTestName = cutString(toCasing(currentTestName, 'kebab'), 80);
+  const kebabTestName = cutString(toKebabCase(currentTestName), 80);
   const verifyFileBase = join(verifyDir, kebabTestName);
   const expectFile = verifyFileBase + '.expect.txt';
   const actualFile = verifyFileBase + '.actual.txt';
@@ -94,8 +96,12 @@ async function getVerifyFilePaths(): Promise<{ expectFile: string; actualFile: s
   return { expectFile, actualFile };
 }
 
+function getFullTestName(t: Deno.TestContext): string {
+  return t.parent ? getFullTestName(t.parent) + ' ' + t.name : t.name;
+}
+
 async function verifyText(text: string, expectFile: string): Promise<VerifyError | undefined> {
-  if (await fs.pathExists(expectFile)) {
+  if (await fs.exists(expectFile)) {
     const expected = (await fs.readFile(expectFile)).toString();
 
     if (text.replace(/\r/g, '') !== expected.replace(/\r/g, '')) {

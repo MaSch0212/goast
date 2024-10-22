@@ -164,9 +164,14 @@ class QueryParameter extends Parameter {
           params = `${params}${params ? '&' : '?'}${encodeURIComponent(this.name)}=${this.serializeValue(v)}`;
         }
       } else {
-        const separator =
-          this.options.style === 'spaceDelimited' ? ' ' : this.options.style === 'pipeDelimited' ? '|' : ',';
-        return `${params}${params ? '&' : '?'}${encodeURIComponent(this.name)}=${this.serializeValue(this.value, separator)}`;
+        const separator = this.options.style === 'spaceDelimited'
+          ? ' '
+          : this.options.style === 'pipeDelimited'
+          ? '|'
+          : ',';
+        return `${params}${params ? '&' : '?'}${encodeURIComponent(this.name)}=${
+          this.serializeValue(this.value, separator)
+        }`;
       }
     } else if (this.value !== null && typeof this.value === 'object') {
       // Object serialization
@@ -175,9 +180,11 @@ class QueryParameter extends Parameter {
         for (const key of Object.keys(this.value)) {
           const propVal = this.value[key];
           if (propVal !== null && propVal !== undefined) {
-            params = `${params}${params ? '&' : '?'}${encodeURIComponent(this.name)}[${encodeURIComponent(
-              key,
-            )}]=${this.serializeValue(propVal)}`;
+            params = `${params}${params ? '&' : '?'}${encodeURIComponent(this.name)}[${
+              encodeURIComponent(
+                key,
+              )
+            }]=${this.serializeValue(propVal)}`;
           }
         }
       } else if (this.options.explode) {

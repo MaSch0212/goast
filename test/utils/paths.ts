@@ -1,8 +1,18 @@
-import { join, resolve } from 'path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+// @deno-types="@types/fs-extra"
+import fs from 'fs-extra';
 
-export const nxRootDir = resolve(__dirname, '..', '..');
+declare const __dirname: string | undefined;
+const scriptDir = typeof __dirname === 'undefined' ? dirname(fileURLToPath(import.meta.url)) : __dirname;
 
-const openApiFilesDir = join(nxRootDir, 'test', 'openapi-files');
-export const openApiV2FilesDir = join(openApiFilesDir, 'v2');
-export const openApiV3FilesDir = join(openApiFilesDir, 'v3');
-export const openApiV3_1FilesDir = join(openApiFilesDir, 'v3.1');
+let _repoRootDir = scriptDir;
+while (!fs.existsSync(join(_repoRootDir, '.git'))) {
+  _repoRootDir = dirname(_repoRootDir);
+}
+
+export const repoRootDir: string = _repoRootDir;
+const openApiFilesDir = join(_repoRootDir, 'test', 'openapi-files');
+export const openApiV2FilesDir: string = join(openApiFilesDir, 'v2');
+export const openApiV3FilesDir: string = join(openApiFilesDir, 'v3');
+export const openApiV3_1FilesDir: string = join(openApiFilesDir, 'v3.1');

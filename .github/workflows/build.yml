@@ -14,27 +14,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
         with:
-          node-version: 20
-          cache: pnpm
+          deno-version: v2.x
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: deno install --frozen
 
       - name: Lint
-        run: pnpm run lint
+        run: deno lint
 
       - name: Test
         id: test
-        run: pnpm run test
+        run: deno task test
 
-      - name: Build
-        run: pnpm run build
+      - name: Build NPM packages
+        run: deno task npm
 
       - name: Upload failed verify outputs
         if: always() && (steps.test.outcome == 'failure')
@@ -44,11 +40,11 @@ jobs:
           path: packages/**/.verify/**/*
           if-no-files-found: ignore
 
-      - name: Upload dist
+      - name: Upload NPM packages
         uses: actions/upload-artifact@v4
         with:
-          name: dist
-          path: dist
+          name: npm
+          path: npm
 
   publish:
     name: Publish
@@ -58,24 +54,34 @@ jobs:
     if: github.ref == 'refs/heads/main'
     permissions:
       contents: write
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Download dist
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Download NPM packages
         uses: actions/download-artifact@v4
         with:
-          name: dist
-          path: dist
+          name: npm
+          path: npm
 
-      - name: Publish @goast/core
+      - name: Publish @goast/core to JSR
+        run: deno publish
+        working-directory: packages/core
+
+      - name: Publish @goast/core to NPM
         id: publish-core
         uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: dist/packages/core
+          package: npm/packages/core
 
       - name: Create Tag for @goast/core
         uses: rickstaa/action-create-tag@v1
@@ -83,12 +89,16 @@ jobs:
           tag: core/v${{ steps.publish-core.outputs.version }}
           tag_exists_error: false
 
-      - name: Publish @goast/kotlin
+      - name: Publish @goast/kotlin to JSR
+        run: deno publish
+        working-directory: packages/kotlin
+
+      - name: Publish @goast/kotlin to NPM
         id: publish-kotlin
         uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: dist/packages/kotlin
+          package: npm/packages/kotlin
 
       - name: Create Tag for @goast/kotlin
         uses: rickstaa/action-create-tag@v1
@@ -96,12 +106,16 @@ jobs:
           tag: kotlin/v${{ steps.publish-kotlin.outputs.version }}
           tag_exists_error: false
 
-      - name: Publish @goast/typescript
+      - name: Publish @goast/typescript to JSR
+        run: deno publish
+        working-directory: packages/typescript
+
+      - name: Publish @goast/typescript to NPM
         id: publish-typescript
         uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: dist/packages/typescript
+          package: npm/packages/typescript
 
       - name: Create Tag for @goast/typescript
         uses: rickstaa/action-create-tag@v1

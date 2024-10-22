@@ -2,18 +2,26 @@
 
 [![GitHub License](https://img.shields.io/github/license/MaSch0212/goast)](LICENSE)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/MaSch0212/goast/build.yml)](https://github.com/MaSch0212/goast/actions/workflows/build.yml)
+<br>
 [![@goast/core NPM Version](https://img.shields.io/npm/v/%40goast%2Fcore?logo=npm&label=%40goast%2Fcore)](https://www.npmjs.com/package/@goast/core)
 [![@goast/typescript NPM Version](https://img.shields.io/npm/v/%40goast%2Ftypescript?logo=npm&label=%40goast%2Ftypescript)](https://www.npmjs.com/package/@goast/typescript)
 [![@goast/kotlin NPM Version](https://img.shields.io/npm/v/%40goast%2Fkotlin?logo=npm&label=%40goast%2Fkotlin)](https://www.npmjs.com/package/@goast/kotlin)
+<br>
+[![@goast/core JSR Version](https://img.shields.io/jsr/v/%40goast%2Fcore?logo=jsr&label=%40goast%2Fcore)](https://jsr.io/@goast/core)
+[![@goast/typescript JSR Version](https://img.shields.io/jsr/v/%40goast%2Ftypescript?logo=jsr&label=%40goast%2Ftypescript)](https://jsr.io/@goast/typescript)
+[![@goast/kotlin JSR Version](https://img.shields.io/jsr/v/%40goast%2Fkotlin?logo=jsr&label=%40goast%2Fkotlin)](https://jsr.io/@goast/kotlin)
 
-**gOAst** stands for **g**enerative **O**pen **A**PI **s**pecification **t**ransformer, a tool designed to transform OpenAPI specifications into various forms with flexibility and extensibility at its core.
+**gOAst** stands for **g**enerative **O**pen **A**PI **s**pecification **t**ransformer, a tool designed to transform
+OpenAPI specifications into various forms with flexibility and extensibility at its core.
 
 ## Motivation 💥
 
-While numerous OpenAPI generators exist, they often cater to specific languages or frameworks and lack the flexibility for customization or extension to meet unique requirements.
+While numerous OpenAPI generators exist, they often cater to specific languages or frameworks and lack the flexibility
+for customization or extension to meet unique requirements.
 
-**gOAst** aims to bridge this gap by offering a highly flexible and extensible platform for transforming OpenAPI specifications into any desired form.
-It not only includes a set of pre-built generators but also simplifies the process of creating new ones or extending existing functionalities.
+**gOAst** aims to bridge this gap by offering a highly flexible and extensible platform for transforming OpenAPI
+specifications into any desired form. It not only includes a set of pre-built generators but also simplifies the process
+of creating new ones or extending existing functionalities.
 
 ## Features 🔥
 
@@ -25,9 +33,12 @@ It not only includes a set of pre-built generators but also simplifies the proce
 
 ✅ **Module Support**: Compatible with both ESM and CJS modules.
 
+✅ **Runtime Support**: Works in Node.js, Deno and Bun.
+
 ## How It Works 🔧
 
-**gOAst** employs a structured approach to transform OpenAPI specifications, making it easy to extend or generate new data forms:
+**gOAst** employs a structured approach to transform OpenAPI specifications, making it easy to extend or generate new
+data forms:
 
 1. **Parse OpenAPI Specification Files**
 
@@ -46,7 +57,8 @@ It not only includes a set of pre-built generators but also simplifies the proce
 
 4. **Generate Output using a Pipeline Approach**
    - Defines a transformation pipeline to produce the desired output.
-   - Generators can utilize information from previous steps and modify the output as needed, enhancing flexibility (e.g., a Service generator that relies on a Model generator).
+   - Generators can utilize information from previous steps and modify the output as needed, enhancing flexibility
+     (e.g., a Service generator that relies on a Model generator).
 
 ## Getting Started 🚀
 
@@ -64,16 +76,13 @@ import { TypeScriptModelsGenerator } from '@goast/typescript';
 
 async function main() {
   const generator = new OpenApiGenerator()
-
     // Add a generator using a class
     .useType(TypeScriptModelsGenerator)
-
     // Add a generator using a function
     .useFn((ctx, cfg) => {
       // Do the generation
       return {}; // Return information about the generated files so it can be used by other generators
     })
-
     // Add a generator using an object implementing `OpenApiGenerationProvider`
     .useValue({ generate: (ctx, cfg) => ({}) });
 
@@ -93,9 +102,9 @@ Outputs from a previous generator can be accessed by the `input` property of the
 
 ### Extending Generators
 
-All generators included with gOAst are implemented by classes.
-This allows for easy extension by creating a new class that extends the desired generator.
-Most generators consist of two classes. One for generation of one entity (e.g. a schema or endpoint) and one for the whole specification.
+All generators included with gOAst are implemented by classes. This allows for easy extension by creating a new class
+that extends the desired generator. Most generators consist of two classes. One for generation of one entity (e.g. a
+schema or endpoint) and one for the whole specification.
 
 In this example we are extending the model generator for typescript to modify the type names:
 
@@ -134,11 +143,11 @@ generator.useType(MyTypeScriptModelsGenerator, {
 
 ## Available Libraries 📚
 
-| Name              | Description                                                      | Links                                                                                              |
-| ----------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| @goast/core       | Core library for parsing and transforming OpenAPI specifications | [NPM](https://www.npmjs.com/package/@goast/core) - [README](./packages/core/README.md)             |
-| @goast/typescript | TypeScript generators for OpenAPI specifications                 | [NPM](https://www.npmjs.com/package/@goast/typescript) - [README](./packages/typescript/README.md) |
-| @goast/kotlin     | Kotlin generators for OpenAPI specifications                     | [NPM](https://www.npmjs.com/package/@goast/kotlin) - [README](./packages/kotlin/README.md)         |
+| Name              | Description                                                      | Links                                                                                                                                        |
+| ----------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| @goast/core       | Core library for parsing and transforming OpenAPI specifications | [NPM](https://www.npmjs.com/package/@goast/core) - [JSR](https://jsr.io/@goast/core) - [README](./packages/core/README.md)                   |
+| @goast/typescript | TypeScript generators for OpenAPI specifications                 | [NPM](https://www.npmjs.com/package/@goast/typescript) - [JSR](https://jsr.io/@goast/typescript) - [README](./packages/typescript/README.md) |
+| @goast/kotlin     | Kotlin generators for OpenAPI specifications                     | [NPM](https://www.npmjs.com/package/@goast/kotlin) - [JSR](https://jsr.io/@goast/kotlin) - [README](./packages/kotlin/README.md)             |
 
 ## Documentation 📖
 
@@ -146,10 +155,11 @@ A more detailed documentation can be found in the [Wiki](https://github.com/MaSc
 
 ## Contributing 🧑🏻‍💻
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any
+contributions you make are **greatly appreciated**.
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also
+simply open an issue with the tag "enhancement". Don't forget to give the project a star! Thanks again!
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
@@ -162,7 +172,7 @@ Don't forget to give the project a star! Thanks again!
 To contribute to the gOAst project, make sure you have the following prerequisites installed:
 
 - [**Git**](https://git-scm.com/)
-- [**Node.js**](https://nodejs.org/en) (v20 or higher) with corepack enabled
+- [**Deno**](https://deno.com/) (v2 or higher)
 - [**Visual Studio Code**](https://code.visualstudio.com/) (recommended) with the recommended extensions
 
 To set up the project for local development, follow these steps:
@@ -171,23 +181,22 @@ To set up the project for local development, follow these steps:
    ```bash
    git clone https://github.com/MaSch0212/goast.git
    ```
-2. Install the project dependencies using `pnpm`:
+2. Install the project dependencies using `deno`:
    ```bash
-   pnpm install
+   deno install
    ```
-3. Adjust the `playground/playground.ts` file according to your needs.
-4. Run the `playground` or `pg` script:
+3. Create a `playground.ts` file and adjust it according to your needs.
+4. Run the `pg` script:
    ```bash
-   pnpm playground
+   deno task pg
    ```
 
 ### Other Scripts
 
-- `pnpm build` - Builds all packages.
-- `pnpm test` - Runs the unit tests for all packages.
-- `pnpm lint` - Lints all packages.
-- `pnpm format` - Formats all packages.
-- `pnpm format:check` - Checks the formatting of all packages.
+- `deno task npm` - Builds all NPM packages.
+- `deno task npm:<core|typescript|kotlin>` - Builds the specified NPM package.
+- `deno task test` - Runs the unit tests for all packages.
+- `deno task test:<core|typescript|kotlin>` - Runs the unit tests for the specified package.
 
 ## License 🔑
 

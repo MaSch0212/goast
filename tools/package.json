@@ -1,5 +1,0 @@
-{
-  "name": "@goast/workspace-tools",
-  "version": "0.0.1",
-  "executors": "./executors.json"
-}

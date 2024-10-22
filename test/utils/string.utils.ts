@@ -1,4 +1,4 @@
-import { EOL } from 'os';
+import { EOL } from 'node:os';
 
 function _normalizeEOL(str: string, indentCharCount?: number): string {
   let result = str.replace(/\r/gm, '').replace(/\n/g, EOL);

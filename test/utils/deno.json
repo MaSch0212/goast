@@ -1,0 +1,10 @@
+{
+  "name": "@goast/test-utils",
+  "version": "0.0.0-beta0",
+  "exports": "./mod.ts",
+  "goastNpmOptions": {
+    "shimDeno": true,
+    "noReadme": true,
+    "private": true
+  }
+}

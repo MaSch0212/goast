@@ -1,7 +1,7 @@
-import { ApiComponent, ApiData, ApiEndpoint, ApiSchema, ApiService, OptionalProperties } from '@goast/core';
-import * as util from 'util';
+// deno-lint-ignore-file no-explicit-any
+import * as util from 'node:util';
 
-export function declutterApiData(data: ApiData) {
+export function declutterApiData(data: any) {
   for (const schema of data.schemas) {
     declutterSchema(schema);
   }
@@ -13,7 +13,7 @@ export function declutterApiData(data: ApiData) {
   }
 }
 
-export function declutterSchema(schema: ApiSchema) {
+export function declutterSchema(schema: any) {
   declutterApiComponent(schema);
 
   if (schema.discriminator) {
@@ -31,20 +31,20 @@ export function declutterSchema(schema: ApiSchema) {
     }
   }
   if ('allOf' in schema) {
-    (schema as any).allOf = schema.allOf.map((s) => s.id);
+    (schema as any).allOf = schema.allOf.map((s: any) => s.id);
   }
   if ('anyOf' in schema) {
-    (schema as any).anyOf = schema.anyOf.map((s) => s.id);
+    (schema as any).anyOf = schema.anyOf.map((s: any) => s.id);
   }
   if ('oneOf' in schema) {
-    (schema as any).oneOf = schema.oneOf.map((s) => s.id);
+    (schema as any).oneOf = schema.oneOf.map((s: any) => s.id);
   }
   if ('inheritedSchemas' in schema) {
-    (schema as any).inheritedSchemas = schema.inheritedSchemas.map((s) => s.id);
+    (schema as any).inheritedSchemas = schema.inheritedSchemas.map((s: any) => s.id);
   }
 }
 
-export function declutterEndpoint(endpoint: ApiEndpoint) {
+export function declutterEndpoint(endpoint: any) {
   declutterApiComponent(endpoint);
   for (const param of endpoint.parameters) {
     if (param.schema) {
@@ -70,12 +70,12 @@ export function declutterEndpoint(endpoint: ApiEndpoint) {
   }
 }
 
-export function declutterService(service: ApiService) {
+export function declutterService(service: any) {
   declutterApiComponent(service);
-  (service as any).endpoints = service.endpoints.map((e) => e.id);
+  (service as any).endpoints = service.endpoints.map((e: any) => e.id);
 }
 
-export function declutterApiComponent(component: OptionalProperties<ApiComponent<any>, '$src'>) {
+export function declutterApiComponent(component: any) {
   if (component.$src) {
     (component.$src as any).document = inspectCountMsg(component.$src.document);
     (component.$src as any).component = inspectCountMsg(component.$src.component);
