@@ -1,6 +1,7 @@
 # gOAst (@goast/typescript)
 
 [![@goast/typescript NPM Version](https://img.shields.io/npm/v/%40goast%2Ftypescript?logo=npm&label=%40goast%2Ftypescript)](https://www.npmjs.com/package/@goast/typescript)
+[![@goast/typescript JSR Version](https://img.shields.io/jsr/v/%40goast%2Ftypescript?logo=jsr&label=%40goast%2Ftypescript)](https://jsr.io/@goast/typescript)
 
 **gOAst** stands for **g**enerative **O**pen **A**PI **s**pecification **t**ransformer, a tool designed to transform
 OpenAPI specifications into various forms with flexibility and extensibility at its core.

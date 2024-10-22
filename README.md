@@ -2,9 +2,14 @@
 
 [![GitHub License](https://img.shields.io/github/license/MaSch0212/goast)](LICENSE)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/MaSch0212/goast/build.yml)](https://github.com/MaSch0212/goast/actions/workflows/build.yml)
+<br>
 [![@goast/core NPM Version](https://img.shields.io/npm/v/%40goast%2Fcore?logo=npm&label=%40goast%2Fcore)](https://www.npmjs.com/package/@goast/core)
 [![@goast/typescript NPM Version](https://img.shields.io/npm/v/%40goast%2Ftypescript?logo=npm&label=%40goast%2Ftypescript)](https://www.npmjs.com/package/@goast/typescript)
 [![@goast/kotlin NPM Version](https://img.shields.io/npm/v/%40goast%2Fkotlin?logo=npm&label=%40goast%2Fkotlin)](https://www.npmjs.com/package/@goast/kotlin)
+<br>
+[![@goast/core JSR Version](https://img.shields.io/jsr/v/%40goast%2Fcore?logo=jsr&label=%40goast%2Fcore)](https://jsr.io/@goast/core)
+[![@goast/typescript JSR Version](https://img.shields.io/jsr/v/%40goast%2Ftypescript?logo=jsr&label=%40goast%2Ftypescript)](https://jsr.io/@goast/typescript)
+[![@goast/kotlin JSR Version](https://img.shields.io/jsr/v/%40goast%2Fkotlin?logo=jsr&label=%40goast%2Fkotlin)](https://jsr.io/@goast/kotlin)
 
 **gOAst** stands for **g**enerative **O**pen **A**PI **s**pecification **t**ransformer, a tool designed to transform
 OpenAPI specifications into various forms with flexibility and extensibility at its core.
@@ -27,6 +32,8 @@ of creating new ones or extending existing functionalities.
 ✅ **Basic AST Support**: For TypeScript and Kotlin, facilitating further custom transformations.
 
 ✅ **Module Support**: Compatible with both ESM and CJS modules.
+
+✅ **Runtime Support**: Works in Node.js, Deno and Bun.
 
 ## How It Works 🔧
 
@@ -136,11 +143,11 @@ generator.useType(MyTypeScriptModelsGenerator, {
 
 ## Available Libraries 📚
 
-| Name              | Description                                                      | Links                                                                                              |
-| ----------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| @goast/core       | Core library for parsing and transforming OpenAPI specifications | [NPM](https://www.npmjs.com/package/@goast/core) - [README](./packages/core/README.md)             |
-| @goast/typescript | TypeScript generators for OpenAPI specifications                 | [NPM](https://www.npmjs.com/package/@goast/typescript) - [README](./packages/typescript/README.md) |
-| @goast/kotlin     | Kotlin generators for OpenAPI specifications                     | [NPM](https://www.npmjs.com/package/@goast/kotlin) - [README](./packages/kotlin/README.md)         |
+| Name              | Description                                                      | Links                                                                                                                                        |
+| ----------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| @goast/core       | Core library for parsing and transforming OpenAPI specifications | [NPM](https://www.npmjs.com/package/@goast/core) - [JSR](https://jsr.io/@goast/core) - [README](./packages/core/README.md)                   |
+| @goast/typescript | TypeScript generators for OpenAPI specifications                 | [NPM](https://www.npmjs.com/package/@goast/typescript) - [JSR](https://jsr.io/@goast/typescript) - [README](./packages/typescript/README.md) |
+| @goast/kotlin     | Kotlin generators for OpenAPI specifications                     | [NPM](https://www.npmjs.com/package/@goast/kotlin) - [JSR](https://jsr.io/@goast/kotlin) - [README](./packages/kotlin/README.md)             |
 
 ## Documentation 📖
 
@@ -165,7 +172,7 @@ simply open an issue with the tag "enhancement". Don't forget to give the projec
 To contribute to the gOAst project, make sure you have the following prerequisites installed:
 
 - [**Git**](https://git-scm.com/)
-- [**Node.js**](https://nodejs.org/en) (v20 or higher) with corepack enabled
+- [**Deno**](https://deno.com/) (v2 or higher)
 - [**Visual Studio Code**](https://code.visualstudio.com/) (recommended) with the recommended extensions
 
 To set up the project for local development, follow these steps:
@@ -174,23 +181,22 @@ To set up the project for local development, follow these steps:
    ```bash
    git clone https://github.com/MaSch0212/goast.git
    ```
-2. Install the project dependencies using `pnpm`:
+2. Install the project dependencies using `deno`:
    ```bash
-   pnpm install
+   deno install
    ```
-3. Adjust the `playground/playground.ts` file according to your needs.
-4. Run the `playground` or `pg` script:
+3. Create a `playground.ts` file and adjust it according to your needs.
+4. Run the `pg` script:
    ```bash
-   pnpm playground
+   deno task pg
    ```
 
 ### Other Scripts
 
-- `pnpm build` - Builds all packages.
-- `pnpm test` - Runs the unit tests for all packages.
-- `pnpm lint` - Lints all packages.
-- `pnpm format` - Formats all packages.
-- `pnpm format:check` - Checks the formatting of all packages.
+- `deno task npm` - Builds all NPM packages.
+- `deno task npm:<core|typescript|kotlin>` - Builds the specified NPM package.
+- `deno task test` - Runs the unit tests for all packages.
+- `deno task test:<core|typescript|kotlin>` - Runs the unit tests for the specified package.
 
 ## License 🔑
 
