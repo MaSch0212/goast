@@ -88,8 +88,8 @@ await build({
 
     // Test files
     fs.copySync(resolve(rootDir, 'test', 'openapi-files'), resolve(distDir, '..', 'test', 'openapi-files'));
-    copyIfExists(resolve(srcDir, 'tests', '.verify'), resolve(distDir, 'script', 'tests', '.verify'));
-    copyIfExists(resolve(srcDir, 'tests', '.verify'), resolve(distDir, 'esm', 'tests', '.verify'));
+    copyIfExists(resolve(absProjectDir, 'tests', '.verify'), resolve(distDir, 'script', 'tests', '.verify'));
+    copyIfExists(resolve(absProjectDir, 'tests', '.verify'), resolve(distDir, 'esm', 'tests', '.verify'));
   },
 });
 

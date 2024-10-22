@@ -5,9 +5,9 @@
     "npm:kotlin": "deno run -A scripts/build_npm.ts packages/kotlin",
     "npm:typescript": "deno run -A scripts/build_npm.ts packages/typescript",
     "npm": "deno task npm:test-utils && deno task npm:core && concurrently \"deno task npm:typescript\" \"deno task npm:kotlin\"",
-    "test:core": "deno test -A packages/core/src",
-    "test:kotlin": "deno test -A packages/kotlin/src",
-    "test:typescript": "deno test -A packages/typescript/src",
+    "test:core": "deno test -A packages/core",
+    "test:kotlin": "deno test -A packages/kotlin",
+    "test:typescript": "deno test -A packages/typescript",
     "pg": "deno run -A playground.ts"
   },
   "imports": {

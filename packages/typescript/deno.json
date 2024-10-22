@@ -2,13 +2,13 @@
   "name": "@goast/typescript",
   "version": "0.4.0-beta6",
   "description": "Provides gOAst generators for generating TypeScript code from OpenAPI specifications.",
-  "exports": "./src/index.ts",
+  "exports": "./mod.ts",
   "publish": {
     "include": [
       "LICENSE",
       "README.md",
-      "src/index.ts",
-      "src/lib/**/*.ts",
+      "mod.ts",
+      "src/**/*.ts",
       "assets/**/*"
     ]
   },

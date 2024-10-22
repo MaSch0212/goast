@@ -2,9 +2,9 @@
   "name": "@goast/core",
   "version": "0.4.0-beta5",
   "description": "A tool designed to transform OpenAPI specifications into various forms with flexibility and extensibility at its core.",
-  "exports": "./src/index.ts",
+  "exports": "./mod.ts",
   "publish": {
-    "include": ["LICENSE", "README.md", "src/index.ts", "src/lib/**/*.ts"]
+    "include": ["LICENSE", "README.md", "mod.ts", "src/**/*.ts"]
   },
   "goastNpmOptions": {
     "usedLocalPackages": ["@goast/test-utils"],

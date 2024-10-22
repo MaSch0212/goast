@@ -1,7 +1,8 @@
 {
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll": "explicit"
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit"
   },
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
