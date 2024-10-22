@@ -231,7 +231,7 @@ type _TsDocTagArgs<
   TTagName extends StringSuggestions<keyof _TsDocTagArgsMap<TBuilder>>,
   TBuilder extends SourceBuilder,
 > = TTagName extends keyof _TsDocTagArgsMap<TBuilder>
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // deno-lint-ignore no-explicit-any
   ? _TsDocTagArgsMap<TBuilder>[TTagName] extends (...args: any[]) => any
     ? ParametersWithOverloads<_TsDocTagArgsMap<TBuilder>[TTagName]>
   : never
@@ -244,7 +244,8 @@ function createDocTag<
   tag: TTagName,
   ...args: _TsDocTagArgs<TTagName, TBuilder>
 ): TsDocTag<TBuilder>;
-function createDocTag<TBuilder extends SourceBuilder>(tag: string, ...args: unknown[]): TsDocTag<TBuilder> {
+// deno-lint-ignore no-explicit-any
+function createDocTag<TBuilder extends SourceBuilder>(tag: string, ...args: any[]): TsDocTag<TBuilder> {
   let opt: _TsDocTagOpt<TBuilder> = {};
   if (args.length > 0) {
     const lastArg = args[args.length - 1];

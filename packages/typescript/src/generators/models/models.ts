@@ -77,6 +77,7 @@ export const defaultTypeScriptModelsGeneratorConfig: DefaultGenerationProviderCo
     modelsIndexFile: 'models.ts',
   };
 
+// deno-lint-ignore ban-types
 export type TypeScriptModelsGeneratorInput = {};
 
 export type TypeScriptModelsGeneratorOutput = {

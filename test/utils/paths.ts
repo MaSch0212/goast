@@ -11,8 +11,8 @@ while (!fs.existsSync(join(_repoRootDir, '.git'))) {
   _repoRootDir = dirname(_repoRootDir);
 }
 
-export const repoRootDir = _repoRootDir;
+export const repoRootDir: string = _repoRootDir;
 const openApiFilesDir = join(_repoRootDir, 'test', 'openapi-files');
-export const openApiV2FilesDir = join(openApiFilesDir, 'v2');
-export const openApiV3FilesDir = join(openApiFilesDir, 'v3');
-export const openApiV3_1FilesDir = join(openApiFilesDir, 'v3.1');
+export const openApiV2FilesDir: string = join(openApiFilesDir, 'v2');
+export const openApiV3FilesDir: string = join(openApiFilesDir, 'v3');
+export const openApiV3_1FilesDir: string = join(openApiFilesDir, 'v3.1');

@@ -53,7 +53,7 @@ function transformModulePath(modulePath: string, transformer: ImportModuleTransf
   return modulePath;
 }
 
-export function modifyString<TArgs extends any[]>(
+export function modifyString<TArgs extends unknown[]>(
   value: string,
   modifier: Nullable<string | RegExp | ((value: string, ...args: TArgs) => string)>,
   ...args: TArgs

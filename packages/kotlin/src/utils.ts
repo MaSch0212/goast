@@ -20,7 +20,7 @@ export function toKotlinPropertyName(value: string): string {
   return `\`${value}\``;
 }
 
-export function modifyString<TArgs extends any[]>(
+export function modifyString<TArgs extends unknown[]>(
   value: string,
   modifier: string | RegExp | ((value: string, ...args: TArgs) => string) | undefined,
   ...args: TArgs

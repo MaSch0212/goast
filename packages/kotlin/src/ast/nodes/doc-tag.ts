@@ -94,7 +94,7 @@ type _KtDocTagArgs<
   TTagName extends StringSuggestions<keyof _KtDocTagArgsMap<TBuilder>>,
   TBuilder extends SourceBuilder,
 > = TTagName extends keyof _KtDocTagArgsMap<TBuilder>
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // deno-lint-ignore no-explicit-any
   ? _KtDocTagArgsMap<TBuilder>[TTagName] extends (...args: any[]) => any
     ? ParametersWithOverloads<_KtDocTagArgsMap<TBuilder>[TTagName]>
   : never

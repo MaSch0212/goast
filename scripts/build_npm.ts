@@ -29,22 +29,20 @@ type PackageJson = {
 };
 
 const rootDir = import.meta.dirname ? resolve(import.meta.dirname, '..') : '.';
-const projectDir = Deno.args[0];
-const absProjectDir = resolve(rootDir, projectDir);
-const srcDir = resolve(rootDir, projectDir, 'src');
-const denoJson: DenoJson = JSON.parse(Deno.readTextFileSync(resolve(rootDir, projectDir, 'deno.json')));
+const projectDir = resolve(rootDir, Deno.args[0]);
+const denoJson: DenoJson = JSON.parse(Deno.readTextFileSync(resolve(rootDir, Deno.args[0], 'deno.json')));
 
 if (!denoJson.name) throw new Error('The "name" property in the deno.json is required.');
 if (!denoJson.version) throw new Error('The "version" property in the deno.json is required.');
 
 const distDir = resolve(rootDir, 'npm', denoJson.name);
 
-Deno.chdir(absProjectDir);
+Deno.chdir(projectDir);
 
 await emptyDir(distDir);
 
 await build({
-  entryPoints: [resolve(absProjectDir, denoJson.exports ?? './src/index.ts')],
+  entryPoints: [resolve(projectDir, denoJson.exports ?? './src/index.ts')],
   outDir: distDir,
   importMap: resolve(rootDir, 'deno.json'),
   shims: {
@@ -82,14 +80,14 @@ await build({
     // steps to run after building and before running the tests
     Deno.copyFileSync(resolve(rootDir, 'LICENSE'), resolve(distDir, 'LICENSE'));
     if (!denoJson.goastNpmOptions?.noReadme) {
-      Deno.copyFileSync(resolve(absProjectDir, 'README.md'), resolve(distDir, 'README.md'));
+      Deno.copyFileSync(resolve(projectDir, 'README.md'), resolve(distDir, 'README.md'));
     }
-    copyIfExists(resolve(absProjectDir, 'assets'), resolve(distDir, 'assets'));
+    copyIfExists(resolve(projectDir, 'assets'), resolve(distDir, 'assets'));
 
     // Test files
     fs.copySync(resolve(rootDir, 'test', 'openapi-files'), resolve(distDir, '..', 'test', 'openapi-files'));
-    copyIfExists(resolve(absProjectDir, 'tests', '.verify'), resolve(distDir, 'script', 'tests', '.verify'));
-    copyIfExists(resolve(absProjectDir, 'tests', '.verify'), resolve(distDir, 'esm', 'tests', '.verify'));
+    copyIfExists(resolve(projectDir, 'tests', '.verify'), resolve(distDir, 'script', 'tests', '.verify'));
+    copyIfExists(resolve(projectDir, 'tests', '.verify'), resolve(distDir, 'esm', 'tests', '.verify'));
   },
 });
 

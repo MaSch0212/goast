@@ -49,7 +49,7 @@ export type TypeScriptK6ClientsGeneratorConfig = TypeScriptGeneratorConfig & {
     number,
     {
       parser: 'text' | 'json';
-      // eslint-disable-next-line @typescript-eslint/ban-types
+      // deno-lint-ignore ban-types
       type: Exclude<ts.Type<TypeScriptFileBuilder>, Function> | ((schemas: readonly ApiSchema[]) => ApiSchema);
     } | null
   >;

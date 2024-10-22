@@ -73,16 +73,16 @@ function getDoc<TBuilder extends SourceBuilder>(
 ): KtDoc<TBuilder> | null {
   const paramsWithDesc = options.parameters
     ?.filter(getIsInstanceOf(KtParameter<TBuilder>))
-    .filter((x): x is KtParameter<TBuilder> & { description: {} } => !!x.description) ?? [];
+    .filter((x): x is KtParameter<TBuilder> & { description: NonNullable<unknown> } => !!x.description) ?? [];
   const classParamsWithPropertyDesc = options.parameters
     ?.filter(getIsInstanceOf(KtParameter<TBuilder>))
     .filter(
-      (x): x is KtParameter<TBuilder> & { property: {}; propertyDescription: {} } =>
+      (x): x is KtParameter<TBuilder> & { property: NonNullable<unknown>; propertyDescription: NonNullable<unknown> } =>
         !!x.property && !!x.propertyDescription,
     ) ?? [];
   const genericsWithDesc = options.generics
     ?.filter(getIsInstanceOf(KtGenericParameter<TBuilder>))
-    .filter((x): x is KtGenericParameter<TBuilder> & { description: {} } => !!x.description) ?? [];
+    .filter((x): x is KtGenericParameter<TBuilder> & { description: NonNullable<unknown> } => !!x.description) ?? [];
   if (
     baseDoc === null &&
     paramsWithDesc.length === 0 &&

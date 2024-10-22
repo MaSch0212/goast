@@ -49,6 +49,7 @@ for (const [version, path] of Object.entries(filePaths)) {
           newLine: '\n',
         };
         const state = await new OpenApiGenerator(generatorOptions)
+          // deno-lint-ignore no-explicit-any
           .useType(KotlinModelsGenerator, { __test__: true } as any)
           .parseAndGenerate(filePath);
         result.splice(0, 0, ['state', state]);

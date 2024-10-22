@@ -73,10 +73,10 @@ function getDoc<TBuilder extends SourceBuilder>(
 ): TsDoc<TBuilder> | null {
   const paramsWithDesc = options.parameters
     ?.filter(getIsInstanceOf(TsParameter<TBuilder>))
-    .filter((x): x is TsParameter<TBuilder> & { description: {} } => !!x.description) ?? [];
+    .filter((x): x is TsParameter<TBuilder> & { description: NonNullable<unknown> } => !!x.description) ?? [];
   const genericsWithDesc = options.generics
     ?.filter(getIsInstanceOf(TsGenericParameter<TBuilder>))
-    .filter((x): x is TsGenericParameter<TBuilder> & { description: {} } => !!x.description) ?? [];
+    .filter((x): x is TsGenericParameter<TBuilder> & { description: NonNullable<unknown> } => !!x.description) ?? [];
   if (paramsWithDesc.length === 0 && genericsWithDesc.length === 0) {
     return baseDoc;
   }

@@ -30,9 +30,9 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
 >;
 
 type _AddImportHandler<T> = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // deno-lint-ignore no-explicit-any
   builderClass: abstract new (...args: any) => T;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // deno-lint-ignore no-explicit-any
   handler: (builder: T, reference: KtReference<any>) => void;
 };
 
@@ -40,7 +40,7 @@ export class KtReference<TBuilder extends SourceBuilder, TInjects extends string
   TBuilder,
   TInjects | Injects
 > {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // deno-lint-ignore no-explicit-any
   private static readonly addImportHandlers: _AddImportHandler<any>[] = [
     {
       builderClass: KotlinFileBuilder,
