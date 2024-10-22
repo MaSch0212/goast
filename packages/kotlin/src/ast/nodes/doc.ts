@@ -62,7 +62,7 @@ const createDoc = <TBuilder extends SourceBuilder>(
   description?: Options<TBuilder>['description'],
   tags?: Options<TBuilder>['tags'],
   options?: Prettify<Omit<Options<TBuilder>, 'description' | 'tags'>>,
-) => new KtDoc<TBuilder>({ ...options, description, tags: tags ?? undefined });
+): KtDoc<TBuilder> => new KtDoc<TBuilder>({ ...options, description, tags: tags ?? undefined });
 
 function getDoc<TBuilder extends SourceBuilder>(
   baseDoc: KtDoc<TBuilder> | null,
@@ -102,7 +102,10 @@ function getDoc<TBuilder extends SourceBuilder>(
   return doc;
 }
 
-export const ktDoc = Object.assign(createDoc, {
+export const ktDoc: typeof createDoc & {
+  write: typeof writeKtNodes;
+  get: typeof getDoc;
+} = Object.assign(createDoc, {
   write: writeKtNodes,
   get: getDoc,
 });

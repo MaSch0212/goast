@@ -1,7 +1,25 @@
 import { kt } from '../../../ast/index.ts';
 
 // See packages/kotlin/assets/client/okhttp3 for reference
-export function getReferenceFactories(infrastructurePackageName: string) {
+export function getReferenceFactories(infrastructurePackageName: string): {
+  multiValueMap: kt.ReferenceFactory;
+  collectionDelimiter: kt.ReferenceFactory;
+  defaultMultiValueConverter: kt.ReferenceFactory;
+  toMultiValueMap: kt.GenericReferenceFactory<1>;
+  apiClient: kt.ReferenceFactory;
+  responseType: kt.ReferenceFactory;
+  apiResponse: kt.GenericReferenceFactory<1>;
+  success: kt.GenericReferenceFactory<1>;
+  informational: kt.GenericReferenceFactory<1>;
+  redirection: kt.GenericReferenceFactory<1>;
+  clientError: kt.GenericReferenceFactory<1>;
+  serverError: kt.GenericReferenceFactory<1>;
+  clientException: kt.ReferenceFactory;
+  serverException: kt.ReferenceFactory;
+  partConfig: kt.GenericReferenceFactory<1>;
+  requestConfig: kt.GenericReferenceFactory<1>;
+  requestMethod: kt.ReferenceFactory;
+} {
   return {
     // ApiAbstractions.kt
     multiValueMap: kt.reference.factory('MultiValueMap', infrastructurePackageName),

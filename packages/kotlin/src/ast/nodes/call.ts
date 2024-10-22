@@ -59,8 +59,8 @@ const createCall = <TBuilder extends SourceBuilder>(
   path: Options<TBuilder>['path'] | ArrayItem<Options<TBuilder>['path']>,
   args?: Options<TBuilder>['arguments'],
   options?: Prettify<Omit<Options<TBuilder>, 'path' | 'arguments'>>,
-) => new KtCall<TBuilder>({ ...options, path: Array.isArray(path) ? path : [path], arguments: args });
+): KtCall<TBuilder> => new KtCall<TBuilder>({ ...options, path: Array.isArray(path) ? path : [path], arguments: args });
 
-export const ktCall = Object.assign(createCall, {
+export const ktCall: typeof createCall & { write: typeof writeKtNodes } = Object.assign(createCall, {
   write: writeKtNodes,
 });

@@ -25,7 +25,7 @@ export function isKotlinAppendValue<TBuilder extends KotlinFileBuilder>(
 
 export class KotlinFileBuilder<TAdditionalAppends = never> extends SourceBuilder<KotlinAppends<TAdditionalAppends>> {
   public readonly packageName: string | undefined;
-  public readonly imports = new ImportCollection();
+  public readonly imports: ImportCollection = new ImportCollection();
 
   public override get options(): KotlinGeneratorConfig {
     return super.options as KotlinGeneratorConfig;

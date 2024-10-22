@@ -45,15 +45,18 @@ export class KtArgument<TBuilder extends SourceBuilder, TInjects extends string 
 const createArgument = <TBuilder extends SourceBuilder>(
   value: Options<TBuilder>['value'],
   options?: Prettify<Omit<Options<TBuilder>, 'value'>>,
-) => new KtArgument<TBuilder>({ ...options, value });
+): KtArgument<TBuilder> => new KtArgument<TBuilder>({ ...options, value });
 
 const createNamedArgument = <TBuilder extends SourceBuilder>(
   name: Options<TBuilder>['name'],
   value: Options<TBuilder>['value'],
   options?: Prettify<Omit<Options<TBuilder>, 'value' | 'name'>>,
-) => new KtArgument<TBuilder>({ ...options, value, name });
+): KtArgument<TBuilder> => new KtArgument<TBuilder>({ ...options, value, name });
 
-export const ktArgument = Object.assign(createArgument, {
+export const ktArgument: typeof createArgument & {
+  named: typeof createNamedArgument;
+  write: typeof writeKtArguments;
+} = Object.assign(createArgument, {
   named: createNamedArgument,
   write: writeKtArguments,
 });

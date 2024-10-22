@@ -169,8 +169,8 @@ export class KtFunction<TBuilder extends SourceBuilder, TInjects extends string 
 const createFunction = <TBuilder extends SourceBuilder>(
   name: Options<TBuilder>['name'],
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
-) => new KtFunction<TBuilder>({ ...options, name });
+): KtFunction<TBuilder> => new KtFunction<TBuilder>({ ...options, name });
 
-export const ktFunction = Object.assign(createFunction, {
+export const ktFunction: typeof createFunction & { write: typeof writeKtNodes } = Object.assign(createFunction, {
   write: writeKtNodes,
 });

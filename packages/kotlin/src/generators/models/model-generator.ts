@@ -5,6 +5,7 @@ import fs from 'fs-extra';
 
 import {
   type ApiSchema,
+  type ApiSchemaKind,
   type ApiSchemaProperty,
   type AppendValue,
   type AppendValueGroup,
@@ -521,7 +522,10 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     return toCasing(args.schema.name, ctx.config.typeNameCasing);
   }
 
-  protected getInheritedSchemas(ctx: Context, args: Args.GetInheritedSchemas) {
+  protected getInheritedSchemas(
+    ctx: Context,
+    args: Args.GetInheritedSchemas,
+  ): (ApiSchema<ApiSchemaKind> & { discriminator: NonNullable<ApiSchema['discriminator']> })[] {
     return args.schema.inheritedSchemas
       .filter((schema) => this.shouldGenerateTypeDeclaration(ctx, { schema }) && !schema.isNameGenerated)
       .filter((item, index, self) => self.indexOf(item) === index);

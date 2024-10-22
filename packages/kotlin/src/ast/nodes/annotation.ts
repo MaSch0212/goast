@@ -69,8 +69,11 @@ const createAnnotation = <TBuilder extends SourceBuilder>(
   $class: Options<TBuilder>['class'],
   $arguments?: Options<TBuilder>['arguments'],
   options?: Prettify<Omit<Options<TBuilder>, 'class' | 'arguments'>>,
-) => new KtAnnotation<TBuilder>({ ...options, class: $class, arguments: $arguments });
+): KtAnnotation<TBuilder> => new KtAnnotation<TBuilder>({ ...options, class: $class, arguments: $arguments });
 
-export const ktAnnotation = Object.assign(createAnnotation, {
-  write: writeKtAnnotations,
-});
+export const ktAnnotation: typeof createAnnotation & { write: typeof writeKtAnnotations } = Object.assign(
+  createAnnotation,
+  {
+    write: writeKtAnnotations,
+  },
+);

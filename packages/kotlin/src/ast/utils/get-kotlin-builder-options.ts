@@ -6,7 +6,7 @@ import { KotlinFileBuilder } from '../../file-builder.ts';
 const ktConfigSymbol = Symbol();
 type _BuilderWithConfig = SourceBuilder & { [ktConfigSymbol]?: KotlinGeneratorConfig };
 
-export function getKotlinBuilderOptions(builder: SourceBuilder) {
+export function getKotlinBuilderOptions(builder: SourceBuilder): KotlinGeneratorConfig {
   if (builder instanceof KotlinFileBuilder) {
     return builder.options;
   }

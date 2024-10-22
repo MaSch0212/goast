@@ -52,7 +52,12 @@ export {
   KtPropertyGetter as PropertyGetter,
   KtPropertySetter as PropertySetter,
 } from './nodes/property.ts';
-export { KtReference as Reference, ktReference as reference } from './nodes/reference.ts';
+export {
+  type KtGenericReferenceFactory as GenericReferenceFactory,
+  KtReference as Reference,
+  ktReference as reference,
+  type KtReferenceFactory as ReferenceFactory,
+} from './nodes/reference.ts';
 export { KtString as String, ktString as string } from './nodes/string.ts';
 export { type KtType as Type, type KtValue as Value } from './nodes/types.ts';
 export * as refs from './references/index.ts';

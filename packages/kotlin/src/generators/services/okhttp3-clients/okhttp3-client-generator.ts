@@ -448,7 +448,7 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
       ?.contentOptions[0]?.schema;
   }
 
-  protected getSchemaType(ctx: Context, args: Args.GetSchemaType) {
+  protected getSchemaType(ctx: Context, args: Args.GetSchemaType): kt.Reference<SourceBuilder> | undefined {
     const { schema } = args;
     return schema && ctx.input.kotlin.models[schema.id].type;
   }

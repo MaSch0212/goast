@@ -61,8 +61,8 @@ const createLambdaType = <TBuilder extends SourceBuilder>(
   parameters: Options<TBuilder>['parameters'],
   returnType: Options<TBuilder>['returnType'],
   options?: Omit<Options<TBuilder>, 'parameters' | 'returnType'>,
-) => new KtLambdaType<TBuilder>({ ...options, parameters, returnType });
+): KtLambdaType<TBuilder> => new KtLambdaType<TBuilder>({ ...options, parameters, returnType });
 
-export const ktLambdaType = Object.assign(createLambdaType, {
+export const ktLambdaType: typeof createLambdaType & { write: typeof writeKtNodes } = Object.assign(createLambdaType, {
   write: writeKtNodes,
 });

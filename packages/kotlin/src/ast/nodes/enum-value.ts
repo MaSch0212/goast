@@ -90,8 +90,11 @@ export class KtEnumValue<TBuilder extends SourceBuilder, TInjects extends string
 const createEnumValue = <TBuilder extends SourceBuilder>(
   name: Options<TBuilder>['name'],
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
-) => new KtEnumValue<TBuilder>({ ...options, name });
+): KtEnumValue<TBuilder> => new KtEnumValue<TBuilder>({ ...options, name });
 
-export const ktEnumValue = Object.assign(createEnumValue, {
-  write: writeKtEnumValues,
-});
+export const ktEnumValue: typeof createEnumValue & { write: typeof writeKtEnumValues } = Object.assign(
+  createEnumValue,
+  {
+    write: writeKtEnumValues,
+  },
+);

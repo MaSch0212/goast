@@ -156,8 +156,8 @@ const createEnum = <TBuilder extends SourceBuilder>(
   name: Options<TBuilder>['name'],
   values?: Options<TBuilder>['values'],
   options?: Prettify<Omit<Options<TBuilder>, 'name' | 'values'>>,
-) => new KtEnum<TBuilder>({ ...options, name, values: values ?? undefined });
+): KtEnum<TBuilder> => new KtEnum<TBuilder>({ ...options, name, values: values ?? undefined });
 
-export const ktEnum = Object.assign(createEnum, {
+export const ktEnum: typeof createEnum & { write: typeof writeKtNodes } = Object.assign(createEnum, {
   write: writeKtNodes,
 });

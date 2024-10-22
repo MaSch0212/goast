@@ -101,9 +101,33 @@ const createReference = <TBuilder extends SourceBuilder>(
   name: Options<TBuilder>['name'],
   packageName?: Options<TBuilder>['packageName'],
   options?: Prettify<Omit<Options<TBuilder>, 'name' | 'packageName'>>,
-) => new KtReference<TBuilder>({ ...options, name, packageName });
+): KtReference<TBuilder> => new KtReference<TBuilder>({ ...options, name, packageName });
 
-const createFactory = (name: string, packageName?: Nullable<string>) => {
+export type KtReferenceFactory =
+  & (<TBuilder extends SourceBuilder>(
+    options?: Prettify<Omit<Options<TBuilder>, 'name' | 'packageName'>>,
+  ) => KtReference<TBuilder>)
+  & {
+    refName: string;
+    packageName: Nullable<string>;
+    matches: (value: unknown) => value is KtReference<never>;
+  };
+
+export type KtGenericReferenceFactory<TGenericCount extends number | number[]> =
+  & (<TBuilder extends SourceBuilder>(
+    generics: TupleWithCount<KtType<TBuilder>, TGenericCount>,
+    options?: Prettify<Omit<Options<TBuilder>, 'name' | 'packageName' | 'generics'>>,
+  ) => KtReference<TBuilder>)
+  & {
+    refName: string;
+    packageName: Nullable<string>;
+    infer: <TBuilder extends SourceBuilder>(
+      options?: Prettify<Omit<Options<TBuilder>, 'name' | 'packageName' | 'generics'>>,
+    ) => KtReference<TBuilder>;
+    matches: (value: unknown) => value is KtReference<never>;
+  };
+
+const createFactory = (name: string, packageName?: Nullable<string>): KtReferenceFactory => {
   return Object.assign(
     <TBuilder extends SourceBuilder>(options?: Prettify<Omit<Options<TBuilder>, 'name' | 'packageName'>>) =>
       createReference<TBuilder>(name, packageName, options),
@@ -119,7 +143,7 @@ const createFactory = (name: string, packageName?: Nullable<string>) => {
 const createGenericFactory = <TGenericCount extends number | number[]>(
   name: string,
   packageName?: Nullable<string>,
-) => {
+): KtGenericReferenceFactory<TGenericCount> => {
   return Object.assign(
     <TBuilder extends SourceBuilder>(
       generics: TupleWithCount<KtType<TBuilder>, TGenericCount>,
@@ -137,11 +161,16 @@ const createGenericFactory = <TGenericCount extends number | number[]>(
   );
 };
 
-const importRefs = <TBuilder extends SourceBuilder>(builder: TBuilder, references: KtReference<TBuilder>[]) => {
+const importRefs = <TBuilder extends SourceBuilder>(builder: TBuilder, references: KtReference<TBuilder>[]): void => {
   references.forEach((ref) => ref.addImport(builder));
 };
 
-export const ktReference = Object.assign(createReference, {
+export const ktReference: typeof createReference & {
+  factory: typeof createFactory;
+  genericFactory: typeof createGenericFactory;
+  write: typeof writeKtNodes;
+  import: typeof importRefs;
+} = Object.assign(createReference, {
   factory: createFactory,
   genericFactory: createGenericFactory,
   write: writeKtNodes,

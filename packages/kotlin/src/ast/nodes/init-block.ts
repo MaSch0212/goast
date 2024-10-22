@@ -31,8 +31,8 @@ export class KtInitBlock<TBuilder extends SourceBuilder, TInjects extends string
 const createInitBlock = <TBuilder extends SourceBuilder>(
   body: Options<TBuilder>['body'],
   options?: Prettify<Omit<Options<TBuilder>, 'body'>>,
-) => new KtInitBlock<TBuilder>({ ...options, body });
+): KtInitBlock<TBuilder> => new KtInitBlock<TBuilder>({ ...options, body });
 
-export const ktInitBlock = Object.assign(createInitBlock, {
+export const ktInitBlock: typeof createInitBlock & { write: typeof writeKtNodes } = Object.assign(createInitBlock, {
   write: writeKtNodes,
 });

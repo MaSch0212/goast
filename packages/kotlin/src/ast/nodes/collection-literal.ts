@@ -39,8 +39,11 @@ export class KtCollectionLiteral<TBuilder extends SourceBuilder, TInjects extend
 const createCollectionLiteral = <TBuilder extends SourceBuilder>(
   elements: Options<TBuilder>['elements'],
   options?: Omit<Options<TBuilder>, 'elements'>,
-) => new KtCollectionLiteral<TBuilder>({ ...options, elements });
+): KtCollectionLiteral<TBuilder> => new KtCollectionLiteral<TBuilder>({ ...options, elements });
 
-export const ktCollectionLiteral = Object.assign(createCollectionLiteral, {
-  write: writeKtNodes,
-});
+export const ktCollectionLiteral: typeof createCollectionLiteral & { write: typeof writeKtNodes } = Object.assign(
+  createCollectionLiteral,
+  {
+    write: writeKtNodes,
+  },
+);

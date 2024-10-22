@@ -126,8 +126,8 @@ export class KtInterface<TBuilder extends SourceBuilder, TInjects extends string
 const createInterface = <TBuilder extends SourceBuilder>(
   name: KtInterface<TBuilder>['name'],
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
-) => new KtInterface<TBuilder>({ ...options, name });
+): KtInterface<TBuilder> => new KtInterface<TBuilder>({ ...options, name });
 
-export const ktInterface = Object.assign(createInterface, {
+export const ktInterface: typeof createInterface & { write: typeof writeKtNodes } = Object.assign(createInterface, {
   write: writeKtNodes,
 });

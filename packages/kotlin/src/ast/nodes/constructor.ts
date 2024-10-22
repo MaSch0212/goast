@@ -116,8 +116,11 @@ const createConstructor = <TBuilder extends SourceBuilder>(
   parameters?: Options<TBuilder>['parameters'],
   body?: Options<TBuilder>['body'],
   options?: Prettify<Omit<Options<TBuilder>, 'parameters' | 'body'>>,
-) => new KtConstructor<TBuilder>({ ...options, parameters: parameters ?? undefined, body });
+): KtConstructor<TBuilder> => new KtConstructor<TBuilder>({ ...options, parameters: parameters ?? undefined, body });
 
-export const ktConstructor = Object.assign(createConstructor, {
-  write: writeKtNodes,
-});
+export const ktConstructor: typeof createConstructor & { write: typeof writeKtNodes } = Object.assign(
+  createConstructor,
+  {
+    write: writeKtNodes,
+  },
+);

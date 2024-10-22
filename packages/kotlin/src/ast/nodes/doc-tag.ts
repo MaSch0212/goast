@@ -129,10 +129,10 @@ function createDocTag<TBuilder extends SourceBuilder>(tag: string, ...args: unkn
 const writeDocTags = <TBuilder extends SourceBuilder>(
   builder: TBuilder,
   nodes: SingleOrMultiple<Nullable<KtAppendValue<TBuilder>>>,
-) => {
+): void => {
   writeKtNodes(builder, nodes, { separator: '\n' });
 };
 
-export const ktDocTag = Object.assign(createDocTag, {
+export const ktDocTag: typeof createDocTag & { write: typeof writeDocTags } = Object.assign(createDocTag, {
   write: writeDocTags,
 });

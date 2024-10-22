@@ -94,9 +94,9 @@ export class KtObject<TBuilder extends SourceBuilder, TInjects extends string = 
   }
 }
 
-const createObject = <TBuilder extends SourceBuilder>(options?: Options<TBuilder>) =>
+const createObject = <TBuilder extends SourceBuilder>(options?: Options<TBuilder>): KtObject<TBuilder> =>
   new KtObject<TBuilder>(options ?? {});
 
-export const ktObject = Object.assign(createObject, {
+export const ktObject: typeof createObject & { write: typeof writeKtNodes } = Object.assign(createObject, {
   write: writeKtNodes,
 });

@@ -75,10 +75,10 @@ export abstract class KtPropertyAccessor<
   }
 }
 export class KtPropertyGetter<TBuilder extends SourceBuilder> extends KtPropertyAccessor<TBuilder> {
-  public override readonly kind = 'get';
+  public override readonly kind = 'get' as const;
 }
 export class KtPropertySetter<TBuilder extends SourceBuilder> extends KtPropertyAccessor<TBuilder> {
-  public override readonly kind = 'set';
+  public override readonly kind = 'set' as const;
 }
 
 type Injects = 'doc' | 'annotations' | 'modifiers' | 'name' | 'type' | 'default' | 'delegate';
@@ -201,18 +201,24 @@ export class KtProperty<TBuilder extends SourceBuilder, TInjects extends string 
   }
 }
 
-const createPropertyGetter = <TBuilder extends SourceBuilder>(options?: AccessorOptions<TBuilder>) =>
-  new KtPropertyGetter<TBuilder>(options ?? {});
+const createPropertyGetter = <TBuilder extends SourceBuilder>(
+  options?: AccessorOptions<TBuilder>,
+): KtPropertyGetter<TBuilder> => new KtPropertyGetter<TBuilder>(options ?? {});
 
-const createPropertySetter = <TBuilder extends SourceBuilder>(options?: AccessorOptions<TBuilder>) =>
-  new KtPropertySetter<TBuilder>(options ?? {});
+const createPropertySetter = <TBuilder extends SourceBuilder>(
+  options?: AccessorOptions<TBuilder>,
+): KtPropertySetter<TBuilder> => new KtPropertySetter<TBuilder>(options ?? {});
 
 const createProperty = <TBuilder extends SourceBuilder>(
   name: Options<TBuilder>['name'],
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
-) => new KtProperty<TBuilder>({ ...options, name });
+): KtProperty<TBuilder> => new KtProperty<TBuilder>({ ...options, name });
 
-export const ktProperty = Object.assign(createProperty, {
+export const ktProperty: typeof createProperty & {
+  getter: typeof createPropertyGetter;
+  setter: typeof createPropertySetter;
+  write: typeof writeKtNodes;
+} = Object.assign(createProperty, {
   getter: createPropertyGetter,
   setter: createPropertySetter,
   write: writeKtNodes,

@@ -171,8 +171,8 @@ export class KtClass<TBuilder extends SourceBuilder, TInjects extends string = n
 const createClass = <TBuilder extends SourceBuilder>(
   name: Options<TBuilder>['name'],
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
-) => new KtClass<TBuilder>({ ...options, name });
+): KtClass<TBuilder> => new KtClass<TBuilder>({ ...options, name });
 
-export const ktClass = Object.assign(createClass, {
+export const ktClass: typeof createClass & { write: typeof writeKtNodes } = Object.assign(createClass, {
   write: writeKtNodes,
 });

@@ -83,7 +83,7 @@ export class KtString<TBuilder extends SourceBuilder, TInjects extends string = 
     }
   }
 
-  protected findTemplateParts(value: string) {
+  protected findTemplateParts(value: string): { value: string; index: number }[] {
     const parts: { value: string; index: number }[] = [];
     let start: number | undefined = undefined;
     let bracketCount = 0;
@@ -107,8 +107,8 @@ export class KtString<TBuilder extends SourceBuilder, TInjects extends string = 
 const createString = <TBuilder extends SourceBuilder>(
   value: Options<TBuilder>['value'],
   options?: Prettify<Omit<Options<TBuilder>, 'value'>>,
-) => new KtString<TBuilder>({ ...options, value });
+): KtString<TBuilder> => new KtString<TBuilder>({ ...options, value });
 
-export const ktString = Object.assign(createString, {
+export const ktString: typeof createString & { write: typeof writeKtNodes } = Object.assign(createString, {
   write: writeKtNodes,
 });

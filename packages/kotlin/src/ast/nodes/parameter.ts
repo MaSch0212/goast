@@ -101,15 +101,18 @@ const createParameter = <TBuilder extends SourceBuilder>(
   options?: Prettify<
     Omit<Options<TBuilder>, 'name' | 'type' | 'accessModifier' | 'property' | 'propertyDescription' | 'override'>
   >,
-) => new KtParameter<TBuilder>({ ...options, name, type });
+): KtParameter<TBuilder> => new KtParameter<TBuilder>({ ...options, name, type });
 
 const createClassParameter = <TBuilder extends SourceBuilder>(
   name: KtParameter<TBuilder>['name'],
   type: KtParameter<TBuilder>['type'],
   options?: Prettify<Omit<Options<TBuilder>, 'name' | 'type'>>,
-) => new KtParameter<TBuilder>({ ...options, name, type });
+): KtParameter<TBuilder> => new KtParameter<TBuilder>({ ...options, name, type });
 
-export const ktParameter = Object.assign(createParameter, {
+export const ktParameter: typeof createParameter & {
+  class: typeof createClassParameter;
+  write: typeof writeKtParameters;
+} = Object.assign(createParameter, {
   class: createClassParameter,
   write: writeKtParameters,
 });
