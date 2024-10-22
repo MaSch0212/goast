@@ -5,6 +5,7 @@
     "npm:kotlin": "deno run -A scripts/build_npm.ts packages/kotlin",
     "npm:typescript": "deno run -A scripts/build_npm.ts packages/typescript",
     "npm": "deno task npm:test-utils && deno task npm:core && concurrently \"deno task npm:typescript\" \"deno task npm:kotlin\"",
+    "test": "deno test -A",
     "test:core": "deno test -A packages/core",
     "test:kotlin": "deno test -A packages/kotlin",
     "test:typescript": "deno test -A packages/typescript",
