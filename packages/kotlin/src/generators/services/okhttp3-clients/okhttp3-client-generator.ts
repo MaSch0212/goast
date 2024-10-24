@@ -67,7 +67,9 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
       primaryConstructor: kt.constructor(
         [
           kt.parameter('basePath', kt.refs.string(), { default: 'defaultBasePath' }),
-          kt.parameter('client', kt.refs.okhttp3.okHttpClient(), { default: kt.call(['ApiClient', 'defaultClient']) }),
+          kt.parameter('client', kt.refs.okhttp3.okHttpClient(), {
+            default: 'defaultClient'
+          }),
         ],
         null,
         {
