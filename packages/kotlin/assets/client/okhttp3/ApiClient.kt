@@ -6,6 +6,7 @@ import okhttp3.Headers.Companion.toHeaders
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.Call.Factory
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -22,7 +23,7 @@ import java.time.OffsetDateTime
 import java.time.OffsetTime
 import java.util.Locale
 
-open class ApiClient(val baseUrl: String, val client: OkHttpClient = defaultClient) {
+open class ApiClient(val baseUrl: String, val client: Factory = defaultClient) {
     companion object {
         protected const val ContentType = "Content-Type"
         protected const val Accept = "Accept"
