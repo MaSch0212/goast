@@ -15,7 +15,7 @@
     "@deno/dnt": "jsr:@deno/dnt@^0.41.3",
     "@std/assert": "jsr:@std/assert@^1.0.6",
     "@std/expect": "jsr:@std/expect@^1.0.5",
-    "@std/testing": "jsr:@std/testing@1.0.4",
+    "@std/testing": "jsr:@std/testing@^1.0.4",
     "@std/text": "jsr:@std/text@^1.0.7",
     "@types/fs-extra": "npm:@types/fs-extra@^11.0.4",
     "@types/node": "npm:@types/node@^22.7.5",

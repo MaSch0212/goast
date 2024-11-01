@@ -1,7 +1,12 @@
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
-import { createCombinedSchema, createStringSchema } from '../../tests/schema-factory.ts';
+import {
+  createCombinedSchema,
+  createObjectSchema,
+  createStringSchema,
+  createUnknownProperty,
+} from '../../tests/schema-factory.ts';
 import { resolveAnyOfAndAllOf } from './schema.utils.ts';
 
 describe('resolveAnyOfAndAllOf', () => {
@@ -14,73 +19,69 @@ describe('resolveAnyOfAndAllOf', () => {
     expect(result).toBeUndefined();
   });
 
-  // TODO: Uncomment as soon as @std/expect has new version (https://github.com/denoland/std/pull/6065)
-  // it('should resolve schema from allOf and anyOf', () => {
-  //   const schema = createObjectSchema({
-  //     name: 'root',
-  //     properties: [createUnknownProperty('prop0')],
-  //     required: ['prop0'],
-  //     allOf: [createObjectSchema({ properties: [createUnknownProperty('prop1')], required: ['prop1'] })],
-  //     anyOf: [createObjectSchema({ properties: [createUnknownProperty('prop2')], required: ['prop2'] })],
-  //   });
+  it('should resolve schema from allOf and anyOf', () => {
+    const prop0 = createUnknownProperty('prop0');
+    const prop1 = createUnknownProperty('prop1');
+    const prop2 = createUnknownProperty('prop2');
+    const schema = createObjectSchema({
+      name: 'root',
+      properties: [prop0],
+      required: ['prop0'],
+      allOf: [createObjectSchema({ properties: [prop1], required: ['prop1'] })],
+      anyOf: [createObjectSchema({ properties: [prop2], required: ['prop2'] })],
+    });
 
-  //   const expectedResult = expect.objectContaining(
-  //     createObjectSchema({
-  //       name: 'root',
-  //       properties: [
-  //         expect.objectContaining(createUnknownProperty('prop0')),
-  //         expect.objectContaining(createUnknownProperty('prop1')),
-  //         expect.objectContaining(createUnknownProperty('prop2')),
-  //       ],
-  //       required: ['prop0', 'prop1', 'prop2'],
-  //     }),
-  //   );
+    const expectedResult = expect.objectContaining(
+      createObjectSchema({
+        name: 'root',
+        properties: [prop0, prop1, prop2],
+        required: ['prop0', 'prop1'],
+      }),
+    );
 
-  //   const result = resolveAnyOfAndAllOf(schema, true);
-  //   expect(result).toEqual(expectedResult);
-  // });
+    const result = resolveAnyOfAndAllOf(schema, true);
+    expect(result).toEqual(expectedResult);
+  });
 
-  // TODO: Uncomment as soon as @std/expect has new version (https://github.com/denoland/std/pull/6065)
-  // it('should merge properties from allOf and anyOf recursively', () => {
-  //   const schema = createCombinedSchema({
-  //     name: 'root',
-  //     allOf: [
-  //       createObjectSchema({
-  //         properties: [createUnknownProperty('prop1')],
-  //         required: ['prop1'],
-  //       }),
-  //     ],
-  //     anyOf: [
-  //       createCombinedSchema({
-  //         allOf: [
-  //           createObjectSchema({
-  //             properties: [createUnknownProperty('prop2')],
-  //             required: ['prop2'],
-  //           }),
-  //         ],
-  //         anyOf: [
-  //           createObjectSchema({
-  //             properties: [createUnknownProperty('prop3')],
-  //             required: ['prop3'],
-  //           }),
-  //         ],
-  //       }),
-  //     ],
-  //   });
+  it('should merge properties from allOf and anyOf recursively', () => {
+    const prop1 = createUnknownProperty('prop1');
+    const prop2 = createUnknownProperty('prop2');
+    const prop3 = createUnknownProperty('prop3');
+    const schema = createCombinedSchema({
+      name: 'root',
+      allOf: [
+        createObjectSchema({
+          properties: [prop1],
+          required: ['prop1'],
+        }),
+      ],
+      anyOf: [
+        createCombinedSchema({
+          allOf: [
+            createObjectSchema({
+              properties: [prop2],
+              required: ['prop2'],
+            }),
+          ],
+          anyOf: [
+            createObjectSchema({
+              properties: [prop3],
+              required: ['prop3'],
+            }),
+          ],
+        }),
+      ],
+    });
 
-  //   const expectedResult = expect.objectContaining(
-  //     createObjectSchema({
-  //       name: 'root',
-  //       properties: [
-  //         expect.objectContaining(createUnknownProperty('prop1')),
-  //         expect.objectContaining(createUnknownProperty('prop2')),
-  //         expect.objectContaining(createUnknownProperty('prop3')),
-  //       ],
-  //       required: ['prop1'],
-  //     }),
-  //   );
+    const expectedResult = expect.objectContaining(
+      createObjectSchema({
+        name: 'root',
+        properties: [prop1, prop2, prop3],
+        required: ['prop1'],
+      }),
+    );
 
-  //   const result = resolveAnyOfAndAllOf(schema, true);
-  //   expect(result).toEqual(expectedResult);
-  // });
+    const result = resolveAnyOfAndAllOf(schema, true);
+    expect(result).toEqual(expectedResult);
+  });
 });

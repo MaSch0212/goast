@@ -13,16 +13,15 @@ describe('fromString', () => {
     expect(sb.toString()).toEqual(str);
   });
 
-  // TODO: Uncomment as soon as @std/expect has new version (https://github.com/denoland/std/pull/6065)
-  // it('should create a StringBuilder instance with the given string and options', () => {
-  //   const str = 'test string';
-  //   const options: Partial<StringBuilderOptions> = {
-  //     newLine: '\r\n',
-  //   };
-  //   const sb = StringBuilder.fromString(str, options);
-  //   expect(sb.toString()).toEqual(str);
-  //   expect(sb.options).toEqual(expect.objectContaining(options));
-  // });
+  it('should create a StringBuilder instance with the given string and options', () => {
+    const str = 'test string';
+    const options: Partial<StringBuilderOptions> = {
+      newLine: '\r\n',
+    };
+    const sb = StringBuilder.fromString(str, options);
+    expect(sb.toString()).toEqual(str);
+    expect(sb.options).toEqual(expect.objectContaining(options));
+  });
 });
 
 describe('build', () => {

@@ -1,5 +1,5 @@
-// @deno-types="npm:@types/fs-extra"
 import { toKebabCase } from '@std/text';
+// @deno-types="npm:@types/fs-extra"
 import fs from 'fs-extra';
 import { spawn } from 'node:child_process';
 import { basename, dirname, join, relative, resolve } from 'node:path';
