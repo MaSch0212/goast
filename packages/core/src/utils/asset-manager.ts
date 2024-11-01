@@ -1,7 +1,7 @@
 import { basename, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-// @deno-types="@types/fs-extra"
+// @deno-types="npm:@types/fs-extra"
 import fs from 'fs-extra';
 
 export class AssetManager {

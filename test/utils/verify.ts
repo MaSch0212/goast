@@ -1,12 +1,12 @@
-// @deno-types="@types/fs-extra"
+// @deno-types="npm:@types/fs-extra"
+import { toKebabCase } from '@std/text';
 import fs from 'fs-extra';
+import { spawn } from 'node:child_process';
 import { basename, dirname, join, relative, resolve } from 'node:path';
+import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import * as util from 'node:util';
-import { spawn } from 'node:child_process';
 import { repoRootDir } from './paths.ts';
-import process from 'node:process';
-import { toKebabCase } from '@std/text';
 
 type VerifyError = 'no-expect-file' | 'verify-failed';
 

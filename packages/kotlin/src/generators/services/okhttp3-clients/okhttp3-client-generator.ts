@@ -1,6 +1,6 @@
 import { dirname } from 'node:path';
 
-// @deno-types="@types/fs-extra"
+// @deno-types="npm:@types/fs-extra"
 import fs from 'fs-extra';
 
 import {
@@ -68,7 +68,7 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
         [
           kt.parameter('basePath', kt.refs.string(), { default: 'defaultBasePath' }),
           kt.parameter('client', kt.refs.okhttp3.okHttpClient(), {
-            default: 'defaultClient'
+            default: 'defaultClient',
           }),
         ],
         null,
