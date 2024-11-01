@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { cwd } from 'node:process';
 
-// @deno-types="@types/fs-extra"
+// @deno-types="npm:@types/fs-extra"
 import fs from 'fs-extra';
 import * as YAML from 'yaml';
 

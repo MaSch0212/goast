@@ -1,6 +1,6 @@
 import { resolve } from 'node:path';
 
-// @deno-types="@types/fs-extra"
+// @deno-types="npm:@types/fs-extra"
 import fs from 'fs-extra';
 
 import {
