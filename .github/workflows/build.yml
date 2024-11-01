@@ -33,6 +33,9 @@ jobs:
         id: test
         run: deno task test
 
+      - name: JSR dry-run publish
+        run: deno publish --dry-run
+
       - name: Build NPM packages
         run: deno task npm
 
