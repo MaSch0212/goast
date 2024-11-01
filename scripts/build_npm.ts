@@ -1,6 +1,6 @@
 import { build, type BuildOptions, emptyDir } from '@deno/dnt';
 import { resolve } from 'node:path';
-// @deno-types="npm:@types/fs-extra"
+// @deno-types="npm:@types/fs-extra@11"
 import fs from 'fs-extra';
 
 type GoastNpmOptions = {

@@ -2,7 +2,7 @@ import { join } from 'node:path';
 
 import { afterEach, describe, test } from '@std/testing/bdd';
 import { restore, stub } from '@std/testing/mock';
-// @deno-types="npm:@types/fs-extra"
+// @deno-types="npm:@types/fs-extra@11"
 import fs from 'fs-extra';
 
 import { OpenApiGenerator, toCustomCase } from '@goast/core';

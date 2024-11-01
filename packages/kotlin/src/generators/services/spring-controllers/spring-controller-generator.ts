@@ -1,4 +1,4 @@
-// @deno-types="npm:@types/fs-extra"
+// @deno-types="npm:@types/fs-extra@11"
 import fs from 'fs-extra';
 
 import {
