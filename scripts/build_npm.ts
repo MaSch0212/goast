@@ -9,6 +9,7 @@ type GoastNpmOptions = {
   usedLocalPackages?: string[];
   noReadme?: boolean;
   private?: boolean;
+  assetsManagerFilePath?: string;
 };
 type DenoJson = {
   name?: string;
@@ -88,6 +89,23 @@ await build({
     fs.copySync(resolve(rootDir, 'test', 'openapi-files'), resolve(distDir, '..', 'test', 'openapi-files'));
     copyIfExists(resolve(projectDir, 'tests', '.verify'), resolve(distDir, 'script', 'tests', '.verify'));
     copyIfExists(resolve(projectDir, 'tests', '.verify'), resolve(distDir, 'esm', 'tests', '.verify'));
+
+    // Adjust asset relative path
+    if (denoJson.goastNpmOptions?.assetsManagerFilePath) {
+      for (const tech of ['esm', 'script']) {
+        const assetsFilePath = resolve(
+          distDir,
+          tech,
+          denoJson.goastNpmOptions.assetsManagerFilePath.replace(/\.ts$/, '.js'),
+        );
+        if (!fs.existsSync(assetsFilePath)) {
+          throw new Error(`The file "${assetsFilePath}" does not exist.`);
+        }
+        let content = fs.readFileSync(assetsFilePath, 'utf-8');
+        content = content.replace('../assets/', '../../assets/');
+        fs.writeFileSync(assetsFilePath, content);
+      }
+    }
   },
 });
 

@@ -1,6 +1,6 @@
 {
   "name": "@goast/kotlin",
-  "version": "0.4.1",
+  "version": "0.4.3",
   "description": "Provides gOAst generators for generating Kotlin code from OpenAPI specifications.",
   "exports": "./mod.ts",
   "publish": {
@@ -13,6 +13,7 @@
     ]
   },
   "goastNpmOptions": {
-    "usedLocalPackages": ["@goast/test-utils", "@goast/core"]
+    "usedLocalPackages": ["@goast/test-utils", "@goast/core"],
+    "assetsManagerFilePath": "src/assets.ts"
   }
 }
