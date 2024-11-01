@@ -210,7 +210,11 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     const result = kt.parameter(
       toCasing(parameter.name, ctx.config.parameterNameCasing),
       this.getParameterType(ctx, { endpoint, parameter }),
-      {},
+      {
+        default: parameter.multipart && parameter.schema?.default !== undefined
+          ? kt.toNode(parameter.schema?.default)
+          : null,
+      },
     );
 
     if (ctx.config.addSwaggerAnnotations) {
