@@ -152,24 +152,30 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
                       kt.collectionLiteral(
                         (response.contentOptions.length === 0
                           ? [{ schema: undefined, type: undefined }]
-                          : response.contentOptions).map((content) =>
-                            kt.call(kt.refs.swagger.content(), [
+                          : response.contentOptions).map((content) => {
+                            let schemaType: kt.Type<Builder> = this.getSchemaType(ctx, { schema: content.schema }) ??
+                              kt.refs.any();
+                            let isArray = false;
+
+                            if (kt.refs.list.matches(schemaType)) {
+                              isArray = true;
+                              schemaType = schemaType.generics[0];
+                            }
+
+                            let ktSchema = kt.call(kt.refs.swagger.schema(), [
+                              kt.argument.named('implementation', s<Builder>`${schemaType}::class`),
+                            ]);
+                            if (isArray) {
+                              ktSchema = kt.call(kt.refs.swagger.arraySchema(), [
+                                kt.argument.named('schema', ktSchema),
+                              ]);
+                            }
+
+                            return kt.call(kt.refs.swagger.content(), [
                               content.type ? kt.argument.named('mediaType', kt.string(content.type)) : null,
-                              content.schema
-                                ? kt.argument.named(
-                                  'schema',
-                                  kt.call(kt.refs.swagger.schema(), [
-                                    kt.argument.named(
-                                      'implementation',
-                                      s<Builder>`${
-                                        this.getSchemaType(ctx, { schema: content.schema }) ?? kt.refs.any()
-                                      }::class`,
-                                    ),
-                                  ]),
-                                )
-                                : null,
-                            ])
-                          ),
+                              content.schema ? kt.argument.named(isArray ? 'array' : 'schema', ktSchema) : null,
+                            ]);
+                          }),
                       ),
                     ),
                   ])

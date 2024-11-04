@@ -6,6 +6,10 @@ export const operation: KtReferenceFactory = ktReference.factory('Operation', 'i
 
 // io.swagger.v3.oas.annotations.media
 export const schema: KtReferenceFactory = ktReference.factory('Schema', 'io.swagger.v3.oas.annotations.media');
+export const arraySchema: KtReferenceFactory = ktReference.factory(
+  'ArraySchema',
+  'io.swagger.v3.oas.annotations.media',
+);
 export const content: KtReferenceFactory = ktReference.factory('Content', 'io.swagger.v3.oas.annotations.media');
 
 // io.swagger.v3.oas.annotations.responses
