@@ -147,6 +147,31 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
                     response.description
                       ? kt.argument.named('description', kt.string(response.description?.trim()))
                       : null,
+                    kt.argument.named(
+                      'content',
+                      kt.collectionLiteral(
+                        (response.contentOptions.length === 0
+                          ? [{ schema: undefined, type: undefined }]
+                          : response.contentOptions).map((content) =>
+                            kt.call(kt.refs.swagger.content(), [
+                              content.type ? kt.argument.named('mediaType', kt.string(content.type)) : null,
+                              content.schema
+                                ? kt.argument.named(
+                                  'schema',
+                                  kt.call(kt.refs.swagger.schema(), [
+                                    kt.argument.named(
+                                      'implementation',
+                                      s<Builder>`${
+                                        this.getSchemaType(ctx, { schema: content.schema }) ?? kt.refs.any()
+                                      }::class`,
+                                    ),
+                                  ]),
+                                )
+                                : null,
+                            ])
+                          ),
+                      ),
+                    ),
                   ])
                 ),
               ),
