@@ -11,6 +11,7 @@ export type KotlinGeneratorConfig = OpenApiGeneratorConfig & {
   functionNameCasing: StringCasing | StringCasingWithOptions;
   propertyNameCasing: StringCasing | StringCasingWithOptions;
   enumValueNameCasing: StringCasing | StringCasingWithOptions;
+  constantNameCasing: StringCasing | StringCasingWithOptions;
 
   globalImports: string[];
 };
@@ -23,6 +24,7 @@ export const defaultKotlinGeneratorConfig: DefaultGenerationProviderConfig<Kotli
   functionNameCasing: 'camel',
   propertyNameCasing: 'camel',
   enumValueNameCasing: 'snake',
+  constantNameCasing: 'snake',
 
   globalImports: [
     'kotlin.*',

@@ -60,6 +60,8 @@ export type GetEndpointPath = { endpoint: ApiEndpoint };
 
 export type GetDirectoryPath = { packageName: string };
 
+export type GetPathConstantName = { endpoint: ApiEndpoint };
+
 export type GetPackageName = object;
 
 export type GetApiInterfaceName = object;

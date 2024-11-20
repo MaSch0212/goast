@@ -74,6 +74,14 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     return kt.interface(interfaceName, {
       annotations: this.getApiInterfaceAnnotations(ctx),
       members: this.getApiInterfaceMembers(ctx),
+      companionObject: kt.object({
+        members: ctx.service.endpoints.map((endpoint) =>
+          kt.property(this.getPathConstantName(ctx, { endpoint }), {
+            const: true,
+            default: kt.string(this.getEndpointPath(ctx, { endpoint })),
+          })
+        ),
+      }),
     });
   }
 
@@ -192,7 +200,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
         'method',
         kt.collectionLiteral([kt.call([kt.refs.spring.requestMethod(), endpoint.method.toUpperCase()])]),
       ),
-      kt.argument.named('value', kt.collectionLiteral([kt.string(this.getEndpointPath(ctx, { endpoint }))])),
+      kt.argument.named('value', kt.collectionLiteral([this.getPathConstantName(ctx, { endpoint })])),
     ]);
     if (endpoint.requestBody && endpoint.requestBody.content.length > 0) {
       requestMapping.arguments.push(
@@ -541,6 +549,11 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
   protected getDirectoryPath(ctx: Context, args: Args.GetDirectoryPath): string {
     const { packageName } = args;
     return `${ctx.config.outputDir}/${packageName.replace(/\./g, '/')}`;
+  }
+
+  protected getPathConstantName(ctx: Context, args: Args.GetPathConstantName): string {
+    const { endpoint } = args;
+    return toCasing(`${endpoint.name}_path`, ctx.config.constantNameCasing);
   }
 
   protected getPackageName(ctx: Context, _args: Args.GetPackageName): string {
