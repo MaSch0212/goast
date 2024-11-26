@@ -9,6 +9,7 @@ import {
   type MaybePromise,
   type OpenApiGeneratorContext,
   OpenApiServicesGenerationProviderBase,
+  toCasing,
 } from '@goast/core';
 
 import { getAssetFileContent } from '../../../assets.ts';
@@ -121,7 +122,8 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
       const targetPath = resolve(targetDir, file);
       console.log(`Copying asset file "${sourcePath}" to "${targetPath}"`);
       const fileContent = (await getAssetFileContent(sourcePath))
-        .replace(/@PACKAGE_NAME@/g, ctx.infrastructurePackageName);
+        .replace(/@PACKAGE_NAME@/g, ctx.infrastructurePackageName)
+        .replace(/@JSON_INCLUDE@/g, toCasing(ctx.config.serializerJsonInclude, 'snake'));
       fs.writeFileSync(targetPath, fileContent);
     }
   }
