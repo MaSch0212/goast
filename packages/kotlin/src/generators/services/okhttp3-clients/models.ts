@@ -19,6 +19,7 @@ export type KotlinOkHttp3ClientsGeneratorConfig = KotlinGeneratorConfig & {
 
   basePath?: string | RegExp | ((basePath: string, service: ApiService) => string);
   pathModifier?: RegExp | ((path: string, endpoint: ApiEndpoint) => string);
+  serializerJsonInclude: 'always' | 'non-null' | 'non-absent' | 'non-default' | 'non-empty' | 'use-defaults';
 };
 
 export const defaultKotlinOkHttp3ClientsGeneratorConfig: DefaultGenerationProviderConfig<
@@ -29,6 +30,7 @@ export const defaultKotlinOkHttp3ClientsGeneratorConfig: DefaultGenerationProvid
   packageName: 'com.openapi.generated',
   packageSuffix: '.api.client',
   infrastructurePackageName: { mode: 'append-full-package-name', value: '.infrastructure' },
+  serializerJsonInclude: 'non-absent',
 };
 
 export type KotlinOkHttp3ClientsGeneratorInput = KotlinModelsGeneratorOutput;

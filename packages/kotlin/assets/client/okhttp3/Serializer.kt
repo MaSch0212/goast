@@ -9,6 +9,6 @@ object Serializer {
     @JvmStatic
     val jacksonObjectMapper: ObjectMapper = jacksonObjectMapper()
         .findAndRegisterModules()
-        .setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
+        .setSerializationInclusion(JsonInclude.Include.@JSON_INCLUDE@)
         .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
 }

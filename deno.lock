@@ -31,6 +31,8 @@
     "jsr:@std/text@^1.0.7": "1.0.8",
     "jsr:@ts-morph/bootstrap@0.24": "0.24.0",
     "jsr:@ts-morph/common@0.24": "0.24.0",
+    "npm:@types/fs-extra@11": "11.0.4",
+    "npm:@types/node@*": "22.5.4",
     "npm:@types/node@^22.7.5": "22.8.6",
     "npm:concurrently@^9.0.1": "9.0.1",
     "npm:fs-extra@^11.2.0": "11.2.0",
@@ -170,6 +172,25 @@
     }
   },
   "npm": {
+    "@types/fs-extra@11.0.4": {
+      "integrity": "sha512-yTbItCNreRooED33qjunPthRcSjERP1r4MqCZc7wv0u2sUkzTFp45tgUfS5+r7FrZPdmCCNflLhVSP/o+SemsQ==",
+      "dependencies": [
+        "@types/jsonfile",
+        "@types/node@22.5.4"
+      ]
+    },
+    "@types/jsonfile@6.1.4": {
+      "integrity": "sha512-D5qGUYwjvnNNextdU59/+fI+spnwtTFmyQP0h+PfIOSkNfpU6AOICUOkm4i0OnSk+NyjdPJrxCDro0sJsWlRpQ==",
+      "dependencies": [
+        "@types/node@22.5.4"
+      ]
+    },
+    "@types/node@22.5.4": {
+      "integrity": "sha512-FDuKUJQm/ju9fT/SeX/6+gBzoPzlVCzfzmGkwKvRHQVxi4BntVbyIwf6a4Xn62mrvndLiml6z/UBXIdEVjQLXg==",
+      "dependencies": [
+        "undici-types"
+      ]
+    },
     "@types/node@22.8.6": {
       "integrity": "sha512-tosuJYKrIqjQIlVCM4PEGxOmyg3FCPa/fViuJChnGeEIhjA46oy8FMVoF9su1/v8PNs2a8Q0iFNyOx0uOF91nw==",
       "dependencies": [
