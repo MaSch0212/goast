@@ -1,7 +1,18 @@
-import type { ApiEndpoint, ApiSchema, SourceBuilder } from '@goast/core';
+import type { ApiEndpoint, ApiResponse, ApiSchema, SourceBuilder } from '@goast/core';
 
 import type { kt } from '../../../ast/index.ts';
 import type { ApiParameterWithMultipartInfo } from '../../../types.ts';
+
+// #region API Response Entities
+export type GenerateApiResponseEntitiesFile = {
+  dirPath: string;
+  packageName: string;
+};
+
+export type GetApiResponseEntitiesFileContent = { packageName: string };
+
+export type GetApiResponseEntities = object;
+// #endregion
 
 // #region API Interface
 export type GenerateApiInterfaceFile = {
@@ -9,11 +20,13 @@ export type GenerateApiInterfaceFile = {
   packageName: string;
 };
 
-export type GetApiinterfaceFileContent = { interfaceName: string };
+export type GetApiInterfaceFileContent = { interfaceName: string };
 
 export type GetApiInterface = { interfaceName: string };
 
 export type GetApiInterfaceEndpointMethod = { endpoint: ApiEndpoint };
+
+export type GetApiResponseEntityClass = { endpoint: ApiEndpoint };
 // #endregion
 
 // #region API Controller
@@ -42,7 +55,7 @@ export type GetApiDelegateInterfaceEndpointMethod = { endpoint: ApiEndpoint };
 
 export type GetParameterType = { endpoint: ApiEndpoint; parameter: ApiParameterWithMultipartInfo };
 
-export type GetResponseType = { endpoint: ApiEndpoint };
+export type GetResponseType = { endpoint: ApiEndpoint; response?: ApiResponse };
 
 export type GetTypeUsage<TBuilder extends SourceBuilder> = {
   schema: ApiSchema | undefined;
@@ -63,6 +76,8 @@ export type GetDirectoryPath = { packageName: string };
 export type GetPathConstantName = { endpoint: ApiEndpoint };
 
 export type GetPackageName = object;
+
+export type GetApiResponseEntityName = { endpoint: ApiEndpoint };
 
 export type GetApiInterfaceName = object;
 

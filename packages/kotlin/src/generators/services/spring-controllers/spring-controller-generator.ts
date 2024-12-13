@@ -15,6 +15,7 @@ import {
   toCasing,
 } from '@goast/core';
 
+import { getReasonPhrase } from 'http-status-codes';
 import { kt } from '../../../ast/index.ts';
 import type { KotlinImport } from '../../../common-results.ts';
 import { KotlinFileBuilder } from '../../../file-builder.ts';
@@ -34,7 +35,7 @@ export interface KotlinSpringControllerGenerator<TOutput extends Output = Output
 
 export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<Context, Output>
   implements KotlinSpringControllerGenerator {
-  generate(ctx: KotlinServiceGeneratorContext): MaybePromise<KotlinServiceGeneratorOutput> {
+  public generate(ctx: KotlinServiceGeneratorContext): MaybePromise<KotlinServiceGeneratorOutput> {
     const packageName = this.getPackageName(ctx, {});
     const dirPath = this.getDirectoryPath(ctx, { packageName });
     fs.ensureDirSync(dirPath);
@@ -62,10 +63,9 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     return { typeName, packageName };
   }
 
-  protected getApiInterfaceFileContent(ctx: Context, args: Args.GetApiinterfaceFileContent): AppendValueGroup<Builder> {
+  protected getApiInterfaceFileContent(ctx: Context, args: Args.GetApiInterfaceFileContent): AppendValueGroup<Builder> {
     const { interfaceName } = args;
-
-    return appendValueGroup([this.getApiInterface(ctx, { interfaceName })], '\n');
+    return appendValueGroup<Builder>([this.getApiInterface(ctx, { interfaceName })], '\n');
   }
 
   protected getApiInterface(ctx: Context, args: Args.GetApiInterface): kt.Interface<Builder> {
@@ -111,6 +111,12 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
       members.push(this.getApiInterfaceEndpointMethod(ctx, { endpoint }));
     });
 
+    if (ctx.config.strictResponseEntities) {
+      members.push(
+        ...ctx.service.endpoints.map((endpoint) => this.getApiResponseEntityClass(ctx, { endpoint })),
+      );
+    }
+
     return members;
   }
 
@@ -125,7 +131,9 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
       suspend: true,
       annotations: this.getApiInterfaceEndpointMethodAnnnotations(ctx, endpoint),
       parameters: parameters.map((parameter) => this.getApiInterfaceEndpointMethodParameter(ctx, endpoint, parameter)),
-      returnType: kt.refs.spring.responseEntity([this.getResponseType(ctx, { endpoint })]),
+      returnType: ctx.config.strictResponseEntities
+        ? kt.reference(this.getApiResponseEntityName(ctx, { endpoint }), null, { generics: ['*'] })
+        : kt.refs.spring.responseEntity([this.getResponseType(ctx, { endpoint })]),
       body: this.getApiInterfaceEndpointMethodBody(ctx, endpoint, parameters),
     });
   }
@@ -304,6 +312,68 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
       '\n',
     );
   }
+
+  private getApiResponseEntityClass(ctx: Context, args: Args.GetApiResponseEntityClass): kt.Class<Builder> {
+    const { endpoint } = args;
+    const name = this.getApiResponseEntityName(ctx, { endpoint });
+    return kt.class(name, {
+      doc: kt.doc(`Response entity for ${endpoint.name}.`),
+      generics: [kt.genericParameter('T')],
+      primaryConstructor: kt.constructor(
+        [
+          kt.parameter.class('body', kt.reference('T')),
+          kt.parameter.class('rawStatus', kt.refs.int()),
+          kt.parameter.class(
+            'headers',
+            kt.refs.spring.multiValueMap([kt.refs.string(), kt.refs.string()], { nullable: true }),
+            { default: kt.toNode(null) },
+          ),
+        ],
+        null,
+        {
+          accessModifier: endpoint.responses.length > 0 ? 'private' : null,
+          delegateTarget: 'super',
+          delegateArguments: [kt.argument('body'), kt.argument('headers'), kt.argument('rawStatus')],
+        },
+      ),
+      extends: kt.refs.spring.responseEntity([kt.reference('T')]),
+      companionObject: kt.object({
+        members: Array.from(
+          new Set([
+            ...ctx.config.defaultStatusCodes,
+            501,
+            ...endpoint.responses.map((x) => x.statusCode),
+          ].filter(notNullish)),
+        )
+          .map((code) => {
+            const fnName = toCasing(getReasonPhrase(code), ctx.config.functionNameCasing);
+            const response = endpoint.responses.find((x) => x.statusCode === code);
+            const responseType = response ? this.getResponseType(ctx, { endpoint, response }) : undefined;
+            const hasResponseBody = responseType && !kt.refs.unit.matches(responseType);
+            return kt.function(fnName, {
+              parameters: [
+                hasResponseBody ? kt.parameter.class('body', responseType) : null,
+                kt.parameter.class(
+                  'headers',
+                  kt.refs.spring.multiValueMap([kt.refs.string(), kt.refs.string()], { nullable: true }),
+                  { default: kt.toNode(null) },
+                ),
+              ],
+              singleExpression: true,
+              body: kt.call([
+                kt.reference(this.getApiResponseEntityName(ctx, { endpoint }), null, {
+                  generics: [hasResponseBody ? responseType : kt.refs.unit({ nullable: true })],
+                }),
+              ], [
+                hasResponseBody ? kt.argument('body') : kt.toNode(null),
+                kt.toNode(code),
+                kt.argument('headers'),
+              ]),
+            });
+          }),
+      }),
+    });
+  }
   // #endregion
 
   // #region API Controller
@@ -461,7 +531,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     const { endpoint } = args;
     const parameters = this.getAllParameters(ctx, { endpoint });
 
-    return kt.function(toCasing(endpoint.name, ctx.config.functionNameCasing), {
+    const fn = kt.function<Builder>(toCasing(endpoint.name, ctx.config.functionNameCasing), {
       suspend: true,
       parameters: parameters.map((parameter) => {
         return kt.parameter(
@@ -469,12 +539,32 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
           this.getParameterType(ctx, { endpoint, parameter }),
         );
       }),
-      returnType: kt.refs.spring.responseEntity([this.getResponseType(ctx, { endpoint })]),
-      body: appendValueGroup(
+    });
+
+    if (ctx.config.strictResponseEntities) {
+      const responseEntity = kt.reference.genericFactory(
+        this.getApiResponseEntityName(ctx, { endpoint }),
+        `${this.getPackageName(ctx, {})}.${this.getApiInterfaceName(ctx, {})}`,
+      );
+      fn.returnType = responseEntity(['*']);
+      fn.body = appendValueGroup(
+        [s`return ${
+          kt.call([
+            responseEntity.infer(),
+            toCasing(getReasonPhrase(501), ctx.config.functionNameCasing),
+          ], [])
+        }`],
+        '\n',
+      );
+    } else {
+      fn.returnType = kt.refs.spring.responseEntity([this.getResponseType(ctx, { endpoint })]);
+      fn.body = appendValueGroup(
         [s`return ${kt.refs.spring.responseEntity.infer()}(${kt.refs.spring.httpStatus()}.NOT_IMPLEMENTED)`],
         '\n',
-      ),
-    });
+      );
+    }
+
+    return fn;
   }
   // #endregion
 
@@ -491,8 +581,8 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
   }
 
   protected getResponseType(ctx: Context, args: Args.GetResponseType): kt.Type<Builder> {
-    const { endpoint } = args;
-    const responseSchemas = endpoint.responses
+    const { endpoint, response } = args;
+    const responseSchemas = (response ? [response] : endpoint.responses)
       .flatMap((x) => x.contentOptions.flatMap((x) => x.schema))
       .filter(notNullish)
       .filter(
@@ -561,6 +651,11 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
       ? ctx.config.packageSuffix
       : ctx.config.packageSuffix(ctx.service);
     return ctx.config.packageName + packageSuffix;
+  }
+
+  protected getApiResponseEntityName(ctx: Context, args: Args.GetApiResponseEntityName): string {
+    const { endpoint } = args;
+    return toCasing(`${endpoint.name}_ResponseEntity`, ctx.config.typeNameCasing);
   }
 
   protected getApiInterfaceName(ctx: Context, _args: Args.GetApiInterfaceName): string {
