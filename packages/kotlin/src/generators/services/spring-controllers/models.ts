@@ -18,6 +18,7 @@ export type KotlinServicesGeneratorConfig = KotlinGeneratorConfig & {
 
   addSwaggerAnnotations: boolean;
   addJakartaValidationAnnotations: boolean;
+  arrayType: 'list' | 'flux';
 };
 
 export const defaultKotlinServicesGeneratorConfig: DefaultGenerationProviderConfig<KotlinServicesGeneratorConfig> = {
@@ -28,6 +29,7 @@ export const defaultKotlinServicesGeneratorConfig: DefaultGenerationProviderConf
 
   addSwaggerAnnotations: true,
   addJakartaValidationAnnotations: true,
+  arrayType: 'flux',
 };
 
 export type KotlinServicesGeneratorInput = KotlinModelsGeneratorOutput;

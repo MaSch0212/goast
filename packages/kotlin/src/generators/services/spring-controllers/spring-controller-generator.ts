@@ -487,7 +487,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
       schema: parameter.schema,
       nullable: (!parameter.required && parameter.schema?.default === undefined) || undefined,
     });
-    return parameter.target === 'body' ? listToFlux(type) : type;
+    return parameter.target === 'body' ? adjustListType(ctx, type) : type;
   }
 
   protected getResponseType(ctx: Context, args: Args.GetResponseType): kt.Type<Builder> {
@@ -505,7 +505,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
       );
 
     if (responseSchemas.length === 1) {
-      return listToFlux(this.getTypeUsage(ctx, { schema: responseSchemas[0], fallback: kt.refs.unit() }));
+      return adjustListType(ctx, this.getTypeUsage(ctx, { schema: responseSchemas[0], fallback: kt.refs.unit() }));
     } else if (responseSchemas.length === 0) {
       return kt.refs.unit();
     } else {
@@ -648,6 +648,12 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
   }
 }
 
-export function listToFlux<T>(type: T): T {
-  return kt.refs.list.matches(type) ? (kt.refs.reactor.flux([type.generics[0]]) as T) : type;
+export function adjustListType<T>(ctx: Context, type: T): T {
+  if (!kt.refs.list.matches(type)) return type;
+  switch (ctx.config.arrayType) {
+    case 'flux':
+      return kt.refs.reactor.flux([type.generics[0]]) as T;
+    default:
+      return type;
+  }
 }
