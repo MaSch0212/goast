@@ -19,6 +19,9 @@ export type KotlinServicesGeneratorConfig = KotlinGeneratorConfig & {
   addSwaggerAnnotations: boolean;
   addJakartaValidationAnnotations: boolean;
   arrayType: 'list' | 'flux';
+
+  strictResponseEntities: boolean;
+  defaultStatusCodes: number[];
 };
 
 export const defaultKotlinServicesGeneratorConfig: DefaultGenerationProviderConfig<KotlinServicesGeneratorConfig> = {
@@ -30,6 +33,9 @@ export const defaultKotlinServicesGeneratorConfig: DefaultGenerationProviderConf
   addSwaggerAnnotations: true,
   addJakartaValidationAnnotations: true,
   arrayType: 'flux',
+
+  strictResponseEntities: false,
+  defaultStatusCodes: [400, 401, 403, 500, 501],
 };
 
 export type KotlinServicesGeneratorInput = KotlinModelsGeneratorOutput;

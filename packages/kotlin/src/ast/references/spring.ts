@@ -19,6 +19,12 @@ export const filePart: KtReferenceFactory = ktReference.factory('FilePart', 'org
 // org.springframework.stereotype
 export const controller: KtReferenceFactory = ktReference.factory('Controller', 'org.springframework.stereotype');
 
+// org.springframework.util
+export const multiValueMap: KtGenericReferenceFactory<2> = ktReference.genericFactory<2>(
+  'MultiValueMap',
+  'org.springframework.util',
+);
+
 // org.springframework.validation.annotation
 export const validated: KtReferenceFactory = ktReference.factory(
   'Validated',

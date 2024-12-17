@@ -20,6 +20,7 @@
     "@types/node": "npm:@types/node@^22.7.5",
     "concurrently": "npm:concurrently@^9.0.1",
     "fs-extra": "npm:fs-extra@^11.2.0",
+    "http-status-codes": "npm:http-status-codes@^2.3.0",
     "yaml": "npm:yaml@^2.5.1"
   },
   "fmt": {
