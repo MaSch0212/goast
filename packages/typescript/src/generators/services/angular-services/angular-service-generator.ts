@@ -85,7 +85,9 @@ export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGene
             ...Object.entries(statusCodes).map(([key, value]) => {
               const isSuccess = key.startsWith('2');
               return ts.intersectionType<Builder>([
-                isSuccess ? ts.refs.angular.httpResponse([value.type]) : ts.refs.angular.httpErrorResponse(),
+                isSuccess
+                  ? ts.refs.angular.httpResponse([value.type])
+                  : ts.refs.omit([ts.refs.angular.httpErrorResponse(), ts.string('error')]),
                 ts.objectType({
                   members: [
                     isSuccess ? null : ts.property('error', { type: ts.unionType([value.type, ts.refs.null_()]) }),
