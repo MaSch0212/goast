@@ -7,7 +7,7 @@
     models: {
       'schema-1': {
         __source__: '<root>/test/openapi-files/v3/discriminated-schemas.yml#/components/schemas/Pet',
-        additionalExports: [ { name: 'PetBase', type: 'type-export' } ],
+        additionalExports: [ { name: '_PetBase', type: 'type-export' } ],
         component: 'Pet',
         filePath: '<root>/out/models/pet.ts',
         imports: [
@@ -62,7 +62,7 @@
       },
       'schema-5': {
         __source__: '<root>/test/openapi-files/v3/discriminated-schemas.yml#/components/schemas/Pet',
-        additionalExports: [ { name: 'PetBase', type: 'type-export' } ],
+        additionalExports: [ { name: '_PetBase', type: 'type-export' } ],
         component: 'Pet',
         filePath: '<root>/out/models/pet.ts',
         imports: [
@@ -92,7 +92,7 @@
       },
       'schema-7': {
         __source__: '<root>/test/openapi-files/v3/discriminated-schemas.yml#/components/schemas/Pet',
-        additionalExports: [ { name: 'PetBase', type: 'type-export' } ],
+        additionalExports: [ { name: '_PetBase', type: 'type-export' } ],
         component: 'Pet',
         filePath: '<root>/out/models/pet.ts',
         imports: [
@@ -150,12 +150,12 @@ import type { Dog } from './dog';
 
 type PetDiscriminator = ('dog') | ('cat');
 
-export type PetBase = {
+export type _PetBase = {
     name: string;
     petType: string;
   };
 
-export type Pet<TPetType extends PetDiscriminator = PetDiscriminator> = (PetBase) & (({
+export type Pet<TPetType extends PetDiscriminator = PetDiscriminator> = (_PetBase) & (({
         dog: ({
             petType: 'dog';
           }) & (Dog);
@@ -193,10 +193,10 @@ export const SCHEMA_9_VALUES = [
 ┌──────────────────────────────────────┐
 │ <root>/out/models/cat.ts             │
 ├──────────────────────────────────────┤
-import type { PetBase } from './pet';
+import type { _PetBase } from './pet';
 import type { Schema9 } from './schema-9';
 
-export type Cat = (Omit<(PetBase) & ({
+export type Cat = (Omit<(_PetBase) & ({
           /**
            * The measured skill for hunting
            */
@@ -210,9 +210,9 @@ export type Cat = (Omit<(PetBase) & ({
 ┌──────────────────────────────────────┐
 │ <root>/out/models/dog.ts             │
 ├──────────────────────────────────────┤
-import type { PetBase } from './pet';
+import type { _PetBase } from './pet';
 
-export type Dog = (Omit<(PetBase) & ({
+export type Dog = (Omit<(_PetBase) & ({
           /**
            * the size of the pack the dog is from
            */
@@ -230,7 +230,7 @@ export { SCHEMA_9_VALUES } from './models/schema-9';
 
 export type { Cat } from './models/cat';
 export type { Dog } from './models/dog';
-export type { Pet, PetBase } from './models/pet';
+export type { Pet, _PetBase } from './models/pet';
 export type { Schema9 } from './models/schema-9';
 
 └──────────────────────────────────────┘

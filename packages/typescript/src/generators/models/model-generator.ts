@@ -450,7 +450,7 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
   }
 
   protected getBaseTypeName(ctx: Context, schema: ApiSchema): string {
-    return toCasing(schema.name + '_Base', ctx.config.typeNameCasing);
+    return toCasing(schema.name, ctx.config.discriminatorBaseTypeCasing);
   }
 
   protected getInheritedSchemas(ctx: Context, schema: ApiSchema): ApiSchema['inheritedSchemas'] {
