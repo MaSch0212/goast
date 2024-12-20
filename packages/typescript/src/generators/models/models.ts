@@ -49,6 +49,12 @@ export type TypeScriptModelGeneratorConfig = TypeScriptGeneratorConfig & {
    * @default 'type'
    */
   typeDeclaration: 'type' | 'prefer-interface';
+
+  /**
+   * The casing to use for the base type of discriminator schemas.
+   * @default `_<SchemaName>Base`
+   */
+  discriminatorBaseTypeCasing: ExtendedStringCasing;
 };
 
 export type TypeScriptModelsGeneratorConfig = TypeScriptModelGeneratorConfig & {
@@ -68,6 +74,7 @@ export const defaultTypeScriptModelGeneratorConfig: DefaultGenerationProviderCon
   modelsDir: 'models',
   modelFileNameCasing: undefined,
   typeDeclaration: 'type',
+  discriminatorBaseTypeCasing: { casing: 'pascal', prefix: '_', suffix: 'Base' },
 };
 
 export const defaultTypeScriptModelsGeneratorConfig: DefaultGenerationProviderConfig<TypeScriptModelsGeneratorConfig> =
