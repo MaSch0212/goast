@@ -142,7 +142,7 @@ export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGene
           parser: value?.parser ?? 'text',
           type: typeof value?.type === 'function'
             ? this.getSchemaType(ctx, value.type(ctx.data.schemas))
-            : value ?? ts.refs.never(),
+            : value ?? this.getAnyType(ctx),
         },
       ]),
       ...endpoint.responses
@@ -151,7 +151,7 @@ export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGene
           x.statusCode,
           {
             parser: this.contentTypeToResponseType(x.contentOptions[0]?.type),
-            type: this.getSchemaType(ctx, x.contentOptions[0]?.schema, ts.refs.never()),
+            type: this.getSchemaType(ctx, x.contentOptions[0]?.schema, this.getAnyType(ctx)),
           },
         ]),
     ]);
