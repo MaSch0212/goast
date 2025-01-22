@@ -1,5 +1,5 @@
 import { AssetManager } from '@goast/core';
-import { pathToFileURL } from 'node:url';
+import { pathToFileURL, URL } from 'node:url';
 
 declare const __filename: string | undefined;
 const scriptUrl = typeof __filename === 'undefined' ? import.meta.url : pathToFileURL(__filename);

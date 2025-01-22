@@ -1,5 +1,5 @@
 import { basename, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, URL } from 'node:url';
 
 // @deno-types="npm:@types/fs-extra@11"
 import fs from 'fs-extra';
