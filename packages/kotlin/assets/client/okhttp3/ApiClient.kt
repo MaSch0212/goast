@@ -140,6 +140,8 @@ open class ApiClient(val baseUrl: String, val client: Factory = defaultClient) {
             mediaType == null || (mediaType.startsWith("application/") && mediaType.endsWith("json")) ->
                 Serializer.jacksonObjectMapper.readValue(bodyContent, object : TypeReference<T>() {})
 
+            mediaType.startsWith("text/") && T::class.java == String::class.java -> bodyContent as T
+
             else -> throw UnsupportedOperationException("responseBody currently only supports JSON body.")
         }
     }
