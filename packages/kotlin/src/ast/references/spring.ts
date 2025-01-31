@@ -24,6 +24,10 @@ export const multiValueMap: KtGenericReferenceFactory<2> = ktReference.genericFa
   'MultiValueMap',
   'org.springframework.util',
 );
+export const linkedMultiValueMap: KtGenericReferenceFactory<2> = ktReference.genericFactory<2>(
+  'LinkedMultiValueMap',
+  'org.springframework.util',
+);
 
 // org.springframework.validation.annotation
 export const validated: KtReferenceFactory = ktReference.factory(
