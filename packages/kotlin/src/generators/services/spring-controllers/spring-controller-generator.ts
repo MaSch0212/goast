@@ -349,6 +349,8 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
             const fnName = toCasing(getReasonPhrase(code), ctx.config.functionNameCasing);
             const response = endpoint.responses.find((x) => x.statusCode === code);
             const responseType = response ? this.getResponseType(ctx, { endpoint, response }) : undefined;
+            const contentType = response?.contentOptions.find((x) => x.schema)?.type;
+
             const hasResponseBody = responseType && !kt.refs.unit.matches(responseType);
             return kt.function(fnName, {
               parameters: [
@@ -367,7 +369,14 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
               ], [
                 hasResponseBody ? kt.argument('body') : kt.toNode(null),
                 kt.toNode(code),
-                kt.argument('headers'),
+                contentType
+                  ? s`${kt.refs.spring.linkedMultiValueMap([kt.refs.string(), kt.refs.string()])}().also {
+                        if (headers != null) {
+                            it.putAll(headers)
+                        }
+                        it.addIfAbsent("Content-Type", ${kt.string(contentType)})
+                    }`
+                  : kt.argument('headers'),
               ]),
             });
           }),
