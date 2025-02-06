@@ -252,8 +252,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       {
         description: property.schema.description?.trim(),
         annotations: [
-          this.getJakartaPatternAnnotation(ctx, { schema, property }),
-          this.getJakartaValidAnnotation(ctx, { schema, property }),
+          ...this.getJakartaValidationAnnotations(ctx, { schema, property }),
           this.getSwaggerSchemaAnnotation(ctx, { schema, property }),
           this.getJacksonJsonPropertyAnnotation(ctx, { schema, property }),
           modify(this.getJacksonJsonIncludeAnnotation(ctx, { schema, property }), (x) => (x.target = 'get')),
@@ -414,29 +413,61 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       : null;
   }
 
-  protected getJakartaPatternAnnotation(
+  protected getJakartaValidationAnnotations(
     ctx: Context,
-    args: Args.GetJakartaPatternAnnotation,
-  ): kt.Annotation<Builder> | null {
+    args: Args.GetJakartaValidationAnnotations,
+  ): kt.Annotation<Builder>[] {
     const { property } = args;
+    const annotations: kt.Annotation<Builder>[] = [];
+    if (!ctx.config.addJakartaValidationAnnotations) {
+      return annotations;
+    }
 
-    return ctx.config.addJakartaValidationAnnotations && property.schema.kind === 'string' && property.schema.pattern
-      ? kt.annotation(kt.refs.jakarta.pattern(), [kt.argument.named('regexp', kt.string(property.schema.pattern))], {
-        target: 'get',
-      })
-      : null;
-  }
+    if (property.schema.kind === 'string') {
+      if (property.schema.pattern) {
+        annotations.push(
+          kt.annotation(kt.refs.jakarta.pattern(), [kt.argument.named('regexp', kt.string(property.schema.pattern))], {
+            target: 'get',
+          }),
+        );
+      }
+      if (property.schema.minLength === 1 && property.schema.maxLength === undefined) {
+        annotations.push(kt.annotation(kt.refs.jakarta.notEmpty(), [], { target: 'get' }));
+      } else if (property.schema.minLength !== undefined || property.schema.maxLength !== undefined) {
+        annotations.push(kt.annotation(kt.refs.jakarta.size(), [
+          property.schema.minLength !== undefined ? kt.argument.named('min', property.schema.minLength) : null,
+          property.schema.maxLength !== undefined ? kt.argument.named('max', property.schema.maxLength) : null,
+        ], { target: 'get' }));
+      }
+    } else if (property.schema.kind === 'number' || property.schema.kind === 'integer') {
+      if (property.schema.minimum !== undefined) {
+        annotations.push(
+          kt.annotation(kt.refs.jakarta.min(), [kt.argument.named('value', property.schema.minimum)], {
+            target: 'get',
+          }),
+        );
+      }
+      if (property.schema.maximum !== undefined) {
+        annotations.push(
+          kt.annotation(kt.refs.jakarta.max(), [kt.argument.named('value', property.schema.maximum)], {
+            target: 'get',
+          }),
+        );
+      }
+    } else if (property.schema.kind === 'array') {
+      if (property.schema.minItems !== undefined || property.schema.maxItems !== undefined) {
+        annotations.push(kt.annotation(kt.refs.jakarta.size(), [
+          property.schema.minItems !== undefined ? kt.argument.named('min', property.schema.minItems) : null,
+          property.schema.maxItems !== undefined ? kt.argument.named('max', property.schema.maxItems) : null,
+        ], { target: 'get' }));
+      }
+    }
 
-  protected getJakartaValidAnnotation(
-    ctx: Context,
-    args: Args.GetJakartaValidAnnotation,
-  ): kt.Annotation<Builder> | null {
-    const { property } = args;
+    if (this.shouldGenerateTypeDeclaration(ctx, { schema: property.schema })) {
+      annotations.push(kt.annotation(kt.refs.jakarta.valid(), [], { target: 'field' }));
+    }
 
-    return ctx.config.addJakartaValidationAnnotations &&
-        this.shouldGenerateTypeDeclaration(ctx, { schema: property.schema })
-      ? kt.annotation(kt.refs.jakarta.valid(), [], { target: 'field' })
-      : null;
+    return annotations;
   }
 
   protected getSwaggerSchemaAnnotation(

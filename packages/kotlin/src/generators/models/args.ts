@@ -78,12 +78,7 @@ export type GetJacksonJsonIncludeAnnotation = {
   property: ApiSchemaProperty;
 };
 
-export type GetJakartaPatternAnnotation = {
-  schema: ApiSchema;
-  property: ApiSchemaProperty;
-};
-
-export type GetJakartaValidAnnotation = {
+export type GetJakartaValidationAnnotations = {
   schema: ApiSchema;
   property: ApiSchemaProperty;
 };
