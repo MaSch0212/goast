@@ -229,6 +229,7 @@ package com.openapi.generated.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.constraints.Min
 
 /**
  * @param packSize the size of the pack the dog is from
@@ -238,6 +239,7 @@ data class Dog(
     @JsonProperty("name", required = true)
     override val name: String,
 
+    @get:Min(value = 0)
     @Schema(required = true, description = "the size of the pack the dog is from")
     @JsonProperty("packSize", required = true)
     val packSize: Int = 0,
