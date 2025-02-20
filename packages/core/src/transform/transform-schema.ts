@@ -5,13 +5,13 @@ import type { ApiSchema, ApiSchemaExtensions, ApiSchemaKind } from './api-types.
 import {
   determineSchemaAccessibility,
   determineSchemaKind,
-  determineSchemaName,
   getCustomFields,
   getOpenApiObjectIdentifier,
   transformAdditionalProperties,
   transformSchemaProperties,
 } from './helpers.ts';
 import type { IncompleteApiSchema, OpenApiTransformerContext } from './types.ts';
+import { determineSchemaName } from './utils/determine-schema-name.ts';
 
 export function transformSchema<T extends Deref<OpenApiSchema>>(ctx: OpenApiTransformerContext, schema: T): ApiSchema {
   if (!schema) {
@@ -56,7 +56,8 @@ export function transformSchema<T extends Deref<OpenApiSchema>>(ctx: OpenApiTran
     $ref: undefined,
     id,
     name: nameInfo.name,
-    isNameGenerated: nameInfo.isGenerated,
+    isNameGenerated: nameInfo.source !== 'title' && nameInfo.source !== 'schema',
+    nameSource: nameInfo.source,
     description: schema.description,
     deprecated: schema.deprecated ?? false,
     accessibility: determineSchemaAccessibility(schema),

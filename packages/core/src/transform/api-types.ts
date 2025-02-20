@@ -137,9 +137,22 @@ export type ApiSchemaDiscriminator = {
   mapping: Record<string, ApiSchema>;
 };
 export type ApiSchemaComponent = ApiComponent<OpenApiSchema>;
+export type ApiSchemaNameSource =
+  | 'schema'
+  | 'title'
+  | 'id'
+  | 'file'
+  | 'response'
+  | 'path-response'
+  | 'path-request-body'
+  | 'schema-property'
+  | 'schema-items'
+  | 'schema-composition'
+  | 'schema-additional-properties';
 export type ApiSchemaBase = ApiSchemaComponent & {
   name: string;
   isNameGenerated: boolean;
+  nameSource: ApiSchemaNameSource;
   description: string | undefined;
   deprecated: boolean;
   accessibility: ApiSchemaAccessibility;

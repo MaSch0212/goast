@@ -1,9 +1,7 @@
-import { parse as parsePath } from 'node:path';
 import { isOpenApiObjectProperty } from '../internal-utils.ts';
-import type { OpenApiHttpMethod, OpenApiObject } from '../parse/openapi-types.ts';
-import type { Deref, DerefSource } from '../parse/types.ts';
+import type { OpenApiObject } from '../parse/openapi-types.ts';
+import type { Deref } from '../parse/types.ts';
 import { isNullish } from '../utils/common.utils.ts';
-import { getDeepProperty } from '../utils/object.utils.ts';
 import type { ApiSchema, ApiSchemaAccessibility, ApiSchemaKind, ApiSchemaProperty } from './api-types.ts';
 import type { OpenApiTransformerContext } from './types.ts';
 
@@ -45,77 +43,6 @@ export function determineSchemaKind<
   return treadAsObject ? 'object' : 'unknown';
 }
 
-export function determineSchemaName(
-  schema: {
-    title?: string;
-    $src: DerefSource<unknown>;
-  },
-  id: string,
-): { name: string; isGenerated: boolean } {
-  if (schema.title) return { name: schema.title, isGenerated: false };
-  if (!schema.$src) {
-    console.log('woot?');
-  }
-
-  if (schema.$src.path === '/') return { name: parsePath(schema.$src.file).name, isGenerated: true };
-
-  const schemaNameMatch = schema.$src.path.match(/(?<=\/components\/schemas\/|\/definitions\/)[^/]+$/i);
-  if (schemaNameMatch) {
-    return { name: schemaNameMatch[0], isGenerated: false };
-  }
-
-  const responseMatch = schema.$src.path.match(/\/paths\/(?<path>.+)\/(?<method>.+)\/responses\/(?<status>\d+)\//);
-  if (responseMatch && responseMatch.groups) {
-    const { path, method, status } = responseMatch.groups;
-    const operation = schema.$src.document.paths?.[path]?.[method as OpenApiHttpMethod] ?? {};
-    return {
-      name: `${determineEndpointName({ method, path: `/${path}`, operation })}_${status}_Response`,
-      isGenerated: true,
-    };
-  }
-
-  const responseCompMatch = schema.$src.path.match(/\/components\/responses\/([^/]+)\/content\/.+\/schema/);
-  if (responseCompMatch) {
-    return {
-      name: responseCompMatch[1].toLowerCase().endsWith('response')
-        ? responseCompMatch[1]
-        : responseCompMatch[1] + 'Response',
-      isGenerated: true,
-    };
-  }
-
-  const requestBodyMatch = schema.$src.path.match(/\/paths\/(?<path>.+)\/(?<method>.+)\/requestBody\//);
-  if (requestBodyMatch && requestBodyMatch.groups) {
-    const { path, method } = requestBodyMatch.groups;
-    const operation = schema.$src.document.paths?.[path]?.[method as OpenApiHttpMethod] ?? {};
-    return { name: `${determineEndpointName({ method, path: `/${path}`, operation })}_Request`, isGenerated: true };
-  }
-
-  const parentSchemaMatch = schema.$src.path.match(/(.*)\/properties\/([^/]*)$/);
-  if (parentSchemaMatch) {
-    const parentSchema = getDeepProperty(schema.$src.document, parentSchemaMatch[1].split('/').filter(Boolean));
-    const parentSchemaName = determineSchemaName(
-      {
-        title: typeof parentSchema === 'object' && parentSchema !== null && 'title' in parentSchema
-          ? String(parentSchema.title)
-          : undefined,
-        $src: {
-          file: schema.$src.file,
-          path: parentSchemaMatch[1],
-          document: schema.$src.document,
-          originalComponent: parentSchema,
-        },
-      },
-      id,
-    );
-    if (!parentSchemaName.isGenerated) {
-      return { name: `${parentSchemaName.name}_${parentSchemaMatch[2]}`, isGenerated: true };
-    }
-  }
-
-  return { name: id, isGenerated: true };
-}
-
 export function determineSchemaAccessibility(schema: {
   readOnly?: boolean;
   writeOnly?: boolean;
@@ -153,15 +80,6 @@ export function getCustomFields<T extends Record<string, unknown>>(schema: T): C
     }
   }
   return result;
-}
-
-export function determineEndpointName(endpointInfo: {
-  method: string;
-  path: string;
-  operation: { operationId?: string };
-}): string {
-  if (endpointInfo.operation.operationId) return endpointInfo.operation.operationId;
-  return endpointInfo.method + endpointInfo.path.replace(/\{([^}]+)\}/g, ':$1').replace(/\//g, '_');
 }
 
 export function transformAdditionalProperties<TAdditionalProperties>(

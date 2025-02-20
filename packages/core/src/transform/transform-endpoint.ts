@@ -20,9 +20,10 @@ import type {
   ApiRequestBody,
   ApiResponse,
 } from './api-types.ts';
-import { determineEndpointName, getCustomFields, getOpenApiObjectIdentifier } from './helpers.ts';
+import { getCustomFields, getOpenApiObjectIdentifier } from './helpers.ts';
 import { transformSchema } from './transform-schema.ts';
 import type { OpenApiTransformerContext } from './types.ts';
+import { determineEndpointName } from './utils/determine-endpoint-name.ts';
 
 export function transformEndpoint(context: OpenApiTransformerContext, endpointInfo: OpenApiCollectorEndpointInfo) {
   const apiPath = transformApiPath(context, endpointInfo.path, endpointInfo.pathItem);
