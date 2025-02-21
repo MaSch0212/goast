@@ -138,17 +138,26 @@ export type ApiSchemaDiscriminator = {
 };
 export type ApiSchemaComponent = ApiComponent<OpenApiSchema>;
 export type ApiSchemaNameSource =
-  | 'schema'
-  | 'title'
-  | 'id'
   | 'file'
+  | 'schema'
   | 'response'
+  | 'parameter'
+  | 'header'
+  | 'response-header'
   | 'path-response'
+  | 'path-response-header'
+  | 'path-parameter'
   | 'path-request-body'
   | 'schema-property'
   | 'schema-items'
+  | 'schema-additional-items'
   | 'schema-composition'
-  | 'schema-additional-properties';
+  | 'schema-exclusion'
+  | 'schema-additional-properties'
+  | 'schema-pattern-properties'
+  | 'schema-definition'
+  | 'schema-discriminator-mapping'
+  | 'id';
 export type ApiSchemaBase = ApiSchemaComponent & {
   name: string;
   isNameGenerated: boolean;

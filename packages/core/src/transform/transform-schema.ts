@@ -2,16 +2,14 @@ import type { OpenApiSchema } from '../parse/openapi-types.ts';
 import type { Deref } from '../parse/types.ts';
 import { createOverwriteProxy } from '../utils/object.utils.ts';
 import type { ApiSchema, ApiSchemaExtensions, ApiSchemaKind } from './api-types.ts';
-import {
-  determineSchemaAccessibility,
-  determineSchemaKind,
-  getCustomFields,
-  getOpenApiObjectIdentifier,
-  transformAdditionalProperties,
-  transformSchemaProperties,
-} from './helpers.ts';
 import type { IncompleteApiSchema, OpenApiTransformerContext } from './types.ts';
+import { determineSchemaAccessibility } from './utils/determine-schema-accessibility.ts';
+import { determineSchemaKind } from './utils/determine-schema-kind.ts';
 import { determineSchemaName } from './utils/determine-schema-name.ts';
+import { getCustomFields } from './utils/get-custom-fields.ts';
+import { getOpenApiObjectIdentifier } from './utils/get-open-api-object-identifier.ts';
+import { transformAdditionalProperties } from './utils/transform-additional-properties.ts';
+import { transformSchemaProperties } from './utils/transform-schema-properties.ts';
 
 export function transformSchema<T extends Deref<OpenApiSchema>>(ctx: OpenApiTransformerContext, schema: T): ApiSchema {
   if (!schema) {
@@ -56,7 +54,8 @@ export function transformSchema<T extends Deref<OpenApiSchema>>(ctx: OpenApiTran
     $ref: undefined,
     id,
     name: nameInfo.name,
-    isNameGenerated: nameInfo.source !== 'title' && nameInfo.source !== 'schema',
+    isNameGenerated: nameInfo.source !== 'schema' && nameInfo.source !== 'header' && nameInfo.source !== 'file' &&
+      nameInfo.source !== 'parameter' && nameInfo.source !== 'response',
     nameSource: nameInfo.source,
     description: schema.description,
     deprecated: schema.deprecated ?? false,
