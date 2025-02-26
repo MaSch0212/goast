@@ -171,7 +171,7 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
         s`val localVarResponse = ${
           kt.call(
             [toCasing(endpoint.name + '_WithHttpInfo', ctx.config.functionNameCasing)],
-            parameters.map((x) => x.name),
+            parameters.map((x) => toCasing(x.name, ctx.config.parameterNameCasing)),
           )
         }`,
         '',
@@ -256,7 +256,7 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
         s`val localVariableConfig = ${
           kt.call(
             [toCasing(endpoint.name, 'camel') + 'RequestConfig'],
-            parameters.map((x) => x.name),
+            parameters.map((x) => toCasing(x.name, ctx.config.parameterNameCasing)),
           )
         }`,
         s`return ${
@@ -309,6 +309,7 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
   ): AppendValueGroup<Builder> {
     const { endpoint, parameters } = args;
     const queryParameters = parameters.filter((x) => x.target === 'query');
+    const headerParameters = parameters.filter((x) => x.target === 'header');
     const result = appendValueGroup<Builder>([], '\n');
 
     if (endpoint.requestBody) {
@@ -359,6 +360,15 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
     result.values.push('val localVariableHeaders: MutableMap<String, String> = mutableMapOf()');
     if (endpoint.requestBody?.content[0] !== undefined) {
       result.values.push(`localVariableHeaders["Content-Type"] = "${endpoint.requestBody?.content[0].type}"`);
+    }
+    for (const header of headerParameters) {
+      const paramName = toCasing(header.name, ctx.config.parameterNameCasing);
+      const toString = header.schema?.kind === 'array' ? '.joinToString()' : '.toString()';
+      result.values.push(
+        s`if (${paramName} != null) {${s.indent`
+          localVariableHeaders["${header.name}"] = ${paramName}${toString}`}
+        }`,
+      );
     }
 
     result.values.push(
@@ -458,7 +468,7 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
   protected getAllParameters(ctx: Context, args: Args.GetAllParameters): ApiParameterWithMultipartInfo[] {
     const { endpoint } = args;
     const parameters = endpoint.parameters.filter(
-      (parameter) => parameter.target === 'query' || parameter.target === 'path',
+      (parameter) => parameter.target === 'query' || parameter.target === 'path' || parameter.target === 'header',
     );
     if (endpoint.requestBody) {
       const content = endpoint.requestBody.content[0];

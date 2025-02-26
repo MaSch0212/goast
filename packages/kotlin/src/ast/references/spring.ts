@@ -60,6 +60,10 @@ export const requestPart: KtReferenceFactory = ktReference.factory(
   'RequestPart',
   'org.springframework.web.bind.annotation',
 );
+export const requestHeader: KtReferenceFactory = ktReference.factory(
+  'RequestHeader',
+  'org.springframework.web.bind.annotation',
+);
 
 // org.springframework.web.context.request
 export const nativeWebRequest: KtReferenceFactory = ktReference.factory(

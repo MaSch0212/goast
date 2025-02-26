@@ -244,6 +244,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
         parameter.multipart ? kt.argument.named('name', kt.string(parameter.multipart.name)) : null,
         parameter.description ? kt.argument.named('description', kt.string(parameter.description?.trim())) : null,
         kt.argument.named('required', parameter.required),
+        parameter.target === 'header' ? kt.argument.named('hidden', kt.toNode(true)) : null,
       ]);
       if (parameter.schema?.default !== undefined) {
         annotation.arguments.push(
@@ -281,6 +282,10 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
 
     if (parameter.target === 'path') {
       result.annotations.push(kt.annotation(kt.refs.spring.pathVariable(), [kt.string(parameter.name)]));
+    }
+
+    if (parameter.target === 'header') {
+      result.annotations.push(kt.annotation(kt.refs.spring.requestHeader(), [kt.string(parameter.name)]));
     }
 
     if (parameter.multipart) {
@@ -682,7 +687,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
   protected getAllParameters(ctx: Context, args: Args.GetAllParameters): ApiParameterWithMultipartInfo[] {
     const { endpoint } = args;
     const parameters = endpoint.parameters.filter(
-      (parameter) => parameter.target === 'query' || parameter.target === 'path',
+      (parameter) => parameter.target === 'query' || parameter.target === 'path' || parameter.target === 'header',
     );
     if (endpoint.requestBody) {
       const content = endpoint.requestBody.content[0];
