@@ -59,6 +59,7 @@ function fromSchema(schema: SchemaLike, _id: string): SchemaName | undefined {
   }
 
   const match = schema.$src.path.match(/^\/(?:components\/schemas|definitions)\/(?<name>[^/]+)$/i);
+  console.log(schema.$src.path, match);
   if (!match?.groups) return undefined;
 
   const { name } = match.groups;
@@ -117,7 +118,7 @@ function fromResponseHeader(schema: SchemaLike, _id: string): SchemaName | undef
 
 function fromPathResponse(schema: SchemaLike, _id: string): SchemaName | undefined {
   const match = schema.$src.path.match(
-    /^\/paths\/(?<path>.+)\/(?<method>.+)\/responses\/(?<status>\d+)\/content\/[^/]+\/schema$/i,
+    /^\/paths\/(?<path>.+)\/(?<method>[^/]+)\/responses\/(?<status>\d+)\/content\/.+\/schema$/i,
   );
   if (!match?.groups) return undefined;
 

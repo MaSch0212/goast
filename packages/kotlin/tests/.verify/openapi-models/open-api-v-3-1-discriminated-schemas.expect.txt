@@ -130,7 +130,7 @@
           classReference: false,
           generics: [],
           inject: {},
-          name: 'Schema9',
+          name: 'CatAllOf1HuntingSkill',
           nullable: false,
           packageName: 'com.openapi.generated.model',
           subReference: null
@@ -167,9 +167,9 @@ interface Pet {
 
 └────────────────────────────────────────┘
 
-┌────────────────────────────────────────────┐
-│ out/com/openapi/generated/model/Schema9.kt │
-├────────────────────────────────────────────┤
+┌──────────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/CatAllOf1HuntingSkill.kt │
+├──────────────────────────────────────────────────────────┤
 package com.openapi.generated.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -177,7 +177,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 /**
  * The measured skill for hunting
  */
-enum class Schema9(val value: String) {
+enum class CatAllOf1HuntingSkill(val value: String) {
     @JsonProperty("clueless")
     CLUELESS("clueless"),
 
@@ -191,7 +191,7 @@ enum class Schema9(val value: String) {
     AGGRESSIVE("aggressive")
 }
 
-└────────────────────────────────────────────┘
+└──────────────────────────────────────────────────────────┘
 
 ┌────────────────────────────────────────┐
 │ out/com/openapi/generated/model/Cat.kt │
@@ -213,7 +213,7 @@ data class Cat(
     @field:Valid
     @Schema(required = true, description = "The measured skill for hunting")
     @JsonProperty("huntingSkill", required = true)
-    val huntingSkill: Schema9 = Schema9.LAZY,
+    val huntingSkill: CatAllOf1HuntingSkill = CatAllOf1HuntingSkill.LAZY,
 
     @Schema(required = true)
     @JsonProperty("petType", required = true)

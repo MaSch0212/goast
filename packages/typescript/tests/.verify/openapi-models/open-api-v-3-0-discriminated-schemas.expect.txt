@@ -111,27 +111,29 @@
           '  /**\n' +
           '   * The measured skill for hunting\n' +
           '   */\n' +
-          '  huntingSkill: Schema9;\n' +
+          '  huntingSkill: CatAllOf1HuntingSkill;\n' +
           '}',
         imports: [
           {
             kind: 'file',
-            modulePath: '<root>/out/models/schema-9.ts',
-            name: 'Schema9',
+            modulePath: '<root>/out/models/cat-all-of-1-hunting-skill.ts',
+            name: 'CatAllOf1HuntingSkill',
             type: 'type-import'
           }
         ]
       },
       'schema-9': {
         __source__: '<root>/test/openapi-files/v3/discriminated-schemas.yml#/components/schemas/Cat/allOf/1/properties/huntingSkill',
-        additionalExports: [ { name: 'SCHEMA_9_VALUES', type: 'export' } ],
-        component: 'Schema9',
-        filePath: '<root>/out/models/schema-9.ts',
+        additionalExports: [
+          { name: 'CAT_ALL_OF_1_HUNTING_SKILL_VALUES', type: 'export' }
+        ],
+        component: 'CatAllOf1HuntingSkill',
+        filePath: '<root>/out/models/cat-all-of-1-hunting-skill.ts',
         imports: [
           {
             kind: 'file',
-            modulePath: '<root>/out/models/schema-9.ts',
-            name: 'Schema9',
+            modulePath: '<root>/out/models/cat-all-of-1-hunting-skill.ts',
+            name: 'CatAllOf1HuntingSkill',
             type: 'type-import'
           }
         ],
@@ -166,41 +168,41 @@ export type Pet<TPetType extends PetDiscriminator = PetDiscriminator> = (_PetBas
 
 └──────────────────────────────────────┘
 
-┌──────────────────────────────────────┐
-│ <root>/out/models/schema-9.ts        │
-├──────────────────────────────────────┤
+┌─────────────────────────────────────────────────┐
+│ <root>/out/models/cat-all-of-1-hunting-skill.ts │
+├─────────────────────────────────────────────────┤
 /**
  * The measured skill for hunting
  */
-export type Schema9 =
+export type CatAllOf1HuntingSkill =
   | ('clueless')
   | ('lazy')
   | ('adventurous')
   | ('aggressive');
 
 /**
- * All possible values of the enum `Schema9`.
+ * All possible values of the enum `CatAllOf1HuntingSkill`.
  */
-export const SCHEMA_9_VALUES = [
+export const CAT_ALL_OF_1_HUNTING_SKILL_VALUES = [
   'clueless',
   'lazy',
   'adventurous',
   'aggressive'
 ] as const;
 
-└──────────────────────────────────────┘
+└─────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────┐
 │ <root>/out/models/cat.ts             │
 ├──────────────────────────────────────┤
+import type { CatAllOf1HuntingSkill } from './cat-all-of-1-hunting-skill';
 import type { _PetBase } from './pet';
-import type { Schema9 } from './schema-9';
 
 export type Cat = (Omit<(_PetBase) & ({
           /**
            * The measured skill for hunting
            */
-          huntingSkill: Schema9;
+          huntingSkill: CatAllOf1HuntingSkill;
         }), 'petType'>) & ({
       petType: 'cat';
     });
@@ -226,11 +228,11 @@ export type Dog = (Omit<(_PetBase) & ({
 ┌──────────────────────────────────────┐
 │ <root>/out/models.ts                 │
 ├──────────────────────────────────────┤
-export { SCHEMA_9_VALUES } from './models/schema-9';
+export { CAT_ALL_OF_1_HUNTING_SKILL_VALUES } from './models/cat-all-of-1-hunting-skill';
 
+export type { CatAllOf1HuntingSkill } from './models/cat-all-of-1-hunting-skill';
 export type { Cat } from './models/cat';
 export type { Dog } from './models/dog';
 export type { Pet, _PetBase } from './models/pet';
-export type { Schema9 } from './models/schema-9';
 
 └──────────────────────────────────────┘

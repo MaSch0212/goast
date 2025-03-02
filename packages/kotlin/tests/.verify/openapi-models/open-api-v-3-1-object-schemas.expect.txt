@@ -453,7 +453,7 @@
           classReference: false,
           generics: [],
           inject: {},
-          name: 'Schema39',
+          name: 'ObjectWithPropertiesAllOfAndAnyOfAllOf0L',
           nullable: false,
           packageName: 'com.openapi.generated.model',
           subReference: null
@@ -559,7 +559,7 @@
           classReference: false,
           generics: [],
           inject: {},
-          name: 'Schema46',
+          name: 'ObjectWithPropertiesAllOfAndAnyOfAllOf1R',
           nullable: false,
           packageName: 'com.openapi.generated.model',
           subReference: null
@@ -665,7 +665,7 @@
           classReference: false,
           generics: [],
           inject: {},
-          name: 'Schema53',
+          name: 'ObjectWithPropertiesAllOfAndAnyOfAnyOf0X',
           nullable: false,
           packageName: 'com.openapi.generated.model',
           subReference: null
@@ -771,7 +771,7 @@
           classReference: false,
           generics: [],
           inject: {},
-          name: 'Schema60',
+          name: 'ObjectWithPropertiesAllOfAndAnyOfAnyOf1Dd',
           nullable: false,
           packageName: 'com.openapi.generated.model',
           subReference: null
@@ -1395,41 +1395,41 @@ class ObjectWithPropertiesAllOfAndAnyOfF
 
 └───────────────────────────────────────────────────────────────────────┘
 
-┌─────────────────────────────────────────────┐
-│ out/com/openapi/generated/model/Schema39.kt │
-├─────────────────────────────────────────────┤
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/ObjectWithPropertiesAllOfAndAnyOfAllOf0L.kt │
+├─────────────────────────────────────────────────────────────────────────────┤
 package com.openapi.generated.model
 
-class Schema39
+class ObjectWithPropertiesAllOfAndAnyOfAllOf0L
 
-└─────────────────────────────────────────────┘
+└─────────────────────────────────────────────────────────────────────────────┘
 
-┌─────────────────────────────────────────────┐
-│ out/com/openapi/generated/model/Schema46.kt │
-├─────────────────────────────────────────────┤
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/ObjectWithPropertiesAllOfAndAnyOfAllOf1R.kt │
+├─────────────────────────────────────────────────────────────────────────────┤
 package com.openapi.generated.model
 
-class Schema46
+class ObjectWithPropertiesAllOfAndAnyOfAllOf1R
 
-└─────────────────────────────────────────────┘
+└─────────────────────────────────────────────────────────────────────────────┘
 
-┌─────────────────────────────────────────────┐
-│ out/com/openapi/generated/model/Schema53.kt │
-├─────────────────────────────────────────────┤
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/ObjectWithPropertiesAllOfAndAnyOfAnyOf0X.kt │
+├─────────────────────────────────────────────────────────────────────────────┤
 package com.openapi.generated.model
 
-class Schema53
+class ObjectWithPropertiesAllOfAndAnyOfAnyOf0X
 
-└─────────────────────────────────────────────┘
+└─────────────────────────────────────────────────────────────────────────────┘
 
-┌─────────────────────────────────────────────┐
-│ out/com/openapi/generated/model/Schema60.kt │
-├─────────────────────────────────────────────┤
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/ObjectWithPropertiesAllOfAndAnyOfAnyOf1Dd.kt │
+├──────────────────────────────────────────────────────────────────────────────┤
 package com.openapi.generated.model
 
-class Schema60
+class ObjectWithPropertiesAllOfAndAnyOfAnyOf1Dd
 
-└─────────────────────────────────────────────┘
+└──────────────────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────────┐
 │ out/com/openapi/generated/model/ObjectWithPropertiesAllOfAndAnyOf.kt │
@@ -1489,7 +1489,7 @@ data class ObjectWithPropertiesAllOfAndAnyOf(
     @field:Valid
     @Schema(required = true)
     @JsonProperty("l", required = true)
-    val l: Schema39,
+    val l: ObjectWithPropertiesAllOfAndAnyOfAllOf0L,
 
     @Schema(required = true)
     @JsonProperty("m", required = true)
@@ -1514,7 +1514,7 @@ data class ObjectWithPropertiesAllOfAndAnyOf(
     @field:Valid
     @Schema(required = true)
     @JsonProperty("r", required = true)
-    val r: Schema46,
+    val r: ObjectWithPropertiesAllOfAndAnyOfAllOf1R,
 
     @Schema(required = true)
     @JsonProperty("s", required = true)
@@ -1539,7 +1539,7 @@ data class ObjectWithPropertiesAllOfAndAnyOf(
     @field:Valid
     @Schema(required = true)
     @JsonProperty("x", required = true)
-    val x: Schema53,
+    val x: ObjectWithPropertiesAllOfAndAnyOfAnyOf0X,
 
     @Schema(required = true)
     @JsonProperty("y", required = true)
@@ -1564,7 +1564,7 @@ data class ObjectWithPropertiesAllOfAndAnyOf(
     @field:Valid
     @Schema(required = true)
     @JsonProperty("dd", required = true)
-    val dd: Schema60
+    val dd: ObjectWithPropertiesAllOfAndAnyOfAnyOf1Dd
 )
 
 └──────────────────────────────────────────────────────────────────────┘

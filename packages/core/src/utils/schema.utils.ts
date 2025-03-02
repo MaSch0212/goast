@@ -89,6 +89,7 @@ function combineAdditionalProperties(
             kind: 'oneOf',
             name: id,
             isNameGenerated: true,
+            nameSource: 'id',
             description: undefined,
             deprecated: false,
             accessibility: 'all',

@@ -1,3 +1,5 @@
+import type { OpenApiCollectorData } from '../collect/types.ts';
+import type { ArrayItem } from '../utils/type.utils.ts';
 import type {
   ApiContent,
   ApiData,
@@ -11,9 +13,7 @@ import type {
   ApiSchemaKind,
   ApiService,
 } from './api-types.ts';
-import type { IdGenerator } from './helpers.ts';
-import type { OpenApiCollectorData } from '../collect/types.ts';
-import type { ArrayItem } from '../utils/type.utils.ts';
+import type { IdGenerator } from './utils/id-generator.ts';
 
 export type OpenApiTransformerOptions = {
   /**

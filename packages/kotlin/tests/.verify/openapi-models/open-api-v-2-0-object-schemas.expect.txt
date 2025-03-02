@@ -453,7 +453,7 @@
           classReference: false,
           generics: [],
           inject: {},
-          name: 'Schema39',
+          name: 'ObjectWithPropertiesAllOfAllOf0L',
           nullable: false,
           packageName: 'com.openapi.generated.model',
           subReference: null
@@ -559,7 +559,7 @@
           classReference: false,
           generics: [],
           inject: {},
-          name: 'Schema46',
+          name: 'ObjectWithPropertiesAllOfAllOf1R',
           nullable: false,
           packageName: 'com.openapi.generated.model',
           subReference: null
@@ -1195,23 +1195,23 @@ class ObjectWithPropertiesAllOfF
 
 └───────────────────────────────────────────────────────────────┘
 
-┌─────────────────────────────────────────────┐
-│ out/com/openapi/generated/model/Schema39.kt │
-├─────────────────────────────────────────────┤
+┌─────────────────────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/ObjectWithPropertiesAllOfAllOf0L.kt │
+├─────────────────────────────────────────────────────────────────────┤
 package com.openapi.generated.model
 
-class Schema39
+class ObjectWithPropertiesAllOfAllOf0L
 
-└─────────────────────────────────────────────┘
+└─────────────────────────────────────────────────────────────────────┘
 
-┌─────────────────────────────────────────────┐
-│ out/com/openapi/generated/model/Schema46.kt │
-├─────────────────────────────────────────────┤
+┌─────────────────────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/ObjectWithPropertiesAllOfAllOf1R.kt │
+├─────────────────────────────────────────────────────────────────────┤
 package com.openapi.generated.model
 
-class Schema46
+class ObjectWithPropertiesAllOfAllOf1R
 
-└─────────────────────────────────────────────┘
+└─────────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────┐
 │ out/com/openapi/generated/model/ObjectWithPropertiesAllOf.kt │
@@ -1271,7 +1271,7 @@ data class ObjectWithPropertiesAllOf(
     @field:Valid
     @Schema(required = true)
     @JsonProperty("l", required = true)
-    val l: Schema39,
+    val l: ObjectWithPropertiesAllOfAllOf0L,
 
     @Schema(required = true)
     @JsonProperty("m", required = true)
@@ -1296,7 +1296,7 @@ data class ObjectWithPropertiesAllOf(
     @field:Valid
     @Schema(required = true)
     @JsonProperty("r", required = true)
-    val r: Schema46
+    val r: ObjectWithPropertiesAllOfAllOf1R
 )
 
 └──────────────────────────────────────────────────────────────┘

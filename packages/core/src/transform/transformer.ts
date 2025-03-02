@@ -1,6 +1,5 @@
 import type { OpenApiCollectorData } from '../collect/types.ts';
 import type { ApiData } from './api-types.ts';
-import { IdGenerator } from './helpers.ts';
 import { transformDocument } from './transform-document.ts';
 import { transformEndpoint } from './transform-endpoint.ts';
 import { transformSchema } from './transform-schema.ts';
@@ -9,6 +8,7 @@ import {
   type OpenApiTransformerContext,
   type OpenApiTransformerOptions,
 } from './types.ts';
+import { IdGenerator } from './utils/id-generator.ts';
 
 export function transformOpenApi(data: OpenApiCollectorData, options?: Partial<OpenApiTransformerOptions>): ApiData {
   const context: OpenApiTransformerContext = {
