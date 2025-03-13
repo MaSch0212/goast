@@ -105,6 +105,11 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
           implements: [delegateInterfaceName],
         }),
       }),
+      kt.function('getExceptionHandler', {
+        returnType: ctx.refs.apiExceptionHandler({ nullable: true }),
+        singleExpression: true,
+        body: kt.toNode(null),
+      }),
     );
 
     ctx.service.endpoints.forEach((endpoint) => {
@@ -131,9 +136,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
       suspend: true,
       annotations: this.getApiInterfaceEndpointMethodAnnnotations(ctx, endpoint),
       parameters: parameters.map((parameter) => this.getApiInterfaceEndpointMethodParameter(ctx, endpoint, parameter)),
-      returnType: ctx.config.strictResponseEntities
-        ? kt.reference(this.getApiResponseEntityName(ctx, { endpoint }), null, { generics: ['*'] })
-        : kt.refs.spring.responseEntity([this.getResponseType(ctx, { endpoint })]),
+      returnType: kt.refs.spring.responseEntity(['*']),
       body: this.getApiInterfaceEndpointMethodBody(ctx, endpoint, parameters),
     });
   }
@@ -307,12 +310,16 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
   ): AppendValueGroup<Builder> {
     return appendValueGroup(
       [
-        s`return ${
+        s`try {${s.indent`
+            return ${
           kt.call(
             [kt.call(kt.reference('getDelegate'), []), toCasing(endpoint.name, ctx.config.functionNameCasing)],
             parameters.map((x) => toCasing(x.name, ctx.config.parameterNameCasing)),
           )
-        }`,
+        }`}
+          } catch (e: ${kt.refs.throwable()}) {${s.indent`
+            return getExceptionHandler()?.handleApiException(e) ?: throw e`}
+          }`,
       ],
       '\n',
     );
@@ -427,6 +434,15 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
             annotations: [kt.annotation(kt.refs.spring.autowired(), [kt.argument.named('required', 'false')])],
           },
         ),
+        kt.parameter.class(
+          'exceptionHandler',
+          ctx.refs.apiExceptionHandler({ nullable: true }),
+          {
+            annotations: [kt.annotation(kt.refs.spring.autowired(), [kt.argument.named('required', 'false')])],
+            accessModifier: 'private',
+            property: 'readonly',
+          },
+        ),
       ]),
       implements: [this.getApiInterfaceName(ctx, {})],
       members: this.getApiControllerMembers(ctx),
@@ -452,17 +468,8 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
 
     const delegateProp = kt.property<Builder>('delegate', {
       accessModifier: 'private',
-      type: kt.reference(delegateInterfaceName),
+      default: s`delegate ?: ${kt.object({ implements: [delegateInterfaceName] })}`,
     });
-
-    const initBlock = kt.initBlock<Builder>(
-      appendValueGroup(
-        [
-          s`this.delegate = ${kt.refs.java.optional.infer()}.ofNullable(delegate).orElse(object : ${delegateInterfaceName} {})`,
-        ],
-        '\n',
-      ),
-    );
 
     const getDelegateFun = kt.function<Builder>('getDelegate', {
       override: true,
@@ -471,7 +478,14 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
       body: kt.reference('delegate'),
     });
 
-    return [delegateProp, initBlock, getDelegateFun];
+    const getExceptionHandlerFun = kt.function<Builder>('getExceptionHandler', {
+      override: true,
+      returnType: ctx.refs.apiExceptionHandler({ nullable: true }),
+      singleExpression: true,
+      body: kt.reference('exceptionHandler'),
+    });
+
+    return [delegateProp, getDelegateFun, getExceptionHandlerFun];
   }
   // #endregion
 

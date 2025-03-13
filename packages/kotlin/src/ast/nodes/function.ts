@@ -14,6 +14,7 @@ import { writeKtNode, writeKtNodes } from '../utils/write-kt-node.ts';
 import { type KtAnnotation, ktAnnotation } from './annotation.ts';
 import { type KtDoc, ktDoc } from './doc.ts';
 import { type KtGenericParameter, ktGenericParameter } from './generic-parameter.ts';
+import { KtInterface } from './interface.ts';
 import { type KtParameter, ktParameter } from './parameter.ts';
 import type { KtType } from './types.ts';
 
@@ -152,7 +153,8 @@ export class KtFunction<TBuilder extends SourceBuilder, TInjects extends string 
       builder.append(this.inject.afterReturnType);
     }
 
-    if (!this.abstract) {
+    const isInInterface = this.getParentNode(builder) instanceof KtInterface;
+    if (!this.abstract && (this.body || !isInInterface)) {
       builder.append(' ');
       if (this.singleExpression && this.body) {
         builder.append('= ');

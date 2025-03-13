@@ -8,10 +8,11 @@ import type {
 import type { KotlinImport } from '../../../common-results.ts';
 import { defaultKotlinGeneratorConfig, type KotlinGeneratorConfig } from '../../../config.ts';
 import type { KotlinModelsGeneratorOutput } from '../../models/index.ts';
+import type { getReferenceFactories } from './refs.ts';
 
 export type KotlinServicesGeneratorConfig = KotlinGeneratorConfig & {
   packageName: string;
-  packageSuffix: string | ((service: ApiService) => string);
+  packageSuffix: string | ((service: ApiService | null) => string);
 
   basePath?: string | RegExp | ((basePath: string, service: ApiService) => string);
   pathModifier?: RegExp | ((path: string, endpoint: ApiEndpoint) => string);
@@ -54,12 +55,16 @@ export type KotlinServiceGeneratorOutput = {
   apiDelegate: KotlinImport;
 };
 
-export type KotlinServicesGeneratorContext = OpenApiServicesGenerationProviderContext<
-  KotlinServicesGeneratorInput,
-  KotlinServicesGeneratorOutput,
-  KotlinServicesGeneratorConfig,
-  KotlinServiceGeneratorOutput
->;
+export type KotlinServicesGeneratorContext =
+  & OpenApiServicesGenerationProviderContext<
+    KotlinServicesGeneratorInput,
+    KotlinServicesGeneratorOutput,
+    KotlinServicesGeneratorConfig,
+    KotlinServiceGeneratorOutput
+  >
+  & {
+    refs: ReturnType<typeof getReferenceFactories>;
+  };
 
 export type KotlinServiceGeneratorContext = KotlinServicesGeneratorContext & {
   service: ApiService;
