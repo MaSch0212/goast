@@ -13,6 +13,7 @@ export const boolean: KtReferenceFactory = ktReference.factory('Boolean', 'kotli
 export const lazyFun: KtGenericReferenceFactory<1> = ktReference.genericFactory<1>('lazy', 'kotlin');
 export const throws: KtReferenceFactory = ktReference.factory('Throws', 'kotlin');
 export const deprecated: KtReferenceFactory = ktReference.factory('Deprecated', 'kotlin');
+export const throwable: KtReferenceFactory = ktReference.factory('Throwable', 'kotlin');
 
 // kotlin.collections
 export const list: KtGenericReferenceFactory<1> = ktReference.genericFactory<1>('List', 'kotlin.collections');
