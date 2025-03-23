@@ -295,9 +295,7 @@ export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGene
                         }, ${options});`;
                       }),
                     endpoint.requestBody
-                      ? s`rb.body(params.body, ${
-                        ts.string(endpoint.requestBody.content[0].type ?? 'application/json')
-                      });`
+                      ? s`rb.body(params.body, ${ts.string(this.getEndpointRequestContentType(ctx, endpoint))});`
                       : null,
                   ],
                   '\n',
@@ -332,14 +330,18 @@ export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGene
     });
   }
 
+  protected getEndpointRequestContentType(ctx: Context, endpoint: ApiEndpoint): string {
+    return ctx.config.defaultSuccessResponseContentType ?? endpoint?.requestBody?.content[0].type ?? 'application/json';
+  }
+
   protected getEndpointSuccessResponseType(ctx: Context, endpoint: ApiEndpoint): string {
     const response = this.getEndpointSuccessResponse(ctx, endpoint);
     if (!response) return '*/*';
 
-    if (!ctx.config.defaultSuccessResponseType) return response.contentOptions[0]?.type ?? '*/*';
+    if (!ctx.config.defaultSuccessResponseContentType) return response.contentOptions[0]?.type ?? '*/*';
 
     return (
-      response.contentOptions.find((x) => x.type === ctx.config.defaultSuccessResponseType)?.type ??
+      response.contentOptions.find((x) => x.type === ctx.config.defaultSuccessResponseContentType)?.type ??
         response.contentOptions[0]?.type ??
         '*/*'
     );
