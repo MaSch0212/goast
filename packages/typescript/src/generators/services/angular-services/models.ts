@@ -157,6 +157,7 @@ export const defaultTypeScriptAngularServicesGeneratorConfig: DefaultGenerationP
     403: null,
     500: null,
   },
+  defaultRequestContentType: undefined,
   defaultSuccessResponseContentType: undefined,
   possibleStatusCodes: [
     100,
