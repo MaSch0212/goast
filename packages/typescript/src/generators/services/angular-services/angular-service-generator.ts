@@ -331,7 +331,7 @@ export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGene
   }
 
   protected getEndpointRequestContentType(ctx: Context, endpoint: ApiEndpoint): string {
-    return ctx.config.defaultSuccessResponseContentType ?? endpoint?.requestBody?.content[0].type ?? 'application/json';
+    return ctx.config.defaultRequestContentType ?? endpoint?.requestBody?.content[0].type ?? 'application/json';
   }
 
   protected getEndpointSuccessResponseType(ctx: Context, endpoint: ApiEndpoint): string {
