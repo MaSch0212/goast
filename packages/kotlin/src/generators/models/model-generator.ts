@@ -10,6 +10,7 @@ import {
   type AppendValue,
   type AppendValueGroup,
   appendValueGroup,
+  builderTemplate as s,
   createOverwriteProxy,
   getSchemaReference,
   type MaybePromise,
@@ -123,8 +124,9 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
   protected getEnum(ctx: Context, args: Args.GetEnum): kt.Enum<Builder> {
     const { schema } = args;
 
+    const name = this.getDeclarationTypeName(ctx, { schema });
     return kt.enum(
-      this.getDeclarationTypeName(ctx, { schema }),
+      name,
       schema.enum?.map((x) =>
         kt.enumValue(toCasing(String(x), ctx.config.enumValueNameCasing), {
           annotations: [kt.annotation(kt.refs.jackson.jsonProperty(), [kt.argument(kt.string(String(x)))])],
@@ -139,6 +141,24 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
             property: 'readonly',
           }),
         ]),
+        companionObject: kt.object({
+          members: [
+            kt.function('fromValue', {
+              parameters: [kt.parameter('value', kt.refs.string())],
+              returnType: kt.reference(name, null, { nullable: true }),
+              singleExpression: true,
+              body: !schema.enum?.length ? 'null' : s`\nwhen(value) {${s.indent`${
+                appendValueGroup([
+                  schema.enum.map((x) =>
+                    s`\n${kt.string(String(x))} -> ${toCasing(String(x), ctx.config.enumValueNameCasing)}`
+                  ),
+                ])
+              }
+                else -> null`}
+              }`,
+            }),
+          ],
+        }),
       },
     );
   }

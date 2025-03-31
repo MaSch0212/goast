@@ -84,7 +84,17 @@ enum class MyEnum(val value: String) {
     TWO("two"),
 
     @JsonProperty("three")
-    THREE("three")
+    THREE("three");
+
+    companion object {
+        fun fromValue(value: String): MyEnum? =
+            when(value) {
+                "one" -> ONE
+                "two" -> TWO
+                "three" -> THREE
+                else -> null
+            }
+    }
 }
 
 └───────────────────────────────────────────┘

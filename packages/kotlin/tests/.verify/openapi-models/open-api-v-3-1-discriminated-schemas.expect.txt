@@ -188,7 +188,18 @@ enum class Schema9(val value: String) {
     ADVENTUROUS("adventurous"),
 
     @JsonProperty("aggressive")
-    AGGRESSIVE("aggressive")
+    AGGRESSIVE("aggressive");
+
+    companion object {
+        fun fromValue(value: String): Schema9? =
+            when(value) {
+                "clueless" -> CLUELESS
+                "lazy" -> LAZY
+                "adventurous" -> ADVENTUROUS
+                "aggressive" -> AGGRESSIVE
+                else -> null
+            }
+    }
 }
 
 └────────────────────────────────────────────┘
