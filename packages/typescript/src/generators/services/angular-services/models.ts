@@ -70,10 +70,16 @@ export type TypeScriptAngularServicesGeneratorConfig = TypeScriptGeneratorConfig
   >;
 
   /**
+   * The default content type which is used for the request. If not defined the first one defined in the OpenApi specification is used.
+   * @default undefined
+   */
+  defaultRequestContentType: Nullable<string>;
+
+  /**
    * The default content type which is used for the success response. If not defined the first one defined in the OpenApi specification is used.
    * @default undefined
    */
-  defaultSuccessResponseType: Nullable<string>;
+  defaultSuccessResponseContentType: Nullable<string>;
 
   /**
    * The possible status codes that any API endpoint can return.
@@ -151,7 +157,8 @@ export const defaultTypeScriptAngularServicesGeneratorConfig: DefaultGenerationP
     403: null,
     500: null,
   },
-  defaultSuccessResponseType: undefined,
+  defaultRequestContentType: undefined,
+  defaultSuccessResponseContentType: undefined,
   possibleStatusCodes: [
     100,
     101,
