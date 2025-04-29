@@ -344,7 +344,7 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
           appendValueGroup(
             queryParameters.map((param) => {
               const paramName = toCasing(param.name, ctx.config.parameterNameCasing);
-              const toString = param.schema?.kind === 'array' ? '.joinToString()' : '.toString()';
+              const toString = this.getParameterToString(ctx, { endpoint, parameter: param });
               const put = s<Builder>`put(${kt.string(paramName)}, listOf(${paramName}${toString}))`;
               return param.required ? put : s<Builder>`if (${paramName} != null) {${s.indent`
                         ${put}`}
@@ -363,7 +363,7 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
     }
     for (const header of headerParameters) {
       const paramName = toCasing(header.name, ctx.config.parameterNameCasing);
-      const toString = header.schema?.kind === 'array' ? '.joinToString()' : '.toString()';
+      const toString = this.getParameterToString(ctx, { endpoint, parameter: header });
       result.values.push(
         s`if (${paramName} != null) {${s.indent`
           localVariableHeaders["${header.name}"] = ${paramName}${toString}`}
@@ -388,6 +388,20 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
     );
 
     return result;
+  }
+
+  protected getParameterToString(ctx: Context, args: Args.GetParameterToString): kt.Value<Builder> {
+    const { parameter } = args;
+    if (parameter.schema?.kind === 'array') {
+      return '.joinToString()';
+    } else if (
+      parameter.schema?.kind === 'string' && parameter.schema.enum?.length &&
+      this.getSchemaType(ctx, { schema: parameter.schema })
+    ) {
+      return '.value';
+    } else {
+      return '.toString()';
+    }
   }
 
   protected getAdditionalClientMembers(
@@ -448,7 +462,9 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
       .forEach((parameter) => {
         path = path.replace(
           `{${parameter.name}}`,
-          `\${encodeURIComponent(${toCasing(parameter.name, 'camel')}.toString())}`,
+          `\${encodeURIComponent(${toCasing(parameter.name, 'camel')}${
+            this.getParameterToString(ctx, { endpoint, parameter })
+          })}`,
         );
       });
     return path;

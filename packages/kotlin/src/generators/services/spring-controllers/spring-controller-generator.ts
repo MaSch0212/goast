@@ -231,10 +231,13 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     endpoint: ApiEndpoint,
     parameter: ApiParameterWithMultipartInfo,
   ): kt.Parameter<Builder> {
-    const schemaType = this.getSchemaType(ctx, { schema: parameter.schema });
+    const isEnumSchema = parameter.schema?.kind === 'string' && parameter.schema.enum?.length &&
+      this.getSchemaType(ctx, { schema: parameter.schema });
+    const actualType = this.getSchemaType(ctx, { schema: parameter.schema });
+    const schemaType = isEnumSchema ? kt.refs.string({ nullable: actualType?.nullable }) : actualType;
     const result = kt.parameter(
       toCasing(parameter.name, ctx.config.parameterNameCasing),
-      this.getParameterType(ctx, { endpoint, parameter }),
+      this.getParameterType(ctx, { endpoint, parameter, type: isEnumSchema ? schemaType : undefined }),
       {
         default: parameter.multipart && parameter.schema?.default !== undefined
           ? kt.toNode(parameter.schema?.default)
@@ -249,13 +252,24 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
         kt.argument.named('required', parameter.required),
         parameter.target === 'header' ? kt.argument.named('hidden', kt.toNode(true)) : null,
       ]);
+
+      const schemaArgs: kt.Argument<SourceBuilder>[] = [];
       if (parameter.schema?.default !== undefined) {
+        schemaArgs.push(kt.argument.named('defaultValue', kt.string(String(parameter.schema?.default))));
+      }
+      if (isEnumSchema) {
+        schemaArgs.push(kt.argument.named(
+          'allowableValues',
+          kt.collectionLiteral(parameter.schema?.enum?.map((x) => kt.string(x?.toString()))),
+        ));
+      }
+      if (schemaArgs.length) {
         annotation.arguments.push(
           kt.argument.named(
             'schema',
             kt.call(
               [kt.refs.swagger.schema()],
-              [kt.argument.named('defaultValue', kt.string(String(parameter.schema?.default)))],
+              schemaArgs,
             ),
           ),
         );
@@ -308,21 +322,38 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     endpoint: ApiEndpoint,
     parameters: ApiParameter[],
   ): AppendValueGroup<Builder> {
-    return appendValueGroup(
-      [
-        s`try {${s.indent`
-            return ${
-          kt.call(
-            [kt.call(kt.reference('getDelegate'), []), toCasing(endpoint.name, ctx.config.functionNameCasing)],
-            parameters.map((x) => toCasing(x.name, ctx.config.parameterNameCasing)),
-          )
-        }`}
-          } catch (e: ${kt.refs.throwable()}) {${s.indent`
-            return getExceptionHandler()?.handleApiException(e) ?: throw e`}
-          }`,
-      ],
-      '\n',
+    const body = appendValueGroup<Builder>([], '\n');
+
+    parameters.forEach((x) => {
+      const paramName = toCasing(x.name, ctx.config.parameterNameCasing);
+      if (x.schema?.kind === 'string' && x.schema.enum?.length) {
+        const type = this.getSchemaType(ctx, { schema: x.schema });
+        if (type) {
+          body.values.push(
+            s`val ${paramName} = ${paramName}${
+              type.nullable || !x.required ? '?' : ''
+            }.let { ${type}.fromValue(it) ?: return ${kt.refs.spring.responseEntity.infer()}.status(${kt.refs.spring.httpStatus()}.BAD_REQUEST).body(${
+              kt.string(`Invalid value for parameter ${x.name}`)
+            }) }`,
+          );
+        }
+      }
+    });
+
+    body.values.push(
+      s`try {${s.indent`
+          return ${
+        kt.call(
+          [kt.call(kt.reference('getDelegate'), []), toCasing(endpoint.name, ctx.config.functionNameCasing)],
+          parameters.map((x) => toCasing(x.name, ctx.config.parameterNameCasing)),
+        )
+      }`}
+        } catch (e: ${kt.refs.throwable()}) {${s.indent`
+          return getExceptionHandler()?.handleApiException(e) ?: throw e`}
+        }`,
     );
+
+    return body;
   }
 
   private getApiResponseEntityClass(ctx: Context, args: Args.GetApiResponseEntityClass): kt.Class<Builder> {
@@ -604,6 +635,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     const type = this.getTypeUsage(ctx, {
       schema: parameter.schema,
       nullable: (!parameter.required && parameter.schema?.default === undefined) || undefined,
+      type: args.type,
     });
     return parameter.target === 'body' ? adjustListType(ctx, type) : type;
   }
@@ -633,7 +665,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
 
   protected getTypeUsage(ctx: Context, args: Args.GetTypeUsage<Builder>): kt.Type<Builder> {
     const { schema, nullable, fallback } = args;
-    const type = this.getSchemaType(ctx, { schema });
+    const type = args.type ?? this.getSchemaType(ctx, { schema });
     return type
       ? createOverwriteProxy(type, { nullable: nullable ?? type.nullable })
       : (fallback ?? kt.refs.any({ nullable }));
