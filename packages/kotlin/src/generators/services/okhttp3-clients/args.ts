@@ -45,6 +45,11 @@ export type GetEndpointClientRequestConfigMethodBody = {
   parameters: ApiParameterWithMultipartInfo[];
 };
 
+export type GetParameterToString = {
+  endpoint: ApiEndpoint;
+  parameter: ApiParameter;
+};
+
 export type GetAdditionalClientMembers = object;
 
 export type GetParameterType = { endpoint: ApiEndpoint; parameter: ApiParameterWithMultipartInfo };

@@ -53,7 +53,11 @@ export type GetApiDelegateInterface = { delegateInterfaceName: string };
 export type GetApiDelegateInterfaceEndpointMethod = { endpoint: ApiEndpoint };
 // #endregion
 
-export type GetParameterType = { endpoint: ApiEndpoint; parameter: ApiParameterWithMultipartInfo };
+export type GetParameterType = {
+  endpoint: ApiEndpoint;
+  parameter: ApiParameterWithMultipartInfo;
+  type?: kt.Reference<SourceBuilder>;
+};
 
 export type GetResponseType = { endpoint: ApiEndpoint; response?: ApiResponse };
 
@@ -61,6 +65,7 @@ export type GetTypeUsage<TBuilder extends SourceBuilder> = {
   schema: ApiSchema | undefined;
   nullable?: boolean;
   fallback?: kt.Type<TBuilder>;
+  type?: kt.Reference<TBuilder>;
 };
 
 export type GetSchemaType = { schema: ApiSchema | undefined };
