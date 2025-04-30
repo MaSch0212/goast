@@ -232,7 +232,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     parameter: ApiParameterWithMultipartInfo,
   ): kt.Parameter<Builder> {
     const isEnumSchema = parameter.schema?.kind === 'string' && parameter.schema.enum?.length &&
-      this.getSchemaType(ctx, { schema: parameter.schema });
+      this.getSchemaType(ctx, { schema: parameter.schema }) && !parameter.multipart;
     const actualType = this.getSchemaType(ctx, { schema: parameter.schema });
     const schemaType = isEnumSchema ? kt.refs.string({ nullable: actualType?.nullable }) : actualType;
     const result = kt.parameter(
@@ -320,13 +320,13 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
   private getApiInterfaceEndpointMethodBody(
     ctx: Context,
     endpoint: ApiEndpoint,
-    parameters: ApiParameter[],
+    parameters: ApiParameterWithMultipartInfo[],
   ): AppendValueGroup<Builder> {
     const body = appendValueGroup<Builder>([], '\n');
 
     parameters.forEach((x) => {
       const paramName = toCasing(x.name, ctx.config.parameterNameCasing);
-      if (x.schema?.kind === 'string' && x.schema.enum?.length) {
+      if (x.schema?.kind === 'string' && x.schema.enum?.length && !x.multipart) {
         const type = this.getSchemaType(ctx, { schema: x.schema });
         if (type) {
           body.values.push(
