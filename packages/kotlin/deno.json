@@ -1,6 +1,6 @@
 {
   "name": "@goast/kotlin",
-  "version": "0.4.16",
+  "version": "0.4.17",
   "description": "Provides gOAst generators for generating Kotlin code from OpenAPI specifications.",
   "exports": "./mod.ts",
   "publish": {
