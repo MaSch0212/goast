@@ -210,6 +210,7 @@ enum class Schema9(val value: String) {
 package com.openapi.generated.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonPropertyDescription
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.Valid
 
@@ -224,6 +225,7 @@ data class Cat(
     @field:Valid
     @Schema(required = true, description = "The measured skill for hunting")
     @JsonProperty("huntingSkill", required = true)
+    @JsonPropertyDescription("The measured skill for hunting")
     val huntingSkill: Schema9 = Schema9.LAZY,
 
     @Schema(required = true)
@@ -239,6 +241,7 @@ data class Cat(
 package com.openapi.generated.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonPropertyDescription
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.Min
 
@@ -253,6 +256,7 @@ data class Dog(
     @get:Min(value = 0)
     @Schema(required = true, description = "the size of the pack the dog is from")
     @JsonProperty("packSize", required = true)
+    @JsonPropertyDescription("the size of the pack the dog is from")
     val packSize: Int = 0,
 
     @Schema(required = true)

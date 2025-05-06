@@ -73,6 +73,11 @@ export type GetJacksonJsonPropertyAnnotation = {
   property: ApiSchemaProperty;
 };
 
+export type GetJacksonJsonPropertyDescriptionAnnotation = {
+  schema: ApiSchema;
+  property: ApiSchemaProperty;
+};
+
 export type GetJacksonJsonIncludeAnnotation = {
   schema: ApiSchema;
   property: ApiSchemaProperty;

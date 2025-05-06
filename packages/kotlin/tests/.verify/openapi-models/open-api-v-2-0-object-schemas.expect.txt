@@ -1440,6 +1440,7 @@ class ObjectWithReferencesInAllOf
 package com.openapi.generated.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonPropertyDescription
 import io.swagger.v3.oas.annotations.media.Schema
 
 /**
@@ -1452,10 +1453,12 @@ import io.swagger.v3.oas.annotations.media.Schema
 data class ObjectWithDescription(
     @Schema(description = "My Property Description")
     @JsonProperty("a")
+    @JsonPropertyDescription("My Property Description")
     val a: String? = null,
 
     @Schema(description = "My Property Description\nWith Multiple Lines\n")
     @JsonProperty("b")
+    @JsonPropertyDescription("My Property Description\nWith Multiple Lines\n")
     val b: Int? = null
 )
 

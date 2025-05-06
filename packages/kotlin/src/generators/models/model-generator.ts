@@ -10,7 +10,6 @@ import {
   type AppendValue,
   type AppendValueGroup,
   appendValueGroup,
-  builderTemplate as s,
   createOverwriteProxy,
   getSchemaReference,
   type MaybePromise,
@@ -18,6 +17,7 @@ import {
   modifyEach,
   notNullish,
   resolveAnyOfAndAllOf,
+  builderTemplate as s,
   type SourceBuilder,
   toCasing,
 } from '@goast/core';
@@ -275,6 +275,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
           ...this.getJakartaValidationAnnotations(ctx, { schema, property }),
           this.getSwaggerSchemaAnnotation(ctx, { schema, property }),
           this.getJacksonJsonPropertyAnnotation(ctx, { schema, property }),
+          this.getJacksonJsonPropertyDescriptionAnnotation(ctx, { schema, property }),
           modify(this.getJacksonJsonIncludeAnnotation(ctx, { schema, property }), (x) => (x.target = 'get')),
           property.schema.deprecated ? kt.annotation(kt.refs.deprecated(), [kt.argument(kt.string(''))]) : null,
         ].filter(notNullish),
@@ -295,6 +296,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       annotations: modifyEach(
         [
           this.getJacksonJsonPropertyAnnotation(ctx, { schema, property }),
+          this.getJacksonJsonPropertyDescriptionAnnotation(ctx, { schema, property }),
           this.getJacksonJsonIncludeAnnotation(ctx, { schema, property }),
           property.schema.deprecated ? kt.annotation(kt.refs.deprecated(), [kt.argument(kt.string(''))]) : null,
         ].filter(notNullish),
@@ -416,6 +418,19 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       ? kt.annotation(kt.refs.jackson.jsonProperty(), [
         kt.argument(kt.string(property.name)),
         schema.required.has(property.name) ? kt.argument.named('required', 'true') : null,
+      ])
+      : null;
+  }
+
+  protected getJacksonJsonPropertyDescriptionAnnotation(
+    ctx: Context,
+    args: Args.GetJacksonJsonPropertyDescriptionAnnotation,
+  ): kt.Annotation<Builder> | null {
+    const { property } = args;
+
+    return ctx.config.addJacksonAnnotations && property.schema.description
+      ? kt.annotation(kt.refs.jackson.jsonPropertyDescription(), [
+        kt.argument(kt.string(property.schema.description)),
       ])
       : null;
   }
