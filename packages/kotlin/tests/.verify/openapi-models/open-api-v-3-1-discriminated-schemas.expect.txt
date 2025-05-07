@@ -219,17 +219,20 @@ import jakarta.validation.Valid
  */
 data class Cat(
     @Schema(required = true)
-    @JsonProperty("name", required = true)
+    @param:JsonProperty("name", required = true)
+    @get:JsonProperty("name", required = true)
     override val name: String,
 
     @field:Valid
     @Schema(required = true, description = "The measured skill for hunting")
-    @JsonProperty("huntingSkill", required = true)
-    @JsonPropertyDescription("The measured skill for hunting")
+    @param:JsonProperty("huntingSkill", required = true)
+    @get:JsonProperty("huntingSkill", required = true)
+    @get:JsonPropertyDescription("The measured skill for hunting")
     val huntingSkill: Schema9 = Schema9.LAZY,
 
     @Schema(required = true)
-    @JsonProperty("petType", required = true)
+    @param:JsonProperty("petType", required = true)
+    @get:JsonProperty("petType", required = true)
     override val petType: String = "cat"
 ) : Pet
 
@@ -250,17 +253,20 @@ import jakarta.validation.constraints.Min
  */
 data class Dog(
     @Schema(required = true)
-    @JsonProperty("name", required = true)
+    @param:JsonProperty("name", required = true)
+    @get:JsonProperty("name", required = true)
     override val name: String,
 
     @get:Min(value = 0)
     @Schema(required = true, description = "the size of the pack the dog is from")
-    @JsonProperty("packSize", required = true)
-    @JsonPropertyDescription("the size of the pack the dog is from")
+    @param:JsonProperty("packSize", required = true)
+    @get:JsonProperty("packSize", required = true)
+    @get:JsonPropertyDescription("the size of the pack the dog is from")
     val packSize: Int = 0,
 
     @Schema(required = true)
-    @JsonProperty("petType", required = true)
+    @param:JsonProperty("petType", required = true)
+    @get:JsonProperty("petType", required = true)
     override val petType: String = "dog"
 ) : Pet
 

@@ -1049,28 +1049,34 @@ import jakarta.validation.Valid
 
 data class ObjectWithProperties(
     @Schema
-    @JsonProperty("a")
+    @param:JsonProperty("a")
+    @get:JsonProperty("a")
     val a: String? = null,
 
     @Schema
-    @JsonProperty("b")
+    @param:JsonProperty("b")
+    @get:JsonProperty("b")
     val b: Int? = null,
 
     @Schema
-    @JsonProperty("c")
+    @param:JsonProperty("c")
+    @get:JsonProperty("c")
     val c: Double? = null,
 
     @Schema
-    @JsonProperty("d")
+    @param:JsonProperty("d")
+    @get:JsonProperty("d")
     val d: Boolean? = null,
 
     @Schema
-    @JsonProperty("e")
+    @param:JsonProperty("e")
+    @get:JsonProperty("e")
     val e: List<Any?>? = null,
 
     @field:Valid
     @Schema
-    @JsonProperty("f")
+    @param:JsonProperty("f")
+    @get:JsonProperty("f")
     val f: ObjectWithPropertiesF? = null
 )
 
@@ -1096,28 +1102,34 @@ import jakarta.validation.Valid
 
 data class ObjectWithRequiredProperties(
     @Schema(required = true)
-    @JsonProperty("a", required = true)
+    @param:JsonProperty("a", required = true)
+    @get:JsonProperty("a", required = true)
     val a: String,
 
     @Schema(required = true)
-    @JsonProperty("b", required = true)
+    @param:JsonProperty("b", required = true)
+    @get:JsonProperty("b", required = true)
     val b: Int,
 
     @Schema(required = true)
-    @JsonProperty("c", required = true)
+    @param:JsonProperty("c", required = true)
+    @get:JsonProperty("c", required = true)
     val c: Double,
 
     @Schema(required = true)
-    @JsonProperty("d", required = true)
+    @param:JsonProperty("d", required = true)
+    @get:JsonProperty("d", required = true)
     val d: Boolean,
 
     @Schema(required = true)
-    @JsonProperty("e", required = true)
+    @param:JsonProperty("e", required = true)
+    @get:JsonProperty("e", required = true)
     val e: List<Any?>,
 
     @field:Valid
     @Schema(required = true)
-    @JsonProperty("f", required = true)
+    @param:JsonProperty("f", required = true)
+    @get:JsonProperty("f", required = true)
     val f: ObjectWithRequiredPropertiesF
 )
 
@@ -1146,28 +1158,34 @@ import jakarta.validation.Valid
 
 data class ObjectWithPropertiesAndAdditionalProperties(
     @Schema
-    @JsonProperty("a")
+    @param:JsonProperty("a")
+    @get:JsonProperty("a")
     val a: String? = null,
 
     @Schema
-    @JsonProperty("b")
+    @param:JsonProperty("b")
+    @get:JsonProperty("b")
     val b: Int? = null,
 
     @Schema
-    @JsonProperty("c")
+    @param:JsonProperty("c")
+    @get:JsonProperty("c")
     val c: Double? = null,
 
     @Schema
-    @JsonProperty("d")
+    @param:JsonProperty("d")
+    @get:JsonProperty("d")
     val d: Boolean? = null,
 
     @Schema
-    @JsonProperty("e")
+    @param:JsonProperty("e")
+    @get:JsonProperty("e")
     val e: List<Any?>? = null,
 
     @field:Valid
     @Schema
-    @JsonProperty("f")
+    @param:JsonProperty("f")
+    @get:JsonProperty("f")
     val f: ObjectWithPropertiesAndAdditionalPropertiesF? = null
 ) {
     @JsonIgnore
@@ -1224,78 +1242,96 @@ import jakarta.validation.Valid
 
 data class ObjectWithPropertiesAllOf(
     @Schema(required = true)
-    @JsonProperty("a", required = true)
+    @param:JsonProperty("a", required = true)
+    @get:JsonProperty("a", required = true)
     val a: String,
 
     @Schema(required = true)
-    @JsonProperty("b", required = true)
+    @param:JsonProperty("b", required = true)
+    @get:JsonProperty("b", required = true)
     val b: Int,
 
     @Schema(required = true)
-    @JsonProperty("c", required = true)
+    @param:JsonProperty("c", required = true)
+    @get:JsonProperty("c", required = true)
     val c: Double,
 
     @Schema(required = true)
-    @JsonProperty("d", required = true)
+    @param:JsonProperty("d", required = true)
+    @get:JsonProperty("d", required = true)
     val d: Boolean,
 
     @Schema(required = true)
-    @JsonProperty("e", required = true)
+    @param:JsonProperty("e", required = true)
+    @get:JsonProperty("e", required = true)
     val e: List<Any?>,
 
     @field:Valid
     @Schema(required = true)
-    @JsonProperty("f", required = true)
+    @param:JsonProperty("f", required = true)
+    @get:JsonProperty("f", required = true)
     val f: ObjectWithPropertiesAllOfF,
 
     @Schema(required = true)
-    @JsonProperty("g", required = true)
+    @param:JsonProperty("g", required = true)
+    @get:JsonProperty("g", required = true)
     val g: String,
 
     @Schema(required = true)
-    @JsonProperty("h", required = true)
+    @param:JsonProperty("h", required = true)
+    @get:JsonProperty("h", required = true)
     val h: Int,
 
     @Schema(required = true)
-    @JsonProperty("i", required = true)
+    @param:JsonProperty("i", required = true)
+    @get:JsonProperty("i", required = true)
     val i: Double,
 
     @Schema(required = true)
-    @JsonProperty("j", required = true)
+    @param:JsonProperty("j", required = true)
+    @get:JsonProperty("j", required = true)
     val j: Boolean,
 
     @Schema(required = true)
-    @JsonProperty("k", required = true)
+    @param:JsonProperty("k", required = true)
+    @get:JsonProperty("k", required = true)
     val k: List<Any?>,
 
     @field:Valid
     @Schema(required = true)
-    @JsonProperty("l", required = true)
+    @param:JsonProperty("l", required = true)
+    @get:JsonProperty("l", required = true)
     val l: Schema39,
 
     @Schema(required = true)
-    @JsonProperty("m", required = true)
+    @param:JsonProperty("m", required = true)
+    @get:JsonProperty("m", required = true)
     val m: String,
 
     @Schema(required = true)
-    @JsonProperty("n", required = true)
+    @param:JsonProperty("n", required = true)
+    @get:JsonProperty("n", required = true)
     val n: Int,
 
     @Schema(required = true)
-    @JsonProperty("o", required = true)
+    @param:JsonProperty("o", required = true)
+    @get:JsonProperty("o", required = true)
     val o: Double,
 
     @Schema(required = true)
-    @JsonProperty("p", required = true)
+    @param:JsonProperty("p", required = true)
+    @get:JsonProperty("p", required = true)
     val p: Boolean,
 
     @Schema(required = true)
-    @JsonProperty("q", required = true)
+    @param:JsonProperty("q", required = true)
+    @get:JsonProperty("q", required = true)
     val q: List<Any?>,
 
     @field:Valid
     @Schema(required = true)
-    @JsonProperty("r", required = true)
+    @param:JsonProperty("r", required = true)
+    @get:JsonProperty("r", required = true)
     val r: Schema46
 )
 
@@ -1321,28 +1357,34 @@ import jakarta.validation.Valid
 
 data class ObjectWithNullableProperties(
     @Schema
-    @JsonProperty("a")
+    @param:JsonProperty("a")
+    @get:JsonProperty("a")
     val a: String? = null,
 
     @Schema
-    @JsonProperty("b")
+    @param:JsonProperty("b")
+    @get:JsonProperty("b")
     val b: Int? = null,
 
     @Schema
-    @JsonProperty("c")
+    @param:JsonProperty("c")
+    @get:JsonProperty("c")
     val c: Double? = null,
 
     @Schema
-    @JsonProperty("d")
+    @param:JsonProperty("d")
+    @get:JsonProperty("d")
     val d: Boolean? = null,
 
     @Schema
-    @JsonProperty("e")
+    @param:JsonProperty("e")
+    @get:JsonProperty("e")
     val e: List<Any?>? = null,
 
     @field:Valid
     @Schema
-    @JsonProperty("f")
+    @param:JsonProperty("f")
+    @get:JsonProperty("f")
     val f: ObjectWithNullablePropertiesF? = null
 )
 
@@ -1368,28 +1410,34 @@ import jakarta.validation.Valid
 
 data class ObjectWithNullablePropertiesAndRequiredProperties(
     @Schema(required = true)
-    @JsonProperty("a", required = true)
+    @param:JsonProperty("a", required = true)
+    @get:JsonProperty("a", required = true)
     val a: String?,
 
     @Schema(required = true)
-    @JsonProperty("b", required = true)
+    @param:JsonProperty("b", required = true)
+    @get:JsonProperty("b", required = true)
     val b: Int?,
 
     @Schema(required = true)
-    @JsonProperty("c", required = true)
+    @param:JsonProperty("c", required = true)
+    @get:JsonProperty("c", required = true)
     val c: Double?,
 
     @Schema(required = true)
-    @JsonProperty("d", required = true)
+    @param:JsonProperty("d", required = true)
+    @get:JsonProperty("d", required = true)
     val d: Boolean?,
 
     @Schema(required = true)
-    @JsonProperty("e", required = true)
+    @param:JsonProperty("e", required = true)
+    @get:JsonProperty("e", required = true)
     val e: List<Any?>?,
 
     @field:Valid
     @Schema(required = true)
-    @JsonProperty("f", required = true)
+    @param:JsonProperty("f", required = true)
+    @get:JsonProperty("f", required = true)
     val f: ObjectWithNullablePropertiesAndRequiredPropertiesF?
 )
 
@@ -1407,19 +1455,23 @@ import jakarta.validation.Valid
 data class ObjectWithReferencesInProperties(
     @field:Valid
     @Schema
-    @JsonProperty("a")
+    @param:JsonProperty("a")
+    @get:JsonProperty("a")
     val a: EmptyObject? = null,
 
     @Schema
-    @JsonProperty("b")
+    @param:JsonProperty("b")
+    @get:JsonProperty("b")
     val b: String? = null,
 
     @Schema
-    @JsonProperty("c")
+    @param:JsonProperty("c")
+    @get:JsonProperty("c")
     val c: String? = null,
 
     @Schema
-    @JsonProperty("d")
+    @param:JsonProperty("d")
+    @get:JsonProperty("d")
     val d: String? = null
 )
 
@@ -1439,6 +1491,7 @@ class ObjectWithReferencesInAllOf
 ├──────────────────────────────────────────────────────────┤
 package com.openapi.generated.model
 
+import com.fasterxml.jackson.annotation.JsonClassDescription
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyDescription
 import io.swagger.v3.oas.annotations.media.Schema
@@ -1450,15 +1503,18 @@ import io.swagger.v3.oas.annotations.media.Schema
  * @param b My Property Description
  * With Multiple Lines
  */
+@JsonClassDescription("My Object Description")
 data class ObjectWithDescription(
     @Schema(description = "My Property Description")
-    @JsonProperty("a")
-    @JsonPropertyDescription("My Property Description")
+    @param:JsonProperty("a")
+    @get:JsonProperty("a")
+    @get:JsonPropertyDescription("My Property Description")
     val a: String? = null,
 
     @Schema(description = "My Property Description\nWith Multiple Lines\n")
-    @JsonProperty("b")
-    @JsonPropertyDescription("My Property Description\nWith Multiple Lines\n")
+    @param:JsonProperty("b")
+    @get:JsonProperty("b")
+    @get:JsonPropertyDescription("My Property Description\nWith Multiple Lines\n")
     val b: Int? = null
 )
 
@@ -1469,10 +1525,13 @@ data class ObjectWithDescription(
 ├───────────────────────────────────────────────────────────────────┤
 package com.openapi.generated.model
 
+import com.fasterxml.jackson.annotation.JsonClassDescription
+
 /**
  * My Object Description
  * With Multiple Lines
  */
+@JsonClassDescription("My Object Description\nWith Multiple Lines\n")
 class ObjectWithMultilineDescription
 
 └───────────────────────────────────────────────────────────────────┘
