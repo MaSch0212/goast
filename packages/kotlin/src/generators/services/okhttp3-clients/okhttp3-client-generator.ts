@@ -145,16 +145,16 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
         ]),
         endpoint.deprecated ? kt.annotation(kt.refs.deprecated(), [kt.argument(kt.string(''))]) : null,
       ],
-      parameters: parameters.map((p) =>
-        kt.parameter(
+      parameters: parameters.map((p) => {
+        return kt.parameter(
           toCasing(p.name, ctx.config.parameterNameCasing),
           this.getParameterType(ctx, { endpoint, parameter: p }),
           {
             description: p.description,
-            default: !p.required ? kt.toNode(p.schema?.default) : null,
+            default: this.getParameterDefaultValue(ctx, { endpoint, parameter: p }),
           },
-        )
-      ),
+        );
+      }),
       returnType: this.getTypeUsage(ctx, { schema: responseSchema, fallback: kt.refs.unit() }),
       body: this.getEndpointClientMethodBody(ctx, { endpoint, parameters, responseSchema }),
     });
@@ -234,7 +234,7 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
           this.getParameterType(ctx, { endpoint, parameter: p }),
           {
             description: p.description,
-            default: !p.required ? kt.toNode(p.schema?.default) : null,
+            default: this.getParameterDefaultValue(ctx, { endpoint, parameter: p }),
           },
         )
       ),
@@ -294,7 +294,7 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
           this.getParameterType(ctx, { endpoint, parameter: p }),
           {
             description: p.description,
-            default: !p.required ? kt.toNode(p.schema?.default) : null,
+            default: this.getParameterDefaultValue(ctx, { endpoint, parameter: p }),
           },
         )
       ),
@@ -437,6 +437,18 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
     return content?.type === 'multipart/form-data'
       ? kt.refs.map([kt.refs.string(), ctx.refs.partConfig(['*'])])
       : this.getTypeUsage(ctx, { schema: content?.schema, fallback: kt.refs.unit() });
+  }
+
+  protected getParameterDefaultValue(ctx: Context, args: Args.GetParameterDefaultValue): kt.Value<Builder> | null {
+    const { parameter } = args;
+
+    return !parameter.required
+      ? parameter.schema?.kind === 'string' && parameter.schema.enum && parameter.schema.default
+        ? s`${this.getTypeUsage(ctx, { schema: parameter.schema, nullable: false })}.${
+          toCasing(String(parameter.schema.default), ctx.config.enumValueNameCasing)
+        }`
+        : kt.toNode(parameter.schema?.default)
+      : null;
   }
 
   protected getTypeUsage(ctx: Context, args: Args.GetTypeUsage<Builder>): kt.Type<Builder> {

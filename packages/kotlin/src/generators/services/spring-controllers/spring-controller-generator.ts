@@ -331,7 +331,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
         if (type) {
           body.values.push(
             s`val ${paramName} = ${paramName}${
-              type.nullable || !x.required ? '?' : ''
+              type.nullable || !x.required && !x.schema.default ? '?' : ''
             }.let { ${type}.fromValue(it) ?: return ${kt.refs.spring.responseEntity.infer()}.status(${kt.refs.spring.httpStatus()}.BAD_REQUEST).body(${
               kt.string(`Invalid value for parameter ${x.name}`)
             }) }`,
