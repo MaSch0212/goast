@@ -56,6 +56,11 @@ export type GetParameterType = { endpoint: ApiEndpoint; parameter: ApiParameterW
 
 export type GetRequestBodyType = { endpoint: ApiEndpoint };
 
+export type GetParameterDefaultValue = {
+  endpoint: ApiEndpoint;
+  parameter: ApiParameter;
+};
+
 export type GetTypeUsage<TBuilder extends SourceBuilder> = {
   schema: ApiSchema | undefined;
   nullable?: boolean;

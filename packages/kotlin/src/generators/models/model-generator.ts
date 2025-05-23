@@ -87,7 +87,10 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
 
     return kt.class(this.getDeclarationTypeName(ctx, { schema }), {
       doc: kt.doc(schema.description?.trim()),
-      annotations: [schema.deprecated ? kt.annotation(kt.refs.deprecated(), [kt.argument(kt.string(''))]) : null],
+      annotations: [
+        this.getJacksonJsonClassDescriptionAnnotation(ctx, { schema }),
+        schema.deprecated ? kt.annotation(kt.refs.deprecated(), [kt.argument(kt.string(''))]) : null,
+      ],
       classKind: parameters.length === 0 ? null : 'data',
       implements: inheritedSchemas.map((schema) => this.getType(ctx, { schema })),
       primaryConstructor: kt.constructor(
@@ -113,6 +116,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       annotations: [
         this.getJacksonJsonTypeInfoAnnotation(ctx, { schema }),
         this.getJacksonJsonSubTypesAnnotation(ctx, { schema }),
+        this.getJacksonJsonClassDescriptionAnnotation(ctx, { schema }),
         schema.deprecated ? kt.annotation(kt.refs.deprecated(), [kt.argument(kt.string(''))]) : null,
       ].filter(notNullish),
       members: this.sortProperties(ctx, { schema, properties: schema.properties.values() }).map((property) =>
@@ -274,8 +278,15 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
         annotations: [
           ...this.getJakartaValidationAnnotations(ctx, { schema, property }),
           this.getSwaggerSchemaAnnotation(ctx, { schema, property }),
-          this.getJacksonJsonPropertyAnnotation(ctx, { schema, property }),
-          modify(this.getJacksonJsonIncludeAnnotation(ctx, { schema, property }), (x) => (x.target = 'get')),
+          modify(this.getJacksonJsonPropertyAnnotation(ctx, { schema, property }), (x) => (x.target = 'param')),
+          ...modifyEach(
+            [
+              this.getJacksonJsonPropertyAnnotation(ctx, { schema, property }),
+              this.getJacksonJsonPropertyDescriptionAnnotation(ctx, { schema, property }),
+              this.getJacksonJsonIncludeAnnotation(ctx, { schema, property }),
+            ].filter(notNullish),
+            (x) => (x.target = 'get'),
+          ),
           property.schema.deprecated ? kt.annotation(kt.refs.deprecated(), [kt.argument(kt.string(''))]) : null,
         ].filter(notNullish),
         override: inheritedSchemas.some((schema) => this.hasProperty(ctx, { schema, propertyName: property.name })),
@@ -295,6 +306,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       annotations: modifyEach(
         [
           this.getJacksonJsonPropertyAnnotation(ctx, { schema, property }),
+          this.getJacksonJsonPropertyDescriptionAnnotation(ctx, { schema, property }),
           this.getJacksonJsonIncludeAnnotation(ctx, { schema, property }),
           property.schema.deprecated ? kt.annotation(kt.refs.deprecated(), [kt.argument(kt.string(''))]) : null,
         ].filter(notNullish),
@@ -406,6 +418,19 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       : null;
   }
 
+  protected getJacksonJsonClassDescriptionAnnotation(
+    ctx: Context,
+    args: Args.GetJacksonJsonClassDescriptionAnnotation,
+  ): kt.Annotation<Builder> | null {
+    const { schema } = args;
+
+    return ctx.config.addJacksonAnnotations && schema.description
+      ? kt.annotation(kt.refs.jackson.jsonClassDescription(), [
+        kt.argument(kt.string(schema.description)),
+      ])
+      : null;
+  }
+
   protected getJacksonJsonPropertyAnnotation(
     ctx: Context,
     args: Args.GetJacksonJsonPropertyAnnotation,
@@ -416,6 +441,19 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       ? kt.annotation(kt.refs.jackson.jsonProperty(), [
         kt.argument(kt.string(property.name)),
         schema.required.has(property.name) ? kt.argument.named('required', 'true') : null,
+      ])
+      : null;
+  }
+
+  protected getJacksonJsonPropertyDescriptionAnnotation(
+    ctx: Context,
+    args: Args.GetJacksonJsonPropertyDescriptionAnnotation,
+  ): kt.Annotation<Builder> | null {
+    const { property } = args;
+
+    return ctx.config.addJacksonAnnotations && property.schema.description
+      ? kt.annotation(kt.refs.jackson.jsonPropertyDescription(), [
+        kt.argument(kt.string(property.schema.description)),
       ])
       : null;
   }
