@@ -64,6 +64,11 @@ export function determineSchemaName(
     return { name: schemaNameMatch[0], isGenerated: false };
   }
 
+  const paramNameMatch = schema.$src.path.match(/\/components\/parameters\/([^/]+)\/schema$/i);
+  if (paramNameMatch) {
+    return { name: paramNameMatch[1], isGenerated: true };
+  }
+
   const responseMatch = schema.$src.path.match(/\/paths\/(?<path>.+)\/(?<method>.+)\/responses\/(?<status>\d+)\//);
   if (responseMatch && responseMatch.groups) {
     const { path, method, status } = responseMatch.groups;
@@ -91,7 +96,7 @@ export function determineSchemaName(
     return { name: `${determineEndpointName({ method, path: `/${path}`, operation })}_Request`, isGenerated: true };
   }
 
-  const parentSchemaMatch = schema.$src.path.match(/(.*)\/properties\/([^/]*)$/);
+  const parentSchemaMatch = schema.$src.path.match(/(.*)\/properties\/([^/]*)(\/additionalProperties)?$/);
   if (parentSchemaMatch) {
     const parentSchema = getDeepProperty(schema.$src.document, parentSchemaMatch[1].split('/').filter(Boolean));
     const parentSchemaName = determineSchemaName(

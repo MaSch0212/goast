@@ -46,7 +46,16 @@ export class KtCall<TBuilder extends SourceBuilder, TInjects extends string = ne
       builder.append(' ');
       writeKtNode(builder, this.arguments[0]);
     } else {
-      writeKtNodes(builder, this.path, { separator: '.' });
+      if (this.path.length > 2) {
+        writeKtNode(builder, this.path[0]);
+        builder.ensureCurrentLineEmpty();
+        builder.indent((builder) => {
+          builder.append('.');
+          writeKtNodes(builder, this.path.slice(1), { separator: '\n.' });
+        });
+      } else {
+        writeKtNodes(builder, this.path, { separator: '.' });
+      }
 
       if (this.arguments) {
         ktArgument.write(builder, this.arguments);

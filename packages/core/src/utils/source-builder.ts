@@ -93,6 +93,10 @@ type LinePrefixNode = {
   chars: string;
 };
 
+export function getIndentString(options: IndentOptions): string {
+  return options.type === 'tabs' ? '\t' : ' '.repeat(options.count);
+}
+
 /**
  * Represents an in-memory source file.
  */
@@ -119,7 +123,7 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
   constructor(options?: Partial<SourceBuilderOptions>) {
     super(options);
     this.__options = { ...defaultSourceBuilderOptions, ...options };
-    this._indentString = this.__options.indent.type === 'tabs' ? '\t' : ' '.repeat(this.__options.indent.count);
+    this._indentString = getIndentString(this.__options.indent);
   }
 
   /**

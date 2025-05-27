@@ -11,6 +11,7 @@ export const unsupportedOperationException: KtReferenceFactory = ktReference.fac
   'UnsupportedOperationException',
   'java.lang',
 );
+export const void_: KtReferenceFactory = ktReference.factory('Void', 'java.lang');
 
 // java.time
 export const offsetDateTime: KtReferenceFactory = ktReference.factory('OffsetDateTime', 'java.time');
