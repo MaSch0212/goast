@@ -41,18 +41,24 @@ export class KtLambda<TBuilder extends SourceBuilder, TInjects extends string = 
 
     builder.parenthesize('{}', (b) => {
       if (this.arguments.length > 0) {
-        b.append(this.inject.beforeArguments);
+        b.append(' ', this.inject.beforeArguments);
         writeKtNodes(b, this.arguments, { separator: ', ' });
         b.append(this.inject.afterArguments);
 
-        b.append(' -> ');
+        b.append(' ->');
       }
 
-      if (!singleline) b.appendLine();
+      b.append(singleline ? ' ' : '\n');
 
       b.append(this.inject.beforeBody, this.body, this.inject.afterBody);
 
-      if (!singleline) b.ensureCurrentLineEmpty();
+      if (singleline) {
+        if (!b.isCurrentLineEmpty) {
+          b.append(' ');
+        }
+      } else {
+        b.ensureCurrentLineEmpty();
+      }
     });
   }
 }
