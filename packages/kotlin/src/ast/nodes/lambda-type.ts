@@ -13,6 +13,7 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
     extensionFor?: Nullable<KtType<TBuilder>>;
     parameters?: Nullable<Nullable<KtType<TBuilder>>[]>;
     returnType: KtType<TBuilder>;
+    suspend?: boolean;
   }
 >;
 
@@ -23,15 +24,21 @@ export class KtLambdaType<TBuilder extends SourceBuilder, TInjects extends strin
   public extensionFor: KtType<TBuilder> | null;
   public parameters: KtType<TBuilder>[];
   public returnType: KtType<TBuilder>;
+  public suspend: boolean;
 
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.extensionFor = options.extensionFor ?? null;
     this.parameters = options.parameters?.filter(notNullish) ?? [];
     this.returnType = options.returnType;
+    this.suspend = options.suspend ?? false;
   }
 
   protected override onWrite(builder: TBuilder): void {
+    if (this.suspend) {
+      builder.append('suspend ');
+    }
+
     if (this.extensionFor) {
       builder.append(this.inject.beforeExtensionFor);
       writeKtNode(builder, this.extensionFor);
@@ -42,8 +49,6 @@ export class KtLambdaType<TBuilder extends SourceBuilder, TInjects extends strin
     builder.append(this.inject.beforeParams);
     if (this.parameters.length === 0) {
       builder.append('()');
-    } else if (this.parameters.length === 1 && !this.extensionFor) {
-      writeKtNode(builder, this.parameters[0]);
     } else {
       ktParameter.write(builder, this.parameters);
     }

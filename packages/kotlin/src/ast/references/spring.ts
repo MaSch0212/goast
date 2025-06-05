@@ -8,9 +8,17 @@ export const autowired: KtReferenceFactory = ktReference.factory(
 
 // org.springframework.http
 export const httpStatus: KtReferenceFactory = ktReference.factory('HttpStatus', 'org.springframework.http');
+export const httpMethod: KtReferenceFactory = ktReference.factory('HttpMethod', 'org.springframework.http');
 export const responseEntity: KtGenericReferenceFactory<1> = ktReference.genericFactory<1>(
   'ResponseEntity',
   'org.springframework.http',
+);
+export const mediaType: KtReferenceFactory = ktReference.factory('MediaType', 'org.springframework.http');
+
+// org.springframework.http.client
+export const multipartBodyBuilder: KtReferenceFactory = ktReference.factory(
+  'MultipartBodyBuilder',
+  'org.springframework.http.client',
 );
 
 // org.springframework.http.codec.multipart
@@ -69,4 +77,10 @@ export const requestHeader: KtReferenceFactory = ktReference.factory(
 export const nativeWebRequest: KtReferenceFactory = ktReference.factory(
   'NativeWebRequest',
   'org.springframework.web.context.request',
+);
+
+// org.springframework.web.util
+export const uriComponentsBuilder: KtReferenceFactory = ktReference.factory(
+  'UriComponentsBuilder',
+  'org.springframework.web.util',
 );

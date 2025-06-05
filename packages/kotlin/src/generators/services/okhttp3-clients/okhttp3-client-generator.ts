@@ -18,7 +18,6 @@ import {
 
 import { kt } from '../../../ast/index.ts';
 import type { KtValue } from '../../../ast/nodes/types.ts';
-import type { KotlinImport } from '../../../common-results.ts';
 import { KotlinFileBuilder } from '../../../file-builder.ts';
 import type { ApiParameterWithMultipartInfo } from '../../../types.ts';
 import { modifyString } from '../../../utils.ts';
@@ -36,7 +35,7 @@ export interface KotlinOkHttp3Generator<TOutput extends Output = Output> {
 
 export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, Output>
   implements KotlinOkHttp3Generator {
-  public generate(ctx: KotlinOkHttp3ClientGeneratorContext): MaybePromise<KotlinImport> {
+  public generate(ctx: KotlinOkHttp3ClientGeneratorContext): MaybePromise<Output> {
     const typeName = this.getApiClientName(ctx, {});
     const packageName = this.getPackageName(ctx, {});
     const filePath = this.getFilePath(ctx, { packageName });
