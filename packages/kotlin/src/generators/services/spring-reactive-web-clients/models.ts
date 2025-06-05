@@ -8,7 +8,7 @@ import type {
 import type { KotlinImport } from '../../../common-results.ts';
 import { defaultKotlinGeneratorConfig, type KotlinGeneratorConfig } from '../../../config.ts';
 import type { KotlinModelsGeneratorOutput } from '../../models/index.ts';
-import { getReferenceFactories } from './refs.ts';
+import type { getReferenceFactories } from './refs.ts';
 
 export type KotlinSpringReactiveWebClientsGeneratorConfig = KotlinGeneratorConfig & {
   packageName: string;

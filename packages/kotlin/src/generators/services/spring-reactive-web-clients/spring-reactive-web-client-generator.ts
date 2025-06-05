@@ -17,7 +17,7 @@ import {
 } from '@goast/core';
 
 import { kt } from '../../../ast/index.ts';
-import { KtValue } from '../../../ast/nodes/types.ts';
+import type { KtValue } from '../../../ast/nodes/types.ts';
 import { KotlinFileBuilder } from '../../../file-builder.ts';
 import type { ApiParameterWithMultipartInfo } from '../../../types.ts';
 import { modifyString } from '../../../utils.ts';
@@ -549,7 +549,7 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
   }
 
   // deno-lint-ignore no-unused-vars
-  protected getRequestsObjectName(ctx: Context, args: Args.GetRequestsObjectName) {
+  protected getRequestsObjectName(ctx: Context, args: Args.GetRequestsObjectName): string {
     return toCasing(`${ctx.service.name}_Requests`, ctx.config.typeNameCasing);
   }
 
