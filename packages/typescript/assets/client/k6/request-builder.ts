@@ -1,30 +1,28 @@
-// @ts-check
-
+// @deno-types="npm:@types/k6/http"
 import http from 'k6/http';
 
 /**
  * Defines the options for appending a parameter
- * @typedef {object} ParameterOptions
- * @property {string} [style]
- * @property {boolean} [explode]
  */
+type ParameterOptions = {
+  style?: string;
+  explode?: boolean;
+};
+
+type BuildOptions = {
+  accept?: string;
+  params?: http.Params;
+};
 
 /**
  * Base class for a parameter
- * @abstract
- * @property {string} name
- * @property {*} value
- * @property {ParameterOptions} options
  */
-class Parameter {
-  /**
-   * @param {string} name
-   * @param {*} value
-   * @param {ParameterOptions} options
-   * @param {string} defaultStyle
-   * @param {boolean} defaultExplode
-   */
-  constructor(name, value, options, defaultStyle, defaultExplode) {
+abstract class Parameter {
+  public readonly name: string;
+  public readonly value: any;
+  public readonly options: ParameterOptions;
+
+  constructor(name: string, value: any, options: ParameterOptions, defaultStyle: string, defaultExplode: boolean) {
     this.name = name;
     this.value = value;
     this.options = options || {};
@@ -36,12 +34,7 @@ class Parameter {
     }
   }
 
-  /**
-   * @param {*} value
-   * @param {string} separator
-   * @returns {string}
-   */
-  serializeValue(value, separator = ',') {
+  public serializeValue(value: any, separator = ','): string {
     if (value === null || value === undefined) {
       return '';
     } else if (value instanceof Array) {
@@ -49,8 +42,7 @@ class Parameter {
         .map((v) => this.serializeValue(v).split(separator).join(encodeURIComponent(separator)))
         .join(separator);
     } else if (typeof value === 'object') {
-      /** @type {string[]} */
-      const array = [];
+      const array: string[] = [];
       for (const key of Object.keys(value)) {
         let propVal = value[key];
         if (propVal !== null && propVal !== undefined) {
@@ -72,25 +64,13 @@ class Parameter {
 
 /**
  * A parameter in the operation path
- * @param {string} name
- * @param {*} value
- * @param {ParameterOptions} options
  */
 class PathParameter extends Parameter {
-  /**
-   * @param {string} name
-   * @param {*} value
-   * @param {ParameterOptions} options
-   */
-  constructor(name, value, options) {
+  constructor(name: string, value: any, options: ParameterOptions) {
     super(name, value, options, 'simple', false);
   }
 
-  /**
-   * @param {string} path
-   * @returns {string}
-   */
-  append(path) {
+  public append(path: string): string {
     let value = this.value;
     if (value === null || value === undefined) {
       value = '';
@@ -122,13 +102,7 @@ class PathParameter extends Parameter {
     return path;
   }
 
-  /**
-   * @override
-   * @param {*} value
-   * @param {string} separator
-   * @returns {string}
-   */
-  serializeValue(value, separator = ',') {
+  public override serializeValue(value: any, separator = ','): string {
     let result = typeof value === 'string' ? encodeURIComponent(value) : super.serializeValue(value, separator);
     result = result.replace(/%3D/g, '=');
     result = result.replace(/%3B/g, ';');
@@ -139,25 +113,13 @@ class PathParameter extends Parameter {
 
 /**
  * A parameter in the query
- * @param {string} name
- * @param {*} value
- * @param {ParameterOptions} options
  */
 class QueryParameter extends Parameter {
-  /**
-   * @param {string} name
-   * @param {*} value
-   * @param {ParameterOptions} options
-   */
-  constructor(name, value, options) {
+  constructor(name: string, value: any, options: ParameterOptions) {
     super(name, value, options, 'form', true);
   }
 
-  /**
-   * @param {string} params
-   * @returns {string}
-   */
-  append(params) {
+  public append(params: string): string {
     if (this.value instanceof Array) {
       // Array serialization
       if (this.options.explode) {
@@ -220,20 +182,11 @@ class QueryParameter extends Parameter {
  * A parameter in the HTTP request header
  */
 class HeaderParameter extends Parameter {
-  /**
-   * @param {string} name
-   * @param {*} value
-   * @param {ParameterOptions} options
-   */
-  constructor(name, value, options) {
+  constructor(name: string, value: any, options: ParameterOptions) {
     super(name, value, options, 'simple', false);
   }
 
-  /**
-   * @param {Object.<string, string>} headers
-   * @returns {Object.<string, string>}
-   */
-  append(headers) {
+  public append(headers: Record<string, string>): Record<string, string> {
     if (this.value !== null && this.value !== undefined) {
       if (this.value instanceof Array) {
         throw new Error('Array header values are not supported');
@@ -247,17 +200,19 @@ class HeaderParameter extends Parameter {
 
 /**
  * Helper to build http requests from parameters
- * @property {string} rootUrl
- * @property {string} operationPath
- * @property {string} method
  */
 export class RequestBuilder {
-  /**
-   * @param {string} rootUrl
-   * @param {string} operationPath
-   * @param {string} method
-   */
-  constructor(rootUrl, operationPath, method) {
+  private readonly _path: Map<string, PathParameter>;
+  private readonly _query: Map<string, QueryParameter>;
+  private readonly _header: Map<string, HeaderParameter>;
+  private _bodyContent: any;
+  private _bodyContentType: string | undefined;
+
+  public readonly rootUrl: string;
+  public readonly operationPath: string;
+  public readonly method: string;
+
+  constructor(rootUrl: string, operationPath: string, method: string) {
     this.rootUrl = rootUrl;
     this.operationPath = operationPath;
     this.method = method;
@@ -270,45 +225,33 @@ export class RequestBuilder {
 
   /**
    * Sets a path parameter
-   * @param {string} name
-   * @param {*} value
-   * @param {ParameterOptions} [options]
    */
-  path(name, value, options) {
+  public path(name: string, value: any, options: ParameterOptions) {
     this._path.set(name, new PathParameter(name, value, options || {}));
   }
 
   /**
    * Sets a query parameter
-   * @param {string} name
-   * @param {*} value
-   * @param {ParameterOptions} [options]
    */
-  query(name, value, options) {
+  public query(name: string, value: any, options: ParameterOptions) {
     this._query.set(name, new QueryParameter(name, value, options || {}));
   }
 
   /**
    * Sets a header parameter
-   * @param {string} name
-   * @param {*} value
-   * @param {ParameterOptions} [options]
    */
-  header(name, value, options) {
+  public header(name: string, value: any, options: ParameterOptions) {
     this._header.set(name, new HeaderParameter(name, value, options || {}));
   }
 
   /**
    * Sets the body content, along with the content type
-   * @param {*} value
-   * @param {string} [contentType]
    */
-  body(value, contentType = 'application/json') {
+  public body(value: any, contentType = 'application/json') {
     this._bodyContentType = contentType;
     if (this._bodyContentType === 'application/x-www-form-urlencoded' && value !== null && typeof value === 'object') {
       // Handle URL-encoded data
-      /** @type {[string, string][]} */
-      const pairs = [];
+      const pairs: [string, string][] = [];
       for (const key of Object.keys(value)) {
         let val = value[key];
         if (!(val instanceof Array)) {
@@ -330,12 +273,7 @@ export class RequestBuilder {
     }
   }
 
-  /**
-   * @private
-   * @param {*} value
-   * @returns {*}
-   */
-  formDataValue(value) {
+  private formDataValue(value: any): any {
     if (value === null || value === undefined) {
       return null;
     }
@@ -346,37 +284,22 @@ export class RequestBuilder {
   }
 
   /**
-   * @typedef {object} BuildOptions
-   * @property {string} [accept]
-   * @property {import('k6/http').Params} [params]
-   */
-
-  /**
    * Builds the request with the current set parameters
-   * @param {BuildOptions} [options]
-   * @returns {import('k6/http').Response}
    */
-  build(options) {
+  public build(options?: BuildOptions): http.Response {
     // Perform the request
     return http.request(...this.buildRequestParams(options));
   }
 
   /**
    * Builds the request with the current set parameters
-   * @param {BuildOptions} [options]
-   * @returns {Promise<import('k6/http').Response>}
    */
-  buildAsync(options) {
+  public buildAsync(options?: BuildOptions): Promise<http.Response> {
     // Perform the request
     return http.asyncRequest(...this.buildRequestParams(options));
   }
 
-  /**
-   * @private
-   * @param {BuildOptions} [options]
-   * @returns {Parameters<typeof import('k6/http').request>}
-   */
-  buildRequestParams(options) {
+  private buildRequestParams(options?: BuildOptions): Parameters<typeof http.request> {
     options = options || {};
 
     // Path parameters
@@ -393,8 +316,7 @@ export class RequestBuilder {
     }
 
     // Header parameters
-    /** @type {Object.<string, string>} */
-    let httpHeaders = {};
+    let httpHeaders: Record<string, string> = {};
     if (options.accept) {
       httpHeaders['Accept'] = options.accept;
     }

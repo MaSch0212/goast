@@ -16,6 +16,12 @@ import type { getReferenceFactories } from './refs.ts';
 
 export type TypeScriptK6ClientsGeneratorConfig = TypeScriptGeneratorConfig & {
   /**
+   * The language of the generated clients.
+   * @default 'javascript'
+   */
+  language: 'javascript' | 'typescript';
+
+  /**
    * Whether to use strict response types for the services.
    * If enabled only the status codes are included that are defined in the OpenAPI specification or the `defaultStatusCodeResponseTypes` option.
    * @default true
@@ -121,8 +127,8 @@ export const defaultTypeScriptK6ClientsGeneratorConfig: DefaultGenerationProvide
   TypeScriptK6ClientsGeneratorConfig
 > = {
   ...defaultTypeScriptGeneratorConfig,
-  importModuleTransformer: 'js-extension',
 
+  language: 'javascript',
   strictResponseTypes: true,
   defaultStatusCodeResponseTypes: {
     401: null,

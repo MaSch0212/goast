@@ -177,49 +177,76 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
     return code;
   }
 
-  protected getEndpointParamsType(ctx: Context, endpoint: ApiEndpoint): ts.Doc<Builder> {
-    const type = ts.doc<Builder>({
-      description: `Parameters for operation ${this.getEndpointMethodName(ctx, endpoint)}`,
-      tags: [ts.docTag('typedef', this.getEndpointParamsTypeName(ctx, endpoint))],
-    });
-
-    for (const parameter of endpoint.parameters) {
-      const schema = parameter.schema;
-      const name = toCasing(parameter.name, ctx.config.propertyNameCasing);
-      type.tags.push(
-        ts.docTag('property', parameter.required ? name : `[${name}]`, {
+  protected getEndpointParamsType(ctx: Context, endpoint: ApiEndpoint): ts.Doc<Builder> | ts.TypeAlias<Builder> {
+    const importOptions: TypeScriptImportOptions = ctx.config.language === 'javascript' ? { type: 'js-doc' } : {};
+    const description = `Parameters for operation ${this.getEndpointMethodName(ctx, endpoint)}`;
+    const typeName = this.getEndpointParamsTypeName(ctx, endpoint);
+    const properties: { name: string; type: ts.Type<Builder>; description: string | undefined; required: boolean }[] =
+      endpoint.parameters.map((parameter) => {
+        const schema = parameter.schema;
+        return {
+          name: toCasing(parameter.name, ctx.config.propertyNameCasing),
           type: schema
-            ? (b) => b.appendModelUsage(ctx.input.typescript.models[schema.id], { type: 'js-doc' })
+            ? (b) => b.appendModelUsage(ctx.input.typescript.models[schema.id], importOptions)
             : this.getAnyType(ctx),
-          text: (parameter.deprecated ? 'Deprecated: ' : '') + parameter.description,
-        }),
-      );
-    }
+          description: (parameter.deprecated ? 'Deprecated: ' : '') + parameter.description,
+          required: parameter.required,
+        };
+      });
 
     if (endpoint.requestBody !== undefined) {
       const body = endpoint.requestBody;
       const schema = body.content[0].schema;
-      type.tags.push(
-        ts.docTag('property', body.required ? 'body' : '[body]', {
-          type: schema
-            ? (b) => b.appendModelUsage(ctx.input.typescript.models[schema.id], { type: 'js-doc' })
-            : this.getAnyType(ctx),
-          text: body.description,
+      properties.push({
+        name: 'body',
+        type: schema
+          ? (b) => b.appendModelUsage(ctx.input.typescript.models[schema.id], importOptions)
+          : this.getAnyType(ctx),
+        description: body.description,
+        required: body.required,
+      });
+    }
+
+    if (ctx.config.language === 'javascript') {
+      return ts.doc<Builder>({
+        description,
+        tags: [
+          ts.docTag('typedef', typeName),
+          ...properties.map((p) =>
+            ts.docTag<'property', Builder>('property', p.required ? p.name : `[${p.name}]`, {
+              type: p.type,
+              text: p.description,
+            })
+          ),
+        ],
+      });
+    } else {
+      return ts.typeAlias<Builder>(
+        typeName,
+        ts.objectType({
+          members: properties.map((p) =>
+            ts.property(p.name, {
+              type: p.type,
+              optional: !p.required,
+              doc: p.description ? ts.doc({ description: p.description }) : undefined,
+            })
+          ),
         }),
       );
     }
-
-    return type;
   }
 
   protected getClass(ctx: Context): ts.Class<Builder> {
+    const isJs = ctx.config.language === 'javascript';
+    const rootUrlType = ts.refs.string();
+    const paramType = ts.functionType({
+      returnType: ts.refs.k6.params({ importType: isJs ? 'js-doc' : 'type-import' }),
+    });
     return ts.class<Builder>(this.getClassName(ctx), {
       doc: ts.doc({
         description: ctx.service.description,
         tags: [
-          ts.docTag('property', 'rootUrl', 'The root URL for this client.', {
-            type: ts.refs.string(),
-          }),
+          isJs ? ts.docTag('property', 'rootUrl', 'The root URL for this client.', { type: ts.refs.string() }) : null,
           ctx.service.endpoints.length === 0 || ctx.service.endpoints.some((x) => !x.deprecated)
             ? null
             : ts.docTag('deprecated'),
@@ -227,22 +254,38 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
       }),
       export: true,
       members: [
+        ...(isJs ? [] : [
+          ts.property('rootUrl', {
+            type: rootUrlType,
+            readonly: true,
+            accessModifier: 'public',
+            doc: ts.doc({ description: 'The root URL for this client.' }),
+          }),
+          ts.property('_defaultK6ParamsFactory', {
+            type: paramType,
+            optional: true,
+            readonly: true,
+            accessModifier: 'private',
+            doc: ts.doc({ description: 'A factory function that returns the default K6 parameters.' }),
+          }),
+        ]),
         ts.constructor({
           doc: ts.doc({
             description: 'Creates a new instance of the client.',
             tags: [
-              ts.docTag('param', 'rootUrl', 'The root URL for this client.', { type: ts.refs.string() }),
+              ts.docTag('param', 'rootUrl', 'The root URL for this client.', { type: isJs ? rootUrlType : undefined }),
               ts.docTag(
                 'param',
                 '[defaultK6ParamsFactory]',
                 'A factory function that returns the default K6 parameters.',
-                {
-                  type: ts.functionType({ returnType: ts.refs.k6.params({ importType: 'js-doc' }) }),
-                },
+                { type: isJs ? paramType : undefined },
               ),
             ],
           }),
-          parameters: [ts.constructorParameter('rootUrl'), ts.constructorParameter('defaultK6ParamsFactory')],
+          parameters: [
+            ts.constructorParameter('rootUrl', { type: isJs ? undefined : rootUrlType }),
+            ts.constructorParameter('defaultK6ParamsFactory', { type: isJs ? undefined : paramType, optional: true }),
+          ],
           body: s`this.rootUrl = rootUrl;
                   this._defaultK6ParamsFactory = defaultK6ParamsFactory;`,
         }),
@@ -253,38 +296,38 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
   }
 
   protected getEndpointMethod(ctx: Context, endpoint: ApiEndpoint): ts.Method<Builder> {
+    const isJs = ctx.config.language === 'javascript';
     const hasParams = this.hasEndpointParams(ctx, endpoint);
     const paramsOptional = !endpoint.parameters.some((p) => p.required) && !endpoint.requestBody?.required;
     const responseModelType = ts.reference(
       this.getResponseModelName(ctx, endpoint),
       this.getResponseModelFilePath(ctx),
-      {
-        importType: 'js-doc',
-      },
+      { importType: ctx.config.language === 'javascript' ? 'js-doc' : 'type-import' },
     );
     const returnType = responseModelType;
     const accept = this.getEndpointSuccessResponse(ctx, endpoint)?.contentOptions[0]?.type ?? '*/*';
+    const paramsType = hasParams ? ts.reference(this.getEndpointParamsTypeName(ctx, endpoint)) : null;
+    const returnTypeWithPromise = ctx.config.async ? ts.refs.promise([returnType]) : returnType;
 
     return ts.method<Builder>(this.getEndpointMethodName(ctx, endpoint), {
       async: ctx.config.async,
-      parameters: [hasParams ? ts.parameter('params') : null, ts.parameter('k6Params')],
+      parameters: [
+        hasParams ? ts.parameter('params', { type: isJs ? null : paramsType }) : null,
+        ts.parameter('k6Params', { type: isJs ? null : ts.refs.k6.params({ importType: 'type-import' }) }),
+      ],
+      returnType: isJs ? null : returnTypeWithPromise,
       doc: ts.doc({
         description: endpoint.description,
-        tags: [
-          hasParams
-            ? ts.docTag('param', paramsOptional ? '[params]' : 'params', {
-              type: ts.reference(this.getEndpointParamsTypeName(ctx, endpoint)),
-            })
-            : null,
-          ts.docTag('param', '[k6Params]', {
-            type: ts.refs.k6.params({ importType: 'js-doc' }),
-          }),
-          ts.docTag('returns', {
-            type: ctx.config.async ? ts.refs.promise([returnType]) : returnType,
-          }),
-          endpoint.deprecated ? ts.docTag('deprecated') : null,
-        ],
+        tags: isJs
+          ? [
+            hasParams ? ts.docTag('param', paramsOptional ? '[params]' : 'params', { type: paramsType }) : null,
+            ts.docTag('param', '[k6Params]', { type: ts.refs.k6.params({ importType: 'js-doc' }) }),
+            ts.docTag('returns', { type: returnTypeWithPromise }),
+            endpoint.deprecated ? ts.docTag('deprecated') : null,
+          ]
+          : [],
       }),
+      accessModifier: isJs ? null : 'public',
       body: appendValueGroup(
         [
           s`const rb = new ${ctx.refs.requestBuilder()}(this.rootUrl, ${
@@ -325,27 +368,38 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
               )
             : null,
           '',
-          s`return /** @type {${returnType}} */ (${s.indent`
-              ${ctx.config.async ? 'await rb.buildAsync' : 'rb.build'}({${s.indent`
-                accept: ${ts.string(accept)},
-                params: this.getK6Params(k6Params),`}
-              })`}
-            );`,
+          ctx.config.language === 'javascript'
+            ? s`return /** @type {${returnType}} */ (${s.indent`
+                ${ctx.config.async ? 'await rb.buildAsync' : 'rb.build'}({${s.indent`
+                  accept: ${ts.string(accept)},
+                  params: this.getK6Params(k6Params),`}
+                })`}
+              );`
+            : s`return (${s.indent`
+                ${ctx.config.async ? 'await rb.buildAsync' : 'rb.build'}({${s.indent`
+                  accept: ${ts.string(accept)},
+                  params: this.getK6Params(k6Params),`}
+                })`}
+              ) as unknown as ${returnType};`,
         ],
         '\n',
       ),
     });
   }
 
-  protected getGetK6ParamsMethod(_ctx: Context): ts.Method<Builder> {
+  protected getGetK6ParamsMethod(ctx: Context): ts.Method<Builder> {
+    const isJs = ctx.config.language === 'javascript';
     return ts.method('getK6Params', {
-      doc: ts.doc({
-        tags: [
-          ts.docTag('private'),
-          ts.docTag('param', '[k6Params]', { type: ts.refs.k6.params({ importType: 'js-doc' }) }),
-        ],
-      }),
-      parameters: [ts.parameter('k6Params')],
+      accessModifier: isJs ? null : 'private',
+      doc: isJs
+        ? ts.doc({
+          tags: [
+            ts.docTag('private'),
+            ts.docTag('param', '[k6Params]', { type: ts.refs.k6.params({ importType: 'js-doc' }) }),
+          ],
+        })
+        : null,
+      parameters: [ts.parameter('k6Params', { type: isJs ? null : ts.refs.k6.params({ importType: 'type-import' }) })],
       body: s`return Object.assign({}, this._defaultK6ParamsFactory ? this._defaultK6ParamsFactory() : {}, k6Params);`,
     });
   }
@@ -391,7 +445,9 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
     return resolve(
       ctx.config.outputDir,
       ctx.config.clientDir,
-      `${toCasing(ctx.service.name, ctx.config.clientFileNameCasing ?? ctx.config.fileNameCasing)}.js`,
+      `${toCasing(ctx.service.name, ctx.config.clientFileNameCasing ?? ctx.config.fileNameCasing)}.${
+        ctx.config.language === 'typescript' ? 'ts' : 'js'
+      }`,
     );
   }
 
