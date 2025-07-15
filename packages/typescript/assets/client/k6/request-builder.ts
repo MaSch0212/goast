@@ -1,5 +1,5 @@
 // @deno-types="npm:@types/k6/http"
-import http from 'k6/http';
+import http, { Params, Response } from 'k6/http';
 
 /**
  * Defines the options for appending a parameter
@@ -11,7 +11,7 @@ type ParameterOptions = {
 
 type BuildOptions = {
   accept?: string;
-  params?: http.Params;
+  params?: Params;
 };
 
 /**
@@ -160,7 +160,7 @@ class QueryParameter extends Parameter {
         }
       } else {
         // Append a single parameter whose values are a comma-separated list of key,value,key,value...
-        const array = [];
+        const array: unknown[] = [];
         for (const key of Object.keys(this.value)) {
           const propVal = this.value[key];
           if (propVal !== null && propVal !== undefined) {
@@ -286,7 +286,7 @@ export class RequestBuilder {
   /**
    * Builds the request with the current set parameters
    */
-  public build(options?: BuildOptions): http.Response {
+  public build(options?: BuildOptions): Response {
     // Perform the request
     return http.request(...this.buildRequestParams(options));
   }
@@ -294,7 +294,7 @@ export class RequestBuilder {
   /**
    * Builds the request with the current set parameters
    */
-  public buildAsync(options?: BuildOptions): Promise<http.Response> {
+  public buildAsync(options?: BuildOptions): Promise<Response> {
     // Perform the request
     return http.asyncRequest(...this.buildRequestParams(options));
   }
