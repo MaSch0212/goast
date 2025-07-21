@@ -9,7 +9,7 @@ import type {
 import { ts } from '../../ast/index.ts';
 import type { TypeScriptComponentOutput } from '../../common-results.ts';
 import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from '../../config.ts';
-import { TypeScriptFileBuilder } from '../../file-builder.ts';
+import type { TypeScriptFileBuilder } from '../../file-builder.ts';
 
 export type TypeScriptModelGeneratorConfig = TypeScriptGeneratorConfig & {
   /**
