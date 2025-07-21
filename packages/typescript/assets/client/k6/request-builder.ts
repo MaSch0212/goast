@@ -325,7 +325,7 @@ export class RequestBuilder {
     }
 
     // Request content headers
-    if (this._bodyContentType) {
+    if (this._bodyContentType && this._bodyContentType !== 'multipart/form-data') {
       httpHeaders['Content-Type'] = this._bodyContentType;
     }
 
