@@ -6,8 +6,10 @@ import type {
   OpenApiSchemasGenerationProviderContext,
 } from '@goast/core';
 
+import { ts } from '../../ast/index.ts';
 import type { TypeScriptComponentOutput } from '../../common-results.ts';
 import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from '../../config.ts';
+import { TypeScriptFileBuilder } from '../../file-builder.ts';
 
 export type TypeScriptModelGeneratorConfig = TypeScriptGeneratorConfig & {
   /**
@@ -55,6 +57,12 @@ export type TypeScriptModelGeneratorConfig = TypeScriptGeneratorConfig & {
    * @default `_<SchemaName>Base`
    */
   discriminatorBaseTypeCasing: ExtendedStringCasing;
+
+  /**
+   * The type to use for binary schemas.
+   * @default `ts.refs.blob`
+   */
+  binarySchemaType: () => ts.Type<TypeScriptFileBuilder>;
 };
 
 export type TypeScriptModelsGeneratorConfig = TypeScriptModelGeneratorConfig & {
@@ -75,6 +83,7 @@ export const defaultTypeScriptModelGeneratorConfig: DefaultGenerationProviderCon
   modelFileNameCasing: undefined,
   typeDeclaration: 'type',
   discriminatorBaseTypeCasing: { casing: 'pascal', prefix: '_', suffix: 'Base' },
+  binarySchemaType: ts.refs.blob,
 };
 
 export const defaultTypeScriptModelsGeneratorConfig: DefaultGenerationProviderConfig<TypeScriptModelsGeneratorConfig> =
