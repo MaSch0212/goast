@@ -291,9 +291,9 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
     }
   }
 
-  protected getStringType(_ctx: Context, schema: StringLikeApiSchema): ts.Type<Builder> {
+  protected getStringType(ctx: Context, schema: StringLikeApiSchema): ts.Type<Builder> {
     if (schema.format === 'binary') {
-      return ts.refs.blob();
+      return ctx.config.binarySchemaType();
     }
     return 'string';
   }

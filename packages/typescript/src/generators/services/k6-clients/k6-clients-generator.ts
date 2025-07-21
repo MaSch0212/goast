@@ -91,7 +91,8 @@ export class TypeScriptK6ClientsGenerator extends OpenApiServicesGenerationProvi
     const targetDir = resolve(ctx.config.outputDir, ctx.config.utilsDir);
     await fs.ensureDir(targetDir);
 
-    await copyAssetFile('client/k6/request-builder.js', targetDir, 'Request Builder');
+    const ext = ctx.config.language === 'javascript' ? '.js' : '.ts';
+    await copyAssetFile(`client/k6/request-builder${ext}`, targetDir, 'Request Builder');
 
     if (!ctx.config.strictResponseTypes) {
       TypeScriptFileBuilder.generate({
@@ -140,7 +141,12 @@ export class TypeScriptK6ClientsGenerator extends OpenApiServicesGenerationProvi
   }
 
   protected getIndexFilePath(ctx: Context): string | null {
-    return ctx.config.clientsIndexFile ? resolve(ctx.config.outputDir, ctx.config.clientsIndexFile) : null;
+    return ctx.config.clientsIndexFile
+      ? resolve(
+        ctx.config.outputDir,
+        ctx.config.clientsIndexFile.replace(/\.[jt]s$/, ctx.config.language === 'javascript' ? '.js' : '.ts'),
+      )
+      : null;
   }
 
   protected getResponseModelsIndexFilePath(ctx: Context): string | null {

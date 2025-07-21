@@ -91,7 +91,7 @@ export class TypeScriptFileBuilder<TAdditionalAppends = never>
   }
 
   public appendModelUsage(type: TypeScriptModelGeneratorOutput, options?: TypeScriptImportOptions): this {
-    this.append(type.component);
+    this.append(options?.type === 'js-doc' ? type.component.replace(/\/\*\*.*\*\/\s*/gs, '') : type.component);
     for (const i of type.imports) {
       this.addImport(i.name, i.modulePath, { ...i, ...options });
     }
