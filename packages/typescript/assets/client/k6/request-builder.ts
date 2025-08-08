@@ -1,5 +1,7 @@
 // @deno-types="npm:@types/k6/http"
 import http, { Params, Response } from 'k6/http';
+// @ts-ignore
+import { FormData } from 'https://jslib.k6.io/formdata/0.0.2/index.js';
 
 /**
  * Defines the options for appending a parameter
@@ -265,6 +267,13 @@ export class RequestBuilder {
         }
       }
       this._bodyContent = pairs.map((p) => `${encodeURIComponent(p[0])}=${encodeURIComponent(p[1])}`).join('&');
+    } else if (this._bodyContentType === 'multipart/form-data' && value !== null && typeof value === 'object') {
+      const fd = new FormData();
+      for (const key in value) {
+        fd.append(key, this.formDataValue(value[key]));
+      }
+      this._bodyContent = fd.body();
+      this._bodyContentType = 'multipart/form-data; boundary=' + fd.boundary;
     } else if (this._bodyContentType.indexOf('json') !== -1 && value !== null && typeof value === 'object') {
       this._bodyContent = JSON.stringify(value);
     } else {
@@ -277,10 +286,22 @@ export class RequestBuilder {
     if (value === null || value === undefined) {
       return null;
     }
-    if (typeof value === 'object') {
-      return JSON.stringify(value);
+    if (this.isFile(value)) {
+      return value;
     }
-    return String(value);
+    return { data: JSON.stringify(value), content_type: 'application/json' };
+  }
+
+  private isFile(value: any): value is http.FileData {
+    return (
+      typeof value === 'object' &&
+      value !== null &&
+      'data' in value &&
+      (typeof value.data === 'string' || value.data instanceof ArrayBuffer) &&
+      (!('filename' in value) || typeof value.filename === 'string') &&
+      (!('content_type' in value) || typeof value.content_type === 'string') &&
+      Object.keys(value).every((key) => key === 'data' || key === 'filename' || key === 'content_type')
+    );
   }
 
   /**
@@ -325,7 +346,7 @@ export class RequestBuilder {
     }
 
     // Request content headers
-    if (this._bodyContentType && this._bodyContentType !== 'multipart/form-data') {
+    if (this._bodyContentType) {
       httpHeaders['Content-Type'] = this._bodyContentType;
     }
 
