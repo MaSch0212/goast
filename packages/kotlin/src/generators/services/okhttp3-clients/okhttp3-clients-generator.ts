@@ -5,7 +5,7 @@ import fs from 'fs-extra';
 
 import {
   type ApiService,
-  AppendValue,
+  type AppendValue,
   builderTemplate as s,
   Factory,
   type MaybePromise,

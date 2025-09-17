@@ -8,7 +8,7 @@ import type {
 
 import type { KotlinImport } from '../../../common-results.ts';
 import { defaultKotlinGeneratorConfig, type KotlinGeneratorConfig } from '../../../config.ts';
-import { KotlinFileBuilder } from '../../../file-builder.ts';
+import type { KotlinFileBuilder } from '../../../file-builder.ts';
 import type { KotlinModelsGeneratorOutput } from '../../models/index.ts';
 import type { getReferenceFactories } from './refs.ts';
 
