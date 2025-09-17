@@ -19,6 +19,7 @@ export function getReferenceFactories(infrastructurePackageName: string): {
   partConfig: kt.GenericReferenceFactory<1>;
   requestConfig: kt.GenericReferenceFactory<1>;
   requestMethod: kt.ReferenceFactory;
+  serializer: kt.ReferenceFactory;
 } {
   return {
     // ApiAbstractions.kt
@@ -51,5 +52,8 @@ export function getReferenceFactories(infrastructurePackageName: string): {
 
     // RequestMethod.kt
     requestMethod: kt.reference.factory('RequestMethod', infrastructurePackageName),
+
+    // Serializer.kt
+    serializer: kt.reference.factory('Serializer', infrastructurePackageName),
   };
 }

@@ -56,6 +56,7 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
   }
 
   protected getClientClass(ctx: Context, _args: Args.GetClientClass): kt.Class<Builder> {
+    const serializerAsParameter = ctx.config.serializer === 'parameter';
     return kt.class(this.getApiClientName(ctx, {}), {
       annotations: [
         ctx.service.endpoints.length === 0 || ctx.service.endpoints.some((x) => !x.deprecated)
@@ -65,15 +66,19 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
       extends: ctx.refs.apiClient(),
       primaryConstructor: kt.constructor(
         [
+          serializerAsParameter ? kt.parameter('objectMapper', kt.refs.jackson.objectMapper()) : null,
           kt.parameter('basePath', kt.refs.string(), { default: 'defaultBasePath' }),
           kt.parameter('client', kt.refs.okhttp3.okHttpClient(), {
             default: 'defaultClient',
+          }),
+          serializerAsParameter ? null : kt.parameter('objectMapper', kt.refs.jackson.objectMapper(), {
+            default: kt.call([ctx.refs.serializer(), 'jacksonObjectMapper']),
           }),
         ],
         null,
         {
           delegateTarget: 'super',
-          delegateArguments: ['basePath', 'client'],
+          delegateArguments: ['basePath', 'objectMapper', 'client'],
         },
       ),
       companionObject: this.getClientCompanionObject(ctx, {}),
