@@ -1,6 +1,7 @@
 package @PACKAGE_NAME@
 
 import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
 import okhttp3.FormBody
 import okhttp3.Headers.Companion.toHeaders
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -23,7 +24,7 @@ import java.time.OffsetDateTime
 import java.time.OffsetTime
 import java.util.Locale
 
-open class ApiClient(val baseUrl: String, val client: Factory = defaultClient) {
+open class ApiClient(@API_CLIENT_PARAMETERS@) {
     companion object {
         protected const val ContentType = "Content-Type"
         protected const val Accept = "Accept"
@@ -86,7 +87,7 @@ open class ApiClient(val baseUrl: String, val client: Factory = defaultClient) {
                                     ("Content-Disposition" to "form-data; name=\"$name\"")
                                 addPart(
                                     partHeaders.toHeaders(),
-                                    Serializer.jacksonObjectMapper.writeValueAsString(part.body)
+                                    objectMapper.writeValueAsString(part.body)
                                         .toRequestBody(JsonMediaType.toMediaTypeOrNull())
                                 )
                             }
@@ -107,7 +108,7 @@ open class ApiClient(val baseUrl: String, val client: Factory = defaultClient) {
                 if (content == null) {
                     EMPTY_REQUEST
                 } else {
-                    Serializer.jacksonObjectMapper.writeValueAsString(content)
+                    objectMapper.writeValueAsString(content)
                         .toRequestBody((mediaType ?: JsonMediaType).toMediaTypeOrNull())
                 }
 
@@ -138,7 +139,7 @@ open class ApiClient(val baseUrl: String, val client: Factory = defaultClient) {
         }
         return when {
             mediaType == null || (mediaType.startsWith("application/") && mediaType.endsWith("json")) ->
-                Serializer.jacksonObjectMapper.readValue(bodyContent, object : TypeReference<T>() {})
+                objectMapper.readValue(bodyContent, object : TypeReference<T>() {})
 
             mediaType.startsWith("text/") && T::class.java == String::class.java -> bodyContent as T
 
@@ -247,6 +248,6 @@ open class ApiClient(val baseUrl: String, val client: Factory = defaultClient) {
         formatter. It also easily allows to provide a simple way to define a custom date format pattern
         inside a gson/moshi adapter.
         */
-        return Serializer.jacksonObjectMapper.writeValueAsString(value).replace("\"", "")
+        return objectMapper.writeValueAsString(value).replace("\"", "")
     }
 }

@@ -5,6 +5,8 @@ import fs from 'fs-extra';
 
 import {
   type ApiService,
+  type AppendValue,
+  builderTemplate as s,
   Factory,
   type MaybePromise,
   type OpenApiGeneratorContext,
@@ -12,7 +14,10 @@ import {
   toCasing,
 } from '@goast/core';
 
+import { writeFileSync } from 'node:fs';
 import { getAssetFileContent } from '../../../assets.ts';
+import { kt } from '../../../ast/index.ts';
+import { KotlinFileBuilder } from '../../../file-builder.ts';
 import type { KotlinServicesGeneratorInput } from '../spring-controllers/index.ts';
 import {
   defaultKotlinOkHttp3ClientsGeneratorConfig,
@@ -114,17 +119,55 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
       'RequestConfig.kt',
       'RequestMethod.kt',
       'ResponseExtensions.kt',
-      'Serializer.kt',
     ];
 
     for (const file of files) {
       const sourcePath = `client/okhttp3/${file}`;
       const targetPath = resolve(targetDir, file);
       console.log(`Copying asset file "${sourcePath}" to "${targetPath}"`);
-      const fileContent = (await getAssetFileContent(sourcePath))
-        .replace(/@PACKAGE_NAME@/g, ctx.infrastructurePackageName)
-        .replace(/@JSON_INCLUDE@/g, toCasing(ctx.config.serializerJsonInclude, 'snake'));
+      let fileContent = (await getAssetFileContent(sourcePath))
+        .replace(/@PACKAGE_NAME@/g, ctx.infrastructurePackageName);
+      if (file === 'ApiClient.kt') {
+        fileContent = fileContent.replace(
+          /@API_CLIENT_PARAMETERS@/,
+          ctx.config.serializer === 'parameter'
+            ? 'val baseUrl: String, val objectMapper: ObjectMapper, val client: Factory = defaultClient'
+            : 'val baseUrl: String, val client: Factory = defaultClient, val objectMapper: ObjectMapper = Serializer.jacksonObjectMapper',
+        );
+      }
       fs.writeFileSync(targetPath, fileContent);
+    }
+
+    if (
+      ctx.config.serializer === 'static' ||
+      typeof ctx.config.serializer === 'object' && ctx.config.serializer.mode === 'static'
+    ) {
+      const filePath = resolve(targetDir, 'Serializer.kt');
+      console.log(`Generating Serializer to ${filePath}...`);
+      const factory: AppendValue<KotlinFileBuilder> = typeof ctx.config.serializer === 'object'
+        ? ctx.config.serializer.factory
+        : s`${kt.refs.jackson.jacksonObjectMapper()}()${s.indent`
+            .findAndRegisterModules()
+            .setSerializationInclusion(${kt.refs.jackson.jsonInclude()}.Include.${
+          toCasing(ctx.config.serializerJsonInclude, 'snake')
+        })
+            .configure(${kt.refs.jackson.serializationFeature()}.WRITE_DATES_AS_TIMESTAMPS, false)
+            .configure(${kt.refs.jackson.deserializationFeature()}.FAIL_ON_UNKNOWN_PROPERTIES, false)`}`;
+
+      const builder = new KotlinFileBuilder(ctx.infrastructurePackageName, ctx.config);
+      builder.append(
+        kt.object({
+          name: 'Serializer',
+          members: [
+            kt.property('jacksonObjectMapper', {
+              type: kt.refs.jackson.objectMapper(),
+              mutable: false,
+              default: kt.call('run', [kt.lambda([], factory)]),
+            }),
+          ],
+        }),
+      );
+      writeFileSync(filePath, builder.toString());
     }
   }
 }

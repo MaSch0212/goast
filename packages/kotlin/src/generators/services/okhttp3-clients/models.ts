@@ -1,12 +1,14 @@
 import type {
   ApiEndpoint,
   ApiService,
+  AppendValue,
   DefaultGenerationProviderConfig,
   OpenApiServicesGenerationProviderContext,
 } from '@goast/core';
 
 import type { KotlinImport } from '../../../common-results.ts';
 import { defaultKotlinGeneratorConfig, type KotlinGeneratorConfig } from '../../../config.ts';
+import type { KotlinFileBuilder } from '../../../file-builder.ts';
 import type { KotlinModelsGeneratorOutput } from '../../models/index.ts';
 import type { getReferenceFactories } from './refs.ts';
 
@@ -20,6 +22,14 @@ export type KotlinOkHttp3ClientsGeneratorConfig = KotlinGeneratorConfig & {
   basePath?: string | RegExp | ((basePath: string, service: ApiService) => string);
   pathModifier?: RegExp | ((path: string, endpoint: ApiEndpoint) => string);
   serializerJsonInclude: 'always' | 'non-null' | 'non-absent' | 'non-default' | 'non-empty' | 'use-defaults';
+  /**
+   * Determines how the serializer is provided to the client.
+   * - `static`: A static instance is created in the infrastructure package and used by all clients.
+   * - `parameter`: The serializer is provided as a required constructor parameter to the client.
+   * - `{ mode: 'static', factory: ... }`: A static instance is created using the provided factory function.
+   * @default 'static'
+   */
+  serializer: 'static' | 'parameter' | { mode: 'static'; factory: AppendValue<KotlinFileBuilder> };
 };
 
 export const defaultKotlinOkHttp3ClientsGeneratorConfig: DefaultGenerationProviderConfig<
@@ -31,6 +41,7 @@ export const defaultKotlinOkHttp3ClientsGeneratorConfig: DefaultGenerationProvid
   packageSuffix: '.api.client',
   infrastructurePackageName: { mode: 'append-full-package-name', value: '.infrastructure' },
   serializerJsonInclude: 'non-absent',
+  serializer: 'static',
 };
 
 export type KotlinOkHttp3ClientsGeneratorInput = KotlinModelsGeneratorOutput;
