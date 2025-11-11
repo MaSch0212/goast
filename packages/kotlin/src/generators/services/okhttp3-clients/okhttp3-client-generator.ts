@@ -349,7 +349,7 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
             queryParameters.map((param) => {
               const paramName = toCasing(param.name, ctx.config.parameterNameCasing);
               const toString = this.getParameterToString(ctx, { endpoint, parameter: param });
-              const put = s<Builder>`put(${kt.string(paramName)}, listOf(${paramName}${toString}))`;
+              const put = s<Builder>`put(${kt.string(param.name)}, listOf(${paramName}${toString}))`;
               return param.required ? put : s<Builder>`if (${paramName} != null) {${s.indent`
                         ${put}`}
                       }`;
