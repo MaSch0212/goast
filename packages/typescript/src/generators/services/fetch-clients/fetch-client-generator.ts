@@ -80,7 +80,9 @@ export class DefaultTypeScriptFetchClientGenerator extends TypeScriptFileGenerat
   }
 
   protected getInterfaceEndpointMethod(ctx: Context, endpoint: ApiEndpoint): ts.Method<Builder> {
-    const params = endpoint.parameters.filter((x) => x.target === 'path' || x.target === 'query');
+    const params = endpoint.parameters.filter((x) =>
+      x.target === 'path' || x.target === 'query' || x.target === 'header'
+    );
     const bodySchema = endpoint.requestBody?.content[0]?.schema;
     const responseSchema = this.getResponseSchema(ctx, endpoint);
     return ts.method(toCasing(endpoint.name, ctx.config.functionNameCasing), {
@@ -193,11 +195,17 @@ export class DefaultTypeScriptFetchClientGenerator extends TypeScriptFileGenerat
             }
           })}
           .build();`}`,
+        'const headers = { ...this.options.headers };',
+        ...endpoint.parameters.filter((x) => x.target === 'header').map((p) =>
+          s<Builder>`if (params && params.${toCasing(p.name, ctx.config.paramNameCasing)} !== undefined) {${s.indent`
+            headers[${ts.string(p.name)}] = String(params.${toCasing(p.name, ctx.config.paramNameCasing)});`}
+          }`
+        ),
         s`const response = (this.options.fetch ?? fetch)(url, ${
           ts.object({
             members: [
               ts.property('method', { value: ts.string(toCasing(endpoint.method, 'all-upper')) }),
-              ts.property('headers', { value: 'this.options.headers' }),
+              ts.property('headers', { value: 'headers' }),
               endpoint.requestBody?.content[0]?.schema ? ts.property('body', { value: 'JSON.stringify(body)' }) : null,
             ],
           })
