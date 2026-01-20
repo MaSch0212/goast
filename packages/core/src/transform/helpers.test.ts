@@ -265,7 +265,10 @@ describe('transformSchemaProperties', () => {
     // deno-lint-ignore no-explicit-any
     const transformSchema = fn((_: unknown, subSchema: any) =>
       subSchema.type === 'string' ? transformedSchema1 : transformedSchema2
-    ) as (ctx: OpenApiTransformerContext, schema: ApiSchema) => ApiSchema;
+    ) as (
+      ctx: OpenApiTransformerContext,
+      schema: ApiSchema,
+    ) => ApiSchema;
     const result = transformSchemaProperties(context, schema, transformSchema);
     expect(Array.from(result.entries())).toEqual([
       ['prop1', { name: 'prop1', schema: transformedSchema1 }],

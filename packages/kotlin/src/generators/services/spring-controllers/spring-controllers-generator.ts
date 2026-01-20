@@ -40,9 +40,14 @@ export class KotlinSpringControllersGenerator extends OpenApiServicesGenerationP
   ServiceOutput,
   Context
 > {
-  private readonly _serviceGeneratorFactory: Factory<KotlinSpringControllerGenerator, []>;
+  private readonly _serviceGeneratorFactory: Factory<
+    KotlinSpringControllerGenerator,
+    []
+  >;
 
-  constructor(serviceGeneratorFactory?: Factory<KotlinSpringControllerGenerator, []>) {
+  constructor(
+    serviceGeneratorFactory?: Factory<KotlinSpringControllerGenerator, []>,
+  ) {
     super();
     this._serviceGeneratorFactory = serviceGeneratorFactory ??
       Factory.fromValue(new DefaultKotlinSpringControllerGenerator());
@@ -56,7 +61,10 @@ export class KotlinSpringControllersGenerator extends OpenApiServicesGenerationP
     };
   }
 
-  protected generateService(ctx: Context, service: ApiService): MaybePromise<ServiceOutput> {
+  protected generateService(
+    ctx: Context,
+    service: ApiService,
+  ): MaybePromise<ServiceOutput> {
     const serviceGenerator = this._serviceGeneratorFactory.create();
     return serviceGenerator.generate({
       ...ctx,
@@ -64,7 +72,11 @@ export class KotlinSpringControllersGenerator extends OpenApiServicesGenerationP
     });
   }
 
-  protected addServiceResult(ctx: Context, service: ApiService, result: ServiceOutput): void {
+  protected addServiceResult(
+    ctx: Context,
+    service: ApiService,
+    result: ServiceOutput,
+  ): void {
     ctx.output.kotlin.services[service.id] = result;
   }
 
@@ -72,14 +84,22 @@ export class KotlinSpringControllersGenerator extends OpenApiServicesGenerationP
     context: OpenApiGeneratorContext<KotlinServicesGeneratorInput>,
     config?: Partial<Config> | undefined,
   ): Context {
-    context.data.services = context.data.services.filter((x) => x.name !== 'exclude-from-generation');
-    const providerContext = this.getProviderContext(context, config, defaultKotlinServicesGeneratorConfig);
+    context.data.services = context.data.services.filter(
+      (x) => x.name !== 'exclude-from-generation',
+    );
+    const providerContext = this.getProviderContext(
+      context,
+      config,
+      defaultKotlinServicesGeneratorConfig,
+    );
     return Object.assign(providerContext, {
       refs: getReferenceFactories(providerContext.config),
     });
   }
 
-  protected override generateAdditionalFiles(ctx: KotlinServicesGeneratorContext): void {
+  protected override generateAdditionalFiles(
+    ctx: KotlinServicesGeneratorContext,
+  ): void {
     this.generateApiExceptionHandler(ctx);
   }
 
@@ -95,16 +115,22 @@ export class KotlinSpringControllersGenerator extends OpenApiServicesGenerationP
     fs.writeFileSync(`${dir}/${fileName}`, builder.toString());
   }
 
-  protected getApiExceptionHandlerFileContent(ctx: Context): AppendValueGroup<KotlinFileBuilder> {
+  protected getApiExceptionHandlerFileContent(
+    ctx: Context,
+  ): AppendValueGroup<KotlinFileBuilder> {
     return appendValueGroup([this.getApiExceptionHandlerInterface(ctx)], '\n');
   }
 
-  protected getApiExceptionHandlerInterface(ctx: Context): kt.Interface<KotlinFileBuilder> {
+  protected getApiExceptionHandlerInterface(
+    ctx: Context,
+  ): kt.Interface<KotlinFileBuilder> {
     return kt.interface(ctx.refs.apiExceptionHandler.refName, {
       members: [
         kt.function('handleApiException', {
-          doc: kt.doc('Handler for API exceptions.', [kt.docTag('return', 'Response entity.')]),
-          suspend: true,
+          doc: kt.doc('Handler for API exceptions.', [
+            kt.docTag('return', 'Response entity.'),
+          ]),
+          suspend: ctx.config.suspendingFunctions,
           parameters: [
             kt.parameter('exception', kt.refs.throwable(), {
               description: 'Exception that has been thrown by the API.',

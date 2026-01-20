@@ -182,17 +182,18 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
     const description = `Parameters for operation ${this.getEndpointMethodName(ctx, endpoint)}`;
     const typeName = this.getEndpointParamsTypeName(ctx, endpoint);
     const properties: { name: string; type: ts.Type<Builder>; description: string | undefined; required: boolean }[] =
-      endpoint.parameters.map((parameter) => {
-        const schema = parameter.schema;
-        return {
-          name: toCasing(parameter.name, ctx.config.propertyNameCasing),
-          type: schema
-            ? (b) => b.appendModelUsage(ctx.input.typescript.models[schema.id], importOptions)
-            : this.getAnyType(ctx),
-          description: (parameter.deprecated ? 'Deprecated: ' : '') + parameter.description,
-          required: parameter.required,
-        };
-      });
+      endpoint.parameters
+        .map((parameter) => {
+          const schema = parameter.schema;
+          return {
+            name: toCasing(parameter.name, ctx.config.propertyNameCasing),
+            type: schema
+              ? (b) => b.appendModelUsage(ctx.input.typescript.models[schema.id], importOptions)
+              : this.getAnyType(ctx),
+            description: (parameter.deprecated ? 'Deprecated: ' : '') + parameter.description,
+            required: parameter.required,
+          };
+        });
 
     if (endpoint.requestBody !== undefined) {
       const body = endpoint.requestBody;

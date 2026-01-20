@@ -29,27 +29,43 @@ type Context = KotlinServiceGeneratorContext;
 type Output = KotlinServiceGeneratorOutput;
 type Builder = KotlinFileBuilder;
 
-export interface KotlinSpringControllerGenerator<TOutput extends Output = Output> {
+export interface KotlinSpringControllerGenerator<
+  TOutput extends Output = Output,
+> {
   generate(ctx: Context): MaybePromise<TOutput>;
 }
 
 export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<Context, Output>
   implements KotlinSpringControllerGenerator {
-  public generate(ctx: KotlinServiceGeneratorContext): MaybePromise<KotlinServiceGeneratorOutput> {
+  public generate(
+    ctx: KotlinServiceGeneratorContext,
+  ): MaybePromise<KotlinServiceGeneratorOutput> {
     const packageName = this.getPackageName(ctx, {});
     const dirPath = this.getDirectoryPath(ctx, { packageName });
     fs.ensureDirSync(dirPath);
 
     console.log(`Generating service ${ctx.service.id} to ${dirPath}...`);
     return {
-      apiInterface: this.generateApiInterfaceFile(ctx, { dirPath, packageName }),
-      apiController: this.generateApiControllerFile(ctx, { dirPath, packageName }),
-      apiDelegate: this.generateApiDelegateInterfaceFile(ctx, { dirPath, packageName }),
+      apiInterface: this.generateApiInterfaceFile(ctx, {
+        dirPath,
+        packageName,
+      }),
+      apiController: this.generateApiControllerFile(ctx, {
+        dirPath,
+        packageName,
+      }),
+      apiDelegate: this.generateApiDelegateInterfaceFile(ctx, {
+        dirPath,
+        packageName,
+      }),
     };
   }
 
   // #region API Interface
-  protected generateApiInterfaceFile(ctx: Context, args: Args.GenerateApiInterfaceFile): KotlinImport {
+  protected generateApiInterfaceFile(
+    ctx: Context,
+    args: Args.GenerateApiInterfaceFile,
+  ): KotlinImport {
     const { dirPath, packageName } = args;
     const typeName = this.getApiInterfaceName(ctx, {});
     const fileName = `${typeName}.kt`;
@@ -57,18 +73,29 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     console.log(`  Generating API interface ${typeName} to ${fileName}...`);
 
     const builder = new KotlinFileBuilder(packageName, ctx.config);
-    builder.append(this.getApiInterfaceFileContent(ctx, { interfaceName: typeName }));
+    builder.append(
+      this.getApiInterfaceFileContent(ctx, { interfaceName: typeName }),
+    );
     fs.writeFileSync(filePath, builder.toString());
 
     return { typeName, packageName };
   }
 
-  protected getApiInterfaceFileContent(ctx: Context, args: Args.GetApiInterfaceFileContent): AppendValueGroup<Builder> {
+  protected getApiInterfaceFileContent(
+    ctx: Context,
+    args: Args.GetApiInterfaceFileContent,
+  ): AppendValueGroup<Builder> {
     const { interfaceName } = args;
-    return appendValueGroup<Builder>([this.getApiInterface(ctx, { interfaceName })], '\n');
+    return appendValueGroup<Builder>(
+      [this.getApiInterface(ctx, { interfaceName })],
+      '\n',
+    );
   }
 
-  protected getApiInterface(ctx: Context, args: Args.GetApiInterface): kt.Interface<Builder> {
+  protected getApiInterface(
+    ctx: Context,
+    args: Args.GetApiInterface,
+  ): kt.Interface<Builder> {
     const { interfaceName } = args;
 
     return kt.interface(interfaceName, {
@@ -133,15 +160,21 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     const parameters = this.getAllParameters(ctx, { endpoint });
 
     return kt.function(toCasing(endpoint.name, ctx.config.functionNameCasing), {
-      suspend: true,
-      annotations: this.getApiInterfaceEndpointMethodAnnnotations(ctx, endpoint),
+      suspend: ctx.config.suspendingFunctions,
+      annotations: this.getApiInterfaceEndpointMethodAnnnotations(
+        ctx,
+        endpoint,
+      ),
       parameters: parameters.map((parameter) => this.getApiInterfaceEndpointMethodParameter(ctx, endpoint, parameter)),
       returnType: kt.refs.spring.responseEntity(['*']),
       body: this.getApiInterfaceEndpointMethodBody(ctx, endpoint, parameters),
     });
   }
 
-  private getApiInterfaceEndpointMethodAnnnotations(ctx: Context, endpoint: ApiEndpoint): kt.Annotation<Builder>[] {
+  private getApiInterfaceEndpointMethodAnnnotations(
+    ctx: Context,
+    endpoint: ApiEndpoint,
+  ): kt.Annotation<Builder>[] {
     const annotations: kt.Annotation<Builder>[] = [];
 
     if (ctx.config.addSwaggerAnnotations) {
@@ -149,7 +182,12 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
         kt.annotation(kt.refs.swagger.operation(), [
           endpoint.summary ? kt.argument.named('summary', kt.string(endpoint.summary?.trim())) : null,
           kt.argument.named('operationId', kt.string(endpoint.name)),
-          endpoint.description ? kt.argument.named('description', kt.string(endpoint.description?.trim())) : null,
+          endpoint.description
+            ? kt.argument.named(
+              'description',
+              kt.string(endpoint.description?.trim()),
+            )
+            : null,
           endpoint.deprecated !== undefined ? kt.argument.named('deprecated', kt.toNode(endpoint.deprecated)) : null,
         ]),
       );
@@ -162,39 +200,61 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
               kt.collectionLiteral(
                 endpoint.responses.map((response) =>
                   kt.call(kt.refs.swagger.apiResponse(), [
-                    kt.argument.named('responseCode', kt.string(response.statusCode?.toString())),
+                    kt.argument.named(
+                      'responseCode',
+                      kt.string(response.statusCode?.toString()),
+                    ),
                     response.description
-                      ? kt.argument.named('description', kt.string(response.description?.trim()))
+                      ? kt.argument.named(
+                        'description',
+                        kt.string(response.description?.trim()),
+                      )
                       : null,
                     kt.argument.named(
                       'content',
                       kt.collectionLiteral(
                         (response.contentOptions.length === 0
                           ? [{ schema: undefined, type: undefined }]
-                          : response.contentOptions).map((content) => {
-                            let schemaType: kt.Type<Builder> = this.getSchemaType(ctx, { schema: content.schema }) ??
-                              kt.refs.any();
-                            let isArray = false;
+                          : response.contentOptions).map(
+                            (content) => {
+                              let schemaType: kt.Type<Builder> = this.getSchemaType(ctx, {
+                                schema: content.schema,
+                              }) ?? kt.refs.any();
+                              let isArray = false;
 
-                            if (kt.refs.list.matches(schemaType)) {
-                              isArray = true;
-                              schemaType = schemaType.generics[0];
-                            }
+                              if (kt.refs.list.matches(schemaType)) {
+                                isArray = true;
+                                schemaType = schemaType.generics[0];
+                              }
 
-                            let ktSchema = kt.call(kt.refs.swagger.schema(), [
-                              kt.argument.named('implementation', s<Builder>`${schemaType}::class`),
-                            ]);
-                            if (isArray) {
-                              ktSchema = kt.call(kt.refs.swagger.arraySchema(), [
-                                kt.argument.named('schema', ktSchema),
+                              let ktSchema = kt.call(kt.refs.swagger.schema(), [
+                                kt.argument.named(
+                                  'implementation',
+                                  s<Builder>`${schemaType}::class`,
+                                ),
                               ]);
-                            }
+                              if (isArray) {
+                                ktSchema = kt.call(kt.refs.swagger.arraySchema(), [
+                                  kt.argument.named('schema', ktSchema),
+                                ]);
+                              }
 
-                            return kt.call(kt.refs.swagger.content(), [
-                              content.type ? kt.argument.named('mediaType', kt.string(content.type)) : null,
-                              content.schema ? kt.argument.named(isArray ? 'array' : 'schema', ktSchema) : null,
-                            ]);
-                          }),
+                              return kt.call(kt.refs.swagger.content(), [
+                                content.type
+                                  ? kt.argument.named(
+                                    'mediaType',
+                                    kt.string(content.type),
+                                  )
+                                  : null,
+                                content.schema
+                                  ? kt.argument.named(
+                                    isArray ? 'array' : 'schema',
+                                    ktSchema,
+                                  )
+                                  : null,
+                              ]);
+                            },
+                          ),
                       ),
                     ),
                   ])
@@ -209,15 +269,25 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     const requestMapping = kt.annotation(kt.refs.spring.requestMapping(), [
       kt.argument.named(
         'method',
-        kt.collectionLiteral([kt.call([kt.refs.spring.requestMethod(), endpoint.method.toUpperCase()])]),
+        kt.collectionLiteral([
+          kt.call([
+            kt.refs.spring.requestMethod(),
+            endpoint.method.toUpperCase(),
+          ]),
+        ]),
       ),
-      kt.argument.named('value', kt.collectionLiteral([this.getPathConstantName(ctx, { endpoint })])),
+      kt.argument.named(
+        'value',
+        kt.collectionLiteral([this.getPathConstantName(ctx, { endpoint })]),
+      ),
     ]);
     if (endpoint.requestBody && endpoint.requestBody.content.length > 0) {
       requestMapping.arguments.push(
         kt.argument.named(
           'consumes',
-          kt.collectionLiteral(endpoint.requestBody?.content.map((x) => kt.string(x.type))),
+          kt.collectionLiteral(
+            endpoint.requestBody?.content.map((x) => kt.string(x.type)),
+          ),
         ),
       );
     }
@@ -231,13 +301,19 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     endpoint: ApiEndpoint,
     parameter: ApiParameterWithMultipartInfo,
   ): kt.Parameter<Builder> {
-    const isEnumSchema = parameter.schema?.kind === 'string' && parameter.schema.enum?.length &&
-      this.getSchemaType(ctx, { schema: parameter.schema }) && !parameter.multipart;
+    const isEnumSchema = parameter.schema?.kind === 'string' &&
+      parameter.schema.enum?.length &&
+      this.getSchemaType(ctx, { schema: parameter.schema }) &&
+      !parameter.multipart;
     const actualType = this.getSchemaType(ctx, { schema: parameter.schema });
     const schemaType = isEnumSchema ? kt.refs.string({ nullable: actualType?.nullable }) : actualType;
     const result = kt.parameter(
       toCasing(parameter.name, ctx.config.parameterNameCasing),
-      this.getParameterType(ctx, { endpoint, parameter, type: isEnumSchema ? schemaType : undefined }),
+      this.getParameterType(ctx, {
+        endpoint,
+        parameter,
+        type: isEnumSchema ? schemaType : undefined,
+      }),
       {
         default: parameter.multipart && parameter.schema?.default !== undefined
           ? kt.toNode(parameter.schema?.default)
@@ -248,36 +324,48 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     if (ctx.config.addSwaggerAnnotations) {
       const annotation = kt.annotation(kt.refs.swagger.parameter(), [
         parameter.multipart ? kt.argument.named('name', kt.string(parameter.multipart.name)) : null,
-        parameter.description ? kt.argument.named('description', kt.string(parameter.description?.trim())) : null,
+        parameter.description
+          ? kt.argument.named(
+            'description',
+            kt.string(parameter.description?.trim()),
+          )
+          : null,
         kt.argument.named('required', parameter.required),
         parameter.target === 'header' ? kt.argument.named('hidden', kt.toNode(true)) : null,
       ]);
 
       const schemaArgs: kt.Argument<SourceBuilder>[] = [];
       if (parameter.schema?.default !== undefined) {
-        schemaArgs.push(kt.argument.named('defaultValue', kt.string(String(parameter.schema?.default))));
+        schemaArgs.push(
+          kt.argument.named(
+            'defaultValue',
+            kt.string(String(parameter.schema?.default)),
+          ),
+        );
       }
       if (isEnumSchema) {
-        schemaArgs.push(kt.argument.named(
-          'allowableValues',
-          kt.collectionLiteral(parameter.schema?.enum?.map((x) => kt.string(x?.toString()))),
-        ));
+        schemaArgs.push(
+          kt.argument.named(
+            'allowableValues',
+            kt.collectionLiteral(
+              parameter.schema?.enum?.map((x) => kt.string(x?.toString())),
+            ),
+          ),
+        );
       }
       if (schemaArgs.length) {
         annotation.arguments.push(
           kt.argument.named(
             'schema',
-            kt.call(
-              [kt.refs.swagger.schema()],
-              schemaArgs,
-            ),
+            kt.call([kt.refs.swagger.schema()], schemaArgs),
           ),
         );
       }
       result.annotations.push(annotation);
     }
 
-    const isCorePackage = !schemaType?.packageName || /^(kotlin|java)(\..*|$)/.test(schemaType.packageName);
+    const isCorePackage = !schemaType?.packageName ||
+      /^(kotlin|java)(\..*|$)/.test(schemaType.packageName);
     if (!isCorePackage && ctx.config.addJakartaValidationAnnotations) {
       result.annotations.push(kt.annotation(kt.refs.jakarta.valid()));
     }
@@ -292,17 +380,30 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
         kt.argument.named('required', parameter.required),
       ]);
       if (parameter.schema?.default !== undefined) {
-        annotation.arguments.push(kt.argument.named('defaultValue', kt.string(String(parameter.schema?.default))));
+        annotation.arguments.push(
+          kt.argument.named(
+            'defaultValue',
+            kt.string(String(parameter.schema?.default)),
+          ),
+        );
       }
       result.annotations.push(annotation);
     }
 
     if (parameter.target === 'path') {
-      result.annotations.push(kt.annotation(kt.refs.spring.pathVariable(), [kt.string(parameter.name)]));
+      result.annotations.push(
+        kt.annotation(kt.refs.spring.pathVariable(), [
+          kt.string(parameter.name),
+        ]),
+      );
     }
 
     if (parameter.target === 'header') {
-      result.annotations.push(kt.annotation(kt.refs.spring.requestHeader(), [kt.string(parameter.name)]));
+      result.annotations.push(
+        kt.annotation(kt.refs.spring.requestHeader(), [
+          kt.string(parameter.name),
+        ]),
+      );
     }
 
     if (parameter.multipart) {
@@ -326,14 +427,20 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
 
     parameters.forEach((x) => {
       const paramName = toCasing(x.name, ctx.config.parameterNameCasing);
-      if (x.schema?.kind === 'string' && x.schema.enum?.length && !x.multipart) {
+      if (
+        x.schema?.kind === 'string' &&
+        x.schema.enum?.length &&
+        !x.multipart
+      ) {
         const type = this.getSchemaType(ctx, { schema: x.schema });
         if (type) {
           body.values.push(
             s`val ${paramName} = ${paramName}${
-              type.nullable || !x.required && !x.schema.default ? '?' : ''
+              type.nullable || (!x.required && !x.schema.default) ? '?' : ''
             }.let { ${type}.fromValue(it) ?: return ${kt.refs.spring.responseEntity.infer()}.status(${kt.refs.spring.httpStatus()}.BAD_REQUEST).body(${
-              kt.string(`Invalid value for parameter ${x.name}`)
+              kt.string(
+                `Invalid value for parameter ${x.name}`,
+              )
             }) }`,
           );
         }
@@ -344,7 +451,10 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
       s`try {${s.indent`
           return ${
         kt.call(
-          [kt.call(kt.reference('getDelegate'), []), toCasing(endpoint.name, ctx.config.functionNameCasing)],
+          [
+            kt.call(kt.reference('getDelegate'), []),
+            toCasing(endpoint.name, ctx.config.functionNameCasing),
+          ],
           parameters.map((x) => toCasing(x.name, ctx.config.parameterNameCasing)),
         )
       }`}
@@ -356,7 +466,10 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     return body;
   }
 
-  private getApiResponseEntityClass(ctx: Context, args: Args.GetApiResponseEntityClass): kt.Class<Builder> {
+  private getApiResponseEntityClass(
+    ctx: Context,
+    args: Args.GetApiResponseEntityClass,
+  ): kt.Class<Builder> {
     const { endpoint } = args;
     const name = this.getApiResponseEntityName(ctx, { endpoint });
     return kt.class(name, {
@@ -368,7 +481,9 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
           kt.parameter.class('rawStatus', kt.refs.int()),
           kt.parameter.class(
             'headers',
-            kt.refs.spring.multiValueMap([kt.refs.string(), kt.refs.string()], { nullable: true }),
+            kt.refs.spring.multiValueMap([kt.refs.string(), kt.refs.string()], {
+              nullable: true,
+            }),
             { default: kt.toNode(null) },
           ),
         ],
@@ -376,40 +491,63 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
         {
           accessModifier: endpoint.responses.length > 0 ? 'private' : null,
           delegateTarget: 'super',
-          delegateArguments: [kt.argument('body'), kt.argument('headers'), kt.argument('rawStatus')],
+          delegateArguments: [
+            kt.argument('body'),
+            kt.argument('headers'),
+            kt.argument('rawStatus'),
+          ],
         },
       ),
       extends: kt.refs.spring.responseEntity([kt.reference('T')]),
       companionObject: kt.object({
         members: Array.from(
-          new Set([
-            ...ctx.config.defaultStatusCodes,
-            501,
-            ...endpoint.responses.map((x) => x.statusCode),
-          ].filter(notNullish)),
-        )
-          .map((code) => {
-            const fnName = toCasing(getReasonPhrase(code), ctx.config.functionNameCasing);
-            const response = endpoint.responses.find((x) => x.statusCode === code);
-            const responseType = response ? this.getResponseType(ctx, { endpoint, response }) : undefined;
-            const contentType = response?.contentOptions.find((x) => x.schema)?.type;
+          new Set(
+            [
+              ...ctx.config.defaultStatusCodes,
+              501,
+              ...endpoint.responses.map((x) => x.statusCode),
+            ].filter(notNullish),
+          ),
+        ).map((code) => {
+          const fnName = toCasing(
+            getReasonPhrase(code),
+            ctx.config.functionNameCasing,
+          );
+          const response = endpoint.responses.find(
+            (x) => x.statusCode === code,
+          );
+          const responseType = response ? this.getResponseType(ctx, { endpoint, response }) : undefined;
+          const contentType = response?.contentOptions.find(
+            (x) => x.schema,
+          )?.type;
 
-            const hasResponseBody = responseType && !kt.refs.unit.matches(responseType);
-            return kt.function(fnName, {
-              parameters: [
-                hasResponseBody ? kt.parameter.class('body', responseType) : null,
-                kt.parameter.class(
-                  'headers',
-                  kt.refs.spring.multiValueMap([kt.refs.string(), kt.refs.string()], { nullable: true }),
-                  { default: kt.toNode(null) },
+          const hasResponseBody = responseType && !kt.refs.unit.matches(responseType);
+          return kt.function(fnName, {
+            parameters: [
+              hasResponseBody ? kt.parameter.class('body', responseType) : null,
+              kt.parameter.class(
+                'headers',
+                kt.refs.spring.multiValueMap(
+                  [kt.refs.string(), kt.refs.string()],
+                  { nullable: true },
+                ),
+                { default: kt.toNode(null) },
+              ),
+            ],
+            singleExpression: true,
+            body: kt.call(
+              [
+                kt.reference(
+                  this.getApiResponseEntityName(ctx, { endpoint }),
+                  null,
+                  {
+                    generics: [
+                      hasResponseBody ? responseType : kt.refs.unit({ nullable: true }),
+                    ],
+                  },
                 ),
               ],
-              singleExpression: true,
-              body: kt.call([
-                kt.reference(this.getApiResponseEntityName(ctx, { endpoint }), null, {
-                  generics: [hasResponseBody ? responseType : kt.refs.unit({ nullable: true })],
-                }),
-              ], [
+              [
                 hasResponseBody ? kt.argument('body') : kt.toNode(null),
                 kt.toNode(code),
                 contentType
@@ -420,16 +558,20 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
                         it.addIfAbsent("Content-Type", ${kt.string(contentType)})
                     }`
                   : kt.argument('headers'),
-              ]),
-            });
-          }),
+              ],
+            ),
+          });
+        }),
       }),
     });
   }
   // #endregion
 
   // #region API Controller
-  protected generateApiControllerFile(ctx: Context, args: Args.GenerateApiControllerFile): KotlinImport {
+  protected generateApiControllerFile(
+    ctx: Context,
+    args: Args.GenerateApiControllerFile,
+  ): KotlinImport {
     const { dirPath, packageName } = args;
     const typeName = this.getApiControllerName(ctx, {});
     const fileName = `${typeName}.kt`;
@@ -437,7 +579,9 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     console.log(`  Generating API controller ${typeName} to ${fileName}...`);
 
     const builder = new KotlinFileBuilder(packageName, ctx.config);
-    builder.append(this.getApiControllerFileContent(ctx, { controllerName: typeName }));
+    builder.append(
+      this.getApiControllerFileContent(ctx, { controllerName: typeName }),
+    );
     fs.writeFileSync(filePath, builder.toString());
 
     return { typeName, packageName };
@@ -449,10 +593,16 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
   ): AppendValueGroup<Builder> {
     const { controllerName } = args;
 
-    return appendValueGroup([this.getApiController(ctx, { controllerName })], '\n');
+    return appendValueGroup(
+      [this.getApiController(ctx, { controllerName })],
+      '\n',
+    );
   }
 
-  protected getApiController(ctx: Context, args: Args.GetApiController): kt.Class<Builder> {
+  protected getApiController(
+    ctx: Context,
+    args: Args.GetApiController,
+  ): kt.Class<Builder> {
     const { controllerName } = args;
 
     return kt.class(controllerName, {
@@ -460,16 +610,26 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
       primaryConstructor: kt.constructor([
         kt.parameter.class(
           'delegate',
-          kt.reference(this.getApiDelegateInterfaceName(ctx, {}), null, { nullable: true }),
+          kt.reference(this.getApiDelegateInterfaceName(ctx, {}), null, {
+            nullable: true,
+          }),
           {
-            annotations: [kt.annotation(kt.refs.spring.autowired(), [kt.argument.named('required', 'false')])],
+            annotations: [
+              kt.annotation(kt.refs.spring.autowired(), [
+                kt.argument.named('required', 'false'),
+              ]),
+            ],
           },
         ),
         kt.parameter.class(
           'exceptionHandler',
           ctx.refs.apiExceptionHandler({ nullable: true }),
           {
-            annotations: [kt.annotation(kt.refs.spring.autowired(), [kt.argument.named('required', 'false')])],
+            annotations: [
+              kt.annotation(kt.refs.spring.autowired(), [
+                kt.argument.named('required', 'false'),
+              ]),
+            ],
             accessModifier: 'private',
             property: 'readonly',
           },
@@ -485,12 +645,21 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     if (ctx.config.addJakartaValidationAnnotations) {
       annotations.push(
         kt.annotation(kt.refs.jakarta.generated(), [
-          kt.argument.named('value', kt.collectionLiteral([kt.string('com.goast.kotlin.spring-service-generator')])),
+          kt.argument.named(
+            'value',
+            kt.collectionLiteral([
+              kt.string('com.goast.kotlin.spring-service-generator'),
+            ]),
+          ),
         ]),
       );
     }
     annotations.push(kt.annotation(kt.refs.spring.controller()));
-    annotations.push(kt.annotation(kt.refs.spring.requestMapping(), [this.getControllerRequestMapping(ctx, {})]));
+    annotations.push(
+      kt.annotation(kt.refs.spring.requestMapping(), [
+        this.getControllerRequestMapping(ctx, {}),
+      ]),
+    );
     return annotations;
   }
 
@@ -521,7 +690,10 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
   // #endregion
 
   // #region API Delegate Interface
-  protected generateApiDelegateInterfaceFile(ctx: Context, args: Args.GenerateApiDelegateInterfaceFile): KotlinImport {
+  protected generateApiDelegateInterfaceFile(
+    ctx: Context,
+    args: Args.GenerateApiDelegateInterfaceFile,
+  ): KotlinImport {
     const { dirPath, packageName } = args;
     const typeName = this.getApiDelegateInterfaceName(ctx, {});
     const fileName = `${typeName}.kt`;
@@ -529,7 +701,11 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     console.log(`  Generating API delegate ${typeName} to ${fileName}...`);
 
     const builder = new KotlinFileBuilder(packageName, ctx.config);
-    builder.append(this.getApiDelegateInterfaceFileContent(ctx, { delegateInterfaceName: typeName }));
+    builder.append(
+      this.getApiDelegateInterfaceFileContent(ctx, {
+        delegateInterfaceName: typeName,
+      }),
+    );
     fs.writeFileSync(filePath, builder.toString());
 
     return { typeName, packageName };
@@ -541,10 +717,16 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
   ): AppendValueGroup<Builder> {
     const { delegateInterfaceName } = args;
 
-    return appendValueGroup([this.getApiDelegateInterface(ctx, { delegateInterfaceName })], '\n');
+    return appendValueGroup(
+      [this.getApiDelegateInterface(ctx, { delegateInterfaceName })],
+      '\n',
+    );
   }
 
-  protected getApiDelegateInterface(ctx: Context, args: Args.GetApiDelegateInterface): kt.Interface<Builder> {
+  protected getApiDelegateInterface(
+    ctx: Context,
+    args: Args.GetApiDelegateInterface,
+  ): kt.Interface<Builder> {
     const { delegateInterfaceName } = args;
 
     return kt.interface(delegateInterfaceName, {
@@ -553,19 +735,28 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     });
   }
 
-  private getApiDelegateInterfaceAnnotations(ctx: Context): kt.Annotation<Builder>[] {
+  private getApiDelegateInterfaceAnnotations(
+    ctx: Context,
+  ): kt.Annotation<Builder>[] {
     const annotations: kt.Annotation<Builder>[] = [];
     if (ctx.config.addJakartaValidationAnnotations) {
       annotations.push(
         kt.annotation(kt.refs.jakarta.generated(), [
-          kt.argument.named('value', kt.collectionLiteral([kt.string('com.goast.kotlin.spring-service-generator')])),
+          kt.argument.named(
+            'value',
+            kt.collectionLiteral([
+              kt.string('com.goast.kotlin.spring-service-generator'),
+            ]),
+          ),
         ]),
       );
     }
     return annotations;
   }
 
-  private getApiDelegateInterfaceMembers(ctx: Context): kt.InterfaceMember<Builder>[] {
+  private getApiDelegateInterfaceMembers(
+    ctx: Context,
+  ): kt.InterfaceMember<Builder>[] {
     const members: kt.InterfaceMember<Builder>[] = [];
 
     members.push(
@@ -577,7 +768,9 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     );
 
     ctx.service.endpoints.forEach((endpoint) => {
-      members.push(this.getApiDelegateInterfaceEndpointMethod(ctx, { endpoint }));
+      members.push(
+        this.getApiDelegateInterfaceEndpointMethod(ctx, { endpoint }),
+      );
     });
 
     return members;
@@ -590,15 +783,18 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     const { endpoint } = args;
     const parameters = this.getAllParameters(ctx, { endpoint });
 
-    const fn = kt.function<Builder>(toCasing(endpoint.name, ctx.config.functionNameCasing), {
-      suspend: true,
-      parameters: parameters.map((parameter) => {
-        return kt.parameter(
-          toCasing(parameter.name, ctx.config.parameterNameCasing),
-          this.getParameterType(ctx, { endpoint, parameter }),
-        );
-      }),
-    });
+    const fn = kt.function<Builder>(
+      toCasing(endpoint.name, ctx.config.functionNameCasing),
+      {
+        suspend: ctx.config.suspendingFunctions,
+        parameters: parameters.map((parameter) => {
+          return kt.parameter(
+            toCasing(parameter.name, ctx.config.parameterNameCasing),
+            this.getParameterType(ctx, { endpoint, parameter }),
+          );
+        }),
+      },
+    );
 
     if (ctx.config.strictResponseEntities) {
       const responseEntity = kt.reference.genericFactory(
@@ -607,18 +803,27 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
       );
       fn.returnType = responseEntity(['*']);
       fn.body = appendValueGroup(
-        [s`return ${
-          kt.call([
-            responseEntity.infer(),
-            toCasing(getReasonPhrase(501), ctx.config.functionNameCasing),
-          ], [])
-        }`],
+        [
+          s`return ${
+            kt.call(
+              [
+                responseEntity.infer(),
+                toCasing(getReasonPhrase(501), ctx.config.functionNameCasing),
+              ],
+              [],
+            )
+          }`,
+        ],
         '\n',
       );
     } else {
-      fn.returnType = kt.refs.spring.responseEntity([this.getResponseType(ctx, { endpoint })]);
+      fn.returnType = kt.refs.spring.responseEntity([
+        this.getResponseType(ctx, { endpoint }),
+      ]);
       fn.body = appendValueGroup(
-        [s`return ${kt.refs.spring.responseEntity.infer()}(${kt.refs.spring.httpStatus()}.NOT_IMPLEMENTED)`],
+        [
+          s`return ${kt.refs.spring.responseEntity.infer()}(${kt.refs.spring.httpStatus()}.NOT_IMPLEMENTED)`,
+        ],
         '\n',
       );
     }
@@ -627,20 +832,27 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
   }
   // #endregion
 
-  protected getParameterType(ctx: Context, args: Args.GetParameterType): kt.Type<Builder> {
+  protected getParameterType(
+    ctx: Context,
+    args: Args.GetParameterType,
+  ): kt.Type<Builder> {
     const { parameter } = args;
     if (parameter.multipart?.isFile) {
       return kt.refs.spring.filePart();
     }
     const type = this.getTypeUsage(ctx, {
       schema: parameter.schema,
-      nullable: (!parameter.required && parameter.schema?.default === undefined) || undefined,
+      nullable: (!parameter.required && parameter.schema?.default === undefined) ||
+        undefined,
       type: args.type,
     });
     return parameter.target === 'body' ? adjustListType(ctx, type) : type;
   }
 
-  protected getResponseType(ctx: Context, args: Args.GetResponseType): kt.Type<Builder> {
+  protected getResponseType(
+    ctx: Context,
+    args: Args.GetResponseType,
+  ): kt.Type<Builder> {
     const { endpoint, response } = args;
     const responseSchemas = (response ? [response] : endpoint.responses)
       .flatMap((x) => x.contentOptions.flatMap((x) => x.schema))
@@ -650,12 +862,21 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
           a.findIndex((y) => {
             const xType = this.getSchemaType(ctx, { schema: x });
             const yType = this.getSchemaType(ctx, { schema: y });
-            return xType?.name === yType?.name && xType?.packageName === yType?.packageName;
+            return (
+              xType?.name === yType?.name &&
+              xType?.packageName === yType?.packageName
+            );
           }) === i,
       );
 
     if (responseSchemas.length === 1) {
-      return adjustListType(ctx, this.getTypeUsage(ctx, { schema: responseSchemas[0], fallback: kt.refs.unit() }));
+      return adjustListType(
+        ctx,
+        this.getTypeUsage(ctx, {
+          schema: responseSchemas[0],
+          fallback: kt.refs.unit(),
+        }),
+      );
     } else if (responseSchemas.length === 0) {
       return kt.refs.unit();
     } else {
@@ -663,7 +884,10 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     }
   }
 
-  protected getTypeUsage(ctx: Context, args: Args.GetTypeUsage<Builder>): kt.Type<Builder> {
+  protected getTypeUsage(
+    ctx: Context,
+    args: Args.GetTypeUsage<Builder>,
+  ): kt.Type<Builder> {
     const { schema, nullable, fallback } = args;
     const type = args.type ?? this.getSchemaType(ctx, { schema });
     return type
@@ -671,12 +895,18 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
       : (fallback ?? kt.refs.any({ nullable }));
   }
 
-  protected getSchemaType(ctx: Context, args: Args.GetSchemaType): kt.Reference<SourceBuilder> | undefined {
+  protected getSchemaType(
+    ctx: Context,
+    args: Args.GetSchemaType,
+  ): kt.Reference<SourceBuilder> | undefined {
     const { schema } = args;
     return schema && ctx.input.kotlin.models[schema.id].type;
   }
 
-  protected getControllerRequestMapping(ctx: Context, args: Args.GetControllerRequestMapping): kt.String<Builder> {
+  protected getControllerRequestMapping(
+    ctx: Context,
+    args: Args.GetControllerRequestMapping,
+  ): kt.String<Builder> {
     let { prefix } = args;
     const basePath = this.getBasePath(ctx, {});
     prefix ??= `openapi.${toCasing(ctx.service.name, ctx.config.propertyNameCasing)}`;
@@ -685,7 +915,8 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
 
   protected getBasePath(ctx: Context, _args: Args.GetBasePath): string {
     return modifyString(
-      (ctx.service.$src ?? ctx.service.endpoints[0]?.$src)?.document.servers?.[0]?.url ?? '/',
+      (ctx.service.$src ?? ctx.service.endpoints[0]?.$src)?.document
+        .servers?.[0]?.url ?? '/',
       ctx.config.basePath,
       ctx.service,
     );
@@ -696,12 +927,18 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     return modifyString(endpoint.path, ctx.config.pathModifier, endpoint);
   }
 
-  protected getDirectoryPath(ctx: Context, args: Args.GetDirectoryPath): string {
+  protected getDirectoryPath(
+    ctx: Context,
+    args: Args.GetDirectoryPath,
+  ): string {
     const { packageName } = args;
     return `${ctx.config.outputDir}/${packageName.replace(/\./g, '/')}`;
   }
 
-  protected getPathConstantName(ctx: Context, args: Args.GetPathConstantName): string {
+  protected getPathConstantName(
+    ctx: Context,
+    args: Args.GetPathConstantName,
+  ): string {
     const { endpoint } = args;
     return toCasing(`${endpoint.name}_path`, ctx.config.constantNameCasing);
   }
@@ -713,27 +950,54 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     return ctx.config.packageName + packageSuffix;
   }
 
-  protected getApiResponseEntityName(ctx: Context, args: Args.GetApiResponseEntityName): string {
+  protected getApiResponseEntityName(
+    ctx: Context,
+    args: Args.GetApiResponseEntityName,
+  ): string {
     const { endpoint } = args;
-    return toCasing(`${endpoint.name}_ResponseEntity`, ctx.config.typeNameCasing);
+    return toCasing(
+      `${endpoint.name}_ResponseEntity`,
+      ctx.config.typeNameCasing,
+    );
   }
 
-  protected getApiInterfaceName(ctx: Context, _args: Args.GetApiInterfaceName): string {
+  protected getApiInterfaceName(
+    ctx: Context,
+    _args: Args.GetApiInterfaceName,
+  ): string {
     return toCasing(ctx.service.name + '_Api', ctx.config.typeNameCasing);
   }
 
-  protected getApiControllerName(ctx: Context, _args: Args.GetApiControllerName): string {
-    return toCasing(ctx.service.name + '_ApiController', ctx.config.typeNameCasing);
+  protected getApiControllerName(
+    ctx: Context,
+    _args: Args.GetApiControllerName,
+  ): string {
+    return toCasing(
+      ctx.service.name + '_ApiController',
+      ctx.config.typeNameCasing,
+    );
   }
 
-  protected getApiDelegateInterfaceName(ctx: Context, _args: Args.GetApiDelegateInterfaceName): string {
-    return toCasing(ctx.service.name + '_ApiDelegate', ctx.config.typeNameCasing);
+  protected getApiDelegateInterfaceName(
+    ctx: Context,
+    _args: Args.GetApiDelegateInterfaceName,
+  ): string {
+    return toCasing(
+      ctx.service.name + '_ApiDelegate',
+      ctx.config.typeNameCasing,
+    );
   }
 
-  protected getAllParameters(ctx: Context, args: Args.GetAllParameters): ApiParameterWithMultipartInfo[] {
+  protected getAllParameters(
+    ctx: Context,
+    args: Args.GetAllParameters,
+  ): ApiParameterWithMultipartInfo[] {
     const { endpoint } = args;
     const parameters = endpoint.parameters.filter(
-      (parameter) => parameter.target === 'query' || parameter.target === 'path' || parameter.target === 'header',
+      (parameter) =>
+        parameter.target === 'query' ||
+        parameter.target === 'path' ||
+        parameter.target === 'header',
     );
     if (endpoint.requestBody) {
       const content = endpoint.requestBody.content[0];
@@ -757,7 +1021,8 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
                 {
                   multipart: {
                     name,
-                    isFile: property.schema.kind === 'string' && property.schema.format === 'binary',
+                    isFile: property.schema.kind === 'string' &&
+                      property.schema.format === 'binary',
                   },
                 },
               ),
@@ -785,7 +1050,9 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     return parameters;
   }
 
-  private createApiParameter(data: Partial<ApiParameter> & Pick<ApiParameter, 'id' | 'name' | 'target'>): ApiParameter {
+  private createApiParameter(
+    data: Partial<ApiParameter> & Pick<ApiParameter, 'id' | 'name' | 'target'>,
+  ): ApiParameter {
     return {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       $src: undefined!,
