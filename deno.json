@@ -28,7 +28,14 @@
     "exclude": ["npm/**/*", "out/**/*", "coverage/**/*", ".verify/**/*"]
   },
   "lint": {
-    "exclude": ["npm/**/*", "out/**/*", "coverage/**/*", ".verify/**/*", "playground.ts", "**/assets/**/*"]
+    "exclude": [
+      "npm/**/*",
+      "out/**/*",
+      "coverage/**/*",
+      ".verify/**/*",
+      "playground.ts",
+      "**/assets/**/*"
+    ]
   },
   "test": {
     "include": ["/packages/*"]

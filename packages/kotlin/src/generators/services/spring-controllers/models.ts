@@ -14,12 +14,16 @@ export type KotlinServicesGeneratorConfig = KotlinGeneratorConfig & {
   packageName: string;
   packageSuffix: string | ((service: ApiService | null) => string);
 
-  basePath?: string | RegExp | ((basePath: string, service: ApiService) => string);
+  basePath?:
+    | string
+    | RegExp
+    | ((basePath: string, service: ApiService) => string);
   pathModifier?: RegExp | ((path: string, endpoint: ApiEndpoint) => string);
 
   addSwaggerAnnotations: boolean;
   addJakartaValidationAnnotations: boolean;
   arrayType: 'list' | 'flux';
+  suspendingFunctions: boolean;
 
   strictResponseEntities: boolean;
   defaultStatusCodes: number[];
@@ -34,6 +38,7 @@ export const defaultKotlinServicesGeneratorConfig: DefaultGenerationProviderConf
   addSwaggerAnnotations: true,
   addJakartaValidationAnnotations: true,
   arrayType: 'flux',
+  suspendingFunctions: true,
 
   strictResponseEntities: false,
   defaultStatusCodes: [400, 401, 403, 500, 501],
