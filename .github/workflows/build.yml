@@ -91,51 +91,48 @@ jobs:
         working-directory: packages/core
 
       - name: Publish @goast/core to NPM
-        run: npm publish
-        working-directory: npm/@goast/core
+        id: publish-core
+        uses: JS-DevTools/npm-publish@v4
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: npm/@goast/core
 
       - name: Create Tag for @goast/core
-        run: |
-          tag="v$(node -p "require('./npm/@goast/core/package.json').version")"
-          if (git rev-parse "$tag" >/dev/null 2>&1); then
-            echo "Tag $tag already exists. Skipping tag creation."
-          else
-            git tag "$tag"
-            git push origin "$tag"
-          fi
+        uses: rickstaa/action-create-tag@v1
+        with:
+          tag: core/v${{ steps.publish-core.outputs.version }}
+          tag_exists_error: false
 
       - name: Publish @goast/kotlin to JSR
         run: deno publish
         working-directory: packages/kotlin
 
       - name: Publish @goast/kotlin to NPM
-        run: npm publish
-        working-directory: npm/@goast/kotlin
+        id: publish-kotlin
+        uses: JS-DevTools/npm-publish@v4
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: npm/@goast/kotlin
 
       - name: Create Tag for @goast/kotlin
-        run: |
-          tag="v$(node -p "require('./npm/@goast/kotlin/package.json').version")"
-          if (git rev-parse "$tag" >/dev/null 2>&1); then
-            echo "Tag $tag already exists. Skipping tag creation."
-          else
-            git tag "$tag"
-            git push origin "$tag"
-          fi
+        uses: rickstaa/action-create-tag@v1
+        with:
+          tag: kotlin/v${{ steps.publish-kotlin.outputs.version }}
+          tag_exists_error: false
 
       - name: Publish @goast/typescript to JSR
         run: deno publish
         working-directory: packages/typescript
 
       - name: Publish @goast/typescript to NPM
-        run: npm publish
-        working-directory: npm/@goast/typescript
+        id: publish-typescript
+        uses: JS-DevTools/npm-publish@v4
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: npm/@goast/typescript
 
       - name: Create Tag for @goast/typescript
-        run: |
-          tag="v$(node -p "require('./npm/@goast/typescript/package.json').version")"
-          if (git rev-parse "$tag" >/dev/null 2>&1); then
-            echo "Tag $tag already exists. Skipping tag creation."
-          else
-            git tag "$tag"
-            git push origin "$tag"
-          fi
+        uses: rickstaa/action-create-tag@v1
+        with:
+          tag: typescript/v${{ steps.publish-typescript.outputs.version }}
+          tag_exists_error: false
