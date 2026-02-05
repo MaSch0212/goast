@@ -94,7 +94,6 @@ jobs:
         id: publish-core
         uses: JS-DevTools/npm-publish@v4
         with:
-          token: ${{ secrets.NPM_TOKEN }}
           package: npm/@goast/core
 
       - name: Create Tag for @goast/core
@@ -111,7 +110,6 @@ jobs:
         id: publish-kotlin
         uses: JS-DevTools/npm-publish@v4
         with:
-          token: ${{ secrets.NPM_TOKEN }}
           package: npm/@goast/kotlin
 
       - name: Create Tag for @goast/kotlin
@@ -128,7 +126,6 @@ jobs:
         id: publish-typescript
         uses: JS-DevTools/npm-publish@v4
         with:
-          token: ${{ secrets.NPM_TOKEN }}
           package: npm/@goast/typescript
 
       - name: Create Tag for @goast/typescript
