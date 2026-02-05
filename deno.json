@@ -17,8 +17,9 @@
     "@std/expect": "jsr:@std/expect@^1.0.5",
     "@std/testing": "jsr:@std/testing@^1.0.4",
     "@std/text": "jsr:@std/text@^1.0.7",
+    "@std/fs": "jsr:@std/fs@^1.0.22",
     "@types/node": "npm:@types/node@^22.7.5",
-    "fs-extra": "npm:fs-extra@^11.2.0",
+    "fs-extra": "npm:fs-extra@^11.3.3",
     "http-status-codes": "npm:http-status-codes@^2.3.0",
     "yaml": "npm:yaml@^2.5.1"
   },

@@ -1,7 +1,6 @@
 import { build, type BuildOptions, emptyDir } from '@deno/dnt';
+import * as fs from '@std/fs';
 import { resolve } from 'node:path';
-// @deno-types="npm:@types/fs-extra@11"
-import fs from 'fs-extra';
 
 type GoastNpmOptions = {
   shimDeno?: BuildOptions['shims']['deno'];
@@ -88,7 +87,9 @@ await build({
     copyIfExists(resolve(projectDir, 'assets'), resolve(distDir, 'assets'));
 
     // Test files
-    fs.copySync(resolve(rootDir, 'test', 'openapi-files'), resolve(distDir, '..', 'test', 'openapi-files'));
+    fs.copySync(resolve(rootDir, 'test', 'openapi-files'), resolve(distDir, '..', 'test', 'openapi-files'), {
+      overwrite: true,
+    });
     copyIfExists(resolve(projectDir, 'tests', '.verify'), resolve(distDir, 'script', 'tests', '.verify'));
     copyIfExists(resolve(projectDir, 'tests', '.verify'), resolve(distDir, 'esm', 'tests', '.verify'));
 
@@ -103,9 +104,9 @@ await build({
         if (!fs.existsSync(assetsFilePath)) {
           throw new Error(`The file "${assetsFilePath}" does not exist.`);
         }
-        let content = fs.readFileSync(assetsFilePath, 'utf-8');
+        let content = Deno.readTextFileSync(assetsFilePath);
         content = content.replace('../assets/', '../../assets/');
-        fs.writeFileSync(assetsFilePath, content);
+        Deno.writeTextFileSync(assetsFilePath, content);
       }
     }
   },
@@ -116,7 +117,7 @@ adjustNpmIgnore();
 
 function copyIfExists(src: string, dest: string) {
   if (fs.existsSync(src)) {
-    fs.copySync(src, dest);
+    fs.copySync(src, dest, { overwrite: true });
   }
 }
 
@@ -157,7 +158,7 @@ function correctLocalPackageDependencies(packageJson: PackageJson) {
     if (!depCollection) continue;
     for (const dep of denoJson.goastNpmOptions?.usedLocalPackages ?? []) {
       if (!depCollection[dep]) continue;
-      const depVersion = fs.readJsonSync(resolve(rootDir, 'npm', dep, 'package.json')).version;
+      const depVersion = JSON.parse(Deno.readTextFileSync(resolve(rootDir, 'npm', dep, 'package.json'))).version;
       if (!depVersion) throw new Error(`The package.json of the local package "${dep}" does not contain a version.`);
       depCollection[dep] = depVersion;
     }
