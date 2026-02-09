@@ -45,6 +45,7 @@ export function transformOpenApi(data: OpenApiCollectorData, options?: Partial<O
   }
 
   return {
+    documents: context.input.documents,
     services: Array.from(context.services.values()),
     endpoints: Array.from(context.endpoints.values()),
     schemas: Array.from(context.schemas.values()),

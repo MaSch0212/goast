@@ -1,3 +1,5 @@
+import type { OpenApiCollectorData } from '../collect/types.ts';
+import type { ArrayItem } from '../utils/type.utils.ts';
 import type {
   ApiContent,
   ApiData,
@@ -12,8 +14,6 @@ import type {
   ApiService,
 } from './api-types.ts';
 import type { IdGenerator } from './helpers.ts';
-import type { OpenApiCollectorData } from '../collect/types.ts';
-import type { ArrayItem } from '../utils/type.utils.ts';
 
 export type OpenApiTransformerOptions = {
   /**
@@ -49,4 +49,4 @@ export type OpenApiTransformerContext = {
     headers: Map<string, ApiHeader>;
     schemas: Map<string, ApiSchema>;
   };
-} & { [K in keyof ApiData]: Map<string, ArrayItem<ApiData[K]>> };
+} & { [K in Exclude<keyof ApiData, 'documents'>]: Map<string, ArrayItem<ApiData[K]>> };

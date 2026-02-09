@@ -5,6 +5,7 @@ import {
   appendValueGroup,
   builderTemplate as s,
   createOverwriteProxy,
+  getSourceDisplayName,
   type MaybePromise,
   resolveAnyOfAndAllOf,
   SourceBuilder,
@@ -36,6 +37,11 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
     const filePath = this.getFilePath(ctx, { packageName });
 
     console.log(`Generating client for service ${ctx.service.name} to ${filePath}...`);
+    ctx.service.endpoints.forEach((endpoint) => {
+      console.log(
+        `  ${getSourceDisplayName(ctx.data, endpoint)} [${toCasing(endpoint.name, ctx.config.functionNameCasing)}]`,
+      );
+    });
     const builder = new KotlinFileBuilder(packageName, ctx.config);
     builder.append(this.getClientFileContent(ctx, {}));
     builder.writeToFile(filePath);

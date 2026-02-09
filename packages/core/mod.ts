@@ -14,6 +14,7 @@ export * from './src/parse/types.ts';
 export * from './src/transform/api-types.ts';
 export * from './src/transform/transformer.ts';
 
+export * from './src/utils/api-data.utils.ts';
 export * from './src/utils/array.utils.ts';
 export * from './src/utils/asset-manager.ts';
 export * from './src/utils/class.utils.ts';

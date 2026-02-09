@@ -5,6 +5,7 @@ import {
   appendValueGroup,
   builderTemplate as s,
   createOverwriteProxy,
+  getSourceDisplayName,
   type MaybePromise,
   notNullish,
   resolveAnyOfAndAllOf,
@@ -41,6 +42,12 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     const dirPath = this.getDirectoryPath(ctx, { packageName });
 
     console.log(`Generating service ${ctx.service.id} to ${dirPath}...`);
+    console.log(`  Endpoints:`);
+    ctx.service.endpoints.forEach((endpoint) => {
+      console.log(
+        `  - ${getSourceDisplayName(ctx.data, endpoint)} [${toCasing(endpoint.name, ctx.config.functionNameCasing)}]`,
+      );
+    });
     return {
       apiInterface: this.generateApiInterfaceFile(ctx, {
         dirPath,

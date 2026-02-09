@@ -7,6 +7,7 @@ import {
   type AppendValueGroup,
   appendValueGroup,
   builderTemplate as s,
+  getSourceDisplayName,
   type MaybePromise,
   toCasing,
 } from '@goast/core';
@@ -38,7 +39,14 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
       logName: `k6 client ${name}`,
       filePath,
       options: ctx.config,
-      generator: (b) => b.append(this.getClientFileContent(ctx)),
+      generator: (b) => {
+        ctx.service.endpoints.forEach((endpoint) => {
+          console.log(
+            `  ${getSourceDisplayName(ctx.data, endpoint)} [${toCasing(endpoint.name, ctx.config.functionNameCasing)}]`,
+          );
+        });
+        b.append(this.getClientFileContent(ctx));
+      },
     });
 
     return {

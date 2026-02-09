@@ -9,6 +9,7 @@ import {
   createOverwriteProxy,
   DEFAULT_IGNORED_SCHEMA_PROPERTIES,
   getSchemaReference,
+  getSourceDisplayName,
   type MaybePromise,
   modify,
   modifyEach,
@@ -44,7 +45,9 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       const packageName = this.getPackageName(ctx, { schema: ctx.schema });
       const filePath = `${ctx.config.outputDir}/${packageName.replace(/\./g, '/')}/${typeName}.kt`;
 
-      console.log(`Generating model ${packageName}.${typeName} to ${filePath}... (${ctx.schema.$src.path})`);
+      console.log(
+        `Generating model ${getSourceDisplayName(ctx.data, ctx.schema)} [${packageName}.${typeName}] to ${filePath}...`,
+      );
       const builder = new KotlinFileBuilder(packageName, ctx.config);
       builder.append(this.getFileContent(ctx, {}));
       builder.writeToFile(filePath);

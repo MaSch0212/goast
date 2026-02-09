@@ -37,7 +37,7 @@ async function getFilesImpl(
     if (stat.isDirectory()) {
       if (options.recursive) {
         if (options.maxDepth && options.maxDepth > currentDepth) {
-          getFilesImpl(filePath, options, files, currentDepth + 1);
+          await getFilesImpl(filePath, options, files, currentDepth + 1);
         }
       }
     } else {

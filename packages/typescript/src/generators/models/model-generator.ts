@@ -9,6 +9,7 @@ import {
   type CombinedLikeApiSchema,
   DEFAULT_IGNORED_SCHEMA_PROPERTIES,
   getSchemaReference,
+  getSourceDisplayName,
   type MaybePromise,
   notNullish,
   type Nullable,
@@ -38,10 +39,11 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
     if (this.shouldGenerateTypeDeclaration(ctx, ctx.schema)) {
       const name = this.getDeclarationTypeName(ctx, ctx.schema);
       const filePath = this.getFilePath(ctx, ctx.schema);
+      const src = getSchemaReference(ctx.schema, DEFAULT_IGNORED_SCHEMA_PROPERTIES).$src;
 
       const fileContent = this.getFileContent(ctx);
       TypeScriptFileBuilder.generate({
-        logName: `model ${name}`,
+        logName: `model ${getSourceDisplayName(ctx.data, ctx.schema)} [${name}]`,
         filePath,
         options: ctx.config,
         generator: (b) => b.append(fileContent),
