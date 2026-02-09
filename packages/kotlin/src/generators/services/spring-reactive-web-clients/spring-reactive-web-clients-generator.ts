@@ -5,8 +5,8 @@ import {
   Factory,
   type MaybePromise,
   type OpenApiGeneratorContext,
-  OpenApiServicesGenerationProviderBase,,
-  writeGeneratedFile
+  OpenApiServicesGenerationProviderBase,
+  writeGeneratedFile,
 } from '@goast/core';
 
 import { getAssetFileContent } from '../../../assets.ts';
