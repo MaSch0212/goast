@@ -1,5 +1,6 @@
 import { type AppendParam, type AppendValue, isAppendValue, SourceBuilder } from '@goast/core';
 
+import { writeGeneratedFile } from '../../core/src/utils/file-system.utils.ts';
 import { KtNode } from './ast/node.ts';
 import { defaultKotlinGeneratorConfig, type KotlinGeneratorConfig } from './config.ts';
 import { ImportCollection } from './import-collection.ts';
@@ -97,6 +98,10 @@ export class KotlinFileBuilder<TAdditionalAppends = never> extends SourceBuilder
       .append(super.toString())
       .if(addPadding, (builder) => builder.ensureCurrentLineEmpty())
       .toString();
+  }
+
+  public writeToFile(filePath: string) {
+    writeGeneratedFile(this.options, filePath, this.toString());
   }
 
   protected override appendSingle(value: KotlinAppendParam<this, TAdditionalAppends>): void {

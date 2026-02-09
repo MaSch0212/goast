@@ -1,10 +1,6 @@
-import { dirname } from 'node:path';
-
-// @deno-types="npm:@types/fs-extra@11"
-import fs from 'fs-extra';
-
 import { type AppendParam, type AppendValue, isAppendValue, type Nullable, SourceBuilder } from '@goast/core';
 
+import { writeGeneratedFile } from '../../core/src/utils/file-system.utils.ts';
 import { TsNode } from './ast/node.ts';
 import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from './config.ts';
 import type { TypeScriptModelGeneratorOutput } from './generators/index.ts';
@@ -101,8 +97,7 @@ export class TypeScriptFileBuilder<TAdditionalAppends = never>
   public writeToFile(filePath?: string): void {
     if (!filePath) filePath = this.filePath;
     if (!filePath) throw new Error('File path is required');
-    fs.ensureDirSync(dirname(filePath));
-    fs.writeFileSync(filePath, this.toString());
+    writeGeneratedFile(this.options, filePath, this.toString());
   }
 
   public static generate(options: {

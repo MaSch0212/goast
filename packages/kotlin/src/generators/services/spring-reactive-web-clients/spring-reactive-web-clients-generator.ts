@@ -1,8 +1,5 @@
 import { resolve } from 'node:path';
 
-// @deno-types="npm:@types/fs-extra@11"
-import fs from 'fs-extra';
-
 import {
   type ApiService,
   Factory,
@@ -11,6 +8,7 @@ import {
   OpenApiServicesGenerationProviderBase,
 } from '@goast/core';
 
+import { writeGeneratedFile } from '../../../../../core/src/utils/file-system.utils.ts';
 import { getAssetFileContent } from '../../../assets.ts';
 import type { KotlinServicesGeneratorInput } from '../spring-controllers/index.ts';
 import {
@@ -110,7 +108,6 @@ export class KotlinSpringReactiveWebClientsGenerator extends OpenApiServicesGene
 
   private async copyInfrastructureFiles(ctx: Context): Promise<void> {
     const targetDir = resolve(ctx.config.outputDir, ctx.infrastructurePackageName.replace(/\./g, '/'));
-    await fs.ensureDir(targetDir);
 
     const files = [
       'ApiRequestFile.kt',
@@ -122,7 +119,7 @@ export class KotlinSpringReactiveWebClientsGenerator extends OpenApiServicesGene
       console.log(`Copying asset file "${sourcePath}" to "${targetPath}"`);
       const fileContent = (await getAssetFileContent(sourcePath))
         .replace(/@PACKAGE_NAME@/g, ctx.infrastructurePackageName);
-      fs.writeFileSync(targetPath, fileContent);
+      writeGeneratedFile(ctx.config, targetPath, fileContent);
     }
   }
 }

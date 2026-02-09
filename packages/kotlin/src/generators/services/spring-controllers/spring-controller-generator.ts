@@ -1,6 +1,3 @@
-// @deno-types="npm:@types/fs-extra@11"
-import fs from 'fs-extra';
-
 import {
   type ApiEndpoint,
   type ApiParameter,
@@ -42,7 +39,6 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
   ): MaybePromise<KotlinServiceGeneratorOutput> {
     const packageName = this.getPackageName(ctx, {});
     const dirPath = this.getDirectoryPath(ctx, { packageName });
-    fs.ensureDirSync(dirPath);
 
     console.log(`Generating service ${ctx.service.id} to ${dirPath}...`);
     return {
@@ -76,7 +72,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     builder.append(
       this.getApiInterfaceFileContent(ctx, { interfaceName: typeName }),
     );
-    fs.writeFileSync(filePath, builder.toString());
+    builder.writeToFile(filePath);
 
     return { typeName, packageName };
   }
@@ -582,7 +578,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     builder.append(
       this.getApiControllerFileContent(ctx, { controllerName: typeName }),
     );
-    fs.writeFileSync(filePath, builder.toString());
+    builder.writeToFile(filePath);
 
     return { typeName, packageName };
   }
@@ -706,7 +702,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
         delegateInterfaceName: typeName,
       }),
     );
-    fs.writeFileSync(filePath, builder.toString());
+    builder.writeToFile(filePath);
 
     return { typeName, packageName };
   }

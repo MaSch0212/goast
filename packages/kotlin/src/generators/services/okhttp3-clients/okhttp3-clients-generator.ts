@@ -1,8 +1,5 @@
 import { resolve } from 'node:path';
 
-// @deno-types="npm:@types/fs-extra@11"
-import fs from 'fs-extra';
-
 import {
   type ApiService,
   type AppendValue,
@@ -14,7 +11,7 @@ import {
   toCasing,
 } from '@goast/core';
 
-import { writeFileSync } from 'node:fs';
+import { writeGeneratedFile } from '../../../../../core/src/utils/file-system.utils.ts';
 import { getAssetFileContent } from '../../../assets.ts';
 import { kt } from '../../../ast/index.ts';
 import { KotlinFileBuilder } from '../../../file-builder.ts';
@@ -108,7 +105,6 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
 
   private async copyInfrastructureFiles(ctx: Context): Promise<void> {
     const targetDir = resolve(ctx.config.outputDir, ctx.infrastructurePackageName.replace(/\./g, '/'));
-    await fs.ensureDir(targetDir);
 
     const files = [
       'ApiAbstractions.kt',
@@ -135,7 +131,7 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
             : 'val baseUrl: String, val client: Factory = defaultClient, val objectMapper: ObjectMapper = Serializer.jacksonObjectMapper',
         );
       }
-      fs.writeFileSync(targetPath, fileContent);
+      writeGeneratedFile(ctx.config, targetPath, fileContent);
     }
 
     if (
@@ -167,7 +163,7 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
           ],
         }),
       );
-      writeFileSync(filePath, builder.toString());
+      builder.writeToFile(filePath);
     }
   }
 }
