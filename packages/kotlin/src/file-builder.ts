@@ -1,6 +1,5 @@
-import { type AppendParam, type AppendValue, isAppendValue, SourceBuilder } from '@goast/core';
+import { type AppendParam, type AppendValue, isAppendValue, SourceBuilder, writeGeneratedFile } from '@goast/core';
 
-import { writeGeneratedFile } from '../../core/src/utils/file-system.utils.ts';
 import { KtNode } from './ast/node.ts';
 import { defaultKotlinGeneratorConfig, type KotlinGeneratorConfig } from './config.ts';
 import { ImportCollection } from './import-collection.ts';

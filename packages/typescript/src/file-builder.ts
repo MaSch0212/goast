@@ -1,6 +1,12 @@
-import { type AppendParam, type AppendValue, isAppendValue, type Nullable, SourceBuilder } from '@goast/core';
+import {
+  type AppendParam,
+  type AppendValue,
+  isAppendValue,
+  type Nullable,
+  SourceBuilder,
+  writeGeneratedFile,
+} from '@goast/core';
 
-import { writeGeneratedFile } from '../../core/src/utils/file-system.utils.ts';
 import { TsNode } from './ast/node.ts';
 import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from './config.ts';
 import type { TypeScriptModelGeneratorOutput } from './generators/index.ts';

@@ -5,10 +5,10 @@ import {
   Factory,
   type MaybePromise,
   type OpenApiGeneratorContext,
-  OpenApiServicesGenerationProviderBase,
+  OpenApiServicesGenerationProviderBase,,
+  writeGeneratedFile
 } from '@goast/core';
 
-import { writeGeneratedFile } from '../../../../../core/src/utils/file-system.utils.ts';
 import { getAssetFileContent } from '../../../assets.ts';
 import type { KotlinServicesGeneratorInput } from '../spring-controllers/index.ts';
 import {

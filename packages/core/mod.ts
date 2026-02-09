@@ -21,6 +21,7 @@ export * from './src/utils/common.utils.ts';
 export * from './src/utils/endpoint.utils.ts';
 export * from './src/utils/error.utils.ts';
 export * from './src/utils/factory.ts';
+export * from './src/utils/file-system.utils.ts';
 export * from './src/utils/generator.utils.ts';
 export * from './src/utils/object.utils.ts';
 export * from './src/utils/schema.utils.ts';

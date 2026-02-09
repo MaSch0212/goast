@@ -9,9 +9,9 @@ import {
   type OpenApiGeneratorContext,
   OpenApiServicesGenerationProviderBase,
   toCasing,
+  writeGeneratedFile,
 } from '@goast/core';
 
-import { writeGeneratedFile } from '../../../../../core/src/utils/file-system.utils.ts';
 import { getAssetFileContent } from '../../../assets.ts';
 import { kt } from '../../../ast/index.ts';
 import { KotlinFileBuilder } from '../../../file-builder.ts';
