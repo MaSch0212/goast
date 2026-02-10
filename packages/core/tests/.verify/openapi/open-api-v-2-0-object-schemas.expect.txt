@@ -1,4 +1,152 @@
 {
+  documents: [
+    {
+      definitions: {
+        EmptyObject: { type: 'object' },
+        ObjectWithAdditionalProperties: { additionalProperties: { type: 'string' }, type: 'object' },
+        ObjectWithDescription: {
+          description: 'My Object Description',
+          properties: {
+            a: { description: 'My Property Description', type: 'string' },
+            b: {
+              description: 'My Property Description\nWith Multiple Lines\n',
+              type: 'integer'
+            }
+          },
+          type: 'object'
+        },
+        ObjectWithMultilineDescription: {
+          description: 'My Object Description\nWith Multiple Lines\n',
+          type: 'object'
+        },
+        ObjectWithNullableProperties: {
+          properties: {
+            a: { type: [ 'string', 'null' ] },
+            b: { type: [ 'integer', 'null' ] },
+            c: { type: [ 'number', 'null' ] },
+            d: { type: [ 'boolean', 'null' ] },
+            e: { type: [ 'array', 'null' ] },
+            f: { type: [ 'object', 'null' ] }
+          },
+          type: 'object'
+        },
+        ObjectWithNullablePropertiesAndRequiredProperties: {
+          properties: {
+            a: { type: [ 'string', 'null' ] },
+            b: { type: [ 'integer', 'null' ] },
+            c: { type: [ 'number', 'null' ] },
+            d: { type: [ 'boolean', 'null' ] },
+            e: { type: [ 'array', 'null' ] },
+            f: { type: [ 'object', 'null' ] }
+          },
+          required: [ 'a', 'b', 'c', 'd', 'e', 'f' ],
+          type: 'object'
+        },
+        ObjectWithProperties: {
+          properties: {
+            a: { type: 'string' },
+            b: { type: 'integer' },
+            c: { type: 'number' },
+            d: { type: 'boolean' },
+            e: { type: 'array' },
+            f: { type: 'object' }
+          },
+          type: 'object'
+        },
+        ObjectWithPropertiesAllOf: {
+          allOf: [
+            {
+              properties: {
+                g: { type: 'string' },
+                h: { type: 'integer' },
+                i: { type: 'number' },
+                j: { type: 'boolean' },
+                k: { type: 'array' },
+                l: { type: 'object' }
+              },
+              type: 'object'
+            },
+            {
+              properties: {
+                m: { type: 'string' },
+                n: { type: 'integer' },
+                o: { type: 'number' },
+                p: { type: 'boolean' },
+                q: { type: 'array' },
+                r: { type: 'object' }
+              },
+              type: 'object'
+            }
+          ],
+          properties: {
+            a: { type: 'string' },
+            b: { type: 'integer' },
+            c: { type: 'number' },
+            d: { type: 'boolean' },
+            e: { type: 'array' },
+            f: { type: 'object' }
+          },
+          required: [
+            'a', 'b', 'c', 'd', 'e',
+            'f', 'g', 'h', 'i', 'j',
+            'k', 'l', 'm', 'n', 'o',
+            'p', 'q', 'r'
+          ],
+          type: 'object'
+        },
+        ObjectWithPropertiesAndAdditionalProperties: {
+          additionalProperties: { type: 'string' },
+          properties: {
+            a: { type: 'string' },
+            b: { type: 'integer' },
+            c: { type: 'number' },
+            d: { type: 'boolean' },
+            e: { type: 'array' },
+            f: { type: 'object' }
+          },
+          type: 'object'
+        },
+        ObjectWithReferencesInAllOf: {
+          allOf: [
+            { '$ref': '#/definitions/EmptyObject' },
+            { '$ref': 'detailed-schemas.yml#/definitions/WithTitle' },
+            { '$ref': 'simple-schemas.yml#/definitions/MyString' },
+            { type: 'string' }
+          ],
+          type: 'object'
+        },
+        ObjectWithReferencesInProperties: {
+          properties: {
+            a: { '$ref': '#/definitions/EmptyObject' },
+            b: { '$ref': 'detailed-schemas.yml#/definitions/WithTitle' },
+            c: { '$ref': 'simple-schemas.yml#/definitions/MyString' },
+            d: { type: 'string' }
+          },
+          type: 'object'
+        },
+        ObjectWithRequiredProperties: {
+          properties: {
+            a: { type: 'string' },
+            b: { type: 'integer' },
+            c: { type: 'number' },
+            d: { type: 'boolean' },
+            e: { type: 'array' },
+            f: { type: 'object' }
+          },
+          required: [ 'a', 'b', 'c', 'd', 'e', 'f' ],
+          type: 'object'
+        }
+      },
+      info: { title: 'Object Schemas', version: '1.0.0' },
+      paths: {
+        '/x': {
+          'x-ignore': true,
+          get: { responses: { '200': { description: '' } } }
+        }
+      },
+      swagger: '2.0'
+    }
+  ],
   endpoints: [],
   schemas: [
     {

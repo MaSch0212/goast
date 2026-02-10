@@ -1,4 +1,36 @@
 {
+  documents: [
+    {
+      components: {
+        schemas: {
+          MyEnum: { enum: [ 'one', 'two', 'three' ], type: 'string' },
+          ReadOnly: { readOnly: true, type: 'string' },
+          WithAllCommon: {
+            default: 'john.doe@example.io',
+            deprecated: true,
+            description: 'My Description',
+            example: '<yours>@example.io',
+            format: 'email',
+            maxLength: 255,
+            minLength: 5,
+            nullable: true,
+            pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$',
+            type: 'string'
+          },
+          WithTitle: { title: 'My Title', type: 'string' },
+          WriteOnly: { type: 'string', writeOnly: true }
+        }
+      },
+      info: { title: 'Detailed Schemas', version: '1.0.0' },
+      openapi: '3.0.0',
+      paths: {
+        '/x': {
+          'x-ignore': true,
+          get: { responses: { '200': { description: '' } } }
+        }
+      }
+    }
+  ],
   endpoints: [],
   schemas: [
     {

@@ -1,15 +1,19 @@
 import { dirname, relative } from 'node:path';
 import process from 'node:process';
-import { ApiComponent, ApiData } from '../transform/api-types.ts';
+import type { ApiComponent, ApiData } from '../transform/api-types.ts';
 
 const DOCUMENTS_BASE_PATH = Symbol('documentsBasePath');
 
-export function getSourceDisplayName(data: ApiData, component: ApiComponent<any>) {
-  let basePath: string | undefined = (data as any)[DOCUMENTS_BASE_PATH];
+type ApiDataWithBasePath = ApiData & {
+  [DOCUMENTS_BASE_PATH]?: string;
+};
+
+export function getSourceDisplayName<T>(data: ApiData, component: ApiComponent<T>): string {
+  let basePath: string | undefined = (data as ApiDataWithBasePath)[DOCUMENTS_BASE_PATH];
   if (basePath === undefined) {
     const allPaths = data.documents.map((doc) => doc.$src.file);
     basePath = getCommonBasePath(allPaths);
-    (data as any)[DOCUMENTS_BASE_PATH] = basePath;
+    (data as ApiDataWithBasePath)[DOCUMENTS_BASE_PATH] = basePath;
   }
 
   const relativePath = relative(basePath, component.$src.file);

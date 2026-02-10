@@ -1,4 +1,26 @@
 {
+  documents: [
+    {
+      components: {
+        schemas: {
+          MyArray: { type: 'array' },
+          MyBoolean: { type: 'boolean' },
+          MyInteger: { type: 'integer' },
+          MyNumber: { type: 'number' },
+          MyObject: { type: 'object' },
+          MyString: { type: 'string' }
+        }
+      },
+      info: { title: 'Simple Schemas', version: '1.0.0' },
+      openapi: '3.1.0',
+      paths: {
+        '/x': {
+          'x-ignore': true,
+          get: { responses: { '200': { description: '' } } }
+        }
+      }
+    }
+  ],
   endpoints: [],
   schemas: [
     {

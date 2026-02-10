@@ -39,7 +39,6 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
     if (this.shouldGenerateTypeDeclaration(ctx, ctx.schema)) {
       const name = this.getDeclarationTypeName(ctx, ctx.schema);
       const filePath = this.getFilePath(ctx, ctx.schema);
-      const src = getSchemaReference(ctx.schema, DEFAULT_IGNORED_SCHEMA_PROPERTIES).$src;
 
       const fileContent = this.getFileContent(ctx);
       TypeScriptFileBuilder.generate({
