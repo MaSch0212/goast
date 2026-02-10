@@ -40,6 +40,13 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       return { type: kt.refs.any({ nullable: true }) };
     }
 
+    const schemaReference = getSchemaReference(ctx.schema, DEFAULT_IGNORED_SCHEMA_PROPERTIES);
+    if (schemaReference !== ctx.schema) {
+      const typeName = this.getDeclarationTypeName(ctx, { schema: schemaReference });
+      const packageName = this.getPackageName(ctx, { schema: schemaReference });
+      return { type: kt.reference(typeName, packageName) };
+    }
+
     if (this.shouldGenerateTypeDeclaration(ctx, { schema: ctx.schema })) {
       const typeName = this.getDeclarationTypeName(ctx, { schema: ctx.schema });
       const packageName = this.getPackageName(ctx, { schema: ctx.schema });
@@ -598,11 +605,6 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
 
     // multipart schemas should not have its own type declaration
     if (schema.$src.path.endsWith('/requestBody/content/multipart/form-data/schema')) {
-      return false;
-    }
-
-    // Check if "real" schema
-    if (getSchemaReference(ctx.schema, DEFAULT_IGNORED_SCHEMA_PROPERTIES) !== ctx.schema) {
       return false;
     }
 

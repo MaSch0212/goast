@@ -80,6 +80,17 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
       await fs.ensureDir(absOutputPath);
     }
 
+    this._providers.forEach(({ config }) => {
+      if (config && 'outputDir' in config && config.outputDir && typeof config.outputDir === 'string') {
+        const providerOutputDir = resolve(config.outputDir);
+        if (this._config.clearOutputDir) {
+          fs.emptyDirSync(providerOutputDir);
+        } else {
+          fs.ensureDirSync(providerOutputDir);
+        }
+      }
+    });
+
     let input = {} as TOutput;
     for (const generator of this._providers) {
       const context = {
