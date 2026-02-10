@@ -40,7 +40,7 @@ export class OpenApiParser {
   public async parseApi(fileName: string): Promise<Deref<OpenApiDocument>> {
     const absoluteFilePath = this.isUrl(fileName) ? fileName : path.resolve(cwd(), fileName);
     const doc = await this.loadDocument(absoluteFilePath);
-    return await this.dereference(absoluteFilePath, '', doc.document);
+    return await this.dereference(absoluteFilePath, '/', doc.document);
   }
 
   public transformApis(apis: Deref<OpenApiDocument>[]): ApiData {
@@ -81,7 +81,7 @@ export class OpenApiParser {
           (result as Record<keyof T, unknown>)[key] = await Promise.all(
             v.map(async (v, index) => {
               if (v && typeof v === 'object') {
-                return await this.dereference(file, `${path}/${String(key)}/${index}`, v);
+                return await this.dereference(file, joinPaths(path, key, index), v);
               } else {
                 return v;
               }
@@ -90,7 +90,7 @@ export class OpenApiParser {
         } else {
           (result as Record<keyof T, unknown>)[key] = await this.dereference(
             file,
-            `${path}/${String(key)}`,
+            joinPaths(path, key),
             v as Record<string, unknown>,
           );
         }
@@ -216,4 +216,10 @@ function getDeepProperty(value: Record<string, unknown>, path: string): unknown 
   }
 
   return result;
+}
+
+function joinPaths(...paths: unknown[]): string {
+  return paths
+    .map((p) => String(p).replace(/\/$/, ''))
+    .join('/');
 }

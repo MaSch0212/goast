@@ -1,4 +1,30 @@
 {
+  documents: [
+    {
+      definitions: {
+        MyEnum: { enum: [ 'one', 'two', 'three' ], type: 'string' },
+        ReadOnly: { readOnly: true, type: 'string' },
+        WithAllCommon: {
+          default: 'john.doe@example.io',
+          description: 'My Description',
+          example: '<yours>@example.io',
+          maxLength: 255,
+          minLength: 5,
+          pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$',
+          type: 'string'
+        },
+        WithTitle: { title: 'My Title', type: 'string' }
+      },
+      info: { title: 'Detailed Schemas', version: '1.0.0' },
+      paths: {
+        '/x': {
+          'x-ignore': true,
+          get: { responses: { '200': { description: '' } } }
+        }
+      },
+      swagger: '2.0'
+    }
+  ],
   endpoints: [],
   schemas: [
     {

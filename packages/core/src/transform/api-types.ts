@@ -1,5 +1,6 @@
 import type {
   KnownOpenApiParameterTarget,
+  OpenApiDocument,
   OpenApiHeader,
   OpenApiHttpMethod,
   OpenApiMediaType,
@@ -15,6 +16,7 @@ import type { Deref, DerefSource } from '../parse/types.ts';
 import type { OptionalProperties } from '../utils/type.utils.ts';
 
 export type ApiData = {
+  documents: Deref<OpenApiDocument>[];
   services: ApiService[];
   endpoints: ApiEndpoint[];
   schemas: ApiSchema[];

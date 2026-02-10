@@ -73,6 +73,7 @@ export function determineSchemaName(
   if (responseMatch && responseMatch.groups) {
     const { path, method, status } = responseMatch.groups;
     const operation = schema.$src.document.paths?.[path]?.[method as OpenApiHttpMethod] ?? {};
+    console.log('responseMatch', responseMatch.groups, operation);
     return {
       name: `${determineEndpointName({ method, path: `/${path}`, operation })}_${status}_Response`,
       isGenerated: true,

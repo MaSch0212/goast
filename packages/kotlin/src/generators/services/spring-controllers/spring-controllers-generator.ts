@@ -1,6 +1,3 @@
-// @deno-types="npm:@types/fs-extra@11"
-import fs from 'fs-extra';
-
 import {
   type ApiService,
   type AppendValueGroup,
@@ -111,8 +108,7 @@ export class KotlinSpringControllersGenerator extends OpenApiServicesGenerationP
 
     const builder = new KotlinFileBuilder(packageName, ctx.config);
     builder.append(this.getApiExceptionHandlerInterface(ctx));
-    fs.ensureDirSync(dir);
-    fs.writeFileSync(`${dir}/${fileName}`, builder.toString());
+    builder.writeToFile(`${dir}/${fileName}`);
   }
 
   protected getApiExceptionHandlerFileContent(

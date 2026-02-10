@@ -7,7 +7,9 @@ import {
   appendValueGroup,
   type ArrayLikeApiSchema,
   type CombinedLikeApiSchema,
+  DEFAULT_IGNORED_SCHEMA_PROPERTIES,
   getSchemaReference,
+  getSourceDisplayName,
   type MaybePromise,
   notNullish,
   type Nullable,
@@ -40,7 +42,7 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
 
       const fileContent = this.getFileContent(ctx);
       TypeScriptFileBuilder.generate({
-        logName: `model ${name}`,
+        logName: `model ${getSourceDisplayName(ctx.data, ctx.schema)} [${name}]`,
         filePath,
         options: ctx.config,
         generator: (b) => b.append(fileContent),
@@ -243,7 +245,7 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
   ): ts.Type<Builder> | null {
     if (!schema) return this.getAnyType(ctx);
 
-    schema = getSchemaReference(schema, ['description']);
+    schema = getSchemaReference(schema, DEFAULT_IGNORED_SCHEMA_PROPERTIES);
 
     if (options?.useBaseType && ctx.schema.inheritedSchemas.some((x) => x.id === schema.id)) {
       return ts.reference(this.getBaseTypeName(ctx, schema), this.getFilePath(ctx, schema), {
@@ -420,6 +422,11 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
 
     // Dynamically generated schemas do not have its own type declaration
     if (!ctx.data.schemas.some((x) => x.id === schema.id)) {
+      return false;
+    }
+
+    // Check if "real" schema
+    if (getSchemaReference(ctx.schema, DEFAULT_IGNORED_SCHEMA_PROPERTIES) !== ctx.schema) {
       return false;
     }
 

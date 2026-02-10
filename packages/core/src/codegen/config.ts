@@ -17,6 +17,18 @@ export type OpenApiGeneratorConfig =
      * @default true
      */
     clearOutputDir: boolean;
+
+    /**
+     * How to handle existing files in the output directory.
+     * - 'override': overwrite existing files.
+     * - 'skip': skip generating files that already exist.
+     * - 'error': throw an error if a file already exists.
+     *
+     * Is is recommended to use `'error'` to prevent issues of two schemas generating the same file and overwriting each other.
+     * If `clearOutputDir` is set to `false`, it is recommended to use `'override'` to ensure that the generated files are up to date.
+     * @default 'error'
+     */
+    existingFileBehavior: 'override' | 'skip' | 'error';
   };
 
 export const defaultOpenApiGeneratorConfig: OpenApiGeneratorConfig = {
@@ -25,4 +37,5 @@ export const defaultOpenApiGeneratorConfig: OpenApiGeneratorConfig = {
 
   outputDir: 'generated',
   clearOutputDir: true,
+  existingFileBehavior: 'error',
 };

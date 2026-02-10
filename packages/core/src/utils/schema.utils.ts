@@ -127,6 +127,12 @@ function hasInvalidSubSchema(subSchemas: ApiSchema[]): boolean {
   );
 }
 
+export const DEFAULT_IGNORED_SCHEMA_PROPERTIES: (keyof OpenApiSchema)[] = [
+  'description',
+  'example',
+  'deprecated',
+];
+
 /**
  * Retrieves the first schema reference and the reference chain of a given schema that
  * defines some schema properties. (e.g. schemas with just "$ref" are skipped)

@@ -1,8 +1,3 @@
-import { dirname } from 'node:path';
-
-// @deno-types="npm:@types/fs-extra@11"
-import fs from 'fs-extra';
-
 import {
   type ApiSchema,
   type ApiSchemaKind,
@@ -12,7 +7,9 @@ import {
   appendValueGroup,
   builderTemplate as s,
   createOverwriteProxy,
+  DEFAULT_IGNORED_SCHEMA_PROPERTIES,
   getSchemaReference,
+  getSourceDisplayName,
   type MaybePromise,
   modify,
   modifyEach,
@@ -43,17 +40,24 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       return { type: kt.refs.any({ nullable: true }) };
     }
 
+    const schemaReference = getSchemaReference(ctx.schema, DEFAULT_IGNORED_SCHEMA_PROPERTIES);
+    if (schemaReference !== ctx.schema) {
+      const typeName = this.getDeclarationTypeName(ctx, { schema: schemaReference });
+      const packageName = this.getPackageName(ctx, { schema: schemaReference });
+      return { type: kt.reference(typeName, packageName) };
+    }
+
     if (this.shouldGenerateTypeDeclaration(ctx, { schema: ctx.schema })) {
       const typeName = this.getDeclarationTypeName(ctx, { schema: ctx.schema });
       const packageName = this.getPackageName(ctx, { schema: ctx.schema });
       const filePath = `${ctx.config.outputDir}/${packageName.replace(/\./g, '/')}/${typeName}.kt`;
-      console.log(`Generating model ${packageName}.${typeName} to ${filePath}...`);
-      fs.ensureDirSync(dirname(filePath));
 
-      fs.writeFileSync(
-        filePath,
-        new KotlinFileBuilder(packageName, ctx.config).append(this.getFileContent(ctx, {})).toString(),
+      console.log(
+        `Generating model ${getSourceDisplayName(ctx.data, ctx.schema)} [${packageName}.${typeName}] to ${filePath}...`,
       );
+      const builder = new KotlinFileBuilder(packageName, ctx.config);
+      builder.append(this.getFileContent(ctx, {}));
+      builder.writeToFile(filePath);
 
       return { type: kt.reference(typeName, packageName) };
     } else {
@@ -219,7 +223,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
   }
 
   protected getGeneratedType(ctx: Context, args: Args.GetGeneratedType): kt.Reference<SourceBuilder> | null {
-    const schema = getSchemaReference(args.schema, ['description']);
+    const schema = getSchemaReference(args.schema, DEFAULT_IGNORED_SCHEMA_PROPERTIES);
     if (this.shouldGenerateTypeDeclaration(ctx, { schema })) {
       return kt.reference(this.getDeclarationTypeName(ctx, { schema }), this.getPackageName(ctx, { schema }), {
         nullable: args.nullable ?? schema.nullable,

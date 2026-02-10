@@ -1,6 +1,3 @@
-// @deno-types="npm:@types/fs-extra@11"
-import fs from 'fs-extra';
-
 import {
   type ApiEndpoint,
   type ApiParameter,
@@ -8,6 +5,7 @@ import {
   appendValueGroup,
   builderTemplate as s,
   createOverwriteProxy,
+  getSourceDisplayName,
   type MaybePromise,
   notNullish,
   resolveAnyOfAndAllOf,
@@ -42,9 +40,14 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
   ): MaybePromise<KotlinServiceGeneratorOutput> {
     const packageName = this.getPackageName(ctx, {});
     const dirPath = this.getDirectoryPath(ctx, { packageName });
-    fs.ensureDirSync(dirPath);
 
     console.log(`Generating service ${ctx.service.id} to ${dirPath}...`);
+    console.log(`  Endpoints:`);
+    ctx.service.endpoints.forEach((endpoint) => {
+      console.log(
+        `  - ${getSourceDisplayName(ctx.data, endpoint)} [${toCasing(endpoint.name, ctx.config.functionNameCasing)}]`,
+      );
+    });
     return {
       apiInterface: this.generateApiInterfaceFile(ctx, {
         dirPath,
@@ -76,7 +79,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     builder.append(
       this.getApiInterfaceFileContent(ctx, { interfaceName: typeName }),
     );
-    fs.writeFileSync(filePath, builder.toString());
+    builder.writeToFile(filePath);
 
     return { typeName, packageName };
   }
@@ -582,7 +585,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     builder.append(
       this.getApiControllerFileContent(ctx, { controllerName: typeName }),
     );
-    fs.writeFileSync(filePath, builder.toString());
+    builder.writeToFile(filePath);
 
     return { typeName, packageName };
   }
@@ -706,7 +709,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
         delegateInterfaceName: typeName,
       }),
     );
-    fs.writeFileSync(filePath, builder.toString());
+    builder.writeToFile(filePath);
 
     return { typeName, packageName };
   }

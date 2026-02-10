@@ -1,4 +1,67 @@
 {
+  documents: [
+    {
+      components: {
+        schemas: {
+          Cat: {
+            allOf: [
+              { '$ref': '#/components/schemas/Pet' },
+              {
+                properties: {
+                  huntingSkill: {
+                    default: 'lazy',
+                    description: 'The measured skill for hunting',
+                    enum: [ 'clueless', 'lazy', 'adventurous', 'aggressive' ],
+                    type: 'string'
+                  }
+                },
+                required: [ 'huntingSkill' ],
+                type: 'object'
+              }
+            ]
+          },
+          Dog: {
+            allOf: [
+              { '$ref': '#/components/schemas/Pet' },
+              {
+                properties: {
+                  packSize: {
+                    default: 0,
+                    description: 'the size of the pack the dog is from',
+                    format: 'int32',
+                    minimum: 0,
+                    type: 'integer'
+                  }
+                },
+                required: [ 'packSize' ],
+                type: 'object'
+              }
+            ]
+          },
+          Pet: {
+            discriminator: {
+              mapping: {
+                cat: '#/components/schemas/Cat',
+                dog: '#/components/schemas/Dog'
+              },
+              propertyName: 'petType'
+            },
+            properties: { name: { type: 'string' }, petType: { type: 'string' } },
+            required: [ 'name', 'petType' ],
+            type: 'object'
+          }
+        }
+      },
+      info: { title: 'Detailed Schemas', version: '1.0.0' },
+      openapi: '3.0.0',
+      paths: {
+        '/x': {
+          'x-ignore': true,
+          get: { responses: { '200': { description: '' } } }
+        }
+      }
+    }
+  ],
   endpoints: [],
   schemas: [
     {

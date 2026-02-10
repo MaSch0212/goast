@@ -14,6 +14,7 @@ export * from './src/parse/types.ts';
 export * from './src/transform/api-types.ts';
 export * from './src/transform/transformer.ts';
 
+export * from './src/utils/api-data.utils.ts';
 export * from './src/utils/array.utils.ts';
 export * from './src/utils/asset-manager.ts';
 export * from './src/utils/class.utils.ts';
@@ -21,6 +22,7 @@ export * from './src/utils/common.utils.ts';
 export * from './src/utils/endpoint.utils.ts';
 export * from './src/utils/error.utils.ts';
 export * from './src/utils/factory.ts';
+export * from './src/utils/file-system.utils.ts';
 export * from './src/utils/generator.utils.ts';
 export * from './src/utils/object.utils.ts';
 export * from './src/utils/schema.utils.ts';

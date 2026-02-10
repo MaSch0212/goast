@@ -1,4 +1,185 @@
 {
+  documents: [
+    {
+      components: {
+        schemas: {
+          EmptyObject: { type: 'object' },
+          ObjectWithAdditionalProperties: { additionalProperties: { type: 'string' }, type: 'object' },
+          ObjectWithNullableProperties: {
+            properties: {
+              a: { type: [ 'string', null ] },
+              b: { type: [ 'integer', null ] },
+              c: { type: [ 'number', null ] },
+              d: { type: [ 'boolean', null ] },
+              e: { type: [ 'array', null ] },
+              f: { type: [ 'object', null ] }
+            },
+            type: 'object'
+          },
+          ObjectWithNullablePropertiesAndRequiredProperties: {
+            properties: {
+              a: { type: [ 'string', null ] },
+              b: { type: [ 'integer', null ] },
+              c: { type: [ 'number', null ] },
+              d: { type: [ 'boolean', null ] },
+              e: { type: [ 'array', null ] },
+              f: { type: [ 'object', null ] }
+            },
+            required: [ 'a', 'b', 'c', 'd', 'e', 'f' ],
+            type: 'object'
+          },
+          ObjectWithProperties: {
+            properties: {
+              a: { type: 'string' },
+              b: { type: 'integer' },
+              c: { type: 'number' },
+              d: { type: 'boolean' },
+              e: { type: 'array' },
+              f: { type: 'object' }
+            },
+            type: 'object'
+          },
+          ObjectWithPropertiesAllOfAndAnyOf: {
+            allOf: [
+              {
+                properties: {
+                  g: { type: 'string' },
+                  h: { type: 'integer' },
+                  i: { type: 'number' },
+                  j: { type: 'boolean' },
+                  k: { type: 'array' },
+                  l: { type: 'object' }
+                },
+                type: 'object'
+              },
+              {
+                properties: {
+                  m: { type: 'string' },
+                  n: { type: 'integer' },
+                  o: { type: 'number' },
+                  p: { type: 'boolean' },
+                  q: { type: 'array' },
+                  r: { type: 'object' }
+                },
+                type: 'object'
+              }
+            ],
+            anyOf: [
+              {
+                properties: {
+                  s: { type: 'string' },
+                  t: { type: 'integer' },
+                  u: { type: 'number' },
+                  v: { type: 'boolean' },
+                  w: { type: 'array' },
+                  x: { type: 'object' }
+                },
+                type: 'object'
+              },
+              {
+                properties: {
+                  aa: { type: 'number' },
+                  bb: { type: 'boolean' },
+                  cc: { type: 'array' },
+                  dd: { type: 'object' },
+                  y: { type: 'string' },
+                  z: { type: 'integer' }
+                },
+                type: 'object'
+              }
+            ],
+            properties: {
+              a: { type: 'string' },
+              b: { type: 'integer' },
+              c: { type: 'number' },
+              d: { type: 'boolean' },
+              e: { type: 'array' },
+              f: { type: 'object' }
+            },
+            required: [
+              'a', 'b', 'c',  'd',  'e',  'f',
+              'g', 'h', 'i',  'j',  'k',  'l',
+              'm', 'n', 'o',  'p',  'q',  'r',
+              's', 't', 'u',  'v',  'w',  'x',
+              'y', 'z', 'aa', 'bb', 'cc', 'dd'
+            ],
+            type: 'object'
+          },
+          ObjectWithPropertiesAndAdditionalProperties: {
+            additionalProperties: { type: 'string' },
+            properties: {
+              a: { type: 'string' },
+              b: { type: 'integer' },
+              c: { type: 'number' },
+              d: { type: 'boolean' },
+              e: { type: 'array' },
+              f: { type: 'object' }
+            },
+            type: 'object'
+          },
+          ObjectWithReferencesInAllOf: {
+            allOf: [
+              { '$ref': '#/components/schemas/EmptyObject' },
+              {
+                '$ref': 'detailed-schemas.yml#/components/schemas/WithTitle'
+              },
+              {
+                '$ref': 'simple-schemas.yml#/components/schemas/MyString'
+              },
+              { type: 'string' }
+            ],
+            type: 'object'
+          },
+          ObjectWithReferencesInAnyOf: {
+            anyOf: [
+              { '$ref': '#/components/schemas/EmptyObject' },
+              {
+                '$ref': 'detailed-schemas.yml#/components/schemas/WithTitle'
+              },
+              {
+                '$ref': 'simple-schemas.yml#/components/schemas/MyString'
+              },
+              { type: 'string' }
+            ],
+            type: 'object'
+          },
+          ObjectWithReferencesInProperties: {
+            properties: {
+              a: { '$ref': '#/components/schemas/EmptyObject' },
+              b: {
+                '$ref': 'detailed-schemas.yml#/components/schemas/WithTitle'
+              },
+              c: {
+                '$ref': 'simple-schemas.yml#/components/schemas/MyString'
+              },
+              d: { type: 'string' }
+            },
+            type: 'object'
+          },
+          ObjectWithRequiredProperties: {
+            properties: {
+              a: { type: 'string' },
+              b: { type: 'integer' },
+              c: { type: 'number' },
+              d: { type: 'boolean' },
+              e: { type: 'array' },
+              f: { type: 'object' }
+            },
+            required: [ 'a', 'b', 'c', 'd', 'e', 'f' ],
+            type: 'object'
+          }
+        }
+      },
+      info: { title: 'Object Schemas', version: '1.0.0' },
+      openapi: '3.1.0',
+      paths: {
+        '/x': {
+          'x-ignore': true,
+          get: { responses: { '200': { description: '' } } }
+        }
+      }
+    }
+  ],
   endpoints: [],
   schemas: [
     {

@@ -1,8 +1,3 @@
-import { dirname } from 'node:path';
-
-// @deno-types="npm:@types/fs-extra@11"
-import fs from 'fs-extra';
-
 import {
   type ApiParameter,
   type ApiSchema,
@@ -10,6 +5,7 @@ import {
   appendValueGroup,
   builderTemplate as s,
   createOverwriteProxy,
+  getSourceDisplayName,
   type MaybePromise,
   resolveAnyOfAndAllOf,
   SourceBuilder,
@@ -42,14 +38,17 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
     const typeName = this.getRequestsObjectName(ctx, {});
     const packageName = this.getPackageName(ctx, {});
     const filePath = this.getFilePath(ctx, { packageName });
-    fs.ensureDirSync(dirname(filePath));
 
     console.log(`Generating client for service ${ctx.service.name} to ${filePath}...`);
+    ctx.service.endpoints.forEach((endpoint) => {
+      console.log(
+        `  ${getSourceDisplayName(ctx.data, endpoint)} [${toCasing(endpoint.name, ctx.config.functionNameCasing)}]`,
+      );
+    });
 
     const builder = new KotlinFileBuilder(packageName, ctx.config);
     builder.append(this.getClientFileContent(ctx, {}));
-
-    fs.writeFileSync(filePath, builder.toString());
+    builder.writeToFile(filePath);
 
     return { typeName, packageName };
   }

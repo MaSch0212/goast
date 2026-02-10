@@ -7,6 +7,7 @@ import {
   type AppendValueGroup,
   appendValueGroup,
   builderTemplate as s,
+  getSourceDisplayName,
   type MaybePromise,
   type Nullable,
   toCasing,
@@ -38,7 +39,14 @@ export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGene
       logName: `service ${name}`,
       filePath,
       options: ctx.config,
-      generator: (b) => b.append(this.getServiceFileContent(ctx)),
+      generator: (b) => {
+        ctx.service.endpoints.forEach((endpoint) => {
+          console.log(
+            `  ${getSourceDisplayName(ctx.data, endpoint)} [${toCasing(endpoint.name, ctx.config.functionNameCasing)}]`,
+          );
+        });
+        b.append(this.getServiceFileContent(ctx));
+      },
     });
 
     return {

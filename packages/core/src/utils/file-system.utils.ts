@@ -1,8 +1,9 @@
-import { resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
 
 // @deno-types="npm:@types/fs-extra@11"
 import fs from 'fs-extra';
 
+import type { OpenApiGeneratorConfig } from '../codegen/config.ts';
 import type { Nullable } from './type.utils.ts';
 
 export type DirectoryScanOptions = {
@@ -36,7 +37,7 @@ async function getFilesImpl(
     if (stat.isDirectory()) {
       if (options.recursive) {
         if (options.maxDepth && options.maxDepth > currentDepth) {
-          getFilesImpl(filePath, options, files, currentDepth + 1);
+          await getFilesImpl(filePath, options, files, currentDepth + 1);
         }
       }
     } else {
@@ -45,4 +46,16 @@ async function getFilesImpl(
       }
     }
   }
+}
+
+export function writeGeneratedFile(config: OpenApiGeneratorConfig, filePath: string, content: string): void {
+  if (config.existingFileBehavior !== 'override' && fs.existsSync(filePath)) {
+    if (config.existingFileBehavior === 'error') {
+      throw new Error(`File already exists: ${filePath}`);
+    }
+    return;
+  }
+
+  fs.ensureDirSync(dirname(filePath));
+  fs.writeFileSync(filePath, content);
 }
