@@ -178,6 +178,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       const nonNullSchema = schema.oneOf.find((x) => x.kind !== 'null')!;
       if (nonNullSchema) {
         schema = nonNullSchema;
+        nullable ??= true;
       }
     }
 
