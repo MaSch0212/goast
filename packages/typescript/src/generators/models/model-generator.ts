@@ -420,6 +420,11 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
       return false;
     }
 
+    // Nullable by oneOf schemas do not need their own type declaration
+    if (schema.kind === 'oneOf' && schema.oneOf?.length === 2 && schema.oneOf.some((x) => x.kind === 'null')) {
+      return false;
+    }
+
     // Dynamically generated schemas do not have its own type declaration
     if (!ctx.data.schemas.some((x) => x.id === schema.id)) {
       return false;
