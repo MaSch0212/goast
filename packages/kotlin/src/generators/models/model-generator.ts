@@ -96,7 +96,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
         schema.deprecated ? kt.annotation(kt.refs.deprecated(), [kt.argument(kt.string(''))]) : null,
       ],
       classKind: parameters.length === 0 ? null : 'data',
-      implements: inheritedSchemas.map((schema) => this.getType(ctx, { schema })),
+      implements: inheritedSchemas.map((schema) => this.getType(ctx, { schema, nullable: false })),
       primaryConstructor: kt.constructor(
         parameters.map((property) => this.getClassParameter(ctx, { ...args, inheritedSchemas, parameters, property })),
       ),
@@ -172,14 +172,21 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
   }
 
   protected getType(ctx: Context, args: Args.GetType): kt.Reference<SourceBuilder> {
-    const { schema } = args;
+    let { schema, nullable } = args;
 
-    const generatedType = this.getGeneratedType(ctx, { schema, nullable: args.nullable });
+    if (schema.kind === 'oneOf' && schema.oneOf.length === 2 && schema.oneOf.some((x) => x.kind === 'null')) {
+      const nonNullSchema = schema.oneOf.find((x) => x.kind !== 'null')!;
+      if (nonNullSchema) {
+        schema = nonNullSchema;
+      }
+    }
+
+    const generatedType = this.getGeneratedType(ctx, { schema, nullable });
     if (generatedType) {
       return generatedType;
     }
 
-    const nullable = args.nullable ?? schema.nullable;
+    nullable ??= schema.nullable;
     switch (schema.kind) {
       case 'boolean':
         return kt.refs.boolean({ nullable });
