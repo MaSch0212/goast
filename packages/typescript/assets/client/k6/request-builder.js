@@ -438,6 +438,10 @@ export class RequestBuilder {
       this._bodyContent,
       Object.assign({}, options.params, {
         headers: Object.assign({}, httpHeaders, options.params ? options.params.headers : {}),
+        tags: {
+          ...options.params?.tags,
+          name: this.operationPath,
+        },
       }),
     ];
   }
