@@ -356,6 +356,10 @@ export class RequestBuilder {
       this._bodyContent,
       Object.assign({}, options.params, {
         headers: Object.assign({}, httpHeaders, options.params ? options.params.headers : {}),
+        tags: {
+          name: this.operationPath,
+          ...options.params?.tags,
+        },
       }),
     ];
   }
