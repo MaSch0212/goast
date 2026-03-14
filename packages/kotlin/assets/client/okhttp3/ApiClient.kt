@@ -241,7 +241,7 @@ open class ApiClient(@API_CLIENT_PARAMETERS@) {
         else -> value.toString()
     }
 
-    protected inline fun <reified T : Any> parseDateToQueryString(value: T): String {
+    protected fun parseDateToQueryString(value: Any): String {
         /*
         .replace("\"", "") converts the json object string to an actual string for the query parameter.
         The moshi or gson adapter allows a more generic solution instead of trying to use a native
