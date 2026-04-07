@@ -209,6 +209,14 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
         switch (schema.format) {
           case 'date-time':
             return kt.refs.java.offsetDateTime({ nullable });
+          case 'time':
+            return kt.refs.java.offsetTime({ nullable });
+          case 'date':
+            return kt.refs.java.localDate({ nullable });
+          case 'local-date-time':
+            return kt.refs.java.localDateTime({ nullable });
+          case 'local-time':
+            return kt.refs.java.localTime({ nullable });
           default:
             return kt.refs.string({ nullable });
         }
