@@ -15,6 +15,10 @@ export const void_: KtReferenceFactory = ktReference.factory('Void', 'java.lang'
 
 // java.time
 export const offsetDateTime: KtReferenceFactory = ktReference.factory('OffsetDateTime', 'java.time');
+export const offsetTime: KtReferenceFactory = ktReference.factory('OffsetTime', 'java.time');
+export const localDateTime: KtReferenceFactory = ktReference.factory('LocalDateTime', 'java.time');
+export const localDate: KtReferenceFactory = ktReference.factory('LocalDate', 'java.time');
+export const localTime: KtReferenceFactory = ktReference.factory('LocalTime', 'java.time');
 
 // java.util
 export const optional: KtGenericReferenceFactory<1> = ktReference.genericFactory<1>('Optional', 'java.util');
