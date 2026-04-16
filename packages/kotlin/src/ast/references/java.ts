@@ -13,6 +13,9 @@ export const unsupportedOperationException: KtReferenceFactory = ktReference.fac
 );
 export const void_: KtReferenceFactory = ktReference.factory('Void', 'java.lang');
 
+// java.net
+export const uri: KtReferenceFactory = ktReference.factory('URI', 'java.net');
+
 // java.time
 export const offsetDateTime: KtReferenceFactory = ktReference.factory('OffsetDateTime', 'java.time');
 export const offsetTime: KtReferenceFactory = ktReference.factory('OffsetTime', 'java.time');
