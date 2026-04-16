@@ -217,6 +217,8 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
             return kt.refs.java.localDateTime({ nullable });
           case 'local-time':
             return kt.refs.java.localTime({ nullable });
+          case 'uri':
+            return kt.refs.java.uri({ nullable });
           default:
             return kt.refs.string({ nullable });
         }
