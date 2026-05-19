@@ -42,6 +42,6 @@ export function getReferenceFactories(options: TypeScriptEasyNetworkStubsGenerat
       importType: 'type-import',
     }),
     createEasyNetworkStubGroup: ts.reference.genericFactory<2>('createEasyNetworkStubGroup', easyNetworkStubUtilsPath),
-    stubHandle: ts.reference.factory('StubHandle', easyNetworkStubUtilsPath, { importType: 'type-import' }),
+    stubHandle: ts.reference.factory('StubHandle', 'easy-network-stub', { importType: 'type-import' }),
   };
 }
