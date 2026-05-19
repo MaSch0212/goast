@@ -98,6 +98,13 @@ export class DefaultTypeScriptEasyNetworkStubGenerator extends TypeScriptFileGen
         ),
         '\n',
         ...ctx.service.endpoints.map((endpoint) =>
+          ts.property<Builder>(this.getEndpointStubHandleFieldName(ctx, endpoint), {
+            accessModifier: 'private',
+            type: s`${ctx.refs.stubHandle()} | undefined`,
+          })
+        ),
+        '\n',
+        ...ctx.service.endpoints.map((endpoint) =>
           ts.property<Builder>(this.getEndpointRequestsPropertyName(ctx, endpoint), {
             readonly: true,
             accessModifier: 'public',
@@ -108,12 +115,16 @@ export class DefaultTypeScriptEasyNetworkStubGenerator extends TypeScriptFileGen
           })
         ),
         ...ctx.service.endpoints.map((endpoint) => this.getEndpointStubMethod(ctx, endpoint)),
+        ...ctx.service.endpoints.map((endpoint) => this.getEndpointUnregisterMethod(ctx, endpoint)),
         ts.method('reset', {
           accessModifier: 'public',
           override: true,
           returnType: ts.refs.void_(),
           body: appendValueGroup(
             [
+              ...ctx.service.endpoints.map((endpoint) =>
+                `this.${this.getEndpointStubHandleFieldName(ctx, endpoint)} = undefined;`
+              ),
               ...ctx.service.endpoints.map((endpoint) =>
                 `this.${this.getEndpointRequestsFieldName(ctx, endpoint)}.length = 0;`
               ),
@@ -156,7 +167,13 @@ export class DefaultTypeScriptEasyNetworkStubGenerator extends TypeScriptFileGen
       returnType: 'this',
       body: appendValueGroup(
         [
-          s`this.stubWrapper.stub2<${requestType}>()(${s.indent`
+          s`if (this.${this.getEndpointStubHandleFieldName(ctx, endpoint)}) {${s.indent`
+              throw new Error('${this.getEndpointStubMethodName(ctx, endpoint)} has already been called. Call ${
+            this.getEndpointUnregisterMethodName(ctx, endpoint)
+          }() or reset() before stubbing again.');`}
+            }`,
+          s`this.${this.getEndpointStubHandleFieldName(ctx, endpoint)} = this.stubWrapper.stub2<${requestType}>()(${s
+            .indent`
               ${ts.string(endpoint.method.toUpperCase())},
               ${this.getStubClassName(ctx)}.${this.getEndpointPathPropertyName(ctx, endpoint)},
               async (request) => {${s.indent`
@@ -197,12 +214,34 @@ export class DefaultTypeScriptEasyNetworkStubGenerator extends TypeScriptFileGen
     return toCasing(endpoint.name + '_Requests', adjustCasing(ctx.config.propertyNameCasing, { prefix: '_' }));
   }
 
+  protected getEndpointStubHandleFieldName(ctx: Context, endpoint: ApiEndpoint): string {
+    return toCasing('stub_' + endpoint.name + '_Handle', adjustCasing(ctx.config.propertyNameCasing, { prefix: '_' }));
+  }
+
   protected getEndpointRequestsPropertyName(ctx: Context, endpoint: ApiEndpoint): string {
     return toCasing(endpoint.name + '_Requests', ctx.config.propertyNameCasing);
   }
 
   protected getEndpointStubMethodName(ctx: Context, endpoint: ApiEndpoint): string {
     return toCasing('stub_' + endpoint.name, ctx.config.functionNameCasing);
+  }
+
+  protected getEndpointUnregisterMethodName(ctx: Context, endpoint: ApiEndpoint): string {
+    return toCasing('unregister_stub_' + endpoint.name, ctx.config.functionNameCasing);
+  }
+
+  protected getEndpointUnregisterMethod(ctx: Context, endpoint: ApiEndpoint): ts.Method<Builder> {
+    return ts.method(this.getEndpointUnregisterMethodName(ctx, endpoint), {
+      accessModifier: 'public',
+      returnType: ts.refs.void_(),
+      body: appendValueGroup(
+        [
+          `this.${this.getEndpointStubHandleFieldName(ctx, endpoint)}?.unregister();`,
+          `this.${this.getEndpointStubHandleFieldName(ctx, endpoint)} = undefined;`,
+        ],
+        '\n',
+      ),
+    });
   }
 
   protected getStubRoute(ctx: Context, endpoint: ApiEndpoint): string {

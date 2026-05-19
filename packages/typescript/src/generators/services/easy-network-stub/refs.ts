@@ -14,6 +14,7 @@ export function getReferenceFactories(options: TypeScriptEasyNetworkStubsGenerat
   easyNetworkStubBase: ts.ModuleReferenceFactory;
   easyNetworkStubGroup: ts.GenericModuleReferenceFactory<2>;
   createEasyNetworkStubGroup: ts.GenericModuleReferenceFactory<2>;
+  stubHandle: ts.ModuleReferenceFactory;
 } {
   const utilsDirPath = resolve(options.outputDir, options.utilsDir);
   const easyNetworkStubUtilsPath = join(utilsDirPath, 'easy-network-stub.utils.ts');
@@ -41,5 +42,6 @@ export function getReferenceFactories(options: TypeScriptEasyNetworkStubsGenerat
       importType: 'type-import',
     }),
     createEasyNetworkStubGroup: ts.reference.genericFactory<2>('createEasyNetworkStubGroup', easyNetworkStubUtilsPath),
+    stubHandle: ts.reference.factory('StubHandle', easyNetworkStubUtilsPath, { importType: 'type-import' }),
   };
 }
