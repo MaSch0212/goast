@@ -1,6 +1,4 @@
-import type { EasyNetworkStub } from 'easy-network-stub';
-
-import type { ErrorResponse, HttpMethod, RouteResponseCallback } from 'easy-network-stub';
+import type { EasyNetworkStub, ErrorResponse, HttpMethod, RouteResponseCallback, StubHandle } from 'easy-network-stub';
 
 /**
  * Options for the `EasyNetworkStubWrapper`.
@@ -130,8 +128,8 @@ export class EasyNetworkStubWrapper {
     method: HttpMethod,
     route: Route,
     response: RouteResponseCallback<Route, unknown>,
-  ): void {
-    this.wrappedStub.stub<Route>(method, route, async (request) => {
+  ): StubHandle {
+    return this.wrappedStub.stub<Route>(method, route, async (request) => {
       if (this.options.delay > 0) await sleep(this.options.delay);
       return await this.runRequest(method, route, response, request);
     });
@@ -154,9 +152,9 @@ export class EasyNetworkStubWrapper {
     method: HttpMethod,
     route: Route,
     response: RouteResponseCallback<Route, T>,
-  ) => void {
+  ) => StubHandle {
     return <Route extends string>(method: HttpMethod, route: Route, response: RouteResponseCallback<Route, T>) => {
-      this.wrappedStub.stub2<T>()<Route>(method, route, async (request) => {
+      return this.wrappedStub.stub2<T>()<Route>(method, route, async (request) => {
         if (this.options.delay > 0) await sleep(this.options.delay);
         return await this.runRequest(method, route, response, request);
       });
@@ -168,7 +166,7 @@ export class EasyNetworkStubWrapper {
    */
   public reset(): void {
     this._requests = [];
-    this.wrappedStub['_config'].stubs = [];
+    this.wrappedStub.reset();
   }
 
   private async runRequest<Route extends string, T>(
