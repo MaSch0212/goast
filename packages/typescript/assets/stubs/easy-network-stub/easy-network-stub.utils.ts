@@ -166,7 +166,7 @@ export class EasyNetworkStubWrapper {
    */
   public reset(): void {
     this._requests = [];
-    this.wrappedStub.reset();
+    this.wrappedStub.unregisterAll();
   }
 
   private async runRequest<Route extends string, T>(
