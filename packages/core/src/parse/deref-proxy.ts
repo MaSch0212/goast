@@ -58,7 +58,13 @@ class DerefProxyHandler<T extends OpenApiObject<string>> implements ProxyHandler
 
   public ownKeys(target: T): ArrayLike<string | symbol> {
     return Array.from(
-      new Set([...Object.keys(target), ...(!isNullish(this._ref) ? Object.keys(this._ref) : []), '$ref', '$src']),
+      new Set([
+        ...Object.getOwnPropertyNames(target),
+        ...Object.getOwnPropertySymbols(target),
+        ...(!isNullish(this._ref) ? Object.keys(this._ref) : []),
+        '$ref',
+        '$src',
+      ]),
     );
   }
 }

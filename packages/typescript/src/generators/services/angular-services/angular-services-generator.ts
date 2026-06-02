@@ -213,7 +213,7 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
           returnType: ts.refs.angular.provider(),
           body: appendValueGroup([
             'return ',
-            ts.tuple([
+            ts.tuple<TypeScriptFileBuilder>([
               (b) =>
                 b.append(
                   'config ? { provide: ',

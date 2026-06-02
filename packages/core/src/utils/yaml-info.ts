@@ -1,6 +1,6 @@
 import * as YAML from 'yaml';
 
-const yamlInfoSymbol = Symbol('yamlInfo');
+export const yamlInfoSymbol = Symbol('yamlInfo');
 
 type WithYamlInfo = {
   [yamlInfoSymbol]?: YamlInfo;
@@ -41,8 +41,8 @@ export function getLineInfo(obj: unknown, path: unknown[]): { line: number; col:
 export function parseYamlWithInfo(yamlString: string): unknown {
   const lineCounter = new YAML.LineCounter();
   const document = YAML.parseDocument(yamlString, { lineCounter });
-  return Object.assign(
-    document.toJS(),
-    { [yamlInfoSymbol]: { document, lineCounter } },
-  );
+  return Object.defineProperty(document.toJS(), yamlInfoSymbol, {
+    value: { document, lineCounter },
+    enumerable: false,
+  });
 }
