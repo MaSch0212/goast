@@ -73,7 +73,7 @@ export function modifyString<TArgs extends unknown[]>(
 }
 
 export function getSourceDocLine<T>(component: ApiComponent<T>): string {
-  const file = path.relative(process.cwd(), component.$src.file);
+  const file = path.relative(process.cwd(), component.$src.file).replace(/\\/g, '/');
   const { line, col } = component.$src.pos;
   return `Source: ${file}:${line}:${col} (${component.$src.path})`;
 }
