@@ -1,6 +1,6 @@
 {
   "name": "@goast/core",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "A tool designed to transform OpenAPI specifications into various forms with flexibility and extensibility at its core.",
   "exports": "./mod.ts",
   "publish": {
