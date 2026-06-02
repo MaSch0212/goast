@@ -1,14 +1,17 @@
 import { resolve } from 'node:path';
 
 import {
+  type ApiComponent,
   type ApiEndpoint,
   type ApiResponse,
   type ApiSchema,
   type AppendValueGroup,
   appendValueGroup,
+  type BasicAppendValue,
   builderTemplate as s,
   getSourceDisplayName,
   type MaybePromise,
+  notNullish,
   type Nullable,
   toCasing,
 } from '@goast/core';
@@ -16,6 +19,7 @@ import {
 import { ts } from '../../../ast/index.ts';
 import type { TypeScriptExportOutput } from '../../../common-results.ts';
 import { TypeScriptFileBuilder } from '../../../file-builder.ts';
+import { getSourceDocLine } from '../../../utils.ts';
 import { TypeScriptFileGenerator } from '../../file-generator.ts';
 import type { TypeScriptAngularServiceGeneratorContext, TypeScriptAngularServiceGeneratorOutput } from './models.ts';
 
@@ -185,7 +189,7 @@ export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGene
       type.members.push(
         ts.property(toCasing(parameter.name, ctx.config.propertyNameCasing), {
           doc: ts.doc({
-            description: parameter.description,
+            description: this.getDocDescription(ctx, parameter),
             tags: [parameter.deprecated ? ts.docTag('deprecated') : null],
           }),
           type: schema ? (b) => b.appendModelUsage(ctx.input.typescript.models[schema.id]) : this.getAnyType(ctx),
@@ -199,7 +203,7 @@ export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGene
       const schema = body.content[0].schema;
       type.members.push(
         ts.property('body', {
-          doc: ts.doc({ description: body.description }),
+          doc: ts.doc({ description: this.getDocDescription(ctx, body) }),
           type: schema ? (b) => b.appendModelUsage(ctx.input.typescript.models[schema.id]) : this.getAnyType(ctx),
           optional: !body.required,
         }),
@@ -268,7 +272,7 @@ export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGene
         ts.parameter('context', { optional: true, type: ts.refs.angular.httpContext() }),
       ],
       doc: ts.doc({
-        description: endpoint.description,
+        description: this.getDocDescription(ctx, endpoint),
         tags: [endpoint.deprecated ? ts.docTag('deprecated') : null],
       }),
       returnType,
@@ -336,6 +340,19 @@ export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGene
         '\n',
       ),
     });
+  }
+
+  protected getDocDescription<T>(
+    ctx: Context,
+    component: ApiComponent<T> & { description?: string },
+  ): BasicAppendValue<Builder> {
+    const docSegments = [component.description?.trim()];
+
+    if (ctx.config.includeSourceInDocs) {
+      docSegments.push(getSourceDocLine(component));
+    }
+
+    return docSegments.filter(notNullish).join('\n\n');
   }
 
   protected getEndpointRequestContentType(ctx: Context, endpoint: ApiEndpoint): string {

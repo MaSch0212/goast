@@ -6,6 +6,7 @@ import {
   type AppendValueGroup,
   appendValueGroup,
   type ArrayLikeApiSchema,
+  type BasicAppendValue,
   type CombinedLikeApiSchema,
   DEFAULT_IGNORED_SCHEMA_PROPERTIES,
   getSchemaReference,
@@ -22,6 +23,7 @@ import {
 import { ts } from '../../ast/index.ts';
 import type { TypeScriptComponentOutputKind } from '../../common-results.ts';
 import { TypeScriptFileBuilder } from '../../file-builder.ts';
+import { getSourceDocLine } from '../../utils.ts';
 import { TypeScriptFileGenerator } from '../file-generator.ts';
 import type { TypeScriptModelGeneratorContext, TypeScriptModelGeneratorOutput } from './models.ts';
 
@@ -128,7 +130,7 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
   protected getEnum(ctx: Context): ts.Enum<Builder> {
     return ts.enum(this.getDeclarationTypeName(ctx, ctx.schema), {
       doc: ts.doc({
-        description: ctx.schema.description,
+        description: this.getSchemaDocDescription(ctx, ctx.schema),
         tags: [ctx.schema.deprecated ? ts.docTag('deprecated') : null],
       }),
       export: true,
@@ -142,7 +144,7 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
     return ts.interface(this.getDeclarationTypeName(ctx, ctx.schema), {
       export: true,
       doc: ts.doc({
-        description: schema.description,
+        description: this.getSchemaDocDescription(ctx, schema as ApiSchema),
         tags: [ctx.schema.deprecated ? ts.docTag('deprecated') : null],
       }),
       members: [...this.getProperties(ctx, schema), this.getIndexer(ctx, schema)],
@@ -158,7 +160,7 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
       {
         export: true,
         doc: ts.doc({
-          description: schema.description,
+          description: this.getSchemaDocDescription(ctx, schema),
           tags: [ctx.schema.deprecated ? ts.docTag('deprecated') : null],
         }),
       },
@@ -228,7 +230,7 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
     return Array.from(schema.properties.values()).map((property) => {
       return ts.property(property.name, {
         doc: ts.doc({
-          description: property.schema.description,
+          description: this.getSchemaDocDescription(ctx, property.schema),
           tags: [property.schema.deprecated ? ts.docTag('deprecated') : null],
         }),
         readonly: ctx.config.immutableTypes,
@@ -396,6 +398,16 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
         }
       }),
     );
+  }
+
+  protected getSchemaDocDescription(ctx: Context, schema: ApiSchema): BasicAppendValue<Builder> {
+    const docSegments = [schema.description?.trim()];
+
+    if (ctx.config.includeSourceInDocs) {
+      docSegments.push(getSourceDocLine(schema));
+    }
+
+    return docSegments.filter(notNullish).join('\n\n');
   }
 
   protected shouldGenerateTypeDeclaration(ctx: Context, schema: ApiSchema): boolean {

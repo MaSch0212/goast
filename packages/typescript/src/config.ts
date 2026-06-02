@@ -68,6 +68,12 @@ export type TypeScriptGeneratorConfig = OpenApiGeneratorConfig & {
    * @default true
    */
   useSingleQuotes: boolean;
+
+  /**
+   * Whether to include the source OpenAPI document path in the generated documentation comments.
+   * @default false
+   */
+  includeSourceInDocs: boolean;
 };
 
 export const defaultTypeScriptGeneratorConfig: DefaultGenerationProviderConfig<TypeScriptGeneratorConfig> = {
@@ -86,4 +92,5 @@ export const defaultTypeScriptGeneratorConfig: DefaultGenerationProviderConfig<T
 
   preferUnknown: true,
   useSingleQuotes: true,
+  includeSourceInDocs: false,
 };

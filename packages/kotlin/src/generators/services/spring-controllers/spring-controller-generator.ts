@@ -3,6 +3,7 @@ import {
   type ApiParameter,
   type AppendValueGroup,
   appendValueGroup,
+  type BasicAppendValue,
   builderTemplate as s,
   createOverwriteProxy,
   getSourceDisplayName,
@@ -18,7 +19,7 @@ import { kt } from '../../../ast/index.ts';
 import type { KotlinImport } from '../../../common-results.ts';
 import { KotlinFileBuilder } from '../../../file-builder.ts';
 import type { ApiParameterWithMultipartInfo } from '../../../types.ts';
-import { modifyString } from '../../../utils.ts';
+import { getSourceDocLine, modifyString } from '../../../utils.ts';
 import { KotlinFileGenerator } from '../../file-generator.ts';
 import type { DefaultKotlinSpringControllerGeneratorArgs as Args } from './index.ts';
 import type { KotlinServiceGeneratorContext, KotlinServiceGeneratorOutput } from './models.ts';
@@ -163,6 +164,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     const parameters = this.getAllParameters(ctx, { endpoint });
 
     return kt.function(toCasing(endpoint.name, ctx.config.functionNameCasing), {
+      doc: kt.doc(this.getEndpointDocDescription(ctx, { endpoint })),
       suspend: ctx.config.suspendingFunctions,
       annotations: this.getApiInterfaceEndpointMethodAnnnotations(
         ctx,
@@ -789,6 +791,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     const fn = kt.function<Builder>(
       toCasing(endpoint.name, ctx.config.functionNameCasing),
       {
+        doc: kt.doc(this.getEndpointDocDescription(ctx, { endpoint })),
         suspend: ctx.config.suspendingFunctions,
         parameters: parameters.map((parameter) => {
           return kt.parameter(
@@ -904,6 +907,16 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
   ): kt.Reference<SourceBuilder> | undefined {
     const { schema } = args;
     return schema && ctx.input.kotlin.models[schema.id].type;
+  }
+
+  protected getEndpointDocDescription(ctx: Context, args: Args.GetEndpointDocDescription): BasicAppendValue<Builder> {
+    const docSegments = [args.endpoint.description?.trim()];
+
+    if (ctx.config.includeSourceInDocs) {
+      docSegments.push(getSourceDocLine(args.endpoint));
+    }
+
+    return docSegments.filter(notNullish).join('\n\n');
   }
 
   protected getControllerRequestMapping(

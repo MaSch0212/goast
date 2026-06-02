@@ -3,10 +3,12 @@ import {
   type ApiSchema,
   type AppendValueGroup,
   appendValueGroup,
+  type BasicAppendValue,
   builderTemplate as s,
   createOverwriteProxy,
   getSourceDisplayName,
   type MaybePromise,
+  notNullish,
   resolveAnyOfAndAllOf,
   SourceBuilder,
   toCasing,
@@ -16,7 +18,7 @@ import { kt } from '../../../ast/index.ts';
 import type { KtValue } from '../../../ast/nodes/types.ts';
 import { KotlinFileBuilder } from '../../../file-builder.ts';
 import type { ApiParameterWithMultipartInfo } from '../../../types.ts';
-import { modifyString } from '../../../utils.ts';
+import { getSourceDocLine, modifyString } from '../../../utils.ts';
 import { KotlinFileGenerator } from '../../file-generator.ts';
 import type { DefaultKotlinOkHttp3GeneratorArgs as Args } from './index.ts';
 import type { KotlinOkHttp3ClientGeneratorContext, KotlinOkHttp3ClientGeneratorOutput } from './models.ts';
@@ -126,7 +128,7 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
     const { endpoint, parameters, responseSchema } = args;
 
     return kt.function(toCasing(endpoint.name, ctx.config.functionNameCasing), {
-      doc: kt.doc(endpoint.summary, [
+      doc: kt.doc(this.getEndpointDocDescription(ctx, { endpoint }), [
         kt.docTag('throws', 'IllegalStateException', 'If the request is not correctly configured'),
         kt.docTag('throws', 'IOException', 'Rethrows the OkHttp execute method exception'),
         kt.docTag(
@@ -219,7 +221,7 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
     const { endpoint, parameters, responseSchema } = args;
 
     return kt.function(toCasing(args.endpoint.name, ctx.config.functionNameCasing) + 'WithHttpInfo', {
-      doc: kt.doc(endpoint.summary, [
+      doc: kt.doc(this.getEndpointDocDescription(ctx, { endpoint }), [
         kt.docTag('throws', 'IllegalStateException', 'If the request is not correctly configured'),
         kt.docTag('throws', 'IOException', 'Rethrows the OkHttp execute method exception'),
       ]),
@@ -554,6 +556,16 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
       schemaInfo && schemaInfo.name !== 'Any' ? SourceBuilder.build((b) => kt.reference.write(b, schemaInfo)) : 'body',
       ctx.config.parameterNameCasing,
     );
+  }
+
+  protected getEndpointDocDescription(ctx: Context, args: Args.GetEndpointDocDescription): BasicAppendValue<Builder> {
+    const docSegments = [args.endpoint.description?.trim()];
+
+    if (ctx.config.includeSourceInDocs) {
+      docSegments.push(getSourceDocLine(args.endpoint));
+    }
+
+    return docSegments.filter(notNullish).join('\n\n');
   }
 
   protected getBasePath(ctx: Context, _args: Args.GetBasePath): string {

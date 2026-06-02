@@ -1,14 +1,17 @@
 import { resolve } from 'node:path';
 
 import {
+  type ApiComponent,
   type ApiEndpoint,
   type ApiResponse,
   type ApiSchema,
   type AppendValueGroup,
   appendValueGroup,
+  type BasicAppendValue,
   builderTemplate as s,
   getSourceDisplayName,
   type MaybePromise,
+  notNullish,
   toCasing,
 } from '@goast/core';
 
@@ -16,6 +19,7 @@ import { ts } from '../../../ast/index.ts';
 import type { TypeScriptExportOutput } from '../../../common-results.ts';
 import { TypeScriptFileBuilder } from '../../../file-builder.ts';
 import type { TypeScriptImportOptions } from '../../../import-collection.ts';
+import { getSourceDocLine } from '../../../utils.ts';
 import { TypeScriptFileGenerator } from '../../file-generator.ts';
 import type { TypeScriptK6ClientGeneratorContext, TypeScriptK6ClientGeneratorOutput } from './models.ts';
 
@@ -189,24 +193,31 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
     const importOptions: TypeScriptImportOptions = ctx.config.language === 'javascript' ? { type: 'js-doc' } : {};
     const description = `Parameters for operation ${this.getEndpointMethodName(ctx, endpoint)}`;
     const typeName = this.getEndpointParamsTypeName(ctx, endpoint);
-    const properties: { name: string; type: ts.Type<Builder>; description: string | undefined; required: boolean }[] =
-      endpoint.parameters
-        .map((parameter) => {
-          const schema = parameter.schema;
-          return {
-            name: toCasing(parameter.name, ctx.config.propertyNameCasing),
-            type: schema
-              ? (b) => b.appendModelUsage(ctx.input.typescript.models[schema.id], importOptions)
-              : this.getAnyType(ctx),
-            description: (parameter.deprecated ? 'Deprecated: ' : '') + parameter.description,
-            required: parameter.required,
-          };
-        });
+    const properties: {
+      schema?: ApiSchema;
+      name: string;
+      type: ts.Type<Builder>;
+      description: string | undefined;
+      required: boolean;
+    }[] = endpoint.parameters
+      .map((parameter) => {
+        const schema = parameter.schema;
+        return {
+          schema,
+          name: toCasing(parameter.name, ctx.config.propertyNameCasing),
+          type: schema
+            ? (b) => b.appendModelUsage(ctx.input.typescript.models[schema.id], importOptions)
+            : this.getAnyType(ctx),
+          description: (parameter.deprecated ? 'Deprecated: ' : '') + parameter.description,
+          required: parameter.required,
+        };
+      });
 
     if (endpoint.requestBody !== undefined) {
       const body = endpoint.requestBody;
       const schema = body.content[0].schema;
       properties.push({
+        schema,
         name: 'body',
         type: schema
           ? (b) => b.appendModelUsage(ctx.input.typescript.models[schema.id], importOptions)
@@ -237,7 +248,14 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
             ts.property(p.name, {
               type: p.type,
               optional: !p.required,
-              doc: p.description ? ts.doc({ description: p.description }) : undefined,
+              doc: p.description
+                ? ts.doc({
+                  description: [
+                    p.description,
+                    p.schema ? getSourceDocLine(p.schema) : null,
+                  ].filter(notNullish).join('\n\n'),
+                })
+                : undefined,
             })
           ),
         }),
@@ -326,7 +344,7 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
       ],
       returnType: isJs ? null : returnTypeWithPromise,
       doc: ts.doc({
-        description: endpoint.description,
+        description: this.getDocDescription(ctx, endpoint),
         tags: isJs
           ? [
             hasParams ? ts.docTag('param', paramsOptional ? '[params]' : 'params', { type: paramsType }) : null,
@@ -418,6 +436,19 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
       endpoint.responses.find((x) => x.statusCode && x.statusCode >= 200 && x.statusCode < 300) ??
         endpoint.responses.find((x) => x.statusCode === undefined)
     );
+  }
+
+  protected getDocDescription<T>(
+    ctx: Context,
+    component: ApiComponent<T> & { description?: string },
+  ): BasicAppendValue<Builder> {
+    const docSegments = [component.description?.trim()];
+
+    if (ctx.config.includeSourceInDocs) {
+      docSegments.push(getSourceDocLine(component));
+    }
+
+    return docSegments.filter(notNullish).join('\n\n');
   }
 
   protected getSchemaType(

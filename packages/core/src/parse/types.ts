@@ -1,8 +1,9 @@
-import type { OpenApiDiscriminator, OpenApiDocument, OpenApiReference, OpenApiSchema } from './openapi-types.ts';
 import { defaultOpenApiTransformerOptions, type OpenApiTransformerOptions } from '../transform/types.ts';
+import type { OpenApiDiscriminator, OpenApiDocument, OpenApiReference, OpenApiSchema } from './openapi-types.ts';
 
 export type DerefSource<T> = {
   file: string;
+  pos: { line: number; col: number };
   path: string;
   document: Deref<OpenApiDocument>;
   originalComponent: T;

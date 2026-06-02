@@ -28,7 +28,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v2/simple-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/definitions/MyString'
+        path: '/definitions/MyString',
+        pos: { col: 5, line: 16 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -70,7 +71,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v2/simple-schemas.yml',
         originalComponent: '19 inspect chars',
-        path: '/definitions/MyInteger'
+        path: '/definitions/MyInteger',
+        pos: { col: 5, line: 18 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -112,7 +114,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v2/simple-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/definitions/MyNumber'
+        path: '/definitions/MyNumber',
+        pos: { col: 5, line: 20 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -154,7 +157,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v2/simple-schemas.yml',
         originalComponent: '19 inspect chars',
-        path: '/definitions/MyBoolean'
+        path: '/definitions/MyBoolean',
+        pos: { col: 5, line: 22 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -196,7 +200,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v2/simple-schemas.yml',
         originalComponent: '17 inspect chars',
-        path: '/definitions/MyArray'
+        path: '/definitions/MyArray',
+        pos: { col: 5, line: 24 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -238,7 +243,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v2/simple-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/definitions/MyObject'
+        path: '/definitions/MyObject',
+        pos: { col: 5, line: 26 }
       },
       accessibility: 'all',
       additionalProperties: undefined,

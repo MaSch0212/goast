@@ -189,7 +189,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/EmptyObject'
+        path: '/components/schemas/EmptyObject',
+        pos: { col: 7, line: 17 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -231,7 +232,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithProperties/properties/a'
+        path: '/components/schemas/ObjectWithProperties/properties/a',
+        pos: { col: 11, line: 22 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -273,7 +275,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '19 inspect chars',
-        path: '/components/schemas/ObjectWithProperties/properties/b'
+        path: '/components/schemas/ObjectWithProperties/properties/b',
+        pos: { col: 11, line: 24 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -315,7 +318,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithProperties/properties/c'
+        path: '/components/schemas/ObjectWithProperties/properties/c',
+        pos: { col: 11, line: 26 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -357,7 +361,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '19 inspect chars',
-        path: '/components/schemas/ObjectWithProperties/properties/d'
+        path: '/components/schemas/ObjectWithProperties/properties/d',
+        pos: { col: 11, line: 28 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -399,7 +404,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '17 inspect chars',
-        path: '/components/schemas/ObjectWithProperties/properties/e'
+        path: '/components/schemas/ObjectWithProperties/properties/e',
+        pos: { col: 11, line: 30 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -441,7 +447,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithProperties/properties/f'
+        path: '/components/schemas/ObjectWithProperties/properties/f',
+        pos: { col: 11, line: 32 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -483,7 +490,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '203 inspect chars',
-        path: '/components/schemas/ObjectWithProperties'
+        path: '/components/schemas/ObjectWithProperties',
+        pos: { col: 7, line: 19 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -532,7 +540,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithRequiredProperties/properties/a'
+        path: '/components/schemas/ObjectWithRequiredProperties/properties/a',
+        pos: { col: 11, line: 37 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -574,7 +583,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '19 inspect chars',
-        path: '/components/schemas/ObjectWithRequiredProperties/properties/b'
+        path: '/components/schemas/ObjectWithRequiredProperties/properties/b',
+        pos: { col: 11, line: 39 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -616,7 +626,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithRequiredProperties/properties/c'
+        path: '/components/schemas/ObjectWithRequiredProperties/properties/c',
+        pos: { col: 11, line: 41 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -658,7 +669,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '19 inspect chars',
-        path: '/components/schemas/ObjectWithRequiredProperties/properties/d'
+        path: '/components/schemas/ObjectWithRequiredProperties/properties/d',
+        pos: { col: 11, line: 43 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -700,7 +712,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '17 inspect chars',
-        path: '/components/schemas/ObjectWithRequiredProperties/properties/e'
+        path: '/components/schemas/ObjectWithRequiredProperties/properties/e',
+        pos: { col: 11, line: 45 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -742,7 +755,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithRequiredProperties/properties/f'
+        path: '/components/schemas/ObjectWithRequiredProperties/properties/f',
+        pos: { col: 11, line: 47 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -784,7 +798,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '249 inspect chars',
-        path: '/components/schemas/ObjectWithRequiredProperties'
+        path: '/components/schemas/ObjectWithRequiredProperties',
+        pos: { col: 7, line: 34 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -833,7 +848,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithAdditionalProperties/additionalProperties'
+        path: '/components/schemas/ObjectWithAdditionalProperties/additionalProperties',
+        pos: { col: 9, line: 58 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -875,7 +891,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '60 inspect chars',
-        path: '/components/schemas/ObjectWithAdditionalProperties'
+        path: '/components/schemas/ObjectWithAdditionalProperties',
+        pos: { col: 7, line: 56 }
       },
       accessibility: 'all',
       additionalProperties: {
@@ -885,7 +902,8 @@
           document: '9 inspect chars',
           file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
           originalComponent: '18 inspect chars',
-          path: '/components/schemas/ObjectWithAdditionalProperties/additionalProperties'
+          path: '/components/schemas/ObjectWithAdditionalProperties/additionalProperties',
+          pos: { col: 9, line: 58 }
         },
         accessibility: 'all',
         additionalProperties: undefined,
@@ -958,7 +976,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/a'
+        path: '/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/a',
+        pos: { col: 11, line: 63 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -1000,7 +1019,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '19 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/b'
+        path: '/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/b',
+        pos: { col: 11, line: 65 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -1042,7 +1062,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/c'
+        path: '/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/c',
+        pos: { col: 11, line: 67 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -1084,7 +1105,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '19 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/d'
+        path: '/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/d',
+        pos: { col: 11, line: 69 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -1126,7 +1148,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '17 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/e'
+        path: '/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/e',
+        pos: { col: 11, line: 71 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -1168,7 +1191,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/f'
+        path: '/components/schemas/ObjectWithPropertiesAndAdditionalProperties/properties/f',
+        pos: { col: 11, line: 73 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -1210,7 +1234,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAndAdditionalProperties/additionalProperties'
+        path: '/components/schemas/ObjectWithPropertiesAndAdditionalProperties/additionalProperties',
+        pos: { col: 9, line: 75 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -1252,7 +1277,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '247 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAndAdditionalProperties'
+        path: '/components/schemas/ObjectWithPropertiesAndAdditionalProperties',
+        pos: { col: 7, line: 60 }
       },
       accessibility: 'all',
       additionalProperties: {
@@ -1262,7 +1288,8 @@
           document: '9 inspect chars',
           file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
           originalComponent: '18 inspect chars',
-          path: '/components/schemas/ObjectWithPropertiesAndAdditionalProperties/additionalProperties'
+          path: '/components/schemas/ObjectWithPropertiesAndAdditionalProperties/additionalProperties',
+          pos: { col: 9, line: 75 }
         },
         accessibility: 'all',
         additionalProperties: undefined,
@@ -1342,7 +1369,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/a'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/a',
+        pos: { col: 11, line: 80 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -1384,7 +1412,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '19 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/b'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/b',
+        pos: { col: 11, line: 82 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -1426,7 +1455,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/c'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/c',
+        pos: { col: 11, line: 84 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -1468,7 +1498,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '19 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/d'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/d',
+        pos: { col: 11, line: 86 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -1510,7 +1541,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '17 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/e'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/e',
+        pos: { col: 11, line: 88 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -1552,7 +1584,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/f'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/properties/f',
+        pos: { col: 11, line: 90 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -1594,7 +1627,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/g'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/g',
+        pos: { col: 15, line: 95 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -1636,7 +1670,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '19 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/h'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/h',
+        pos: { col: 15, line: 97 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -1678,7 +1713,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/i'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/i',
+        pos: { col: 15, line: 99 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -1720,7 +1756,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '19 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/j'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/j',
+        pos: { col: 15, line: 101 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -1762,7 +1799,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '17 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/k'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/k',
+        pos: { col: 15, line: 103 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -1804,7 +1842,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/l'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0/properties/l',
+        pos: { col: 15, line: 105 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -1846,7 +1885,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '203 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/0',
+        pos: { col: 11, line: 92 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -1895,7 +1935,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/m'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/m',
+        pos: { col: 15, line: 109 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -1937,7 +1978,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '19 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/n'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/n',
+        pos: { col: 15, line: 111 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -1979,7 +2021,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/o'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/o',
+        pos: { col: 15, line: 113 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -2021,7 +2064,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '19 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/p'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/p',
+        pos: { col: 15, line: 115 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -2063,7 +2107,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '17 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/q'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/q',
+        pos: { col: 15, line: 117 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -2105,7 +2150,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/r'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1/properties/r',
+        pos: { col: 15, line: 119 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -2147,7 +2193,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '203 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/allOf/1',
+        pos: { col: 11, line: 106 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -2196,7 +2243,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/s'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/s',
+        pos: { col: 15, line: 124 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -2238,7 +2286,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '19 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/t'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/t',
+        pos: { col: 15, line: 126 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -2280,7 +2329,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/u'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/u',
+        pos: { col: 15, line: 128 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -2322,7 +2372,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '19 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/v'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/v',
+        pos: { col: 15, line: 130 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -2364,7 +2415,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '17 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/w'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/w',
+        pos: { col: 15, line: 132 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -2406,7 +2458,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/x'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0/properties/x',
+        pos: { col: 15, line: 134 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -2448,7 +2501,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '203 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/0',
+        pos: { col: 11, line: 121 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -2497,7 +2551,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/y'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/y',
+        pos: { col: 15, line: 138 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -2539,7 +2594,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '19 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/z'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/z',
+        pos: { col: 15, line: 140 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -2581,7 +2637,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/aa'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/aa',
+        pos: { col: 15, line: 142 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -2623,7 +2680,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '19 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/bb'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/bb',
+        pos: { col: 15, line: 144 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -2665,7 +2723,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '17 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/cc'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/cc',
+        pos: { col: 15, line: 146 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -2707,7 +2766,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/dd'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1/properties/dd',
+        pos: { col: 15, line: 148 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -2749,7 +2809,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '207 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf/anyOf/1',
+        pos: { col: 11, line: 135 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -2798,7 +2859,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '1437 inspect chars',
-        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf'
+        path: '/components/schemas/ObjectWithPropertiesAllOfAndAnyOf',
+        pos: { col: 7, line: 77 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -2878,7 +2940,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '28 inspect chars',
-        path: '/components/schemas/ObjectWithNullableProperties/properties/a'
+        path: '/components/schemas/ObjectWithNullableProperties/properties/a',
+        pos: { col: 11, line: 184 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -2920,7 +2983,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '29 inspect chars',
-        path: '/components/schemas/ObjectWithNullableProperties/properties/b'
+        path: '/components/schemas/ObjectWithNullableProperties/properties/b',
+        pos: { col: 11, line: 188 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -2962,7 +3026,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '28 inspect chars',
-        path: '/components/schemas/ObjectWithNullableProperties/properties/c'
+        path: '/components/schemas/ObjectWithNullableProperties/properties/c',
+        pos: { col: 11, line: 192 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3004,7 +3069,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '29 inspect chars',
-        path: '/components/schemas/ObjectWithNullableProperties/properties/d'
+        path: '/components/schemas/ObjectWithNullableProperties/properties/d',
+        pos: { col: 11, line: 196 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3046,7 +3112,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '27 inspect chars',
-        path: '/components/schemas/ObjectWithNullableProperties/properties/e'
+        path: '/components/schemas/ObjectWithNullableProperties/properties/e',
+        pos: { col: 11, line: 200 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3088,7 +3155,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '28 inspect chars',
-        path: '/components/schemas/ObjectWithNullableProperties/properties/f'
+        path: '/components/schemas/ObjectWithNullableProperties/properties/f',
+        pos: { col: 11, line: 204 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3130,7 +3198,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '263 inspect chars',
-        path: '/components/schemas/ObjectWithNullableProperties'
+        path: '/components/schemas/ObjectWithNullableProperties',
+        pos: { col: 7, line: 181 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3179,7 +3248,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '28 inspect chars',
-        path: '/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/a'
+        path: '/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/a',
+        pos: { col: 11, line: 211 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3221,7 +3291,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '29 inspect chars',
-        path: '/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/b'
+        path: '/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/b',
+        pos: { col: 11, line: 215 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3263,7 +3334,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '28 inspect chars',
-        path: '/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/c'
+        path: '/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/c',
+        pos: { col: 11, line: 219 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3305,7 +3377,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '29 inspect chars',
-        path: '/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/d'
+        path: '/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/d',
+        pos: { col: 11, line: 223 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3347,7 +3420,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '27 inspect chars',
-        path: '/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/e'
+        path: '/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/e',
+        pos: { col: 11, line: 227 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3389,7 +3463,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '28 inspect chars',
-        path: '/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/f'
+        path: '/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties/properties/f',
+        pos: { col: 11, line: 231 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3431,7 +3506,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '309 inspect chars',
-        path: '/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties'
+        path: '/components/schemas/ObjectWithNullablePropertiesAndRequiredProperties',
+        pos: { col: 7, line: 208 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3480,7 +3556,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '46 inspect chars',
-        path: '/components/schemas/ObjectWithReferencesInProperties/properties/a'
+        path: '/components/schemas/ObjectWithReferencesInProperties/properties/a',
+        pos: { col: 11, line: 245 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3522,7 +3599,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/detailed-schemas.yml',
         originalComponent: '37 inspect chars',
-        path: '/components/schemas/WithTitle'
+        path: '/components/schemas/WithTitle',
+        pos: { col: 7, line: 17 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3564,7 +3642,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '64 inspect chars',
-        path: '/components/schemas/ObjectWithReferencesInProperties/properties/b'
+        path: '/components/schemas/ObjectWithReferencesInProperties/properties/b',
+        pos: { col: 11, line: 247 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3606,7 +3685,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/simple-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/MyString'
+        path: '/components/schemas/MyString',
+        pos: { col: 7, line: 17 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3648,7 +3728,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '61 inspect chars',
-        path: '/components/schemas/ObjectWithReferencesInProperties/properties/c'
+        path: '/components/schemas/ObjectWithReferencesInProperties/properties/c',
+        pos: { col: 11, line: 249 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3690,7 +3771,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithReferencesInProperties/properties/d'
+        path: '/components/schemas/ObjectWithReferencesInProperties/properties/d',
+        pos: { col: 11, line: 251 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3732,7 +3814,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '265 inspect chars',
-        path: '/components/schemas/ObjectWithReferencesInProperties'
+        path: '/components/schemas/ObjectWithReferencesInProperties',
+        pos: { col: 7, line: 242 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3779,7 +3862,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '46 inspect chars',
-        path: '/components/schemas/ObjectWithReferencesInAnyOf/anyOf/0'
+        path: '/components/schemas/ObjectWithReferencesInAnyOf/anyOf/0',
+        pos: { col: 11, line: 255 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3821,7 +3905,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '64 inspect chars',
-        path: '/components/schemas/ObjectWithReferencesInAnyOf/anyOf/1'
+        path: '/components/schemas/ObjectWithReferencesInAnyOf/anyOf/1',
+        pos: { col: 11, line: 256 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3863,7 +3948,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '61 inspect chars',
-        path: '/components/schemas/ObjectWithReferencesInAnyOf/anyOf/2'
+        path: '/components/schemas/ObjectWithReferencesInAnyOf/anyOf/2',
+        pos: { col: 11, line: 257 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3905,7 +3991,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithReferencesInAnyOf/anyOf/3'
+        path: '/components/schemas/ObjectWithReferencesInAnyOf/anyOf/3',
+        pos: { col: 11, line: 258 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3947,7 +4034,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '248 inspect chars',
-        path: '/components/schemas/ObjectWithReferencesInAnyOf'
+        path: '/components/schemas/ObjectWithReferencesInAnyOf',
+        pos: { col: 7, line: 253 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -3989,7 +4077,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '46 inspect chars',
-        path: '/components/schemas/ObjectWithReferencesInAllOf/allOf/0'
+        path: '/components/schemas/ObjectWithReferencesInAllOf/allOf/0',
+        pos: { col: 11, line: 262 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -4031,7 +4120,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '64 inspect chars',
-        path: '/components/schemas/ObjectWithReferencesInAllOf/allOf/1'
+        path: '/components/schemas/ObjectWithReferencesInAllOf/allOf/1',
+        pos: { col: 11, line: 263 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -4073,7 +4163,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '61 inspect chars',
-        path: '/components/schemas/ObjectWithReferencesInAllOf/allOf/2'
+        path: '/components/schemas/ObjectWithReferencesInAllOf/allOf/2',
+        pos: { col: 11, line: 264 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -4115,7 +4206,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithReferencesInAllOf/allOf/3'
+        path: '/components/schemas/ObjectWithReferencesInAllOf/allOf/3',
+        pos: { col: 11, line: 265 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -4157,7 +4249,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/object-schemas.yml',
         originalComponent: '248 inspect chars',
-        path: '/components/schemas/ObjectWithReferencesInAllOf'
+        path: '/components/schemas/ObjectWithReferencesInAllOf',
+        pos: { col: 7, line: 260 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
