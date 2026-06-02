@@ -3,7 +3,7 @@ import {
   type ApiSchema,
   type AppendValueGroup,
   appendValueGroup,
-  BasicAppendValue,
+  type BasicAppendValue,
   builderTemplate as s,
   createOverwriteProxy,
   getSourceDisplayName,

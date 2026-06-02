@@ -1,13 +1,13 @@
 import { resolve } from 'node:path';
 
 import {
-  ApiComponent,
+  type ApiComponent,
   type ApiEndpoint,
   type ApiResponse,
   type ApiSchema,
   type AppendValueGroup,
   appendValueGroup,
-  BasicAppendValue,
+  type BasicAppendValue,
   builderTemplate as s,
   getSourceDisplayName,
   type MaybePromise,
@@ -342,9 +342,9 @@ export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGene
     });
   }
 
-  protected getDocDescription(
+  protected getDocDescription<T>(
     ctx: Context,
-    component: ApiComponent<any> & { description?: string },
+    component: ApiComponent<T> & { description?: string },
   ): BasicAppendValue<Builder> {
     const docSegments = [component.description?.trim()];
 

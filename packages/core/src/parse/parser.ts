@@ -203,9 +203,3 @@ function getDeepProperty(value: Record<string, unknown>, path: string): unknown 
 
   return result;
 }
-
-function joinPaths(...paths: unknown[]): string {
-  return paths
-    .map((p) => String(p).replace(/\/$/, ''))
-    .join('/');
-}

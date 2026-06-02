@@ -6,7 +6,7 @@ import {
   type AppendValueGroup,
   appendValueGroup,
   type ArrayLikeApiSchema,
-  BasicAppendValue,
+  type BasicAppendValue,
   type CombinedLikeApiSchema,
   DEFAULT_IGNORED_SCHEMA_PROPERTIES,
   getSchemaReference,

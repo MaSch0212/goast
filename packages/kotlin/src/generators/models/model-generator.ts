@@ -5,7 +5,7 @@ import {
   type AppendValue,
   type AppendValueGroup,
   appendValueGroup,
-  BasicAppendValue,
+  type BasicAppendValue,
   builderTemplate as s,
   createOverwriteProxy,
   DEFAULT_IGNORED_SCHEMA_PROPERTIES,
