@@ -39,7 +39,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3/oneof-schemas.yml',
         originalComponent: '13 inspect chars',
-        path: '/components/schemas/EmptyOneOf'
+        path: '/components/schemas/EmptyOneOf',
+        pos: { col: 7, line: 17 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -80,7 +81,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3/oneof-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/OneOfSimpleTypes/oneOf/0'
+        path: '/components/schemas/OneOfSimpleTypes/oneOf/0',
+        pos: { col: 11, line: 20 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -122,7 +124,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3/oneof-schemas.yml',
         originalComponent: '19 inspect chars',
-        path: '/components/schemas/OneOfSimpleTypes/oneOf/1'
+        path: '/components/schemas/OneOfSimpleTypes/oneOf/1',
+        pos: { col: 11, line: 21 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -164,7 +167,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3/oneof-schemas.yml',
         originalComponent: '54 inspect chars',
-        path: '/components/schemas/OneOfSimpleTypes'
+        path: '/components/schemas/OneOfSimpleTypes',
+        pos: { col: 7, line: 19 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -205,7 +209,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3/oneof-schemas.yml',
         originalComponent: '29 inspect chars',
-        path: '/components/schemas/IgnoreType'
+        path: '/components/schemas/IgnoreType',
+        pos: { col: 7, line: 23 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -246,7 +251,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3/oneof-schemas.yml',
         originalComponent: '45 inspect chars',
-        path: '/components/schemas/WithReferences/oneOf/0'
+        path: '/components/schemas/WithReferences/oneOf/0',
+        pos: { col: 11, line: 27 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -287,7 +293,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3/detailed-schemas.yml',
         originalComponent: '37 inspect chars',
-        path: '/components/schemas/WithTitle'
+        path: '/components/schemas/WithTitle',
+        pos: { col: 7, line: 17 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -329,7 +336,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3/oneof-schemas.yml',
         originalComponent: '64 inspect chars',
-        path: '/components/schemas/WithReferences/oneOf/1'
+        path: '/components/schemas/WithReferences/oneOf/1',
+        pos: { col: 11, line: 28 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -371,7 +379,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3/simple-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/MyString'
+        path: '/components/schemas/MyString',
+        pos: { col: 7, line: 17 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -413,7 +422,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3/oneof-schemas.yml',
         originalComponent: '61 inspect chars',
-        path: '/components/schemas/WithReferences/oneOf/2'
+        path: '/components/schemas/WithReferences/oneOf/2',
+        pos: { col: 11, line: 29 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -455,7 +465,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3/oneof-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/WithReferences/oneOf/3'
+        path: '/components/schemas/WithReferences/oneOf/3',
+        pos: { col: 11, line: 30 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -497,7 +508,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3/oneof-schemas.yml',
         originalComponent: '229 inspect chars',
-        path: '/components/schemas/WithReferences'
+        path: '/components/schemas/WithReferences',
+        pos: { col: 7, line: 26 }
       },
       accessibility: 'all',
       additionalProperties: undefined,

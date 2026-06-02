@@ -71,7 +71,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/Pet/properties/name'
+        path: '/components/schemas/Pet/properties/name',
+        pos: { col: 11, line: 25 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -113,7 +114,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/Pet/properties/petType'
+        path: '/components/schemas/Pet/properties/petType',
+        pos: { col: 11, line: 27 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -155,7 +157,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml',
         originalComponent: '38 inspect chars',
-        path: '/components/schemas/Cat/allOf/0'
+        path: '/components/schemas/Cat/allOf/0',
+        pos: { col: 11, line: 33 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -203,7 +206,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml',
         originalComponent: '149 inspect chars',
-        path: '/components/schemas/Cat/allOf/1/properties/huntingSkill'
+        path: '/components/schemas/Cat/allOf/1/properties/huntingSkill',
+        pos: { col: 15, line: 37 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -245,7 +249,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml',
         originalComponent: '261 inspect chars',
-        path: '/components/schemas/Cat/allOf/1'
+        path: '/components/schemas/Cat/allOf/1',
+        pos: { col: 11, line: 34 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -289,7 +294,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml',
         originalComponent: '372 inspect chars',
-        path: '/components/schemas/Cat'
+        path: '/components/schemas/Cat',
+        pos: { col: 7, line: 32 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -330,7 +336,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml',
         originalComponent: '38 inspect chars',
-        path: '/components/schemas/Dog/allOf/0'
+        path: '/components/schemas/Dog/allOf/0',
+        pos: { col: 11, line: 49 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -378,7 +385,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml',
         originalComponent: '123 inspect chars',
-        path: '/components/schemas/Dog/allOf/1/properties/packSize'
+        path: '/components/schemas/Dog/allOf/1/properties/packSize',
+        pos: { col: 15, line: 53 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -420,7 +428,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml',
         originalComponent: '231 inspect chars',
-        path: '/components/schemas/Dog/allOf/1'
+        path: '/components/schemas/Dog/allOf/1',
+        pos: { col: 11, line: 50 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -464,7 +473,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml',
         originalComponent: '346 inspect chars',
-        path: '/components/schemas/Dog'
+        path: '/components/schemas/Dog',
+        pos: { col: 7, line: 48 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -505,7 +515,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/discriminated-schemas.yml',
         originalComponent: '279 inspect chars',
-        path: '/components/schemas/Pet'
+        path: '/components/schemas/Pet',
+        pos: { col: 7, line: 17 }
       },
       accessibility: 'all',
       additionalProperties: undefined,

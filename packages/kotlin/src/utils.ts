@@ -1,4 +1,6 @@
-import type { Nullable } from '@goast/core';
+import type { ApiComponent, Nullable } from '@goast/core';
+import path from 'node:path';
+import process from 'node:process';
 
 export function toKotlinStringLiteral(value: Nullable<string>): string {
   if (!value) {
@@ -36,4 +38,10 @@ export function modifyString<TArgs extends unknown[]>(
     return modifier(value, ...args);
   }
   return value;
+}
+
+export function getSourceDocLine(component: ApiComponent<any>): string {
+  const file = path.relative(process.cwd(), component.$src.file);
+  const { line, col } = component.$src.pos;
+  return `Source: ${file}:${line}:${col} (${component.$src.path})`;
 }

@@ -18,6 +18,10 @@ export type GetEnum = {
   schema: ApiSchema;
 };
 
+export type GetSchemaDocDescription = {
+  schema: ApiSchema;
+};
+
 export type GetType = {
   schema: ApiSchema;
   nullable?: boolean;

@@ -1,6 +1,7 @@
-import { dirname, relative } from 'node:path';
+import path, { dirname, relative } from 'node:path';
 
-import type { Nullable } from '@goast/core';
+import type { ApiComponent, Nullable } from '@goast/core';
+import process from 'node:process';
 
 export type ImportModuleTransformer =
   | 'omit-extension'
@@ -69,4 +70,10 @@ export function modifyString<TArgs extends unknown[]>(
     return modifier(value, ...args);
   }
   return value;
+}
+
+export function getSourceDocLine(component: ApiComponent<any>): string {
+  const file = path.relative(process.cwd(), component.$src.file);
+  const { line, col } = component.$src.pos;
+  return `Source: ${file}:${line}:${col} (${component.$src.path})`;
 }

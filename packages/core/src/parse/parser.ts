@@ -3,12 +3,12 @@ import { cwd } from 'node:process';
 
 // @deno-types="npm:@types/fs-extra@11"
 import fs from 'fs-extra';
-import * as YAML from 'yaml';
 
 import { collectOpenApi } from '../collect/collector.ts';
 import type { ApiData } from '../transform/api-types.ts';
 import { transformOpenApi } from '../transform/transformer.ts';
 import { isNullish } from '../utils/common.utils.ts';
+import { getLineInfo, parseYamlWithInfo } from '../utils/yaml-info.ts';
 import { createDerefProxy } from './deref-proxy.ts';
 import type { OpenApiDocument, OpenApiObject, OpenApiReference, OpenApiSchema } from './openapi-types.ts';
 import { defaultOpenApiParserOptions, type Deref, type OpenApiParserOptions } from './types.ts';
@@ -40,7 +40,7 @@ export class OpenApiParser {
   public async parseApi(fileName: string): Promise<Deref<OpenApiDocument>> {
     const absoluteFilePath = this.isUrl(fileName) ? fileName : path.resolve(cwd(), fileName);
     const doc = await this.loadDocument(absoluteFilePath);
-    return await this.dereference(absoluteFilePath, '/', doc.document);
+    return await this.dereference(absoluteFilePath, [], doc.document);
   }
 
   public transformApis(apis: Deref<OpenApiDocument>[]): ApiData {
@@ -49,10 +49,15 @@ export class OpenApiParser {
     return transformedData;
   }
 
-  private async dereference<T extends OpenApiObject<string>>(file: string, path: string, value: T): Promise<Deref<T>> {
+  private async dereference<T extends OpenApiObject<string>>(
+    file: string,
+    path: unknown[],
+    value: T,
+  ): Promise<Deref<T>> {
+    const openApiPath = `/${path.join('/')}`;
     let existingDocument = this._loadedDocuments.get(file);
     if (existingDocument) {
-      const existingComponent = existingDocument.dereferencedComponents.get(path);
+      const existingComponent = existingDocument.dereferencedComponents.get(openApiPath);
       if (existingComponent) {
         return existingComponent as Deref<T>;
       }
@@ -62,11 +67,12 @@ export class OpenApiParser {
 
     const result = createDerefProxy(value, {
       file,
-      path,
+      pos: getLineInfo(existingDocument.document, path),
+      path: openApiPath,
       document: existingDocument.dereferencedDocument,
       originalComponent: value,
     });
-    existingDocument.dereferencedComponents.set(path, result as Deref<OpenApiObject<string>>);
+    existingDocument.dereferencedComponents.set(openApiPath, result as Deref<OpenApiObject<string>>);
 
     if (value.$ref) {
       // deno-lint-ignore no-explicit-any
@@ -81,7 +87,7 @@ export class OpenApiParser {
           (result as Record<keyof T, unknown>)[key] = await Promise.all(
             v.map(async (v, index) => {
               if (v && typeof v === 'object') {
-                return await this.dereference(file, joinPaths(path, key, index), v);
+                return await this.dereference(file, [...path, key, index], v);
               } else {
                 return v;
               }
@@ -90,12 +96,12 @@ export class OpenApiParser {
         } else {
           (result as Record<keyof T, unknown>)[key] = await this.dereference(
             file,
-            joinPaths(path, key),
+            [...path, key],
             v as Record<string, unknown>,
           );
         }
       }
-      if (typeof v === 'string' && path.endsWith('/discriminator/mapping')) {
+      if (typeof v === 'string' && openApiPath.endsWith('/discriminator/mapping')) {
         (result as Record<keyof T, unknown>)[key] = await this.resolveReference<OpenApiSchema>(file, { $ref: v });
       }
     }
@@ -120,7 +126,7 @@ export class OpenApiParser {
 
     const value = refPath ? getDeepProperty(doc.document, refPath.replace(/[/]/g, '.')) : doc.document;
     if (value && typeof value === 'object') {
-      return this.dereference(absoluteRefFile, refPath ?? '/', value as T);
+      return this.dereference(absoluteRefFile, refPath.split('/').filter(Boolean), value as T);
     }
 
     return undefined;
@@ -133,20 +139,7 @@ export class OpenApiParser {
     }
 
     const documentContent = await this.getDocumentContent(fileOrUrl);
-    const extname = path.extname(fileOrUrl).toLowerCase();
-
-    let parsedDocument: unknown;
-    if (extname === '.json') {
-      parsedDocument = this.tryParseJson(documentContent);
-    } else if (extname === '.yaml' || extname === '.yml') {
-      parsedDocument = this.tryParseYaml(documentContent);
-    } else {
-      parsedDocument = this.tryParseJson(documentContent);
-      if (parsedDocument !== undefined) {
-        parsedDocument = this.tryParseYaml(documentContent);
-      }
-    }
-
+    const parsedDocument = this.tryParseYamlOrJson(documentContent);
     if (parsedDocument === undefined) {
       throw new Error(`Unable to parse ${fileOrUrl}`);
     }
@@ -154,6 +147,7 @@ export class OpenApiParser {
     const doc = (parsedDocument ?? {}) as OpenApiDocument;
     const deref = createDerefProxy(doc, {
       file: fileOrUrl,
+      pos: { line: 0, col: 0 },
       path: '',
       originalComponent: doc,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -186,17 +180,9 @@ export class OpenApiParser {
     return /^https?:\/\//i.test(fileOrUrl);
   }
 
-  private tryParseJson(json: string): unknown {
+  private tryParseYamlOrJson(yamlOrJson: string): unknown {
     try {
-      return JSON.parse(json);
-    } catch {
-      return undefined;
-    }
-  }
-
-  private tryParseYaml(yaml: string): unknown {
-    try {
-      return YAML.parse(yaml);
+      return parseYamlWithInfo(yamlOrJson);
     } catch {
       return undefined;
     }

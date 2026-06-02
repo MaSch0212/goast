@@ -3,10 +3,12 @@ import {
   type ApiSchema,
   type AppendValueGroup,
   appendValueGroup,
+  BasicAppendValue,
   builderTemplate as s,
   createOverwriteProxy,
   getSourceDisplayName,
   type MaybePromise,
+  notNullish,
   resolveAnyOfAndAllOf,
   SourceBuilder,
   toCasing,
@@ -16,7 +18,7 @@ import { kt } from '../../../ast/index.ts';
 import type { KtValue } from '../../../ast/nodes/types.ts';
 import { KotlinFileBuilder } from '../../../file-builder.ts';
 import type { ApiParameterWithMultipartInfo } from '../../../types.ts';
-import { modifyString } from '../../../utils.ts';
+import { getSourceDocLine, modifyString } from '../../../utils.ts';
 import { KotlinFileGenerator } from '../../file-generator.ts';
 import type { DefaultKotlinSpringReactiveWebClientGeneratorArgs as Args } from './index.ts';
 import type {
@@ -90,7 +92,7 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
     const functionName = this.getEndpointFunctionName(ctx, { endpoint });
 
     return kt.function(functionName, {
-      doc: kt.doc(endpoint.description),
+      doc: kt.doc(this.getEndpointDocDescription(ctx, { endpoint })),
       suspend: true,
       receiverType: kt.refs.springReactive.webClient(),
       parameters: parameters.map((parameter) =>
@@ -142,7 +144,7 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
     const functionName = this.getEndpointFunctionName(ctx, { endpoint });
 
     return kt.function(functionName, {
-      doc: kt.doc(endpoint.description),
+      doc: kt.doc(this.getEndpointDocDescription(ctx, { endpoint })),
       suspend: true,
       generics: [kt.genericParameter('T')],
       receiverType: kt.refs.springReactive.webClient(),
@@ -201,7 +203,7 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
     const functionName = this.getEndpointRequestFunctionName(ctx, { endpoint });
 
     return kt.function(functionName, {
-      doc: kt.doc(endpoint.description),
+      doc: kt.doc(this.getEndpointDocDescription(ctx, { endpoint })),
       receiverType: kt.refs.springReactive.webClient(),
       parameters: parameters.map((parameter) =>
         kt.parameter(
@@ -527,6 +529,16 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
       schemaInfo && schemaInfo.name !== 'Any' ? SourceBuilder.build((b) => kt.reference.write(b, schemaInfo)) : 'body',
       ctx.config.parameterNameCasing,
     );
+  }
+
+  protected getEndpointDocDescription(ctx: Context, args: Args.GetEndpointDocDescription): BasicAppendValue<Builder> {
+    const docSegments = [args.endpoint.description?.trim()];
+
+    if (ctx.config.includeSourceInDocs) {
+      docSegments.push(getSourceDocLine(args.endpoint));
+    }
+
+    return docSegments.filter(notNullish).join('\n\n');
   }
 
   protected getBasePath(ctx: Context, _args: Args.GetBasePath): string {

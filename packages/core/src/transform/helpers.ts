@@ -4,6 +4,7 @@ import type { OpenApiHttpMethod, OpenApiObject } from '../parse/openapi-types.ts
 import type { Deref, DerefSource } from '../parse/types.ts';
 import { isNullish } from '../utils/common.utils.ts';
 import { getDeepProperty } from '../utils/object.utils.ts';
+import { getLineInfo } from '../utils/yaml-info.ts';
 import type { ApiSchema, ApiSchemaAccessibility, ApiSchemaKind, ApiSchemaProperty } from './api-types.ts';
 import type { OpenApiTransformerContext } from './types.ts';
 
@@ -106,6 +107,7 @@ export function determineSchemaName(
           : undefined,
         $src: {
           file: schema.$src.file,
+          pos: getLineInfo(schema.$src.document, parentSchemaMatch[1].split('/').filter(Boolean)),
           path: parentSchemaMatch[1],
           document: schema.$src.document,
           originalComponent: parentSchema,

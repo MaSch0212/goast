@@ -34,7 +34,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v2/detailed-schemas.yml',
         originalComponent: '37 inspect chars',
-        path: '/definitions/WithTitle'
+        path: '/definitions/WithTitle',
+        pos: { col: 5, line: 16 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -76,7 +77,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v2/detailed-schemas.yml',
         originalComponent: '218 inspect chars',
-        path: '/definitions/WithAllCommon'
+        path: '/definitions/WithAllCommon',
+        pos: { col: 5, line: 19 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -118,7 +120,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v2/detailed-schemas.yml',
         originalComponent: '51 inspect chars',
-        path: '/definitions/MyEnum'
+        path: '/definitions/MyEnum',
+        pos: { col: 5, line: 27 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -160,7 +163,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v2/detailed-schemas.yml',
         originalComponent: '34 inspect chars',
-        path: '/definitions/ReadOnly'
+        path: '/definitions/ReadOnly',
+        pos: { col: 5, line: 33 }
       },
       accessibility: 'readOnly',
       additionalProperties: undefined,

@@ -30,7 +30,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/simple-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/MyString'
+        path: '/components/schemas/MyString',
+        pos: { col: 7, line: 17 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -72,7 +73,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/simple-schemas.yml',
         originalComponent: '19 inspect chars',
-        path: '/components/schemas/MyInteger'
+        path: '/components/schemas/MyInteger',
+        pos: { col: 7, line: 19 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -114,7 +116,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/simple-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/MyNumber'
+        path: '/components/schemas/MyNumber',
+        pos: { col: 7, line: 21 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -156,7 +159,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/simple-schemas.yml',
         originalComponent: '19 inspect chars',
-        path: '/components/schemas/MyBoolean'
+        path: '/components/schemas/MyBoolean',
+        pos: { col: 7, line: 23 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -198,7 +202,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/simple-schemas.yml',
         originalComponent: '17 inspect chars',
-        path: '/components/schemas/MyArray'
+        path: '/components/schemas/MyArray',
+        pos: { col: 7, line: 25 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -240,7 +245,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/simple-schemas.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/MyObject'
+        path: '/components/schemas/MyObject',
+        pos: { col: 7, line: 27 }
       },
       accessibility: 'all',
       additionalProperties: undefined,

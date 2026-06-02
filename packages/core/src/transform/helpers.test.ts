@@ -48,7 +48,13 @@ describe('determineSchemaName', () => {
   test('returns the schema title if it exists', () => {
     const schema = {
       title: 'TestSchema',
-      $src: { file: 'my-api.yml', path: '/test/schema', document: {} as Deref<OpenApiDocument>, originalComponent: {} },
+      $src: {
+        file: 'my-api.yml',
+        pos: { line: 0, col: 0 },
+        path: '/test/schema',
+        document: {} as Deref<OpenApiDocument>,
+        originalComponent: {},
+      },
     };
     expect(determineSchemaName(schema, 'TestId')).toEqual({
       name: 'TestSchema',
@@ -58,7 +64,13 @@ describe('determineSchemaName', () => {
 
   test("returns the json schema file name if the schema title doesn't exist", () => {
     const schema = {
-      $src: { path: '/', file: 'test.json', document: {} as Deref<OpenApiDocument>, originalComponent: {} },
+      $src: {
+        path: '/',
+        file: 'test.json',
+        pos: { line: 0, col: 0 },
+        document: {} as Deref<OpenApiDocument>,
+        originalComponent: {},
+      },
     };
     expect(determineSchemaName(schema, 'TestId')).toEqual({
       name: 'test',
@@ -70,6 +82,7 @@ describe('determineSchemaName', () => {
     const schema = {
       $src: {
         file: 'my-api.yml',
+        pos: { line: 0, col: 0 },
         path: '/components/schemas/TestSchema',
         document: {} as Deref<OpenApiDocument>,
         originalComponent: {},
@@ -85,6 +98,7 @@ describe('determineSchemaName', () => {
     const schema = {
       $src: {
         file: 'my-api.yml',
+        pos: { line: 0, col: 0 },
         path: '/definitions/TestSchema',
         document: {} as Deref<OpenApiDocument>,
         originalComponent: {},
@@ -100,6 +114,7 @@ describe('determineSchemaName', () => {
     const schema = {
       $src: {
         file: 'my-api.yml',
+        pos: { line: 0, col: 0 },
         path: '/paths/users/{userId}/email-verification/{token}/get/responses/200/',
         document: {} as Deref<OpenApiDocument>,
         originalComponent: {},
@@ -113,7 +128,13 @@ describe('determineSchemaName', () => {
 
   test('returns the provided id if no other name can be determined', () => {
     const schema = {
-      $src: { file: 'my-api.yml', path: '/test/schema', document: {} as Deref<OpenApiDocument>, originalComponent: {} },
+      $src: {
+        file: 'my-api.yml',
+        pos: { line: 0, col: 0 },
+        path: '/test/schema',
+        document: {} as Deref<OpenApiDocument>,
+        originalComponent: {},
+      },
     };
     expect(determineSchemaName(schema, 'TestId')).toEqual({ name: 'TestId', isGenerated: true });
   });

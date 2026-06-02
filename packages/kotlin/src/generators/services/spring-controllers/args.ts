@@ -68,6 +68,8 @@ export type GetTypeUsage<TBuilder extends SourceBuilder> = {
   type?: kt.Reference<TBuilder>;
 };
 
+export type GetEndpointDocDescription = { endpoint: ApiEndpoint };
+
 export type GetSchemaType = { schema: ApiSchema | undefined };
 
 export type GetControllerRequestMapping = { prefix?: string };

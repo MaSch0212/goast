@@ -14,6 +14,12 @@ export type KotlinGeneratorConfig = OpenApiGeneratorConfig & {
   constantNameCasing: StringCasing | StringCasingWithOptions;
 
   globalImports: string[];
+
+  /**
+   * Whether to include the source OpenAPI document path in the generated documentation comments.
+   * @default false
+   */
+  includeSourceInDocs: boolean;
 };
 
 export const defaultKotlinGeneratorConfig: DefaultGenerationProviderConfig<KotlinGeneratorConfig> = {
@@ -38,4 +44,5 @@ export const defaultKotlinGeneratorConfig: DefaultGenerationProviderConfig<Kotli
     'java.lang.*',
     'kotlin.jvm.*',
   ],
+  includeSourceInDocs: false,
 };

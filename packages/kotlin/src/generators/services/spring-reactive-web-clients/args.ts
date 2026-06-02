@@ -92,6 +92,8 @@ export type GetAllParameters = { endpoint: ApiEndpoint };
 
 export type GetRequestBodyParamName = { endpoint: ApiEndpoint };
 
+export type GetEndpointDocDescription = { endpoint: ApiEndpoint };
+
 export type GetBasePath = object;
 
 export type GetEndpointPath = { endpoint: ApiEndpoint };

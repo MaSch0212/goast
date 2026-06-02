@@ -1,18 +1,22 @@
 import { resolve } from 'node:path';
 
 import {
+  ApiComponent,
   type ApiEndpoint,
   type ApiSchema,
   type AppendValueGroup,
   appendValueGroup,
+  BasicAppendValue,
   builderTemplate as s,
   getSourceDisplayName,
   type MaybePromise,
+  notNullish,
   toCasing,
 } from '@goast/core';
 
 import { ts } from '../../../ast/index.ts';
 import { TypeScriptFileBuilder } from '../../../file-builder.ts';
+import { getSourceDocLine } from '../../../utils.ts';
 import { TypeScriptFileGenerator } from '../../file-generator.ts';
 import type { TypeScriptFetchClientGeneratorContext, TypeScriptFetchClientGeneratorOutput } from './models.ts';
 
@@ -96,7 +100,10 @@ export class DefaultTypeScriptFetchClientGenerator extends TypeScriptFileGenerat
     const bodySchema = endpoint.requestBody?.content[0]?.schema;
     const responseSchema = this.getResponseSchema(ctx, endpoint);
     return ts.method(toCasing(endpoint.name, ctx.config.functionNameCasing), {
-      doc: ts.doc({ description: endpoint.description, tags: [endpoint.deprecated ? ts.docTag('deprecated') : null] }),
+      doc: ts.doc({
+        description: this.getDocDescription(ctx, endpoint),
+        tags: [endpoint.deprecated ? ts.docTag('deprecated') : null],
+      }),
       parameters: [
         params.length > 0
           ? ts.parameter('params', {
@@ -230,6 +237,19 @@ export class DefaultTypeScriptFetchClientGenerator extends TypeScriptFileGenerat
     return method;
   }
   // #endregion
+
+  protected getDocDescription(
+    ctx: Context,
+    component: ApiComponent<any> & { description?: string },
+  ): BasicAppendValue<Builder> {
+    const docSegments = [component.description?.trim()];
+
+    if (ctx.config.includeSourceInDocs) {
+      docSegments.push(getSourceDocLine(component));
+    }
+
+    return docSegments.filter(notNullish).join('\n\n');
+  }
 
   protected getSchemaType(ctx: Context, schema: ApiSchema | undefined, fallback?: ts.Type<Builder>): ts.Type<Builder> {
     const output = schema && ctx.input.typescript.models[schema.id];

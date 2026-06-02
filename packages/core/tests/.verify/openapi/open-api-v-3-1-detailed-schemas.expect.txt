@@ -39,7 +39,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/detailed-schemas.yml',
         originalComponent: '37 inspect chars',
-        path: '/components/schemas/WithTitle'
+        path: '/components/schemas/WithTitle',
+        pos: { col: 7, line: 17 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -81,7 +82,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/detailed-schemas.yml',
         originalComponent: '267 inspect chars',
-        path: '/components/schemas/WithAllCommon'
+        path: '/components/schemas/WithAllCommon',
+        pos: { col: 7, line: 20 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -123,7 +125,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/detailed-schemas.yml',
         originalComponent: '51 inspect chars',
-        path: '/components/schemas/MyEnum'
+        path: '/components/schemas/MyEnum',
+        pos: { col: 7, line: 32 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -165,7 +168,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/detailed-schemas.yml',
         originalComponent: '35 inspect chars',
-        path: '/components/schemas/WriteOnly'
+        path: '/components/schemas/WriteOnly',
+        pos: { col: 7, line: 38 }
       },
       accessibility: 'writeOnly',
       additionalProperties: undefined,
@@ -207,7 +211,8 @@
         document: '9 inspect chars',
         file: '<root>/test/openapi-files/v3.1/detailed-schemas.yml',
         originalComponent: '34 inspect chars',
-        path: '/components/schemas/ReadOnly'
+        path: '/components/schemas/ReadOnly',
+        pos: { col: 7, line: 41 }
       },
       accessibility: 'readOnly',
       additionalProperties: undefined,

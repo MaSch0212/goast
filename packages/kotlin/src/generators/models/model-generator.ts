@@ -5,6 +5,7 @@ import {
   type AppendValue,
   type AppendValueGroup,
   appendValueGroup,
+  BasicAppendValue,
   builderTemplate as s,
   createOverwriteProxy,
   DEFAULT_IGNORED_SCHEMA_PROPERTIES,
@@ -21,6 +22,7 @@ import {
 
 import { kt } from '../../ast/index.ts';
 import { KotlinFileBuilder } from '../../file-builder.ts';
+import { getSourceDocLine } from '../../utils.ts';
 import { KotlinFileGenerator } from '../file-generator.ts';
 import type { DefaultKotlinModelGeneratorArgs as Args } from './index.ts';
 import type { KotlinModelGeneratorContext, KotlinModelGeneratorOutput } from './models.ts';
@@ -90,7 +92,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     const parameters = this.getClassProperties(ctx, { schema });
 
     return kt.class(this.getDeclarationTypeName(ctx, { schema }), {
-      doc: kt.doc(schema.description?.trim()),
+      doc: kt.doc(this.getSchemaDocDescription(ctx, { schema })),
       annotations: [
         this.getJacksonJsonClassDescriptionAnnotation(ctx, { schema }),
         schema.deprecated ? kt.annotation(kt.refs.deprecated(), [kt.argument(kt.string(''))]) : null,
@@ -116,7 +118,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     const { schema } = args;
 
     return kt.interface(this.getDeclarationTypeName(ctx, { schema }), {
-      doc: kt.doc(schema.description?.trim()),
+      doc: kt.doc(this.getSchemaDocDescription(ctx, { schema })),
       annotations: [
         this.getJacksonJsonTypeInfoAnnotation(ctx, { schema }),
         this.getJacksonJsonSubTypesAnnotation(ctx, { schema }),
@@ -142,7 +144,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
         })
       ) ?? [],
       {
-        doc: kt.doc(schema.description?.trim()),
+        doc: kt.doc(this.getSchemaDocDescription(ctx, { schema })),
         annotations: [schema.deprecated ? kt.annotation(kt.refs.deprecated(), [kt.argument(kt.string(''))]) : null],
         primaryConstructor: kt.constructor([
           kt.parameter.class(toCasing('value', ctx.config.propertyNameCasing), kt.refs.string(), {
@@ -169,6 +171,16 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
         }),
       },
     );
+  }
+
+  protected getSchemaDocDescription(ctx: Context, args: Args.GetSchemaDocDescription): BasicAppendValue<Builder> {
+    const docSegments = [args.schema.description?.trim()];
+
+    if (ctx.config.includeSourceInDocs) {
+      docSegments.push(getSourceDocLine(args.schema));
+    }
+
+    return docSegments.filter(notNullish).join('\n\n');
   }
 
   protected getType(ctx: Context, args: Args.GetType): kt.Reference<SourceBuilder> {
@@ -324,7 +336,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     const { schema, property } = args;
 
     return kt.property(toCasing(property.name, ctx.config.propertyNameCasing), {
-      doc: kt.doc(property.schema.description?.trim()),
+      doc: kt.doc(this.getSchemaDocDescription(ctx, { schema: property.schema })),
       annotations: modifyEach(
         [
           this.getJacksonJsonPropertyAnnotation(ctx, { schema, property }),
