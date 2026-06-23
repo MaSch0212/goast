@@ -14,7 +14,6 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
-import okhttp3.internal.EMPTY_REQUEST
 import java.io.File
 import java.net.URLConnection
 import java.time.LocalDate
@@ -106,7 +105,7 @@ open class ApiClient(@API_CLIENT_PARAMETERS@) {
 
             mediaType == null || mediaType.startsWith("application/") && mediaType.endsWith("json") ->
                 if (content == null) {
-                    EMPTY_REQUEST
+                    ByteArray(0).toRequestBody(null)
                 } else {
                     objectMapper.writeValueAsString(content)
                         .toRequestBody((mediaType ?: JsonMediaType).toMediaTypeOrNull())
