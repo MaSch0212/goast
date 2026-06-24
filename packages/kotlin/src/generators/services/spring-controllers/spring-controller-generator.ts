@@ -28,6 +28,8 @@ type Context = KotlinServiceGeneratorContext;
 type Output = KotlinServiceGeneratorOutput;
 type Builder = KotlinFileBuilder;
 
+const strictResponseCustomProperty = 'strict-response';
+
 export interface KotlinSpringControllerGenerator<
   TOutput extends Output = Output,
 > {
@@ -116,7 +118,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     });
   }
 
-  private getApiInterfaceAnnotations(ctx: Context): kt.Annotation<Builder>[] {
+  protected getApiInterfaceAnnotations(ctx: Context): kt.Annotation<Builder>[] {
     const validated = kt.annotation(kt.refs.spring.validated());
     const requestMapping = kt.annotation(kt.refs.spring.requestMapping(), [
       kt.argument(this.getControllerRequestMapping(ctx, { prefix: 'api' })),
@@ -124,7 +126,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     return [validated, requestMapping];
   }
 
-  private getApiInterfaceMembers(ctx: Context): kt.InterfaceMember<Builder>[] {
+  protected getApiInterfaceMembers(ctx: Context): kt.InterfaceMember<Builder>[] {
     const members: kt.InterfaceMember<Builder>[] = [];
     const delegateInterfaceName = this.getApiDelegateInterfaceName(ctx, {});
 
@@ -147,11 +149,11 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
       members.push(this.getApiInterfaceEndpointMethod(ctx, { endpoint }));
     });
 
-    if (ctx.config.strictResponseEntities) {
-      members.push(
-        ...ctx.service.endpoints.map((endpoint) => this.getApiResponseEntityClass(ctx, { endpoint })),
-      );
-    }
+    members.push(
+      ...ctx.service.endpoints
+        .filter((endpoint) => endpoint.custom[strictResponseCustomProperty] ?? ctx.config.strictResponseEntities)
+        .map((endpoint) => this.getApiResponseEntityClass(ctx, { endpoint })),
+    );
 
     return members;
   }
@@ -176,7 +178,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     });
   }
 
-  private getApiInterfaceEndpointMethodAnnnotations(
+  protected getApiInterfaceEndpointMethodAnnnotations(
     ctx: Context,
     endpoint: ApiEndpoint,
   ): kt.Annotation<Builder>[] {
@@ -301,7 +303,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     return annotations;
   }
 
-  private getApiInterfaceEndpointMethodParameter(
+  protected getApiInterfaceEndpointMethodParameter(
     ctx: Context,
     endpoint: ApiEndpoint,
     parameter: ApiParameterWithMultipartInfo,
@@ -423,7 +425,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     return result;
   }
 
-  private getApiInterfaceEndpointMethodBody(
+  protected getApiInterfaceEndpointMethodBody(
     ctx: Context,
     endpoint: ApiEndpoint,
     parameters: ApiParameterWithMultipartInfo[],
@@ -471,7 +473,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     return body;
   }
 
-  private getApiResponseEntityClass(
+  protected getApiResponseEntityClass(
     ctx: Context,
     args: Args.GetApiResponseEntityClass,
   ): kt.Class<Builder> {
@@ -645,7 +647,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     });
   }
 
-  private getApiControllerAnnotations(ctx: Context): kt.Annotation<Builder>[] {
+  protected getApiControllerAnnotations(ctx: Context): kt.Annotation<Builder>[] {
     const annotations: kt.Annotation<Builder>[] = [];
     if (ctx.config.addJakartaValidationAnnotations) {
       annotations.push(
@@ -668,7 +670,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     return annotations;
   }
 
-  private getApiControllerMembers(ctx: Context): kt.ClassMember<Builder>[] {
+  protected getApiControllerMembers(ctx: Context): kt.ClassMember<Builder>[] {
     const delegateInterfaceName = this.getApiDelegateInterfaceName(ctx, {});
 
     const delegateProp = kt.property<Builder>('delegate', {
@@ -740,7 +742,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     });
   }
 
-  private getApiDelegateInterfaceAnnotations(
+  protected getApiDelegateInterfaceAnnotations(
     ctx: Context,
   ): kt.Annotation<Builder>[] {
     const annotations: kt.Annotation<Builder>[] = [];
@@ -759,7 +761,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     return annotations;
   }
 
-  private getApiDelegateInterfaceMembers(
+  protected getApiDelegateInterfaceMembers(
     ctx: Context,
   ): kt.InterfaceMember<Builder>[] {
     const members: kt.InterfaceMember<Builder>[] = [];
@@ -802,7 +804,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
       },
     );
 
-    if (ctx.config.strictResponseEntities) {
+    if (endpoint.custom[strictResponseCustomProperty] ?? ctx.config.strictResponseEntities) {
       const responseEntity = kt.reference.genericFactory(
         this.getApiResponseEntityName(ctx, { endpoint }),
         `${this.getPackageName(ctx, {})}.${this.getApiInterfaceName(ctx, {})}`,

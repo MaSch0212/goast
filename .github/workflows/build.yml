@@ -21,7 +21,9 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
-          deno-version: v2.x
+          # Pinned: Deno 2.8.3 regressed `export =` default-import type resolution
+          # (e.g. `import fs from 'fs-extra'`), breaking type-checking repo-wide.
+          deno-version: v2.8.2
 
       - name: Install dependencies
         run: deno install --frozen
@@ -71,7 +73,9 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
-          deno-version: v2.x
+          # Pinned: Deno 2.8.3 regressed `export =` default-import type resolution
+          # (e.g. `import fs from 'fs-extra'`), breaking type-checking repo-wide.
+          deno-version: v2.8.2
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
