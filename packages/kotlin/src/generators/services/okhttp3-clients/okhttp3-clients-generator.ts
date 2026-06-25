@@ -131,6 +131,14 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
             : 'val baseUrl: String, val client: Factory = defaultClient, val objectMapper: ObjectMapper = Serializer.jacksonObjectMapper',
         );
       }
+      if (ctx.config.springBootVersion === 4) {
+        // Jackson 3 (Spring Boot 4) moved every package except annotations from
+        // `com.fasterxml.jackson.*` to `tools.jackson.*`. Rewrite the imports in the copied assets to match.
+        fileContent = fileContent.replace(
+          /\bcom\.fasterxml\.jackson\.(core|databind|module|datatype|dataformat)\b/g,
+          'tools.jackson.$1',
+        );
+      }
       writeGeneratedFile(ctx.config, targetPath, fileContent);
     }
 
@@ -140,15 +148,26 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
     ) {
       const filePath = resolve(targetDir, 'Serializer.kt');
       console.log(`Generating Serializer to ${filePath}...`);
+      const springBootVersion = ctx.config.springBootVersion;
+      const jsonIncludeMember = toCasing(ctx.config.serializerJsonInclude, 'snake');
+      const defaultFactory: AppendValue<KotlinFileBuilder> = springBootVersion === 4
+        // Jackson 3's ObjectMapper is immutable; configuration moved to the (Kotlin) mapper builder.
+        ? s`${kt.refs.jackson.jacksonMapperBuilder(springBootVersion)}()${s.indent`
+            .findAndAddModules()
+            .changeDefaultPropertyInclusion { it.withValueInclusion(${kt.refs.jackson.jsonInclude()}.Include.${jsonIncludeMember}).withContentInclusion(${kt.refs.jackson.jsonInclude()}.Include.${jsonIncludeMember}) }
+            .configure(${kt.refs.jackson.serializationFeature(springBootVersion)}.WRITE_DATES_AS_TIMESTAMPS, false)
+            .configure(${kt.refs.jackson.deserializationFeature(springBootVersion)}.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .build()`}`
+        : s`${kt.refs.jackson.jacksonObjectMapper(springBootVersion)}()${s.indent`
+            .findAndRegisterModules()
+            .setSerializationInclusion(${kt.refs.jackson.jsonInclude()}.Include.${jsonIncludeMember})
+            .configure(${kt.refs.jackson.serializationFeature(springBootVersion)}.WRITE_DATES_AS_TIMESTAMPS, false)
+            .configure(${
+          kt.refs.jackson.deserializationFeature(springBootVersion)
+        }.FAIL_ON_UNKNOWN_PROPERTIES, false)`}`;
       const factory: AppendValue<KotlinFileBuilder> = typeof ctx.config.serializer === 'object'
         ? ctx.config.serializer.factory
-        : s`${kt.refs.jackson.jacksonObjectMapper()}()${s.indent`
-            .findAndRegisterModules()
-            .setSerializationInclusion(${kt.refs.jackson.jsonInclude()}.Include.${
-          toCasing(ctx.config.serializerJsonInclude, 'snake')
-        })
-            .configure(${kt.refs.jackson.serializationFeature()}.WRITE_DATES_AS_TIMESTAMPS, false)
-            .configure(${kt.refs.jackson.deserializationFeature()}.FAIL_ON_UNKNOWN_PROPERTIES, false)`}`;
+        : defaultFactory;
 
       const builder = new KotlinFileBuilder(ctx.infrastructurePackageName, ctx.config);
       builder.append(
@@ -156,7 +175,7 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
           name: 'Serializer',
           members: [
             kt.property('jacksonObjectMapper', {
-              type: kt.refs.jackson.objectMapper(),
+              type: kt.refs.jackson.objectMapper(ctx.config.springBootVersion),
               mutable: false,
               default: kt.call('run', [kt.lambda([], factory)]),
             }),

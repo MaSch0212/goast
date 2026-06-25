@@ -1,0 +1,1102 @@
+┌──────────────────────────────────────┐
+│ state                                │
+├──────────────────────────────────────┤
+{
+  kotlin: {
+    clients: {
+      'service-1': {
+        __source__: 'tag:Pets',
+        packageName: 'com.openapi.generated.api.client',
+        typeName: 'PetsApiClient'
+      }
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints.yml#/paths//pets/get/responses/200/content/application/json/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Pet',
+              nullable: false,
+              packageName: 'com.openapi.generated.model',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints.yml#/components/schemas/Pet',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Pet',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints.yml#/paths//pets/{id}/delete/parameters/0/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints.yml#/components/schemas/Pet',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Pet',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints.yml#/components/schemas/Owner',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Owner',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints.yml#/components/schemas/Owner',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Owner',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints.yml#/components/schemas/Owner/properties/name',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints.yml#/components/schemas/Pet',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Pet',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints.yml#/components/schemas/Pet',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Pet',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints.yml#/components/schemas/Pet/properties/id',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints.yml#/components/schemas/Pet/properties/name',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints.yml#/components/schemas/Pet/properties/tag',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints.yml#/components/schemas/Pet',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Pet',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints.yml#/components/schemas/Pet',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Pet',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints.yml#/paths//pets/{id}/get/parameters/0/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      }
+    }
+  }
+}
+└──────────────────────────────────────┘
+
+┌────────────────────────────────────────┐
+│ out/com/openapi/generated/model/Pet.kt │
+├────────────────────────────────────────┤
+package com.openapi.generated.model
+
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.swagger.v3.oas.annotations.media.Schema
+
+data class Pet(
+    @Schema(required = true)
+    @param:JsonProperty("id", required = true)
+    @get:JsonProperty("id", required = true)
+    val id: String,
+
+    @Schema(required = true)
+    @param:JsonProperty("name", required = true)
+    @get:JsonProperty("name", required = true)
+    val name: String,
+
+    @Schema
+    @param:JsonProperty("tag")
+    @get:JsonProperty("tag")
+    val tag: String? = null
+)
+
+└────────────────────────────────────────┘
+
+┌──────────────────────────────────────────┐
+│ out/com/openapi/generated/model/Owner.kt │
+├──────────────────────────────────────────┤
+package com.openapi.generated.model
+
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.swagger.v3.oas.annotations.media.Schema
+
+data class Owner(
+    @Schema(required = true)
+    @param:JsonProperty("name", required = true)
+    @get:JsonProperty("name", required = true)
+    val name: String
+)
+
+└──────────────────────────────────────────┘
+
+┌───────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/api/client/PetsApiClient.kt │
+├───────────────────────────────────────────────────────┤
+package com.openapi.generated.api.client
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.openapi.generated.api.client.infrastructure.ApiClient
+import com.openapi.generated.api.client.infrastructure.ApiResponse
+import com.openapi.generated.api.client.infrastructure.ClientError
+import com.openapi.generated.api.client.infrastructure.ClientException
+import com.openapi.generated.api.client.infrastructure.MultiValueMap
+import com.openapi.generated.api.client.infrastructure.RequestConfig
+import com.openapi.generated.api.client.infrastructure.RequestMethod
+import com.openapi.generated.api.client.infrastructure.ResponseType
+import com.openapi.generated.api.client.infrastructure.Serializer
+import com.openapi.generated.api.client.infrastructure.ServerError
+import com.openapi.generated.api.client.infrastructure.ServerException
+import com.openapi.generated.api.client.infrastructure.Success
+import com.openapi.generated.model.Pet
+import okhttp3.Call.Factory
+import okhttp3.HttpUrl
+import java.io.IOException
+
+class PetsApiClient(
+    basePath: String = defaultBasePath,
+    client: Factory = defaultClient,
+    objectMapper: ObjectMapper = Serializer.jacksonObjectMapper
+) : ApiClient(basePath, objectMapper, client) {
+    companion object {
+        @JvmStatic
+        val defaultBasePath: String by lazy {
+            System.getProperties().getProperty(ApiClient.baseUrlKey, "/")
+        }
+    }
+
+    /**
+     * @throws IllegalStateException If the request is not correctly configured
+     * @throws IOException Rethrows the OkHttp execute method exception
+     * @throws UnsupportedOperationException If the API returns an informational or redirection response
+     * @throws ClientException If the API returns a client error response
+     * @throws ServerException If the API returns a server error response
+     */
+    @Throws(
+        IllegalStateException::class,
+        IOException::class,
+        UnsupportedOperationException::class,
+        ClientException::class,
+        ServerException::class
+    )
+    fun listPets(): List<Pet> {
+        val localVarResponse = listPetsWithHttpInfo()
+
+        return when (localVarResponse.responseType) {
+            ResponseType.Success -> (localVarResponse as Success<*>).data as List<Pet>
+            ResponseType.Informational -> throw UnsupportedOperationException("Client does not support Informational responses.")
+            ResponseType.Redirection -> throw UnsupportedOperationException("Client does not support Redirection responses.")
+            ResponseType.ClientError -> {
+                val localVarError = localVarResponse as ClientError<*>
+                throw ClientException(
+                    "Client error : ${localVarError.statusCode} ${localVarError.message.orEmpty()}",
+                    localVarError.statusCode,
+                    localVarResponse
+                )
+            }
+
+            ResponseType.ServerError -> {
+                val localVarError = localVarResponse as ServerError<*>
+                throw ServerException(
+                    "Server error : ${localVarError.statusCode} ${localVarError.message.orEmpty()}",
+                    localVarError.statusCode,
+                    localVarResponse
+                )
+            }
+        }
+    }
+
+    /**
+     * @throws IllegalStateException If the request is not correctly configured
+     * @throws IOException Rethrows the OkHttp execute method exception
+     */
+    @Throws(IllegalStateException::class, IOException::class)
+    fun listPetsWithHttpInfo(): ApiResponse<List<Pet>?> {
+        val localVariableConfig = listPetsRequestConfig()
+        return request<Unit, List<Pet>>(localVariableConfig)
+    }
+
+    /**
+     * To obtain the request config of the operation listPets
+     */
+    private fun listPetsRequestConfig(): RequestConfig<Unit> {
+        val localVariableQuery: MultiValueMap = mutableMapOf<String, List<String>>()
+        val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
+        return RequestConfig(
+            method = RequestMethod.GET,
+            path = "/pets",
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            requiresAuthentication = false
+        )
+    }
+
+    /**
+     * @throws IllegalStateException If the request is not correctly configured
+     * @throws IOException Rethrows the OkHttp execute method exception
+     * @throws UnsupportedOperationException If the API returns an informational or redirection response
+     * @throws ClientException If the API returns a client error response
+     * @throws ServerException If the API returns a server error response
+     */
+    @Throws(
+        IllegalStateException::class,
+        IOException::class,
+        UnsupportedOperationException::class,
+        ClientException::class,
+        ServerException::class
+    )
+    fun createPet(pet: Pet): Pet {
+        val localVarResponse = createPetWithHttpInfo(pet)
+
+        return when (localVarResponse.responseType) {
+            ResponseType.Success -> (localVarResponse as Success<*>).data as Pet
+            ResponseType.Informational -> throw UnsupportedOperationException("Client does not support Informational responses.")
+            ResponseType.Redirection -> throw UnsupportedOperationException("Client does not support Redirection responses.")
+            ResponseType.ClientError -> {
+                val localVarError = localVarResponse as ClientError<*>
+                throw ClientException(
+                    "Client error : ${localVarError.statusCode} ${localVarError.message.orEmpty()}",
+                    localVarError.statusCode,
+                    localVarResponse
+                )
+            }
+
+            ResponseType.ServerError -> {
+                val localVarError = localVarResponse as ServerError<*>
+                throw ServerException(
+                    "Server error : ${localVarError.statusCode} ${localVarError.message.orEmpty()}",
+                    localVarError.statusCode,
+                    localVarResponse
+                )
+            }
+        }
+    }
+
+    /**
+     * @throws IllegalStateException If the request is not correctly configured
+     * @throws IOException Rethrows the OkHttp execute method exception
+     */
+    @Throws(IllegalStateException::class, IOException::class)
+    fun createPetWithHttpInfo(pet: Pet): ApiResponse<Pet?> {
+        val localVariableConfig = createPetRequestConfig(pet)
+        return request<Pet, Pet>(localVariableConfig)
+    }
+
+    /**
+     * To obtain the request config of the operation createPet
+     */
+    private fun createPetRequestConfig(pet: Pet): RequestConfig<Pet> {
+        val localVariableBody = pet
+        val localVariableQuery: MultiValueMap = mutableMapOf<String, List<String>>()
+        val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
+        localVariableHeaders["Content-Type"] = "application/json"
+        return RequestConfig(
+            method = RequestMethod.POST,
+            path = "/pets",
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            requiresAuthentication = false,
+            body = localVariableBody
+        )
+    }
+
+    /**
+     * @throws IllegalStateException If the request is not correctly configured
+     * @throws IOException Rethrows the OkHttp execute method exception
+     * @throws UnsupportedOperationException If the API returns an informational or redirection response
+     * @throws ClientException If the API returns a client error response
+     * @throws ServerException If the API returns a server error response
+     */
+    @Throws(
+        IllegalStateException::class,
+        IOException::class,
+        UnsupportedOperationException::class,
+        ClientException::class,
+        ServerException::class
+    )
+    fun getPet(id: String): Pet {
+        val localVarResponse = getPetWithHttpInfo(id)
+
+        return when (localVarResponse.responseType) {
+            ResponseType.Success -> (localVarResponse as Success<*>).data as Pet
+            ResponseType.Informational -> throw UnsupportedOperationException("Client does not support Informational responses.")
+            ResponseType.Redirection -> throw UnsupportedOperationException("Client does not support Redirection responses.")
+            ResponseType.ClientError -> {
+                val localVarError = localVarResponse as ClientError<*>
+                throw ClientException(
+                    "Client error : ${localVarError.statusCode} ${localVarError.message.orEmpty()}",
+                    localVarError.statusCode,
+                    localVarResponse
+                )
+            }
+
+            ResponseType.ServerError -> {
+                val localVarError = localVarResponse as ServerError<*>
+                throw ServerException(
+                    "Server error : ${localVarError.statusCode} ${localVarError.message.orEmpty()}",
+                    localVarError.statusCode,
+                    localVarResponse
+                )
+            }
+        }
+    }
+
+    /**
+     * @throws IllegalStateException If the request is not correctly configured
+     * @throws IOException Rethrows the OkHttp execute method exception
+     */
+    @Throws(IllegalStateException::class, IOException::class)
+    fun getPetWithHttpInfo(id: String): ApiResponse<Pet?> {
+        val localVariableConfig = getPetRequestConfig(id)
+        return request<Unit, Pet>(localVariableConfig)
+    }
+
+    /**
+     * To obtain the request config of the operation getPet
+     */
+    private fun getPetRequestConfig(id: String): RequestConfig<Unit> {
+        val localVariableQuery: MultiValueMap = mutableMapOf<String, List<String>>()
+        val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
+        return RequestConfig(
+            method = RequestMethod.GET,
+            path = "/pets/${encodeURIComponent(id.toString())}",
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            requiresAuthentication = false
+        )
+    }
+
+    /**
+     * @throws IllegalStateException If the request is not correctly configured
+     * @throws IOException Rethrows the OkHttp execute method exception
+     * @throws UnsupportedOperationException If the API returns an informational or redirection response
+     * @throws ClientException If the API returns a client error response
+     * @throws ServerException If the API returns a server error response
+     */
+    @Throws(
+        IllegalStateException::class,
+        IOException::class,
+        UnsupportedOperationException::class,
+        ClientException::class,
+        ServerException::class
+    )
+    fun deletePet(id: String): Unit {
+        val localVarResponse = deletePetWithHttpInfo(id)
+
+        return when (localVarResponse.responseType) {
+            ResponseType.Success -> Unit
+            ResponseType.Informational -> throw UnsupportedOperationException("Client does not support Informational responses.")
+            ResponseType.Redirection -> throw UnsupportedOperationException("Client does not support Redirection responses.")
+            ResponseType.ClientError -> {
+                val localVarError = localVarResponse as ClientError<*>
+                throw ClientException(
+                    "Client error : ${localVarError.statusCode} ${localVarError.message.orEmpty()}",
+                    localVarError.statusCode,
+                    localVarResponse
+                )
+            }
+
+            ResponseType.ServerError -> {
+                val localVarError = localVarResponse as ServerError<*>
+                throw ServerException(
+                    "Server error : ${localVarError.statusCode} ${localVarError.message.orEmpty()}",
+                    localVarError.statusCode,
+                    localVarResponse
+                )
+            }
+        }
+    }
+
+    /**
+     * @throws IllegalStateException If the request is not correctly configured
+     * @throws IOException Rethrows the OkHttp execute method exception
+     */
+    @Throws(IllegalStateException::class, IOException::class)
+    fun deletePetWithHttpInfo(id: String): ApiResponse<Unit?> {
+        val localVariableConfig = deletePetRequestConfig(id)
+        return request<Unit, Unit>(localVariableConfig)
+    }
+
+    /**
+     * To obtain the request config of the operation deletePet
+     */
+    private fun deletePetRequestConfig(id: String): RequestConfig<Unit> {
+        val localVariableQuery: MultiValueMap = mutableMapOf<String, List<String>>()
+        val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
+        return RequestConfig(
+            method = RequestMethod.DELETE,
+            path = "/pets/${encodeURIComponent(id.toString())}",
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            requiresAuthentication = false
+        )
+    }
+
+    /**
+     * @throws IllegalStateException If the request is not correctly configured
+     * @throws IOException Rethrows the OkHttp execute method exception
+     * @throws UnsupportedOperationException If the API returns an informational or redirection response
+     * @throws ClientException If the API returns a client error response
+     * @throws ServerException If the API returns a server error response
+     */
+    @Throws(
+        IllegalStateException::class,
+        IOException::class,
+        UnsupportedOperationException::class,
+        ClientException::class,
+        ServerException::class
+    )
+    fun searchPets(): Pet {
+        val localVarResponse = searchPetsWithHttpInfo()
+
+        return when (localVarResponse.responseType) {
+            ResponseType.Success -> (localVarResponse as Success<*>).data as Pet
+            ResponseType.Informational -> throw UnsupportedOperationException("Client does not support Informational responses.")
+            ResponseType.Redirection -> throw UnsupportedOperationException("Client does not support Redirection responses.")
+            ResponseType.ClientError -> {
+                val localVarError = localVarResponse as ClientError<*>
+                throw ClientException(
+                    "Client error : ${localVarError.statusCode} ${localVarError.message.orEmpty()}",
+                    localVarError.statusCode,
+                    localVarResponse
+                )
+            }
+
+            ResponseType.ServerError -> {
+                val localVarError = localVarResponse as ServerError<*>
+                throw ServerException(
+                    "Server error : ${localVarError.statusCode} ${localVarError.message.orEmpty()}",
+                    localVarError.statusCode,
+                    localVarResponse
+                )
+            }
+        }
+    }
+
+    /**
+     * @throws IllegalStateException If the request is not correctly configured
+     * @throws IOException Rethrows the OkHttp execute method exception
+     */
+    @Throws(IllegalStateException::class, IOException::class)
+    fun searchPetsWithHttpInfo(): ApiResponse<Pet?> {
+        val localVariableConfig = searchPetsRequestConfig()
+        return request<Unit, Pet>(localVariableConfig)
+    }
+
+    /**
+     * To obtain the request config of the operation searchPets
+     */
+    private fun searchPetsRequestConfig(): RequestConfig<Unit> {
+        val localVariableQuery: MultiValueMap = mutableMapOf<String, List<String>>()
+        val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
+        return RequestConfig(
+            method = RequestMethod.GET,
+            path = "/pets/search",
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            requiresAuthentication = false
+        )
+    }
+
+    private fun encodeURIComponent(uriComponent: String): String = HttpUrl.Builder().scheme("http").host("localhost").addPathSegment(uriComponent).build().encodedPathSegments[0]
+}
+
+└───────────────────────────────────────────────────────┘
+
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ <root>/out/com/openapi/generated/api/client/infrastructure/ApiAbstractions.kt │
+├───────────────────────────────────────────────────────────────────────────────┤
+package com.openapi.generated.api.client.infrastructure
+
+typealias MultiValueMap = MutableMap<String, List<String>>
+
+fun collectionDelimiter(collectionFormat: String) = when (collectionFormat) {
+    "csv" -> ","
+    "tsv" -> "\t"
+    "pipe" -> "|"
+    "space" -> " "
+    else -> ""
+}
+
+val defaultMultiValueConverter: (item: Any?) -> String = { item -> "$item" }
+
+fun <T : Any?> toMultiValue(
+    items: Array<T>,
+    collectionFormat: String,
+    map: (item: T) -> String = defaultMultiValueConverter
+) = toMultiValue(items.asIterable(), collectionFormat, map)
+
+fun <T : Any?> toMultiValue(
+    items: Iterable<T>,
+    collectionFormat: String,
+    map: (item: T) -> String = defaultMultiValueConverter
+): List<String> {
+    return when (collectionFormat) {
+        "multi" -> items.map(map)
+        else -> listOf(items.joinToString(separator = collectionDelimiter(collectionFormat), transform = map))
+    }
+}
+
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ <root>/out/com/openapi/generated/api/client/infrastructure/ApiClient.kt │
+├─────────────────────────────────────────────────────────────────────────┤
+package com.openapi.generated.api.client.infrastructure
+
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import okhttp3.FormBody
+import okhttp3.Headers.Companion.toHeaders
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.Call.Factory
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.ResponseBody
+import java.io.File
+import java.net.URLConnection
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.OffsetTime
+import java.util.Locale
+
+open class ApiClient(val baseUrl: String, val client: Factory = defaultClient, val objectMapper: ObjectMapper = Serializer.jacksonObjectMapper) {
+    companion object {
+        protected const val ContentType = "Content-Type"
+        protected const val Accept = "Accept"
+        protected const val Authorization = "Authorization"
+        protected const val JsonMediaType = "application/json"
+        protected const val FormDataMediaType = "multipart/form-data"
+        protected const val FormUrlEncMediaType = "application/x-www-form-urlencoded"
+        protected const val XmlMediaType = "application/xml"
+
+        val apiKey: MutableMap<String, String> = mutableMapOf()
+        val apiKeyPrefix: MutableMap<String, String> = mutableMapOf()
+        var username: String? = null
+        var password: String? = null
+        var accessToken: String? = null
+        const val baseUrlKey = "org.openapitools.client.baseUrl"
+
+        @JvmStatic
+        val defaultClient: OkHttpClient by lazy {
+            builder.build()
+        }
+
+        @JvmStatic
+        val builder: OkHttpClient.Builder = OkHttpClient.Builder()
+    }
+
+    /**
+     * Guess Content-Type header from the given file (defaults to "application/octet-stream").
+     *
+     * @param file The given file
+     * @return The guessed Content-Type
+     */
+    protected fun guessContentTypeFromFile(file: File): String {
+        val contentType = URLConnection.guessContentTypeFromName(file.name)
+        return contentType ?: "application/octet-stream"
+    }
+
+    protected inline fun <reified T> requestBody(content: T, mediaType: String?): RequestBody =
+        when {
+            content is File -> content.asRequestBody(
+                (mediaType ?: guessContentTypeFromFile(content)).toMediaTypeOrNull()
+            )
+
+            mediaType == FormDataMediaType ->
+                MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .apply {
+                        // content's type *must* be Map<String, PartConfig<*>>
+                        @Suppress("UNCHECKED_CAST")
+                        (content as Map<String, PartConfig<*>>).forEach { (name, part) ->
+                            if (part.body is File) {
+                                val partHeaders = part.headers.toMutableMap() +
+                                    ("Content-Disposition" to "form-data; name=\"$name\"; filename=\"${part.body.name}\"")
+                                val fileMediaType = guessContentTypeFromFile(part.body).toMediaTypeOrNull()
+                                addPart(
+                                    partHeaders.toHeaders(),
+                                    part.body.asRequestBody(fileMediaType)
+                                )
+                            } else {
+                                val partHeaders = part.headers.toMutableMap() +
+                                    ("Content-Disposition" to "form-data; name=\"$name\"")
+                                addPart(
+                                    partHeaders.toHeaders(),
+                                    objectMapper.writeValueAsString(part.body)
+                                        .toRequestBody(JsonMediaType.toMediaTypeOrNull())
+                                )
+                            }
+                        }
+                    }.build()
+
+            mediaType == FormUrlEncMediaType -> {
+                FormBody.Builder().apply {
+                    // content's type *must* be Map<String, PartConfig<*>>
+                    @Suppress("UNCHECKED_CAST")
+                    (content as Map<String, PartConfig<*>>).forEach { (name, part) ->
+                        add(name, parameterToString(part.body))
+                    }
+                }.build()
+            }
+
+            mediaType == null || mediaType.startsWith("application/") && mediaType.endsWith("json") ->
+                if (content == null) {
+                    ByteArray(0).toRequestBody(null)
+                } else {
+                    objectMapper.writeValueAsString(content)
+                        .toRequestBody((mediaType ?: JsonMediaType).toMediaTypeOrNull())
+                }
+
+            mediaType == XmlMediaType -> throw UnsupportedOperationException("xml not currently supported.")
+            // TODO: this should be extended with other serializers
+            else -> throw UnsupportedOperationException("requestBody currently only supports JSON body and File body.")
+        }
+
+    protected inline fun <reified T : Any?> responseBody(body: ResponseBody?, mediaType: String? = JsonMediaType): T? {
+        if (body == null) {
+            return null
+        }
+        if (T::class.java == File::class.java) {
+            // return tempFile
+            // Attention: if you are developing an android app that supports API Level 25 and bellow, please check flag supportAndroidApiLevel25AndBelow in https://openapi-generator.tech/docs/generators/kotlin#config-options
+            val tempFile = java.nio.file.Files.createTempFile("tmp.org.openapitools.client", null).toFile()
+            tempFile.deleteOnExit()
+            body.byteStream().use { inputStream ->
+                tempFile.outputStream().use { tempFileOutputStream ->
+                    inputStream.copyTo(tempFileOutputStream)
+                }
+            }
+            return tempFile as T
+        }
+        val bodyContent = body.string()
+        if (bodyContent.isEmpty()) {
+            return null
+        }
+        return when {
+            mediaType == null || (mediaType.startsWith("application/") && mediaType.endsWith("json")) ->
+                objectMapper.readValue(bodyContent, object : TypeReference<T>() {})
+
+            mediaType.startsWith("text/") && T::class.java == String::class.java -> bodyContent as T
+
+            else -> throw UnsupportedOperationException("responseBody currently only supports JSON body.")
+        }
+    }
+
+    protected inline fun <reified I, reified T : Any?> request(requestConfig: RequestConfig<I>): ApiResponse<T?> {
+        val httpUrl = baseUrl.toHttpUrlOrNull() ?: throw IllegalStateException("baseUrl is invalid.")
+
+        val url = httpUrl.newBuilder()
+            .addEncodedPathSegments(requestConfig.path.trimStart('/'))
+            .apply {
+                requestConfig.query.forEach { query ->
+                    query.value.forEach { queryValue ->
+                        addQueryParameter(query.key, queryValue)
+                    }
+                }
+            }.build()
+
+        // take content-type/accept from spec or set to default (application/json) if not defined
+        if (requestConfig.body != null && requestConfig.headers[ContentType].isNullOrEmpty()) {
+            requestConfig.headers[ContentType] = JsonMediaType
+        }
+        if (requestConfig.headers[Accept].isNullOrEmpty()) {
+            requestConfig.headers[Accept] = JsonMediaType
+        }
+        val headers = requestConfig.headers
+
+        if (headers[Accept].isNullOrEmpty()) {
+            throw kotlin.IllegalStateException("Missing Accept header. This is required.")
+        }
+
+        val contentType = if (headers[ContentType] != null) {
+            // TODO: support multiple contentType options here.
+            (headers[ContentType] as String).substringBefore(";").lowercase(Locale.getDefault())
+        } else {
+            null
+        }
+
+        val request = when (requestConfig.method) {
+            RequestMethod.DELETE -> Request.Builder().url(url).delete(requestBody(requestConfig.body, contentType))
+            RequestMethod.GET -> Request.Builder().url(url)
+            RequestMethod.HEAD -> Request.Builder().url(url).head()
+            RequestMethod.PATCH -> Request.Builder().url(url).patch(requestBody(requestConfig.body, contentType))
+            RequestMethod.PUT -> Request.Builder().url(url).put(requestBody(requestConfig.body, contentType))
+            RequestMethod.POST -> Request.Builder().url(url).post(requestBody(requestConfig.body, contentType))
+            RequestMethod.OPTIONS -> Request.Builder().url(url).method("OPTIONS", null)
+        }.apply {
+            headers.forEach { header -> addHeader(header.key, header.value) }
+        }.build()
+
+        val response = client.newCall(request).execute()
+
+        val accept = response.header(ContentType)?.substringBefore(";")?.lowercase(Locale.getDefault())
+
+        // TODO: handle specific mapping types. e.g. Map<int, Class<?>>
+        return when {
+            response.isRedirect -> Redirection(
+                response.code,
+                response.headers.toMultimap()
+            )
+
+            response.isInformational -> Informational(
+                response.message,
+                response.code,
+                response.headers.toMultimap()
+            )
+
+            response.isSuccessful -> Success(
+                responseBody(response.body, accept),
+                response.code,
+                response.headers.toMultimap()
+            )
+
+            response.isClientError -> ClientError(
+                response.message,
+                response.body?.string(),
+                response.code,
+                response.headers.toMultimap()
+            )
+
+            else -> ServerError(
+                response.message,
+                response.body?.string(),
+                response.code,
+                response.headers.toMultimap()
+            )
+        }
+    }
+
+    protected fun parameterToString(value: Any?): String = when (value) {
+        null -> ""
+        is Array<*> -> toMultiValue(value, "csv").toString()
+        is Iterable<*> -> toMultiValue(value, "csv").toString()
+        is OffsetDateTime, is OffsetTime, is LocalDateTime, is LocalDate, is LocalTime ->
+            parseDateToQueryString(value)
+
+        else -> value.toString()
+    }
+
+    protected fun parseDateToQueryString(value: Any): String {
+        /*
+        .replace("\"", "") converts the json object string to an actual string for the query parameter.
+        The moshi or gson adapter allows a more generic solution instead of trying to use a native
+        formatter. It also easily allows to provide a simple way to define a custom date format pattern
+        inside a gson/moshi adapter.
+        */
+        return objectMapper.writeValueAsString(value).replace("\"", "")
+    }
+}
+
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│ <root>/out/com/openapi/generated/api/client/infrastructure/ApiResponse.kt │
+├───────────────────────────────────────────────────────────────────────────┤
+package com.openapi.generated.api.client.infrastructure
+
+enum class ResponseType {
+    Success, Informational, Redirection, ClientError, ServerError
+}
+
+interface Response
+
+abstract class ApiResponse<T>(val responseType: ResponseType) : Response {
+    abstract val statusCode: Int
+    abstract val headers: Map<String, List<String>>
+}
+
+class Success<T>(
+    val data: T,
+    override val statusCode: Int = -1,
+    override val headers: Map<String, List<String>> = mapOf()
+) : ApiResponse<T>(ResponseType.Success)
+
+class Informational<T>(
+    val statusText: String,
+    override val statusCode: Int = -1,
+    override val headers: Map<String, List<String>> = mapOf()
+) : ApiResponse<T>(ResponseType.Informational)
+
+class Redirection<T>(
+    override val statusCode: Int = -1,
+    override val headers: Map<String, List<String>> = mapOf()
+) : ApiResponse<T>(ResponseType.Redirection)
+
+class ClientError<T>(
+    val message: String? = null,
+    val body: Any? = null,
+    override val statusCode: Int = -1,
+    override val headers: Map<String, List<String>> = mapOf()
+) : ApiResponse<T>(ResponseType.ClientError)
+
+class ServerError<T>(
+    val message: String? = null,
+    val body: Any? = null,
+    override val statusCode: Int = -1,
+    override val headers: Map<String, List<String>>
+) : ApiResponse<T>(ResponseType.ServerError)
+
+└───────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ <root>/out/com/openapi/generated/api/client/infrastructure/Errors.kt │
+├──────────────────────────────────────────────────────────────────────┤
+@file:Suppress("unused")
+
+package com.openapi.generated.api.client.infrastructure
+
+import java.lang.RuntimeException
+
+open class ClientException(message: kotlin.String? = null, val statusCode: Int = -1, val response: Response? = null) :
+    RuntimeException(message) {
+
+    companion object {
+        private const val serialVersionUID: Long = 123L
+    }
+}
+
+open class ServerException(message: kotlin.String? = null, val statusCode: Int = -1, val response: Response? = null) :
+    RuntimeException(message) {
+
+    companion object {
+        private const val serialVersionUID: Long = 456L
+    }
+}
+
+└──────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ <root>/out/com/openapi/generated/api/client/infrastructure/PartConfig.kt │
+├──────────────────────────────────────────────────────────────────────────┤
+package com.openapi.generated.api.client.infrastructure
+
+/**
+ * Defines a config object for a given part of a multi-part request.
+ * NOTE: Headers is a Map<String,String> because rfc2616 defines
+ *       multi-valued headers as csv-only.
+ */
+data class PartConfig<T>(
+    val headers: MutableMap<String, String> = mutableMapOf(),
+    val body: T? = null
+)
+
+└──────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ <root>/out/com/openapi/generated/api/client/infrastructure/RequestConfig.kt │
+├─────────────────────────────────────────────────────────────────────────────┤
+package com.openapi.generated.api.client.infrastructure
+
+/**
+ * Defines a config object for a given request.
+ * NOTE: This object doesn't include 'body' because it
+ *       allows for caching of the constructed object
+ *       for many request definitions.
+ * NOTE: Headers is a Map<String,String> because rfc2616 defines
+ *       multi-valued headers as csv-only.
+ */
+data class RequestConfig<T>(
+    val method: RequestMethod,
+    val path: String,
+    val headers: MutableMap<String, String> = mutableMapOf(),
+    val query: MutableMap<String, List<String>> = mutableMapOf(),
+    val requiresAuthentication: Boolean,
+    val body: T? = null
+)
+
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ <root>/out/com/openapi/generated/api/client/infrastructure/RequestMethod.kt │
+├─────────────────────────────────────────────────────────────────────────────┤
+package com.openapi.generated.api.client.infrastructure
+
+/**
+ * Provides enumerated HTTP verbs
+ */
+enum class RequestMethod {
+    GET, DELETE, HEAD, OPTIONS, PATCH, POST, PUT
+}
+
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│ <root>/out/com/openapi/generated/api/client/infrastructure/ResponseExtensions.kt │
+├──────────────────────────────────────────────────────────────────────────────────┤
+package com.openapi.generated.api.client.infrastructure
+
+import okhttp3.Response
+
+/**
+ * Provides an extension to evaluation whether the response is a 1xx code
+ */
+val Response.isInformational: Boolean get() = this.code in 100..199
+
+/**
+ * Provides an extension to evaluation whether the response is a 3xx code
+ */
+@Suppress("EXTENSION_SHADOWED_BY_MEMBER")
+val Response.isRedirect: Boolean get() = this.code in 300..399
+
+/**
+ * Provides an extension to evaluation whether the response is a 4xx code
+ */
+val Response.isClientError: Boolean get() = this.code in 400..499
+
+/**
+ * Provides an extension to evaluation whether the response is a 5xx (Standard) through 999 (non-standard) code
+ */
+val Response.isServerError: Boolean get() = this.code in 500..999
+
+└──────────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ <root>/out/com/openapi/generated/api/client/infrastructure/Serializer.kt │
+├──────────────────────────────────────────────────────────────────────────┤
+package com.openapi.generated.api.client.infrastructure
+
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+
+object Serializer {
+    val jacksonObjectMapper: ObjectMapper = run {
+        jacksonObjectMapper()
+            .findAndRegisterModules()
+            .setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
+            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    }
+}
+
+└──────────────────────────────────────────────────────────────────────────┘

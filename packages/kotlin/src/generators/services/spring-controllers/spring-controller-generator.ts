@@ -479,12 +479,16 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
   ): kt.Class<Builder> {
     const { endpoint } = args;
     const name = this.getApiResponseEntityName(ctx, { endpoint });
+    // Spring 7's `ResponseEntity<T>` carries an `Any` upper bound (JSpecify), so the subclass must bound `T`.
+    // The body parameter is then made nullable (`T?`) to keep null-body ("no response body") responses legal
+    // while staying wire-identical, since Spring's super constructor accepts a `@Nullable T body`.
+    const springBoot4 = ctx.config.springBootVersion === 4;
     return kt.class(name, {
       doc: kt.doc(`Response entity for ${endpoint.name}.`),
-      generics: [kt.genericParameter('T')],
+      generics: [kt.genericParameter('T', springBoot4 ? { constraint: kt.refs.any() } : undefined)],
       primaryConstructor: kt.constructor(
         [
-          kt.parameter.class('body', kt.reference('T')),
+          kt.parameter.class('body', kt.reference('T', null, springBoot4 ? { nullable: true } : undefined)),
           kt.parameter.class('rawStatus', kt.refs.int()),
           kt.parameter.class(
             'headers',
@@ -549,7 +553,11 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
                   null,
                   {
                     generics: [
-                      hasResponseBody ? responseType : kt.refs.unit({ nullable: true }),
+                      hasResponseBody
+                        ? responseType
+                        // `Unit?` violates the `T : Any` bound under Spring Boot 4; the `null` body argument
+                        // below stays (now legal because the subclass body parameter is nullable).
+                        : (springBoot4 ? kt.refs.unit() : kt.refs.unit({ nullable: true })),
                     ],
                   },
                 ),
@@ -888,7 +896,9 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     } else if (responseSchemas.length === 0) {
       return kt.refs.unit();
     } else {
-      return kt.refs.any({ nullable: true });
+      // Under Spring Boot 4, this type flows into `ResponseEntity<T : Any>` (e.g. the delegate default methods),
+      // so the ambiguous/unknown-body fallback must be non-null `Any` rather than `Any?`.
+      return ctx.config.springBootVersion === 4 ? kt.refs.any() : kt.refs.any({ nullable: true });
     }
   }
 

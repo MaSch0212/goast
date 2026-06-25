@@ -146,7 +146,10 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
     return kt.function(functionName, {
       doc: kt.doc(this.getEndpointDocDescription(ctx, { endpoint })),
       suspend: true,
-      generics: [kt.genericParameter('T')],
+      // Spring 7's `WebClient.exchangeToMono` is `<V : Any>`, so the `<T>` overloads need an `Any` bound to infer.
+      generics: [
+        kt.genericParameter('T', ctx.config.springBootVersion === 4 ? { constraint: kt.refs.any() } : undefined),
+      ],
       receiverType: kt.refs.springReactive.webClient(),
       parameters: [
         ...parameters.map((parameter) =>
