@@ -31,3 +31,7 @@ export const awaitBodilessEntity: KtReferenceFactory = ktReference.factory(
   'awaitBodilessEntity',
   'org.springframework.web.reactive.function.client',
 );
+export const awaitExchange: KtReferenceFactory = ktReference.factory(
+  'awaitExchange',
+  'org.springframework.web.reactive.function.client',
+);
