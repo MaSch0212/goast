@@ -146,7 +146,7 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
     return kt.function(functionName, {
       doc: kt.doc(this.getEndpointDocDescription(ctx, { endpoint })),
       suspend: true,
-      // Spring 7's `WebClient.exchangeToMono` is `<V : Any>`, so the `<T>` overloads need an `Any` bound to infer.
+      // Spring 7's `WebClient.awaitExchange` is `<V : Any>`, so the `<T>` overloads need an `Any` bound to infer.
       generics: [
         kt.genericParameter('T', ctx.config.springBootVersion === 4 ? { constraint: kt.refs.any() } : undefined),
       ],
@@ -182,16 +182,9 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
     result.values.push(s`return ${
       kt.call([
         kt.call(['this', requestFunctionName], parameterNames),
-        kt.call(['exchangeToMono'], [
-          kt.lambda(
-            [],
-            kt.call(kt.refs.kotlinx.mono.infer(), [kt.lambda([], 'responseHandler(it)', { singleline: true })]),
-            { singleline: true },
-          ),
-        ]),
-        kt.call([kt.refs.kotlinx.awaitFirstOrNull.infer()], []),
+        kt.call([kt.refs.springReactive.awaitExchange()], ['responseHandler']),
       ])
-    } as T`);
+    }`);
 
     return result;
   }
