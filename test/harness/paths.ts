@@ -12,7 +12,9 @@ while (!fs.existsSync(join(_repoRootDir, '.git'))) {
 }
 
 export const repoRootDir: string = _repoRootDir;
-const openApiFilesDir = join(_repoRootDir, 'test', 'openapi-files');
-export const openApiV2FilesDir: string = join(openApiFilesDir, 'v2');
-export const openApiV3FilesDir: string = join(openApiFilesDir, 'v3');
-export const openApiV3_1FilesDir: string = join(openApiFilesDir, 'v3.1');
+
+/** Root of the OpenAPI corpus. */
+export const specsDir: string = join(_repoRootDir, 'test', 'specs');
+
+/** Root of the committed tier-2 snapshots. */
+export const snapshotRootDir: string = join(_repoRootDir, 'test', 'output');

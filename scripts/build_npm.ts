@@ -87,7 +87,7 @@ await build({
     copyIfExists(resolve(projectDir, 'assets'), resolve(distDir, 'assets'));
 
     // Test files
-    fs.copySync(resolve(rootDir, 'test', 'openapi-files'), resolve(distDir, '..', 'test', 'openapi-files'), {
+    fs.copySync(resolve(rootDir, 'test', 'specs'), resolve(distDir, '..', 'test', 'specs'), {
       overwrite: true,
     });
     copyIfExists(resolve(projectDir, 'tests', '.verify'), resolve(distDir, 'script', 'tests', '.verify'));
