@@ -1669,3 +1669,34 @@ Phase 2 consumes `verifyFileTree` and `verifyText` from `@goast/test-harness`, a
 - Committing the initial `test/output/` trees.
 - Extending `test/README.md` with how to add a spec and a profile, and flipping the tier-2 row in its status table to
   `active`.
+
+### Carryover from the phase 1 final review
+
+Five predictable phase-2 needs the final whole-branch review identified. The first three are harness gaps that phase 2
+should close in the harness rather than work around per profile.
+
+1. **A `verifyProfile` wrapper.** The spec requires both the file-tree snapshot and the `state` text snapshot to gate a
+   profile's test, but `verifyFileTree`'s `generate` callback returns `Promise<void>`, so a profile test must capture
+   `state` through a closure — and a check-mode `verifyFileTree` throw short-circuits the `verifyText` call, so you see
+   only one of the two failures per run. A single `verifyProfile(snapshotDir, generate)` that collects and reports both
+   belongs in the harness, not duplicated across ~50 profile tests.
+2. **Orphan-snapshot detection.** `verifyFileTree` prunes only within the directory it is handed, so a renamed spec or a
+   dropped config variant leaves `test/output/<old-profile>/` in place forever. Phase 2 needs a sweep asserting the
+   directory set under `test/output/` equals the registry × corpus product.
+3. **Report volume control.** `formatMismatchReport` caps *excerpts* at three files but prints every added/changed/
+   removed path. A header-comment change that regenerates a whole profile prints hundreds of lines per failing test,
+   across hundreds of failing tests. Cap the file list too.
+4. **Generator log noise.** Each generation prints a `Generating … to <absolute temp path>` line per file plus
+   `Copying asset file …`. Across ~400 profile/spec pairs that buries the terse `+3 ~1 -0` per-profile summary. Suppress
+   or redirect generator logging during snapshot runs.
+5. **Source-doc paths are cwd-relative, not absolute.** `getSourceDocLine` emits `path.relative(process.cwd(), …)`, so
+   `normalizePaths` never matches them — running a task from a package directory rather than the repo root would
+   silently produce different snapshots. Latent only because `includeSourceInDocs` defaults to `false`. If any phase-2
+   profile enables it, either normalize cwd-relative repo paths too or document "run tasks from the repo root".
+
+Two facts established during phase 1 that are worth not re-deriving: generation is deterministic across differing temp
+output directories, and no output path leaks into generated file contents — a check-mode rerun against a fresh temp dir
+passes. That was the largest unvalidated assumption behind the whole tier-2 design, and it holds. Separately, asset
+files copied verbatim by `copyAssetFile` are now pinned to LF via `.gitattributes`; phase 2 must not commit its first
+`test/output/` trees from a working tree where that pinning has not taken effect, or CI on Linux will disagree with a
+Windows checkout.
