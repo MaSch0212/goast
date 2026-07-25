@@ -235,9 +235,9 @@
           classReference: false,
           generics: [],
           inject: {},
-          name: 'Any',
+          name: 'OneOfOfOneOf',
           nullable: false,
-          packageName: 'kotlin',
+          packageName: 'com.openapi.generated.model',
           subReference: null
         }
       },

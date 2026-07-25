@@ -7,5 +7,5 @@ data class AllOfConflicting(
     @Schema
     @param:JsonProperty("value")
     @get:JsonProperty("value")
-    val value: String? = null
+    val value: Any? = null
 )

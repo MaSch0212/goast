@@ -3,7 +3,7 @@ package com.openapi.generated.model
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
 
-data class AllOfContainingOneOf(
+data class OneOfOfOneOf(
     @Schema
     @param:JsonProperty("a")
     @get:JsonProperty("a")
@@ -12,10 +12,5 @@ data class AllOfContainingOneOf(
     @Schema
     @param:JsonProperty("b")
     @get:JsonProperty("b")
-    val b: Int? = null,
-
-    @Schema
-    @param:JsonProperty("extra")
-    @get:JsonProperty("extra")
-    val extra: String? = null
+    val b: Int? = null
 )

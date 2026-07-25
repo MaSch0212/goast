@@ -5,6 +5,16 @@ import io.swagger.v3.oas.annotations.media.Schema
 
 data class AllOfContainingOneOf(
     @Schema
+    @param:JsonProperty("a")
+    @get:JsonProperty("a")
+    val a: String? = null,
+
+    @Schema
+    @param:JsonProperty("b")
+    @get:JsonProperty("b")
+    val b: Int? = null,
+
+    @Schema
     @param:JsonProperty("extra")
     @get:JsonProperty("extra")
     val extra: String? = null
