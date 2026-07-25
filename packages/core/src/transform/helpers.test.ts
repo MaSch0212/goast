@@ -1,5 +1,5 @@
 import { expect, fn } from '@std/expect';
-import { describe, test } from '@std/testing/bdd';
+import { describe, it, test } from '@std/testing/bdd';
 import type { OpenApiDocument } from '../parse/openapi-types.ts';
 import type { Deref } from '../parse/types.ts';
 import type { ApiSchema } from './api-types.ts';
@@ -335,5 +335,28 @@ describe('IdGenerator', () => {
     expect(id2).toBe('test-2');
     expect(id3).toBe('test2-1');
     expect(id4).toBe('test-3');
+  });
+});
+
+describe('determineSchemaName', () => {
+  it('prints nothing for a schema without $src', () => {
+    const lines: string[] = [];
+    const original = console.log;
+    console.log = (...args: unknown[]) => lines.push(args.join(' '));
+    try {
+      // Still throws — the next statement dereferences $src. Only the silence is under test.
+      // deno-lint-ignore no-explicit-any
+      determineSchemaName({} as any, 'some-id');
+    } catch {
+      // expected
+    } finally {
+      console.log = original;
+    }
+    expect(lines).toEqual([]);
+  });
+
+  it('prefers an explicit title', () => {
+    // deno-lint-ignore no-explicit-any
+    expect(determineSchemaName({ title: 'Pet' } as any, 'some-id')).toEqual({ name: 'Pet', isGenerated: false });
   });
 });

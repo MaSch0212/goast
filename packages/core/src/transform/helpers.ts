@@ -54,9 +54,6 @@ export function determineSchemaName(
   id: string,
 ): { name: string; isGenerated: boolean } {
   if (schema.title) return { name: schema.title, isGenerated: false };
-  if (!schema.$src) {
-    console.log('woot?');
-  }
 
   if (schema.$src.path === '/') return { name: parsePath(schema.$src.file).name, isGenerated: true };
 
