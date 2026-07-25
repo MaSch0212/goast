@@ -1,0 +1,72 @@
+{
+  typescript: {
+    indexFiles: {
+      models: '<output>/models.ts',
+      responseModels: '<output>/responses.ts',
+      services: '<output>/services.ts'
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v2/detailed-schemas.yml#/definitions/WithTitle',
+        additionalExports: [],
+        component: 'MyTitle',
+        filePath: '<output>/models/my-title.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/my-title.ts',
+            name: 'MyTitle',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v2/detailed-schemas.yml#/definitions/WithAllCommon',
+        additionalExports: [],
+        component: 'WithAllCommon',
+        filePath: '<output>/models/with-all-common.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/with-all-common.ts',
+            name: 'WithAllCommon',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v2/detailed-schemas.yml#/definitions/MyEnum',
+        additionalExports: [ { name: 'MY_ENUM_VALUES', type: 'export' } ],
+        component: 'MyEnum',
+        filePath: '<output>/models/my-enum.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/my-enum.ts',
+            name: 'MyEnum',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v2/detailed-schemas.yml#/definitions/ReadOnly',
+        additionalExports: [],
+        component: 'ReadOnly',
+        filePath: '<output>/models/read-only.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/read-only.ts',
+            name: 'ReadOnly',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      }
+    },
+    services: {}
+  }
+}

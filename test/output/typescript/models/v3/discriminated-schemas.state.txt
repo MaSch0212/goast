@@ -1,0 +1,141 @@
+{
+  typescript: {
+    indexFiles: {
+      models: '<output>/models.ts'
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/discriminated-schemas.yml#/components/schemas/Pet',
+        additionalExports: [ { name: '_PetBase', type: 'type-export' } ],
+        component: 'Pet',
+        filePath: '<output>/models/pet.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/pet.ts',
+            name: 'Pet',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/discriminated-schemas.yml#/components/schemas/Dog/allOf/1',
+        component: '{\n' +
+          '  /**\n' +
+          '   * the size of the pack the dog is from\n' +
+          '   */\n' +
+          '  packSize: number;\n' +
+          '}',
+        imports: []
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/discriminated-schemas.yml#/components/schemas/Dog/allOf/1/properties/packSize',
+        component: 'number',
+        imports: []
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/discriminated-schemas.yml#/components/schemas/Pet/properties/name',
+        component: 'string',
+        imports: []
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/discriminated-schemas.yml#/components/schemas/Pet/properties/petType',
+        component: 'string',
+        imports: []
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/discriminated-schemas.yml#/components/schemas/Dog',
+        additionalExports: [],
+        component: 'Dog',
+        filePath: '<output>/models/dog.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/dog.ts',
+            name: 'Dog',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/discriminated-schemas.yml#/components/schemas/Pet',
+        additionalExports: [ { name: '_PetBase', type: 'type-export' } ],
+        component: 'Pet',
+        filePath: '<output>/models/pet.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/pet.ts',
+            name: 'Pet',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/discriminated-schemas.yml#/components/schemas/Cat',
+        additionalExports: [],
+        component: 'Cat',
+        filePath: '<output>/models/cat.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/cat.ts',
+            name: 'Cat',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/discriminated-schemas.yml#/components/schemas/Pet',
+        additionalExports: [ { name: '_PetBase', type: 'type-export' } ],
+        component: 'Pet',
+        filePath: '<output>/models/pet.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/pet.ts',
+            name: 'Pet',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/discriminated-schemas.yml#/components/schemas/Cat/allOf/1',
+        component: '{\n' +
+          '  /**\n' +
+          '   * The measured skill for hunting\n' +
+          '   */\n' +
+          '  huntingSkill: Schema9;\n' +
+          '}',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/schema-9.ts',
+            name: 'Schema9',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/discriminated-schemas.yml#/components/schemas/Cat/allOf/1/properties/huntingSkill',
+        additionalExports: [ { name: 'SCHEMA_9_VALUES', type: 'export' } ],
+        component: 'Schema9',
+        filePath: '<output>/models/schema-9.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/schema-9.ts',
+            name: 'Schema9',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      }
+    }
+  }
+}
