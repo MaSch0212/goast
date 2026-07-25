@@ -42,7 +42,8 @@
     ]
   },
   "test": {
-    "include": ["/packages/*"]
+    "include": ["packages", "test"],
+    "exclude": ["test/output"]
   },
   "workspace": [
     "packages/core",
