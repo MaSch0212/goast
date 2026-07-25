@@ -106,6 +106,21 @@ inheritance encoding works and the `oneOf`-holder encoding does not. This is the
 corpus. Batch 3 correctly left it alone — its own defect-10 fix would have removed some of these errors while
 introducing a semantic lie — so it needs its own batch.
 
+### Defect 17 — a discriminated base that is itself a subtype (found by batch 6, not scheduled)
+
+`NestedDiscriminatorGroup` compiles, but the inheritance relation it describes cannot be expressed at all. Two
+independent causes, one per package:
+
+- `getInterface` (`packages/kotlin/src/generators/models/model-generator.ts:117-132`) passes only `doc`, `annotations`
+  and `members` to `kt.interface`. There is no `implements`, where `getClass` twenty lines above has one. **An interface
+  can never be a subtype in this generator.**
+- `resolveDescriminatorMapping` (`packages/core/src/transform/transform-schema.ts:192`) registers an implicit subtype
+  only under `schema.kind === 'combined' && schema.allOf`. A `'oneOf'`-kind subtype is skipped, so
+  `NestedDiscriminatorGroup` never enters `NestedDiscriminator`'s mapping and never gains it in `inheritedSchemas`.
+
+Consequence: `NestedDiscriminator`'s `@JsonSubTypes` lists only `Leaf`, and **no** value round-trips through the parent
+for the `Group` branch. Fixing it needs both an emitter change and a core change, so it is its own task.
+
 ### Also registered, not scheduled
 
 Small, verified, and each needing either a decision or a home:
