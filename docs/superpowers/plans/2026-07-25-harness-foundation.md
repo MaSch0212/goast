@@ -1057,7 +1057,7 @@ describe('check mode', () => {
 
       const error = await verifyFileTree(snapshotDir, generator({ 'change.ts': 'new', 'fresh.ts': 'F' }), {
         mode: 'check',
-      }).catch((e: Error) => e);
+      }).catch((e: Error) => e) as Error;
 
       expect(error.message).toContain('Snapshot mismatch:');
       expect(error.message).toContain('+ fresh.ts');
@@ -1352,7 +1352,7 @@ describe('verifyText', () => {
       const file = join(dir, 'state.txt');
       await verifyText(file, 'a\nold\nc\n', { mode: 'write' });
 
-      const error = await verifyText(file, 'a\nnew\nc\n', { mode: 'check' }).catch((e: Error) => e);
+      const error = await verifyText(file, 'a\nnew\nc\n', { mode: 'check' }).catch((e: Error) => e) as Error;
 
       expect(error.message).toContain('Snapshot mismatch:');
       expect(error.message).toContain('at line 2');
@@ -1364,7 +1364,7 @@ describe('verifyText', () => {
   it('should report a missing snapshot file distinctly in check mode', async () => {
     await withTempDir(async (dir) => {
       const error = await verifyText(join(dir, 'state.txt'), 'text\n', { mode: 'check' })
-        .catch((e: Error) => e);
+        .catch((e: Error) => e) as Error;
 
       expect(error.message).toContain('Snapshot file does not exist');
     });
