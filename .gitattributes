@@ -1,0 +1,5 @@
+# Generated snapshot trees. Diffs are collapsed by default on GitHub but stay
+# expandable, and line endings must be LF so a Windows checkout matches what CI
+# validates on Linux.
+test/output/** text eol=lf
+test/output/** linguist-generated=true
