@@ -12,6 +12,7 @@
     "test:core": "deno test -A packages/core",
     "test:kotlin": "deno test -A packages/kotlin",
     "test:typescript": "deno test -A packages/typescript",
+    "test:harness": "deno test -A test/harness",
     "pg": "deno run -A playground.ts"
   },
   "imports": {
