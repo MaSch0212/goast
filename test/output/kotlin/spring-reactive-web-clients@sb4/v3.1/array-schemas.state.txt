@@ -67,8 +67,8 @@
               classReference: false,
               generics: [],
               inject: {},
-              name: 'Boolean',
-              nullable: false,
+              name: 'Any',
+              nullable: true,
               packageName: 'kotlin',
               subReference: null
             }

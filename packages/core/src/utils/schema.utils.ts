@@ -52,10 +52,13 @@ function collectSubSchemaProperties(
           properties.set(prop.name, prop);
         }
       }
-      if (!optional) {
-        for (const prop of subSchema.required) {
-          required.add(prop);
-        }
+    }
+
+    // A branch does not have to contribute properties to contribute requiredness: `allOf: [{ required: [x] }]`
+    // only tightens a property inherited from a sibling branch and has no type or properties of its own.
+    if (!optional) {
+      for (const prop of subSchema.required) {
+        required.add(prop);
       }
     }
 

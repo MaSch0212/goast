@@ -9,5 +9,5 @@ data class NestedInlineObjectMiddle(
     @Schema
     @param:JsonProperty("inner")
     @get:JsonProperty("inner")
-    val inner: Schema15? = null
+    val inner: NestedInlineObjectMiddleInner? = null
 )

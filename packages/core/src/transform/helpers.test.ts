@@ -2,6 +2,7 @@ import { expect, fn } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
 import type { OpenApiDocument } from '../parse/openapi-types.ts';
 import type { Deref } from '../parse/types.ts';
+import { parseYamlWithInfo } from '../utils/yaml-info.ts';
 import type { ApiSchema } from './api-types.ts';
 import {
   determineEndpointName,
@@ -30,6 +31,16 @@ describe('determineSchemaKind', () => {
 
   test('returns "multi-type" if schema has "type" property as an array', () => {
     const schema = { type: ['string', 'number'] };
+    expect(determineSchemaKind(ctx, schema)).toBe('multi-type');
+  });
+
+  test('returns "multi-type" if a 3.1 type array is combined with "allOf"', () => {
+    const schema = { type: ['object', 'null'], allOf: [{ type: 'object' }] };
+    expect(determineSchemaKind(ctx, schema)).toBe('multi-type');
+  });
+
+  test('returns "multi-type" if a 3.1 type array is combined with "anyOf"', () => {
+    const schema = { type: ['string', 'null'], anyOf: [{ type: 'string' }] };
     expect(determineSchemaKind(ctx, schema)).toBe('multi-type');
   });
 
@@ -122,6 +133,47 @@ describe('determineSchemaName', () => {
     };
     expect(determineSchemaName(schema, 'TestId')).toEqual({
       name: 'get_users_:userId_email-verification_:token_200_Response',
+      isGenerated: true,
+    });
+  });
+
+  test('composes the names of inline objects nested more than one level deep', () => {
+    const document = parseYamlWithInfo(`
+components:
+  schemas:
+    NestedInlineObject:
+      type: object
+      properties:
+        middle:
+          type: object
+          properties:
+            inner:
+              type: object
+              properties:
+                value:
+                  type: string
+`) as Deref<OpenApiDocument>;
+
+    const nameOf = (path: string) =>
+      determineSchemaName(
+        {
+          $src: { file: 'my-api.yml', pos: { line: 0, col: 0 }, path, document, originalComponent: {} },
+        },
+        'schema-15',
+      );
+
+    expect(nameOf('/components/schemas/NestedInlineObject/properties/middle')).toEqual({
+      name: 'NestedInlineObject_middle',
+      isGenerated: true,
+    });
+    expect(nameOf('/components/schemas/NestedInlineObject/properties/middle/properties/inner')).toEqual({
+      name: 'NestedInlineObject_middle_inner',
+      isGenerated: true,
+    });
+    expect(
+      nameOf('/components/schemas/NestedInlineObject/properties/middle/properties/inner/properties/value'),
+    ).toEqual({
+      name: 'NestedInlineObject_middle_inner_value',
       isGenerated: true,
     });
   });

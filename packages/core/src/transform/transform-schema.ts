@@ -29,20 +29,27 @@ export function transformSchema<T extends Deref<OpenApiSchema>>(ctx: OpenApiTran
   let nullable = kind === 'null';
   if (kind === 'multi-type') {
     const types = schema.type as string[];
-    let isSingleType = types.length === 1;
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (types.includes('null') || types.includes(null!)) {
+    let remainingTypes = withoutNullType(types);
+    if (remainingTypes.length < types.length) {
       nullable = true;
-      isSingleType = types.length === 2;
     }
 
-    if (isSingleType) {
-      const newType = types.filter((t) => t !== 'null' && t !== null)[0];
+    if (remainingTypes.length === 0) {
+      // A type array that contains nothing but `null` constrains nullability only. If the schema also has a
+      // `$ref`, the actual type is the referenced one; otherwise the schema really is just the null type.
+      remainingTypes = withoutNullType(asTypeArray(schema.$ref?.type));
+    }
+
+    if (remainingTypes.length === 1) {
       schema = createOverwriteProxy(schema);
-      schema.type = newType;
+      schema.type = remainingTypes[0];
+      kind = determineSchemaKind(ctx, schema);
+    } else if (remainingTypes.length === 0) {
+      schema = createOverwriteProxy(schema);
+      schema.type = 'null';
       kind = determineSchemaKind(ctx, schema);
     } else {
-      schema.type = types.filter((t) => t !== 'null' && t !== null);
+      schema.type = remainingTypes;
     }
   }
 
@@ -96,7 +103,21 @@ export function transformSchema<T extends Deref<OpenApiSchema>>(ctx: OpenApiTran
   return completeSchema;
 }
 
+function asTypeArray(type: string | string[] | undefined): string[] {
+  if (type === undefined) return [];
+  return Array.isArray(type) ? type : [type];
+}
+
+function withoutNullType(types: string[]): string[] {
+  // OpenAPI 3.1 allows `type: [~]`, which YAML parses to `null` rather than to the string `'null'`.
+  return types.filter((t) => t !== 'null' && t !== null);
+}
+
 function allExtensionsTransformer(schema: Deref<OpenApiSchema>, context: OpenApiTransformerContext) {
+  // A schema with `prefixItems` is a tuple. Tuples are not modelled, but the `items` schema of a tuple only
+  // describes the elements *after* the prefix, so it must not be reported as the element schema of the array:
+  // that would actively mistype the array instead of leaving its elements unspecified.
+  const isTuple = (schema.prefixItems?.length ?? 0) > 0;
   return {
     oneOf: schema.oneOf?.map((s) => transformSchema(context, s)) ?? [],
     format: schema.format,
@@ -109,7 +130,7 @@ function allExtensionsTransformer(schema: Deref<OpenApiSchema>, context: OpenApi
     additionalProperties: transformAdditionalProperties(context, schema, transformSchema),
     allOf: schema.allOf?.map((s) => transformSchema(context, s)) ?? [],
     anyOf: schema.anyOf?.map((s) => transformSchema(context, s)) ?? [],
-    items: schema.items ? transformSchema(context, schema.items) : undefined,
+    items: !isTuple && schema.items ? transformSchema(context, schema.items) : undefined,
     minItems: schema.minItems,
     maxItems: schema.maxItems,
   };

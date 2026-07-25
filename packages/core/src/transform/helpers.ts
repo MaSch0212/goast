@@ -20,12 +20,15 @@ export function determineSchemaKind<
 >(ctx: OpenApiTransformerContext, schema: T): ApiSchemaKind {
   if (schema.oneOf) {
     return 'oneOf';
+  } else if (Array.isArray(schema.type)) {
+    // An OpenAPI 3.1 type array has to be resolved before `allOf`/`anyOf` is considered: it is the only
+    // place where 3.1 expresses nullability, and it may still narrow down to `object` (in which case the
+    // `allOf`/`anyOf` branch below must not claim the schema as `combined`).
+    return 'multi-type';
   } else if (schema.type !== 'object' && (schema.allOf || schema.anyOf)) {
     const hasProperties = (schema.properties && Object.keys(schema.properties).length > 0) ||
       schema.additionalProperties;
     return hasProperties ? 'object' : 'combined';
-  } else if (Array.isArray(schema.type)) {
-    return 'multi-type';
   } else if (
     schema.type === 'object' ||
     schema.type === 'string' ||
@@ -112,7 +115,10 @@ export function determineSchemaName(
       },
       id,
     );
-    if (!parentSchemaName.isGenerated) {
+    // Continue the chain as long as the parent has a name of its own. Generated parent names are fine to build
+    // on — that is what makes a third-level inline object `Parent_middle_inner` instead of an opaque ordinal.
+    // Only the `id` fallback below is unusable, because it carries no information about the schema at all.
+    if (parentSchemaName.name !== id) {
       return { name: `${parentSchemaName.name}_${parentSchemaMatch[2]}`, isGenerated: true };
     }
   }

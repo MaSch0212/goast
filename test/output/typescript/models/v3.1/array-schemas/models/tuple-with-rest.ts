@@ -1,1 +1,1 @@
-export type TupleWithRest = (boolean)[];
+export type TupleWithRest = (unknown)[];

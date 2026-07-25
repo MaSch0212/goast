@@ -162,6 +162,11 @@ type AdditionalCombinedSchemaProperties = {
   anyOf: ApiSchema[];
 };
 type AdditionalArraySchemaProperties = {
+  /**
+   * The schema of every element of the array, or `undefined` if the array does not constrain its elements to a
+   * single schema. Note that an OpenAPI 3.1 tuple (`prefixItems`) has no single element schema: tuples are not
+   * modelled, so `items` is `undefined` for them even though the OpenAPI schema has an `items` keyword.
+   */
   items: ApiSchema | undefined;
   minItems: number | undefined;
   maxItems: number | undefined;

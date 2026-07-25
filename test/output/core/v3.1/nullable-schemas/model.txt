@@ -115,7 +115,7 @@
       inheritedSchemas: [],
       isNameGenerated: false,
       items: undefined,
-      kind: 'multi-type',
+      kind: 'string',
       maxItems: undefined,
       maxLength: undefined,
       maximum: undefined,
@@ -129,7 +129,7 @@
       pattern: undefined,
       properties: Map(0) {},
       required: Set(0) {},
-      type: []
+      type: 'string'
     },
     {
       '$ref': undefined,
@@ -628,7 +628,7 @@
       inheritedSchemas: [],
       isNameGenerated: false,
       items: undefined,
-      kind: 'combined',
+      kind: 'object',
       maxItems: undefined,
       maxLength: undefined,
       maximum: undefined,
@@ -637,11 +637,12 @@
       minimum: undefined,
       name: 'NullableWithAllOf',
       not: undefined,
-      nullable: false,
+      nullable: true,
       oneOf: [],
       pattern: undefined,
       properties: Map(0) {},
-      required: Set(0) {}
+      required: Set(0) {},
+      type: 'object'
     },
     {
       '$ref': undefined,

@@ -9,8 +9,8 @@ data class AllOfRequiredOnly(
     @get:JsonProperty("id", required = true)
     val id: String,
 
-    @Schema
-    @param:JsonProperty("name")
-    @get:JsonProperty("name")
-    val name: String? = null
+    @Schema(required = true)
+    @param:JsonProperty("name", required = true)
+    @get:JsonProperty("name", required = true)
+    val name: String
 )

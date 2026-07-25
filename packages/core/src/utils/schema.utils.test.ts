@@ -6,6 +6,7 @@ import {
   createObjectSchema,
   createStringSchema,
   createUnknownProperty,
+  createUnknownSchema,
 } from './schema-factory.ts';
 import { resolveAnyOfAndAllOf } from './schema.utils.ts';
 
@@ -41,6 +42,35 @@ describe('resolveAnyOfAndAllOf', () => {
 
     const result = resolveAnyOfAndAllOf(schema, true);
     expect(result).toEqual(expectedResult);
+  });
+
+  it('should collect required from an allOf branch that contributes nothing but required', () => {
+    const id = createUnknownProperty('id');
+    const name = createUnknownProperty('name');
+    const schema = createCombinedSchema({
+      name: 'AllOfRequiredOnly',
+      allOf: [
+        createObjectSchema({ properties: [id, name], required: ['id'] }),
+        createUnknownSchema({ required: ['name'] }),
+      ],
+    });
+
+    const result = resolveAnyOfAndAllOf(schema, true);
+
+    expect(Array.from(result?.required ?? [])).toEqual(['id', 'name']);
+  });
+
+  it('should not collect required from an anyOf branch that contributes nothing but required', () => {
+    const id = createUnknownProperty('id');
+    const schema = createCombinedSchema({
+      name: 'AnyOfRequiredOnly',
+      allOf: [createObjectSchema({ properties: [id], required: ['id'] })],
+      anyOf: [createUnknownSchema({ required: ['name'] })],
+    });
+
+    const result = resolveAnyOfAndAllOf(schema, true);
+
+    expect(Array.from(result?.required ?? [])).toEqual(['id']);
   });
 
   it('should merge properties from allOf and anyOf recursively', () => {

@@ -108,7 +108,7 @@
           classReference: false,
           generics: [],
           inject: {},
-          name: 'Schema15',
+          name: 'NestedInlineObjectMiddleInner',
           nullable: false,
           packageName: 'com.openapi.generated.model',
           subReference: null
