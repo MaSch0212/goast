@@ -20,14 +20,14 @@ import { RequestBuilder } from '../utils/request-builder';
  * Parameters for operation getPet
  *
  * @typedef GetPetParams
- * @property {string} id undefined
+ * @property {string} id
  */
 
 /**
  * Parameters for operation deletePet
  *
  * @typedef DeletePetParams
- * @property {string} id undefined
+ * @property {string} id
  */
 
 const LIST_PETS_PATH = '/pets';
@@ -46,7 +46,7 @@ export class PetsClient {
    * @param {string} rootUrl The root URL for this client.
    * @param {() => Params} [defaultK6ParamsFactory] A factory function that returns the default K6 parameters.
    */
-  constructor(rootUrl, defaultK6ParamsFactory?) {
+  constructor(rootUrl, defaultK6ParamsFactory) {
     this.rootUrl = rootUrl;
     this._defaultK6ParamsFactory = defaultK6ParamsFactory;
   }

@@ -1,4 +1,4 @@
-import { type SourceBuilderOptions, StringBuilder } from '@goast/core';
+import { compareString, type SourceBuilderOptions, StringBuilder } from '@goast/core';
 
 import type { KotlinImport } from './common-results.ts';
 import { defaultKotlinGeneratorConfig } from './config.ts';
@@ -86,7 +86,7 @@ export class ImportCollection {
           } else if (!isCoreImport(a) && isCoreImport(b)) {
             return -1;
           }
-          return a.localeCompare(b);
+          return compareString(a, b);
         })
         .forEach((importPath) => builder.appendLine(`import ${importPath}`));
     }

@@ -208,7 +208,11 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
           type: schema
             ? (b) => b.appendModelUsage(ctx.input.typescript.models[schema.id], importOptions)
             : this.getAnyType(ctx),
-          description: (parameter.deprecated ? 'Deprecated: ' : '') + parameter.description,
+          description: parameter.description
+            ? (parameter.deprecated ? 'Deprecated: ' : '') + parameter.description
+            : parameter.deprecated
+            ? 'Deprecated: '
+            : undefined,
           required: parameter.required,
         };
       });
@@ -311,7 +315,13 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
           }),
           parameters: [
             ts.constructorParameter('rootUrl', { type: isJs ? undefined : rootUrlType }),
-            ts.constructorParameter('defaultK6ParamsFactory', { type: isJs ? undefined : paramType, optional: true }),
+            // `optional` renders a TypeScript `?`, which is a syntax error in a `.js` file. JavaScript
+            // parameters are optional anyway, and the JSDoc `@param [defaultK6ParamsFactory]` above
+            // already records it.
+            ts.constructorParameter('defaultK6ParamsFactory', {
+              type: isJs ? undefined : paramType,
+              optional: isJs ? undefined : true,
+            }),
           ],
           body: s`this.rootUrl = rootUrl;
                   this._defaultK6ParamsFactory = defaultK6ParamsFactory;`,

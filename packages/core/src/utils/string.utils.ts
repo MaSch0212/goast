@@ -286,6 +286,31 @@ export function escapeRegExp(str: string): string {
 }
 
 /**
+ * Compares two strings for sorting, case-insensitively, without any dependency on the host locale.
+ *
+ * Deliberately not `String.prototype.localeCompare`: its collation depends on the host locale and ICU
+ * version, so the same input would sort differently on different machines — which would make
+ * generated output non-reproducible. `toLowerCase` is Unicode default case conversion and carries no
+ * locale dependency.
+ *
+ * Comparison is case-insensitive so that, for example, `awaitBody` sorts alphabetically beside
+ * `WebClient` rather than after every capitalized name. Strings differing only in case fall back to a
+ * case-sensitive comparison, so their relative order is still stable. Non-ASCII characters order by
+ * code point rather than alphabetically — `Ähre` sorts after `Zebra` — which is less pretty than
+ * locale collation but entirely reproducible.
+ *
+ * @param a The first string.
+ * @param b The second string.
+ * @returns A negative number if `a` sorts first, a positive number if `b` does, otherwise 0.
+ */
+export function compareString(a: string, b: string): number {
+  const lowerA = a.toLowerCase();
+  const lowerB = b.toLowerCase();
+  if (lowerA !== lowerB) return lowerA < lowerB ? -1 : 1;
+  return a < b ? -1 : a > b ? 1 : 0;
+}
+
+/**
  * Removes characters from a string and, if necessary, inserts new characters in their place, returning the spliced string.
  * @param str The string to splice.
  * @param start The index at which to start changing the string.

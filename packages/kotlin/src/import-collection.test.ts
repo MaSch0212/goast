@@ -102,6 +102,29 @@ describe('ImportCollection', () => {
     });
   });
 
+  describe('import ordering', () => {
+    it('should sort case-insensitively, so lowercase members interleave with capitalised ones', () => {
+      const importCollection = new ImportCollection();
+      for (const name of ['WebClient', 'awaitBody', 'ClientResponse', 'awaitExchange']) {
+        importCollection.addImport(name, 'org.springframework.web.reactive.function.client');
+      }
+
+      const base = 'import org.springframework.web.reactive.function.client';
+      expect(importCollection.toString()).toBe(
+        `${base}.awaitBody${EOL}${base}.awaitExchange${EOL}${base}.ClientResponse${EOL}${base}.WebClient${EOL}`,
+      );
+    });
+
+    it('should sort packages case-insensitively too, not just members', () => {
+      const importCollection = new ImportCollection();
+      importCollection.addImport('Thing', 'org.example.Zebra');
+      importCollection.addImport('Thing', 'org.example.apple');
+      expect(importCollection.toString()).toBe(
+        `import org.example.apple.Thing${EOL}import org.example.Zebra.Thing${EOL}`,
+      );
+    });
+  });
+
   it('should ignore global imports', () => {
     const importCollection = new ImportCollection({
       globalImports: ['kotlin.*', 'myPackage.MyClass'],
