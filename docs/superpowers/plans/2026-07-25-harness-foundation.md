@@ -1034,7 +1034,10 @@ Run: `deno test -A test/harness/snapshot/text-diff.test.ts` Expected: PASS, 6 te
 - [ ] **Step 5: Add the check-mode tests**
 
 Append this `describe` block inside the existing top-level `describe('verifyFileTree', ...)` in
-`test/harness/snapshot/verify-file-tree.test.ts`, directly after the `describe('write mode', ...)` block:
+`test/harness/snapshot/verify-file-tree.test.ts`, directly after the `describe('write mode', ...)` block. The snippet
+below is written at zero indentation for readability — indent it by two spaces when you paste it, so it nests inside
+`describe('verifyFileTree', ...)` as a sibling of `describe('write mode', ...)`. Run `deno fmt` afterwards and it will
+settle the exact whitespace for you.
 
 ```ts
 describe('check mode', () => {
@@ -1270,11 +1273,14 @@ In `test/harness/snapshot/verify-file-tree.ts`, add the import:
 import { normalizeFileTree } from './normalize.ts';
 ```
 
-and wrap the tree read, so the committed snapshot always stores normalized content:
+and wrap the tree read, so the committed snapshot always stores normalized content. Replace the existing
+`const actual = await readFileTree(outputDir);` line inside `verifyFileTree` with:
 
 ```ts
 const actual = normalizeFileTree(await readFileTree(outputDir));
 ```
+
+Keep the surrounding indentation of the line you are replacing.
 
 The committed side needs no normalization — it was written already normalized.
 

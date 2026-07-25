@@ -29,7 +29,7 @@
   "fmt": {
     "lineWidth": 120,
     "singleQuote": true,
-    "exclude": ["npm/**/*", "out/**/*", "coverage/**/*", ".verify/**/*"]
+    "exclude": ["npm/**/*", "out/**/*", "coverage/**/*", ".verify/**/*", "docs/superpowers/**"]
   },
   "lint": {
     "exclude": [
