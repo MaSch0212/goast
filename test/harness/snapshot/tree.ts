@@ -1,7 +1,8 @@
 import { dirname, join, relative } from 'node:path';
 
 import { equals } from '@std/bytes';
-import { ensureDir, walk } from '@std/fs';
+import { ensureDir } from '@std/fs/ensure-dir';
+import { walk } from '@std/fs/walk';
 
 /** A directory tree flattened to relative, forward-slash-separated paths and raw file contents. */
 export type FileTree = Map<string, Uint8Array>;

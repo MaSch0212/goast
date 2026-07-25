@@ -1,6 +1,6 @@
 import { dirname } from 'node:path';
 
-import { ensureDir } from '@std/fs';
+import { ensureDir } from '@std/fs/ensure-dir';
 
 import { resolveSnapshotMode, type VerifyOptions } from './mode.ts';
 import { normalizePaths } from './normalize.ts';
