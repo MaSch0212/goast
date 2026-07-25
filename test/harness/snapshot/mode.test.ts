@@ -32,4 +32,9 @@ describe('resolveSnapshotMode', () => {
       'Invalid GOAST_SNAPSHOT value: "yes". Expected "write" or "check".',
     );
   });
+
+  it('should treat an empty GOAST_SNAPSHOT as unset and fall through to the CI default', () => {
+    expect(resolveSnapshotMode(env({ GOAST_SNAPSHOT: '', CI: 'true' }))).toBe('check');
+    expect(resolveSnapshotMode(env({ GOAST_SNAPSHOT: '' }))).toBe('write');
+  });
 });
