@@ -3,7 +3,7 @@
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or
 > superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Grow `test/specs/` from 14 entries to 53 so tier 2 pins generator behaviour across the OpenAPI edge cases the
+**Goal:** Grow `test/specs/` from 14 entries to 54 so tier 2 pins generator behaviour across the OpenAPI edge cases the
 strategy enumerates.
 
 **Architecture:** Pure content work on a finished machine. Every task authors a batch of OpenAPI documents in one
@@ -41,7 +41,7 @@ Two items in the spec's Spec Corpus section are not implemented, both recorded h
   set has no honest home in the layout. `multi-file/` covers multi-document parsing. If mixed-version parsing needs
   coverage it needs a discovery change, which belongs to a phase that is allowed to touch the harness.
 
-The spec estimates "approximately 45" specs; this plan lands on 53, because splitting a concern per file is the spec's
+The spec estimates "approximately 45" specs; this plan lands on 54, because splitting a concern per file is the spec's
 stated principle and it beats hitting an approximate count. Task 9 amends the spec with the real number.
 
 **No task edits an existing spec.** Where a concern belongs beside coverage that already exists — implicit discriminator
@@ -50,7 +50,7 @@ legitimately churn its snapshots, and that would blunt the zero-churn gate that 
 
 ## File Structure
 
-Created, 39 corpus entries:
+Created, 40 corpus entries:
 
 | Task | Path                                     | Isolates                                       |
 | ---- | ---------------------------------------- | ---------------------------------------------- |
@@ -68,6 +68,7 @@ Created, 39 corpus entries:
 | 3    | `test/specs/v3.1/allof-schemas.yml`      | `allOf` merging under 3.1                      |
 | 3    | `test/specs/v3/anyof-schemas.yml`        | `anyOf` as a named schema                      |
 | 3    | `test/specs/v3/discriminator-variants.yml`| implicit and partial discriminator mapping    |
+| 3    | `test/specs/v3/anyof-cycle.yml`          | `anyOf` branch cycling back to its own holder  |
 | 3    | `test/specs/v3/nested-composition.yml`   | composition inside composition                 |
 | 4    | `test/specs/v3/recursive-refs.yml`       | self and mutual recursion                      |
 | 4    | `test/specs/v3/external-refs/`           | multi-file `$ref` resolution                   |
@@ -436,7 +437,7 @@ are a `oneOf`), `MapOfOneOf` (`additionalProperties` is a `oneOf`), `PropertyOfN
 property is an `allOf` containing a `oneOf`).
 
 - [ ] **Step 6: Format** — Step 6 of Task 1.
-- [ ] **Step 7: Verify discovery** — Step 7 of Task 1. Expected count: `29`.
+- [ ] **Step 7: Verify discovery** — Step 7 of Task 1. Expected count: `30`.
 - [ ] **Step 8: Regenerate** — Step 8 of Task 1.
 - [ ] **Step 9: Prove zero churn** — Step 9 of Task 1.
 - [ ] **Step 10: Verify check mode** — Step 10 of Task 1.
@@ -515,7 +516,7 @@ JSON input path.
 Run: `deno fmt test/specs`
 Expected: exits 0. This also formats the `.json` spec.
 
-- [ ] **Step 7: Verify discovery** — Step 7 of Task 1. Expected count: `34` (the `external-refs/` directory is one
+- [ ] **Step 7: Verify discovery** — Step 7 of Task 1. Expected count: `35` (the `external-refs/` directory is one
       entry, not two).
 - [ ] **Step 8: Regenerate** — Step 8 of Task 1. Watch for a run that stops progressing; see the halt conditions.
 - [ ] **Step 9: Prove zero churn** — Step 9 of Task 1.
@@ -585,7 +586,7 @@ the acronym case), `iOSDevice` (leading lowercase before capitals). Each is a di
 must not collide — if two of them produce the same output name, that is the finding.
 
 - [ ] **Step 5: Format** — Step 6 of Task 1.
-- [ ] **Step 6: Verify discovery** — Step 7 of Task 1. Expected count: `38`.
+- [ ] **Step 6: Verify discovery** — Step 7 of Task 1. Expected count: `39`.
 - [ ] **Step 7: Regenerate** — Step 8 of Task 1.
 - [ ] **Step 8: Prove zero churn** — Step 9 of Task 1.
 - [ ] **Step 9: Verify check mode** — Step 10 of Task 1.
@@ -687,7 +688,7 @@ rather than a request body. Tag `Parameters`. Operations:
 Define `Payload` under `definitions` as an object with two properties. Responses are `200` with a `description`.
 
 - [ ] **Step 5: Format** — Step 6 of Task 1.
-- [ ] **Step 6: Verify discovery** — Step 7 of Task 1. Expected count: `42`.
+- [ ] **Step 6: Verify discovery** — Step 7 of Task 1. Expected count: `43`.
 - [ ] **Step 7: Regenerate** — Step 8 of Task 1.
 - [ ] **Step 8: Prove zero churn** — Step 9 of Task 1.
 - [ ] **Step 9: Verify check mode** — Step 10 of Task 1.
@@ -784,7 +785,7 @@ Tag `Headers`. All `GET`, each `200`:
 Define one `components.headers` entry `SharedHeader` and one schema `Thing`.
 
 - [ ] **Step 5: Format** — Step 6 of Task 1.
-- [ ] **Step 6: Verify discovery** — Step 7 of Task 1. Expected count: `46`.
+- [ ] **Step 6: Verify discovery** — Step 7 of Task 1. Expected count: `47`.
 - [ ] **Step 7: Regenerate** — Step 8 of Task 1.
 - [ ] **Step 8: Prove zero churn** — Step 9 of Task 1.
 - [ ] **Step 9: Verify check mode** — Step 10 of Task 1.
@@ -905,7 +906,7 @@ a second schema. Not a translation of an existing spec — a small independent d
 input path and not about duplicated content.
 
 - [ ] **Step 8: Format** — Step 6 of Task 1.
-- [ ] **Step 9: Verify discovery** — Step 7 of Task 1. Expected count: `53` (`multi-file/` is one entry).
+- [ ] **Step 9: Verify discovery** — Step 7 of Task 1. Expected count: `54` (`multi-file/` is one entry).
 - [ ] **Step 10: Regenerate** — Step 8 of Task 1.
 - [ ] **Step 11: Prove zero churn** — Step 9 of Task 1.
 - [ ] **Step 12: Verify check mode** — Step 10 of Task 1.
@@ -927,11 +928,11 @@ git commit -m "test: add document and operation structure specs to the corpus"
 
 **Interfaces:**
 
-- Consumes: the finished 53-entry corpus, and the per-batch reports from Tasks 1-8 (error snapshots, file counts).
+- Consumes: the finished 54-entry corpus, and the per-batch reports from Tasks 1-8 (error snapshots, file counts).
 - Produces: the documentation a contributor needs to find where a concern already lives.
 
-A 53-entry corpus without an index invites duplicate specs, because the cheapest thing to do when adding coverage is to
-create a new file rather than read 53 existing ones.
+A 54-entry corpus without an index invites duplicate specs, because the cheapest thing to do when adding coverage is to
+create a new file rather than read 54 existing ones.
 
 - [ ] **Step 1: Measure the corpus**
 
