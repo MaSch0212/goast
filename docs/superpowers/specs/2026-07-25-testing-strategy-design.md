@@ -167,8 +167,27 @@ the CI artifact rather than bloating logs.
 **Mode resolution:** `GOAST_SNAPSHOT=write|check` wins when set. Otherwise `check` when `CI` is set, `write` when it is
 not.
 
-**Pruning safety rail:** write mode deletes files, so if a generator throws early or emits zero files, the harness fails
-rather than wiping the tree. A broken test must never silently delete snapshots.
+**Pruning safety rail:** write mode deletes files, so if a generator throws early, the harness fails rather than wiping
+the tree. A broken test must never silently delete snapshots. The rail is `actual.size === 0 && expected.size > 0`:
+emitting zero files is legitimate — `KotlinModelsGenerator` does exactly that for a spec without `components/schemas` —
+so only the combination of nothing generated and a populated snapshot is treated as a fault.
+
+**Error snapshots.** A wide edge-case corpus crossed with nine generators guarantees combinations that throw:
+`existingFileBehavior: 'error'` throws by design when two schemas map to one filename, which is precisely what the
+naming-collision specs provoke, and generators carry genuine bugs on unusual input. A thrown generation is therefore a
+recordable outcome, not a test failure: the harness catches it and snapshots the message to `<spec>.error.txt` beside
+the tree, with the file tree asserted empty. Committing the crash makes it reviewable — a PR that fixes a generator
+shows the `.error.txt` deleted and a real tree appearing, and a PR that introduces a crash shows the inverse. The
+alternative, letting throws fail the test, would leave the suite permanently red on a corpus this wide and force the
+narrower corpus the tier exists to avoid. A profile and spec pair has exactly one of the two snapshot forms, never
+both; possessing both is itself a failure.
+
+**Log suppression.** The generators emit roughly 23 hardcoded `console.log` calls — `Generating … to <path>`, `Copying
+asset file …` — with no verbosity flag or logger seam anywhere in `packages/*/src`. Across hundreds of profile and spec
+pairs that buries the per-profile `+3 ~1 -0` summary the write mode exists to surface. The harness captures `console`
+for the duration of each generation and replays the captured output only when that generation fails. Adding a logger
+option to `OpenApiGeneratorConfig` would be the cleaner fix, but it is a public API change to a published package in
+service of a test concern, so it stays out of scope.
 
 **Determinism:** generators always run with `newLine: '\n'`, and comparison is byte-exact — a stray `\r` in a snapshot
 is a real bug, not noise to strip. `.gitattributes` gets `test/output/** text eol=lf` so a Windows checkout does not
@@ -201,6 +220,18 @@ generated output (`copyAssetFile`) are pinned to LF at source instead, via `pack
 
 One test file iterates profiles against discovered specs and emits a `describe`/`it` per pair. Adding an edge-case spec
 is dropping a file in `test/specs/`; adding a config variant is one registry entry.
+
+Fifteen profiles, because `springBootVersion` sits on the shared `KotlinGeneratorConfig` base and so varies all four
+Kotlin generators: `models@sb3`, `models@sb4`, `spring-controllers@sb3`, `spring-controllers@sb3-strict`,
+`spring-controllers@sb4`, `spring-controllers@sb4-strict`, `spring-reactive-web-clients@sb3`,
+`spring-reactive-web-clients@sb4`, `okhttp3-clients@sb3`, `okhttp3-clients@sb4` for Kotlin; `models`, `fetch-clients`,
+`angular-services`, `k6-clients`, `easy-network-stub` for TypeScript.
+
+**Measured cost.** Generation runs at roughly 30 ms per profile and spec pair, so the full 45 x 15 matrix is about 20
+seconds of generation — tier 2 stays inside the everyday loop. Output volume is roughly 65 KB and 60 files per spec
+across the profiles, extrapolating to some 4.5 MB and 4500 committed files. About 40 KB per spec of that is
+byte-identical client boilerplate that the okhttp3, k6, and easy-network-stub generators re-emit per spec. Accepted:
+`linguist-generated` collapses it in review, and an asset change genuinely does affect every output tree.
 
 ## Tier 3: Compile Gate
 
@@ -425,8 +456,11 @@ Each phase gets its own implementation plan.
 1. **Harness foundation** — `test/harness/snapshot/` (mode, tree, text-diff, normalize, and the two verify entry
    points), `deno.json` wiring, `test/README.md`. `docker.ts` moved to phase 3, where the compile gate gives it a real
    consumer; building it here would mean either an untested abstraction or Docker-dependent tests with no workload.
-2. **Corpus and tier 2** — the ~45 specs, profile registry, output tests, deletion of the old verify tests, initial
-   committed trees.
+2. **Tier 2 machinery** — spec discovery, profile registry, `verifyProfile`, the output test driver, deletion of the old
+   verify tests, initial committed trees over the _existing_ 14-file corpus. Delivers a working tier 2 end to end.
+2b. **Corpus expansion** — the ~45 edge-case specs, in category batches, each batch regenerating trees. Split from 2
+   because authoring the corpus is bulk content work gated on nothing but a functioning tier 2, and because reviewing
+   ~4500 committed files is tractable per category and not in one commit.
 3. **Tier 3** — Gradle multi-project compile, TypeScript compile, `kotlin` and `node` Dockerfiles.
 4. **Tier 1** — `@goast/core` `parse`/`transform`/`collect`/`codegen` coverage plus the convention pass. Independent of
    the others; can slot anywhere.
