@@ -30,10 +30,38 @@ describe('findOrphanSnapshots', () => {
     });
   });
 
-  it('reports a tree directory no profile claims', async () => {
-    await withTree(['kotlin/dropped/v3/spec/Model.kt'], async (root) => {
-      expect(await findOrphanSnapshots(root, [])).toEqual(['kotlin/dropped/v3/spec']);
-    });
+  it('reports a whole dropped profile as one entry, not one per subdirectory', async () => {
+    // A live sibling profile ('kept') keeps 'kotlin' from collapsing further up than 'dropped'.
+    await withTree(
+      ['kotlin/dropped/v3/spec/Model.kt', 'kotlin/kept/v3/spec/Model.kt'],
+      async (root) => {
+        expect(await findOrphanSnapshots(root, ['kotlin/kept/v3/spec'])).toEqual(['kotlin/dropped']);
+      },
+    );
+  });
+
+  it('collapses a tree spanning multiple subdirectories to the shallowest unclaimed directory', async () => {
+    await withTree(
+      ['k/p/v3/spec/api/A.kt', 'k/p/v3/spec/model/B.kt'],
+      async (root) => {
+        // Nothing anywhere is claimed, so the whole tree collapses to its single top-level segment
+        // rather than reporting 'k/p/v3/spec/api' and 'k/p/v3/spec/model' as two separate orphans.
+        expect(await findOrphanSnapshots(root, [])).toEqual(['k']);
+      },
+    );
+  });
+
+  it('collapses a renamed spec spanning multiple subdirectories to its tree base, not a leaf', async () => {
+    await withTree(
+      ['k/p/v3/spec/api/A.kt', 'k/p/v3/spec/model/B.kt'],
+      async (root) => {
+        // A live sibling spec under the same profile/version pins the shallowest-ancestor rule at
+        // the renamed spec's tree base, rather than a hardcoded depth.
+        expect(await findOrphanSnapshots(root, ['k/p/v3/other', 'k/p/v3/other.state.txt'])).toEqual([
+          'k/p/v3/spec',
+        ]);
+      },
+    );
   });
 
   it('reports a stale state file left by a renamed spec', async () => {
@@ -43,8 +71,9 @@ describe('findOrphanSnapshots', () => {
   });
 
   it('reports orphans sorted', async () => {
+    // 'a/b/other' is a live sibling that keeps 'a/b' from collapsing further than 'a/b/spec'.
     await withTree(['a/z.state.txt', 'a/b/spec/f.kt'], async (root) => {
-      expect(await findOrphanSnapshots(root, [])).toEqual(['a/b/spec', 'a/z.state.txt']);
+      expect(await findOrphanSnapshots(root, ['a/b/other'])).toEqual(['a/b/spec', 'a/z.state.txt']);
     });
   });
 
