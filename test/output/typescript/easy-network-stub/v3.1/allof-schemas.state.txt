@@ -362,6 +362,46 @@
         ],
         kind: 'type'
       },
+      'schema-40': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/AllOfNullableBranch',
+        additionalExports: [],
+        component: 'AllOfNullableBranch',
+        filePath: '<output>/models/all-of-nullable-branch.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/all-of-nullable-branch.ts',
+            name: 'AllOfNullableBranch',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-41': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Base',
+        additionalExports: [],
+        component: 'Base',
+        filePath: '<output>/models/base.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/base.ts',
+            name: 'Base',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-42': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/AllOfNullableBranch/allOf/1',
+        component: '{\n  nullableValue?: (string) | (null);\n}',
+        imports: []
+      },
+      'schema-43': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/AllOfNullableBranch/allOf/1/properties/nullableValue',
+        component: 'string',
+        imports: []
+      },
       'schema-5': {
         __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Timestamps/properties/createdAt',
         component: 'string',

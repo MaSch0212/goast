@@ -409,6 +409,54 @@
           subReference: null
         }
       },
+      'schema-40': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/AllOfNullableBranch',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'AllOfNullableBranch',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-41': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Base',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Base',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-42': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/AllOfNullableBranch/allOf/1',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-43': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/AllOfNullableBranch/allOf/1/properties/nullableValue',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
       'schema-5': {
         __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Timestamps/properties/createdAt',
         type: KtReference {

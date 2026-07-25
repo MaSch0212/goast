@@ -1,5 +1,7 @@
-import type { NestedDiscriminatorGroup } from './nested-discriminator-group';
+import type { _NestedDiscriminatorGroupBase } from './nested-discriminator-group';
 
-export type NestedDiscriminatorGroupA = (NestedDiscriminatorGroup) & ({
-      groupAValue?: string;
+export type NestedDiscriminatorGroupA = (Omit<(_NestedDiscriminatorGroupBase) & ({
+          groupAValue?: string;
+        }), 'groupKind'>) & ({
+      groupKind: 'NestedDiscriminatorGroupA';
     });

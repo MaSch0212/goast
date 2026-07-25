@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   version: 1.0.0
-  title: All Of Schemas
+  title: AllOf Schemas
 
 paths:
   /x:
@@ -91,3 +91,11 @@ components:
       description: A schema combined via allOf that also carries its own title and description.
       allOf:
         - $ref: '#/components/schemas/Base'
+    AllOfNullableBranch:
+      allOf:
+        - $ref: '#/components/schemas/Base'
+        - type: object
+          properties:
+            nullableValue:
+              type: string
+              nullable: true

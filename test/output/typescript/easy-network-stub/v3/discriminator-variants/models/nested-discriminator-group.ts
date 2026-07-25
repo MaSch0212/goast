@@ -1,6 +1,15 @@
-import type { _NestedDiscriminatorBase } from './nested-discriminator';
-import type { _Schema84Base } from './schema-84';
+import type { NestedDiscriminatorGroupA } from './nested-discriminator-group-a';
+import type { NestedDiscriminatorGroupB } from './nested-discriminator-group-b';
 
-export type NestedDiscriminatorGroup = (Omit<(_NestedDiscriminatorBase) & (_Schema84Base), 'kind'>) & ({
-      kind: 'NestedDiscriminatorGroup';
-    });
+type NestedDiscriminatorGroupDiscriminator = ('NestedDiscriminatorGroupB') | ('NestedDiscriminatorGroupA');
+
+export type _NestedDiscriminatorGroupBase = (NestedDiscriminatorGroupA) | (NestedDiscriminatorGroupB);
+
+export type NestedDiscriminatorGroup<TGroupKind extends NestedDiscriminatorGroupDiscriminator = NestedDiscriminatorGroupDiscriminator> = (_NestedDiscriminatorGroupBase) & (({
+        NestedDiscriminatorGroupB: ({
+            groupKind: 'NestedDiscriminatorGroupB';
+          }) & (NestedDiscriminatorGroupB);
+        NestedDiscriminatorGroupA: ({
+            groupKind: 'NestedDiscriminatorGroupA';
+          }) & (NestedDiscriminatorGroupA);
+      })[TGroupKind]);

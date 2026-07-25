@@ -1,4 +1,5 @@
 export type { AllOfConflicting } from './models/all-of-conflicting';
+export type { AllOfNullableBranch } from './models/all-of-nullable-branch';
 export type { AllOfRefAndInline } from './models/all-of-ref-and-inline';
 export type { AllOfRequiredOnly } from './models/all-of-required-only';
 export type { AllOfSingle } from './models/all-of-single';
