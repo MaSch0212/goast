@@ -64,6 +64,20 @@ Every entry was found by the phase-2b corpus and independently verified by a rev
 | - | ------ | ---- | --------- |
 | 14 | A deprecated parameter with no description renders a dangling `Deprecated:` with nothing after the colon. Introduced by commit `a92d29a`, which fixed the adjacent literal-`undefined` bug and left this one. | `generators/services/k6-clients/k6-client-generator.ts` | `v3/defaults-and-deprecated` `deprecatedParams.noDesc` |
 
+### Batch 5 — declaration-level nullability (found during the sweep, not in the original 14)
+
+| # | Defect | Site | Pinned by |
+| - | ------ | ---- | --------- |
+| 15 | `nullable` is honoured **only** when rendering an object property. A nullable schema used as a type alias, an array item, or an `anyOf`/`oneOf` branch silently loses its `| null`. In TypeScript, `nullable` appears at exactly one site: `model-generator.ts:238`. So `AnyOfWithNullable`, whose second branch is `{integer, nullable: true}`, renders `(string) \| (number)` with no `null` anywhere. | TypeScript `model-generator.ts:238`; the Kotlin equivalent needs locating | `v3/anyof-schemas` `AnyOfWithNullable`, `v3/nullable-schemas` (all), `v3.1/nullable-schemas` |
+
+Found by the batch-2 reviewer, and it is the same gap batch 1 ran into from the other side: batch 1's core fixes for 3.1
+nullability churned no generator output precisely because no generator reads declaration-level nullability. Fixing this
+makes those two core fixes load-bearing.
+
+This is scoped as its own batch because `getType` is the single funnel every type rendering passes through, so the fix
+is small but its churn is broad, and because the property-level union at `model-generator.ts:238` must stop double-adding
+`null` once `getType` handles it.
+
 ### Explicitly out of scope
 
 These are **missing features**, not defects, and each needs its own design:
