@@ -99,7 +99,7 @@ export async function verifyProfile(
     for (
       const verify of [
         () => verifyGeneratedTree(snapshot.treeDir, outputDir, { mode }),
-        () => verifyText(snapshot.stateFile, serializeValue(run.value) + '\n', { mode }),
+        () => verifyText(snapshot.stateFile, replaceOutputDir(serializeValue(run.value) + '\n', outputDir), { mode }),
       ]
     ) {
       try {
@@ -118,16 +118,42 @@ export async function verifyProfile(
  * Renders a generation failure as snapshot text.
  *
  * The stack is deliberately dropped: it carries line numbers that churn on unrelated edits. The
- * generation directory is rewritten to `<output>` because it is a fresh temp path on every run and
- * `normalizePaths` only knows about paths inside the repository.
+ * generation directory is rewritten to `<output>` via {@link replaceOutputDir} because it is a
+ * fresh temp path on every run and `normalizePaths` only knows about paths inside the repository.
  */
 function formatGenerationError(error: unknown, outputDir: string): string {
   const text = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+  return replaceOutputDir(text, outputDir);
+}
+
+/**
+ * Rewrites every occurrence of `outputDir` in `text` to `<output>`, with separators normalized to
+ * forward slashes.
+ *
+ * The temp directory differs on every run — it is never machine-independent — so any spelling of
+ * it that leaks into snapshot text (an error message, or a generator's serialized `state`) must be
+ * neutralized before the text is compared or committed. A generator is free to render the path
+ * using the platform-native separator, a forward-slash spelling, or — inside a `util.inspect`
+ * string literal, as generator `state` objects often are — a doubled-backslash spelling (every
+ * backslash in the whole string is escaped, including the separators *after* the directory, not
+ * just the ones inside it). Doubled first so it is consumed before the shorter native spelling can
+ * partially match inside it.
+ *
+ * Once the directory itself is replaced, the trailing path (e.g. `\models.ts`, or its escaped form
+ * `\\models.ts`) still carries whichever separator style its match used. Two backslash characters
+ * always mean one escaped separator, so they collapse to a single `/` first; only then are any
+ * remaining lone backslashes — the unescaped-native case — turned into `/` too. Collapsing pairs
+ * before singles keeps an escaped separator from becoming two slashes instead of one.
+ */
+function replaceOutputDir(text: string, outputDir: string): string {
   let replaced = text;
   for (const variant of outputDirSpellings(outputDir)) {
     replaced = replaced.split(variant).join('<output>');
   }
-  return replaced.replace(/<output>[\\/][^\s"']*/g, (path) => path.replace(/\\/g, '/'));
+  return replaced.replace(
+    /<output>([^\s"']*)/g,
+    (_match, rest: string) => `<output>${rest.replace(/\\\\/g, '/').replace(/\\/g, '/')}`,
+  );
 }
 
 /**

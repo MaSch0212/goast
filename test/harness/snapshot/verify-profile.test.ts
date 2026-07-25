@@ -130,6 +130,49 @@ describe('verifyProfile write mode', () => {
       expect(await exists(paths.errorFile)).toBe(false);
     });
   });
+
+  it('normalizes every spelling of the generation directory out of the state snapshot', async () => {
+    await withTempDir(async (base) => {
+      const paths = profileSnapshotPaths(base, 'spec');
+      let capturedOutputDir = '';
+
+      await verifyProfile(paths, (outputDir) => {
+        capturedOutputDir = outputDir;
+        return {
+          // A native path, e.g. what `resolve(outputDir, 'models.ts')` produces. `serializeValue`
+          // (`util.inspect` under the hood) doubles every backslash when rendering it inside a
+          // quoted string literal, so this is what actually reaches the snapshot text as the
+          // doubled-backslash spelling — the exact case that regressed to `<output>//models.ts`.
+          native: join(outputDir, 'models.ts'),
+          // A generator that renders its own paths with forward slashes regardless of platform.
+          forwardSlash: `${outputDir.replace(/\\/g, '/')}/models.ts`,
+        };
+      }, { mode: 'write' });
+
+      const state = await Deno.readTextFile(paths.stateFile);
+      expect(capturedOutputDir).not.toBe('');
+      expect(state).toContain("native: '<output>/models.ts'");
+      expect(state).toContain("forwardSlash: '<output>/models.ts'");
+      expect(state).not.toContain('<output>//');
+      expect(state).not.toContain(capturedOutputDir);
+      expect(state).not.toContain(capturedOutputDir.replace(/\\/g, '/'));
+      expect(state).not.toContain(capturedOutputDir.replace(/\\/g, '\\\\'));
+    });
+  });
+
+  it('passes a check-mode rerun whose state carries the generation directory', async () => {
+    await withTempDir(async (base) => {
+      const paths = profileSnapshotPaths(base, 'spec');
+      const generate = (outputDir: string) => ({
+        // A different temp directory every run — exactly what previously broke check mode for the
+        // TypeScript generators, which store absolute output paths (e.g. `indexFiles`) in state.
+        indexFile: join(outputDir, 'models.ts'),
+      });
+
+      await verifyProfile(paths, generate, { mode: 'write' });
+      await verifyProfile(paths, generate, { mode: 'check' });
+    });
+  });
 });
 
 describe('verifyProfile check mode', () => {
