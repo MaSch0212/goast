@@ -611,7 +611,7 @@ Snapshots are compared byte-exactly, so a formatter rewriting them would fight t
 "fmt": {
   "lineWidth": 120,
   "singleQuote": true,
-  "exclude": ["npm/**/*", "out/**/*", "coverage/**/*", ".verify/**/*", "test/output/**"]
+  "exclude": ["npm/**/*", "out/**/*", "coverage/**/*", ".verify/**/*", "docs/superpowers/**", "test/output/**"]
 },
 "lint": {
   "exclude": [
@@ -626,7 +626,7 @@ Snapshots are compared byte-exactly, so a formatter rewriting them would fight t
 },
 ```
 
-Leave the `.verify/**` entries alone — the legacy snapshots still exist until phase 2 removes them.
+**Append** to both arrays — do not replace them with the snippet above verbatim. Leave the `.verify/**` entries alone (the legacy snapshots still exist until phase 2 removes them), and leave `docs/superpowers/**` in `fmt.exclude` alone: `deno fmt` reformats markdown including embedded code blocks, and removing that entry lets it re-corrupt this very plan while later tasks are still reading it.
 
 - [ ] **Step 3: Write the failing test**
 
