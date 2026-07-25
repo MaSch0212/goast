@@ -1,1 +1,1 @@
-export type NullableArrayOfNullable = (string)[];
+export type NullableArrayOfNullable = ((string) | (null))[];

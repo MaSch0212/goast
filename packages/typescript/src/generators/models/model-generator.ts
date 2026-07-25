@@ -219,7 +219,7 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
     return schema.additionalProperties
       ? ts.indexer(
         ts.refs.string(),
-        (schema.additionalProperties === true ? null : this.getType(ctx, schema.additionalProperties)) ??
+        (schema.additionalProperties === true ? null : this.getMemberType(ctx, schema.additionalProperties)) ??
           this.getAnyType(ctx),
         { readonly: ctx.config.immutableTypes },
       )
@@ -238,6 +238,38 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
         type: ts.unionType([this.getType(ctx, property.schema), property.schema.nullable ? 'null' : null]),
       });
     });
+  }
+
+  /**
+   * The type of a schema used as a *member* of an enclosing type - a composition branch, an array element, an
+   * `additionalProperties` value - with the schema's own nullability applied.
+   *
+   * `getType` renders a schema's type without its `null` on purpose: the two contexts that render a schema's type
+   * as a whole declare nullability themselves. A property has it added by `getProperties`, and a top-level type
+   * alias deliberately does not hoist it, because that would change what every declared type means for consumers.
+   * A member position has neither - nothing downstream can add the `null` back - so unless it is admitted here the
+   * emitted type cannot represent a value the spec explicitly permits.
+   */
+  protected getMemberType(
+    ctx: Context,
+    schema: Nullable<ApiSchema>,
+    options?: { skipSchemas?: boolean; useBaseType?: boolean },
+  ): ts.Type<Builder> | null {
+    const type = this.getType(ctx, schema, options);
+    return type !== null && schema && this.isNullableMember(schema) ? ts.unionType([type, 'null']) : type;
+  }
+
+  /**
+   * Whether a schema needs a `null` added to the type `getType` renders for it. A schema that only ever renders as
+   * `null` (the null type itself) already admits it, and adding a second one would emit `(null) | (null)`.
+   *
+   * Nullability is read through the reference chain the same way `getType` reads the type, so a `$ref` to a
+   * declared nullable schema - whose own declaration does not hoist the `null` - still admits null where it is used.
+   */
+  protected isNullableMember(schema: ApiSchema): boolean {
+    const resolved = getSchemaReference(schema, DEFAULT_IGNORED_SCHEMA_PROPERTIES);
+    if (resolved.kind === 'null') return false;
+    return schema.nullable === true || resolved.nullable === true;
   }
 
   protected getType(
@@ -303,7 +335,7 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
   }
 
   protected getArrayType(ctx: Context, schema: ArrayLikeApiSchema): ts.Type<Builder> {
-    return ts.arrayType(this.getType(ctx, schema.items) ?? this.getAnyType(ctx), {
+    return ts.arrayType(this.getMemberType(ctx, schema.items) ?? this.getAnyType(ctx), {
       readonly: ctx.config.immutableTypes,
     });
   }
@@ -364,8 +396,10 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
     // i.e. a union - TypeScript unions already admit values matching several branches, so no Partial<> wrapper is
     // needed to express that overlap. A schema with both intersects the allOf branches with the anyOf union.
     return ts.intersectionType([
-      ...schema.allOf.map((x) => this.getType(ctx, x, { useBaseType })),
-      schema.anyOf.length > 0 ? ts.unionType(schema.anyOf.map((x) => this.getType(ctx, x, { useBaseType }))) : null,
+      ...schema.allOf.map((x) => this.getMemberType(ctx, x, { useBaseType })),
+      schema.anyOf.length > 0
+        ? ts.unionType(schema.anyOf.map((x) => this.getMemberType(ctx, x, { useBaseType })))
+        : null,
     ]);
   }
 
@@ -373,7 +407,7 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
     if (schema.oneOf.length === 0) {
       return this.getAnyType(ctx);
     }
-    return ts.unionType(schema.oneOf.map((x) => this.getType(ctx, x)));
+    return ts.unionType(schema.oneOf.map((x) => this.getMemberType(ctx, x)));
   }
 
   protected getMultiType(ctx: Context, schema: ApiSchema<'multi-type'>): ts.Type<Builder> {

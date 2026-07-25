@@ -1,1 +1,1 @@
-export type AnyOfWithNullable = (string) | (number);
+export type AnyOfWithNullable = (string) | (number) | (null);

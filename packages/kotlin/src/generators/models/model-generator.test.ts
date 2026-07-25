@@ -208,6 +208,15 @@ class TestModelGenerator extends DefaultKotlinModelGenerator {
     return this.shouldGenerateTypeDeclaration(createContext(all, configOverrides), { schema });
   }
 
+  /** The type reference the generator renders for a schema used as a value. */
+  public renderType(schema: ApiSchema, all: ApiSchema[] = []): string {
+    const ctx = createContext(all);
+    // Same package as the generated model, so a reference renders unqualified and without an import.
+    const builder = new KotlinFileBuilder(`${config.packageName}${config.packageSuffix}`, ctx.config);
+    builder.append(this.getType(ctx, { schema }));
+    return builder.toString(false).replace(/^package [^\n]*\n\s*/, '');
+  }
+
   public normalize(schema: ApiSchema, all: ApiSchema[] = []): ApiSchema {
     const ctx = createContext(all);
     return this.normalizeDiscriminatedBases(ctx, { schema });
@@ -293,6 +302,37 @@ describe('DefaultKotlinModelGenerator', () => {
       const code = new TestModelGenerator().renderEnum('EnumWithSpecialChars', ['has space', 'class', 'Thing2']);
 
       expect(enumEntries(code).map((e) => e.name)).toEqual(['HAS_SPACE', 'CLASS', 'THING_2']);
+    });
+  });
+
+  // Unlike the TypeScript generator, `getType` applies `schema.nullable` itself (`nullable ??= schema.nullable`),
+  // so every value position - a list element, a map value, a reference to a declared nullable schema - already
+  // carries the trailing `?`. These lock that in, so the Kotlin side cannot regress into the same gap.
+  describe('getType nullability', () => {
+    it('renders a nullable primitive with a trailing question mark', () => {
+      expect(new TestModelGenerator().renderType(createSchema('S', { kind: 'string', type: 'string', nullable: true })))
+        .toBe('String?');
+    });
+
+    it('renders the element type of a list from nullable items as nullable', () => {
+      const items = createSchema('Item', { kind: 'string', type: 'string', nullable: true });
+      const schema = createSchema('Arr', { kind: 'array', type: 'array', items });
+
+      expect(new TestModelGenerator().renderType(schema)).toBe('List<String?>');
+    });
+
+    it('renders the value type of a map from nullable additionalProperties as nullable', () => {
+      const additionalProperties = createSchema('Value', { kind: 'integer', type: 'integer', nullable: true });
+      const schema = createSchema('Map', { kind: 'object', type: 'object', additionalProperties });
+
+      expect(new TestModelGenerator().renderType(schema)).toBe('Map<String, Int?>');
+    });
+
+    it('renders a reference to a declared nullable schema as nullable', () => {
+      const declared = createSchema('MyEnum', { kind: 'string', type: 'string', enum: ['a', 'b'], nullable: true });
+      const items = createSchema('Items', { kind: 'array', type: 'array', items: declared });
+
+      expect(new TestModelGenerator().renderType(items, [declared])).toBe('List<MyEnum?>');
     });
   });
 
