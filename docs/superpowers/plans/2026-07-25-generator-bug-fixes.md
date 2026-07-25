@@ -74,9 +74,18 @@ Found by the batch-2 reviewer, and it is the same gap batch 1 ran into from the 
 nullability churned no generator output precisely because no generator reads declaration-level nullability. Fixing this
 makes those two core fixes load-bearing.
 
-This is scoped as its own batch because `getType` is the single funnel every type rendering passes through, so the fix
-is small but its churn is broad, and because the property-level union at `model-generator.ts:238` must stop double-adding
-`null` once `getType` handles it.
+**Scope is deliberately narrow, and the boundary matters.** There are two readings of this defect:
+
+- **Where nullability is lost with no compensation** — an `anyOf`/`oneOf` branch, an array's `items`, a `$ref`'d type
+  used as a composition member. Nothing downstream re-adds the `null`, so the generated type simply cannot represent a
+  value the spec permits. This is a defect and this batch fixes it.
+- **Where a compensating mechanism already exists** — a nullable schema emitted as a top-level type alias. The property
+  renderer at `model-generator.ts:238` adds `| null` when the *property* is nullable, so the common path is covered.
+  Hoisting `null` into every alias instead would change the output semantics of the library for every downstream
+  consumer, which is a design decision for the repo owner rather than a bug fix.
+
+This batch therefore fixes the first and leaves the second alone, and must not double-add `null` where the property
+renderer already does. Check whether Kotlin has the same split before assuming it does.
 
 ### Batch 6 — Kotlin discriminated-subtype contract (found during the sweep, not in the original 14)
 
