@@ -75,6 +75,19 @@ describe('verifyProfile write mode', () => {
     });
   });
 
+  it('normalizes the forward-slash spelling of the generation directory identically', async () => {
+    await withTempDir(async (base) => {
+      const paths = profileSnapshotPaths(base, 'spec');
+
+      await verifyProfile(paths, (outputDir) => {
+        const forwardSlash = outputDir.replace(/\\/g, '/');
+        throw new Error(`File already exists: ${forwardSlash}/a/Model.kt`);
+      }, { mode: 'write' });
+
+      expect(await Deno.readTextFile(paths.errorFile)).toBe('Error: File already exists: <output>/a/Model.kt\n');
+    });
+  });
+
   it('replaces an error snapshot with a tree once generation succeeds', async () => {
     await withTempDir(async (base) => {
       const paths = profileSnapshotPaths(base, 'spec');

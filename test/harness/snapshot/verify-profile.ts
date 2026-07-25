@@ -123,7 +123,26 @@ export async function verifyProfile(
  */
 function formatGenerationError(error: unknown, outputDir: string): string {
   const text = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
-  return text.split(outputDir).join('<output>').replace(/<output>[\\/][^\s"']*/g, (path) => path.replace(/\\/g, '/'));
+  let replaced = text;
+  for (const variant of outputDirSpellings(outputDir)) {
+    replaced = replaced.split(variant).join('<output>');
+  }
+  return replaced.replace(/<output>[\\/][^\s"']*/g, (path) => path.replace(/\\/g, '/'));
+}
+
+/**
+ * Every separator spelling of `outputDir` that generated output is known to use, longest first.
+ *
+ * Mirrors {@link normalizePaths}, which matches native, forward-slash, and doubled-backslash
+ * spellings of the repo root for the same reason: a generator is free to render a path with any of
+ * the three, and a literal single-spelling match would let the other two leak the (per-run, never
+ * machine-independent) temp directory into a committed snapshot. Longest first so the doubled-
+ * backslash spelling — which contains the native spelling as a substring on Windows — is consumed
+ * before the shorter spelling can partially match inside it.
+ */
+function outputDirSpellings(outputDir: string): string[] {
+  const spellings = new Set([outputDir, outputDir.replace(/\\/g, '/'), outputDir.replace(/\\/g, '\\\\')]);
+  return [...spellings].sort((a, b) => b.length - a.length);
 }
 
 async function pathExists(path: string): Promise<boolean> {
