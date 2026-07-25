@@ -1,1 +1,1 @@
-export type AnyOfWithNullable = (Partial<string>) & (Partial<number>);
+export type AnyOfWithNullable = (string) | (number);

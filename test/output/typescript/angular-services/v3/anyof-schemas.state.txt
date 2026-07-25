@@ -173,7 +173,7 @@
       },
       'schema-25': {
         __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/ObjectWithAnyOfProperty/properties/value',
-        component: '(Partial<string>) & (Partial<number>)',
+        component: '(string) | (number)',
         imports: []
       },
       'schema-26': {

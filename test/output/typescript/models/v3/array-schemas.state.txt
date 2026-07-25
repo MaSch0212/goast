@@ -139,7 +139,7 @@
       },
       'schema-21': {
         __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfAnyOf/items',
-        component: '(Partial<string>) & (Partial<number>)',
+        component: '(string) | (number)',
         imports: []
       },
       'schema-22': {

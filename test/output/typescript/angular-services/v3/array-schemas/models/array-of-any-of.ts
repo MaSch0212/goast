@@ -1,1 +1,1 @@
-export type ArrayOfAnyOf = ((Partial<string>) & (Partial<number>))[];
+export type ArrayOfAnyOf = ((string) | (number))[];

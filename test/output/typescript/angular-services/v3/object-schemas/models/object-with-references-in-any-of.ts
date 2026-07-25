@@ -3,7 +3,7 @@ import type { MyString } from './my-string';
 import type { MyTitle } from './my-title';
 
 export type ObjectWithReferencesInAnyOf =
-  & (Partial<EmptyObject>)
-  & (Partial<MyTitle>)
-  & (Partial<MyString>)
-  & (Partial<string>);
+  | (EmptyObject)
+  | (MyTitle)
+  | (MyString)
+  | (string);

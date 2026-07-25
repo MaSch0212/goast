@@ -1,1 +1,1 @@
-export type AnyOfPrimitives = (Partial<string>) & (Partial<number>);
+export type AnyOfPrimitives = (string) | (number);

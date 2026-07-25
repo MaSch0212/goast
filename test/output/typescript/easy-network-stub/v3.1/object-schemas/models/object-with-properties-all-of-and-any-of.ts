@@ -29,7 +29,7 @@ export type ObjectWithPropertiesAllOfAndAnyOf =
         [key: string]: never;
       };
     })
-  & (Partial<{
+  & (({
         s?: string;
         t?: number;
         u?: number;
@@ -38,8 +38,7 @@ export type ObjectWithPropertiesAllOfAndAnyOf =
         x?: {
           [key: string]: never;
         };
-      }>)
-  & (Partial<{
+      }) | ({
         y?: string;
         z?: number;
         aa?: number;
@@ -48,4 +47,4 @@ export type ObjectWithPropertiesAllOfAndAnyOf =
         dd?: {
           [key: string]: never;
         };
-      }>);
+      }));

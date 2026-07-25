@@ -360,9 +360,12 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
       return this.getAnyType(ctx);
     }
     const useBaseType = schema.id === ctx.schema.id;
+    // allOf branches must all hold at once, i.e. an intersection. anyOf branches only require at least one to hold,
+    // i.e. a union - TypeScript unions already admit values matching several branches, so no Partial<> wrapper is
+    // needed to express that overlap. A schema with both intersects the allOf branches with the anyOf union.
     return ts.intersectionType([
       ...schema.allOf.map((x) => this.getType(ctx, x, { useBaseType })),
-      ...schema.anyOf.map((x) => ts.reference('Partial', null, { generics: [this.getType(ctx, x, { useBaseType })] })),
+      schema.anyOf.length > 0 ? ts.unionType(schema.anyOf.map((x) => this.getType(ctx, x, { useBaseType }))) : null,
     ]);
   }
 

@@ -1,1 +1,1 @@
-export type AnyOfArrays = (Partial<(string)[]>) & (Partial<(number)[]>);
+export type AnyOfArrays = ((string)[]) | ((number)[]);

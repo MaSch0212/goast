@@ -5,7 +5,7 @@ type AnyOfDiscriminatorDiscriminator = ('AnyOfDiscriminatorB') | ('AnyOfDiscrimi
 
 export type _AnyOfDiscriminatorBase = ({
       kind: string;
-    }) & (Partial<AnyOfDiscriminatorA>) & (Partial<AnyOfDiscriminatorB>);
+    }) & ((AnyOfDiscriminatorA) | (AnyOfDiscriminatorB));
 
 export type AnyOfDiscriminator<TKind extends AnyOfDiscriminatorDiscriminator = AnyOfDiscriminatorDiscriminator> = (_AnyOfDiscriminatorBase) & (({
         AnyOfDiscriminatorB: ({

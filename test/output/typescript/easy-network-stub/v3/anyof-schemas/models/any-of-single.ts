@@ -1,1 +1,1 @@
-export type AnyOfSingle = Partial<string>;
+export type AnyOfSingle = string;
