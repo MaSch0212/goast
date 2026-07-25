@@ -1,7 +1,7 @@
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
-import { firstTextDifference } from './text-diff.ts';
+import { firstTextDifference, formatMismatchReport } from './text-diff.ts';
 
 const encode = (text: string) => new TextEncoder().encode(text);
 
@@ -64,5 +64,39 @@ describe('firstTextDifference', () => {
 
   it('should report binary buffers instead of diffing them', () => {
     expect(firstTextDifference(new Uint8Array([0, 1, 2]), new Uint8Array([0, 1, 3]))).toBe('binary');
+  });
+});
+
+describe('formatMismatchReport file list cap', () => {
+  const encoder = new TextEncoder();
+
+  it('lists every path when there are few', () => {
+    const added = ['a.txt', 'b.txt'];
+    const report = formatMismatchReport('/snap', { added, changed: [], removed: [] }, new Map(), new Map());
+
+    expect(report).toContain('  + a.txt');
+    expect(report).toContain('  + b.txt');
+    expect(report).not.toContain('more path(s)');
+  });
+
+  it('caps a long list and says how many were omitted', () => {
+    const added = Array.from({ length: 30 }, (_, i) => `file-${String(i).padStart(2, '0')}.txt`);
+    const report = formatMismatchReport('/snap', { added, changed: [], removed: [] }, new Map(), new Map());
+
+    expect(report).toContain('  + file-00.txt');
+    expect(report).toContain('  + file-19.txt');
+    expect(report).not.toContain('  + file-20.txt');
+    expect(report).toContain('  ... and 10 more path(s)');
+  });
+
+  it('counts added, changed and removed together against the cap', () => {
+    const paths = (prefix: string, n: number) => Array.from({ length: n }, (_, i) => `${prefix}-${i}.txt`);
+    const expected = new Map(paths('c', 15).map((p) => [p, encoder.encode('one')]));
+    const actual = new Map(paths('c', 15).map((p) => [p, encoder.encode('two')]));
+    const diff = { added: paths('a', 10), changed: paths('c', 15), removed: paths('r', 5) };
+
+    const report = formatMismatchReport('/snap', diff, expected, actual);
+
+    expect(report).toContain('  ... and 10 more path(s)');
   });
 });

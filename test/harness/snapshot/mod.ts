@@ -1,3 +1,4 @@
+export * from './capture-console.ts';
 export * from './mode.ts';
 export * from './normalize.ts';
 export * from './text-diff.ts';

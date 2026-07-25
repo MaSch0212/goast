@@ -17,6 +17,9 @@ export type TextDifference = {
 /** Maximum files to detail in a mismatch report before summarising the rest. */
 const MAX_DETAILED_FILES = 3;
 
+/** Maximum paths to list in a mismatch report before summarising the rest. */
+const MAX_LISTED_PATHS = 20;
+
 /**
  * Locates the first differing line between two buffers.
  *
@@ -57,9 +60,7 @@ export function formatMismatchReport(
 ): string {
   const lines: string[] = [`Snapshot mismatch: ${snapshotDir}`, ''];
 
-  for (const path of diff.added) lines.push(`  + ${path}`);
-  for (const path of diff.changed) lines.push(`  ~ ${path}`);
-  for (const path of diff.removed) lines.push(`  - ${path}`);
+  lines.push(...formatPathList(diff));
 
   const detailed = diff.changed.slice(0, MAX_DETAILED_FILES);
   for (const path of detailed) {
@@ -88,6 +89,20 @@ export function formatDifferenceExcerpt(difference: TextDifference): string[] {
   if (difference.actual !== undefined) lines.push(`  +${pad(lineNumber)} | ${difference.actual}`);
   after.forEach((line, i) => lines.push(`   ${pad(lineNumber + 1 + i)} | ${line}`));
   return lines;
+}
+
+function formatPathList(diff: TreeDiff): string[] {
+  const entries = [
+    ...diff.added.map((path) => `  + ${path}`),
+    ...diff.changed.map((path) => `  ~ ${path}`),
+    ...diff.removed.map((path) => `  - ${path}`),
+  ];
+  if (entries.length <= MAX_LISTED_PATHS) return entries;
+
+  return [
+    ...entries.slice(0, MAX_LISTED_PATHS),
+    `  ... and ${entries.length - MAX_LISTED_PATHS} more path(s)`,
+  ];
 }
 
 function formatFileDifference(path: string, expected: Uint8Array, actual: Uint8Array): string[] {
