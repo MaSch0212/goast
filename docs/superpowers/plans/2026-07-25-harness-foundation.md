@@ -808,6 +808,7 @@ git commit -m "feat(harness): add verifyFileTree write mode"
 - Produces:
   - `type TextDifference = { lineNumber: number; before: string[]; expected: string | undefined; actual: string | undefined; after: string[] }` — `lineNumber` is 1-based; `expected`/`actual` are `undefined` when that side ran out of lines.
   - `function firstTextDifference(expected: Uint8Array, actual: Uint8Array, contextLines?: number): TextDifference | 'binary' | null` — `'binary'` when either side contains a NUL byte, `null` when the buffers are equal. `contextLines` defaults to 3.
+  - `function formatDifferenceExcerpt(difference: TextDifference): string[]` — renders the gutter-numbered `-`/`+` excerpt. Task 6's `verifyText` reuses this; it must not grow a second copy of the padding logic.
   - `function formatMismatchReport(snapshotDir: string, diff: TreeDiff, expected: FileTree, actual: FileTree): string`
 
 - [ ] **Step 1: Write the failing test for `firstTextDifference`**
@@ -970,21 +971,32 @@ export function formatMismatchReport(
   return lines.join('\n');
 }
 
-function formatFileDifference(path: string, expected: Uint8Array, actual: Uint8Array): string[] {
-  const difference = firstTextDifference(expected, actual);
-  if (difference === null) return [];
-  if (difference === 'binary') return [`First difference in ${path}: binary content differs`];
-
+/**
+ * Renders a {@link TextDifference} as gutter-numbered context lines, with the expected line marked
+ * `-` and the actual line marked `+`.
+ */
+export function formatDifferenceExcerpt(difference: TextDifference): string[] {
   const { lineNumber, before, after } = difference;
   const gutter = String(lineNumber + after.length).length;
   const pad = (n: number) => String(n).padStart(gutter, ' ');
 
-  const lines = [`First difference in ${path} at line ${lineNumber}:`];
+  const lines: string[] = [];
   before.forEach((line, i) => lines.push(`   ${pad(lineNumber - before.length + i)} | ${line}`));
   if (difference.expected !== undefined) lines.push(`  -${pad(lineNumber)} | ${difference.expected}`);
   if (difference.actual !== undefined) lines.push(`  +${pad(lineNumber)} | ${difference.actual}`);
   after.forEach((line, i) => lines.push(`   ${pad(lineNumber + 1 + i)} | ${line}`));
   return lines;
+}
+
+function formatFileDifference(path: string, expected: Uint8Array, actual: Uint8Array): string[] {
+  const difference = firstTextDifference(expected, actual);
+  if (difference === null) return [];
+  if (difference === 'binary') return [`First difference in ${path}: binary content differs`];
+
+  return [
+    `First difference in ${path} at line ${difference.lineNumber}:`,
+    ...formatDifferenceExcerpt(difference),
+  ];
 }
 ```
 
@@ -1331,7 +1343,7 @@ import { ensureDir } from '@std/fs';
 
 import { resolveSnapshotMode, type VerifyOptions } from './mode.ts';
 import { normalizePaths } from './normalize.ts';
-import { firstTextDifference } from './text-diff.ts';
+import { firstTextDifference, formatDifferenceExcerpt } from './text-diff.ts';
 
 const encoder = new TextEncoder();
 
@@ -1374,15 +1386,7 @@ function formatTextMismatch(snapshotFile: string, expected: string, actual: stri
   const difference = firstTextDifference(encoder.encode(expected), encoder.encode(actual));
 
   if (difference !== null && difference !== 'binary') {
-    const { lineNumber, before, after } = difference;
-    const gutter = String(lineNumber + after.length).length;
-    const pad = (n: number) => String(n).padStart(gutter, ' ');
-
-    lines.push(`First difference at line ${lineNumber}:`);
-    before.forEach((line, i) => lines.push(`   ${pad(lineNumber - before.length + i)} | ${line}`));
-    if (difference.expected !== undefined) lines.push(`  -${pad(lineNumber)} | ${difference.expected}`);
-    if (difference.actual !== undefined) lines.push(`  +${pad(lineNumber)} | ${difference.actual}`);
-    after.forEach((line, i) => lines.push(`   ${pad(lineNumber + 1 + i)} | ${line}`));
+    lines.push(`First difference at line ${difference.lineNumber}:`, ...formatDifferenceExcerpt(difference));
   }
 
   lines.push('', 'Run `deno task test:output` to update the snapshot, then commit the result.');
