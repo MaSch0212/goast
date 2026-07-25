@@ -1,6 +1,7 @@
 export * from './capture-console.ts';
 export * from './mode.ts';
 export * from './normalize.ts';
+export * from './orphans.ts';
 export * from './serialize.ts';
 export * from './text-diff.ts';
 export * from './tree.ts';
