@@ -1,0 +1,67 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Primitive Formats
+
+paths:
+  /x:
+    x-ignore: true
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    Int32:
+      type: integer
+      format: int32
+    Int64:
+      type: integer
+      format: int64
+    IntNoFormat:
+      type: integer
+    Float:
+      type: number
+      format: float
+    Double:
+      type: number
+      format: double
+    NumNoFormat:
+      type: number
+    Byte:
+      type: string
+      format: byte
+    Binary:
+      type: string
+      format: binary
+    Date:
+      type: string
+      format: date
+    DateTime:
+      type: string
+      format: date-time
+    Password:
+      type: string
+      format: password
+    Uuid:
+      type: string
+      format: uuid
+    Uri:
+      type: string
+      format: uri
+    Hostname:
+      type: string
+      format: hostname
+    Ipv4:
+      type: string
+      format: ipv4
+    Ipv6:
+      type: string
+      format: ipv6
+    UnknownFormat:
+      type: string
+      format: something-nonstandard
+    BoolWithFormat:
+      type: boolean
+      format: checkbox

@@ -1,0 +1,199 @@
+{
+  typescript: {
+    clients: {},
+    indexFiles: {
+      clientInterfaces: '<output>/clients.ts',
+      clients: '<output>/clients.ts',
+      models: '<output>/models.ts'
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/IntEnum',
+        additionalExports: [ { name: 'INT_ENUM_VALUES', type: 'export' } ],
+        component: 'IntEnum',
+        filePath: '<output>/models/int-enum.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/int-enum.ts',
+            name: 'IntEnum',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/ArrayOfEnum/items',
+        additionalExports: [ { name: 'SCHEMA_10_VALUES', type: 'export' } ],
+        component: 'Schema10',
+        filePath: '<output>/models/schema-10.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/schema-10.ts',
+            name: 'Schema10',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/ObjectWithInlineEnum',
+        additionalExports: [],
+        component: 'ObjectWithInlineEnum',
+        filePath: '<output>/models/object-with-inline-enum.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/object-with-inline-enum.ts',
+            name: 'ObjectWithInlineEnum',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/ObjectWithInlineEnum/properties/status',
+        additionalExports: [
+          {
+            name: 'OBJECT_WITH_INLINE_ENUM_STATUS_VALUES',
+            type: 'export'
+          }
+        ],
+        component: 'ObjectWithInlineEnumStatus',
+        filePath: '<output>/models/object-with-inline-enum-status.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/object-with-inline-enum-status.ts',
+            name: 'ObjectWithInlineEnumStatus',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/NumEnum',
+        additionalExports: [ { name: 'NUM_ENUM_VALUES', type: 'export' } ],
+        component: 'NumEnum',
+        filePath: '<output>/models/num-enum.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/num-enum.ts',
+            name: 'NumEnum',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/SingleValueEnum',
+        additionalExports: [ { name: 'SINGLE_VALUE_ENUM_VALUES', type: 'export' } ],
+        component: 'SingleValueEnum',
+        filePath: '<output>/models/single-value-enum.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/single-value-enum.ts',
+            name: 'SingleValueEnum',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/MixedEnum',
+        additionalExports: [ { name: 'MIXED_ENUM_VALUES', type: 'export' } ],
+        component: 'MixedEnum',
+        filePath: '<output>/models/mixed-enum.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/mixed-enum.ts',
+            name: 'MixedEnum',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/EnumWithEmptyString',
+        additionalExports: [ { name: 'ENUM_WITH_EMPTY_STRING_VALUES', type: 'export' } ],
+        component: 'EnumWithEmptyString',
+        filePath: '<output>/models/enum-with-empty-string.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/enum-with-empty-string.ts',
+            name: 'EnumWithEmptyString',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/EnumWithSpecialChars',
+        additionalExports: [ { name: 'ENUM_WITH_SPECIAL_CHARS_VALUES', type: 'export' } ],
+        component: 'EnumWithSpecialChars',
+        filePath: '<output>/models/enum-with-special-chars.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/enum-with-special-chars.ts',
+            name: 'EnumWithSpecialChars',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/EnumWithReservedWords',
+        additionalExports: [ { name: 'ENUM_WITH_RESERVED_WORDS_VALUES', type: 'export' } ],
+        component: 'EnumWithReservedWords',
+        filePath: '<output>/models/enum-with-reserved-words.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/enum-with-reserved-words.ts',
+            name: 'EnumWithReservedWords',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/EnumWithNumericStrings',
+        additionalExports: [
+          { name: 'ENUM_WITH_NUMERIC_STRINGS_VALUES', type: 'export' }
+        ],
+        component: 'EnumWithNumericStrings',
+        filePath: '<output>/models/enum-with-numeric-strings.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/enum-with-numeric-strings.ts',
+            name: 'EnumWithNumericStrings',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/ArrayOfEnum',
+        additionalExports: [],
+        component: 'ArrayOfEnum',
+        filePath: '<output>/models/array-of-enum.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/array-of-enum.ts',
+            name: 'ArrayOfEnum',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      }
+    }
+  }
+}

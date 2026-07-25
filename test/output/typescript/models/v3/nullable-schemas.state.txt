@@ -1,0 +1,162 @@
+{
+  typescript: {
+    indexFiles: { models: '<output>/models.ts' },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableEnum',
+        additionalExports: [ { name: 'NULLABLE_ENUM_VALUES', type: 'export' } ],
+        component: 'NullableEnum',
+        filePath: '<output>/models/nullable-enum.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nullable-enum.ts',
+            name: 'NullableEnum',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableWithAllOf/allOf/0',
+        component: '{\n  a?: string;\n}',
+        imports: []
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableWithAllOf/allOf/0/properties/a',
+        component: 'string',
+        imports: []
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableObjectProperty',
+        additionalExports: [],
+        component: 'NullableObjectProperty',
+        filePath: '<output>/models/nullable-object-property.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nullable-object-property.ts',
+            name: 'NullableObjectProperty',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableObjectProperty/properties/value',
+        component: '{\n  [key: string]: never;\n}',
+        imports: []
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableRequired',
+        additionalExports: [],
+        component: 'NullableRequired',
+        filePath: '<output>/models/nullable-required.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nullable-required.ts',
+            name: 'NullableRequired',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableRequired/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableRef',
+        additionalExports: [ { name: 'NULLABLE_REF_VALUES', type: 'export' } ],
+        component: 'NullableRef',
+        filePath: '<output>/models/nullable-ref.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nullable-ref.ts',
+            name: 'NullableRef',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableArray',
+        additionalExports: [],
+        component: 'NullableArray',
+        filePath: '<output>/models/nullable-array.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nullable-array.ts',
+            name: 'NullableArray',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableArray/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/ArrayOfNullable',
+        additionalExports: [],
+        component: 'ArrayOfNullable',
+        filePath: '<output>/models/array-of-nullable.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/array-of-nullable.ts',
+            name: 'ArrayOfNullable',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/ArrayOfNullable/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableArrayOfNullable',
+        additionalExports: [],
+        component: 'NullableArrayOfNullable',
+        filePath: '<output>/models/nullable-array-of-nullable.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nullable-array-of-nullable.ts',
+            name: 'NullableArrayOfNullable',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableArrayOfNullable/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableWithAllOf',
+        additionalExports: [],
+        component: 'NullableWithAllOf',
+        filePath: '<output>/models/nullable-with-all-of.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nullable-with-all-of.ts',
+            name: 'NullableWithAllOf',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      }
+    }
+  }
+}

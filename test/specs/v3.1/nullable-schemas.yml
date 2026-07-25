@@ -1,0 +1,77 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: Nullable Schemas
+
+paths:
+  /x:
+    x-ignore: true
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    NullableEnum:
+      type:
+        - string
+        - null
+      enum:
+        - one
+        - two
+        - three
+    NullableRef:
+      $ref: '#/components/schemas/NullableEnum'
+      type:
+        - null
+    NullableArray:
+      type:
+        - array
+        - null
+      items:
+        type: string
+    ArrayOfNullable:
+      type: array
+      items:
+        type:
+          - string
+          - null
+    NullableArrayOfNullable:
+      type:
+        - array
+        - null
+      items:
+        type:
+          - string
+          - null
+    NullableWithAllOf:
+      type:
+        - null
+      allOf:
+        - type: object
+          properties:
+            a:
+              type: string
+    NullableObjectProperty:
+      type: object
+      properties:
+        value:
+          type:
+            - object
+            - null
+    NullableRequired:
+      type: object
+      properties:
+        value:
+          type:
+            - string
+            - null
+      required:
+        - value
+    NullOnly:
+      type: 'null'
+    MultiType:
+      type:
+        - string
+        - integer

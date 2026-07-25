@@ -1,0 +1,80 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Enum Schemas
+
+paths:
+  /x:
+    x-ignore: true
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    IntEnum:
+      type: integer
+      enum:
+        - 1
+        - 2
+        - 3
+    NumEnum:
+      type: number
+      enum:
+        - 1.1
+        - 2.2
+        - 3.3
+    SingleValueEnum:
+      type: string
+      enum:
+        - only
+    MixedEnum:
+      enum:
+        - one
+        - 2
+        - true
+        - null
+    EnumWithEmptyString:
+      type: string
+      enum:
+        - ''
+        - one
+        - two
+    EnumWithSpecialChars:
+      type: string
+      enum:
+        - 'has space'
+        - 'has-hyphen'
+        - 'has.dot'
+        - 'has/slash'
+        - 'has+plus'
+    EnumWithReservedWords:
+      type: string
+      enum:
+        - 'class'
+        - 'object'
+        - 'null'
+        - 'true'
+        - 'return'
+    EnumWithNumericStrings:
+      type: string
+      enum:
+        - '1'
+        - '2'
+    ArrayOfEnum:
+      type: array
+      items:
+        type: string
+        enum:
+          - one
+          - two
+          - three
+    ObjectWithInlineEnum:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - active
+            - inactive

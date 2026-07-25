@@ -1,0 +1,161 @@
+{
+  kotlin: {
+    clients: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/IntEnum',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'IntEnum',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/ArrayOfEnum/items',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Schema10',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/ObjectWithInlineEnum',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'ObjectWithInlineEnum',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/ObjectWithInlineEnum/properties/status',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'ObjectWithInlineEnumStatus',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/NumEnum',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'NumEnum',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/SingleValueEnum',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'SingleValueEnum',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/MixedEnum',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'MixedEnum',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/EnumWithEmptyString',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'EnumWithEmptyString',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/EnumWithSpecialChars',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'EnumWithSpecialChars',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/EnumWithReservedWords',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'EnumWithReservedWords',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/EnumWithNumericStrings',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'EnumWithNumericStrings',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/enum-schemas.yml#/components/schemas/ArrayOfEnum',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Schema10',
+              nullable: false,
+              packageName: 'com.openapi.generated.model',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      }
+    }
+  }
+}
