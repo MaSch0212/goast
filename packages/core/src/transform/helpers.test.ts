@@ -44,6 +44,34 @@ describe('determineSchemaKind', () => {
     expect(determineSchemaKind(ctx, schema)).toBe('multi-type');
   });
 
+  // A type array with two or more non-null types is not normalized away by `transformSchema`, so nothing
+  // re-runs this function for it. It therefore has to keep yielding the same kind as before the 3.1 type
+  // array was given precedence, otherwise such a schema silently loses its `allOf` merge downstream.
+  test('still returns "combined" if a type array with two or more non-null types has "allOf"', () => {
+    expect(determineSchemaKind(ctx, { type: ['string', 'integer'], allOf: [{ type: 'string' }] })).toBe('combined');
+    expect(determineSchemaKind(ctx, { type: ['string', 'integer', 'null'], anyOf: [{ type: 'string' }] })).toBe(
+      'combined',
+    );
+  });
+
+  test('still returns "object" if a type array with two or more non-null types has "allOf" and properties', () => {
+    expect(
+      determineSchemaKind(ctx, { type: ['string', 'integer'], properties: { a: {} }, allOf: [{ type: 'object' }] }),
+    ).toBe('object');
+    expect(
+      determineSchemaKind(ctx, {
+        type: ['string', 'integer', 'null'],
+        properties: { a: {} },
+        allOf: [{ type: 'object' }],
+      }),
+    ).toBe('object');
+  });
+
+  test('returns "multi-type" for a type array with two or more non-null types and no composition', () => {
+    expect(determineSchemaKind(ctx, { type: ['string', 'integer'] })).toBe('multi-type');
+    expect(determineSchemaKind(ctx, { type: ['string', 'integer', 'null'] })).toBe('multi-type');
+  });
+
   test('returns the value of "type" property if it is a string', () => {
     const schema = { type: 'string' };
     expect(determineSchemaKind(ctx, schema)).toBe('string');

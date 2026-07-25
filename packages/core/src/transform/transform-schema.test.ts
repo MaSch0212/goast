@@ -36,7 +36,7 @@ function derefAt(path: string, schema: Record<string, unknown>, ref?: Deref<Open
     if (Array.isArray(value)) {
       schema[key] = value.map((x, i) => derefAt(`${path}/${key}/${i}`, x as Record<string, unknown>));
     } else if (value && typeof value === 'object') {
-      schema[key] = key === 'properties' || key === 'patternProperties'
+      schema[key] = key === 'properties'
         ? Object.fromEntries(
           Object.entries(value as Record<string, Record<string, unknown>>).map(([k, v]) => [
             k,
@@ -103,6 +103,41 @@ describe('transformSchema', () => {
       expect(result.kind).toBe('multi-type');
       expect((result as ApiSchema<'multi-type'>).type).toEqual(['string', 'integer']);
       expect(result.nullable).toBe(true);
+    });
+
+    test('keeps the allOf of a type array with two or more non-null types, and still reports it nullable', () => {
+      const schema = derefSchema('MultiTypeWithAllOf', {
+        type: ['string', 'integer', 'null'],
+        allOf: [{ type: 'object' }],
+      });
+
+      const result = transformSchema(createContext(), schema);
+
+      // Not `multi-type`: nothing would re-run the kind decision, and both generators would then drop the
+      // `allOf` — Kotlin refuses a declaration for `multi-type`, TypeScript renders a bare union.
+      expect(result.kind).toBe('combined');
+      expect((result as ApiSchema<'combined'>).allOf).toHaveLength(1);
+      expect(result.nullable).toBe(true);
+    });
+
+    test('keeps the allOf of an all-null type array instead of collapsing to the bare null type', () => {
+      const schema = derefSchema('NullWithAllOf', { type: ['null'], allOf: [{ type: 'object' }] });
+
+      const result = transformSchema(createContext(), schema);
+
+      expect(result.kind).toBe('combined');
+      expect((result as ApiSchema<'combined'>).allOf).toHaveLength(1);
+      expect(result.nullable).toBe(true);
+    });
+
+    test('reports an empty type array as nullable, like the scalar null type', () => {
+      const empty = transformSchema(createContext(), derefSchema('EmptyTypeArray', { type: [] }));
+      const scalar = transformSchema(createContext(), derefSchema('NullScalar', { type: 'null' }));
+
+      expect(empty.kind).toBe('null');
+      expect(scalar.kind).toBe('null');
+      expect(empty.nullable).toBe(scalar.nullable);
+      expect(empty.nullable).toBe(true);
     });
   });
 

@@ -3,13 +3,16 @@ import type { Deref } from '../parse/types.ts';
 import { createOverwriteProxy } from '../utils/object.utils.ts';
 import type { ApiSchema, ApiSchemaExtensions, ApiSchemaKind } from './api-types.ts';
 import {
+  asTypeArray,
   determineSchemaAccessibility,
   determineSchemaKind,
   determineSchemaName,
   getCustomFields,
   getOpenApiObjectIdentifier,
+  hasNullType,
   transformAdditionalProperties,
   transformSchemaProperties,
+  withoutNullType,
 } from './helpers.ts';
 import type { IncompleteApiSchema, OpenApiTransformerContext } from './types.ts';
 
@@ -26,13 +29,12 @@ export function transformSchema<T extends Deref<OpenApiSchema>>(ctx: OpenApiTran
   if (existing) return existing;
 
   let kind = determineSchemaKind(ctx, schema);
-  let nullable = kind === 'null';
+  // Read nullability from the `type` keyword as declared, before the normalisation below rewrites it. This has
+  // to happen independently of `kind`, because a type array with two or more non-null types deliberately keeps
+  // its `combined`/`object` kind and is never normalised — but it is still nullable if it lists `null`.
+  let nullable = hasNullType(schema.type);
   if (kind === 'multi-type') {
-    const types = schema.type as string[];
-    let remainingTypes = withoutNullType(types);
-    if (remainingTypes.length < types.length) {
-      nullable = true;
-    }
+    let remainingTypes = withoutNullType(schema.type as string[]);
 
     if (remainingTypes.length === 0) {
       // A type array that contains nothing but `null` constrains nullability only. If the schema also has a
@@ -40,17 +42,19 @@ export function transformSchema<T extends Deref<OpenApiSchema>>(ctx: OpenApiTran
       remainingTypes = withoutNullType(asTypeArray(schema.$ref?.type));
     }
 
-    if (remainingTypes.length === 1) {
-      schema = createOverwriteProxy(schema);
-      schema.type = remainingTypes[0];
-      kind = determineSchemaKind(ctx, schema);
-    } else if (remainingTypes.length === 0) {
-      schema = createOverwriteProxy(schema);
-      schema.type = 'null';
-      kind = determineSchemaKind(ctx, schema);
-    } else {
+    if (remainingTypes.length > 1) {
+      // Still a genuine multi-type schema; only the `null` member is absorbed into `nullable`.
       schema.type = remainingTypes;
+    } else {
+      schema = createOverwriteProxy(schema);
+      // Re-asking `determineSchemaKind` rather than assuming the narrowed type's kind is what lets a sibling
+      // `allOf`/`anyOf` still be honoured — including for an all-`null` type array, which stays `combined`.
+      schema.type = remainingTypes.length === 1 ? remainingTypes[0] : 'null';
+      kind = determineSchemaKind(ctx, schema);
     }
+  }
+  if (kind === 'null') {
+    nullable = true;
   }
 
   const id = ctx.idGenerator.generateId('schema');
@@ -101,16 +105,6 @@ export function transformSchema<T extends Deref<OpenApiSchema>>(ctx: OpenApiTran
   ctx.transformed.schemas.set(openApiObjectId, completeSchema);
   ctx.schemas.set(schemaSource, completeSchema);
   return completeSchema;
-}
-
-function asTypeArray(type: string | string[] | undefined): string[] {
-  if (type === undefined) return [];
-  return Array.isArray(type) ? type : [type];
-}
-
-function withoutNullType(types: string[]): string[] {
-  // OpenAPI 3.1 allows `type: [~]`, which YAML parses to `null` rather than to the string `'null'`.
-  return types.filter((t) => t !== 'null' && t !== null);
 }
 
 function allExtensionsTransformer(schema: Deref<OpenApiSchema>, context: OpenApiTransformerContext) {

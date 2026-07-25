@@ -8,6 +8,27 @@ import { getLineInfo } from '../utils/yaml-info.ts';
 import type { ApiSchema, ApiSchemaAccessibility, ApiSchemaKind, ApiSchemaProperty } from './api-types.ts';
 import type { OpenApiTransformerContext } from './types.ts';
 
+/** Normalizes a `type` keyword to an array, so a scalar type and a 3.1 type array can be treated alike. */
+export function asTypeArray(type: string | string[] | undefined | null): string[] {
+  if (isNullish(type)) return [];
+  return Array.isArray(type) ? type : [type];
+}
+
+// OpenAPI 3.1 allows `type: [~]`, which YAML parses to `null` rather than to the string `'null'`.
+function isNullType(type: string | null): boolean {
+  return type === 'null' || type === null;
+}
+
+/** The declared types with every `null` member removed. */
+export function withoutNullType(types: (string | null)[]): string[] {
+  return types.filter((t): t is string => !isNullType(t));
+}
+
+/** Whether the `type` keyword declares `null`, either as a scalar type or as a member of a 3.1 type array. */
+export function hasNullType(type: string | string[] | undefined | null): boolean {
+  return asTypeArray(type).some(isNullType);
+}
+
 export function determineSchemaKind<
   T extends {
     oneOf?: unknown;
@@ -18,17 +39,26 @@ export function determineSchemaKind<
     additionalProperties?: unknown;
   },
 >(ctx: OpenApiTransformerContext, schema: T): ApiSchemaKind {
+  // An OpenAPI 3.1 type array that reduces to at most one non-null type is normalised away by
+  // `transformSchema`, which replaces `type` with the narrowed scalar (or `'null'`) and then asks this
+  // function again. Such an array therefore has to reach the `multi-type` branch below *before* the
+  // `allOf`/`anyOf` branch can claim it as `combined`, because a type array is 3.1's only way of expressing
+  // nullability and it would otherwise never be looked at. The second pass gives the `allOf`/`anyOf` branch
+  // its chance, this time with a scalar type it can judge correctly.
+  //
+  // A type array with two or more non-null members is *not* normalised away: nothing re-asks, so it must keep
+  // falling through to the `allOf`/`anyOf` branch exactly as it always has. Its nullability is picked up by
+  // `transformSchema` from the type as declared instead.
+  const narrowsToSingleType = Array.isArray(schema.type) && withoutNullType(schema.type).length <= 1;
+
   if (schema.oneOf) {
     return 'oneOf';
-  } else if (Array.isArray(schema.type)) {
-    // An OpenAPI 3.1 type array has to be resolved before `allOf`/`anyOf` is considered: it is the only
-    // place where 3.1 expresses nullability, and it may still narrow down to `object` (in which case the
-    // `allOf`/`anyOf` branch below must not claim the schema as `combined`).
-    return 'multi-type';
-  } else if (schema.type !== 'object' && (schema.allOf || schema.anyOf)) {
+  } else if (!narrowsToSingleType && schema.type !== 'object' && (schema.allOf || schema.anyOf)) {
     const hasProperties = (schema.properties && Object.keys(schema.properties).length > 0) ||
       schema.additionalProperties;
     return hasProperties ? 'object' : 'combined';
+  } else if (Array.isArray(schema.type)) {
+    return 'multi-type';
   } else if (
     schema.type === 'object' ||
     schema.type === 'string' ||
