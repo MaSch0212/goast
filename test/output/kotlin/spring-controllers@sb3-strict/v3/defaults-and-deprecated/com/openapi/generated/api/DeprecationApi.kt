@@ -54,11 +54,11 @@ interface DeprecationApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "OK.", content = [Content()])])
     @RequestMapping(method = [RequestMethod.GET], value = [DEPRECATED_PARAMS_PATH])
     suspend fun deprecatedParams(
-        @Parameter(description = "This parameter is deprecated.", required = false)
+        @Parameter(description = "This parameter is deprecated.", required = false, deprecated = true)
         @RequestParam(value = "withDesc", required = false)
         withDesc: String?,
 
-        @Parameter(required = false)
+        @Parameter(required = false, deprecated = true)
         @RequestParam(value = "noDesc", required = false)
         noDesc: String?,
 

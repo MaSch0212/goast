@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 enum class EnumWithEmptyString(val value: String) {
     @JsonProperty("")
-    (""),
+    _EMPTY(""),
 
     @JsonProperty("one")
     ONE("one"),
@@ -15,7 +15,7 @@ enum class EnumWithEmptyString(val value: String) {
     companion object {
         fun fromValue(value: String): EnumWithEmptyString? =
             when(value) {
-                "" ->
+                "" -> _EMPTY
                 "one" -> ONE
                 "two" -> TWO
                 else -> null

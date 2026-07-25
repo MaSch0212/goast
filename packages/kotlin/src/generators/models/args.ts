@@ -133,4 +133,6 @@ export type NormalizeSchema = {
 export type HasProperty = {
   schema: ApiSchema;
   propertyName: string;
+  /** The schemas already inspected, so a composition that cycles back on itself terminates. */
+  visited?: Set<ApiSchema>;
 };

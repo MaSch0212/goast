@@ -135,10 +135,12 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     const { schema } = args;
 
     const name = this.getDeclarationTypeName(ctx, { schema });
+    // One set of names for both generation sites below, so the constant and its `when` branch agree.
+    const valueNames = this.toEnumValueNames(ctx, schema.enum);
     return kt.enum(
       name,
-      schema.enum?.map((x) =>
-        kt.enumValue(toCasing(String(x), ctx.config.enumValueNameCasing), {
+      schema.enum?.map((x, i) =>
+        kt.enumValue(valueNames[i], {
           annotations: [kt.annotation(kt.refs.jackson.jsonProperty(), [kt.argument(kt.string(String(x)))])],
           arguments: [kt.argument(kt.string(String(x)))],
         })
@@ -159,9 +161,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
               singleExpression: true,
               body: !schema.enum?.length ? 'null' : s`\nwhen(value) {${s.indent`${
                 appendValueGroup([
-                  schema.enum.map((x) =>
-                    s`\n${kt.string(String(x))} -> ${toCasing(String(x), ctx.config.enumValueNameCasing)}`
-                  ),
+                  schema.enum.map((x, i) => s`\n${kt.string(String(x))} -> ${valueNames[i]}`),
                 ])
               }
                 else -> null`}
@@ -287,7 +287,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
           return String(schema.default);
         case 'string':
           return schema.enum && schema.enum.length > 0
-            ? kt.call([this.getType(ctx, { schema }), toCasing(String(schema.default), ctx.config.enumValueNameCasing)])
+            ? kt.call([this.getType(ctx, { schema }), this.toEnumValueName(ctx, schema.enum, schema.default)])
             : kt.string(String(schema.default));
         case 'array':
           return kt.call(
@@ -714,12 +714,23 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
   }
 
   protected hasProperty(ctx: Context, args: Args.HasProperty): boolean {
-    const { schema, propertyName } = args;
+    // A composition branch may compose back to one of its own ancestors (see test/specs/v3/anyof-cycle.yml).
+    // Without this guard such a cycle recurses until the stack overflows. Re-visiting a schema can never
+    // change the answer, so returning `false` for one is safe: another path either already found the
+    // property or does not contain it at all.
+    const { schema, propertyName, visited = new Set<ApiSchema>() } = args;
+    if (visited.has(schema)) return false;
+    visited.add(schema);
 
     return (
       ('properties' in schema && schema.properties.has(propertyName)) ||
-      ('anyOf' in schema && schema.anyOf.some((schema) => this.hasProperty(ctx, { schema, propertyName }))) ||
-      ('allOf' in schema && schema.allOf.some((schema) => this.hasProperty(ctx, { schema, propertyName })))
+      ('anyOf' in schema && schema.anyOf.some((schema) => this.hasProperty(ctx, { schema, propertyName, visited }))) ||
+      ('allOf' in schema && schema.allOf.some((schema) => this.hasProperty(ctx, { schema, propertyName, visited }))) ||
+      // Only an undiscriminated `oneOf` composes into the schema that references it, matching which `oneOf`
+      // branches `resolveAnyOfAndAllOf` merges. A discriminated one lists subtypes, whose properties are not
+      // the referencing schema's, so an inherited property never comes from there.
+      ('oneOf' in schema && !schema.discriminator &&
+        schema.oneOf.some((schema) => this.hasProperty(ctx, { schema, propertyName, visited })))
     );
   }
 }

@@ -12,6 +12,7 @@ object DeprecationRequests {
     /**
      * This operation is deprecated.
      */
+    @Deprecated("")
     suspend fun WebClient.deprecatedOp(): Unit {
         this
             .deprecatedOpRequest()
@@ -22,10 +23,12 @@ object DeprecationRequests {
     /**
      * This operation is deprecated.
      */
+    @Deprecated("")
     suspend fun <T : Any> WebClient.deprecatedOp(responseHandler: suspend (ClientResponse) -> T): T {
         return this.deprecatedOpRequest().awaitExchange(responseHandler)
     }
 
+    @Deprecated("")
     fun deprecatedOpUri(): String {
         return UriComponentsBuilder.fromPath("deprecated-op")
             .build()
@@ -35,10 +38,12 @@ object DeprecationRequests {
     /**
      * This operation is deprecated.
      */
+    @Deprecated("")
     fun WebClient.deprecatedOpRequest(): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET).uri(deprecatedOpUri())
     }
 
+    @Deprecated("")
     suspend fun WebClient.deprecatedOpNoDesc(): Unit {
         this
             .deprecatedOpNoDescRequest()
@@ -46,16 +51,19 @@ object DeprecationRequests {
             .awaitBodilessEntity()
     }
 
+    @Deprecated("")
     suspend fun <T : Any> WebClient.deprecatedOpNoDesc(responseHandler: suspend (ClientResponse) -> T): T {
         return this.deprecatedOpNoDescRequest().awaitExchange(responseHandler)
     }
 
+    @Deprecated("")
     fun deprecatedOpNoDescUri(): String {
         return UriComponentsBuilder.fromPath("deprecated-op-no-desc")
             .build()
             .toUriString()
     }
 
+    @Deprecated("")
     fun WebClient.deprecatedOpNoDescRequest(): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET).uri(deprecatedOpNoDescUri())
     }

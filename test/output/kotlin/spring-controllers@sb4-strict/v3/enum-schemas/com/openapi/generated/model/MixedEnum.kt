@@ -7,7 +7,7 @@ enum class MixedEnum(val value: String) {
     ONE("one"),
 
     @JsonProperty("2")
-    ("2"),
+    _2("2"),
 
     @JsonProperty("true")
     TRUE("true"),
@@ -19,7 +19,7 @@ enum class MixedEnum(val value: String) {
         fun fromValue(value: String): MixedEnum? =
             when(value) {
                 "one" -> ONE
-                "2" ->
+                "2" -> _2
                 "true" -> TRUE
                 "null" -> NULL
                 else -> null

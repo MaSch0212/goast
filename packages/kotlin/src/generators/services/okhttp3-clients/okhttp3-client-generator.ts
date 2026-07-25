@@ -453,7 +453,7 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
     return !parameter.required
       ? parameter.schema?.kind === 'string' && parameter.schema.enum && parameter.schema.default
         ? s`${this.getTypeUsage(ctx, { schema: parameter.schema, nullable: false })}.${
-          toCasing(String(parameter.schema.default), ctx.config.enumValueNameCasing)
+          this.toEnumValueName(ctx, parameter.schema.enum, parameter.schema.default)
         }`
         : kt.toNode(parameter.schema?.default)
       : null;

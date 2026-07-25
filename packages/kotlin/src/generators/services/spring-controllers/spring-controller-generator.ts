@@ -338,6 +338,10 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
           )
           : null,
         kt.argument.named('required', parameter.required),
+        // Only emitted when set, matching how the model generator marks a deprecated property on `@Schema`.
+        // `@Operation` always states `deprecated`, but doing that for every parameter of every endpoint
+        // would add `deprecated = false` noise far beyond what the annotation is documenting.
+        parameter.deprecated ? kt.argument.named('deprecated', kt.toNode(true)) : null,
         parameter.target === 'header' ? kt.argument.named('hidden', kt.toNode(true)) : null,
       ]);
 
