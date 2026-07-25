@@ -76,7 +76,8 @@ test/
     kotlin/<profile>/<version>/<spec>.state.txt
     core/<version>/<spec>/model.txt                # parsed ApiData snapshot
   harness/                    # replaces test/utils/
-    snapshot.ts  docker.ts  ref-server.ts  ref-client.ts
+    snapshot/                 # mode, tree, text-diff, normalize, verify-file-tree, verify-text
+    docker.ts  ref-server.ts  ref-client.ts
     declutter.ts  paths.ts  string.utils.ts  types.ts
   output-tests/profiles.ts    # profile registry driving tier 2 and 3
   docker/
@@ -176,9 +177,16 @@ state, and source-doc lines per `24a6f8d` — are normalized to `<root>/...` bef
 today's `verify.ts`. A committed tree must be machine-independent. Where the generator already emits relative paths the
 normalization is inert. Normalized paths appear only inside comments, so tier 3 still compiles the tree.
 
-**CI artifact:** in check mode the harness also writes the actual tree to `test/.snapshot-actual/` (gitignored) and
-emits a `git apply`-able `snapshot.patch`, uploaded as an artifact. Applying the patch is an alternative to re-running
-generation locally. This replaces the current `verify-outputs` upload.
+**CI artifact:** the harness itself emits no patch. When the `output-check` job fails, CI re-runs it in write mode and
+uploads `git diff` as a `snapshot.patch` artifact, which a developer can `git apply` instead of regenerating locally.
+This replaces the current `verify-outputs` upload. Producing the patch from write mode plus `git diff` is strictly
+simpler than reimplementing patch generation in the harness, and it needs no `test/.snapshot-actual/` tree.
+
+This makes the `.gitattributes` treatment of `test/output/**` load-bearing: the tree is marked `-text` so git never
+normalizes line endings on either checkout or commit. `text eol=lf` would fix the checkout half but silently rewrite
+CRs on commit — which would make `git diff` blind to exactly the CR-only changes this patch mechanism has to carry, and
+would leave check mode permanently red on a Windows checkout while CI stayed green. Assets copied verbatim into
+generated output (`copyAssetFile`) are pinned to LF at source instead, via `packages/*/assets/** text eol=lf`.
 
 **Profile registry.** Handwriting 45 x 9 test files is untenable, so a registry drives both tier 2 and tier 3:
 
@@ -402,8 +410,9 @@ verified during implementation and the task is dropped if not.
 **Config changes:**
 
 - `deno.json`'s `test.include` is `["/packages/*"]` today, which would exclude everything under `test/`. It widens.
-- `fmt.exclude` and `lint.exclude` gain `test/output/**` and `test/.snapshot-actual/**`, and drop `.verify/**`.
-- `.gitignore` swaps `**/.verify/**/*.actual.txt` for `test/.snapshot-actual/`, `*.snapshot.patch`, and `test/.tmp/`.
+- `fmt.exclude` and `lint.exclude` gain `test/output/**`, and drop `.verify/**`.
+- `.gitignore` drops `**/.verify/**/*.actual.txt`. Nothing replaces it: the harness generates into a system temp
+  directory via `Deno.makeTempDir()`, so no scratch tree lands inside the repo.
 - New `deno task` entries as listed under Local Tasks.
 
 **Documentation:** `test/README.md` documents the four tiers, write and check modes, and how to add a spec, a profile,
@@ -413,7 +422,9 @@ or a case.
 
 Each phase gets its own implementation plan.
 
-1. **Harness foundation** — `test/harness/` (snapshot, paths, docker), `deno.json` wiring, `test/README.md`.
+1. **Harness foundation** — `test/harness/snapshot/` (mode, tree, text-diff, normalize, and the two verify entry
+   points), `deno.json` wiring, `test/README.md`. `docker.ts` moved to phase 3, where the compile gate gives it a real
+   consumer; building it here would mean either an untested abstraction or Docker-dependent tests with no workload.
 2. **Corpus and tier 2** — the ~45 specs, profile registry, output tests, deletion of the old verify tests, initial
    committed trees.
 3. **Tier 3** — Gradle multi-project compile, TypeScript compile, `kotlin` and `node` Dockerfiles.
