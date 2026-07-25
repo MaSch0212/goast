@@ -94,5 +94,22 @@ describe('verifyFileTree', () => {
         await expect(Deno.stat(tempDirs[0])).rejects.toThrow(Deno.errors.NotFound);
       });
     });
+
+    it('should clean up its temporary directory even when generation rejects asynchronously', async () => {
+      await withTempDir(async (dir) => {
+        const tempDirs: string[] = [];
+
+        await expect(
+          verifyFileTree(join(dir, 'snapshot'), async (outputDir) => {
+            tempDirs.push(outputDir);
+            await Promise.resolve();
+            throw new Error('generator async rejected');
+          }, { mode: 'write' }),
+        ).rejects.toThrow('generator async rejected');
+
+        expect(tempDirs).toHaveLength(1);
+        await expect(Deno.stat(tempDirs[0])).rejects.toThrow(Deno.errors.NotFound);
+      });
+    });
   });
 });
