@@ -28,7 +28,9 @@ export function normalizeFileTree(tree: FileTree): FileTree {
   const result: FileTree = new Map();
 
   for (const [path, bytes] of tree) {
-    result.set(path, bytes.includes(0) ? bytes : encoder.encode(normalizePaths(decoder.decode(bytes))));
+    const text = decoder.decode(bytes);
+    const normalized = normalizePaths(text);
+    result.set(path, bytes.includes(0) || normalized === text ? bytes : encoder.encode(normalized));
   }
   return result;
 }

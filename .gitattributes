@@ -1,5 +1,10 @@
-# Generated snapshot trees. Diffs are collapsed by default on GitHub but stay
-# expandable, and line endings must be LF so a Windows checkout matches what CI
-# validates on Linux.
-test/output/** text eol=lf
+# Generated snapshot trees. Comparison is byte-exact, so git must never normalize line endings in
+# either direction on checkout or on commit; `-text` (not `eol=lf`) keeps a Windows checkout from
+# mangling the tree that CI validates on Linux, without git rewriting CRLFs back out at commit time.
+test/output/** -text
 test/output/** linguist-generated=true
+
+# Asset sources copied verbatim by generators (see packages/core/src/utils/asset-manager.ts). Keep
+# them LF in every working tree so a Windows checkout with core.autocrlf=true doesn't inject CRLFs
+# into files that generators copy byte-for-byte into the (byte-exact) snapshot.
+packages/*/assets/** text eol=lf

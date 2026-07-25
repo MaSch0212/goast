@@ -23,17 +23,19 @@ export async function verifyFileTree(
   try {
     await generate(outputDir);
     const actual = normalizeFileTree(await readFileTree(outputDir));
+    const expected = await readFileTree(snapshotDir);
 
     // Safety rail: a generator that throws early or silently emits nothing must not be able to
-    // delete a committed snapshot in write mode.
-    if (actual.size === 0) {
+    // delete a *populated* committed snapshot in write mode. A generator that legitimately emits
+    // zero files (e.g. a spec with no components/schemas) is fine as long as the committed
+    // snapshot is empty or absent too.
+    if (actual.size === 0 && expected.size > 0) {
       throw new Error(
         `Generation produced no files for snapshot "${snapshotDir}". Refusing to continue, ` +
           `because write mode would delete the entire snapshot.`,
       );
     }
 
-    const expected = await readFileTree(snapshotDir);
     const diff = diffFileTrees(expected, actual);
     if (isEmptyDiff(diff)) return;
 

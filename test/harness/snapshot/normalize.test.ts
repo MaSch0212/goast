@@ -43,4 +43,15 @@ describe('normalizeFileTree', () => {
     const tree = normalizeFileTree(new Map([['logo.png', binary]]));
     expect(tree.get('logo.png')).toEqual(binary);
   });
+
+  it('should preserve carriage returns in a file with no repo paths', () => {
+    const tree = normalizeFileTree(new Map([['doc.ts', encode('one\r\ntwo')]]));
+    expect(decode(tree.get('doc.ts')!)).toBe('one\r\ntwo');
+  });
+
+  it('should preserve carriage returns in a file that gets rewritten', () => {
+    const absolute = join(repoRootDir, 'a.yml');
+    const tree = normalizeFileTree(new Map([['doc.ts', encode(`one\r\n// from ${absolute}\r\ntwo`)]]));
+    expect(decode(tree.get('doc.ts')!)).toBe('one\r\n// from <root>/a.yml\r\ntwo');
+  });
 });

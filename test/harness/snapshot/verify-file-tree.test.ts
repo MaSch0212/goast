@@ -79,6 +79,16 @@ describe('verifyFileTree', () => {
       });
     });
 
+    it('should pass when generation produces no files and no snapshot exists yet', async () => {
+      await withTempDir(async (dir) => {
+        const snapshotDir = join(dir, 'snapshot');
+
+        await verifyFileTree(snapshotDir, generator({}), { mode: 'write' });
+
+        expect(await readAsText(snapshotDir)).toEqual({});
+      });
+    });
+
     it('should clean up its temporary directory even when generation throws', async () => {
       await withTempDir(async (dir) => {
         const tempDirs: string[] = [];
@@ -151,6 +161,14 @@ describe('verifyFileTree', () => {
         await expect(verifyFileTree(snapshotDir, generator({ 'a.ts': 'B' }), { mode: 'check' })).rejects.toThrow();
 
         expect(await readAsText(snapshotDir)).toEqual({ 'a.ts': 'A' });
+      });
+    });
+
+    it('should pass when generation produces no files and no snapshot exists', async () => {
+      await withTempDir(async (dir) => {
+        const snapshotDir = join(dir, 'snapshot');
+
+        await verifyFileTree(snapshotDir, generator({}), { mode: 'check' });
       });
     });
   });
