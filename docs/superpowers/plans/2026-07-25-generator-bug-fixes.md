@@ -78,6 +78,49 @@ This is scoped as its own batch because `getType` is the single funnel every typ
 is small but its churn is broad, and because the property-level union at `model-generator.ts:238` must stop double-adding
 `null` once `getType` handles it.
 
+### Batch 6 — Kotlin discriminated-subtype contract (found during the sweep, not in the original 14)
+
+| # | Defect | Site | Pinned by |
+| - | ------ | ---- | --------- |
+| 16 | For an implicit or partially-mapped discriminator, the generated Kotlin does not compile: the base interface hoists **every** subtype's properties, while each subtype implements neither the discriminator property nor the hoisted ones, and its own properties lack `override`. Both halves of the contract are broken in opposite directions. **12 model files × 10 profiles = 120 uncompilable files.** | Kotlin base/subtype member computation; `collectSubSchemaProperties` never gives a subtype its base's properties | `v3/discriminator-variants` |
+
+Example, from `test/output/kotlin/models@sb3/v3/discriminator-variants/**`:
+
+```kotlin
+interface ImplicitBase { val petType: String; val breed: String?; val lives: Int? }
+data class ImplicitDog(val breed: String? = null) : ImplicitBase   // 3 compile errors
+```
+
+`ImplicitDog` implements neither `petType` (non-null, required) nor `lives`, and `breed` is missing `override`.
+`AllOfInheritanceDiscriminator*` is by contrast **correct**, which is the useful contrast: the explicit-`allOf`
+inheritance encoding works and the `oneOf`-holder encoding does not. This is the largest correctness hole in the Kotlin
+corpus. Batch 3 correctly left it alone — its own defect-10 fix would have removed some of these errors while
+introducing a semantic lie — so it needs its own batch.
+
+### Also registered, not scheduled
+
+Small, verified, and each needing either a decision or a home:
+
+- **Kotlin `hasProperty` is not undefined-safe** at `packages/kotlin/src/generators/models/model-generator.ts:732-733`:
+  `'oneOf' in schema && schema.oneOf.some(...)`. `normalizeSchema` in the same file constructs `{...schema, oneOf:
+  undefined}`, so an own `oneOf` key holding `undefined` is a shape this codebase produces. Unreachable today because
+  the only caller is filtered to discriminated schemas. `schema.oneOf?.some(...)` closes it. Fold into batch 5.
+- **Enums whose values share a string form emit dead constants.** `[2, '2', 2.0]` yields `_2`, `_2_2`, `_2_3`, all
+  carrying `@JsonProperty("2")` and all three `when` labels `"2"`. Names no longer collide and it compiles (duplicate
+  `when` labels are a Kotlin warning), but `fromValue` can only ever return `_2`. Arguably an invalid spec; no corpus
+  case. Decision needed, not a fix.
+- **Enum constant names are order-sensitive for colliding values only.** Reordering `[2, '2']` swaps `_2` and `_2_2`.
+  Inherent to any suffix scheme; distinct values are position-independent. Documentation, not a fix.
+- **`hasInvalidSubSchema` remains inverted** for `combined` branches (`packages/core/src/utils/schema.utils.ts`), and
+  batch 3's defect-10 change made it newly inconsistent under `ignoreNonObjectParts: false`. All five call sites pass
+  `true`, so no generated output is affected — verified twice, by two reviewers.
+- **The nested and top-level `oneOf` readings now disagree in principle.** `composedOneOf` treats a discriminated
+  `oneOf` as a subtype list, while Kotlin's `normalizeSchema` still flattens a top-level `oneOf` into `allOf`/`anyOf`
+  and merges every branch regardless of discriminator. Pre-existing at the top level; no output impact.
+- **No name deduplication exists anywhere in the three packages.** Batch 1's nested-naming fix replaced opaque ordinal
+  fallbacks, which were collision-free by construction, with composed names that are not. A dedup mechanism is a design
+  task.
+
 ### Explicitly out of scope
 
 These are **missing features**, not defects, and each needs its own design:
