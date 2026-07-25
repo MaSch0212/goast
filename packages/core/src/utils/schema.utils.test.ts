@@ -6,7 +6,7 @@ import {
   createObjectSchema,
   createStringSchema,
   createUnknownProperty,
-} from '../../tests/schema-factory.ts';
+} from './schema-factory.ts';
 import { resolveAnyOfAndAllOf } from './schema.utils.ts';
 
 describe('resolveAnyOfAndAllOf', () => {

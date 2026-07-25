@@ -29,5 +29,4 @@ Thumbs.db
 
 .openapi
 /out
-**/.verify/**/*.actual.txt
 playground.ts

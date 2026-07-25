@@ -1,4 +1,10 @@
-import type { ApiSchema, ApiSchemaBase, ApiSchemaComponent, ApiSchemaExtensions, ApiSchemaProperty } from '../mod.ts';
+import type {
+  ApiSchema,
+  ApiSchemaBase,
+  ApiSchemaComponent,
+  ApiSchemaExtensions,
+  ApiSchemaProperty,
+} from '../transform/api-types.ts';
 
 export type TestSchema =
   & Partial<Omit<ApiSchemaBase, 'required'>>

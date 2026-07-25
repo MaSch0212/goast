@@ -33,14 +33,13 @@
   "fmt": {
     "lineWidth": 120,
     "singleQuote": true,
-    "exclude": ["npm/**/*", "out/**/*", "coverage/**/*", ".verify/**/*", "docs/superpowers/**", "test/output/**"]
+    "exclude": ["npm/**/*", "out/**/*", "coverage/**/*", "docs/superpowers/**", "test/output/**"]
   },
   "lint": {
     "exclude": [
       "npm/**/*",
       "out/**/*",
       "coverage/**/*",
-      ".verify/**/*",
       "test/output/**",
       "playground.ts",
       "**/assets/**/*"
