@@ -57,6 +57,10 @@ function findUnclaimedBase(path: string, claimed: Set<string>): string | undefin
   const name = segments[segments.length - 1];
   if (name.endsWith('.state.txt') || name.endsWith('.error.txt')) return path;
 
+  // A bare file directly in the root has no ancestor directory to attribute it to, so it is its own
+  // base. The layout never produces one, which is exactly why it must still be reported.
+  if (segments.length === 1) return path;
+
   for (let i = 1; i < segments.length; i++) {
     const prefix = segments.slice(0, i).join('/');
     if (claimed.has(prefix)) return undefined;

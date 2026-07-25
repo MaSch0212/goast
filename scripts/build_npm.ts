@@ -90,8 +90,6 @@ await build({
     fs.copySync(resolve(rootDir, 'test', 'specs'), resolve(distDir, '..', 'test', 'specs'), {
       overwrite: true,
     });
-    copyIfExists(resolve(projectDir, 'tests', '.verify'), resolve(distDir, 'script', 'tests', '.verify'));
-    copyIfExists(resolve(projectDir, 'tests', '.verify'), resolve(distDir, 'esm', 'tests', '.verify'));
 
     // Adjust asset relative path
     if (denoJson.goastNpmOptions?.assetsManagerFilePath) {

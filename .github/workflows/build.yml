@@ -41,14 +41,6 @@ jobs:
       - name: Build NPM packages
         run: deno task npm
 
-      - name: Upload failed verify outputs
-        if: always() && (steps.test.outcome == 'failure')
-        uses: actions/upload-artifact@v4
-        with:
-          name: verify-outputs
-          path: packages/**/.verify/**/*
-          if-no-files-found: ignore
-
       - name: Upload NPM packages
         uses: actions/upload-artifact@v4
         with:

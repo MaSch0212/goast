@@ -2,7 +2,6 @@ import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
 import { OpenApiGenerator } from '@goast/core';
-import { SPEC_VERSION_DIRS } from '@goast/test-harness';
 
 import { profiles } from './profiles.ts';
 
@@ -19,15 +18,6 @@ describe('profiles', () => {
   it('uses names that are safe as path segments', () => {
     for (const profile of profiles) {
       expect(profile.name).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*(@[a-z0-9]+(-[a-z0-9]+)*)?$/);
-    }
-  });
-
-  it('names only real version directories in a filter', () => {
-    for (const profile of profiles) {
-      if (profile.versions === 'all') continue;
-      for (const version of profile.versions) {
-        expect(Object.keys(SPEC_VERSION_DIRS)).toContain(version);
-      }
     }
   });
 

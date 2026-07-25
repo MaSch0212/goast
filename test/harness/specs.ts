@@ -36,6 +36,23 @@ const SPEC_EXTENSIONS = ['.yml', '.yaml', '.json'];
  */
 export async function discoverSpecs(root: string = specsDir): Promise<DiscoveredSpec[]> {
   const specs: DiscoveredSpec[] = [];
+  // `versionDir/name` is the snapshot base for every profile, so two corpus entries that agree on it
+  // would silently share one set of snapshots: write mode would let the second overwrite the first,
+  // the orphan sweep would see nothing missing, and only check mode would ever complain. Extensions
+  // are stripped, so `pets.yml` beside `pets.json` is exactly that collision.
+  const claimedBy = new Map<string, string>();
+  const claim = (spec: DiscoveredSpec, source: string) => {
+    const key = `${spec.versionDir}/${spec.name}`;
+    const previous = claimedBy.get(key);
+    if (previous !== undefined) {
+      throw new Error(
+        `Duplicate spec name "${key}" in the corpus: ${previous} and ${source} both map to the same ` +
+          'snapshot base. Rename one of them.',
+      );
+    }
+    claimedBy.set(key, source);
+    specs.push(spec);
+  };
 
   for (const versionDir of Object.keys(SPEC_VERSION_DIRS) as SpecVersionDir[]) {
     const versionPath = join(root, versionDir);
@@ -54,15 +71,15 @@ export async function discoverSpecs(root: string = specsDir): Promise<Discovered
       if (entry.isDirectory) {
         const files = await collectSpecFiles(path);
         if (files.length > 0) {
-          specs.push({ versionDir, version: SPEC_VERSION_DIRS[versionDir], name: entry.name, files });
+          claim({ versionDir, version: SPEC_VERSION_DIRS[versionDir], name: entry.name, files }, path);
         }
       } else if (isSpecFile(entry.name)) {
-        specs.push({
+        claim({
           versionDir,
           version: SPEC_VERSION_DIRS[versionDir],
           name: entry.name.replace(/\.[^.]+$/, ''),
           files: [path],
-        });
+        }, path);
       }
     }
   }

@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { describe, it } from '@std/testing/bdd';
 
 import { OpenApiParser } from '@goast/core';
-import { declutterApiData, discoverSpecs, serializeValue, snapshotRootDir, verifyText } from '@goast/test-harness';
+import { declutterApiData, discoverSpecs, serializeNormalized, snapshotRootDir, verifyText } from '@goast/test-harness';
 
 const specs = await discoverSpecs();
 
@@ -20,7 +20,10 @@ describe('core model', () => {
 
       await verifyText(
         join(snapshotRootDir, 'core', spec.versionDir, spec.name, 'model.txt'),
-        serializeValue(data) + '\n',
+        // Paths are rewritten on the value, not on the rendered text: `util.inspect` picks its line
+        // breaks from the raw width, so normalizing afterwards would bake this checkout's path
+        // length into the snapshot.
+        serializeNormalized(data) + '\n',
       );
     });
   }

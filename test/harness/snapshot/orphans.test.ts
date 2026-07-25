@@ -70,6 +70,14 @@ describe('findOrphanSnapshots', () => {
     });
   });
 
+  it('reports a bare file sitting directly in the root', async () => {
+    // Not a layout the harness produces, which is precisely why a stray file left there must still
+    // surface rather than being silently swallowed for having no ancestor directory.
+    await withTree(['stray.txt'], async (root) => {
+      expect(await findOrphanSnapshots(root, [])).toEqual(['stray.txt']);
+    });
+  });
+
   it('reports orphans sorted', async () => {
     // 'a/b/other' is a live sibling that keeps 'a/b' from collapsing further than 'a/b/spec'.
     await withTree(['a/z.state.txt', 'a/b/spec/f.kt'], async (root) => {

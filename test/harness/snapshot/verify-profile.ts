@@ -2,7 +2,7 @@ import { join } from 'node:path';
 
 import { captureConsole } from './capture-console.ts';
 import { resolveSnapshotMode, type VerifyOptions } from './mode.ts';
-import { serializeValue } from './serialize.ts';
+import { serializeNormalized } from './serialize.ts';
 import { verifyGeneratedTree } from './verify-file-tree.ts';
 import { verifyText } from './verify-text.ts';
 
@@ -99,7 +99,15 @@ export async function verifyProfile(
     for (
       const verify of [
         () => verifyGeneratedTree(snapshot.treeDir, outputDir, { mode }),
-        () => verifyText(snapshot.stateFile, replaceOutputDir(serializeValue(run.value) + '\n', outputDir), { mode }),
+        // Normalized on the *value*, before serialization: `util.inspect` chooses its line breaks
+        // from the rendered width of what it is handed, so rewriting the finished text would leave
+        // the layout encoding the length of this machine's temp path.
+        () =>
+          verifyText(
+            snapshot.stateFile,
+            serializeNormalized(run.value, (text) => replaceOutputDir(text, outputDir)) + '\n',
+            { mode },
+          ),
       ]
     ) {
       try {

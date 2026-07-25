@@ -52,6 +52,38 @@ describe('discoverSpecs', () => {
     }
   });
 
+  it('throws when two specs would share one snapshot base', async () => {
+    const root = await Deno.makeTempDir({ prefix: 'goast-specs-' });
+    try {
+      await Deno.mkdir(join(root, 'v3'), { recursive: true });
+      await Deno.writeTextFile(join(root, 'v3', 'pets.yml'), 'openapi: 3.0.0\n');
+      await Deno.writeTextFile(join(root, 'v3', 'pets.json'), '{}');
+
+      const error = await discoverSpecs(root).then(() => undefined, (e: Error) => e);
+
+      expect(error).toBeInstanceOf(Error);
+      expect(error!.message).toContain('v3/pets');
+      expect(error!.message).toContain(join(root, 'v3', 'pets.json'));
+      expect(error!.message).toContain(join(root, 'v3', 'pets.yml'));
+    } finally {
+      await Deno.remove(root, { recursive: true });
+    }
+  });
+
+  it('allows the same spec name in different version directories', async () => {
+    const root = await Deno.makeTempDir({ prefix: 'goast-specs-' });
+    try {
+      await Deno.mkdir(join(root, 'v2'), { recursive: true });
+      await Deno.mkdir(join(root, 'v3'), { recursive: true });
+      await Deno.writeTextFile(join(root, 'v2', 'pets.yml'), 'swagger: "2.0"\n');
+      await Deno.writeTextFile(join(root, 'v3', 'pets.yml'), 'openapi: 3.0.0\n');
+
+      expect((await discoverSpecs(root)).map((s) => `${s.versionDir}/${s.name}`)).toEqual(['v2/pets', 'v3/pets']);
+    } finally {
+      await Deno.remove(root, { recursive: true });
+    }
+  });
+
   it('ignores an absent version directory', async () => {
     const root = await Deno.makeTempDir({ prefix: 'goast-specs-' });
     try {
