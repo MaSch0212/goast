@@ -1,0 +1,93 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: All Of Schemas
+
+paths:
+  /x:
+    x-ignore: true
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    Base:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    Timestamps:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+    AllOfSingle:
+      allOf:
+        - $ref: '#/components/schemas/Base'
+    AllOfTwoRefs:
+      allOf:
+        - $ref: '#/components/schemas/Base'
+        - $ref: '#/components/schemas/Timestamps'
+    AllOfRefAndInline:
+      allOf:
+        - $ref: '#/components/schemas/Base'
+        - type: object
+          properties:
+            tag:
+              type: string
+    AllOfWithOwnProperties:
+      allOf:
+        - $ref: '#/components/schemas/Base'
+      properties:
+        ownField:
+          type: string
+      required:
+        - ownField
+    AllOfConflicting:
+      allOf:
+        - type: object
+          properties:
+            value:
+              type: string
+        - type: object
+          properties:
+            value:
+              type: integer
+    AllOfRequiredOnly:
+      allOf:
+        - $ref: '#/components/schemas/Base'
+        - required:
+            - name
+    Level1:
+      type: object
+      properties:
+        level1Value:
+          type: string
+    Level2:
+      allOf:
+        - $ref: '#/components/schemas/Level1'
+        - type: object
+          properties:
+            level2Value:
+              type: string
+    Level3:
+      allOf:
+        - $ref: '#/components/schemas/Level2'
+        - type: object
+          properties:
+            level3Value:
+              type: string
+    DeepInheritance:
+      allOf:
+        - $ref: '#/components/schemas/Level3'
+    AllOfWithDescription:
+      title: With Description
+      description: A schema combined via allOf that also carries its own title and description.
+      allOf:
+        - $ref: '#/components/schemas/Base'

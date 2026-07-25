@@ -1,0 +1,437 @@
+{
+  typescript: {
+    indexFiles: {
+      models: '<output>/models.ts',
+      responseModels: '<output>/responses.ts',
+      services: '<output>/services.ts'
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Base',
+        additionalExports: [],
+        component: 'Base',
+        filePath: '<output>/models/base.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/base.ts',
+            name: 'Base',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Timestamps',
+        additionalExports: [],
+        component: 'Timestamps',
+        filePath: '<output>/models/timestamps.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/timestamps.ts',
+            name: 'Timestamps',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/AllOfRefAndInline',
+        additionalExports: [],
+        component: 'AllOfRefAndInline',
+        filePath: '<output>/models/all-of-ref-and-inline.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/all-of-ref-and-inline.ts',
+            name: 'AllOfRefAndInline',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Base',
+        additionalExports: [],
+        component: 'Base',
+        filePath: '<output>/models/base.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/base.ts',
+            name: 'Base',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/AllOfRefAndInline/allOf/1',
+        component: '{\n  tag?: string;\n}',
+        imports: []
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/AllOfRefAndInline/allOf/1/properties/tag',
+        component: 'string',
+        imports: []
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/AllOfWithOwnProperties',
+        additionalExports: [],
+        component: 'AllOfWithOwnProperties',
+        filePath: '<output>/models/all-of-with-own-properties.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/all-of-with-own-properties.ts',
+            name: 'AllOfWithOwnProperties',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/AllOfWithOwnProperties/properties/ownField',
+        component: 'string',
+        imports: []
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Base',
+        additionalExports: [],
+        component: 'Base',
+        filePath: '<output>/models/base.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/base.ts',
+            name: 'Base',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/AllOfConflicting',
+        additionalExports: [],
+        component: 'AllOfConflicting',
+        filePath: '<output>/models/all-of-conflicting.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/all-of-conflicting.ts',
+            name: 'AllOfConflicting',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/AllOfConflicting/allOf/0',
+        component: '{\n  value?: string;\n}',
+        imports: []
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Base/properties/id',
+        component: 'string',
+        imports: []
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/AllOfConflicting/allOf/0/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/AllOfConflicting/allOf/1',
+        component: '{\n  value?: number;\n}',
+        imports: []
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/AllOfConflicting/allOf/1/properties/value',
+        component: 'number',
+        imports: []
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/AllOfRequiredOnly',
+        additionalExports: [],
+        component: 'AllOfRequiredOnly',
+        filePath: '<output>/models/all-of-required-only.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/all-of-required-only.ts',
+            name: 'AllOfRequiredOnly',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Base',
+        additionalExports: [],
+        component: 'Base',
+        filePath: '<output>/models/base.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/base.ts',
+            name: 'Base',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/AllOfRequiredOnly/allOf/1',
+        component: 'unknown',
+        imports: []
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Level1',
+        additionalExports: [],
+        component: 'Level1',
+        filePath: '<output>/models/level-1.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/level-1.ts',
+            name: 'Level1',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-27': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Level1/properties/level1Value',
+        component: 'string',
+        imports: []
+      },
+      'schema-28': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Level2',
+        additionalExports: [],
+        component: 'Level2',
+        filePath: '<output>/models/level-2.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/level-2.ts',
+            name: 'Level2',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-29': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Level1',
+        additionalExports: [],
+        component: 'Level1',
+        filePath: '<output>/models/level-1.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/level-1.ts',
+            name: 'Level1',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Base/properties/name',
+        component: 'string',
+        imports: []
+      },
+      'schema-30': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Level2/allOf/1',
+        component: '{\n  level2Value?: string;\n}',
+        imports: []
+      },
+      'schema-31': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Level2/allOf/1/properties/level2Value',
+        component: 'string',
+        imports: []
+      },
+      'schema-32': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Level3',
+        additionalExports: [],
+        component: 'Level3',
+        filePath: '<output>/models/level-3.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/level-3.ts',
+            name: 'Level3',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-33': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Level2',
+        additionalExports: [],
+        component: 'Level2',
+        filePath: '<output>/models/level-2.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/level-2.ts',
+            name: 'Level2',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-34': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Level3/allOf/1',
+        component: '{\n  level3Value?: string;\n}',
+        imports: []
+      },
+      'schema-35': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Level3/allOf/1/properties/level3Value',
+        component: 'string',
+        imports: []
+      },
+      'schema-36': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/DeepInheritance',
+        additionalExports: [],
+        component: 'DeepInheritance',
+        filePath: '<output>/models/deep-inheritance.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/deep-inheritance.ts',
+            name: 'DeepInheritance',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-37': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Level3',
+        additionalExports: [],
+        component: 'Level3',
+        filePath: '<output>/models/level-3.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/level-3.ts',
+            name: 'Level3',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-38': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/AllOfWithDescription',
+        additionalExports: [],
+        component: 'WithDescription',
+        filePath: '<output>/models/with-description.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/with-description.ts',
+            name: 'WithDescription',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-39': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Base',
+        additionalExports: [],
+        component: 'Base',
+        filePath: '<output>/models/base.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/base.ts',
+            name: 'Base',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Timestamps',
+        additionalExports: [],
+        component: 'Timestamps',
+        filePath: '<output>/models/timestamps.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/timestamps.ts',
+            name: 'Timestamps',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Timestamps/properties/createdAt',
+        component: 'string',
+        imports: []
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/AllOfSingle',
+        additionalExports: [],
+        component: 'AllOfSingle',
+        filePath: '<output>/models/all-of-single.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/all-of-single.ts',
+            name: 'AllOfSingle',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Base',
+        additionalExports: [],
+        component: 'Base',
+        filePath: '<output>/models/base.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/base.ts',
+            name: 'Base',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/AllOfTwoRefs',
+        additionalExports: [],
+        component: 'AllOfTwoRefs',
+        filePath: '<output>/models/all-of-two-refs.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/all-of-two-refs.ts',
+            name: 'AllOfTwoRefs',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3.1/allof-schemas.yml#/components/schemas/Base',
+        additionalExports: [],
+        component: 'Base',
+        filePath: '<output>/models/base.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/base.ts',
+            name: 'Base',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      }
+    },
+    services: {}
+  }
+}

@@ -1,0 +1,27 @@
+export { DISCRIMINATOR_WITH_ENUM_KIND_VALUES } from './models/discriminator-with-enum-kind';
+
+export type { AllOfInheritanceDiscriminatorChildA } from './models/all-of-inheritance-discriminator-child-a';
+export type { AllOfInheritanceDiscriminatorChildB } from './models/all-of-inheritance-discriminator-child-b';
+export type { AllOfInheritanceDiscriminator, _AllOfInheritanceDiscriminatorBase } from './models/all-of-inheritance-discriminator';
+export type { AnyOfDiscriminatorA } from './models/any-of-discriminator-a';
+export type { AnyOfDiscriminatorB } from './models/any-of-discriminator-b';
+export type { AnyOfDiscriminator, _AnyOfDiscriminatorBase } from './models/any-of-discriminator';
+export type { DiscriminatorPropertyNotRequiredA } from './models/discriminator-property-not-required-a';
+export type { DiscriminatorPropertyNotRequiredB } from './models/discriminator-property-not-required-b';
+export type { DiscriminatorPropertyNotRequired, _DiscriminatorPropertyNotRequiredBase } from './models/discriminator-property-not-required';
+export type { DiscriminatorWithEnumAlpha } from './models/discriminator-with-enum-alpha';
+export type { DiscriminatorWithEnumBeta } from './models/discriminator-with-enum-beta';
+export type { DiscriminatorWithEnumKind } from './models/discriminator-with-enum-kind';
+export type { DiscriminatorWithEnum, _DiscriminatorWithEnumBase } from './models/discriminator-with-enum';
+export type { ImplicitBase, _ImplicitBaseBase } from './models/implicit-base';
+export type { ImplicitCat } from './models/implicit-cat';
+export type { ImplicitDog } from './models/implicit-dog';
+export type { NestedDiscriminatorGroupA } from './models/nested-discriminator-group-a';
+export type { NestedDiscriminatorGroupB } from './models/nested-discriminator-group-b';
+export type { NestedDiscriminatorGroup } from './models/nested-discriminator-group';
+export type { NestedDiscriminatorLeaf } from './models/nested-discriminator-leaf';
+export type { NestedDiscriminator, _NestedDiscriminatorBase } from './models/nested-discriminator';
+export type { PartialMappingFirst } from './models/partial-mapping-first';
+export type { PartialMappingSecond } from './models/partial-mapping-second';
+export type { PartialMappingThird } from './models/partial-mapping-third';
+export type { PartialMapping, _PartialMappingBase } from './models/partial-mapping';

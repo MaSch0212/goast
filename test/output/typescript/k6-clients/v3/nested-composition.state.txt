@@ -1,0 +1,549 @@
+{
+  typescript: {
+    indexFiles: {
+      k6Clients: '<output>/clients.js',
+      k6ResponseModels: '<output>/responses.ts',
+      models: '<output>/models.ts'
+    },
+    k6Clients: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        additionalExports: [],
+        component: 'NestedBranchA',
+        filePath: '<output>/models/nested-branch-a.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nested-branch-a.ts',
+            name: 'NestedBranchA',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfContainingOneOf/allOf/1/properties/extra',
+        component: 'string',
+        imports: []
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfContainingAllOf',
+        additionalExports: [],
+        component: 'OneOfContainingAllOf',
+        filePath: '<output>/models/one-of-containing-all-of.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/one-of-containing-all-of.ts',
+            name: 'OneOfContainingAllOf',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfContainingAllOf/oneOf/0',
+        component: '(NestedBranchA) & (NestedBranchB)',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nested-branch-a.ts',
+            name: 'NestedBranchA',
+            type: 'type-import'
+          },
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nested-branch-b.ts',
+            name: 'NestedBranchB',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        additionalExports: [],
+        component: 'NestedBranchA',
+        filePath: '<output>/models/nested-branch-a.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nested-branch-a.ts',
+            name: 'NestedBranchA',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        additionalExports: [],
+        component: 'NestedBranchB',
+        filePath: '<output>/models/nested-branch-b.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nested-branch-b.ts',
+            name: 'NestedBranchB',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfContainingAllOf/oneOf/1',
+        component: 'string',
+        imports: []
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AnyOfContainingAllOf',
+        additionalExports: [],
+        component: 'AnyOfContainingAllOf',
+        filePath: '<output>/models/any-of-containing-all-of.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/any-of-containing-all-of.ts',
+            name: 'AnyOfContainingAllOf',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AnyOfContainingAllOf/anyOf/0',
+        component: '(NestedBranchA) & (NestedBranchB)',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nested-branch-a.ts',
+            name: 'NestedBranchA',
+            type: 'type-import'
+          },
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nested-branch-b.ts',
+            name: 'NestedBranchB',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        additionalExports: [],
+        component: 'NestedBranchA',
+        filePath: '<output>/models/nested-branch-a.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nested-branch-a.ts',
+            name: 'NestedBranchA',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        additionalExports: [],
+        component: 'NestedBranchB',
+        filePath: '<output>/models/nested-branch-b.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nested-branch-b.ts',
+            name: 'NestedBranchB',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA/properties/a',
+        component: 'string',
+        imports: []
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AnyOfContainingAllOf/anyOf/1',
+        component: 'string',
+        imports: []
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfOfAllOf',
+        additionalExports: [],
+        component: 'AllOfOfAllOf',
+        filePath: '<output>/models/all-of-of-all-of.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/all-of-of-all-of.ts',
+            name: 'AllOfOfAllOf',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfOfAllOf/allOf/0',
+        component: '(NestedBranchA) & (NestedBranchB)',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nested-branch-a.ts',
+            name: 'NestedBranchA',
+            type: 'type-import'
+          },
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nested-branch-b.ts',
+            name: 'NestedBranchB',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        additionalExports: [],
+        component: 'NestedBranchA',
+        filePath: '<output>/models/nested-branch-a.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nested-branch-a.ts',
+            name: 'NestedBranchA',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        additionalExports: [],
+        component: 'NestedBranchB',
+        filePath: '<output>/models/nested-branch-b.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nested-branch-b.ts',
+            name: 'NestedBranchB',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfOfAllOf/allOf/1',
+        component: '{\n  top?: string;\n}',
+        imports: []
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfOfAllOf/allOf/1/properties/top',
+        component: 'string',
+        imports: []
+      },
+      'schema-27': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfOfOneOf',
+        additionalExports: [],
+        component: 'OneOfOfOneOf',
+        filePath: '<output>/models/one-of-of-one-of.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/one-of-of-one-of.ts',
+            name: 'OneOfOfOneOf',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-28': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfOfOneOf/oneOf/0',
+        component: '(NestedBranchA) | (NestedBranchB)',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nested-branch-a.ts',
+            name: 'NestedBranchA',
+            type: 'type-import'
+          },
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nested-branch-b.ts',
+            name: 'NestedBranchB',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-29': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        additionalExports: [],
+        component: 'NestedBranchA',
+        filePath: '<output>/models/nested-branch-a.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nested-branch-a.ts',
+            name: 'NestedBranchA',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        additionalExports: [],
+        component: 'NestedBranchB',
+        filePath: '<output>/models/nested-branch-b.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nested-branch-b.ts',
+            name: 'NestedBranchB',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-30': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        additionalExports: [],
+        component: 'NestedBranchB',
+        filePath: '<output>/models/nested-branch-b.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nested-branch-b.ts',
+            name: 'NestedBranchB',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-31': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfOfOneOf/oneOf/1',
+        component: 'string',
+        imports: []
+      },
+      'schema-32': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf',
+        additionalExports: [],
+        component: 'ArrayOfOneOf',
+        filePath: '<output>/models/array-of-one-of.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/array-of-one-of.ts',
+            name: 'ArrayOfOneOf',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-33': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items',
+        component: '({\n' +
+          '    kind?: string;\n' +
+          '    text?: string;\n' +
+          '  }) | ({\n' +
+          '    kind?: string;\n' +
+          '    number?: number;\n' +
+          '  })',
+        imports: []
+      },
+      'schema-34': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/0',
+        component: '{\n  kind?: string;\n  text?: string;\n}',
+        imports: []
+      },
+      'schema-35': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/0/properties/kind',
+        component: 'string',
+        imports: []
+      },
+      'schema-36': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/0/properties/text',
+        component: 'string',
+        imports: []
+      },
+      'schema-37': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/1',
+        component: '{\n  kind?: string;\n  number?: number;\n}',
+        imports: []
+      },
+      'schema-38': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/1/properties/kind',
+        component: 'string',
+        imports: []
+      },
+      'schema-39': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/1/properties/number',
+        component: 'number',
+        imports: []
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB/properties/b',
+        component: 'number',
+        imports: []
+      },
+      'schema-40': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/MapOfOneOf',
+        additionalExports: [],
+        component: 'MapOfOneOf',
+        filePath: '<output>/models/map-of-one-of.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/map-of-one-of.ts',
+            name: 'MapOfOneOf',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-41': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/MapOfOneOf/additionalProperties',
+        component: '(string) | (number)',
+        imports: []
+      },
+      'schema-42': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/MapOfOneOf/additionalProperties/oneOf/0',
+        component: 'string',
+        imports: []
+      },
+      'schema-43': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/MapOfOneOf/additionalProperties/oneOf/1',
+        component: 'number',
+        imports: []
+      },
+      'schema-44': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition',
+        additionalExports: [],
+        component: 'PropertyOfNestedComposition',
+        filePath: '<output>/models/property-of-nested-composition.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/property-of-nested-composition.ts',
+            name: 'PropertyOfNestedComposition',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-45': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value',
+        component: '(({\n' +
+          '      x?: string;\n' +
+          '    }) | ({\n' +
+          '      y?: number;\n' +
+          '    })) & ({\n' +
+          '    extra?: string;\n' +
+          '  })',
+        imports: []
+      },
+      'schema-46': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/0',
+        component: '({\n    x?: string;\n  }) | ({\n    y?: number;\n  })',
+        imports: []
+      },
+      'schema-47': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/0/oneOf/0',
+        component: '{\n  x?: string;\n}',
+        imports: []
+      },
+      'schema-48': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/0/oneOf/0/properties/x',
+        component: 'string',
+        imports: []
+      },
+      'schema-49': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/0/oneOf/1',
+        component: '{\n  y?: number;\n}',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfContainingOneOf',
+        additionalExports: [],
+        component: 'AllOfContainingOneOf',
+        filePath: '<output>/models/all-of-containing-one-of.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/all-of-containing-one-of.ts',
+            name: 'AllOfContainingOneOf',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-50': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/0/oneOf/1/properties/y',
+        component: 'number',
+        imports: []
+      },
+      'schema-51': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/1',
+        component: '{\n  extra?: string;\n}',
+        imports: []
+      },
+      'schema-52': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/1/properties/extra',
+        component: 'string',
+        imports: []
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfContainingOneOf/allOf/0',
+        component: '(NestedBranchA) | (NestedBranchB)',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nested-branch-a.ts',
+            name: 'NestedBranchA',
+            type: 'type-import'
+          },
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nested-branch-b.ts',
+            name: 'NestedBranchB',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        additionalExports: [],
+        component: 'NestedBranchA',
+        filePath: '<output>/models/nested-branch-a.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nested-branch-a.ts',
+            name: 'NestedBranchA',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        additionalExports: [],
+        component: 'NestedBranchB',
+        filePath: '<output>/models/nested-branch-b.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nested-branch-b.ts',
+            name: 'NestedBranchB',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfContainingOneOf/allOf/1',
+        component: '{\n  extra?: string;\n}',
+        imports: []
+      }
+    }
+  }
+}

@@ -1,0 +1,660 @@
+{
+  kotlin: {
+    clients: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchA',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfContainingOneOf/allOf/1/properties/extra',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfContainingAllOf',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'OneOfContainingAllOf',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfContainingAllOf/oneOf/0',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Schema12',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchA',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchB',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfContainingAllOf/oneOf/1',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AnyOfContainingAllOf',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'AnyOfContainingAllOf',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AnyOfContainingAllOf/anyOf/0',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchA',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchB',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA/properties/a',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AnyOfContainingAllOf/anyOf/1',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfOfAllOf',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'AllOfOfAllOf',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfOfAllOf/allOf/0',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchA',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchB',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfOfAllOf/allOf/1',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfOfAllOf/allOf/1/properties/top',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-27': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfOfOneOf',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-28': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfOfOneOf/oneOf/0',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Schema28',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-29': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchA',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchB',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-30': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchB',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-31': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfOfOneOf/oneOf/1',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-32': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Schema33',
+              nullable: false,
+              packageName: 'com.openapi.generated.model',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-33': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Schema33',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-34': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/0',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Schema34',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-35': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/0/properties/kind',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-36': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/0/properties/text',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-37': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/1',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Schema37',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-38': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/1/properties/kind',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-39': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/1/properties/number',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB/properties/b',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-40': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/MapOfOneOf',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'String',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            },
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Any',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'Map',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-41': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/MapOfOneOf/additionalProperties',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-42': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/MapOfOneOf/additionalProperties/oneOf/0',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-43': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/MapOfOneOf/additionalProperties/oneOf/1',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-44': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'PropertyOfNestedComposition',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-45': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'PropertyOfNestedCompositionValue',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-46': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/0',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-47': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/0/oneOf/0',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Schema47',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-48': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/0/oneOf/0/properties/x',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-49': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/0/oneOf/1',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Schema49',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfContainingOneOf',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'AllOfContainingOneOf',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-50': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/0/oneOf/1/properties/y',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-51': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/1',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-52': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/1/properties/extra',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfContainingOneOf/allOf/0',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchA',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchB',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfContainingOneOf/allOf/1',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      }
+    }
+  }
+}
