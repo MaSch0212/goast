@@ -11,6 +11,7 @@
     "jsr:@std/assert@^1.0.7": "1.0.7",
     "jsr:@std/async@^1.0.8": "1.0.8",
     "jsr:@std/bytes@0.223": "0.223.0",
+    "jsr:@std/bytes@^1.0.5": "1.0.6",
     "jsr:@std/data-structures@^1.0.4": "1.0.4",
     "jsr:@std/expect@^1.0.5": "1.0.7",
     "jsr:@std/fmt@0.223": "0.223.0",
@@ -88,6 +89,9 @@
     "@std/bytes@0.223.0": {
       "integrity": "84b75052cd8680942c397c2631318772b295019098f40aac5c36cead4cba51a8"
     },
+    "@std/bytes@1.0.6": {
+      "integrity": "f6ac6adbd8ccd99314045f5703e23af0a68d7f7e58364b47d2c7f408aeb5820a"
+    },
     "@std/data-structures@1.0.4": {
       "integrity": "fa0e20c11eb9ba673417450915c750a0001405a784e2a4e0c3725031681684a0"
     },
@@ -136,7 +140,7 @@
       "integrity": "2d8c3c2ab3a515619b90da2c6ff5ea7b75a94383259ef4d02116b228393f84f1",
       "dependencies": [
         "jsr:@std/assert@0.223",
-        "jsr:@std/bytes"
+        "jsr:@std/bytes@0.223"
       ]
     },
     "@std/path@0.223.0": {
@@ -255,6 +259,7 @@
     "dependencies": [
       "jsr:@deno/dnt@~0.41.3",
       "jsr:@std/assert@^1.0.6",
+      "jsr:@std/bytes@^1.0.5",
       "jsr:@std/expect@^1.0.5",
       "jsr:@std/fs@^1.0.22",
       "jsr:@std/testing@^1.0.4",
