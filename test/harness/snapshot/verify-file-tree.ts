@@ -1,4 +1,5 @@
 import { resolveSnapshotMode, type VerifyOptions } from './mode.ts';
+import { normalizeFileTree } from './normalize.ts';
 import { formatMismatchReport } from './text-diff.ts';
 import { applyTreeDiff, diffFileTrees, formatDiffCounts, isEmptyDiff, readFileTree } from './tree.ts';
 
@@ -21,7 +22,7 @@ export async function verifyFileTree(
 
   try {
     await generate(outputDir);
-    const actual = await readFileTree(outputDir);
+    const actual = normalizeFileTree(await readFileTree(outputDir));
 
     // Safety rail: a generator that throws early or silently emits nothing must not be able to
     // delete a committed snapshot in write mode.

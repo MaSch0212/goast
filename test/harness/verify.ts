@@ -2,11 +2,11 @@ import { toKebabCase } from '@std/text';
 // @deno-types="npm:@types/fs-extra@11"
 import fs from 'fs-extra';
 import { spawn } from 'node:child_process';
-import { basename, dirname, join, relative, resolve } from 'node:path';
+import { basename, dirname, join } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import * as util from 'node:util';
-import { repoRootDir } from './paths.ts';
+import { normalizePaths } from './snapshot/normalize.ts';
 
 type VerifyError = 'no-expect-file' | 'verify-failed';
 
@@ -25,10 +25,6 @@ export async function verify(t: Deno.TestContext, data: unknown): Promise<void> 
   } else if (await fs.exists(actualFile)) {
     await fs.remove(actualFile);
   }
-}
-
-function escapeRegExp(text: string) {
-  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 }
 
 function cutString(text: string, length: number) {
@@ -54,15 +50,6 @@ function dataToText(data: unknown, depth: number = 100): string {
   }
 
   return normalizePaths(text);
-}
-
-function normalizePaths(text: string): string {
-  const rootPathRegex = escapeRegExp(repoRootDir).replace(/\\\\/g, '(\\\\|\\\\\\\\|\\/)');
-  const pathRegex = new RegExp(`${rootPathRegex}[a-zA-Z0-9-_\\\\\\/.]*`, 'g');
-  return text.replace(
-    pathRegex,
-    (path) => '<root>/' + relative(repoRootDir, resolve(path.replace(/\\\\/g, '\\'))).replace(/\\/g, '/'),
-  );
 }
 
 function header(name: string): string {
