@@ -112,4 +112,46 @@ describe('verifyFileTree', () => {
       });
     });
   });
+
+  describe('check mode', () => {
+    it('should pass when the tree matches', async () => {
+      await withTempDir(async (dir) => {
+        const snapshotDir = join(dir, 'snapshot');
+        await verifyFileTree(snapshotDir, generator({ 'a.ts': 'A' }), { mode: 'write' });
+
+        await verifyFileTree(snapshotDir, generator({ 'a.ts': 'A' }), { mode: 'check' });
+      });
+    });
+
+    it('should throw a report listing added, changed and removed files', async () => {
+      await withTempDir(async (dir) => {
+        const snapshotDir = join(dir, 'snapshot');
+        await verifyFileTree(snapshotDir, generator({ 'change.ts': 'old', 'gone.ts': 'G' }), { mode: 'write' });
+
+        const error = await verifyFileTree(snapshotDir, generator({ 'change.ts': 'new', 'fresh.ts': 'F' }), {
+          mode: 'check',
+        }).catch((e: Error) => e) as Error;
+
+        expect(error.message).toContain('Snapshot mismatch:');
+        expect(error.message).toContain('+ fresh.ts');
+        expect(error.message).toContain('~ change.ts');
+        expect(error.message).toContain('- gone.ts');
+        expect(error.message).toContain('First difference in change.ts at line 1');
+        expect(error.message).toContain('-1 | old');
+        expect(error.message).toContain('+1 | new');
+        expect(error.message).toContain('Run `deno task test:output`');
+      });
+    });
+
+    it('should leave the snapshot untouched on mismatch', async () => {
+      await withTempDir(async (dir) => {
+        const snapshotDir = join(dir, 'snapshot');
+        await verifyFileTree(snapshotDir, generator({ 'a.ts': 'A' }), { mode: 'write' });
+
+        await expect(verifyFileTree(snapshotDir, generator({ 'a.ts': 'B' }), { mode: 'check' })).rejects.toThrow();
+
+        expect(await readAsText(snapshotDir)).toEqual({ 'a.ts': 'A' });
+      });
+    });
+  });
 });

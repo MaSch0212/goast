@@ -1,4 +1,5 @@
 import { resolveSnapshotMode, type VerifyOptions } from './mode.ts';
+import { formatMismatchReport } from './text-diff.ts';
 import { applyTreeDiff, diffFileTrees, formatDiffCounts, isEmptyDiff, readFileTree } from './tree.ts';
 
 /**
@@ -36,7 +37,7 @@ export async function verifyFileTree(
     if (isEmptyDiff(diff)) return;
 
     if (mode === 'check') {
-      throw new Error(`Snapshot mismatch: ${snapshotDir} (${formatDiffCounts(diff)})`);
+      throw new Error(formatMismatchReport(snapshotDir, diff, expected, actual));
     }
 
     await applyTreeDiff(snapshotDir, actual, diff);
