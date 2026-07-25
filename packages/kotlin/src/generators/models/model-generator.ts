@@ -619,12 +619,25 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       return false;
     }
 
+    // A discriminated schema is the supertype its subtypes implement and the carrier of the
+    // `@JsonTypeInfo`/`@JsonSubTypes` pair, so it always needs a declaration of its own. The two rules below
+    // simplify a schema that nothing refers to as a type; degrading a polymorphic base to `Any` or to a `Map`
+    // instead drops the supertype from every subtype and the polymorphism with it. This matters for a base
+    // whose `discriminator.propertyName` is declared on the mapping targets rather than on the base, which is
+    // legal and leaves the base with no properties of its own.
+    const isDiscriminatedBase = schema.kind === 'object' && schema.discriminator !== undefined;
+
     // Schemas representable by a simple Map type do not need its own type declaration
-    if (schema.kind === 'object' && schema.properties.size === 0 && schema.additionalProperties) {
+    if (
+      !isDiscriminatedBase && schema.kind === 'object' && schema.properties.size === 0 && schema.additionalProperties
+    ) {
       return false;
     }
 
-    if (schema.kind === 'object' && ctx.config.emptyObjectTypeBehavior === 'use-any' && schema.properties.size === 0) {
+    if (
+      !isDiscriminatedBase && schema.kind === 'object' &&
+      ctx.config.emptyObjectTypeBehavior === 'use-any' && schema.properties.size === 0
+    ) {
       return false;
     }
 
@@ -737,6 +750,15 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
    * same document was not.
    */
   protected normalizeDiscriminatedBases(_ctx: Context, args: Args.NormalizeDiscriminatedBases): ApiSchema {
+    // `normalizeSchema` runs once per property type via `shouldGenerateTypeDeclaration`, and almost no schema
+    // has a discriminated base anywhere below it. Answering that first costs one traversal and one set, and
+    // lets the overwhelmingly common case return the schema itself rather than a copy per composing schema.
+    //
+    // The question is asked once for the whole call rather than again per branch: a per-branch answer would
+    // have to be memoised to stay linear, and memoising it is unsound, because a walk truncated by the cycle
+    // guard can record `false` for a branch that reaches a base only by going back through an ancestor.
+    if (!containsDiscriminatedBase(args.schema, new Set())) return args.schema;
+
     const rewritten = new Map<ApiSchema, ApiSchema>();
     return rewrite(args.schema);
 
@@ -744,13 +766,13 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       const existing = rewritten.get(schema);
       if (existing) return existing;
 
-      const isDiscriminatedBase = schema.kind === 'oneOf' && schema.discriminator !== undefined;
+      const isBase = isDiscriminatedBase(schema);
       const allOf = branches(schema, 'allOf');
       const anyOf = branches(schema, 'anyOf');
       // The branches of a discriminated `oneOf` are dropped rather than descended into: they are the schema's
       // subtypes, and a subtype is generated from its own file where it is the root of this walk.
-      const oneOf = isDiscriminatedBase ? [] : branches(schema, 'oneOf');
-      if (!isDiscriminatedBase && allOf.length === 0 && anyOf.length === 0 && oneOf.length === 0) {
+      const oneOf = isBase ? [] : branches(schema, 'oneOf');
+      if (!isBase && allOf.length === 0 && anyOf.length === 0 && oneOf.length === 0) {
         return schema;
       }
 
@@ -758,7 +780,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       // deno-lint-ignore no-explicit-any
       const copy: any = { ...schema };
       rewritten.set(schema, copy);
-      if (isDiscriminatedBase) {
+      if (isBase) {
         copy.kind = 'object';
         copy.type = 'object';
       }
@@ -766,6 +788,22 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       copy.anyOf = anyOf.map(rewrite);
       copy.oneOf = oneOf.map(rewrite);
       return copy as ApiSchema;
+    }
+
+    /** Whether the schema or anything it composes is a base this walk would rewrite. */
+    function containsDiscriminatedBase(schema: ApiSchema, visited: Set<ApiSchema>): boolean {
+      if (visited.has(schema)) return false;
+      visited.add(schema);
+      if (isDiscriminatedBase(schema)) return true;
+
+      const contains = (x: ApiSchema) => containsDiscriminatedBase(x, visited);
+      return branches(schema, 'allOf').some(contains) ||
+        branches(schema, 'anyOf').some(contains) ||
+        branches(schema, 'oneOf').some(contains);
+    }
+
+    function isDiscriminatedBase(schema: ApiSchema): boolean {
+      return schema.kind === 'oneOf' && schema.discriminator !== undefined;
     }
 
     /**

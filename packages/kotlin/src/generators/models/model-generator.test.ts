@@ -14,8 +14,11 @@ const config = { ...defaultOpenApiGeneratorConfig, ...defaultKotlinModelsGenerat
  * The only context members the declaration path reads: the config, and the schema list
  * `shouldGenerateTypeDeclaration` consults to decide whether a schema gets a type of its own.
  */
-function createContext(schemas: ApiSchema[] = []): KotlinModelGeneratorContext {
-  return { config, data: { schemas } } as unknown as KotlinModelGeneratorContext;
+function createContext(
+  schemas: ApiSchema[] = [],
+  configOverrides: Partial<typeof config> = {},
+): KotlinModelGeneratorContext {
+  return { config: { ...config, ...configOverrides }, data: { schemas } } as unknown as KotlinModelGeneratorContext;
 }
 
 /** A schema carrying just enough for the enum declaration path. */
@@ -144,6 +147,31 @@ function createNestedShape(): { root: ApiSchema; group: ApiSchema; groupA: ApiSc
   return { root, group, groupA, all: [root, group, groupA] };
 }
 
+/**
+ * A discriminated base that declares no properties of its own, because the discriminator property is declared
+ * on the mapping targets instead. Legal OpenAPI, and not in the corpus.
+ */
+function createPropertylessShape(): { base: ApiSchema; sub: ApiSchema; all: ApiSchema[] } {
+  const base = createSchema('PropertylessBase', {
+    kind: 'oneOf',
+    discriminator: { propertyName: 'kind', mapping: {} },
+  });
+  const sub = createSchema('PropertylessSub', {
+    kind: 'combined',
+    allOf: [
+      base,
+      createSchema('subOwn', {
+        properties: createProperties({ kind: createString('kind'), subValue: createString('subValue') }),
+        required: new Set(['kind']),
+      }),
+    ],
+  });
+  Object.assign(base, { oneOf: [sub] });
+  base.discriminator!.mapping = { PropertylessSub: sub };
+  sub.inheritedSchemas.push(base as never);
+  return { base, sub, all: [base, sub] };
+}
+
 class TestModelGenerator extends DefaultKotlinModelGenerator {
   public renderEnum(name: string, values: unknown[]): string {
     const builder = new KotlinFileBuilder('com.test', config);
@@ -165,11 +193,24 @@ class TestModelGenerator extends DefaultKotlinModelGenerator {
   }
 
   /** The declaration the generator would write to the schema's own file. */
-  public renderDeclaration(schema: ApiSchema, all: ApiSchema[]): string {
-    const ctx = createContext(all);
-    const builder = new KotlinFileBuilder(`${config.packageName}${config.packageSuffix}`, config);
+  public renderDeclaration(
+    schema: ApiSchema,
+    all: ApiSchema[],
+    configOverrides: Partial<typeof config> = {},
+  ): string {
+    const ctx = createContext(all, configOverrides);
+    const builder = new KotlinFileBuilder(`${config.packageName}${config.packageSuffix}`, ctx.config);
     builder.append(this.getSchemaDeclaration(ctx, { schema: this.normalizeSchema(ctx, { schema }) }));
     return builder.toString(false);
+  }
+
+  public willDeclareType(schema: ApiSchema, all: ApiSchema[], configOverrides: Partial<typeof config> = {}): boolean {
+    return this.shouldGenerateTypeDeclaration(createContext(all, configOverrides), { schema });
+  }
+
+  public normalize(schema: ApiSchema, all: ApiSchema[] = []): ApiSchema {
+    const ctx = createContext(all);
+    return this.normalizeDiscriminatedBases(ctx, { schema });
   }
 }
 
@@ -328,6 +369,38 @@ describe('DefaultKotlinModelGenerator', () => {
         { name: 'groupAValue', override: false },
         { name: 'groupKind', override: true },
       ]);
+    });
+
+    it('keeps a base that declares no properties of its own declared under every emptyObjectTypeBehavior', () => {
+      const { base, sub, all } = createPropertylessShape();
+      const generator = new TestModelGenerator();
+
+      // The `@JsonSubTypes` carrier is the supertype its subtypes implement, so degrading it to `Any` would
+      // silently drop the polymorphism rather than simplify an unreferenced empty object.
+      for (const emptyObjectTypeBehavior of ['generate-empty-class', 'use-any'] as const) {
+        expect(generator.willDeclareType(base, all, { emptyObjectTypeBehavior })).toBe(true);
+        expect(generator.renderDeclaration(base, all, { emptyObjectTypeBehavior }))
+          .toContain('interface PropertylessBase');
+        expect(generator.renderDeclaration(sub, all, { emptyObjectTypeBehavior }))
+          .toContain(': PropertylessBase');
+      }
+    });
+
+    it('still degrades an undiscriminated empty object to Any under use-any', () => {
+      const empty = createSchema('EmptyObject');
+      const generator = new TestModelGenerator();
+
+      expect(generator.willDeclareType(empty, [empty], { emptyObjectTypeBehavior: 'use-any' })).toBe(false);
+      expect(generator.willDeclareType(empty, [empty], { emptyObjectTypeBehavior: 'generate-empty-class' }))
+        .toBe(true);
+    });
+
+    it('leaves a schema whose composition holds no discriminated base untouched', () => {
+      const branch = createSchema('Branch', { properties: createProperties({ a: createString('a') }) });
+      const composed = createSchema('Composed', { kind: 'combined', allOf: [branch] });
+
+      // Not merely equal — the identical object, so the walk cannot be allocating a copy per composing schema.
+      expect(new TestModelGenerator().normalize(composed)).toBe(composed);
     });
 
     it('still composes an undiscriminated oneOf into the schema that declares it', () => {
