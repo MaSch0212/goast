@@ -1,9 +1,6 @@
 {
   typescript: {
-    indexFiles: {
-      models: '<output>/models.ts',
-      stubs: '<output>/stubs.ts'
-    },
+    indexFiles: { models: '<output>/models.ts', stubs: '<output>/stubs.ts' },
     models: {
       'schema-1': {
         __source__: '<root>/test/specs/v2/simple-schemas.yml#/definitions/MyString',

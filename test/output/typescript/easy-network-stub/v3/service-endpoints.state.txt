@@ -1,9 +1,6 @@
 {
   typescript: {
-    indexFiles: {
-      models: '<output>/models.ts',
-      stubs: '<output>/stubs.ts'
-    },
+    indexFiles: { models: '<output>/models.ts', stubs: '<output>/stubs.ts' },
     models: {
       'schema-1': {
         __source__: '<root>/test/specs/v3/service-endpoints.yml#/paths//pets/get/responses/200/content/application/json/schema',
