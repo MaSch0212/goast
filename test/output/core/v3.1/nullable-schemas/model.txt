@@ -29,7 +29,7 @@
             allOf: [
               { properties: { a: { type: 'string' } }, type: 'object' }
             ],
-            type: [ null ]
+            type: [ 'object', null ]
           }
         }
       },
@@ -523,7 +523,7 @@
         file: '<root>/test/specs/v3.1/nullable-schemas.yml',
         originalComponent: '18 inspect chars',
         path: '/components/schemas/NullableWithAllOf/allOf/0/properties/a',
-        pos: { col: 15, line: 55 }
+        pos: { col: 15, line: 56 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -566,7 +566,7 @@
         file: '<root>/test/specs/v3.1/nullable-schemas.yml',
         originalComponent: '57 inspect chars',
         path: '/components/schemas/NullableWithAllOf/allOf/0',
-        pos: { col: 11, line: 52 }
+        pos: { col: 11, line: 53 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -604,10 +604,10 @@
     {
       '$ref': undefined,
       '$src': {
-        component: '98 inspect chars',
+        component: '108 inspect chars',
         document: '9 inspect chars',
         file: '<root>/test/specs/v3.1/nullable-schemas.yml',
-        originalComponent: '98 inspect chars',
+        originalComponent: '108 inspect chars',
         path: '/components/schemas/NullableWithAllOf',
         pos: { col: 7, line: 49 }
       },
@@ -651,7 +651,7 @@
         file: '<root>/test/specs/v3.1/nullable-schemas.yml',
         originalComponent: '28 inspect chars',
         path: '/components/schemas/NullableObjectProperty/properties/value',
-        pos: { col: 11, line: 60 }
+        pos: { col: 11, line: 61 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -694,7 +694,7 @@
         file: '<root>/test/specs/v3.1/nullable-schemas.yml',
         originalComponent: '75 inspect chars',
         path: '/components/schemas/NullableObjectProperty',
-        pos: { col: 7, line: 57 }
+        pos: { col: 7, line: 58 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -737,7 +737,7 @@
         file: '<root>/test/specs/v3.1/nullable-schemas.yml',
         originalComponent: '28 inspect chars',
         path: '/components/schemas/NullableRequired/properties/value',
-        pos: { col: 11, line: 67 }
+        pos: { col: 11, line: 68 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -780,7 +780,7 @@
         file: '<root>/test/specs/v3.1/nullable-schemas.yml',
         originalComponent: '100 inspect chars',
         path: '/components/schemas/NullableRequired',
-        pos: { col: 7, line: 64 }
+        pos: { col: 7, line: 65 }
       },
       accessibility: 'all',
       additionalProperties: undefined,
@@ -823,7 +823,7 @@
         file: '<root>/test/specs/v3.1/nullable-schemas.yml',
         originalComponent: '16 inspect chars',
         path: '/components/schemas/NullOnly',
-        pos: { col: 7, line: 73 }
+        pos: { col: 7, line: 74 }
       },
       accessibility: 'all',
       const: undefined,
@@ -852,7 +852,7 @@
         file: '<root>/test/specs/v3.1/nullable-schemas.yml',
         originalComponent: '33 inspect chars',
         path: '/components/schemas/MultiType',
-        pos: { col: 7, line: 75 }
+        pos: { col: 7, line: 76 }
       },
       accessibility: 'all',
       additionalProperties: undefined,

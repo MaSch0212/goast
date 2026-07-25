@@ -47,6 +47,7 @@ components:
           - null
     NullableWithAllOf:
       type:
+        - object
         - null
       allOf:
         - type: object
