@@ -7,5 +7,10 @@ data class DiscriminatorPropertyNotRequiredB(
     @Schema
     @param:JsonProperty("bValue")
     @get:JsonProperty("bValue")
-    val bValue: String? = null
+    val bValue: String? = null,
+
+    @Schema
+    @param:JsonProperty("kind")
+    @get:JsonProperty("kind")
+    override val kind: String? = "DiscriminatorPropertyNotRequiredB"
 ) : DiscriminatorPropertyNotRequired

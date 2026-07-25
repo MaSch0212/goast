@@ -14,13 +14,4 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 interface PartialMapping {
     @get:JsonProperty("kind", required = true)
     val kind: String
-
-    @get:JsonProperty("firstValue")
-    val firstValue: String?
-
-    @get:JsonProperty("secondValue")
-    val secondValue: String?
-
-    @get:JsonProperty("thirdValue")
-    val thirdValue: String?
 }

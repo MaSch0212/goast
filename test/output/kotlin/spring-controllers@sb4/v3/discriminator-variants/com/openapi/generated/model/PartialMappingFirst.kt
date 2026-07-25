@@ -7,5 +7,10 @@ data class PartialMappingFirst(
     @Schema
     @param:JsonProperty("firstValue")
     @get:JsonProperty("firstValue")
-    val firstValue: String? = null
+    val firstValue: String? = null,
+
+    @Schema(required = true)
+    @param:JsonProperty("kind", required = true)
+    @get:JsonProperty("kind", required = true)
+    override val kind: String = "first"
 ) : PartialMapping

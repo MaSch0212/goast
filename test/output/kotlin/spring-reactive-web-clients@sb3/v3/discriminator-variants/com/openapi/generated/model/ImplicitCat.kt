@@ -7,5 +7,10 @@ data class ImplicitCat(
     @Schema
     @param:JsonProperty("lives")
     @get:JsonProperty("lives")
-    val lives: Int? = null
+    val lives: Int? = null,
+
+    @Schema(required = true)
+    @param:JsonProperty("petType", required = true)
+    @get:JsonProperty("petType", required = true)
+    override val petType: String = "ImplicitCat"
 ) : ImplicitBase

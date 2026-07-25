@@ -7,5 +7,10 @@ data class ImplicitDog(
     @Schema
     @param:JsonProperty("breed")
     @get:JsonProperty("breed")
-    val breed: String? = null
+    val breed: String? = null,
+
+    @Schema(required = true)
+    @param:JsonProperty("petType", required = true)
+    @get:JsonProperty("petType", required = true)
+    override val petType: String = "ImplicitDog"
 ) : ImplicitBase

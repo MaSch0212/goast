@@ -15,9 +15,6 @@ interface NestedDiscriminatorGroup {
     @get:JsonProperty("groupKind", required = true)
     val groupKind: String
 
-    @get:JsonProperty("groupAValue")
-    val groupAValue: String?
-
-    @get:JsonProperty("groupBValue")
-    val groupBValue: String?
+    @get:JsonProperty("kind", required = true)
+    val kind: String
 }

@@ -14,10 +14,4 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 interface ImplicitBase {
     @get:JsonProperty("petType", required = true)
     val petType: String
-
-    @get:JsonProperty("breed")
-    val breed: String?
-
-    @get:JsonProperty("lives")
-    val lives: Int?
 }

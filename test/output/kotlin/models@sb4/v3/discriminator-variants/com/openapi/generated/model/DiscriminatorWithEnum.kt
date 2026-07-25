@@ -14,10 +14,4 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 interface DiscriminatorWithEnum {
     @get:JsonProperty("kind", required = true)
     val kind: DiscriminatorWithEnumKind
-
-    @get:JsonProperty("alphaValue")
-    val alphaValue: String?
-
-    @get:JsonProperty("betaValue")
-    val betaValue: String?
 }

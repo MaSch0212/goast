@@ -695,6 +695,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
   protected normalizeSchema(ctx: Context, args: Args.NormalizeSchema): ApiSchema {
     let { schema } = args;
 
+    schema = this.normalizeDiscriminatedBases(ctx, { schema });
     if (schema.kind === 'oneOf') {
       schema = ctx.config.oneOfBehavior === 'treat-as-any-of'
         // deno-lint-ignore no-explicit-any
@@ -711,6 +712,70 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     }
 
     return schema;
+  }
+
+  /**
+   * Rewrites every discriminated `oneOf` base reachable from the schema through a composition into the
+   * `object` it describes, so that the merge in `normalizeSchema` treats it as one.
+   *
+   * A schema that declares a `oneOf` is of kind `oneOf` even when it also declares `type: object` and
+   * properties of its own — `determineSchemaKind` looks at `oneOf` first. For a *discriminated* `oneOf` that
+   * loses the very information the Kotlin declarations need, because the branches of such a `oneOf` are the
+   * schema's subtypes rather than parts of it (the same distinction `resolveAnyOfAndAllOf` draws for a `oneOf`
+   * nested inside a composition):
+   *
+   * - the base is an object in its own right, described by its own `properties`, `required` and any
+   *   `allOf`/`anyOf` it composes — so its interface must declare those and nothing else, not the union of
+   *   what its subtypes declare;
+   * - a subtype's `allOf: [Base]` is a composition with that object — so the subtype must inherit the base's
+   *   own properties, including the discriminator, while inheriting nothing from its siblings.
+   *
+   * Both follow from turning the base into an `object` before the merge runs: the merge already collects the
+   * properties of an `object` branch and already declines to collect the branches of a discriminated `oneOf`.
+   * This is why `AllOfInheritanceDiscriminator` in test/specs/v3/discriminator-variants.yml has always been
+   * correct — with no `oneOf` keyword it is of kind `object` already — while every `oneOf`-holder base in the
+   * same document was not.
+   */
+  protected normalizeDiscriminatedBases(_ctx: Context, args: Args.NormalizeDiscriminatedBases): ApiSchema {
+    const rewritten = new Map<ApiSchema, ApiSchema>();
+    return rewrite(args.schema);
+
+    function rewrite(schema: ApiSchema): ApiSchema {
+      const existing = rewritten.get(schema);
+      if (existing) return existing;
+
+      const isDiscriminatedBase = schema.kind === 'oneOf' && schema.discriminator !== undefined;
+      const allOf = branches(schema, 'allOf');
+      const anyOf = branches(schema, 'anyOf');
+      // The branches of a discriminated `oneOf` are dropped rather than descended into: they are the schema's
+      // subtypes, and a subtype is generated from its own file where it is the root of this walk.
+      const oneOf = isDiscriminatedBase ? [] : branches(schema, 'oneOf');
+      if (!isDiscriminatedBase && allOf.length === 0 && anyOf.length === 0 && oneOf.length === 0) {
+        return schema;
+      }
+
+      // Registered before descending, so a branch composing back to one of its own ancestors terminates.
+      // deno-lint-ignore no-explicit-any
+      const copy: any = { ...schema };
+      rewritten.set(schema, copy);
+      if (isDiscriminatedBase) {
+        copy.kind = 'object';
+        copy.type = 'object';
+      }
+      copy.allOf = allOf.map(rewrite);
+      copy.anyOf = anyOf.map(rewrite);
+      copy.oneOf = oneOf.map(rewrite);
+      return copy as ApiSchema;
+    }
+
+    /**
+     * The branches a schema composes under one keyword. `normalizeSchema` leaves an explicit
+     * `oneOf: undefined` behind when it rewrites a `oneOf` holder, so a keyword can be present with no value.
+     */
+    function branches(schema: ApiSchema, keyword: 'allOf' | 'anyOf' | 'oneOf'): ApiSchema[] {
+      const values = schema as unknown as Record<string, ApiSchema[] | undefined>;
+      return values[keyword] ?? [];
+    }
   }
 
   protected hasProperty(ctx: Context, args: Args.HasProperty): boolean {

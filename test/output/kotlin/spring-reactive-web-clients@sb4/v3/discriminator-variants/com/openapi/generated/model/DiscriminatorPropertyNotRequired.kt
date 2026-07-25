@@ -14,10 +14,4 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 interface DiscriminatorPropertyNotRequired {
     @get:JsonProperty("kind")
     val kind: String?
-
-    @get:JsonProperty("aValue")
-    val aValue: String?
-
-    @get:JsonProperty("bValue")
-    val bValue: String?
 }

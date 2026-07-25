@@ -14,7 +14,4 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 interface NestedDiscriminator {
     @get:JsonProperty("kind", required = true)
     val kind: String
-
-    @get:JsonProperty("leafValue")
-    val leafValue: String?
 }

@@ -130,6 +130,10 @@ export type NormalizeSchema = {
   schema: ApiSchema;
 };
 
+export type NormalizeDiscriminatedBases = {
+  schema: ApiSchema;
+};
+
 export type HasProperty = {
   schema: ApiSchema;
   propertyName: string;
