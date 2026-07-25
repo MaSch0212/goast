@@ -1,0 +1,311 @@
+{
+  typescript: {
+    clients: {},
+    indexFiles: {
+      clientInterfaces: '<output>/clients.ts',
+      clients: '<output>/clients.ts',
+      models: '<output>/models.ts'
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfString',
+        additionalExports: [],
+        component: 'ArrayOfString',
+        filePath: '<output>/models/array-of-string.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/array-of-string.ts',
+            name: 'ArrayOfString',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfString',
+        additionalExports: [],
+        component: 'ArrayOfString',
+        filePath: '<output>/models/array-of-string.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/array-of-string.ts',
+            name: 'ArrayOfString',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfInlineObject',
+        additionalExports: [],
+        component: 'ArrayOfInlineObject',
+        filePath: '<output>/models/array-of-inline-object.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/array-of-inline-object.ts',
+            name: 'ArrayOfInlineObject',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfInlineObject/items',
+        component: '{\n  name?: string;\n  value?: number;\n}',
+        imports: []
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfInlineObject/items/properties/name',
+        component: 'string',
+        imports: []
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfInlineObject/items/properties/value',
+        component: 'number',
+        imports: []
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/UniqueArray',
+        additionalExports: [],
+        component: 'UniqueArray',
+        filePath: '<output>/models/unique-array.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/unique-array.ts',
+            name: 'UniqueArray',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/UniqueArray/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/BoundedArray',
+        additionalExports: [],
+        component: 'BoundedArray',
+        filePath: '<output>/models/bounded-array.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/bounded-array.ts',
+            name: 'BoundedArray',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/BoundedArray/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayNoItems',
+        additionalExports: [],
+        component: 'ArrayNoItems',
+        filePath: '<output>/models/array-no-items.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/array-no-items.ts',
+            name: 'ArrayNoItems',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfString/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfAnyOf',
+        additionalExports: [],
+        component: 'ArrayOfAnyOf',
+        filePath: '<output>/models/array-of-any-of.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/array-of-any-of.ts',
+            name: 'ArrayOfAnyOf',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfAnyOf/items',
+        component: '(Partial<string>) & (Partial<number>)',
+        imports: []
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfAnyOf/items/anyOf/0',
+        component: 'string',
+        imports: []
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfAnyOf/items/anyOf/1',
+        component: 'number',
+        imports: []
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties',
+        additionalExports: [],
+        component: 'ObjectWithArrayProperties',
+        filePath: '<output>/models/object-with-array-properties.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/object-with-array-properties.ts',
+            name: 'ObjectWithArrayProperties',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/strings',
+        component: '(string)[]',
+        imports: []
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/strings/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-27': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/refs',
+        component: '(ArrayOfString)[]',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/array-of-string.ts',
+            name: 'ArrayOfString',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-28': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfString',
+        additionalExports: [],
+        component: 'ArrayOfString',
+        filePath: '<output>/models/array-of-string.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/array-of-string.ts',
+            name: 'ArrayOfString',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-29': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/nested',
+        component: '((string)[])[]',
+        imports: []
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfRef',
+        additionalExports: [],
+        component: 'ArrayOfRef',
+        filePath: '<output>/models/array-of-ref.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/array-of-ref.ts',
+            name: 'ArrayOfRef',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-30': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/nested/items',
+        component: '(string)[]',
+        imports: []
+      },
+      'schema-31': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/nested/items/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfString',
+        additionalExports: [],
+        component: 'ArrayOfString',
+        filePath: '<output>/models/array-of-string.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/array-of-string.ts',
+            name: 'ArrayOfString',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfArray',
+        additionalExports: [],
+        component: 'ArrayOfArray',
+        filePath: '<output>/models/array-of-array.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/array-of-array.ts',
+            name: 'ArrayOfArray',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfArray/items',
+        component: '(string)[]',
+        imports: []
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfArray/items/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfArrayOfRef',
+        additionalExports: [],
+        component: 'ArrayOfArrayOfRef',
+        filePath: '<output>/models/array-of-array-of-ref.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/array-of-array-of-ref.ts',
+            name: 'ArrayOfArrayOfRef',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfArrayOfRef/items',
+        component: '(ArrayOfString)[]',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/array-of-string.ts',
+            name: 'ArrayOfString',
+            type: 'type-import'
+          }
+        ]
+      }
+    }
+  }
+}

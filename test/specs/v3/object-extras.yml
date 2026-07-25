@@ -1,0 +1,64 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Object Extras
+
+paths:
+  /x:
+    x-ignore: true
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    OpenObject:
+      type: object
+      additionalProperties: true
+    ClosedObject:
+      type: object
+      additionalProperties: false
+    ClosedObjectWithProperties:
+      type: object
+      properties:
+        a:
+          type: string
+        b:
+          type: integer
+      additionalProperties: false
+    MapOfRef:
+      type: object
+      additionalProperties:
+        $ref: 'simple-schemas.yml#/components/schemas/MyString'
+    MapOfArray:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          type: string
+    BoundedObject:
+      type: object
+      minProperties: 1
+      maxProperties: 5
+    NestedInlineObject:
+      type: object
+      properties:
+        middle:
+          type: object
+          properties:
+            inner:
+              type: object
+              properties:
+                value:
+                  type: string
+    NotSchema:
+      not:
+        type: string
+    ObjectWithNot:
+      type: object
+      properties:
+        value:
+          not:
+            type: string
+    EmptySchema: {}

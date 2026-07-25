@@ -1,0 +1,242 @@
+{
+  typescript: {
+    clients: {},
+    indexFiles: {
+      clientInterfaces: '<output>/clients.ts',
+      clients: '<output>/clients.ts',
+      models: '<output>/models.ts'
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/OpenObject',
+        additionalExports: [],
+        component: 'OpenObject',
+        filePath: '<output>/models/open-object.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/open-object.ts',
+            name: 'OpenObject',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/MapOfArray/additionalProperties',
+        component: '(string)[]',
+        imports: []
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/MapOfArray/additionalProperties/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/BoundedObject',
+        additionalExports: [],
+        component: 'BoundedObject',
+        filePath: '<output>/models/bounded-object.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/bounded-object.ts',
+            name: 'BoundedObject',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/NestedInlineObject',
+        additionalExports: [],
+        component: 'NestedInlineObject',
+        filePath: '<output>/models/nested-inline-object.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/nested-inline-object.ts',
+            name: 'NestedInlineObject',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/NestedInlineObject/properties/middle',
+        component: '{\n  inner?: {\n    value?: string;\n  };\n}',
+        imports: []
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/NestedInlineObject/properties/middle/properties/inner',
+        component: '{\n  value?: string;\n}',
+        imports: []
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/NestedInlineObject/properties/middle/properties/inner/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/NotSchema',
+        additionalExports: [],
+        component: 'NotSchema',
+        filePath: '<output>/models/not-schema.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/not-schema.ts',
+            name: 'NotSchema',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/NotSchema/not',
+        component: 'string',
+        imports: []
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/ObjectWithNot',
+        additionalExports: [],
+        component: 'ObjectWithNot',
+        filePath: '<output>/models/object-with-not.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/object-with-not.ts',
+            name: 'ObjectWithNot',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/ClosedObject',
+        additionalExports: [],
+        component: 'ClosedObject',
+        filePath: '<output>/models/closed-object.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/closed-object.ts',
+            name: 'ClosedObject',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/ObjectWithNot/properties/value',
+        component: 'unknown',
+        imports: []
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/ObjectWithNot/properties/value/not',
+        component: 'string',
+        imports: []
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/EmptySchema',
+        additionalExports: [],
+        component: 'EmptySchema',
+        filePath: '<output>/models/empty-schema.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/empty-schema.ts',
+            name: 'EmptySchema',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/ClosedObjectWithProperties',
+        additionalExports: [],
+        component: 'ClosedObjectWithProperties',
+        filePath: '<output>/models/closed-object-with-properties.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/closed-object-with-properties.ts',
+            name: 'ClosedObjectWithProperties',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/ClosedObjectWithProperties/properties/a',
+        component: 'string',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/ClosedObjectWithProperties/properties/b',
+        component: 'number',
+        imports: []
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/MapOfRef',
+        additionalExports: [],
+        component: 'MapOfRef',
+        filePath: '<output>/models/map-of-ref.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/map-of-ref.ts',
+            name: 'MapOfRef',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/simple-schemas.yml#/components/schemas/MyString',
+        additionalExports: [],
+        component: 'MyString',
+        filePath: '<output>/models/my-string.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/my-string.ts',
+            name: 'MyString',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/simple-schemas.yml#/components/schemas/MyString',
+        additionalExports: [],
+        component: 'MyString',
+        filePath: '<output>/models/my-string.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/my-string.ts',
+            name: 'MyString',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/MapOfArray',
+        additionalExports: [],
+        component: 'MapOfArray',
+        filePath: '<output>/models/map-of-array.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/map-of-array.ts',
+            name: 'MapOfArray',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      }
+    }
+  }
+}

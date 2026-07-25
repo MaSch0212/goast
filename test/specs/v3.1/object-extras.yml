@@ -1,0 +1,70 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: Object Extras
+
+paths:
+  /x:
+    x-ignore: true
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    PatternPropertiesObject:
+      type: object
+      patternProperties:
+        '^str_':
+          type: string
+        'count':
+          type: integer
+    PatternAndAdditional:
+      type: object
+      patternProperties:
+        '^str_':
+          type: string
+      additionalProperties: false
+    UnevaluatedPropertiesObject:
+      allOf:
+        - type: object
+          properties:
+            a:
+              type: string
+      unevaluatedProperties: false
+    DependentSchemasObject:
+      type: object
+      properties:
+        creditCard:
+          type: string
+        billingAddress:
+          type: string
+      dependentSchemas:
+        creditCard:
+          required:
+            - billingAddress
+    DependentRequiredObject:
+      type: object
+      properties:
+        creditCard:
+          type: string
+        billingAddress:
+          type: string
+      dependentRequired:
+        creditCard:
+          - billingAddress
+    PropertyNamesObject:
+      type: object
+      propertyNames:
+        pattern: '^[a-z][a-zA-Z0-9]*$'
+    OpenObject:
+      type: object
+      additionalProperties: true
+    ClosedObject:
+      type: object
+      additionalProperties: false
+    MapOfRef:
+      type: object
+      additionalProperties:
+        $ref: 'simple-schemas.yml#/components/schemas/MyString'
