@@ -13,7 +13,7 @@ import { RequestBuilder } from '../utils/request-builder';
  *
  * @typedef DeprecatedParamsParams
  * @property {string} [withDesc] Deprecated: This parameter is deprecated.
- * @property {string} [noDesc] Deprecated:
+ * @property {string} [noDesc] Deprecated
  * @property {string} [plain]
  */
 

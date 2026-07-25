@@ -211,7 +211,7 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
           description: parameter.description
             ? (parameter.deprecated ? 'Deprecated: ' : '') + parameter.description
             : parameter.deprecated
-            ? 'Deprecated: '
+            ? 'Deprecated'
             : undefined,
           required: parameter.required,
         };
