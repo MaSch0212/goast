@@ -11,7 +11,7 @@ import {
   openApiV3FilesDir,
   type OpenApiVersion,
   verify,
-} from '@goast/test-utils';
+} from '@goast/test-harness';
 
 import { afterEach, describe, test } from '@std/testing/bdd';
 import { restore, stub } from '@std/testing/mock';

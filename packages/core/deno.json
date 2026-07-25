@@ -7,7 +7,7 @@
     "include": ["LICENSE", "README.md", "mod.ts", "src/**/*.ts"]
   },
   "goastNpmOptions": {
-    "usedLocalPackages": ["@goast/test-utils"],
+    "usedLocalPackages": ["@goast/test-harness"],
     "shimUndici": true
   }
 }

@@ -143,7 +143,7 @@ function moveTypeDependenciesToDevDependencies(packageJson: PackageJson) {
 }
 
 function removeTestRelatedDependencies(packageJson: PackageJson) {
-  const dependenciesToRemove = ['@deno/shim-deno-test', '@goast/test-utils', 'picocolors'];
+  const dependenciesToRemove = ['@deno/shim-deno-test', '@goast/test-harness', 'picocolors'];
 
   for (const depCollection of [packageJson.dependencies, packageJson.devDependencies, packageJson.peerDependencies]) {
     if (!depCollection) continue;

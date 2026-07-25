@@ -14,7 +14,7 @@ import {
   openApiV3FilesDir,
   type OpenApiVersion,
   verify,
-} from '@goast/test-utils';
+} from '@goast/test-harness';
 
 import { KotlinModelsGenerator } from '../src/generators/models/models-generator.ts';
 

@@ -1,4 +1,4 @@
-import { normalizeEOL } from '@goast/test-utils';
+import { normalizeEOL } from '@goast/test-harness';
 
 import { expect } from '@std/expect/expect';
 import { beforeEach, describe, it } from '@std/testing/bdd';

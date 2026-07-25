@@ -3,7 +3,7 @@ import { EOL } from 'node:os';
 import { expect } from '@std/expect/expect';
 import { beforeEach, describe, it } from '@std/testing/bdd';
 
-import { normalizeEOL } from '@goast/test-utils';
+import { normalizeEOL } from '@goast/test-harness';
 
 import { TypeScriptFileBuilder } from '../../file-builder.ts';
 import { tsDecorator } from './decorator.ts';

@@ -7,7 +7,7 @@ import { restore, stub } from '@std/testing/mock';
 import fs from 'fs-extra';
 
 import { OpenApiGenerator } from '@goast/core';
-import { MultipartData, openApiV3FilesDir, verify } from '@goast/test-utils';
+import { MultipartData, openApiV3FilesDir, verify } from '@goast/test-harness';
 
 import { KotlinModelsGenerator } from '../src/generators/models/models-generator.ts';
 import { KotlinOkHttp3ClientsGenerator } from '../src/generators/services/okhttp3-clients/okhttp3-clients-generator.ts';

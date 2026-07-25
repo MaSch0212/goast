@@ -1,10 +1,15 @@
 # Harness Foundation Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or
+> superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build the snapshot engine that tier 2 output tests will run on, and rename the test support package to match its new role.
+**Goal:** Build the snapshot engine that tier 2 output tests will run on, and rename the test support package to match
+its new role.
 
-**Architecture:** A new `test/harness/snapshot/` module compares a freshly generated directory tree against a committed one. It resolves a write/check mode from the environment, diffs two `Map<relPath, bytes>` trees, and either applies the diff to the committed tree (write) or throws a readable report (check). Existing helpers in `test/utils/` move to `test/harness/` unchanged; nothing is deleted in this phase, so the repo stays green throughout.
+**Architecture:** A new `test/harness/snapshot/` module compares a freshly generated directory tree against a committed
+one. It resolves a write/check mode from the environment, diffs two `Map<relPath, bytes>` trees, and either applies the
+diff to the committed tree (write) or throws a readable report (check). Existing helpers in `test/utils/` move to
+`test/harness/` unchanged; nothing is deleted in this phase, so the repo stays green throughout.
 
 **Tech Stack:** Deno 2.8.2, `@std/fs`, `@std/bytes`, `@std/expect`, `@std/testing/bdd`.
 
@@ -12,52 +17,58 @@
 
 ## Global Constraints
 
-- Deno version is pinned to **v2.8.2**. Deno 2.8.3 regressed `export =` default-import type resolution (e.g. `import fs from 'fs-extra'`), breaking type-checking repo-wide. Do not bump it.
+- Deno version is pinned to **v2.8.2**. Deno 2.8.3 regressed `export =` default-import type resolution (e.g.
+  `import fs from 'fs-extra'`), breaking type-checking repo-wide. Do not bump it.
 - Prerequisites are **Deno and Docker only**. This phase adds no other toolchain and needs no Docker.
 - Source formatting is enforced by `deno fmt`: **line width 120, single quotes**. Run `deno fmt` before every commit.
-- All snapshot comparison is **byte-exact**. Never strip `\r` — a stray carriage return in a snapshot is a real bug, not noise.
+- All snapshot comparison is **byte-exact**. Never strip `\r` — a stray carriage return in a snapshot is a real bug, not
+  noise.
 - Generators always run with `newLine: '\n'`.
 - Tests use `describe`/`it` from `@std/testing/bdd` and `expect` from `@std/expect` (never `@std/expect/expect`).
 - Never use `EOL` from `node:os` in a test. Use literal `\n`, so tests do not depend on host OS.
-- **Two deliberate deviations from the spec, already agreed:** `docker.ts` is deferred to phase 3 (no consumer until then), and the harness does not emit `snapshot.patch` (CI generates it by re-running in write mode and running `git diff`). Consequently `test/.snapshot-actual/` is never created.
+- **Two deliberate deviations from the spec, already agreed:** `docker.ts` is deferred to phase 3 (no consumer until
+  then), and the harness does not emit `snapshot.patch` (CI generates it by re-running in write mode and running
+  `git diff`). Consequently `test/.snapshot-actual/` is never created.
 
 ## File Structure
 
 **Moved unchanged (Task 1):**
 
-| From | To | Responsibility |
-|------|-----|----------------|
-| `test/utils/deno.json` | `test/harness/deno.json` | Workspace member manifest, renamed to `@goast/test-harness` |
-| `test/utils/mod.ts` | `test/harness/mod.ts` | Public barrel |
-| `test/utils/paths.ts` | `test/harness/paths.ts` | Repo root and spec directory paths |
-| `test/utils/string.utils.ts` | `test/harness/string.utils.ts` | `normalizeEOL` |
-| `test/utils/types.ts` | `test/harness/types.ts` | `OpenApiVersion` |
-| `test/utils/declutter.ts` | `test/harness/declutter.ts` | Strips noise from parsed `ApiData` |
-| `test/utils/verify.ts` | `test/harness/verify.ts` | Legacy snapshot helper. Kept so existing tests pass; **phase 2 deletes it.** |
+| From                         | To                             | Responsibility                                                               |
+| ---------------------------- | ------------------------------ | ---------------------------------------------------------------------------- |
+| `test/utils/deno.json`       | `test/harness/deno.json`       | Workspace member manifest, renamed to `@goast/test-harness`                  |
+| `test/utils/mod.ts`          | `test/harness/mod.ts`          | Public barrel                                                                |
+| `test/utils/paths.ts`        | `test/harness/paths.ts`        | Repo root and spec directory paths                                           |
+| `test/utils/string.utils.ts` | `test/harness/string.utils.ts` | `normalizeEOL`                                                               |
+| `test/utils/types.ts`        | `test/harness/types.ts`        | `OpenApiVersion`                                                             |
+| `test/utils/declutter.ts`    | `test/harness/declutter.ts`    | Strips noise from parsed `ApiData`                                           |
+| `test/utils/verify.ts`       | `test/harness/verify.ts`       | Legacy snapshot helper. Kept so existing tests pass; **phase 2 deletes it.** |
 
 **Created:**
 
-| File | Responsibility |
-|------|----------------|
-| `test/harness/snapshot/mode.ts` | Resolve `write` vs `check` from the environment |
-| `test/harness/snapshot/tree.ts` | Read a directory into `FileTree`; diff two trees; apply a diff |
-| `test/harness/snapshot/text-diff.ts` | Locate the first differing line between two byte buffers |
-| `test/harness/snapshot/normalize.ts` | Rewrite absolute repo paths to `<root>/…` |
-| `test/harness/snapshot/verify-file-tree.ts` | `verifyFileTree` — the file-tree snapshot entry point |
-| `test/harness/snapshot/verify-text.ts` | `verifyText` — the text snapshot entry point |
-| `test/harness/snapshot/mod.ts` | Barrel for the snapshot module |
-| `.gitattributes` | Force LF and `linguist-generated` on `test/output/**` |
-| `test/README.md` | Contributor documentation for the harness |
+| File                                        | Responsibility                                                 |
+| ------------------------------------------- | -------------------------------------------------------------- |
+| `test/harness/snapshot/mode.ts`             | Resolve `write` vs `check` from the environment                |
+| `test/harness/snapshot/tree.ts`             | Read a directory into `FileTree`; diff two trees; apply a diff |
+| `test/harness/snapshot/text-diff.ts`        | Locate the first differing line between two byte buffers       |
+| `test/harness/snapshot/normalize.ts`        | Rewrite absolute repo paths to `<root>/…`                      |
+| `test/harness/snapshot/verify-file-tree.ts` | `verifyFileTree` — the file-tree snapshot entry point          |
+| `test/harness/snapshot/verify-text.ts`      | `verifyText` — the text snapshot entry point                   |
+| `test/harness/snapshot/mod.ts`              | Barrel for the snapshot module                                 |
+| `.gitattributes`                            | Force LF and `linguist-generated` on `test/output/**`          |
+| `test/README.md`                            | Contributor documentation for the harness                      |
 
-Each file has one responsibility and its own colocated `.test.ts`. `verify.ts` is refactored once, in Task 6, to import `normalizePaths` from `normalize.ts` instead of holding its own copy.
+Each file has one responsibility and its own colocated `.test.ts`. `verify.ts` is refactored once, in Task 6, to import
+`normalizePaths` from `normalize.ts` instead of holding its own copy.
 
 ---
 
 ### Task 1: Rename `test/utils` to `test/harness` as `@goast/test-harness`
 
-Pure refactor. No behaviour changes. The existing test suite passing *is* the test for this task.
+Pure refactor. No behaviour changes. The existing test suite passing _is_ the test for this task.
 
 **Files:**
+
 - Move: `test/utils/` → `test/harness/` (7 files)
 - Modify: `test/harness/deno.json` (package name)
 - Modify: `deno.json` (workspace list, `npm:test-utils` task)
@@ -66,12 +77,15 @@ Pure refactor. No behaviour changes. The existing test suite passing *is* the te
 - Modify: 15 test files importing `@goast/test-utils`
 
 **Interfaces:**
-- Produces: the module specifier `@goast/test-harness`, exporting exactly what `@goast/test-utils` exported today — `verify`, `MultipartData`, `normalizeEOL`, `declutterApiData`, `repoRootDir`, `openApiV2FilesDir`, `openApiV3FilesDir`, `openApiV3_1FilesDir`, `OpenApiVersion`.
+
+- Produces: the module specifier `@goast/test-harness`, exporting exactly what `@goast/test-utils` exported today —
+  `verify`, `MultipartData`, `normalizeEOL`, `declutterApiData`, `repoRootDir`, `openApiV2FilesDir`,
+  `openApiV3FilesDir`, `openApiV3_1FilesDir`, `OpenApiVersion`.
 
 - [ ] **Step 1: Confirm the baseline is green**
 
-Run: `deno task test`
-Expected: PASS. If it already fails, stop and report — do not proceed with a rename on a red baseline.
+Run: `deno task test` Expected: PASS. If it already fails, stop and report — do not proceed with a rename on a red
+baseline.
 
 - [ ] **Step 2: Move the directory**
 
@@ -133,8 +147,7 @@ Expected: all PASS, with the same test count as Step 1.
 
 - [ ] **Step 7: Verify the npm build still works**
 
-Run: `deno task npm:test-harness`
-Expected: exits 0, and `npm/@goast/test-harness/package.json` exists.
+Run: `deno task npm:test-harness` Expected: exits 0, and `npm/@goast/test-harness/package.json` exists.
 
 - [ ] **Step 8: Commit**
 
@@ -148,28 +161,34 @@ git commit -m "refactor: rename @goast/test-utils to @goast/test-harness"
 ### Task 2: Snapshot mode resolution
 
 **Files:**
+
 - Create: `test/harness/snapshot/mode.ts`
 - Test: `test/harness/snapshot/mode.test.ts`
 - Modify: `deno.json` (`test.include`, `test.exclude`)
 
 **Interfaces:**
+
 - Produces:
   - `type SnapshotMode = 'write' | 'check'`
-  - `type VerifyOptions = { mode?: SnapshotMode }` — shared by both verify entry points. It lives here rather than beside either one, so `verify-text.ts` and `verify-file-tree.ts` stay independent of each other.
-  - `function resolveSnapshotMode(get?: (key: string) => string | undefined): SnapshotMode` — `get` defaults to `Deno.env.get` and exists so tests can inject an environment without mutating the process.
+  - `type VerifyOptions = { mode?: SnapshotMode }` — shared by both verify entry points. It lives here rather than
+    beside either one, so `verify-text.ts` and `verify-file-tree.ts` stay independent of each other.
+  - `function resolveSnapshotMode(get?: (key: string) => string | undefined): SnapshotMode` — `get` defaults to
+    `Deno.env.get` and exists so tests can inject an environment without mutating the process.
 
 - [ ] **Step 1: Widen test discovery so `test/` is included**
 
-`deno.json`'s `test.include` is currently `["/packages/*"]`, which excludes everything under `test/`. Replace the whole `test` block:
+`deno.json`'s `test.include` is currently `["/packages/*"]`, which excludes everything under `test/`. Replace the whole
+`test` block:
 
 ```json
-  "test": {
-    "include": ["packages", "test"],
-    "exclude": ["test/output"]
-  },
+"test": {
+  "include": ["packages", "test"],
+  "exclude": ["test/output"]
+},
 ```
 
-The `exclude` matters because `test/output/` will later hold generated TypeScript that must never be treated as a test file.
+The `exclude` matters because `test/output/` will later hold generated TypeScript that must never be treated as a test
+file.
 
 - [ ] **Step 2: Write the failing test**
 
@@ -215,8 +234,7 @@ describe('resolveSnapshotMode', () => {
 
 - [ ] **Step 3: Run test to verify it fails**
 
-Run: `deno test -A test/harness/snapshot/mode.test.ts`
-Expected: FAIL — module `./mode.ts` not found.
+Run: `deno test -A test/harness/snapshot/mode.test.ts` Expected: FAIL — module `./mode.ts` not found.
 
 - [ ] **Step 4: Write the implementation**
 
@@ -258,13 +276,12 @@ export function resolveSnapshotMode(
 
 - [ ] **Step 5: Run test to verify it passes**
 
-Run: `deno test -A test/harness/snapshot/mode.test.ts`
-Expected: PASS, 5 tests.
+Run: `deno test -A test/harness/snapshot/mode.test.ts` Expected: PASS, 5 tests.
 
 - [ ] **Step 6: Verify discovery picked up the new test**
 
-Run: `deno task test`
-Expected: PASS, and the output includes `test/harness/snapshot/mode.test.ts`. If it does not appear, the `test.include` change in Step 1 did not take effect.
+Run: `deno task test` Expected: PASS, and the output includes `test/harness/snapshot/mode.test.ts`. If it does not
+appear, the `test.include` change in Step 1 did not take effect.
 
 - [ ] **Step 7: Commit**
 
@@ -279,11 +296,13 @@ git commit -m "feat(harness): add snapshot mode resolution"
 ### Task 3: File tree reading and diffing
 
 **Files:**
+
 - Create: `test/harness/snapshot/tree.ts`
 - Test: `test/harness/snapshot/tree.test.ts`
 - Modify: `deno.json` (add `@std/bytes` import)
 
 **Interfaces:**
+
 - Consumes: nothing from earlier tasks.
 - Produces:
   - `type FileTree = Map<string, Uint8Array>` — keys are paths relative to the tree root, always `/`-separated.
@@ -299,7 +318,7 @@ git commit -m "feat(harness): add snapshot mode resolution"
 In `deno.json`, add to `imports` (keep the block alphabetically tidy — it goes directly before `@std/expect`):
 
 ```json
-    "@std/bytes": "jsr:@std/bytes@^1.0.5",
+"@std/bytes": "jsr:@std/bytes@^1.0.5",
 ```
 
 Then update the lockfile:
@@ -432,8 +451,7 @@ describe('applyTreeDiff', () => {
 
 - [ ] **Step 3: Run test to verify it fails**
 
-Run: `deno test -A test/harness/snapshot/tree.test.ts`
-Expected: FAIL — module `./tree.ts` not found.
+Run: `deno test -A test/harness/snapshot/tree.test.ts` Expected: FAIL — module `./tree.ts` not found.
 
 - [ ] **Step 4: Write the implementation**
 
@@ -538,12 +556,13 @@ async function removeEmptyDirs(dir: string): Promise<boolean> {
 }
 ```
 
-Note the guard in `applyTreeDiff`: `removeEmptyDirs` would delete the snapshot root itself if the tree ever became empty, so it runs only when something was actually removed. Task 4 adds the stronger rail that stops an empty generation reaching this code at all.
+Note the guard in `applyTreeDiff`: `removeEmptyDirs` would delete the snapshot root itself if the tree ever became
+empty, so it runs only when something was actually removed. Task 4 adds the stronger rail that stops an empty generation
+reaching this code at all.
 
 - [ ] **Step 5: Run test to verify it passes**
 
-Run: `deno test -A test/harness/snapshot/tree.test.ts`
-Expected: PASS, 10 tests.
+Run: `deno test -A test/harness/snapshot/tree.test.ts` Expected: PASS, 10 tests.
 
 - [ ] **Step 6: Commit**
 
@@ -558,13 +577,16 @@ git commit -m "feat(harness): add file tree reading and diffing"
 ### Task 4: `verifyFileTree` write mode
 
 **Files:**
+
 - Create: `test/harness/snapshot/verify-file-tree.ts`
 - Create: `.gitattributes`
 - Test: `test/harness/snapshot/verify-file-tree.test.ts`
 - Modify: `deno.json` (`fmt.exclude`, `lint.exclude`)
 
 **Interfaces:**
-- Consumes: `resolveSnapshotMode`, `VerifyOptions` from `./mode.ts`; `applyTreeDiff`, `diffFileTrees`, `formatDiffCounts`, `isEmptyDiff`, `readFileTree` from `./tree.ts`.
+
+- Consumes: `resolveSnapshotMode`, `VerifyOptions` from `./mode.ts`; `applyTreeDiff`, `diffFileTrees`,
+  `formatDiffCounts`, `isEmptyDiff`, `readFileTree` from `./tree.ts`.
 - Produces:
   - `function verifyFileTree(snapshotDir: string, generate: (outputDir: string) => Promise<void> | void, options?: VerifyOptions): Promise<void>`
 
@@ -582,25 +604,26 @@ test/output/** linguist-generated=true
 
 - [ ] **Step 2: Exclude the committed output tree from fmt and lint**
 
-Snapshots are compared byte-exactly, so a formatter rewriting them would fight the harness. In `deno.json`, add `"test/output/**"` to both exclude lists:
+Snapshots are compared byte-exactly, so a formatter rewriting them would fight the harness. In `deno.json`, add
+`"test/output/**"` to both exclude lists:
 
 ```json
-  "fmt": {
-    "lineWidth": 120,
-    "singleQuote": true,
-    "exclude": ["npm/**/*", "out/**/*", "coverage/**/*", ".verify/**/*", "test/output/**"]
-  },
-  "lint": {
-    "exclude": [
-      "npm/**/*",
-      "out/**/*",
-      "coverage/**/*",
-      ".verify/**/*",
-      "test/output/**",
-      "playground.ts",
-      "**/assets/**/*"
-    ]
-  },
+"fmt": {
+  "lineWidth": 120,
+  "singleQuote": true,
+  "exclude": ["npm/**/*", "out/**/*", "coverage/**/*", ".verify/**/*", "test/output/**"]
+},
+"lint": {
+  "exclude": [
+    "npm/**/*",
+    "out/**/*",
+    "coverage/**/*",
+    ".verify/**/*",
+    "test/output/**",
+    "playground.ts",
+    "**/assets/**/*"
+  ]
+},
 ```
 
 Leave the `.verify/**` entries alone — the legacy snapshots still exist until phase 2 removes them.
@@ -712,8 +735,8 @@ describe('verifyFileTree', () => {
 
 - [ ] **Step 4: Run test to verify it fails**
 
-Run: `deno test -A test/harness/snapshot/verify-file-tree.test.ts`
-Expected: FAIL — module `./verify-file-tree.ts` not found.
+Run: `deno test -A test/harness/snapshot/verify-file-tree.test.ts` Expected: FAIL — module `./verify-file-tree.ts` not
+found.
 
 - [ ] **Step 5: Write the implementation**
 
@@ -773,8 +796,7 @@ The check-mode message is intentionally a one-liner here; Task 5 replaces it wit
 
 - [ ] **Step 6: Run test to verify it passes**
 
-Run: `deno test -A test/harness/snapshot/verify-file-tree.test.ts`
-Expected: PASS, 5 tests.
+Run: `deno test -A test/harness/snapshot/verify-file-tree.test.ts` Expected: PASS, 5 tests.
 
 - [ ] **Step 7: Verify fmt and lint still pass with the new excludes**
 
@@ -798,17 +820,22 @@ git commit -m "feat(harness): add verifyFileTree write mode"
 ### Task 5: First-difference reporting and `verifyFileTree` check mode
 
 **Files:**
+
 - Create: `test/harness/snapshot/text-diff.ts`
 - Test: `test/harness/snapshot/text-diff.test.ts`
 - Modify: `test/harness/snapshot/verify-file-tree.ts` (replace the one-line check-mode error)
 - Modify: `test/harness/snapshot/verify-file-tree.test.ts` (add check-mode tests)
 
 **Interfaces:**
+
 - Consumes: `TreeDiff`, `FileTree` from `./tree.ts`.
 - Produces:
-  - `type TextDifference = { lineNumber: number; before: string[]; expected: string | undefined; actual: string | undefined; after: string[] }` — `lineNumber` is 1-based; `expected`/`actual` are `undefined` when that side ran out of lines.
-  - `function firstTextDifference(expected: Uint8Array, actual: Uint8Array, contextLines?: number): TextDifference | 'binary' | null` — `'binary'` when either side contains a NUL byte, `null` when the buffers are equal. `contextLines` defaults to 3.
-  - `function formatDifferenceExcerpt(difference: TextDifference): string[]` — renders the gutter-numbered `-`/`+` excerpt. Task 6's `verifyText` reuses this; it must not grow a second copy of the padding logic.
+  - `type TextDifference = { lineNumber: number; before: string[]; expected: string | undefined; actual: string | undefined; after: string[] }`
+    — `lineNumber` is 1-based; `expected`/`actual` are `undefined` when that side ran out of lines.
+  - `function firstTextDifference(expected: Uint8Array, actual: Uint8Array, contextLines?: number): TextDifference | 'binary' | null`
+    — `'binary'` when either side contains a NUL byte, `null` when the buffers are equal. `contextLines` defaults to 3.
+  - `function formatDifferenceExcerpt(difference: TextDifference): string[]` — renders the gutter-numbered `-`/`+`
+    excerpt. Task 6's `verifyText` reuses this; it must not grow a second copy of the padding logic.
   - `function formatMismatchReport(snapshotDir: string, diff: TreeDiff, expected: FileTree, actual: FileTree): string`
 
 - [ ] **Step 1: Write the failing test for `firstTextDifference`**
@@ -886,12 +913,12 @@ describe('firstTextDifference', () => {
 });
 ```
 
-Note the third case: splitting `'a\n'` on `\n` yields `['a', '']`, so the trailing empty line is a real line and the difference is at line 2. The assertions encode that deliberately.
+Note the third case: splitting `'a\n'` on `\n` yields `['a', '']`, so the trailing empty line is a real line and the
+difference is at line 2. The assertions encode that deliberately.
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `deno test -A test/harness/snapshot/text-diff.test.ts`
-Expected: FAIL — module `./text-diff.ts` not found.
+Run: `deno test -A test/harness/snapshot/text-diff.test.ts` Expected: FAIL — module `./text-diff.ts` not found.
 
 - [ ] **Step 3: Write `text-diff.ts`**
 
@@ -1002,61 +1029,62 @@ function formatFileDifference(path: string, expected: Uint8Array, actual: Uint8A
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `deno test -A test/harness/snapshot/text-diff.test.ts`
-Expected: PASS, 6 tests.
+Run: `deno test -A test/harness/snapshot/text-diff.test.ts` Expected: PASS, 6 tests.
 
 - [ ] **Step 5: Add the check-mode tests**
 
-Append this `describe` block inside the existing top-level `describe('verifyFileTree', ...)` in `test/harness/snapshot/verify-file-tree.test.ts`, directly after the `describe('write mode', ...)` block:
+Append this `describe` block inside the existing top-level `describe('verifyFileTree', ...)` in
+`test/harness/snapshot/verify-file-tree.test.ts`, directly after the `describe('write mode', ...)` block:
 
 ```ts
-  describe('check mode', () => {
-    it('should pass when the tree matches', async () => {
-      await withTempDir(async (dir) => {
-        const snapshotDir = join(dir, 'snapshot');
-        await verifyFileTree(snapshotDir, generator({ 'a.ts': 'A' }), { mode: 'write' });
+describe('check mode', () => {
+  it('should pass when the tree matches', async () => {
+    await withTempDir(async (dir) => {
+      const snapshotDir = join(dir, 'snapshot');
+      await verifyFileTree(snapshotDir, generator({ 'a.ts': 'A' }), { mode: 'write' });
 
-        await verifyFileTree(snapshotDir, generator({ 'a.ts': 'A' }), { mode: 'check' });
-      });
-    });
-
-    it('should throw a report listing added, changed and removed files', async () => {
-      await withTempDir(async (dir) => {
-        const snapshotDir = join(dir, 'snapshot');
-        await verifyFileTree(snapshotDir, generator({ 'change.ts': 'old', 'gone.ts': 'G' }), { mode: 'write' });
-
-        const error = await verifyFileTree(snapshotDir, generator({ 'change.ts': 'new', 'fresh.ts': 'F' }), {
-          mode: 'check',
-        }).catch((e: Error) => e);
-
-        expect(error.message).toContain('Snapshot mismatch:');
-        expect(error.message).toContain('+ fresh.ts');
-        expect(error.message).toContain('~ change.ts');
-        expect(error.message).toContain('- gone.ts');
-        expect(error.message).toContain('First difference in change.ts at line 1');
-        expect(error.message).toContain('-1 | old');
-        expect(error.message).toContain('+1 | new');
-        expect(error.message).toContain('Run `deno task test:output`');
-      });
-    });
-
-    it('should leave the snapshot untouched on mismatch', async () => {
-      await withTempDir(async (dir) => {
-        const snapshotDir = join(dir, 'snapshot');
-        await verifyFileTree(snapshotDir, generator({ 'a.ts': 'A' }), { mode: 'write' });
-
-        await expect(verifyFileTree(snapshotDir, generator({ 'a.ts': 'B' }), { mode: 'check' })).rejects.toThrow();
-
-        expect(await readAsText(snapshotDir)).toEqual({ 'a.ts': 'A' });
-      });
+      await verifyFileTree(snapshotDir, generator({ 'a.ts': 'A' }), { mode: 'check' });
     });
   });
+
+  it('should throw a report listing added, changed and removed files', async () => {
+    await withTempDir(async (dir) => {
+      const snapshotDir = join(dir, 'snapshot');
+      await verifyFileTree(snapshotDir, generator({ 'change.ts': 'old', 'gone.ts': 'G' }), { mode: 'write' });
+
+      const error = await verifyFileTree(snapshotDir, generator({ 'change.ts': 'new', 'fresh.ts': 'F' }), {
+        mode: 'check',
+      }).catch((e: Error) => e);
+
+      expect(error.message).toContain('Snapshot mismatch:');
+      expect(error.message).toContain('+ fresh.ts');
+      expect(error.message).toContain('~ change.ts');
+      expect(error.message).toContain('- gone.ts');
+      expect(error.message).toContain('First difference in change.ts at line 1');
+      expect(error.message).toContain('-1 | old');
+      expect(error.message).toContain('+1 | new');
+      expect(error.message).toContain('Run `deno task test:output`');
+    });
+  });
+
+  it('should leave the snapshot untouched on mismatch', async () => {
+    await withTempDir(async (dir) => {
+      const snapshotDir = join(dir, 'snapshot');
+      await verifyFileTree(snapshotDir, generator({ 'a.ts': 'A' }), { mode: 'write' });
+
+      await expect(verifyFileTree(snapshotDir, generator({ 'a.ts': 'B' }), { mode: 'check' })).rejects.toThrow();
+
+      expect(await readAsText(snapshotDir)).toEqual({ 'a.ts': 'A' });
+    });
+  });
+});
 ```
 
 - [ ] **Step 6: Run the new tests to verify they fail**
 
-Run: `deno test -A test/harness/snapshot/verify-file-tree.test.ts`
-Expected: `should throw a report listing added, changed and removed files` FAILS — the message is still the Task 4 one-liner and lacks `+ fresh.ts`. The other two check-mode tests pass already.
+Run: `deno test -A test/harness/snapshot/verify-file-tree.test.ts` Expected:
+`should throw a report listing added, changed and removed files` FAILS — the message is still the Task 4 one-liner and
+lacks `+ fresh.ts`. The other two check-mode tests pass already.
 
 - [ ] **Step 7: Wire the report into `verifyFileTree`**
 
@@ -1069,15 +1097,14 @@ import { formatMismatchReport } from './text-diff.ts';
 and replace the check-mode branch:
 
 ```ts
-    if (mode === 'check') {
-      throw new Error(formatMismatchReport(snapshotDir, diff, expected, actual));
-    }
+if (mode === 'check') {
+  throw new Error(formatMismatchReport(snapshotDir, diff, expected, actual));
+}
 ```
 
 - [ ] **Step 8: Run tests to verify they pass**
 
-Run: `deno test -A test/harness/snapshot/`
-Expected: PASS, all tests across the four test files.
+Run: `deno test -A test/harness/snapshot/` Expected: PASS, all tests across the four test files.
 
 - [ ] **Step 9: Commit**
 
@@ -1091,9 +1118,14 @@ git commit -m "feat(harness): add first-difference reporting for snapshot mismat
 
 ### Task 6: Path normalization and `verifyText`
 
-Snapshots are committed and validated on two machines: a Windows checkout locally, Linux in CI. Absolute paths that leak into generated output — the `__source__` fields in generator state, and source-doc comment lines per commit `24a6f8d` — must be rewritten to `<root>/…` before comparison, or every snapshot would be machine-specific. The logic already exists inside `test/harness/verify.ts`; this task extracts it so both the legacy helper and the new snapshot module share one copy.
+Snapshots are committed and validated on two machines: a Windows checkout locally, Linux in CI. Absolute paths that leak
+into generated output — the `__source__` fields in generator state, and source-doc comment lines per commit `24a6f8d` —
+must be rewritten to `<root>/…` before comparison, or every snapshot would be machine-specific. The logic already exists
+inside `test/harness/verify.ts`; this task extracts it so both the legacy helper and the new snapshot module share one
+copy.
 
 **Files:**
+
 - Create: `test/harness/snapshot/normalize.ts`
 - Create: `test/harness/snapshot/verify-text.ts`
 - Test: `test/harness/snapshot/normalize.test.ts`
@@ -1102,10 +1134,14 @@ Snapshots are committed and validated on two machines: a Windows checkout locall
 - Modify: `test/harness/snapshot/verify-file-tree.ts` (normalize the generated tree)
 
 **Interfaces:**
-- Consumes: `repoRootDir` from `../paths.ts`; `FileTree` from `./tree.ts`; `resolveSnapshotMode` and `VerifyOptions` from `./mode.ts`; `firstTextDifference` from `./text-diff.ts`.
+
+- Consumes: `repoRootDir` from `../paths.ts`; `FileTree` from `./tree.ts`; `resolveSnapshotMode` and `VerifyOptions`
+  from `./mode.ts`; `firstTextDifference` from `./text-diff.ts`.
 - Produces:
-  - `function normalizePaths(text: string): string` — rewrites absolute repo paths to `<root>/`-prefixed forward-slash paths.
-  - `function normalizeFileTree(tree: FileTree): FileTree` — applies `normalizePaths` to every non-binary file, leaving binary files untouched.
+  - `function normalizePaths(text: string): string` — rewrites absolute repo paths to `<root>/`-prefixed forward-slash
+    paths.
+  - `function normalizeFileTree(tree: FileTree): FileTree` — applies `normalizePaths` to every non-binary file, leaving
+    binary files untouched.
   - `function verifyText(snapshotFile: string, text: string, options?: VerifyOptions): Promise<void>`
 
 - [ ] **Step 1: Write the failing test for normalization**
@@ -1163,12 +1199,12 @@ describe('normalizeFileTree', () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `deno test -A test/harness/snapshot/normalize.test.ts`
-Expected: FAIL — module `./normalize.ts` not found.
+Run: `deno test -A test/harness/snapshot/normalize.test.ts` Expected: FAIL — module `./normalize.ts` not found.
 
 - [ ] **Step 3: Write `normalize.ts`**
 
-The regex construction is lifted from `test/harness/verify.ts` unchanged — it is already correct, including the doubled-backslash handling for paths that were themselves escaped into a string literal.
+The regex construction is lifted from `test/harness/verify.ts` unchanged — it is already correct, including the
+doubled-backslash handling for paths that were themselves escaped into a string literal.
 
 ```ts
 import { relative, resolve } from 'node:path';
@@ -1209,12 +1245,12 @@ export function normalizeFileTree(tree: FileTree): FileTree {
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `deno test -A test/harness/snapshot/normalize.test.ts`
-Expected: PASS, 6 tests.
+Run: `deno test -A test/harness/snapshot/normalize.test.ts` Expected: PASS, 6 tests.
 
 - [ ] **Step 5: Remove the duplicated copy from the legacy helper**
 
-In `test/harness/verify.ts`, delete the local `escapeRegExp` and `normalizePaths` function definitions (lines 30-32 and 59-66) and import the shared one instead. Add to the import block at the top:
+In `test/harness/verify.ts`, delete the local `escapeRegExp` and `normalizePaths` function definitions (lines 30-32 and
+59-66) and import the shared one instead. Add to the import block at the top:
 
 ```ts
 import { normalizePaths } from './snapshot/normalize.ts';
@@ -1222,8 +1258,9 @@ import { normalizePaths } from './snapshot/normalize.ts';
 
 - [ ] **Step 6: Verify the legacy tests still pass**
 
-Run: `deno task test`
-Expected: PASS, same count as before. This confirms the extracted `normalizePaths` behaves identically to the copy it replaced — the existing `.expect.txt` files are full of `<root>/` paths and would break loudly otherwise.
+Run: `deno task test` Expected: PASS, same count as before. This confirms the extracted `normalizePaths` behaves
+identically to the copy it replaced — the existing `.expect.txt` files are full of `<root>/` paths and would break
+loudly otherwise.
 
 - [ ] **Step 7: Normalize the generated tree in `verifyFileTree`**
 
@@ -1236,7 +1273,7 @@ import { normalizeFileTree } from './normalize.ts';
 and wrap the tree read, so the committed snapshot always stores normalized content:
 
 ```ts
-    const actual = normalizeFileTree(await readFileTree(outputDir));
+const actual = normalizeFileTree(await readFileTree(outputDir));
 ```
 
 The committed side needs no normalization — it was written already normalized.
@@ -1331,8 +1368,7 @@ describe('verifyText', () => {
 
 - [ ] **Step 9: Run test to verify it fails**
 
-Run: `deno test -A test/harness/snapshot/verify-text.test.ts`
-Expected: FAIL — module `./verify-text.ts` not found.
+Run: `deno test -A test/harness/snapshot/verify-text.test.ts` Expected: FAIL — module `./verify-text.ts` not found.
 
 - [ ] **Step 10: Write `verify-text.ts`**
 
@@ -1396,8 +1432,7 @@ function formatTextMismatch(snapshotFile: string, expected: string, actual: stri
 
 - [ ] **Step 11: Run test to verify it passes**
 
-Run: `deno test -A test/harness/snapshot/verify-text.test.ts`
-Expected: PASS, 6 tests.
+Run: `deno test -A test/harness/snapshot/verify-text.test.ts` Expected: PASS, 6 tests.
 
 - [ ] **Step 12: Commit**
 
@@ -1412,15 +1447,20 @@ git commit -m "feat(harness): add path normalization and verifyText"
 ### Task 7: Public exports, tasks and documentation
 
 **Files:**
+
 - Create: `test/harness/snapshot/mod.ts`
 - Create: `test/README.md`
 - Modify: `test/harness/mod.ts` (re-export the snapshot module)
 - Modify: `deno.json` (add the `test:harness` task)
 
 **Interfaces:**
+
 - Produces: everything from Tasks 2-6, re-exported through `@goast/test-harness`.
 
-The `test:output` and `test:output:check` tasks are **not** added here, even though check-mode failure messages name them. `deno test` errors on a path that does not exist, and `test/output-tests/` arrives in phase 2 — so adding them now would ship two broken tasks. Nothing in phase 1 can emit those messages in real use, since no tier-2 test exists yet. `test/README.md` marks tier 2 as `phase 2` in its status table, so the documentation stays honest.
+The `test:output` and `test:output:check` tasks are **not** added here, even though check-mode failure messages name
+them. `deno test` errors on a path that does not exist, and `test/output-tests/` arrives in phase 2 — so adding them now
+would ship two broken tasks. Nothing in phase 1 can emit those messages in real use, since no tier-2 test exists yet.
+`test/README.md` marks tier 2 as `phase 2` in its status table, so the documentation stays honest.
 
 - [ ] **Step 1: Create the snapshot barrel**
 
@@ -1450,15 +1490,15 @@ export * from './verify.ts';
 
 - [ ] **Step 3: Verify the barrel has no export collisions**
 
-Run: `deno check test/harness/mod.ts`
-Expected: no errors. `verify.ts` exports `verify` and `MultipartData`; the snapshot module exports `verifyFileTree` and `verifyText`. A collision here means something was named twice.
+Run: `deno check test/harness/mod.ts` Expected: no errors. `verify.ts` exports `verify` and `MultipartData`; the
+snapshot module exports `verifyFileTree` and `verifyText`. A collision here means something was named twice.
 
 - [ ] **Step 4: Add the deno task**
 
 In `deno.json`, add to `tasks` after the existing `test:typescript` entry:
 
 ```json
-    "test:harness": "deno test -A test/harness",
+"test:harness": "deno test -A test/harness",
 ```
 
 - [ ] **Step 5: Write the contributor documentation**
@@ -1478,20 +1518,19 @@ Deno only. Later phases add tiers that require Docker; the everyday loop does no
 
 ## Tiers
 
-| # | Tier | Question | Command | Status |
-|---|------|----------|---------|--------|
-| 1 | Unit | Does this function do what it says? | `deno task test` | active |
-| 2 | Output | Did the generated text change? | `deno task test:output` | phase 2 |
-| 3 | Compile | Is the generated code valid in its language? | `deno task test:compile` | phase 3 |
-| 4 | Integration | Does the generated code behave correctly on the wire? | `deno task test:it` | phases 5-7 |
+| # | Tier        | Question                                              | Command                  | Status     |
+| - | ----------- | ----------------------------------------------------- | ------------------------ | ---------- |
+| 1 | Unit        | Does this function do what it says?                   | `deno task test`         | active     |
+| 2 | Output      | Did the generated text change?                        | `deno task test:output`  | phase 2    |
+| 3 | Compile     | Is the generated code valid in its language?          | `deno task test:compile` | phase 3    |
+| 4 | Integration | Does the generated code behave correctly on the wire? | `deno task test:it`      | phases 5-7 |
 
 ## Snapshot modes
 
-Tier 2 compares generated output against trees committed under `test/output/`. It runs in one of two
-modes:
+Tier 2 compares generated output against trees committed under `test/output/`. It runs in one of two modes:
 
-- **write** — the default locally. A changed snapshot is rewritten on disk and the test passes. The
-  change then shows up in `git status` and is reviewed as an ordinary diff in the pull request.
+- **write** — the default locally. A changed snapshot is rewritten on disk and the test passes. The change then shows up
+  in `git status` and is reviewed as an ordinary diff in the pull request.
 - **check** — the default in CI. A changed snapshot fails the test.
 
 Resolution order:
@@ -1507,8 +1546,8 @@ deno task test:output   # regenerates snapshots
 git diff                # review what changed
 ```
 
-> The `test:output` tasks land with tier 2 in phase 2. Today the harness is in place but nothing calls
-> it yet; `deno task test:harness` runs the harness's own tests.
+> The `test:output` tasks land with tier 2 in phase 2. Today the harness is in place but nothing calls it yet;
+> `deno task test:harness` runs the harness's own tests.
 
 and to reproduce a CI failure locally:
 
@@ -1516,9 +1555,8 @@ and to reproduce a CI failure locally:
 deno task test:output:check
 ```
 
-When CI fails on a snapshot mismatch, the workflow re-runs the job in write mode and uploads the
-resulting `git diff` as a `snapshot.patch` artifact. Applying it is an alternative to regenerating
-locally:
+When CI fails on a snapshot mismatch, the workflow re-runs the job in write mode and uploads the resulting `git diff` as
+a `snapshot.patch` artifact. Applying it is an alternative to regenerating locally:
 
 ```bash
 git apply snapshot.patch
@@ -1542,19 +1580,19 @@ await verifyFileTree('test/output/typescript/models/v3/pets', async (outputDir) 
 await verifyText('test/output/typescript/models/v3/pets.state.txt', inspect(state, { sorted: true }));
 ```
 
-Both accept `{ mode: 'write' | 'check' }` to override environment resolution. Tests for the harness
-itself always pass an explicit mode, so they never depend on whether `CI` happens to be set.
+Both accept `{ mode: 'write' | 'check' }` to override environment resolution. Tests for the harness itself always pass
+an explicit mode, so they never depend on whether `CI` happens to be set.
 
 ### Guarantees worth knowing
 
-- **Comparison is byte-exact.** Carriage returns are never stripped — a stray `\r` in a snapshot is a
-  real bug. Generators must run with `newLine: '\n'`.
-- **Absolute repo paths are normalized** to `<root>/…` with forward slashes before comparison, so a
-  snapshot written on Windows matches one validated on Linux.
-- **Write mode will not delete a snapshot wholesale.** If generation emits zero files, the test fails
-  instead of pruning, so a generator that throws early cannot wipe committed output.
-- **`test/output/**` is excluded** from `deno fmt` and `deno lint`, and marked `linguist-generated` in
-  `.gitattributes` so GitHub collapses those diffs by default.
+- **Comparison is byte-exact.** Carriage returns are never stripped — a stray `\r` in a snapshot is a real bug.
+  Generators must run with `newLine: '\n'`.
+- **Absolute repo paths are normalized** to `<root>/…` with forward slashes before comparison, so a snapshot written on
+  Windows matches one validated on Linux.
+- **Write mode will not delete a snapshot wholesale.** If generation emits zero files, the test fails instead of
+  pruning, so a generator that throws early cannot wipe committed output.
+- **`test/output/**` is excluded** from `deno fmt` and `deno lint`, and marked `linguist-generated` in `.gitattributes`
+  so GitHub collapses those diffs by default.
 
 ## Layout
 
@@ -1605,8 +1643,10 @@ Before handing off to phase 2, confirm:
 - [ ] `deno fmt --check` and `deno lint` pass.
 - [ ] `deno publish --dry-run --allow-dirty` passes.
 - [ ] `deno task npm` builds all four packages, including `@goast/test-harness`.
-- [ ] `grep -rn "test-utils" --include="*.ts" --include="*.json" --include="*.yml" . --exclude-dir=npm --exclude-dir=.git` returns nothing.
-- [ ] `GOAST_SNAPSHOT=check deno task test:harness` passes — harness tests pass an explicit mode and must be immune to the environment.
+- [ ] `grep -rn "test-utils" --include="*.ts" --include="*.json" --include="*.yml" . --exclude-dir=npm --exclude-dir=.git`
+      returns nothing.
+- [ ] `GOAST_SNAPSHOT=check deno task test:harness` passes — harness tests pass an explicit mode and must be immune to
+      the environment.
 
 ## Handoff to Phase 2
 
@@ -1614,13 +1654,12 @@ Phase 2 consumes `verifyFileTree` and `verifyText` from `@goast/test-harness`, a
 
 - Building the ~45-spec corpus at `test/specs/`, replacing `test/openapi-files/`.
 - Creating `test/output-tests/profiles.ts` and the test file that iterates profiles against specs.
-- Adding the `test:output` and `test:output:check` deno tasks, deliberately omitted in phase 1
-  because their target directory did not exist yet. Check-mode failure messages already name them.
-- Deleting `packages/*/tests/openapi*.test.ts`, the `packages/*/tests/.verify/` trees, and
-  `test/harness/verify.ts` — along with its `MultipartData` export and the `spawn('code', '--diff')`
-  call.
-- Updating `scripts/build_npm.ts`, which hardcodes both `test/openapi-files` and `tests/.verify` paths
-  in its `postBuild` hook.
+- Adding the `test:output` and `test:output:check` deno tasks, deliberately omitted in phase 1 because their target
+  directory did not exist yet. Check-mode failure messages already name them.
+- Deleting `packages/*/tests/openapi*.test.ts`, the `packages/*/tests/.verify/` trees, and `test/harness/verify.ts` —
+  along with its `MultipartData` export and the `spawn('code', '--diff')` call.
+- Updating `scripts/build_npm.ts`, which hardcodes both `test/openapi-files` and `tests/.verify` paths in its
+  `postBuild` hook.
 - Committing the initial `test/output/` trees.
-- Extending `test/README.md` with how to add a spec and a profile, and flipping the tier-2 row in its
-  status table to `active`.
+- Extending `test/README.md` with how to add a spec and a profile, and flipping the tier-2 row in its status table to
+  `active`.

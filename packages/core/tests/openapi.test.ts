@@ -7,7 +7,7 @@ import {
   openApiV3FilesDir,
   type OpenApiVersion,
   verify,
-} from '@goast/test-utils';
+} from '@goast/test-harness';
 
 import { describe, it } from '@std/testing/bdd';
 import { OpenApiParser, toCustomCase } from '../mod.ts';
