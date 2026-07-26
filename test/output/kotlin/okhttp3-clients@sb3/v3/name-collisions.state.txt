@@ -1,0 +1,223 @@
+{
+  kotlin: {
+    clients: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/myThing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'MyThing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/my thing/properties/fromMyThingSpaced',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/Thing2',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Thing2',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/Thing2/properties/fromThing2',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/Thing_2',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Thing2',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/Thing_2/properties/fromThingUnderscore2',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/ÜberThing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'BerThing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/ÜberThing/properties/fromUeberThingUmlaut',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/UberThing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'UberThing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/UberThing/properties/fromUberThingAscii',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/myThing/properties/fromMyThingCamel',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/MyThing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'MyThing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/MyThing/properties/fromMyThingPascal',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/my_thing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'MyThing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/my_thing/properties/fromMyThingSnake',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/my-thing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'MyThing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/my-thing/properties/fromMyThingKebab',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/my thing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'MyThing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      }
+    }
+  }
+}

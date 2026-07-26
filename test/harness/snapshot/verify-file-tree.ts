@@ -38,7 +38,7 @@ export async function verifyGeneratedTree(
   options: VerifyOptions = {},
 ): Promise<void> {
   const mode = options.mode ?? resolveSnapshotMode();
-  const actual = normalizeFileTree(await readFileTree(outputDir));
+  const actual = normalizeFileTree(await readFileTree(outputDir), outputDir);
   const expected = await readFileTree(snapshotDir);
 
   // Safety rail: a generator that throws early or silently emits nothing must not be able to

@@ -19,7 +19,8 @@ for (const profile of profiles) {
         await verifyProfile(
           profileSnapshotPaths(baseDir, spec.name),
           (outputDir) =>
-            profile.configure(new OpenApiGenerator({ outputDir, newLine: '\n' })).parseAndGenerate(spec.files),
+            profile.configure(new OpenApiGenerator({ outputDir, newLine: '\n', existingFileBehavior: 'count' }))
+              .parseAndGenerate(spec.files),
         );
       });
     }

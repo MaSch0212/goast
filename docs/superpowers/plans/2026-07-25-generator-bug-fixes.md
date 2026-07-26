@@ -121,6 +121,47 @@ independent causes, one per package:
 Consequence: `NestedDiscriminator`'s `@JsonSubTypes` lists only `Leaf`, and **no** value round-trips through the parent
 for the `Group` branch. Fixing it needs both an emitter change and a core change, so it is its own task.
 
+### Defect 18 — TypeScript misclassifies an empty-named model file as a bare module, leaking an absolute path into generated source (found by phase 2b task 5, not scheduled)
+
+A TypeScript-generated model whose normalized name is the empty string (a schema name from which no ASCII
+alphanumeric character survives `getWords`'s strip — see `___`, `日本語`, `Ελληνικά`, `Кириллица` in the phase 2b
+corpus) writes its file under a basename that is literally `.ts` (e.g. `models/.ts`). `getImportKind`
+(`packages/typescript/src/import-collection.ts:198-201`):
+
+```ts
+protected getImportKind(fromModule: string): TypeScriptImportKind {
+  const extName = extname(fromModule).toUpperCase();
+  return extName === '.TS' || extName === '.JS' || extName === '.JSON' ? 'file' : 'module';
+}
+```
+
+`node:path`'s `extname` returns `''` for a path whose basename is exactly `.ts` — the same reason `.bashrc` has no
+extension: a leading dot with nothing before it is a hidden file, not an extension. So this one file is misclassified
+as a bare `'module'` specifier instead of a `'file'`, and `resolveModulePath` (`import-collection.ts:203-215`) only
+calls `getModulePathRelativeToFile` — the function that turns an absolute path into a relative import — for the
+`'file'` kind. For `'module'`, the schema's raw absolute *output-directory* path is written straight into the
+package's `models.ts` barrel instead of a relative import.
+
+Pinned by `v3/extreme-names` (`___`) and `v3/non-ascii-names` (`日本語`/`Ελληνικά`/`Кириллица`), every TypeScript
+profile — e.g. `test/output/typescript/models/v3/extreme-names/models.ts` line 1 (and the identical first line of
+the same file under `angular-services`, `fetch-clients`, `k6-clients`, `easy-network-stub`, and the `non-ascii-names`
+sibling in all five).
+
+The committed snapshot line reads `export type {  } from '<output>/models/.ts';` rather than a real filesystem path
+— `test/harness/snapshot/normalize.ts` (`normalizeFileTree`/`replaceOutputDir`) neutralizes the ephemeral per-run
+temp output directory into the `<output>` marker before the tree is compared or committed, the same way it already
+neutralized a leaked path in `state.txt` and in generation-error text (the tree-content path had no such
+neutralization until phase 2b task 5 found the gap and closed it — see that task's report for the harness fix).
+**The `<output>` marker is the harness doing its job, not evidence the underlying bug is fixed**: a reader of this
+snapshot should not mistake `<output>/models/.ts` for a resolved leak — it is the same leak, made stable and
+reviewable instead of a randomly-named temp path that changed on every run. Before the harness fix, and while
+`existingFileBehavior: 'error'` was in effect, generation aborted on an unrelated filename collision before
+`models.ts` was ever written for either spec, so this defect's committed-output consequence was invisible until
+task 5's round 2 switched to `existingFileBehavior: 'count'` and let generation run far enough to reach it.
+
+Not fixed here — this phase records defects rather than fixing them. The fix belongs in `getImportKind`: also treat
+a path whose basename starts with `.ts`/`.js`/`.json` (i.e. an empty component name) as `'file'`, not `'module'`.
+
 ### Also registered, not scheduled
 
 Small, verified, and each needing either a decision or a home:

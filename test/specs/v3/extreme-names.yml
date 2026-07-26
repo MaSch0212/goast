@@ -13,7 +13,7 @@ paths:
 
 components:
   schemas:
-    'VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong':
+    'VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong':
       type: object
       properties:
         markerVeryLongName:
@@ -81,7 +81,7 @@ components:
     ObjectWithExtremeProperties:
       type: object
       properties:
-        VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong:
+        VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong:
           type: string
         2FactorAuth:
           type: string

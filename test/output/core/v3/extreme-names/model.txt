@@ -47,7 +47,7 @@
             properties: {
               '': { type: 'string' },
               '2FactorAuth': { type: 'string' },
-              VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong: { type: 'string' }
+              VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong: { type: 'string' }
             },
             type: 'object'
           },
@@ -59,7 +59,7 @@
             properties: { markerScreaming: { type: 'string' } },
             type: 'object'
           },
-          VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong: {
+          VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong: {
             properties: { markerVeryLongName: { type: 'string' } },
             type: 'object'
           },
@@ -112,7 +112,7 @@
         document: '9 inspect chars',
         file: '<root>/test/specs/v3/extreme-names.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong/properties/markerVeryLongName',
+        path: '/components/schemas/VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong/properties/markerVeryLongName',
         pos: { col: 11, line: 20 }
       },
       accessibility: 'all',
@@ -139,7 +139,7 @@
       minItems: undefined,
       minLength: undefined,
       minimum: undefined,
-      name: 'VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong_markerVeryLongName',
+      name: 'VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong_markerVeryLongName',
       not: undefined,
       nullable: false,
       oneOf: [],
@@ -155,7 +155,7 @@
         document: '9 inspect chars',
         file: '<root>/test/specs/v3/extreme-names.yml',
         originalComponent: '78 inspect chars',
-        path: '/components/schemas/VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong',
+        path: '/components/schemas/VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong',
         pos: { col: 7, line: 17 }
       },
       accessibility: 'all',
@@ -182,7 +182,7 @@
       minItems: undefined,
       minLength: undefined,
       minimum: undefined,
-      name: 'VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong',
+      name: 'VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong',
       not: undefined,
       nullable: false,
       oneOf: [],
@@ -1168,7 +1168,7 @@
         document: '9 inspect chars',
         file: '<root>/test/specs/v3/extreme-names.yml',
         originalComponent: '18 inspect chars',
-        path: '/components/schemas/ObjectWithExtremeProperties/properties/VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong',
+        path: '/components/schemas/ObjectWithExtremeProperties/properties/VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong',
         pos: { col: 11, line: 85 }
       },
       accessibility: 'all',
@@ -1195,7 +1195,7 @@
       minItems: undefined,
       minLength: undefined,
       minimum: undefined,
-      name: 'ObjectWithExtremeProperties_VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong',
+      name: 'ObjectWithExtremeProperties_VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong',
       not: undefined,
       nullable: false,
       oneOf: [],
@@ -1293,10 +1293,10 @@
     {
       '$ref': undefined,
       '$src': {
-        component: '333 inspect chars',
+        component: '213 inspect chars',
         document: '9 inspect chars',
         file: '<root>/test/specs/v3/extreme-names.yml',
-        originalComponent: '333 inspect chars',
+        originalComponent: '213 inspect chars',
         path: '/components/schemas/ObjectWithExtremeProperties',
         pos: { col: 7, line: 82 }
       },
@@ -1332,8 +1332,8 @@
       properties: Map(3) {
         '' => { name: '', schema: 'schema-28' },
         '2FactorAuth' => { name: '2FactorAuth', schema: 'schema-27' },
-        'VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong' => {
-          name: 'VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong',
+        'VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong' => {
+          name: 'VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong',
           schema: 'schema-26'
         }
       },

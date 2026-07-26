@@ -4,10 +4,15 @@ import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
 import { repoRootDir } from '../paths.ts';
-import { normalizeFileTree, normalizePaths, normalizePathsUnderRoot } from './normalize.ts';
+import { normalizeFileTree, normalizePaths, normalizePathsUnderRoot, replaceOutputDir } from './normalize.ts';
 
 const encode = (text: string) => new TextEncoder().encode(text);
 const decode = (bytes: Uint8Array) => new TextDecoder().decode(bytes);
+
+// A stand-in "temp output dir" for tests that don't care about output-dir normalization at all — an
+// arbitrary path unrelated to `repoRootDir` and never itself a substring of any path these tests
+// build, so it is a no-op for them while still satisfying `normalizeFileTree`'s now-required parameter.
+const unusedOutputDir = 'C:\\Users\\nobody\\AppData\\Local\\Temp\\goast-snapshot-unused';
 
 describe('normalizePaths', () => {
   it('should rewrite an absolute repo path to a <root> path', () => {
@@ -63,24 +68,91 @@ describe('normalizePathsUnderRoot', () => {
 describe('normalizeFileTree', () => {
   it('should normalize text file contents', () => {
     const absolute = join(repoRootDir, 'a.yml');
-    const tree = normalizeFileTree(new Map([['doc.ts', encode(`// from ${absolute}\n`)]]));
+    const tree = normalizeFileTree(new Map([['doc.ts', encode(`// from ${absolute}\n`)]]), unusedOutputDir);
     expect(decode(tree.get('doc.ts')!)).toBe('// from <root>/a.yml\n');
   });
 
   it('should leave binary files byte-identical', () => {
     const binary = new Uint8Array([0, 1, 2, 0]);
-    const tree = normalizeFileTree(new Map([['logo.png', binary]]));
+    const tree = normalizeFileTree(new Map([['logo.png', binary]]), unusedOutputDir);
     expect(tree.get('logo.png')).toEqual(binary);
   });
 
   it('should preserve carriage returns in a file with no repo paths', () => {
-    const tree = normalizeFileTree(new Map([['doc.ts', encode('one\r\ntwo')]]));
+    const tree = normalizeFileTree(new Map([['doc.ts', encode('one\r\ntwo')]]), unusedOutputDir);
     expect(decode(tree.get('doc.ts')!)).toBe('one\r\ntwo');
   });
 
   it('should preserve carriage returns in a file that gets rewritten', () => {
     const absolute = join(repoRootDir, 'a.yml');
-    const tree = normalizeFileTree(new Map([['doc.ts', encode(`one\r\n// from ${absolute}\r\ntwo`)]]));
+    const tree = normalizeFileTree(new Map([['doc.ts', encode(`one\r\n// from ${absolute}\r\ntwo`)]]), unusedOutputDir);
     expect(decode(tree.get('doc.ts')!)).toBe('one\r\n// from <root>/a.yml\r\ntwo');
+  });
+
+  // This is the defect the harness fix closes: a generator bug (a schema whose normalized name is
+  // empty misclassifies its own file as a bare module specifier — see
+  // packages/typescript/src/import-collection.ts's getImportKind — and leaks its absolute output
+  // path into generated source) used to reach a committed snapshot verbatim, because
+  // `verifyGeneratedTree` normalized tree content with `normalizePaths` (repo root only) and never
+  // with `replaceOutputDir` (output dir), even though `replaceOutputDir` already existed for
+  // `state.txt` and generation-error text. These pin that tree content is now neutralized the same
+  // way.
+  it('should rewrite an output-dir path inside tree file content to <output> with forward slashes', () => {
+    const outputDir = 'C:\\Users\\someone\\AppData\\Local\\Temp\\goast-snapshot-abc123';
+    const leaked = `${outputDir}\\models\\.ts`;
+    const tree = normalizeFileTree(new Map([['models.ts', encode(`export type {  } from '${leaked}';\n`)]]), outputDir);
+    expect(decode(tree.get('models.ts')!)).toBe("export type {  } from '<output>/models/.ts';\n");
+  });
+
+  it('should normalize a native and a doubled-backslash spelling of the output dir to identical text', () => {
+    // This is the property that makes the snapshot identical on a Windows checkout and on Linux CI:
+    // whichever spelling a generator happened to render, the committed text must come out the same.
+    const outputDir = 'C:\\Users\\someone\\AppData\\Local\\Temp\\goast-snapshot-abc123';
+    const nativeSpelling = `${outputDir}\\models\\a.ts`;
+    const doubledSpelling = nativeSpelling.replace(/\\/g, '\\\\');
+
+    const native = normalizeFileTree(new Map([['x.ts', encode(`from '${nativeSpelling}'`)]]), outputDir);
+    const doubled = normalizeFileTree(new Map([['x.ts', encode(`from '${doubledSpelling}'`)]]), outputDir);
+
+    expect(decode(native.get('x.ts')!)).toBe("from '<output>/models/a.ts'");
+    expect(decode(doubled.get('x.ts')!)).toEqual(decode(native.get('x.ts')!));
+  });
+
+  it('should still apply repo-root normalization alongside output-dir normalization', () => {
+    const outputDir = 'C:\\Users\\someone\\AppData\\Local\\Temp\\goast-snapshot-abc123';
+    const repoPath = join(repoRootDir, 'test', 'specs', 'v3', 'pets.yml');
+    const text = `// source: ${repoPath}\nexport type {  } from '${outputDir}\\models\\.ts';\n`;
+
+    const tree = normalizeFileTree(new Map([['doc.ts', encode(text)]]), outputDir);
+
+    expect(decode(tree.get('doc.ts')!)).toBe(
+      "// source: <root>/test/specs/v3/pets.yml\nexport type {  } from '<output>/models/.ts';\n",
+    );
+  });
+});
+
+describe('replaceOutputDir', () => {
+  it('should rewrite the native spelling of the output dir', () => {
+    const outputDir = 'C:\\Users\\someone\\AppData\\Local\\Temp\\goast-snapshot-abc123';
+    expect(replaceOutputDir(`File already exists: ${outputDir}\\models\\a.ts`, outputDir)).toBe(
+      'File already exists: <output>/models/a.ts',
+    );
+  });
+
+  it('should rewrite a forward-slash spelling of the output dir', () => {
+    const outputDir = 'C:\\Users\\someone\\AppData\\Local\\Temp\\goast-snapshot-abc123';
+    const forwardSlash = outputDir.replace(/\\/g, '/');
+    expect(replaceOutputDir(`from '${forwardSlash}/models/a.ts'`, outputDir)).toBe("from '<output>/models/a.ts'");
+  });
+
+  it('should rewrite the doubled-backslash spelling of the output dir', () => {
+    const outputDir = 'C:\\Users\\someone\\AppData\\Local\\Temp\\goast-snapshot-abc123';
+    const doubled = outputDir.replace(/\\/g, '\\\\');
+    expect(replaceOutputDir(`from '${doubled}\\\\models\\\\a.ts'`, outputDir)).toBe("from '<output>/models/a.ts'");
+  });
+
+  it('should leave text without the output dir untouched', () => {
+    const outputDir = 'C:\\Users\\someone\\AppData\\Local\\Temp\\goast-snapshot-abc123';
+    expect(replaceOutputDir('export const a = 1;\n', outputDir)).toBe('export const a = 1;\n');
   });
 });

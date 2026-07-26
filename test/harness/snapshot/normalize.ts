@@ -69,16 +69,70 @@ export function normalizePaths(text: string): string {
   return normalizePathsUnderRoot(text, repoRootDir);
 }
 
-/** Applies {@link normalizePaths} to every text file in a tree. Binary files pass through untouched. */
-export function normalizeFileTree(tree: FileTree): FileTree {
+/**
+ * Applies {@link normalizePaths} and {@link replaceOutputDir} to every text file in a tree. Binary
+ * files pass through untouched.
+ *
+ * `outputDir` is required, not optional: an optional parameter would let a future caller silently
+ * skip the output-directory neutralizer, which is exactly the gap that let a generator's leaked
+ * absolute path reach a committed snapshot undetected (`replaceOutputDir` was applied to `state.txt`
+ * and to generation-error text, but never to tree file content, until this was found and fixed).
+ */
+export function normalizeFileTree(tree: FileTree, outputDir: string): FileTree {
   const decoder = new TextDecoder();
   const encoder = new TextEncoder();
   const result: FileTree = new Map();
 
   for (const [path, bytes] of tree) {
     const text = decoder.decode(bytes);
-    const normalized = normalizePaths(text);
+    const normalized = replaceOutputDir(normalizePaths(text), outputDir);
     result.set(path, bytes.includes(0) || normalized === text ? bytes : encoder.encode(normalized));
   }
   return result;
+}
+
+/**
+ * Rewrites every occurrence of `outputDir` in `text` to `<output>`, with separators normalized to
+ * forward slashes.
+ *
+ * The temp directory differs on every run — it is never machine-independent — so any spelling of
+ * it that leaks into snapshot text (an error message, a generator's serialized `state`, or — the
+ * case that motivated moving this here — a generator's own generated source, when a naming bug
+ * makes it emit an absolute path instead of a relative import) must be neutralized before the text
+ * is compared or committed. A generator is free to render the path using the platform-native
+ * separator, a forward-slash spelling, or — inside a `util.inspect` string literal, as generator
+ * `state` objects often are — a doubled-backslash spelling (every backslash in the whole string is
+ * escaped, including the separators *after* the directory, not just the ones inside it). Doubled
+ * first so it is consumed before the shorter native spelling can partially match inside it.
+ *
+ * Once the directory itself is replaced, the trailing path (e.g. `\models.ts`, or its escaped form
+ * `\\models.ts`) still carries whichever separator style its match used. Two backslash characters
+ * always mean one escaped separator, so they collapse to a single `/` first; only then are any
+ * remaining lone backslashes — the unescaped-native case — turned into `/` too. Collapsing pairs
+ * before singles keeps an escaped separator from becoming two slashes instead of one.
+ */
+export function replaceOutputDir(text: string, outputDir: string): string {
+  let replaced = text;
+  for (const variant of outputDirSpellings(outputDir)) {
+    replaced = replaced.split(variant).join('<output>');
+  }
+  return replaced.replace(
+    /<output>([^\s"']*)/g,
+    (_match, rest: string) => `<output>${rest.replace(/\\\\/g, '/').replace(/\\/g, '/')}`,
+  );
+}
+
+/**
+ * Every separator spelling of `outputDir` that generated output is known to use, longest first.
+ *
+ * Mirrors {@link normalizePaths}, which matches native, forward-slash, and doubled-backslash
+ * spellings of the repo root for the same reason: a generator is free to render a path with any of
+ * the three, and a literal single-spelling match would let the other two leak the (per-run, never
+ * machine-independent) temp directory into a committed snapshot. Longest first so the doubled-
+ * backslash spelling — which contains the native spelling as a substring on Windows — is consumed
+ * before the shorter spelling can partially match inside it.
+ */
+function outputDirSpellings(outputDir: string): string[] {
+  const spellings = new Set([outputDir, outputDir.replace(/\\/g, '/'), outputDir.replace(/\\/g, '\\\\')]);
+  return [...spellings].sort((a, b) => b.length - a.length);
 }

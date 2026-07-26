@@ -1,0 +1,187 @@
+{
+  typescript: {
+    indexFiles: { models: '<output>/models.ts' },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/myThing',
+        additionalExports: [],
+        component: 'MyThing',
+        filePath: '<output>/models/my-thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/my-thing.ts',
+            name: 'MyThing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/my thing/properties/fromMyThingSpaced',
+        component: 'string',
+        imports: []
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/Thing2',
+        additionalExports: [],
+        component: 'Thing2',
+        filePath: '<output>/models/thing-2.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/thing-2.ts',
+            name: 'Thing2',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/Thing2/properties/fromThing2',
+        component: 'string',
+        imports: []
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/Thing_2',
+        additionalExports: [],
+        component: 'Thing2',
+        filePath: '<output>/models/thing-2.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/thing-2.ts',
+            name: 'Thing2',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/Thing_2/properties/fromThingUnderscore2',
+        component: 'string',
+        imports: []
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/ÜberThing',
+        additionalExports: [],
+        component: 'BerThing',
+        filePath: '<output>/models/ber-thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/ber-thing.ts',
+            name: 'BerThing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/ÜberThing/properties/fromUeberThingUmlaut',
+        component: 'string',
+        imports: []
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/UberThing',
+        additionalExports: [],
+        component: 'UberThing',
+        filePath: '<output>/models/uber-thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/uber-thing.ts',
+            name: 'UberThing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/UberThing/properties/fromUberThingAscii',
+        component: 'string',
+        imports: []
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/myThing/properties/fromMyThingCamel',
+        component: 'string',
+        imports: []
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/MyThing',
+        additionalExports: [],
+        component: 'MyThing',
+        filePath: '<output>/models/my-thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/my-thing.ts',
+            name: 'MyThing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/MyThing/properties/fromMyThingPascal',
+        component: 'string',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/my_thing',
+        additionalExports: [],
+        component: 'MyThing',
+        filePath: '<output>/models/my-thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/my-thing.ts',
+            name: 'MyThing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/my_thing/properties/fromMyThingSnake',
+        component: 'string',
+        imports: []
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/my-thing',
+        additionalExports: [],
+        component: 'MyThing',
+        filePath: '<output>/models/my-thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/my-thing.ts',
+            name: 'MyThing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/my-thing/properties/fromMyThingKebab',
+        component: 'string',
+        imports: []
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/name-collisions.yml#/components/schemas/my thing',
+        additionalExports: [],
+        component: 'MyThing',
+        filePath: '<output>/models/my-thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/my-thing.ts',
+            name: 'MyThing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      }
+    }
+  }
+}

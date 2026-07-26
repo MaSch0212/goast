@@ -172,4 +172,47 @@ describe('verifyFileTree', () => {
       });
     });
   });
+
+  describe('output-directory leaks', () => {
+    // A generator bug (see packages/typescript/src/import-collection.ts's getImportKind, which
+    // misclassifies a file whose basename is empty and leaves its absolute path unresolved) can leak
+    // the ephemeral per-run output directory straight into generated source. That directory is a
+    // fresh `Deno.makeTempDir` path every run, so committing it verbatim would make the snapshot
+    // fail on the very next run, on any machine. This pins that `verifyFileTree` neutralizes such a
+    // leak into `<output>` end to end, the same way it already neutralized a leaked repo-root path.
+    it('should neutralize a leaked absolute output-dir path before it reaches the committed snapshot', async () => {
+      await withTempDir(async (dir) => {
+        const snapshotDir = join(dir, 'snapshot');
+
+        await verifyFileTree(snapshotDir, async (outputDir) => {
+          const target = join(outputDir, 'models.ts');
+          await Deno.writeTextFile(target, `export type {  } from '${outputDir}\\models\\.ts';\n`);
+        }, { mode: 'write' });
+
+        expect(await readAsText(snapshotDir)).toEqual({
+          'models.ts': "export type {  } from '<output>/models/.ts';\n",
+        });
+      });
+    });
+
+    it('should treat two runs that leak different temp-dir spellings as an identical, stable snapshot', async () => {
+      // The property that matters most: whichever random directory name this run's `Deno.makeTempDir`
+      // happens to mint, the neutralized snapshot must come out byte-identical, or check mode could
+      // never agree with a previous write-mode run — the exact non-determinism this fix closes.
+      await withTempDir(async (dir) => {
+        const snapshotDir = join(dir, 'snapshot');
+        const leak = (outputDir: string) => (o: string) =>
+          Deno.writeTextFile(join(o, 'models.ts'), `export type {  } from '${outputDir}';\n`);
+
+        await verifyFileTree(snapshotDir, async (outputDir) => await leak(outputDir)(outputDir), { mode: 'write' });
+        const first = await readAsText(snapshotDir);
+
+        await verifyFileTree(snapshotDir, async (outputDir) => await leak(outputDir)(outputDir), { mode: 'check' });
+        const second = await readAsText(snapshotDir);
+
+        expect(first).toEqual(second);
+        expect(first['models.ts']).toBe("export type {  } from '<output>';\n");
+      });
+    });
+  });
 });
