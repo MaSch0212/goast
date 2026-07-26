@@ -1,0 +1,452 @@
+{
+  typescript: {
+    indexFiles: {
+      k6Clients: '<output>/clients.js',
+      k6ResponseModels: '<output>/responses.ts',
+      models: '<output>/models.ts'
+    },
+    k6Clients: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/class',
+        additionalExports: [],
+        component: 'Class',
+        filePath: '<output>/models/class.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/class.ts',
+            name: 'Class',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/var/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/when',
+        additionalExports: [],
+        component: 'When',
+        filePath: '<output>/models/when.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/when.ts',
+            name: 'When',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/when/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/is',
+        additionalExports: [],
+        component: 'Is',
+        filePath: '<output>/models/is.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/is.ts',
+            name: 'Is',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/is/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/as',
+        additionalExports: [],
+        component: 'As',
+        filePath: '<output>/models/as.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/as.ts',
+            name: 'As',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/as/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/in',
+        additionalExports: [],
+        component: 'In',
+        filePath: '<output>/models/in.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/in.ts',
+            name: 'In',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/in/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/typeof',
+        additionalExports: [],
+        component: 'Typeof',
+        filePath: '<output>/models/typeof.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/typeof.ts',
+            name: 'Typeof',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/class/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/typeof/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/interface',
+        additionalExports: [],
+        component: 'Interface',
+        filePath: '<output>/models/interface.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/interface.ts',
+            name: 'Interface',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/interface/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/enum',
+        additionalExports: [],
+        component: 'Enum',
+        filePath: '<output>/models/enum.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/enum.ts',
+            name: 'Enum',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/enum/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/null',
+        additionalExports: [],
+        component: 'Null',
+        filePath: '<output>/models/null.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/null.ts',
+            name: 'Null',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/null/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-27': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/String',
+        additionalExports: [],
+        component: 'String',
+        filePath: '<output>/models/string.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/string.ts',
+            name: 'String',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-28': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/String/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-29': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/Int',
+        additionalExports: [],
+        component: 'Int',
+        filePath: '<output>/models/int.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/int.ts',
+            name: 'Int',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/object',
+        additionalExports: [],
+        component: 'Object',
+        filePath: '<output>/models/object.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/object.ts',
+            name: 'Object',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-30': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/Int/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-31': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/List',
+        additionalExports: [],
+        component: 'List',
+        filePath: '<output>/models/list.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/list.ts',
+            name: 'List',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-32': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/List/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-33': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/Map',
+        additionalExports: [],
+        component: 'Map',
+        filePath: '<output>/models/map.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/map.ts',
+            name: 'Map',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-34': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/Map/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-35': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/Any',
+        additionalExports: [],
+        component: 'Any',
+        filePath: '<output>/models/any.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/any.ts',
+            name: 'Any',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-36': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/Any/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-37': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/Unit',
+        additionalExports: [],
+        component: 'Unit',
+        filePath: '<output>/models/unit.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/unit.ts',
+            name: 'Unit',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-38': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/Unit/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-39': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/ObjectWithReservedProperties',
+        additionalExports: [],
+        component: 'ObjectWithReservedProperties',
+        filePath: '<output>/models/object-with-reserved-properties.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/object-with-reserved-properties.ts',
+            name: 'ObjectWithReservedProperties',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/object/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-40': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/ObjectWithReservedProperties/properties/class',
+        component: 'string',
+        imports: []
+      },
+      'schema-41': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/ObjectWithReservedProperties/properties/val',
+        component: 'string',
+        imports: []
+      },
+      'schema-42': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/ObjectWithReservedProperties/properties/is',
+        component: 'string',
+        imports: []
+      },
+      'schema-43': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/ObjectWithReservedProperties/properties/in',
+        component: 'string',
+        imports: []
+      },
+      'schema-44': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/ObjectWithReservedProperties/properties/function',
+        component: 'string',
+        imports: []
+      },
+      'schema-45': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/ObjectWithReservedProperties/properties/default',
+        component: 'string',
+        imports: []
+      },
+      'schema-46': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/ObjectWithReservedProperties/properties/constructor',
+        component: 'string',
+        imports: []
+      },
+      'schema-47': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/ObjectWithReservedProperties/properties/prototype',
+        component: 'string',
+        imports: []
+      },
+      'schema-48': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/ObjectWithReservedProperties/properties/this',
+        component: 'string',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/fun',
+        additionalExports: [],
+        component: 'Fun',
+        filePath: '<output>/models/fun.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/fun.ts',
+            name: 'Fun',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/fun/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/val',
+        additionalExports: [],
+        component: 'Val',
+        filePath: '<output>/models/val.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/val.ts',
+            name: 'Val',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/val/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/var',
+        additionalExports: [],
+        component: 'Var',
+        filePath: '<output>/models/var.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/var.ts',
+            name: 'Var',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      }
+    }
+  }
+}

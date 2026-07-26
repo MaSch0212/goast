@@ -1,0 +1,124 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Extreme Names
+
+paths:
+  /x:
+    x-ignore: true
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    'VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong':
+      type: object
+      properties:
+        markerVeryLongName:
+          type: string
+    '2FactorAuth':
+      type: object
+      properties:
+        markerTwoFactorAuth:
+          type: string
+    '_Underscore':
+      type: object
+      properties:
+        markerUnderscore:
+          type: string
+    '__DoubleUnderscore':
+      type: object
+      properties:
+        markerDoubleUnderscore:
+          type: string
+    '$Dollar':
+      type: object
+      properties:
+        markerDollar:
+          type: string
+    'A':
+      type: object
+      properties:
+        markerUpperA:
+          type: string
+    'a':
+      type: object
+      properties:
+        markerLowerA:
+          type: string
+    '___':
+      type: object
+      properties:
+        markerPunctuationOnly:
+          type: string
+    'With.Dot':
+      type: object
+      properties:
+        markerDot:
+          type: string
+    'With/Slash':
+      type: object
+      properties:
+        markerSlash:
+          type: string
+    'With Space':
+      type: object
+      properties:
+        markerSpace:
+          type: string
+    'With-Dash':
+      type: object
+      properties:
+        markerDash:
+          type: string
+    'With+Plus':
+      type: object
+      properties:
+        markerPlus:
+          type: string
+    ObjectWithExtremeProperties:
+      type: object
+      properties:
+        VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong:
+          type: string
+        2FactorAuth:
+          type: string
+        '':
+          type: string
+    camelCaseName:
+      type: object
+      properties:
+        markerCamel:
+          type: string
+    PascalCaseName:
+      type: object
+      properties:
+        markerPascal:
+          type: string
+    snake_case_name:
+      type: object
+      properties:
+        markerSnake:
+          type: string
+    SCREAMING_SNAKE_NAME:
+      type: object
+      properties:
+        markerScreaming:
+          type: string
+    kebab-case-name:
+      type: object
+      properties:
+        markerKebab:
+          type: string
+    HTTPResponseXML:
+      type: object
+      properties:
+        markerHttpXml:
+          type: string
+    iOSDevice:
+      type: object
+      properties:
+        markerIosDevice:
+          type: string
