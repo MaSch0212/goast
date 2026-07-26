@@ -143,7 +143,7 @@ already isolates the concern.
 | `v2/simple-schemas.yml`          | one schema per primitive type, no other keywords, under Swagger 2.0's top-level `definitions`                                                                                         |
 | `v3/simple-schemas.yml`          | one schema per primitive type, no other keywords                                                                                                                                      |
 | `v3.1/simple-schemas.yml`        | the same set, 3.1 form                                                                                                                                                                |
-| `v2/detailed-schemas.yml`        | the common keywords Swagger 2.0 supports together: title, format, default, length, pattern, enum, `readOnly` (2.0 has no `writeOnly` or `nullable`)                                   |
+| `v2/detailed-schemas.yml`        | the common keywords Swagger 2.0 supports together: title, default, length, pattern, example, enum, `readOnly` (2.0 has no `writeOnly` or `nullable`)                                  |
 | `v3/detailed-schemas.yml`        | title, the full set of common keywords together (format, default, length, pattern, `nullable`, `deprecated`, example), a plain string enum, `readOnly`/`writeOnly`                    |
 | `v3.1/detailed-schemas.yml`      | the same, 3.1 form (a `type` array instead of `nullable`)                                                                                                                             |
 | `v3/primitive-formats.yml`       | every `format` on every primitive, including a nonstandard one and a `format` on the "wrong" type                                                                                     |
@@ -155,21 +155,21 @@ already isolates the concern.
 
 ### Arrays and objects
 
-| Spec                      | Isolates                                                                                                                                                                                 |
-| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `v2/object-schemas.yml`   | properties, `required`, `additionalProperties`, `allOf` (2.0 has no `anyOf`), object and multi-line descriptions                                                                         |
-| `v3/object-schemas.yml`   | properties, `required`, `additionalProperties`, `allOf` and `anyOf` combined on one schema, nullable properties, and `$ref`s in properties/`anyOf`/`allOf` both same-file and cross-file |
-| `v3.1/object-schemas.yml` | the same, 3.1 form                                                                                                                                                                       |
-| `v3/array-schemas.yml`    | array constraints and nesting — `uniqueItems`, min/max, arrays of arrays, an untyped `items`-less array                                                                                  |
-| `v3.1/array-schemas.yml`  | `prefixItems` (tuples, with and without a rest `items`, closed with `items: false`), `contains`                                                                                          |
-| `v3/object-extras.yml`    | the `additionalProperties` boolean forms, `not`, `minProperties`/`maxProperties`, a schema that is just `{}`                                                                             |
-| `v3.1/object-extras.yml`  | `patternProperties` and its 3.1-only relatives — `unevaluatedProperties`, `dependentSchemas`, `dependentRequired`, `propertyNames`                                                       |
+| Spec                      | Isolates                                                                                                                                                                                                                                       |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `v2/object-schemas.yml`   | properties, `required`, `additionalProperties`, `allOf` combined with own properties (2.0 has no `anyOf`), type-array nullable properties, `$ref`s in properties and `allOf` both same-file and cross-file, object and multi-line descriptions |
+| `v3/object-schemas.yml`   | properties, `required`, `additionalProperties`, `allOf` and `anyOf` combined on one schema, nullable properties, and `$ref`s in properties/`anyOf`/`allOf` both same-file and cross-file                                                       |
+| `v3.1/object-schemas.yml` | the same, 3.1 form                                                                                                                                                                                                                             |
+| `v3/array-schemas.yml`    | array constraints and nesting — `uniqueItems`, min/max, arrays of arrays, an untyped `items`-less array                                                                                                                                        |
+| `v3.1/array-schemas.yml`  | `prefixItems` (tuples, with and without a rest `items`, closed with `items: false`), `contains`                                                                                                                                                |
+| `v3/object-extras.yml`    | the `additionalProperties` boolean forms, `not`, `minProperties`/`maxProperties`, a schema that is just `{}`                                                                                                                                   |
+| `v3.1/object-extras.yml`  | `patternProperties` and its 3.1-only relatives — `unevaluatedProperties`, `dependentSchemas`, `dependentRequired`, `propertyNames`                                                                                                             |
 
 ### Composition
 
 | Spec                             | Isolates                                                                                                                                                                                                                                                                                                               |
 | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `v3/oneof-schemas.yml`           | an empty `oneOf`, `oneOf` of plain types, `oneOf` ignored beside a sibling `type`, `oneOf` of refs                                                                                                                                                                                                                     |
+| `v3/oneof-schemas.yml`           | an empty `oneOf`, `oneOf` of plain types, a sibling `type` ignored beside `oneOf`, `oneOf` of refs                                                                                                                                                                                                                     |
 | `v3.1/oneof-schemas.yml`         | the same, 3.1 form                                                                                                                                                                                                                                                                                                     |
 | `v3/discriminated-schemas.yml`   | a discriminator with an explicit `mapping`, encoded as parent-declares/children-`allOf` inheritance rather than a `oneOf`                                                                                                                                                                                              |
 | `v3.1/discriminated-schemas.yml` | the same, 3.1 form                                                                                                                                                                                                                                                                                                     |
@@ -194,26 +194,26 @@ already isolates the concern.
 
 | Spec                     | Isolates                                                                                                                                                                                                                                               |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `v3/name-collisions.yml` | schema names that a generator's normalization collapses onto each other (casing, separators, transliteration) — see "Reading the corpus" below for what a collision actually does to the tree                                                          |
+| `v3/name-collisions.yml` | schema names that a generator's normalization collapses onto each other (casing, separators, transliteration) — see "How to add a spec" below for what a collision actually does to the tree                                                           |
 | `v3/reserved-words.yml`  | Kotlin and TypeScript keywords used as type names and, separately, as property names                                                                                                                                                                   |
 | `v3/non-ascii-names.yml` | umlauts, CJK, Greek, Cyrillic, emoji, and a combining-mark name next to its precomposed equivalent                                                                                                                                                     |
 | `v3/extreme-names.yml`   | a 200-character name, numeric-leading names, punctuation-only names, and a casing-variety set (`camelCase`, `PascalCase`, `snake_case`, `SCREAMING_SNAKE`, `kebab-case`, an acronym, a leading-lowercase-before-capitals name) that must _not_ collide |
 
 ### Parameters
 
-| Spec                           | Isolates                                                                                                                     |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
-| `v3/parameter-locations.yml`   | path, query, header, and cookie parameters, `allowEmptyValue`, `allowReserved`, a `$ref`'d parameter schema                  |
-| `v3/parameter-styles.yml`      | the `style` × `explode` matrix — `form`, `spaceDelimited`, `pipeDelimited`, `deepObject`, `simple`, `label`, `matrix`        |
-| `v3/parameter-inheritance.yml` | path-item-level `parameters` inherited and overridden by an operation, plus a `$ref`'d path-item parameter                   |
-| `v2/parameter-locations.yml`   | Swagger 2.0's `body` and `formData` parameter locations, plus `collectionFormat` — pins an absence, see "Reading the corpus" |
+| Spec                           | Isolates                                                                                                                                                   |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `v3/parameter-locations.yml`   | path, query, header, and cookie parameters, `allowEmptyValue`, `allowReserved`, a `$ref`'d parameter schema                                                |
+| `v3/parameter-styles.yml`      | the `style` × `explode` matrix — `form`, `spaceDelimited`, `pipeDelimited`, `deepObject`, `simple`, `label`, `matrix`                                      |
+| `v3/parameter-inheritance.yml` | path-item-level `parameters` inherited and overridden by an operation, plus a `$ref`'d path-item parameter                                                 |
+| `v2/parameter-locations.yml`   | Swagger 2.0's `body` and `formData` parameter locations (which pin an absence, see "Reading the corpus"), plus query `collectionFormat`, which does render |
 
 ### Bodies and responses
 
 | Spec                       | Isolates                                                                                                                                                       |
 | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `v3/request-bodies.yml`    | content types on a request body — JSON, XML, text, octet-stream, form-urlencoded, `*/*`, several on one operation, optional, a `$ref`'d body                   |
-| `v3/multipart-bodies.yml`  | files and nested objects inside `multipart/form-data`, plus an `encoding` block — pins an absence, see "Reading the corpus"                                    |
+| `v3/multipart-bodies.yml`  | files and nested objects inside `multipart/form-data`, which render; an `encoding` block, which pins an absence, see "Reading the corpus"                      |
 | `v3/response-variants.yml` | multiple `2xx` codes, `default`, `204`, `2XX`/`4XX`/`5XX` ranges mixed with exact codes, multi-content-type and array/primitive responses, a `$ref`'d response |
 | `v3/response-headers.yml`  | response headers, including required, deprecated, `$ref`'d, and on a `204` — pins an absence, see "Reading the corpus"                                         |
 
@@ -221,7 +221,7 @@ already isolates the concern.
 
 | Spec                       | Isolates                                                                                                                                                                 |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `v3/service-endpoints.yml` | a small multi-tag service (list/create/get/delete/search across two schemas) — the baseline endpoint spec other specs' conventions are read against                      |
+| `v3/service-endpoints.yml` | a small single-tag service (list/create/get/delete/search across two schemas) — the baseline endpoint spec other specs' conventions are read against                     |
 | `v3/operation-naming.yml`  | the name a generator derives when `operationId` is missing — by method, path, path parameters, and (once) a `summary` instead                                            |
 | `v3/tags-and-servers.yml`  | tag combinations (none, one, two, shared, declared vs. undeclared) and `servers` at document, path-item, and operation level                                             |
 | `v3/security-schemes.yml`  | apiKey, http basic, http bearer, and oauth2 schemes; inherited, overridden, emptied, ANDed, and ORed `security` requirements — pins an absence, see "Reading the corpus" |
@@ -279,19 +279,19 @@ patched or hidden by trimming the spec.
 ## How to add a spec
 
 Drop a file in `test/specs/<version>/` (`v2`, `v3`, or `v3.1`). A _directory_ there is one spec too, whose files are
-parsed together — that's how multi-file and mixed-reference specs are expressed. Then:
+parsed together — that's how multi-file and mixed-reference specs are expressed. Then, **format before you regenerate,
+never after**:
 
 ```bash
+deno fmt test/specs
 deno task test:output
 git diff                # review the new snapshot tree
 ```
 
-and commit the generated tree. `discoverSpecs()` picks the new spec up automatically; nothing else needs to change.
-
-**Format before you regenerate, never after.** Run `deno fmt test/specs` first. The Kotlin and TypeScript generators
-stamp source-document line numbers into generated doc comments via `getSourceDocLine`; reformatting a spec after
-generating its snapshot silently invalidates every stamped line number, and check mode then fails on a machine that
-never reformatted the file, with no clue why.
+and commit the generated tree. `discoverSpecs()` picks the new spec up automatically; nothing else needs to change. The
+fmt step must come first: the Kotlin and TypeScript generators stamp source-document line numbers into generated doc
+comments via `getSourceDocLine`, and reformatting a spec after generating its snapshot silently invalidates every
+stamped line number — check mode then fails on a machine that never reformatted the file, with no clue why.
 
 **`git diff --stat -- test/output` must stay empty for every _other_ spec's snapshots.** Adding a spec should only add
 new, untracked paths. A line of diff against an existing spec's tree means the new spec changed generation for something
@@ -305,6 +305,20 @@ through the new tree for `_1`/`_2`-suffixed files before trusting a clean run; g
 paths. And per the option's own doc comment: a counted file is written under a name nothing else generated references
 (every other file's imports still point at the first file written), so `'count'` makes a collision inspectable, not
 correct.
+
+**Before committing, run the check gate — write mode alone does not prove the tree is right.**
+
+```bash
+deno fmt --check
+deno lint
+GOAST_SNAPSHOT=check deno test -A test/output-tests
+```
+
+Write mode (`deno task test:output`, above) always passes by construction — it rewrites whatever it finds, so it cannot
+catch a mismatch, only produce one to review. The check-mode run is what actually verifies the committed tree is
+deterministic and matches what's on disk. Never substitute bare `deno task test` (equivalently, bare `deno test -A`) for
+this: `test/output-tests` is not excluded from its default test scope, so it runs in write mode too and would silently
+rewrite a real mismatch instead of failing on it.
 
 **A new spec belongs in the corpus map above.** Add one row, in one phrase that says what the spec isolates rather than
 restating its filename, under the category it fits.

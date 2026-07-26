@@ -66,7 +66,7 @@ Coverage responsibility:
 ```
 test/
   specs/                      # OpenAPI corpus (replaces test/openapi-files/)
-    v2/ v3/ v3.1/             # ~45 edge-case specs, one concern per file
+    v2/ v3/ v3.1/             # 54 edge-case specs, one concern per file
     integration/              # the curated kitchen-sink spec
   cases/cases.ts              # shared case table (tier 4 expectations)
   output/                     # COMMITTED generated trees, reviewed in PRs
@@ -92,7 +92,7 @@ profile maps to exactly one tier-3 compile unit.
 
 Review ergonomics: `test/output/**` is added to `fmt.exclude` and `lint.exclude` — it is generated, and byte-exactness
 is the point — and marked `linguist-generated` in `.gitattributes` so GitHub collapses those diffs by default while
-keeping them expandable. A 40-spec regeneration must not bury the substantive change in a pull request.
+keeping them expandable. A 54-spec regeneration must not bury the substantive change in a pull request.
 
 Because tier 2 lets generators write real files, assets emitted through `copyAssetFile` (`easy-network-stub.utils.ts`,
 the okhttp3 client base, and so on) land in the committed tree. Asset drift becomes reviewable, which it is not today.
@@ -214,7 +214,7 @@ CRs on commit — which would make `git diff` blind to exactly the CR-only chang
 would leave check mode permanently red on a Windows checkout while CI stayed green. Assets copied verbatim into
 generated output (`copyAssetFile`) are pinned to LF at source instead, via `packages/*/assets/** text eol=lf`.
 
-**Profile registry.** Handwriting 45 x 9 test files is untenable, so a registry drives both tier 2 and tier 3:
+**Profile registry.** Handwriting 54 x 9 test files is untenable, so a registry drives both tier 2 and tier 3:
 
 ```ts
 // test/output-tests/profiles.ts
@@ -234,10 +234,10 @@ Kotlin generators: `models@sb3`, `models@sb4`, `spring-controllers@sb3`, `spring
 `spring-reactive-web-clients@sb4`, `okhttp3-clients@sb3`, `okhttp3-clients@sb4` for Kotlin; `models`, `fetch-clients`,
 `angular-services`, `k6-clients`, `easy-network-stub` for TypeScript.
 
-**Measured cost.** Generation runs at roughly 30 ms per profile and spec pair, so the full 45 x 15 matrix is about 20
-seconds of generation — tier 2 stays inside the everyday loop. Output volume is roughly 65 KB and 60 files per spec
-across the profiles, extrapolating to some 4.5 MB and 4500 committed files. About 40 KB per spec of that is
-byte-identical client boilerplate that the okhttp3, k6, and easy-network-stub generators re-emit per spec. Accepted:
+**Measured cost (post-expansion).** Across the full 54 x 15 matrix, `deno task test:output:check` runs in about 20-22
+seconds wall-clock (871 total steps across the profile, core-model, and orphan checks) — tier 2 stays inside the
+everyday loop. The committed tree is 8,275 files under `test/output/`. A meaningful share of that is byte-identical
+client boilerplate that the okhttp3, k6, and easy-network-stub generators re-emit per spec. Accepted:
 `linguist-generated` collapses it in review, and an asset change genuinely does affect every output tree.
 
 ## Tier 3: Compile Gate
@@ -465,9 +465,10 @@ Each phase gets its own implementation plan.
    consumer; building it here would mean either an untested abstraction or Docker-dependent tests with no workload.
 2. **Tier 2 machinery** — spec discovery, profile registry, `verifyProfile`, the output test driver, deletion of the old
    verify tests, initial committed trees over the _existing_ 14-file corpus. Delivers a working tier 2 end to end.
-2b. **Corpus expansion** — the ~45 edge-case specs, in category batches, each batch regenerating trees. Split from 2
-   because authoring the corpus is bulk content work gated on nothing but a functioning tier 2, and because reviewing
-   ~4500 committed files is tractable per category and not in one commit.
+2b. **Corpus expansion** — the 40 new edge-case specs that grew the corpus to 54, in category batches, each batch
+   regenerating trees. Split from 2 because authoring the corpus is bulk content work gated on nothing but a
+   functioning tier 2, and because reviewing the resulting 8,275 committed files is tractable per category and not in
+   one commit.
 3. **Tier 3** — Gradle multi-project compile, TypeScript compile, `kotlin` and `node` Dockerfiles.
 4. **Tier 1** — `@goast/core` `parse`/`transform`/`collect`/`codegen` coverage plus the convention pass. Independent of
    the others; can slot anywhere.

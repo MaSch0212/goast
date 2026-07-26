@@ -204,6 +204,43 @@ the literal string `"default"` for the default response and has no standard repr
 particular annotation field); that decision, plus verifying the fix actually compiles, belongs to whichever batch
 picks this up.
 
+### Defect 20 — the TypeScript fetch client JSON-stringifies every `multipart/form-data` body (found by phase 2b task 9, not scheduled)
+
+`FetchClientsGenerator`'s request builder (`packages/typescript/src/generators/services/fetch-clients/fetch-client-generator.ts:226`) decides how to serialize a request body from schema presence alone:
+
+```ts
+endpoint.requestBody?.content[0]?.schema ? ts.property('body', { value: 'JSON.stringify(body)' }) : null,
+```
+
+This branch never inspects `endpoint.requestBody.content[0].contentType`, so every request body — JSON, form-urlencoded,
+`multipart/form-data`, anything — is wrapped in `JSON.stringify(...)` and sent with no `Content-Type` header set to
+match. For a `multipart/form-data` operation whose body includes a `Blob`-typed part, this is not just the wrong
+serialization — `JSON.stringify` on an object holding a `Blob` produces `"{}"` (or drops the field, depending on the
+engine), so the file content itself is lost on the wire, not merely mis-encoded.
+
+Pinned by `v3/multipart-bodies`, all seven operations, in
+`test/output/typescript/fetch-clients/v3/multipart-bodies/clients/multipart-client.ts`:
+`singleFile` (line 31), `multipleFiles` (line 50), `fileAndFields` (line 72), `nestedObjectPart` (line 94),
+`refPart` (line 113), `withEncoding` (line 135), `optionalFile` (line 154) — every one reads `body: JSON.stringify(body)`.
+Five of the seven (`singleFile`, `multipleFiles`, `fileAndFields`, `withEncoding`, `optionalFile`) have a `Blob`-typed
+field in the body, so the data-loss consequence above applies to those five; `nestedObjectPart` and `refPart` have no
+`Blob` field and only mis-serialize.
+
+**Scoped to the `fetch-clients` profile only.** The other two TypeScript client generators that emit multipart
+operations both delegate to a shared, content-type-aware request builder instead of inlining `JSON.stringify`:
+`k6-clients` and `angular-services` both emit `rb.body(params.body, 'multipart/form-data')`
+(`test/output/typescript/k6-clients/v3/multipart-bodies/clients/multipart-client.js` and
+`test/output/typescript/angular-services/v3/multipart-bodies/services/multipart.service.ts`, seven call sites each).
+Whether that builder itself handles `multipart/form-data` correctly is not verified here — only that neither of those
+two profiles inlines the JSON-stringify mistake `fetch-clients` does.
+
+This is a distinct defect from `multipart-bodies.yml`'s inert `style` key (a corpus quirk recorded in `test/README.md`,
+not a generator bug): the `encoding` block being ignored is specification-conformant and separate from the body itself
+being serialized wrong regardless of `encoding`. Not fixed here — this phase records defects rather than fixing them.
+A fix needs `fetch-client-generator.ts` to branch on `content[0].contentType`: build a `FormData` and `append` each
+property for `multipart/form-data`, URL-encode for `application/x-www-form-urlencoded`, and keep `JSON.stringify` only
+for JSON-like media types.
+
 ### Also registered, not scheduled
 
 Small, verified, and each needing either a decision or a home:
