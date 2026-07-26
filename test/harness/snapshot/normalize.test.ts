@@ -129,6 +129,22 @@ describe('normalizeFileTree', () => {
       "// source: <root>/test/specs/v3/pets.yml\nexport type {  } from '<output>/models/.ts';\n",
     );
   });
+
+  // The case that was actually broken: nothing stops TMPDIR/TEMP from pointing inside the checkout,
+  // so `outputDir` can itself sit under `repoRootDir`. With `normalizePaths` applied first, it would
+  // consume the `repoRootDir` prefix of the leaked path and leave the random per-run directory name —
+  // `goast-snapshot-abc123` here — sitting in the committed snapshot as `<root>/tmp/goast-snapshot-
+  // abc123/models/.ts`: still machine- and run-dependent, the exact hole this whole change closes.
+  // Running `replaceOutputDir` first (see `normalizeFileTree`'s doc comment) avoids this by consuming
+  // the leaked path down to `<output>` before `normalizePaths` ever sees it.
+  it('should neutralize a leaked path even when the output dir sits inside the repo root', () => {
+    const outputDir = join(repoRootDir, 'tmp', 'goast-snapshot-abc123');
+    const text = `export type {  } from '${join(outputDir, 'models', '.ts')}';\n`;
+
+    const tree = normalizeFileTree(new Map([['models.ts', encode(text)]]), outputDir);
+
+    expect(decode(tree.get('models.ts')!)).toBe("export type {  } from '<output>/models/.ts';\n");
+  });
 });
 
 describe('replaceOutputDir', () => {
@@ -154,5 +170,17 @@ describe('replaceOutputDir', () => {
   it('should leave text without the output dir untouched', () => {
     const outputDir = 'C:\\Users\\someone\\AppData\\Local\\Temp\\goast-snapshot-abc123';
     expect(replaceOutputDir('export const a = 1;\n', outputDir)).toBe('export const a = 1;\n');
+  });
+
+  // The trailing-path pass exists to clean up *after* a replacement this function just made; it must
+  // not also rewrite a literal `<output>` that was already in the input for an unrelated reason (this
+  // function is now applied to every text file of every generated tree, not just util.inspect dumps
+  // and error text, so an unrelated `<output>` substring is now a real possibility). Before this was
+  // guarded, `const s = "<output>\n\t";` came out as `const s = "<output>/n/t";` even though the output
+  // dir never appeared anywhere in the text.
+  it('should not touch a literal <output> already in the text when the output dir never appears', () => {
+    const outputDir = 'C:\\Users\\someone\\AppData\\Local\\Temp\\goast-snapshot-abc123';
+    const text = 'const s = "<output>\\n\\t";';
+    expect(replaceOutputDir(text, outputDir)).toBe(text);
   });
 });

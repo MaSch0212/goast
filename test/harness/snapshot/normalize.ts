@@ -70,13 +70,25 @@ export function normalizePaths(text: string): string {
 }
 
 /**
- * Applies {@link normalizePaths} and {@link replaceOutputDir} to every text file in a tree. Binary
- * files pass through untouched.
+ * Applies {@link replaceOutputDir} and {@link normalizePaths} to every text file in a tree, in that
+ * order. Binary files pass through untouched.
  *
  * `outputDir` is required, not optional: an optional parameter would let a future caller silently
  * skip the output-directory neutralizer, which is exactly the gap that let a generator's leaked
  * absolute path reach a committed snapshot undetected (`replaceOutputDir` was applied to `state.txt`
  * and to generation-error text, but never to tree file content, until this was found and fixed).
+ *
+ * Order matters and is not arbitrary: `outputDir` can itself sit inside `repoRootDir` (nothing stops
+ * `TMPDIR`/`TEMP` from pointing into the working tree), and if `normalizePaths` ran first it would
+ * consume the leaked path's `repoRootDir` prefix and leave the random per-run directory name — the
+ * exact non-machine-independent text this function exists to remove — sitting in the committed
+ * snapshot as `<root>/tmp/goast-snapshot-abc123/…`. Running `replaceOutputDir` first avoids this: it
+ * yields `<output>/…`, which no longer contains `repoRootDir`, so `normalizePaths` has nothing left to
+ * match there. In the ordinary case — `outputDir` outside the checkout entirely — the two roots are
+ * disjoint and the two passes don't interact, so this order produces identical output to the old one.
+ * {@link serializeNormalized} composes the same two functions for `state.txt`, in the same order, for
+ * the same reason: if the two artifacts disagreed on order, a leaked path inside the checkout would
+ * be neutralized in one and not the other.
  */
 export function normalizeFileTree(tree: FileTree, outputDir: string): FileTree {
   const decoder = new TextDecoder();
@@ -85,7 +97,7 @@ export function normalizeFileTree(tree: FileTree, outputDir: string): FileTree {
 
   for (const [path, bytes] of tree) {
     const text = decoder.decode(bytes);
-    const normalized = replaceOutputDir(normalizePaths(text), outputDir);
+    const normalized = normalizePaths(replaceOutputDir(text, outputDir));
     result.set(path, bytes.includes(0) || normalized === text ? bytes : encoder.encode(normalized));
   }
   return result;
@@ -110,12 +122,23 @@ export function normalizeFileTree(tree: FileTree, outputDir: string): FileTree {
  * always mean one escaped separator, so they collapse to a single `/` first; only then are any
  * remaining lone backslashes — the unescaped-native case — turned into `/` too. Collapsing pairs
  * before singles keeps an escaped separator from becoming two slashes instead of one.
+ *
+ * That trailing-path pass only runs when a replacement actually happened. Its regex matches any
+ * literal `<output>` already present in the input, not just one this function just produced, and
+ * unconditionally rewrites every backslash in the run that follows — harmless when this only ever
+ * saw `util.inspect` dumps and error text, but this is now applied to every text file of every
+ * generated tree (see {@link normalizeFileTree}), where an unrelated `<output>` substring followed by
+ * literal backslashes is content this function must leave alone.
  */
 export function replaceOutputDir(text: string, outputDir: string): string {
   let replaced = text;
+  let matched = false;
   for (const variant of outputDirSpellings(outputDir)) {
+    if (!replaced.includes(variant)) continue;
+    matched = true;
     replaced = replaced.split(variant).join('<output>');
   }
+  if (!matched) return replaced;
   return replaced.replace(
     /<output>([^\s"']*)/g,
     (_match, rest: string) => `<output>${rest.replace(/\\\\/g, '/').replace(/\\/g, '/')}`,

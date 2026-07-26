@@ -160,7 +160,9 @@ reviewable instead of a randomly-named temp path that changed on every run. Befo
 task 5's round 2 switched to `existingFileBehavior: 'count'` and let generation run far enough to reach it.
 
 Not fixed here — this phase records defects rather than fixing them. The fix belongs in `getImportKind`: also treat
-a path whose basename starts with `.ts`/`.js`/`.json` (i.e. an empty component name) as `'file'`, not `'module'`.
+a path whose basename is **exactly** `.ts`, `.js`, or `.json` (i.e. an empty component name) as `'file'`, not
+`'module'` — basename equality with the extension, not a prefix match (a prefix match would also wrongly capture
+`.tsx`, `.tsconfig`, or `.jsonc`, which are not this bug).
 
 ### Also registered, not scheduled
 

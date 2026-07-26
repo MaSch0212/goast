@@ -77,9 +77,18 @@ export function rewriteStrings(
  *
  * Every snapshot kind that serializes a value goes through here, so the two cannot drift apart
  * again.
+ *
+ * When `extraReplace` is the output-directory neutralizer, it runs **before** `normalizePaths`, not
+ * after: `outputDir` can itself sit inside `repoRootDir` (nothing stops `TMPDIR`/`TEMP` from pointing
+ * into the working tree), and if `normalizePaths` ran first it would consume the leaked path's
+ * `repoRootDir` prefix and leave the random per-run directory name — the one part of the path that is
+ * never machine-independent — sitting in the committed snapshot. Running the output-directory
+ * replacement first avoids this, and produces identical output to the old order in the ordinary case
+ * where the two roots are disjoint. `normalizeFileTree` in `./normalize.ts` composes the same two
+ * functions, in the same order, for the same reason — the two must not drift apart on this either.
  */
 export function serializeNormalized(value: unknown, extraReplace?: (text: string) => string): string {
-  const replace = extraReplace ? (text: string) => extraReplace(normalizePaths(text)) : normalizePaths;
+  const replace = extraReplace ? (text: string) => normalizePaths(extraReplace(text)) : normalizePaths;
   // A pre-rendered string has no structure to walk; `serializeValue` passes it through verbatim.
   if (typeof value === 'string') return replace(value);
 
