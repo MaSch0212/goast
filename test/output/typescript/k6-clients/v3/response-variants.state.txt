@@ -1,0 +1,450 @@
+{
+  typescript: {
+    indexFiles: {
+      k6Clients: '<output>/clients.js',
+      k6ResponseModels: '<output>/responses.ts',
+      models: '<output>/models.ts'
+    },
+    k6Clients: {
+      'service-1': {
+        __source__: 'tag:Responses',
+        component: 'ResponsesClient',
+        filePath: '<output>/clients/responses-client.js',
+        responseModels: {
+          'endpoint-1': {
+            component: 'TwoSuccessCodesApiResponse',
+            filePath: '<output>/models/responses/responses-responses.ts'
+          },
+          'endpoint-10': {
+            component: 'PrimitiveResponseApiResponse',
+            filePath: '<output>/models/responses/responses-responses.ts'
+          },
+          'endpoint-11': {
+            component: 'ArrayResponseApiResponse',
+            filePath: '<output>/models/responses/responses-responses.ts'
+          },
+          'endpoint-12': {
+            component: 'RefResponseApiResponse',
+            filePath: '<output>/models/responses/responses-responses.ts'
+          },
+          'endpoint-2': {
+            component: 'SuccessAndDefaultApiResponse',
+            filePath: '<output>/models/responses/responses-responses.ts'
+          },
+          'endpoint-3': {
+            component: 'OnlyDefaultApiResponse',
+            filePath: '<output>/models/responses/responses-responses.ts'
+          },
+          'endpoint-4': {
+            component: 'NoContentApiResponse',
+            filePath: '<output>/models/responses/responses-responses.ts'
+          },
+          'endpoint-5': {
+            component: 'EmptyBody200ApiResponse',
+            filePath: '<output>/models/responses/responses-responses.ts'
+          },
+          'endpoint-6': {
+            component: 'RangeCodesApiResponse',
+            filePath: '<output>/models/responses/responses-responses.ts'
+          },
+          'endpoint-7': {
+            component: 'MixedExactAndRangeApiResponse',
+            filePath: '<output>/models/responses/responses-responses.ts'
+          },
+          'endpoint-8': {
+            component: 'ErrorCodesApiResponse',
+            filePath: '<output>/models/responses/responses-responses.ts'
+          },
+          'endpoint-9': {
+            component: 'MultiContentResponseApiResponse',
+            filePath: '<output>/models/responses/responses-responses.ts'
+          }
+        }
+      }
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        additionalExports: [],
+        component: 'Thing',
+        filePath: '<output>/models/thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/thing.ts',
+            name: 'Thing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        additionalExports: [],
+        component: 'Error',
+        filePath: '<output>/models/error.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/error.ts',
+            name: 'Error',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        additionalExports: [],
+        component: 'Error',
+        filePath: '<output>/models/error.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/error.ts',
+            name: 'Error',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error/properties/message',
+        component: 'string',
+        imports: []
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error/properties/code',
+        component: 'number',
+        imports: []
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        additionalExports: [],
+        component: 'Error',
+        filePath: '<output>/models/error.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/error.ts',
+            name: 'Error',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        additionalExports: [],
+        component: 'Thing',
+        filePath: '<output>/models/thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/thing.ts',
+            name: 'Thing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        additionalExports: [],
+        component: 'Error',
+        filePath: '<output>/models/error.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/error.ts',
+            name: 'Error',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        additionalExports: [],
+        component: 'Error',
+        filePath: '<output>/models/error.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/error.ts',
+            name: 'Error',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        additionalExports: [],
+        component: 'Thing',
+        filePath: '<output>/models/thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/thing.ts',
+            name: 'Thing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/OtherThing',
+        additionalExports: [],
+        component: 'OtherThing',
+        filePath: '<output>/models/other-thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/other-thing.ts',
+            name: 'OtherThing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        additionalExports: [],
+        component: 'Thing',
+        filePath: '<output>/models/thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/thing.ts',
+            name: 'Thing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        additionalExports: [],
+        component: 'Error',
+        filePath: '<output>/models/error.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/error.ts',
+            name: 'Error',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        additionalExports: [],
+        component: 'Thing',
+        filePath: '<output>/models/thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/thing.ts',
+            name: 'Thing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        additionalExports: [],
+        component: 'Error',
+        filePath: '<output>/models/error.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/error.ts',
+            name: 'Error',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        additionalExports: [],
+        component: 'Error',
+        filePath: '<output>/models/error.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/error.ts',
+            name: 'Error',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        additionalExports: [],
+        component: 'Error',
+        filePath: '<output>/models/error.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/error.ts',
+            name: 'Error',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        additionalExports: [],
+        component: 'Error',
+        filePath: '<output>/models/error.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/error.ts',
+            name: 'Error',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        additionalExports: [],
+        component: 'Thing',
+        filePath: '<output>/models/thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/thing.ts',
+            name: 'Thing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-27': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/paths//multi-content/get/responses/200/content/text/plain/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-28': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/paths//primitive/get/responses/200/content/application/json/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-29': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/paths//array/get/responses/200/content/application/json/schema',
+        component: '(Thing)[]',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/thing.ts',
+            name: 'Thing',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing/properties/id',
+        component: 'string',
+        imports: []
+      },
+      'schema-30': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        additionalExports: [],
+        component: 'Thing',
+        filePath: '<output>/models/thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/thing.ts',
+            name: 'Thing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-31': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        additionalExports: [],
+        component: 'Thing',
+        filePath: '<output>/models/thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/thing.ts',
+            name: 'Thing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing/properties/label',
+        component: 'string',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/OtherThing',
+        additionalExports: [],
+        component: 'OtherThing',
+        filePath: '<output>/models/other-thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/other-thing.ts',
+            name: 'OtherThing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/OtherThing',
+        additionalExports: [],
+        component: 'OtherThing',
+        filePath: '<output>/models/other-thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/other-thing.ts',
+            name: 'OtherThing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/OtherThing/properties/code',
+        component: 'number',
+        imports: []
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/OtherThing/properties/note',
+        component: 'string',
+        imports: []
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        additionalExports: [],
+        component: 'Thing',
+        filePath: '<output>/models/thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/thing.ts',
+            name: 'Thing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      }
+    }
+  }
+}
