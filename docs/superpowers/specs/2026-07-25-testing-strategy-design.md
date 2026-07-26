@@ -99,7 +99,14 @@ the okhttp3 client base, and so on) land in the committed tree. Asset drift beco
 
 ## Spec Corpus
 
-Approximately 45 focused specs replace the current six. Each file isolates one concern so a failure names its own cause.
+54 focused specs replace the current six (measured via `discoverSpecs()` after the corpus-expansion phase landed;
+see `docs/superpowers/plans/2026-07-25-corpus-expansion.md`). Each file isolates one concern so a failure names its
+own cause. Three items this section describes are not in the corpus: remote HTTP `$ref` (excluded — it would make
+tier 2 non-hermetic, fail offline, and pin a third party's document), mixed spec versions in one set (excluded —
+`discoverSpecs()` derives `version` from the parent directory, so a mixed-version set has no honest home in the
+layout without a discovery change), and a document mixing `webhooks` with a non-empty `paths` (a coverage gap: the
+corpus-expansion plan asked for both "no `paths` at all" and a regular operation in `v3.1/webhooks.yml`, which are
+unsatisfiable together, so the no-`paths` case was kept and the mixed case dropped rather than faked).
 
 - **Types and schemas** — primitive formats; `nullable` (3.0) versus type arrays (3.1); enums (string, integer, mixed,
   single-value); `const`; arrays (nested, `prefixItems`, `uniqueItems`); objects (`additionalProperties`

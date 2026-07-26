@@ -60,6 +60,11 @@ a `snapshot.patch` artifact. Applying it is an alternative to regenerating local
 git apply snapshot.patch
 ```
 
+**Measured cost.** `deno task test:output:check` runs the full 54-spec corpus across fifteen profiles in about 22
+seconds wall-clock (18 passed, 871 steps, 0 failed) on a warm Deno cache. The 54 specs and their generated trees
+together commit 8,275 files under `test/output/`, ten of them `.error.txt` (see "Error snapshots" under
+[Corpus map](#corpus-map)) rather than a generated tree.
+
 ## Harness API
 
 `@goast/test-harness` (source in `test/harness/`) provides the snapshot engine.
@@ -87,6 +92,12 @@ an explicit mode, so they never depend on whether `CI` happens to be set.
   Generators must run with `newLine: '\n'`.
 - **Absolute repo paths are normalized** to `<root>/…` with forward slashes before comparison, so a snapshot written on
   Windows matches one validated on Linux.
+- **The harness's random per-run output directory is rewritten to `<output>`, in tree file content as well as in
+  `state.txt`.** If you find `from '<output>/models/…'` inside a committed generated file rather than a plausible
+  relative import, the `<output>` marker is the harness doing its job — the wrongness is that the generator wrote an
+  absolute temp-directory path into generated source in the first place. This surfaced during the corpus-expansion phase
+  when `existingFileBehavior: 'count'` (below) let generation reach a file whose name is exactly `.ts` for the first
+  time; it's registered as defect 18 in `docs/superpowers/plans/2026-07-25-generator-bug-fixes.md`, not fixed here.
 - **Write mode will not delete a snapshot wholesale.** If generation emits zero files, the test fails instead of
   pruning, so a generator that throws early cannot wipe committed output.
 - **`test/output/**` is excluded** from `deno fmt` and `deno lint`, and marked `linguist-generated` in `.gitattributes`
@@ -115,6 +126,156 @@ fails if it finds a base — a tree directory, a `.state.txt`, or an `.error.txt
 `test/output-tests/core-model.test.ts` snapshots one more thing per spec: the parsed `ApiData` model itself, at
 `test/output/core/<version>/<spec>/model.txt`, independent of any generator.
 
+## Corpus map
+
+`test/specs/` holds 54 entries — the count `discoverSpecs()` returns, not the file count, since a _directory_ under a
+version directory (`v3/external-refs/`, `v3/multi-file/`) is one entry regardless of how many files it contains. 14 of
+the 54 predate the corpus-expansion phase; the other 40 were added by
+[`docs/superpowers/plans/2026-07-25-corpus-expansion.md`](../docs/superpowers/plans/2026-07-25-corpus-expansion.md) to
+push edge-case coverage past the original six-file corpus's small fraction of OpenAPI. Read this table before adding a
+spec — the cheapest thing to do when adding coverage is to create a new file rather than check whether one of these 54
+already isolates the concern.
+
+### Types and schemas
+
+| Spec                             | Isolates                                                                                                                                                                              |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `v2/simple-schemas.yml`          | one schema per primitive type, no other keywords, under Swagger 2.0's top-level `definitions`                                                                                         |
+| `v3/simple-schemas.yml`          | one schema per primitive type, no other keywords                                                                                                                                      |
+| `v3.1/simple-schemas.yml`        | the same set, 3.1 form                                                                                                                                                                |
+| `v2/detailed-schemas.yml`        | the common keywords Swagger 2.0 supports together: title, format, default, length, pattern, enum, `readOnly` (2.0 has no `writeOnly` or `nullable`)                                   |
+| `v3/detailed-schemas.yml`        | title, the full set of common keywords together (format, default, length, pattern, `nullable`, `deprecated`, example), a plain string enum, `readOnly`/`writeOnly`                    |
+| `v3.1/detailed-schemas.yml`      | the same, 3.1 form (a `type` array instead of `nullable`)                                                                                                                             |
+| `v3/primitive-formats.yml`       | every `format` on every primitive, including a nonstandard one and a `format` on the "wrong" type                                                                                     |
+| `v3/nullable-schemas.yml`        | 3.0 `nullable` in combination — with a `$ref`, an array, `allOf`, `required`                                                                                                          |
+| `v3.1/nullable-schemas.yml`      | the same combinations expressed as 3.1 type arrays, plus `type: 'null'` alone and a genuine multi-type schema                                                                         |
+| `v3/enum-schemas.yml`            | non-string and irregular enums — integer, mixed JSON types, empty string, special characters, reserved words as values                                                                |
+| `v3.1/enum-schemas.yml`          | `const`, and `enum` with no `type` at all                                                                                                                                             |
+| `v3/defaults-and-deprecated.yml` | `default` per type and `deprecated` at three positions (schema, operation, parameter) — including the deprecated-parameter-without-description shape that was a real k6 generator bug |
+
+### Arrays and objects
+
+| Spec                      | Isolates                                                                                                                                                                                 |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `v2/object-schemas.yml`   | properties, `required`, `additionalProperties`, `allOf` (2.0 has no `anyOf`), object and multi-line descriptions                                                                         |
+| `v3/object-schemas.yml`   | properties, `required`, `additionalProperties`, `allOf` and `anyOf` combined on one schema, nullable properties, and `$ref`s in properties/`anyOf`/`allOf` both same-file and cross-file |
+| `v3.1/object-schemas.yml` | the same, 3.1 form                                                                                                                                                                       |
+| `v3/array-schemas.yml`    | array constraints and nesting — `uniqueItems`, min/max, arrays of arrays, an untyped `items`-less array                                                                                  |
+| `v3.1/array-schemas.yml`  | `prefixItems` (tuples, with and without a rest `items`, closed with `items: false`), `contains`                                                                                          |
+| `v3/object-extras.yml`    | the `additionalProperties` boolean forms, `not`, `minProperties`/`maxProperties`, a schema that is just `{}`                                                                             |
+| `v3.1/object-extras.yml`  | `patternProperties` and its 3.1-only relatives — `unevaluatedProperties`, `dependentSchemas`, `dependentRequired`, `propertyNames`                                                       |
+
+### Composition
+
+| Spec                             | Isolates                                                                                                                                                                                                                                                                                                               |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `v3/oneof-schemas.yml`           | an empty `oneOf`, `oneOf` of plain types, `oneOf` ignored beside a sibling `type`, `oneOf` of refs                                                                                                                                                                                                                     |
+| `v3.1/oneof-schemas.yml`         | the same, 3.1 form                                                                                                                                                                                                                                                                                                     |
+| `v3/discriminated-schemas.yml`   | a discriminator with an explicit `mapping`, encoded as parent-declares/children-`allOf` inheritance rather than a `oneOf`                                                                                                                                                                                              |
+| `v3.1/discriminated-schemas.yml` | the same, 3.1 form                                                                                                                                                                                                                                                                                                     |
+| `v3/allof-schemas.yml`           | `allOf` merging — two refs, ref plus inline, sibling properties beside `allOf`, a property-type conflict between branches, a required-only branch, three-level inheritance                                                                                                                                             |
+| `v3.1/allof-schemas.yml`         | the same shapes, 3.1 form                                                                                                                                                                                                                                                                                              |
+| `v3/anyof-schemas.yml`           | `anyOf` as the whole of a named schema, not just a property keyword                                                                                                                                                                                                                                                    |
+| `v3/discriminator-variants.yml`  | discriminator mapping that `v3/discriminated-schemas.yml` doesn't cover — implicit (no `mapping`), partial `mapping`, on `anyOf`, on a bare `allOf` inheritance chain with no `oneOf`, an unrequired discriminator property, an enum-typed discriminator property, a discriminator nested inside another discriminator |
+| `v3/anyof-cycle.yml`             | an `anyOf` branch that refs back to the schema holding it                                                                                                                                                                                                                                                              |
+| `v3/nested-composition.yml`      | composition nested inside composition — `allOf` of `oneOf`, `oneOf` of `allOf`, two-level `allOf`/`oneOf`, composition inside an array or map or object property                                                                                                                                                       |
+
+### References
+
+| Spec                       | Isolates                                                                                                                                                                    |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `v3/recursive-refs.yml`    | self-recursion, mutual recursion, and recursion through an array, a map, and a required property — one schema in this file crashes a generator, see "Error snapshots" below |
+| `v3/external-refs/`        | a schema-only file with no `openapi`/`info`/`paths` (`shared/types.yml`) pulled in by `$ref` from a full document (`main.yml`), directly and through an array               |
+| `v3/root-ref.yml`          | `$ref: '#'` (the whole document) and `$ref: '#/components'`                                                                                                                 |
+| `v3/ref-siblings.yml`      | `$ref` beside other keywords (`description`, `title`, `nullable`, `default`, `example`) — 3.0 ignores the siblings, 3.1 merges them                                         |
+| `v3/json-schema-root.json` | a bare JSON Schema document as the root, no `openapi`/`info`/`paths` — the case commit `35a746b` fixed                                                                      |
+
+### Naming
+
+| Spec                     | Isolates                                                                                                                                                                                                                                               |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `v3/name-collisions.yml` | schema names that a generator's normalization collapses onto each other (casing, separators, transliteration) — see "Reading the corpus" below for what a collision actually does to the tree                                                          |
+| `v3/reserved-words.yml`  | Kotlin and TypeScript keywords used as type names and, separately, as property names                                                                                                                                                                   |
+| `v3/non-ascii-names.yml` | umlauts, CJK, Greek, Cyrillic, emoji, and a combining-mark name next to its precomposed equivalent                                                                                                                                                     |
+| `v3/extreme-names.yml`   | a 200-character name, numeric-leading names, punctuation-only names, and a casing-variety set (`camelCase`, `PascalCase`, `snake_case`, `SCREAMING_SNAKE`, `kebab-case`, an acronym, a leading-lowercase-before-capitals name) that must _not_ collide |
+
+### Parameters
+
+| Spec                           | Isolates                                                                                                                     |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| `v3/parameter-locations.yml`   | path, query, header, and cookie parameters, `allowEmptyValue`, `allowReserved`, a `$ref`'d parameter schema                  |
+| `v3/parameter-styles.yml`      | the `style` × `explode` matrix — `form`, `spaceDelimited`, `pipeDelimited`, `deepObject`, `simple`, `label`, `matrix`        |
+| `v3/parameter-inheritance.yml` | path-item-level `parameters` inherited and overridden by an operation, plus a `$ref`'d path-item parameter                   |
+| `v2/parameter-locations.yml`   | Swagger 2.0's `body` and `formData` parameter locations, plus `collectionFormat` — pins an absence, see "Reading the corpus" |
+
+### Bodies and responses
+
+| Spec                       | Isolates                                                                                                                                                       |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `v3/request-bodies.yml`    | content types on a request body — JSON, XML, text, octet-stream, form-urlencoded, `*/*`, several on one operation, optional, a `$ref`'d body                   |
+| `v3/multipart-bodies.yml`  | files and nested objects inside `multipart/form-data`, plus an `encoding` block — pins an absence, see "Reading the corpus"                                    |
+| `v3/response-variants.yml` | multiple `2xx` codes, `default`, `204`, `2XX`/`4XX`/`5XX` ranges mixed with exact codes, multi-content-type and array/primitive responses, a `$ref`'d response |
+| `v3/response-headers.yml`  | response headers, including required, deprecated, `$ref`'d, and on a `204` — pins an absence, see "Reading the corpus"                                         |
+
+### Document structure
+
+| Spec                       | Isolates                                                                                                                                                                 |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `v3/service-endpoints.yml` | a small multi-tag service (list/create/get/delete/search across two schemas) — the baseline endpoint spec other specs' conventions are read against                      |
+| `v3/operation-naming.yml`  | the name a generator derives when `operationId` is missing — by method, path, path parameters, and (once) a `summary` instead                                            |
+| `v3/tags-and-servers.yml`  | tag combinations (none, one, two, shared, declared vs. undeclared) and `servers` at document, path-item, and operation level                                             |
+| `v3/security-schemes.yml`  | apiKey, http basic, http bearer, and oauth2 schemes; inherited, overridden, emptied, ANDed, and ORed `security` requirements — pins an absence, see "Reading the corpus" |
+| `v3/path-edge-cases.yml`   | punctuation in path segments, a templated segment overlapping a literal one, a trailing slash, a parameter-only path, deep nesting, casing variety                       |
+| `v3/multi-file/`           | three complete documents (`shared.yml`, `pets.yml`, `owners.yml`) parsed as one spec, cross-referencing each other in both directions                                    |
+| `v3.1/webhooks.yml`        | 3.1 `webhooks`, with no `paths` at all — pins an absence, see "Reading the corpus"                                                                                       |
+| `v3/json-input.json`       | a complete document written as JSON instead of YAML                                                                                                                      |
+
+### Reading the corpus
+
+A few entries need context a one-phrase table cell can't carry:
+
+- **Several entries pin an absence, not a generated behaviour.** `v3/response-headers.yml`, `v3/security-schemes.yml`,
+  `v3.1/webhooks.yml`, the `encoding` block in `v3/multipart-bodies.yml`, and the `body`/`formData` parameters in
+  `v2/parameter-locations.yml` all reach the parsed core model — visible in `test/output/core/**/model.txt` — and then
+  disappear before any generator emits a line of code for them (verified by grepping the generated trees: no response
+  header name, no security scheme name, no webhook operation ID, no `encoding`-driven `Content-Type` or `style`, and no
+  2.0 body/`formData` parameter appears in any generated client, controller, or model file;
+  `v2/parameter-locations.yml`'s `bodyParam()`, `formDataParams()`, and `fileUpload()` all generate with **no parameters
+  at all**). A green run against these specs proves the input parses; it does not prove anything renders. Treat a change
+  to one of them as "the model shape moved" until you've checked whether a generator was supposed to start honoring it.
+- `v3/multipart-bodies.yml`'s `withEncoding` operation sets `style: form` on a multipart part. By the OpenAPI 3.0 spec's
+  own text, `style` is ignored unless the media type is `application/x-www-form-urlencoded` — see the doc comment on
+  `OpenApiEncoding.style` at `packages/core/src/parse/openapi-types.ts:279`. The key is there because the corpus plan
+  asked for it; it is inert by specification, not merely unimplemented.
+- `v3.1/webhooks.yml`'s third entry, `petsRequested`, is a **`get` under `webhooks:`**, not a regular operation under
+  `paths:` — there is no `paths:` in this file at all. Under `webhooks:` the keys are webhook names and the value is a
+  Path Item Object, so a non-`post` method there is legal, but it is still a webhook. Do not read `petsRequested`'s
+  `operationId: listPets` as evidence that this spec covers a mixed webhooks-plus-regular-operations document.
+- `v3/security-schemes.yml` declares `ApiKeyQuery` (apiKey in query) and `BasicAuth` (http basic) in
+  `components.securitySchemes`, but no operation's `security` requires either — they're declared-only.
+- **Coverage gap:** no entry in the corpus has both a top-level `webhooks` block and a non-empty `paths` block in the
+  same document. The corpus-expansion plan asked for both "no `paths` at all" and a regular operation in the same file
+  for `v3.1/webhooks.yml`, which turned out to be unsatisfiable together (a webhook-only document can't have `paths` and
+  still be the no-`paths` case); the no-`paths` shape was kept because nothing else in the corpus pins it, and the mixed
+  shape was dropped rather than faked. If you need that combination, it isn't here yet.
+
+### Error snapshots
+
+Exactly one defect is committed as `.error.txt`, ten times over — once per Kotlin profile (`models@sb3`, `models@sb4`,
+`okhttp3-clients@sb3`, `okhttp3-clients@sb4`, `spring-controllers@sb3`, `spring-controllers@sb3-strict`,
+`spring-controllers@sb4`, `spring-controllers@sb4-strict`, `spring-reactive-web-clients@sb3`,
+`spring-reactive-web-clients@sb4`) against `v3/recursive-refs`. Every one holds the identical one-line message
+`RangeError: Maximum call stack size exceeded`.
+
+**Known bug, narrowly scoped — do not read this as "Kotlin crashes on recursive schemas."** Bisecting the spec's schemas
+one at a time through `KotlinModelsGenerator` shows only `RecursiveThroughMap` (whose `additionalProperties` refs
+itself) triggers the crash. Every other recursive shape in the file generates correctly, including _direct_
+self-reference: `SelfRecursive.kt` emits `val child: SelfRecursive? = null` and `TreeNode.kt` emits
+`val parent: TreeNode?` / `val children: List<TreeNode>?`. The bug is in `KotlinModelsGenerator`'s handling of a
+self-referencing `additionalProperties` map specifically, and every Kotlin profile hits it because all ten chain
+`KotlinModelsGenerator` first. Not fixed here — per this phase's rules, a crash is reported and left in place, not
+patched or hidden by trimming the spec.
+
 ## How to add a spec
 
 Drop a file in `test/specs/<version>/` (`v2`, `v3`, or `v3.1`). A _directory_ there is one spec too, whose files are
@@ -126,6 +287,27 @@ git diff                # review the new snapshot tree
 ```
 
 and commit the generated tree. `discoverSpecs()` picks the new spec up automatically; nothing else needs to change.
+
+**Format before you regenerate, never after.** Run `deno fmt test/specs` first. The Kotlin and TypeScript generators
+stamp source-document line numbers into generated doc comments via `getSourceDocLine`; reformatting a spec after
+generating its snapshot silently invalidates every stamped line number, and check mode then fails on a machine that
+never reformatted the file, with no clue why.
+
+**`git diff --stat -- test/output` must stay empty for every _other_ spec's snapshots.** Adding a spec should only add
+new, untracked paths. A line of diff against an existing spec's tree means the new spec changed generation for something
+already committed — that's a behaviour change riding in disguised as new coverage, and it needs its own investigation
+before it gets committed alongside the new spec.
+
+**A filename collision is silent, not a failure.** The output tests run with `existingFileBehavior: 'count'`
+(`test/output-tests/output.test.ts`): if a spec has two schemas whose names normalize to the same file, generation does
+not fail — it writes `X.kt`, then `X_1.kt`, `X_2.kt`, and so on, and the run reports green. After adding a spec, look
+through the new tree for `_1`/`_2`-suffixed files before trusting a clean run; grep the diff for `_\d+\.` in the new
+paths. And per the option's own doc comment: a counted file is written under a name nothing else generated references
+(every other file's imports still point at the first file written), so `'count'` makes a collision inspectable, not
+correct.
+
+**A new spec belongs in the corpus map above.** Add one row, in one phrase that says what the spec isolates rather than
+restating its filename, under the category it fits.
 
 ## How to add a profile
 
