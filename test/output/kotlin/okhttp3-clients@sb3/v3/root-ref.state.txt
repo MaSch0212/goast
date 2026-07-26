@@ -73,6 +73,18 @@
           packageName: 'kotlin',
           subReference: null
         }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/root-ref.yml#/components',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
       }
     }
   }

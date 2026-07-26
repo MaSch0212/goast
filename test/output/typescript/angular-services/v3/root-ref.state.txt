@@ -55,6 +55,11 @@
         __source__: '<root>/test/specs/v3/root-ref.yml#/components',
         component: 'unknown',
         imports: []
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/root-ref.yml#/components',
+        component: 'unknown',
+        imports: []
       }
     },
     services: {}

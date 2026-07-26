@@ -23,3 +23,5 @@ components:
       properties:
         allComponents:
           $ref: '#/components'
+    RefsComponentsDirect:
+      $ref: '#/components'

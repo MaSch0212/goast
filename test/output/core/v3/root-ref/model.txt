@@ -7,6 +7,7 @@
             properties: { allComponents: { '$ref': '#/components' } },
             type: 'object'
           },
+          RefsComponentsDirect: { '$ref': '#/components' },
           RefsRoot: { properties: { document: { '$ref': '#' } }, type: 'object' }
         }
       },
@@ -25,10 +26,10 @@
     {
       '$ref': undefined,
       '$src': {
-        component: '429 inspect chars',
+        component: '485 inspect chars',
         document: '9 inspect chars',
         file: '<root>/test/specs/v3/root-ref.yml',
-        originalComponent: '429 inspect chars',
+        originalComponent: '485 inspect chars',
         path: '/',
         pos: { col: 1, line: 1 }
       },
@@ -124,10 +125,10 @@
     {
       '$ref': undefined,
       '$src': {
-        component: '211 inspect chars',
+        component: '265 inspect chars',
         document: '9 inspect chars',
         file: '<root>/test/specs/v3/root-ref.yml',
-        originalComponent: '211 inspect chars',
+        originalComponent: '265 inspect chars',
         path: '/components',
         pos: { col: 3, line: 15 }
       },
@@ -221,6 +222,34 @@
       },
       required: Set(0) {},
       type: 'object'
+    },
+    {
+      '$ref': 'schema-6',
+      '$src': {
+        component: '26 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/root-ref.yml',
+        originalComponent: '26 inspect chars',
+        path: '/components/schemas/RefsComponentsDirect',
+        pos: { col: 7, line: 27 }
+      },
+      accessibility: 'all',
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      id: 'schema-7',
+      inheritedSchemas: [],
+      isNameGenerated: false,
+      kind: 'unknown',
+      name: 'RefsComponentsDirect',
+      not: undefined,
+      nullable: false,
+      required: Set(0) {}
     }
   ],
   services: []
