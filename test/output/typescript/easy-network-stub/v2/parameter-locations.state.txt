@@ -1,0 +1,54 @@
+{
+  typescript: {
+    indexFiles: { models: '<output>/models.ts', stubs: '<output>/stubs.ts' },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v2/parameter-locations.yml#/definitions/Payload',
+        additionalExports: [],
+        component: 'Payload',
+        filePath: '<output>/models/payload.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/payload.ts',
+            name: 'Payload',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v2/parameter-locations.yml#/definitions/Payload',
+        additionalExports: [],
+        component: 'Payload',
+        filePath: '<output>/models/payload.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/payload.ts',
+            name: 'Payload',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v2/parameter-locations.yml#/definitions/Payload/properties/name',
+        component: 'string',
+        imports: []
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v2/parameter-locations.yml#/definitions/Payload/properties/value',
+        component: 'number',
+        imports: []
+      }
+    },
+    stubs: {
+      'service-1': {
+        __source__: 'tag:Parameters',
+        component: 'ParametersStubs',
+        filePath: '<output>/stubs/parameters.stubs.ts'
+      }
+    }
+  }
+}

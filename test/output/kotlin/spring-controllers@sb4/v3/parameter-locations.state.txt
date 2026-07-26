@@ -1,0 +1,263 @@
+{
+  kotlin: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//path/{id}/{sub}/get/parameters/0/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//mixed/{id}/get/parameters/0/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//mixed/{id}/get/parameters/1/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//mixed/{id}/get/parameters/2/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//mixed/{id}/get/parameters/3/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//described/get/parameters/0/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//described/get/parameters/1/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//described/get/parameters/2/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/components/schemas/ParamSchema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'ParamSchema',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/components/schemas/ParamSchema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'ParamSchema',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//empty-value/get/parameters/0/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//path/{id}/{sub}/get/parameters/1/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//reserved/get/parameters/0/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//query/get/parameters/0/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//query/get/parameters/1/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//query/get/parameters/2/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//query/get/parameters/3/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Boolean',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//header/get/parameters/0/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//header/get/parameters/1/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//cookie/get/parameters/0/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      }
+    },
+    services: {
+      'service-1': {
+        __source__: 'tag:Parameters',
+        apiController: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'ParametersApiController'
+        },
+        apiDelegate: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'ParametersApiDelegate'
+        },
+        apiInterface: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'ParametersApi'
+        }
+      }
+    }
+  }
+}

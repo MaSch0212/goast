@@ -1,0 +1,5544 @@
+{
+  documents: [
+    {
+      components: {
+        parameters: {
+          IdParam: {
+            in: 'path',
+            name: 'id',
+            required: true,
+            schema: { type: 'string' }
+          },
+          PageParam: {
+            in: 'query',
+            name: 'page',
+            schema: { default: 1, type: 'integer' }
+          }
+        }
+      },
+      info: { title: 'Parameter Inheritance', version: '1.0.0' },
+      openapi: '3.0.0',
+      paths: {
+        '/inherited/{id}': {
+          get: {
+            operationId: 'inheritsParams',
+            responses: {
+              '200': {
+                description: 'The inherited path and query parameters echoed back.'
+              }
+            },
+            tags: [ 'Inheritance' ]
+          },
+          parameters: [
+            {
+              in: 'path',
+              name: 'id',
+              required: true,
+              schema: { type: 'string' }
+            },
+            { in: 'query', name: 'common', schema: { type: 'string' } }
+          ],
+          post: {
+            operationId: 'inheritsAndAdds',
+            parameters: [
+              {
+                in: 'query',
+                name: 'extra',
+                schema: { type: 'string' }
+              }
+            ],
+            responses: {
+              '200': {
+                description: "The inherited parameters plus this operation's own one echoed back."
+              }
+            },
+            tags: [ 'Inheritance' ]
+          }
+        },
+        '/overridden/{id}': {
+          get: {
+            operationId: 'overridesParam',
+            parameters: [
+              {
+                description: 'Overrides the inherited parameter with a different type.',
+                in: 'query',
+                name: 'common',
+                schema: { type: 'integer' }
+              }
+            ],
+            responses: {
+              '200': {
+                description: 'The operation-level override of the inherited parameter echoed back.'
+              }
+            },
+            tags: [ 'Inheritance' ]
+          },
+          parameters: [
+            {
+              in: 'path',
+              name: 'id',
+              required: true,
+              schema: { type: 'string' }
+            },
+            { in: 'query', name: 'common', schema: { type: 'string' } }
+          ]
+        },
+        '/ref-param/{id}': {
+          get: {
+            operationId: 'refParam',
+            parameters: [ { '$ref': '#/components/parameters/PageParam' } ],
+            responses: {
+              '200': { description: "The two $ref'd parameters echoed back." }
+            },
+            tags: [ 'Inheritance' ]
+          },
+          parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+        }
+      }
+    }
+  ],
+  endpoints: [
+    <ref *1> {
+      '$ref': undefined,
+      '$src': {
+        component: '175 inspect chars',
+        document: '2327 inspect chars',
+        file: '<root>/test/specs/v3/parameter-inheritance.yml',
+        originalComponent: '175 inspect chars',
+        path: '/paths//inherited/{id}/get',
+        pos: { col: 7, line: 19 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-1',
+      method: 'get',
+      name: 'inheritsParams',
+      parameters: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              in: 'path',
+              name: 'id',
+              required: true,
+              schema: { type: 'string' }
+            },
+            document: {
+              components: {
+                parameters: {
+                  IdParam: {
+                    in: 'path',
+                    name: 'id',
+                    required: true,
+                    schema: { type: 'string' }
+                  },
+                  PageParam: {
+                    in: 'query',
+                    name: 'page',
+                    schema: { default: 1, type: 'integer' }
+                  }
+                }
+              },
+              info: { title: 'Parameter Inheritance', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/inherited/{id}': {
+                  get: {
+                    operationId: 'inheritsParams',
+                    responses: {
+                      '200': {
+                        description: 'The inherited path and query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ],
+                  post: {
+                    operationId: 'inheritsAndAdds',
+                    parameters: [
+                      {
+                        in: 'query',
+                        name: 'extra',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: "The inherited parameters plus this operation's own one echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  }
+                },
+                '/overridden/{id}': {
+                  get: {
+                    operationId: 'overridesParam',
+                    parameters: [
+                      {
+                        description: 'Overrides the inherited parameter with a different type.',
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'integer' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The operation-level override of the inherited parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ]
+                },
+                '/ref-param/{id}': {
+                  get: {
+                    operationId: 'refParam',
+                    parameters: [ { '$ref': '#/components/parameters/PageParam' } ],
+                    responses: {
+                      '200': {
+                        description: "The two $ref'd parameters echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/parameter-inheritance.yml',
+            originalComponent: {
+              in: 'path',
+              name: 'id',
+              required: true,
+              schema: { type: 'string' }
+            },
+            path: '/paths//inherited/{id}/parameters/0',
+            pos: { col: 9, line: 9 }
+          },
+          allowEmptyValue: undefined,
+          allowReserved: undefined,
+          deprecated: false,
+          description: undefined,
+          explode: undefined,
+          id: 'parameter-1',
+          name: 'id',
+          required: true,
+          schema: undefined,
+          style: undefined,
+          target: 'path'
+        },
+        {
+          '$ref': undefined,
+          '$src': {
+            component: { in: 'query', name: 'common', schema: { type: 'string' } },
+            document: {
+              components: {
+                parameters: {
+                  IdParam: {
+                    in: 'path',
+                    name: 'id',
+                    required: true,
+                    schema: { type: 'string' }
+                  },
+                  PageParam: {
+                    in: 'query',
+                    name: 'page',
+                    schema: { default: 1, type: 'integer' }
+                  }
+                }
+              },
+              info: { title: 'Parameter Inheritance', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/inherited/{id}': {
+                  get: {
+                    operationId: 'inheritsParams',
+                    responses: {
+                      '200': {
+                        description: 'The inherited path and query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ],
+                  post: {
+                    operationId: 'inheritsAndAdds',
+                    parameters: [
+                      {
+                        in: 'query',
+                        name: 'extra',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: "The inherited parameters plus this operation's own one echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  }
+                },
+                '/overridden/{id}': {
+                  get: {
+                    operationId: 'overridesParam',
+                    parameters: [
+                      {
+                        description: 'Overrides the inherited parameter with a different type.',
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'integer' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The operation-level override of the inherited parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ]
+                },
+                '/ref-param/{id}': {
+                  get: {
+                    operationId: 'refParam',
+                    parameters: [ { '$ref': '#/components/parameters/PageParam' } ],
+                    responses: {
+                      '200': {
+                        description: "The two $ref'd parameters echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/parameter-inheritance.yml',
+            originalComponent: { in: 'query', name: 'common', schema: { type: 'string' } },
+            path: '/paths//inherited/{id}/parameters/1',
+            pos: { col: 9, line: 14 }
+          },
+          allowEmptyValue: undefined,
+          allowReserved: undefined,
+          deprecated: false,
+          description: undefined,
+          explode: undefined,
+          id: 'parameter-2',
+          name: 'common',
+          required: false,
+          schema: undefined,
+          style: undefined,
+          target: 'query'
+        }
+      ],
+      path: '/inherited/{id}',
+      pathInfo: <ref *2> {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              operationId: 'inheritsParams',
+              responses: {
+                '200': {
+                  description: 'The inherited path and query parameters echoed back.'
+                }
+              },
+              tags: [ 'Inheritance' ]
+            },
+            parameters: [
+              {
+                in: 'path',
+                name: 'id',
+                required: true,
+                schema: { type: 'string' }
+              },
+              {
+                in: 'query',
+                name: 'common',
+                schema: { type: 'string' }
+              }
+            ],
+            post: {
+              operationId: 'inheritsAndAdds',
+              parameters: [
+                {
+                  in: 'query',
+                  name: 'extra',
+                  schema: { type: 'string' }
+                }
+              ],
+              responses: {
+                '200': {
+                  description: "The inherited parameters plus this operation's own one echoed back."
+                }
+              },
+              tags: [ 'Inheritance' ]
+            }
+          },
+          document: {
+            components: {
+              parameters: {
+                IdParam: {
+                  in: 'path',
+                  name: 'id',
+                  required: true,
+                  schema: { type: 'string' }
+                },
+                PageParam: {
+                  in: 'query',
+                  name: 'page',
+                  schema: { default: 1, type: 'integer' }
+                }
+              }
+            },
+            info: { title: 'Parameter Inheritance', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/inherited/{id}': {
+                get: {
+                  operationId: 'inheritsParams',
+                  responses: {
+                    '200': {
+                      description: 'The inherited path and query parameters echoed back.'
+                    }
+                  },
+                  tags: [ 'Inheritance' ]
+                },
+                parameters: [
+                  {
+                    in: 'path',
+                    name: 'id',
+                    required: true,
+                    schema: { type: 'string' }
+                  },
+                  {
+                    in: 'query',
+                    name: 'common',
+                    schema: { type: 'string' }
+                  }
+                ],
+                post: {
+                  operationId: 'inheritsAndAdds',
+                  parameters: [
+                    {
+                      in: 'query',
+                      name: 'extra',
+                      schema: { type: 'string' }
+                    }
+                  ],
+                  responses: {
+                    '200': {
+                      description: "The inherited parameters plus this operation's own one echoed back."
+                    }
+                  },
+                  tags: [ 'Inheritance' ]
+                }
+              },
+              '/overridden/{id}': {
+                get: {
+                  operationId: 'overridesParam',
+                  parameters: [
+                    {
+                      description: 'Overrides the inherited parameter with a different type.',
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'integer' }
+                    }
+                  ],
+                  responses: {
+                    '200': {
+                      description: 'The operation-level override of the inherited parameter echoed back.'
+                    }
+                  },
+                  tags: [ 'Inheritance' ]
+                },
+                parameters: [
+                  {
+                    in: 'path',
+                    name: 'id',
+                    required: true,
+                    schema: { type: 'string' }
+                  },
+                  {
+                    in: 'query',
+                    name: 'common',
+                    schema: { type: 'string' }
+                  }
+                ]
+              },
+              '/ref-param/{id}': {
+                get: {
+                  operationId: 'refParam',
+                  parameters: [ { '$ref': '#/components/parameters/PageParam' } ],
+                  responses: {
+                    '200': {
+                      description: "The two $ref'd parameters echoed back."
+                    }
+                  },
+                  tags: [ 'Inheritance' ]
+                },
+                parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+              }
+            }
+          },
+          file: '<root>/test/specs/v3/parameter-inheritance.yml',
+          originalComponent: {
+            get: {
+              operationId: 'inheritsParams',
+              responses: {
+                '200': {
+                  description: 'The inherited path and query parameters echoed back.'
+                }
+              },
+              tags: [ 'Inheritance' ]
+            },
+            parameters: [
+              {
+                in: 'path',
+                name: 'id',
+                required: true,
+                schema: { type: 'string' }
+              },
+              {
+                in: 'query',
+                name: 'common',
+                schema: { type: 'string' }
+              }
+            ],
+            post: {
+              operationId: 'inheritsAndAdds',
+              parameters: [
+                {
+                  in: 'query',
+                  name: 'extra',
+                  schema: { type: 'string' }
+                }
+              ],
+              responses: {
+                '200': {
+                  description: "The inherited parameters plus this operation's own one echoed back."
+                }
+              },
+              tags: [ 'Inheritance' ]
+            }
+          },
+          path: '/paths//inherited/{id}',
+          pos: { col: 5, line: 8 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: [Circular *1],
+        head: undefined,
+        id: 'path-1',
+        options: undefined,
+        parameters: [
+          {
+            '$ref': undefined,
+            '$src': {
+              component: {
+                in: 'path',
+                name: 'id',
+                required: true,
+                schema: { type: 'string' }
+              },
+              document: {
+                components: {
+                  parameters: {
+                    IdParam: {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    PageParam: {
+                      in: 'query',
+                      name: 'page',
+                      schema: { default: 1, type: 'integer' }
+                    }
+                  }
+                },
+                info: { title: 'Parameter Inheritance', version: '1.0.0' },
+                openapi: '3.0.0',
+                paths: {
+                  '/inherited/{id}': {
+                    get: {
+                      operationId: 'inheritsParams',
+                      responses: {
+                        '200': {
+                          description: 'The inherited path and query parameters echoed back.'
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [
+                      {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    post: {
+                      operationId: 'inheritsAndAdds',
+                      parameters: [
+                        {
+                          in: 'query',
+                          name: 'extra',
+                          schema: { type: 'string' }
+                        }
+                      ],
+                      responses: {
+                        '200': {
+                          description: "The inherited parameters plus this operation's own one echoed back."
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    }
+                  },
+                  '/overridden/{id}': {
+                    get: {
+                      operationId: 'overridesParam',
+                      parameters: [
+                        {
+                          description: 'Overrides the inherited parameter with a different type.',
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'integer' }
+                        }
+                      ],
+                      responses: {
+                        '200': {
+                          description: 'The operation-level override of the inherited parameter echoed back.'
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [
+                      {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'string' }
+                      }
+                    ]
+                  },
+                  '/ref-param/{id}': {
+                    get: {
+                      operationId: 'refParam',
+                      parameters: [
+                        { '$ref': '#/components/parameters/PageParam' }
+                      ],
+                      responses: {
+                        '200': {
+                          description: "The two $ref'd parameters echoed back."
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                  }
+                }
+              },
+              file: '<root>/test/specs/v3/parameter-inheritance.yml',
+              originalComponent: {
+                in: 'path',
+                name: 'id',
+                required: true,
+                schema: { type: 'string' }
+              },
+              path: '/paths//inherited/{id}/parameters/0',
+              pos: { col: 9, line: 9 }
+            },
+            allowEmptyValue: undefined,
+            allowReserved: undefined,
+            deprecated: false,
+            description: undefined,
+            explode: undefined,
+            id: 'parameter-1',
+            name: 'id',
+            required: true,
+            schema: undefined,
+            style: undefined,
+            target: 'path'
+          },
+          {
+            '$ref': undefined,
+            '$src': {
+              component: {
+                in: 'query',
+                name: 'common',
+                schema: { type: 'string' }
+              },
+              document: {
+                components: {
+                  parameters: {
+                    IdParam: {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    PageParam: {
+                      in: 'query',
+                      name: 'page',
+                      schema: { default: 1, type: 'integer' }
+                    }
+                  }
+                },
+                info: { title: 'Parameter Inheritance', version: '1.0.0' },
+                openapi: '3.0.0',
+                paths: {
+                  '/inherited/{id}': {
+                    get: {
+                      operationId: 'inheritsParams',
+                      responses: {
+                        '200': {
+                          description: 'The inherited path and query parameters echoed back.'
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [
+                      {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    post: {
+                      operationId: 'inheritsAndAdds',
+                      parameters: [
+                        {
+                          in: 'query',
+                          name: 'extra',
+                          schema: { type: 'string' }
+                        }
+                      ],
+                      responses: {
+                        '200': {
+                          description: "The inherited parameters plus this operation's own one echoed back."
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    }
+                  },
+                  '/overridden/{id}': {
+                    get: {
+                      operationId: 'overridesParam',
+                      parameters: [
+                        {
+                          description: 'Overrides the inherited parameter with a different type.',
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'integer' }
+                        }
+                      ],
+                      responses: {
+                        '200': {
+                          description: 'The operation-level override of the inherited parameter echoed back.'
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [
+                      {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'string' }
+                      }
+                    ]
+                  },
+                  '/ref-param/{id}': {
+                    get: {
+                      operationId: 'refParam',
+                      parameters: [
+                        { '$ref': '#/components/parameters/PageParam' }
+                      ],
+                      responses: {
+                        '200': {
+                          description: "The two $ref'd parameters echoed back."
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                  }
+                }
+              },
+              file: '<root>/test/specs/v3/parameter-inheritance.yml',
+              originalComponent: {
+                in: 'query',
+                name: 'common',
+                schema: { type: 'string' }
+              },
+              path: '/paths//inherited/{id}/parameters/1',
+              pos: { col: 9, line: 14 }
+            },
+            allowEmptyValue: undefined,
+            allowReserved: undefined,
+            deprecated: false,
+            description: undefined,
+            explode: undefined,
+            id: 'parameter-2',
+            name: 'common',
+            required: false,
+            schema: undefined,
+            style: undefined,
+            target: 'query'
+          }
+        ],
+        patch: undefined,
+        path: '/inherited/{id}',
+        post: {
+          '$ref': undefined,
+          '$src': {
+            component: '269 inspect chars',
+            document: '2327 inspect chars',
+            file: '<root>/test/specs/v3/parameter-inheritance.yml',
+            originalComponent: '269 inspect chars',
+            path: '/paths//inherited/{id}/post',
+            pos: { col: 7, line: 25 }
+          },
+          custom: {},
+          deprecated: false,
+          description: undefined,
+          id: 'endpoint-2',
+          method: 'post',
+          name: 'inheritsAndAdds',
+          parameters: [
+            {
+              '$ref': undefined,
+              '$src': {
+                component: {
+                  in: 'path',
+                  name: 'id',
+                  required: true,
+                  schema: { type: 'string' }
+                },
+                document: {
+                  components: {
+                    parameters: {
+                      IdParam: {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      PageParam: {
+                        in: 'query',
+                        name: 'page',
+                        schema: { default: 1, type: 'integer' }
+                      }
+                    }
+                  },
+                  info: { title: 'Parameter Inheritance', version: '1.0.0' },
+                  openapi: '3.0.0',
+                  paths: {
+                    '/inherited/{id}': {
+                      get: {
+                        operationId: 'inheritsParams',
+                        responses: {
+                          '200': {
+                            description: 'The inherited path and query parameters echoed back.'
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [
+                        {
+                          in: 'path',
+                          name: 'id',
+                          required: true,
+                          schema: { type: 'string' }
+                        },
+                        {
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'string' }
+                        }
+                      ],
+                      post: {
+                        operationId: 'inheritsAndAdds',
+                        parameters: [
+                          {
+                            in: 'query',
+                            name: 'extra',
+                            schema: { type: 'string' }
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: "The inherited parameters plus this operation's own one echoed back."
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      }
+                    },
+                    '/overridden/{id}': {
+                      get: {
+                        operationId: 'overridesParam',
+                        parameters: [
+                          {
+                            description: 'Overrides the inherited parameter with a different type.',
+                            in: 'query',
+                            name: 'common',
+                            schema: { type: 'integer' }
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: 'The operation-level override of the inherited parameter echoed back.'
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [
+                        {
+                          in: 'path',
+                          name: 'id',
+                          required: true,
+                          schema: { type: 'string' }
+                        },
+                        {
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'string' }
+                        }
+                      ]
+                    },
+                    '/ref-param/{id}': {
+                      get: {
+                        operationId: 'refParam',
+                        parameters: [
+                          {
+                            '$ref': '#/components/parameters/PageParam'
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: "The two $ref'd parameters echoed back."
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                    }
+                  }
+                },
+                file: '<root>/test/specs/v3/parameter-inheritance.yml',
+                originalComponent: {
+                  in: 'path',
+                  name: 'id',
+                  required: true,
+                  schema: { type: 'string' }
+                },
+                path: '/paths//inherited/{id}/parameters/0',
+                pos: { col: 9, line: 9 }
+              },
+              allowEmptyValue: undefined,
+              allowReserved: undefined,
+              deprecated: false,
+              description: undefined,
+              explode: undefined,
+              id: 'parameter-1',
+              name: 'id',
+              required: true,
+              schema: undefined,
+              style: undefined,
+              target: 'path'
+            },
+            {
+              '$ref': undefined,
+              '$src': {
+                component: {
+                  in: 'query',
+                  name: 'common',
+                  schema: { type: 'string' }
+                },
+                document: {
+                  components: {
+                    parameters: {
+                      IdParam: {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      PageParam: {
+                        in: 'query',
+                        name: 'page',
+                        schema: { default: 1, type: 'integer' }
+                      }
+                    }
+                  },
+                  info: { title: 'Parameter Inheritance', version: '1.0.0' },
+                  openapi: '3.0.0',
+                  paths: {
+                    '/inherited/{id}': {
+                      get: {
+                        operationId: 'inheritsParams',
+                        responses: {
+                          '200': {
+                            description: 'The inherited path and query parameters echoed back.'
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [
+                        {
+                          in: 'path',
+                          name: 'id',
+                          required: true,
+                          schema: { type: 'string' }
+                        },
+                        {
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'string' }
+                        }
+                      ],
+                      post: {
+                        operationId: 'inheritsAndAdds',
+                        parameters: [
+                          {
+                            in: 'query',
+                            name: 'extra',
+                            schema: { type: 'string' }
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: "The inherited parameters plus this operation's own one echoed back."
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      }
+                    },
+                    '/overridden/{id}': {
+                      get: {
+                        operationId: 'overridesParam',
+                        parameters: [
+                          {
+                            description: 'Overrides the inherited parameter with a different type.',
+                            in: 'query',
+                            name: 'common',
+                            schema: { type: 'integer' }
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: 'The operation-level override of the inherited parameter echoed back.'
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [
+                        {
+                          in: 'path',
+                          name: 'id',
+                          required: true,
+                          schema: { type: 'string' }
+                        },
+                        {
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'string' }
+                        }
+                      ]
+                    },
+                    '/ref-param/{id}': {
+                      get: {
+                        operationId: 'refParam',
+                        parameters: [
+                          {
+                            '$ref': '#/components/parameters/PageParam'
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: "The two $ref'd parameters echoed back."
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                    }
+                  }
+                },
+                file: '<root>/test/specs/v3/parameter-inheritance.yml',
+                originalComponent: {
+                  in: 'query',
+                  name: 'common',
+                  schema: { type: 'string' }
+                },
+                path: '/paths//inherited/{id}/parameters/1',
+                pos: { col: 9, line: 14 }
+              },
+              allowEmptyValue: undefined,
+              allowReserved: undefined,
+              deprecated: false,
+              description: undefined,
+              explode: undefined,
+              id: 'parameter-2',
+              name: 'common',
+              required: false,
+              schema: undefined,
+              style: undefined,
+              target: 'query'
+            },
+            {
+              '$ref': undefined,
+              '$src': {
+                component: {
+                  in: 'query',
+                  name: 'extra',
+                  schema: { type: 'string' }
+                },
+                document: {
+                  components: {
+                    parameters: {
+                      IdParam: {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      PageParam: {
+                        in: 'query',
+                        name: 'page',
+                        schema: { default: 1, type: 'integer' }
+                      }
+                    }
+                  },
+                  info: { title: 'Parameter Inheritance', version: '1.0.0' },
+                  openapi: '3.0.0',
+                  paths: {
+                    '/inherited/{id}': {
+                      get: {
+                        operationId: 'inheritsParams',
+                        responses: {
+                          '200': {
+                            description: 'The inherited path and query parameters echoed back.'
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [
+                        {
+                          in: 'path',
+                          name: 'id',
+                          required: true,
+                          schema: { type: 'string' }
+                        },
+                        {
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'string' }
+                        }
+                      ],
+                      post: {
+                        operationId: 'inheritsAndAdds',
+                        parameters: [
+                          {
+                            in: 'query',
+                            name: 'extra',
+                            schema: { type: 'string' }
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: "The inherited parameters plus this operation's own one echoed back."
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      }
+                    },
+                    '/overridden/{id}': {
+                      get: {
+                        operationId: 'overridesParam',
+                        parameters: [
+                          {
+                            description: 'Overrides the inherited parameter with a different type.',
+                            in: 'query',
+                            name: 'common',
+                            schema: { type: 'integer' }
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: 'The operation-level override of the inherited parameter echoed back.'
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [
+                        {
+                          in: 'path',
+                          name: 'id',
+                          required: true,
+                          schema: { type: 'string' }
+                        },
+                        {
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'string' }
+                        }
+                      ]
+                    },
+                    '/ref-param/{id}': {
+                      get: {
+                        operationId: 'refParam',
+                        parameters: [
+                          {
+                            '$ref': '#/components/parameters/PageParam'
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: "The two $ref'd parameters echoed back."
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                    }
+                  }
+                },
+                file: '<root>/test/specs/v3/parameter-inheritance.yml',
+                originalComponent: {
+                  in: 'query',
+                  name: 'extra',
+                  schema: { type: 'string' }
+                },
+                path: '/paths//inherited/{id}/post/parameters/0',
+                pos: { col: 11, line: 28 }
+              },
+              allowEmptyValue: undefined,
+              allowReserved: undefined,
+              deprecated: false,
+              description: undefined,
+              explode: undefined,
+              id: 'parameter-3',
+              name: 'extra',
+              required: false,
+              schema: 'schema-3',
+              style: undefined,
+              target: 'query'
+            }
+          ],
+          path: '/inherited/{id}',
+          pathInfo: [Circular *2],
+          requestBody: undefined,
+          responses: [
+            {
+              '$ref': undefined,
+              '$src': {
+                component: {
+                  description: "The inherited parameters plus this operation's own one echoed back."
+                },
+                document: {
+                  components: {
+                    parameters: {
+                      IdParam: {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      PageParam: {
+                        in: 'query',
+                        name: 'page',
+                        schema: { default: 1, type: 'integer' }
+                      }
+                    }
+                  },
+                  info: { title: 'Parameter Inheritance', version: '1.0.0' },
+                  openapi: '3.0.0',
+                  paths: {
+                    '/inherited/{id}': {
+                      get: {
+                        operationId: 'inheritsParams',
+                        responses: {
+                          '200': {
+                            description: 'The inherited path and query parameters echoed back.'
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [
+                        {
+                          in: 'path',
+                          name: 'id',
+                          required: true,
+                          schema: { type: 'string' }
+                        },
+                        {
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'string' }
+                        }
+                      ],
+                      post: {
+                        operationId: 'inheritsAndAdds',
+                        parameters: [
+                          {
+                            in: 'query',
+                            name: 'extra',
+                            schema: { type: 'string' }
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: "The inherited parameters plus this operation's own one echoed back."
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      }
+                    },
+                    '/overridden/{id}': {
+                      get: {
+                        operationId: 'overridesParam',
+                        parameters: [
+                          {
+                            description: 'Overrides the inherited parameter with a different type.',
+                            in: 'query',
+                            name: 'common',
+                            schema: { type: 'integer' }
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: 'The operation-level override of the inherited parameter echoed back.'
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [
+                        {
+                          in: 'path',
+                          name: 'id',
+                          required: true,
+                          schema: { type: 'string' }
+                        },
+                        {
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'string' }
+                        }
+                      ]
+                    },
+                    '/ref-param/{id}': {
+                      get: {
+                        operationId: 'refParam',
+                        parameters: [
+                          {
+                            '$ref': '#/components/parameters/PageParam'
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: "The two $ref'd parameters echoed back."
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                    }
+                  }
+                },
+                file: '<root>/test/specs/v3/parameter-inheritance.yml',
+                originalComponent: {
+                  description: "The inherited parameters plus this operation's own one echoed back."
+                },
+                path: '/paths//inherited/{id}/post/responses/200',
+                pos: { col: 11, line: 34 }
+              },
+              contentOptions: [],
+              description: "The inherited parameters plus this operation's own one echoed back.",
+              headers: [],
+              id: 'response-2',
+              statusCode: 200
+            }
+          ],
+          summary: undefined,
+          tags: [ 'Inheritance' ]
+        },
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              description: 'The inherited path and query parameters echoed back.'
+            },
+            document: {
+              components: {
+                parameters: {
+                  IdParam: {
+                    in: 'path',
+                    name: 'id',
+                    required: true,
+                    schema: { type: 'string' }
+                  },
+                  PageParam: {
+                    in: 'query',
+                    name: 'page',
+                    schema: { default: 1, type: 'integer' }
+                  }
+                }
+              },
+              info: { title: 'Parameter Inheritance', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/inherited/{id}': {
+                  get: {
+                    operationId: 'inheritsParams',
+                    responses: {
+                      '200': {
+                        description: 'The inherited path and query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ],
+                  post: {
+                    operationId: 'inheritsAndAdds',
+                    parameters: [
+                      {
+                        in: 'query',
+                        name: 'extra',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: "The inherited parameters plus this operation's own one echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  }
+                },
+                '/overridden/{id}': {
+                  get: {
+                    operationId: 'overridesParam',
+                    parameters: [
+                      {
+                        description: 'Overrides the inherited parameter with a different type.',
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'integer' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The operation-level override of the inherited parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ]
+                },
+                '/ref-param/{id}': {
+                  get: {
+                    operationId: 'refParam',
+                    parameters: [ { '$ref': '#/components/parameters/PageParam' } ],
+                    responses: {
+                      '200': {
+                        description: "The two $ref'd parameters echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/parameter-inheritance.yml',
+            originalComponent: {
+              description: 'The inherited path and query parameters echoed back.'
+            },
+            path: '/paths//inherited/{id}/get/responses/200',
+            pos: { col: 11, line: 23 }
+          },
+          contentOptions: [],
+          description: 'The inherited path and query parameters echoed back.',
+          headers: [],
+          id: 'response-1',
+          statusCode: 200
+        }
+      ],
+      summary: undefined,
+      tags: [ 'Inheritance' ]
+    },
+    <ref *3> {
+      '$ref': undefined,
+      '$src': {
+        component: '269 inspect chars',
+        document: '2327 inspect chars',
+        file: '<root>/test/specs/v3/parameter-inheritance.yml',
+        originalComponent: '269 inspect chars',
+        path: '/paths//inherited/{id}/post',
+        pos: { col: 7, line: 25 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-2',
+      method: 'post',
+      name: 'inheritsAndAdds',
+      parameters: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              in: 'path',
+              name: 'id',
+              required: true,
+              schema: { type: 'string' }
+            },
+            document: {
+              components: {
+                parameters: {
+                  IdParam: {
+                    in: 'path',
+                    name: 'id',
+                    required: true,
+                    schema: { type: 'string' }
+                  },
+                  PageParam: {
+                    in: 'query',
+                    name: 'page',
+                    schema: { default: 1, type: 'integer' }
+                  }
+                }
+              },
+              info: { title: 'Parameter Inheritance', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/inherited/{id}': {
+                  get: {
+                    operationId: 'inheritsParams',
+                    responses: {
+                      '200': {
+                        description: 'The inherited path and query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ],
+                  post: {
+                    operationId: 'inheritsAndAdds',
+                    parameters: [
+                      {
+                        in: 'query',
+                        name: 'extra',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: "The inherited parameters plus this operation's own one echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  }
+                },
+                '/overridden/{id}': {
+                  get: {
+                    operationId: 'overridesParam',
+                    parameters: [
+                      {
+                        description: 'Overrides the inherited parameter with a different type.',
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'integer' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The operation-level override of the inherited parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ]
+                },
+                '/ref-param/{id}': {
+                  get: {
+                    operationId: 'refParam',
+                    parameters: [ { '$ref': '#/components/parameters/PageParam' } ],
+                    responses: {
+                      '200': {
+                        description: "The two $ref'd parameters echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/parameter-inheritance.yml',
+            originalComponent: {
+              in: 'path',
+              name: 'id',
+              required: true,
+              schema: { type: 'string' }
+            },
+            path: '/paths//inherited/{id}/parameters/0',
+            pos: { col: 9, line: 9 }
+          },
+          allowEmptyValue: undefined,
+          allowReserved: undefined,
+          deprecated: false,
+          description: undefined,
+          explode: undefined,
+          id: 'parameter-1',
+          name: 'id',
+          required: true,
+          schema: undefined,
+          style: undefined,
+          target: 'path'
+        },
+        {
+          '$ref': undefined,
+          '$src': {
+            component: { in: 'query', name: 'common', schema: { type: 'string' } },
+            document: {
+              components: {
+                parameters: {
+                  IdParam: {
+                    in: 'path',
+                    name: 'id',
+                    required: true,
+                    schema: { type: 'string' }
+                  },
+                  PageParam: {
+                    in: 'query',
+                    name: 'page',
+                    schema: { default: 1, type: 'integer' }
+                  }
+                }
+              },
+              info: { title: 'Parameter Inheritance', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/inherited/{id}': {
+                  get: {
+                    operationId: 'inheritsParams',
+                    responses: {
+                      '200': {
+                        description: 'The inherited path and query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ],
+                  post: {
+                    operationId: 'inheritsAndAdds',
+                    parameters: [
+                      {
+                        in: 'query',
+                        name: 'extra',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: "The inherited parameters plus this operation's own one echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  }
+                },
+                '/overridden/{id}': {
+                  get: {
+                    operationId: 'overridesParam',
+                    parameters: [
+                      {
+                        description: 'Overrides the inherited parameter with a different type.',
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'integer' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The operation-level override of the inherited parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ]
+                },
+                '/ref-param/{id}': {
+                  get: {
+                    operationId: 'refParam',
+                    parameters: [ { '$ref': '#/components/parameters/PageParam' } ],
+                    responses: {
+                      '200': {
+                        description: "The two $ref'd parameters echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/parameter-inheritance.yml',
+            originalComponent: { in: 'query', name: 'common', schema: { type: 'string' } },
+            path: '/paths//inherited/{id}/parameters/1',
+            pos: { col: 9, line: 14 }
+          },
+          allowEmptyValue: undefined,
+          allowReserved: undefined,
+          deprecated: false,
+          description: undefined,
+          explode: undefined,
+          id: 'parameter-2',
+          name: 'common',
+          required: false,
+          schema: undefined,
+          style: undefined,
+          target: 'query'
+        },
+        {
+          '$ref': undefined,
+          '$src': {
+            component: { in: 'query', name: 'extra', schema: { type: 'string' } },
+            document: {
+              components: {
+                parameters: {
+                  IdParam: {
+                    in: 'path',
+                    name: 'id',
+                    required: true,
+                    schema: { type: 'string' }
+                  },
+                  PageParam: {
+                    in: 'query',
+                    name: 'page',
+                    schema: { default: 1, type: 'integer' }
+                  }
+                }
+              },
+              info: { title: 'Parameter Inheritance', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/inherited/{id}': {
+                  get: {
+                    operationId: 'inheritsParams',
+                    responses: {
+                      '200': {
+                        description: 'The inherited path and query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ],
+                  post: {
+                    operationId: 'inheritsAndAdds',
+                    parameters: [
+                      {
+                        in: 'query',
+                        name: 'extra',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: "The inherited parameters plus this operation's own one echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  }
+                },
+                '/overridden/{id}': {
+                  get: {
+                    operationId: 'overridesParam',
+                    parameters: [
+                      {
+                        description: 'Overrides the inherited parameter with a different type.',
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'integer' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The operation-level override of the inherited parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ]
+                },
+                '/ref-param/{id}': {
+                  get: {
+                    operationId: 'refParam',
+                    parameters: [ { '$ref': '#/components/parameters/PageParam' } ],
+                    responses: {
+                      '200': {
+                        description: "The two $ref'd parameters echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/parameter-inheritance.yml',
+            originalComponent: { in: 'query', name: 'extra', schema: { type: 'string' } },
+            path: '/paths//inherited/{id}/post/parameters/0',
+            pos: { col: 11, line: 28 }
+          },
+          allowEmptyValue: undefined,
+          allowReserved: undefined,
+          deprecated: false,
+          description: undefined,
+          explode: undefined,
+          id: 'parameter-3',
+          name: 'extra',
+          required: false,
+          schema: 'schema-3',
+          style: undefined,
+          target: 'query'
+        }
+      ],
+      path: '/inherited/{id}',
+      pathInfo: <ref *2> {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              operationId: 'inheritsParams',
+              responses: {
+                '200': {
+                  description: 'The inherited path and query parameters echoed back.'
+                }
+              },
+              tags: [ 'Inheritance' ]
+            },
+            parameters: [
+              {
+                in: 'path',
+                name: 'id',
+                required: true,
+                schema: { type: 'string' }
+              },
+              {
+                in: 'query',
+                name: 'common',
+                schema: { type: 'string' }
+              }
+            ],
+            post: {
+              operationId: 'inheritsAndAdds',
+              parameters: [
+                {
+                  in: 'query',
+                  name: 'extra',
+                  schema: { type: 'string' }
+                }
+              ],
+              responses: {
+                '200': {
+                  description: "The inherited parameters plus this operation's own one echoed back."
+                }
+              },
+              tags: [ 'Inheritance' ]
+            }
+          },
+          document: {
+            components: {
+              parameters: {
+                IdParam: {
+                  in: 'path',
+                  name: 'id',
+                  required: true,
+                  schema: { type: 'string' }
+                },
+                PageParam: {
+                  in: 'query',
+                  name: 'page',
+                  schema: { default: 1, type: 'integer' }
+                }
+              }
+            },
+            info: { title: 'Parameter Inheritance', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/inherited/{id}': {
+                get: {
+                  operationId: 'inheritsParams',
+                  responses: {
+                    '200': {
+                      description: 'The inherited path and query parameters echoed back.'
+                    }
+                  },
+                  tags: [ 'Inheritance' ]
+                },
+                parameters: [
+                  {
+                    in: 'path',
+                    name: 'id',
+                    required: true,
+                    schema: { type: 'string' }
+                  },
+                  {
+                    in: 'query',
+                    name: 'common',
+                    schema: { type: 'string' }
+                  }
+                ],
+                post: {
+                  operationId: 'inheritsAndAdds',
+                  parameters: [
+                    {
+                      in: 'query',
+                      name: 'extra',
+                      schema: { type: 'string' }
+                    }
+                  ],
+                  responses: {
+                    '200': {
+                      description: "The inherited parameters plus this operation's own one echoed back."
+                    }
+                  },
+                  tags: [ 'Inheritance' ]
+                }
+              },
+              '/overridden/{id}': {
+                get: {
+                  operationId: 'overridesParam',
+                  parameters: [
+                    {
+                      description: 'Overrides the inherited parameter with a different type.',
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'integer' }
+                    }
+                  ],
+                  responses: {
+                    '200': {
+                      description: 'The operation-level override of the inherited parameter echoed back.'
+                    }
+                  },
+                  tags: [ 'Inheritance' ]
+                },
+                parameters: [
+                  {
+                    in: 'path',
+                    name: 'id',
+                    required: true,
+                    schema: { type: 'string' }
+                  },
+                  {
+                    in: 'query',
+                    name: 'common',
+                    schema: { type: 'string' }
+                  }
+                ]
+              },
+              '/ref-param/{id}': {
+                get: {
+                  operationId: 'refParam',
+                  parameters: [ { '$ref': '#/components/parameters/PageParam' } ],
+                  responses: {
+                    '200': {
+                      description: "The two $ref'd parameters echoed back."
+                    }
+                  },
+                  tags: [ 'Inheritance' ]
+                },
+                parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+              }
+            }
+          },
+          file: '<root>/test/specs/v3/parameter-inheritance.yml',
+          originalComponent: {
+            get: {
+              operationId: 'inheritsParams',
+              responses: {
+                '200': {
+                  description: 'The inherited path and query parameters echoed back.'
+                }
+              },
+              tags: [ 'Inheritance' ]
+            },
+            parameters: [
+              {
+                in: 'path',
+                name: 'id',
+                required: true,
+                schema: { type: 'string' }
+              },
+              {
+                in: 'query',
+                name: 'common',
+                schema: { type: 'string' }
+              }
+            ],
+            post: {
+              operationId: 'inheritsAndAdds',
+              parameters: [
+                {
+                  in: 'query',
+                  name: 'extra',
+                  schema: { type: 'string' }
+                }
+              ],
+              responses: {
+                '200': {
+                  description: "The inherited parameters plus this operation's own one echoed back."
+                }
+              },
+              tags: [ 'Inheritance' ]
+            }
+          },
+          path: '/paths//inherited/{id}',
+          pos: { col: 5, line: 8 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: <ref *1> {
+          '$ref': undefined,
+          '$src': {
+            component: '175 inspect chars',
+            document: '2327 inspect chars',
+            file: '<root>/test/specs/v3/parameter-inheritance.yml',
+            originalComponent: '175 inspect chars',
+            path: '/paths//inherited/{id}/get',
+            pos: { col: 7, line: 19 }
+          },
+          custom: {},
+          deprecated: false,
+          description: undefined,
+          id: 'endpoint-1',
+          method: 'get',
+          name: 'inheritsParams',
+          parameters: [
+            {
+              '$ref': undefined,
+              '$src': {
+                component: {
+                  in: 'path',
+                  name: 'id',
+                  required: true,
+                  schema: { type: 'string' }
+                },
+                document: {
+                  components: {
+                    parameters: {
+                      IdParam: {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      PageParam: {
+                        in: 'query',
+                        name: 'page',
+                        schema: { default: 1, type: 'integer' }
+                      }
+                    }
+                  },
+                  info: { title: 'Parameter Inheritance', version: '1.0.0' },
+                  openapi: '3.0.0',
+                  paths: {
+                    '/inherited/{id}': {
+                      get: {
+                        operationId: 'inheritsParams',
+                        responses: {
+                          '200': {
+                            description: 'The inherited path and query parameters echoed back.'
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [
+                        {
+                          in: 'path',
+                          name: 'id',
+                          required: true,
+                          schema: { type: 'string' }
+                        },
+                        {
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'string' }
+                        }
+                      ],
+                      post: {
+                        operationId: 'inheritsAndAdds',
+                        parameters: [
+                          {
+                            in: 'query',
+                            name: 'extra',
+                            schema: { type: 'string' }
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: "The inherited parameters plus this operation's own one echoed back."
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      }
+                    },
+                    '/overridden/{id}': {
+                      get: {
+                        operationId: 'overridesParam',
+                        parameters: [
+                          {
+                            description: 'Overrides the inherited parameter with a different type.',
+                            in: 'query',
+                            name: 'common',
+                            schema: { type: 'integer' }
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: 'The operation-level override of the inherited parameter echoed back.'
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [
+                        {
+                          in: 'path',
+                          name: 'id',
+                          required: true,
+                          schema: { type: 'string' }
+                        },
+                        {
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'string' }
+                        }
+                      ]
+                    },
+                    '/ref-param/{id}': {
+                      get: {
+                        operationId: 'refParam',
+                        parameters: [
+                          {
+                            '$ref': '#/components/parameters/PageParam'
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: "The two $ref'd parameters echoed back."
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                    }
+                  }
+                },
+                file: '<root>/test/specs/v3/parameter-inheritance.yml',
+                originalComponent: {
+                  in: 'path',
+                  name: 'id',
+                  required: true,
+                  schema: { type: 'string' }
+                },
+                path: '/paths//inherited/{id}/parameters/0',
+                pos: { col: 9, line: 9 }
+              },
+              allowEmptyValue: undefined,
+              allowReserved: undefined,
+              deprecated: false,
+              description: undefined,
+              explode: undefined,
+              id: 'parameter-1',
+              name: 'id',
+              required: true,
+              schema: undefined,
+              style: undefined,
+              target: 'path'
+            },
+            {
+              '$ref': undefined,
+              '$src': {
+                component: {
+                  in: 'query',
+                  name: 'common',
+                  schema: { type: 'string' }
+                },
+                document: {
+                  components: {
+                    parameters: {
+                      IdParam: {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      PageParam: {
+                        in: 'query',
+                        name: 'page',
+                        schema: { default: 1, type: 'integer' }
+                      }
+                    }
+                  },
+                  info: { title: 'Parameter Inheritance', version: '1.0.0' },
+                  openapi: '3.0.0',
+                  paths: {
+                    '/inherited/{id}': {
+                      get: {
+                        operationId: 'inheritsParams',
+                        responses: {
+                          '200': {
+                            description: 'The inherited path and query parameters echoed back.'
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [
+                        {
+                          in: 'path',
+                          name: 'id',
+                          required: true,
+                          schema: { type: 'string' }
+                        },
+                        {
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'string' }
+                        }
+                      ],
+                      post: {
+                        operationId: 'inheritsAndAdds',
+                        parameters: [
+                          {
+                            in: 'query',
+                            name: 'extra',
+                            schema: { type: 'string' }
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: "The inherited parameters plus this operation's own one echoed back."
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      }
+                    },
+                    '/overridden/{id}': {
+                      get: {
+                        operationId: 'overridesParam',
+                        parameters: [
+                          {
+                            description: 'Overrides the inherited parameter with a different type.',
+                            in: 'query',
+                            name: 'common',
+                            schema: { type: 'integer' }
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: 'The operation-level override of the inherited parameter echoed back.'
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [
+                        {
+                          in: 'path',
+                          name: 'id',
+                          required: true,
+                          schema: { type: 'string' }
+                        },
+                        {
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'string' }
+                        }
+                      ]
+                    },
+                    '/ref-param/{id}': {
+                      get: {
+                        operationId: 'refParam',
+                        parameters: [
+                          {
+                            '$ref': '#/components/parameters/PageParam'
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: "The two $ref'd parameters echoed back."
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                    }
+                  }
+                },
+                file: '<root>/test/specs/v3/parameter-inheritance.yml',
+                originalComponent: {
+                  in: 'query',
+                  name: 'common',
+                  schema: { type: 'string' }
+                },
+                path: '/paths//inherited/{id}/parameters/1',
+                pos: { col: 9, line: 14 }
+              },
+              allowEmptyValue: undefined,
+              allowReserved: undefined,
+              deprecated: false,
+              description: undefined,
+              explode: undefined,
+              id: 'parameter-2',
+              name: 'common',
+              required: false,
+              schema: undefined,
+              style: undefined,
+              target: 'query'
+            }
+          ],
+          path: '/inherited/{id}',
+          pathInfo: [Circular *2],
+          requestBody: undefined,
+          responses: [
+            {
+              '$ref': undefined,
+              '$src': {
+                component: {
+                  description: 'The inherited path and query parameters echoed back.'
+                },
+                document: {
+                  components: {
+                    parameters: {
+                      IdParam: {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      PageParam: {
+                        in: 'query',
+                        name: 'page',
+                        schema: { default: 1, type: 'integer' }
+                      }
+                    }
+                  },
+                  info: { title: 'Parameter Inheritance', version: '1.0.0' },
+                  openapi: '3.0.0',
+                  paths: {
+                    '/inherited/{id}': {
+                      get: {
+                        operationId: 'inheritsParams',
+                        responses: {
+                          '200': {
+                            description: 'The inherited path and query parameters echoed back.'
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [
+                        {
+                          in: 'path',
+                          name: 'id',
+                          required: true,
+                          schema: { type: 'string' }
+                        },
+                        {
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'string' }
+                        }
+                      ],
+                      post: {
+                        operationId: 'inheritsAndAdds',
+                        parameters: [
+                          {
+                            in: 'query',
+                            name: 'extra',
+                            schema: { type: 'string' }
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: "The inherited parameters plus this operation's own one echoed back."
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      }
+                    },
+                    '/overridden/{id}': {
+                      get: {
+                        operationId: 'overridesParam',
+                        parameters: [
+                          {
+                            description: 'Overrides the inherited parameter with a different type.',
+                            in: 'query',
+                            name: 'common',
+                            schema: { type: 'integer' }
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: 'The operation-level override of the inherited parameter echoed back.'
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [
+                        {
+                          in: 'path',
+                          name: 'id',
+                          required: true,
+                          schema: { type: 'string' }
+                        },
+                        {
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'string' }
+                        }
+                      ]
+                    },
+                    '/ref-param/{id}': {
+                      get: {
+                        operationId: 'refParam',
+                        parameters: [
+                          {
+                            '$ref': '#/components/parameters/PageParam'
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: "The two $ref'd parameters echoed back."
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                    }
+                  }
+                },
+                file: '<root>/test/specs/v3/parameter-inheritance.yml',
+                originalComponent: {
+                  description: 'The inherited path and query parameters echoed back.'
+                },
+                path: '/paths//inherited/{id}/get/responses/200',
+                pos: { col: 11, line: 23 }
+              },
+              contentOptions: [],
+              description: 'The inherited path and query parameters echoed back.',
+              headers: [],
+              id: 'response-1',
+              statusCode: 200
+            }
+          ],
+          summary: undefined,
+          tags: [ 'Inheritance' ]
+        },
+        head: undefined,
+        id: 'path-1',
+        options: undefined,
+        parameters: [
+          {
+            '$ref': undefined,
+            '$src': {
+              component: {
+                in: 'path',
+                name: 'id',
+                required: true,
+                schema: { type: 'string' }
+              },
+              document: {
+                components: {
+                  parameters: {
+                    IdParam: {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    PageParam: {
+                      in: 'query',
+                      name: 'page',
+                      schema: { default: 1, type: 'integer' }
+                    }
+                  }
+                },
+                info: { title: 'Parameter Inheritance', version: '1.0.0' },
+                openapi: '3.0.0',
+                paths: {
+                  '/inherited/{id}': {
+                    get: {
+                      operationId: 'inheritsParams',
+                      responses: {
+                        '200': {
+                          description: 'The inherited path and query parameters echoed back.'
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [
+                      {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    post: {
+                      operationId: 'inheritsAndAdds',
+                      parameters: [
+                        {
+                          in: 'query',
+                          name: 'extra',
+                          schema: { type: 'string' }
+                        }
+                      ],
+                      responses: {
+                        '200': {
+                          description: "The inherited parameters plus this operation's own one echoed back."
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    }
+                  },
+                  '/overridden/{id}': {
+                    get: {
+                      operationId: 'overridesParam',
+                      parameters: [
+                        {
+                          description: 'Overrides the inherited parameter with a different type.',
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'integer' }
+                        }
+                      ],
+                      responses: {
+                        '200': {
+                          description: 'The operation-level override of the inherited parameter echoed back.'
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [
+                      {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'string' }
+                      }
+                    ]
+                  },
+                  '/ref-param/{id}': {
+                    get: {
+                      operationId: 'refParam',
+                      parameters: [
+                        { '$ref': '#/components/parameters/PageParam' }
+                      ],
+                      responses: {
+                        '200': {
+                          description: "The two $ref'd parameters echoed back."
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                  }
+                }
+              },
+              file: '<root>/test/specs/v3/parameter-inheritance.yml',
+              originalComponent: {
+                in: 'path',
+                name: 'id',
+                required: true,
+                schema: { type: 'string' }
+              },
+              path: '/paths//inherited/{id}/parameters/0',
+              pos: { col: 9, line: 9 }
+            },
+            allowEmptyValue: undefined,
+            allowReserved: undefined,
+            deprecated: false,
+            description: undefined,
+            explode: undefined,
+            id: 'parameter-1',
+            name: 'id',
+            required: true,
+            schema: undefined,
+            style: undefined,
+            target: 'path'
+          },
+          {
+            '$ref': undefined,
+            '$src': {
+              component: {
+                in: 'query',
+                name: 'common',
+                schema: { type: 'string' }
+              },
+              document: {
+                components: {
+                  parameters: {
+                    IdParam: {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    PageParam: {
+                      in: 'query',
+                      name: 'page',
+                      schema: { default: 1, type: 'integer' }
+                    }
+                  }
+                },
+                info: { title: 'Parameter Inheritance', version: '1.0.0' },
+                openapi: '3.0.0',
+                paths: {
+                  '/inherited/{id}': {
+                    get: {
+                      operationId: 'inheritsParams',
+                      responses: {
+                        '200': {
+                          description: 'The inherited path and query parameters echoed back.'
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [
+                      {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    post: {
+                      operationId: 'inheritsAndAdds',
+                      parameters: [
+                        {
+                          in: 'query',
+                          name: 'extra',
+                          schema: { type: 'string' }
+                        }
+                      ],
+                      responses: {
+                        '200': {
+                          description: "The inherited parameters plus this operation's own one echoed back."
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    }
+                  },
+                  '/overridden/{id}': {
+                    get: {
+                      operationId: 'overridesParam',
+                      parameters: [
+                        {
+                          description: 'Overrides the inherited parameter with a different type.',
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'integer' }
+                        }
+                      ],
+                      responses: {
+                        '200': {
+                          description: 'The operation-level override of the inherited parameter echoed back.'
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [
+                      {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'string' }
+                      }
+                    ]
+                  },
+                  '/ref-param/{id}': {
+                    get: {
+                      operationId: 'refParam',
+                      parameters: [
+                        { '$ref': '#/components/parameters/PageParam' }
+                      ],
+                      responses: {
+                        '200': {
+                          description: "The two $ref'd parameters echoed back."
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                  }
+                }
+              },
+              file: '<root>/test/specs/v3/parameter-inheritance.yml',
+              originalComponent: {
+                in: 'query',
+                name: 'common',
+                schema: { type: 'string' }
+              },
+              path: '/paths//inherited/{id}/parameters/1',
+              pos: { col: 9, line: 14 }
+            },
+            allowEmptyValue: undefined,
+            allowReserved: undefined,
+            deprecated: false,
+            description: undefined,
+            explode: undefined,
+            id: 'parameter-2',
+            name: 'common',
+            required: false,
+            schema: undefined,
+            style: undefined,
+            target: 'query'
+          }
+        ],
+        patch: undefined,
+        path: '/inherited/{id}',
+        post: [Circular *3],
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              description: "The inherited parameters plus this operation's own one echoed back."
+            },
+            document: {
+              components: {
+                parameters: {
+                  IdParam: {
+                    in: 'path',
+                    name: 'id',
+                    required: true,
+                    schema: { type: 'string' }
+                  },
+                  PageParam: {
+                    in: 'query',
+                    name: 'page',
+                    schema: { default: 1, type: 'integer' }
+                  }
+                }
+              },
+              info: { title: 'Parameter Inheritance', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/inherited/{id}': {
+                  get: {
+                    operationId: 'inheritsParams',
+                    responses: {
+                      '200': {
+                        description: 'The inherited path and query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ],
+                  post: {
+                    operationId: 'inheritsAndAdds',
+                    parameters: [
+                      {
+                        in: 'query',
+                        name: 'extra',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: "The inherited parameters plus this operation's own one echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  }
+                },
+                '/overridden/{id}': {
+                  get: {
+                    operationId: 'overridesParam',
+                    parameters: [
+                      {
+                        description: 'Overrides the inherited parameter with a different type.',
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'integer' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The operation-level override of the inherited parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ]
+                },
+                '/ref-param/{id}': {
+                  get: {
+                    operationId: 'refParam',
+                    parameters: [ { '$ref': '#/components/parameters/PageParam' } ],
+                    responses: {
+                      '200': {
+                        description: "The two $ref'd parameters echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/parameter-inheritance.yml',
+            originalComponent: {
+              description: "The inherited parameters plus this operation's own one echoed back."
+            },
+            path: '/paths//inherited/{id}/post/responses/200',
+            pos: { col: 11, line: 34 }
+          },
+          contentOptions: [],
+          description: "The inherited parameters plus this operation's own one echoed back.",
+          headers: [],
+          id: 'response-2',
+          statusCode: 200
+        }
+      ],
+      summary: undefined,
+      tags: [ 'Inheritance' ]
+    },
+    <ref *4> {
+      '$ref': undefined,
+      '$src': {
+        component: '378 inspect chars',
+        document: '2327 inspect chars',
+        file: '<root>/test/specs/v3/parameter-inheritance.yml',
+        originalComponent: '378 inspect chars',
+        path: '/paths//overridden/{id}/get',
+        pos: { col: 7, line: 47 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-3',
+      method: 'get',
+      name: 'overridesParam',
+      parameters: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              in: 'path',
+              name: 'id',
+              required: true,
+              schema: { type: 'string' }
+            },
+            document: {
+              components: {
+                parameters: {
+                  IdParam: {
+                    in: 'path',
+                    name: 'id',
+                    required: true,
+                    schema: { type: 'string' }
+                  },
+                  PageParam: {
+                    in: 'query',
+                    name: 'page',
+                    schema: { default: 1, type: 'integer' }
+                  }
+                }
+              },
+              info: { title: 'Parameter Inheritance', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/inherited/{id}': {
+                  get: {
+                    operationId: 'inheritsParams',
+                    responses: {
+                      '200': {
+                        description: 'The inherited path and query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ],
+                  post: {
+                    operationId: 'inheritsAndAdds',
+                    parameters: [
+                      {
+                        in: 'query',
+                        name: 'extra',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: "The inherited parameters plus this operation's own one echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  }
+                },
+                '/overridden/{id}': {
+                  get: {
+                    operationId: 'overridesParam',
+                    parameters: [
+                      {
+                        description: 'Overrides the inherited parameter with a different type.',
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'integer' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The operation-level override of the inherited parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ]
+                },
+                '/ref-param/{id}': {
+                  get: {
+                    operationId: 'refParam',
+                    parameters: [ { '$ref': '#/components/parameters/PageParam' } ],
+                    responses: {
+                      '200': {
+                        description: "The two $ref'd parameters echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/parameter-inheritance.yml',
+            originalComponent: {
+              in: 'path',
+              name: 'id',
+              required: true,
+              schema: { type: 'string' }
+            },
+            path: '/paths//overridden/{id}/parameters/0',
+            pos: { col: 9, line: 37 }
+          },
+          allowEmptyValue: undefined,
+          allowReserved: undefined,
+          deprecated: false,
+          description: undefined,
+          explode: undefined,
+          id: 'parameter-4',
+          name: 'id',
+          required: true,
+          schema: 'schema-4',
+          style: undefined,
+          target: 'path'
+        },
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              description: 'Overrides the inherited parameter with a different type.',
+              in: 'query',
+              name: 'common',
+              schema: { type: 'integer' }
+            },
+            document: {
+              components: {
+                parameters: {
+                  IdParam: {
+                    in: 'path',
+                    name: 'id',
+                    required: true,
+                    schema: { type: 'string' }
+                  },
+                  PageParam: {
+                    in: 'query',
+                    name: 'page',
+                    schema: { default: 1, type: 'integer' }
+                  }
+                }
+              },
+              info: { title: 'Parameter Inheritance', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/inherited/{id}': {
+                  get: {
+                    operationId: 'inheritsParams',
+                    responses: {
+                      '200': {
+                        description: 'The inherited path and query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ],
+                  post: {
+                    operationId: 'inheritsAndAdds',
+                    parameters: [
+                      {
+                        in: 'query',
+                        name: 'extra',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: "The inherited parameters plus this operation's own one echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  }
+                },
+                '/overridden/{id}': {
+                  get: {
+                    operationId: 'overridesParam',
+                    parameters: [
+                      {
+                        description: 'Overrides the inherited parameter with a different type.',
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'integer' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The operation-level override of the inherited parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ]
+                },
+                '/ref-param/{id}': {
+                  get: {
+                    operationId: 'refParam',
+                    parameters: [ { '$ref': '#/components/parameters/PageParam' } ],
+                    responses: {
+                      '200': {
+                        description: "The two $ref'd parameters echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/parameter-inheritance.yml',
+            originalComponent: {
+              description: 'Overrides the inherited parameter with a different type.',
+              in: 'query',
+              name: 'common',
+              schema: { type: 'integer' }
+            },
+            path: '/paths//overridden/{id}/get/parameters/0',
+            pos: { col: 11, line: 50 }
+          },
+          allowEmptyValue: undefined,
+          allowReserved: undefined,
+          deprecated: false,
+          description: 'Overrides the inherited parameter with a different type.',
+          explode: undefined,
+          id: 'parameter-6',
+          name: 'common',
+          required: false,
+          schema: 'schema-6',
+          style: undefined,
+          target: 'query'
+        }
+      ],
+      path: '/overridden/{id}',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              operationId: 'overridesParam',
+              parameters: [
+                {
+                  description: 'Overrides the inherited parameter with a different type.',
+                  in: 'query',
+                  name: 'common',
+                  schema: { type: 'integer' }
+                }
+              ],
+              responses: {
+                '200': {
+                  description: 'The operation-level override of the inherited parameter echoed back.'
+                }
+              },
+              tags: [ 'Inheritance' ]
+            },
+            parameters: [
+              {
+                in: 'path',
+                name: 'id',
+                required: true,
+                schema: { type: 'string' }
+              },
+              {
+                in: 'query',
+                name: 'common',
+                schema: { type: 'string' }
+              }
+            ]
+          },
+          document: {
+            components: {
+              parameters: {
+                IdParam: {
+                  in: 'path',
+                  name: 'id',
+                  required: true,
+                  schema: { type: 'string' }
+                },
+                PageParam: {
+                  in: 'query',
+                  name: 'page',
+                  schema: { default: 1, type: 'integer' }
+                }
+              }
+            },
+            info: { title: 'Parameter Inheritance', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/inherited/{id}': {
+                get: {
+                  operationId: 'inheritsParams',
+                  responses: {
+                    '200': {
+                      description: 'The inherited path and query parameters echoed back.'
+                    }
+                  },
+                  tags: [ 'Inheritance' ]
+                },
+                parameters: [
+                  {
+                    in: 'path',
+                    name: 'id',
+                    required: true,
+                    schema: { type: 'string' }
+                  },
+                  {
+                    in: 'query',
+                    name: 'common',
+                    schema: { type: 'string' }
+                  }
+                ],
+                post: {
+                  operationId: 'inheritsAndAdds',
+                  parameters: [
+                    {
+                      in: 'query',
+                      name: 'extra',
+                      schema: { type: 'string' }
+                    }
+                  ],
+                  responses: {
+                    '200': {
+                      description: "The inherited parameters plus this operation's own one echoed back."
+                    }
+                  },
+                  tags: [ 'Inheritance' ]
+                }
+              },
+              '/overridden/{id}': {
+                get: {
+                  operationId: 'overridesParam',
+                  parameters: [
+                    {
+                      description: 'Overrides the inherited parameter with a different type.',
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'integer' }
+                    }
+                  ],
+                  responses: {
+                    '200': {
+                      description: 'The operation-level override of the inherited parameter echoed back.'
+                    }
+                  },
+                  tags: [ 'Inheritance' ]
+                },
+                parameters: [
+                  {
+                    in: 'path',
+                    name: 'id',
+                    required: true,
+                    schema: { type: 'string' }
+                  },
+                  {
+                    in: 'query',
+                    name: 'common',
+                    schema: { type: 'string' }
+                  }
+                ]
+              },
+              '/ref-param/{id}': {
+                get: {
+                  operationId: 'refParam',
+                  parameters: [ { '$ref': '#/components/parameters/PageParam' } ],
+                  responses: {
+                    '200': {
+                      description: "The two $ref'd parameters echoed back."
+                    }
+                  },
+                  tags: [ 'Inheritance' ]
+                },
+                parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+              }
+            }
+          },
+          file: '<root>/test/specs/v3/parameter-inheritance.yml',
+          originalComponent: {
+            get: {
+              operationId: 'overridesParam',
+              parameters: [
+                {
+                  description: 'Overrides the inherited parameter with a different type.',
+                  in: 'query',
+                  name: 'common',
+                  schema: { type: 'integer' }
+                }
+              ],
+              responses: {
+                '200': {
+                  description: 'The operation-level override of the inherited parameter echoed back.'
+                }
+              },
+              tags: [ 'Inheritance' ]
+            },
+            parameters: [
+              {
+                in: 'path',
+                name: 'id',
+                required: true,
+                schema: { type: 'string' }
+              },
+              {
+                in: 'query',
+                name: 'common',
+                schema: { type: 'string' }
+              }
+            ]
+          },
+          path: '/paths//overridden/{id}',
+          pos: { col: 5, line: 36 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: [Circular *4],
+        head: undefined,
+        id: 'path-2',
+        options: undefined,
+        parameters: [
+          {
+            '$ref': undefined,
+            '$src': {
+              component: {
+                in: 'path',
+                name: 'id',
+                required: true,
+                schema: { type: 'string' }
+              },
+              document: {
+                components: {
+                  parameters: {
+                    IdParam: {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    PageParam: {
+                      in: 'query',
+                      name: 'page',
+                      schema: { default: 1, type: 'integer' }
+                    }
+                  }
+                },
+                info: { title: 'Parameter Inheritance', version: '1.0.0' },
+                openapi: '3.0.0',
+                paths: {
+                  '/inherited/{id}': {
+                    get: {
+                      operationId: 'inheritsParams',
+                      responses: {
+                        '200': {
+                          description: 'The inherited path and query parameters echoed back.'
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [
+                      {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    post: {
+                      operationId: 'inheritsAndAdds',
+                      parameters: [
+                        {
+                          in: 'query',
+                          name: 'extra',
+                          schema: { type: 'string' }
+                        }
+                      ],
+                      responses: {
+                        '200': {
+                          description: "The inherited parameters plus this operation's own one echoed back."
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    }
+                  },
+                  '/overridden/{id}': {
+                    get: {
+                      operationId: 'overridesParam',
+                      parameters: [
+                        {
+                          description: 'Overrides the inherited parameter with a different type.',
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'integer' }
+                        }
+                      ],
+                      responses: {
+                        '200': {
+                          description: 'The operation-level override of the inherited parameter echoed back.'
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [
+                      {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'string' }
+                      }
+                    ]
+                  },
+                  '/ref-param/{id}': {
+                    get: {
+                      operationId: 'refParam',
+                      parameters: [
+                        { '$ref': '#/components/parameters/PageParam' }
+                      ],
+                      responses: {
+                        '200': {
+                          description: "The two $ref'd parameters echoed back."
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                  }
+                }
+              },
+              file: '<root>/test/specs/v3/parameter-inheritance.yml',
+              originalComponent: {
+                in: 'path',
+                name: 'id',
+                required: true,
+                schema: { type: 'string' }
+              },
+              path: '/paths//overridden/{id}/parameters/0',
+              pos: { col: 9, line: 37 }
+            },
+            allowEmptyValue: undefined,
+            allowReserved: undefined,
+            deprecated: false,
+            description: undefined,
+            explode: undefined,
+            id: 'parameter-4',
+            name: 'id',
+            required: true,
+            schema: 'schema-4',
+            style: undefined,
+            target: 'path'
+          },
+          {
+            '$ref': undefined,
+            '$src': {
+              component: {
+                in: 'query',
+                name: 'common',
+                schema: { type: 'string' }
+              },
+              document: {
+                components: {
+                  parameters: {
+                    IdParam: {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    PageParam: {
+                      in: 'query',
+                      name: 'page',
+                      schema: { default: 1, type: 'integer' }
+                    }
+                  }
+                },
+                info: { title: 'Parameter Inheritance', version: '1.0.0' },
+                openapi: '3.0.0',
+                paths: {
+                  '/inherited/{id}': {
+                    get: {
+                      operationId: 'inheritsParams',
+                      responses: {
+                        '200': {
+                          description: 'The inherited path and query parameters echoed back.'
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [
+                      {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    post: {
+                      operationId: 'inheritsAndAdds',
+                      parameters: [
+                        {
+                          in: 'query',
+                          name: 'extra',
+                          schema: { type: 'string' }
+                        }
+                      ],
+                      responses: {
+                        '200': {
+                          description: "The inherited parameters plus this operation's own one echoed back."
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    }
+                  },
+                  '/overridden/{id}': {
+                    get: {
+                      operationId: 'overridesParam',
+                      parameters: [
+                        {
+                          description: 'Overrides the inherited parameter with a different type.',
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'integer' }
+                        }
+                      ],
+                      responses: {
+                        '200': {
+                          description: 'The operation-level override of the inherited parameter echoed back.'
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [
+                      {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'string' }
+                      }
+                    ]
+                  },
+                  '/ref-param/{id}': {
+                    get: {
+                      operationId: 'refParam',
+                      parameters: [
+                        { '$ref': '#/components/parameters/PageParam' }
+                      ],
+                      responses: {
+                        '200': {
+                          description: "The two $ref'd parameters echoed back."
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                  }
+                }
+              },
+              file: '<root>/test/specs/v3/parameter-inheritance.yml',
+              originalComponent: {
+                in: 'query',
+                name: 'common',
+                schema: { type: 'string' }
+              },
+              path: '/paths//overridden/{id}/parameters/1',
+              pos: { col: 9, line: 42 }
+            },
+            allowEmptyValue: undefined,
+            allowReserved: undefined,
+            deprecated: false,
+            description: undefined,
+            explode: undefined,
+            id: 'parameter-5',
+            name: 'common',
+            required: false,
+            schema: {
+              '$ref': undefined,
+              '$src': {
+                component: '18 inspect chars',
+                document: '9 inspect chars',
+                file: '<root>/test/specs/v3/parameter-inheritance.yml',
+                originalComponent: '18 inspect chars',
+                path: '/paths//overridden/{id}/parameters/1/schema',
+                pos: { col: 11, line: 45 }
+              },
+              accessibility: 'all',
+              additionalProperties: undefined,
+              allOf: [],
+              anyOf: [],
+              const: undefined,
+              custom: {},
+              default: undefined,
+              deprecated: false,
+              description: undefined,
+              discriminator: undefined,
+              enum: undefined,
+              example: undefined,
+              format: undefined,
+              id: 'schema-5',
+              inheritedSchemas: [],
+              isNameGenerated: true,
+              items: undefined,
+              kind: 'string',
+              maxItems: undefined,
+              maxLength: undefined,
+              maximum: undefined,
+              minItems: undefined,
+              minLength: undefined,
+              minimum: undefined,
+              name: 'schema-5',
+              not: undefined,
+              nullable: false,
+              oneOf: [],
+              pattern: undefined,
+              properties: Map(0) {},
+              required: Set(0) {},
+              type: 'string'
+            },
+            style: undefined,
+            target: 'query'
+          }
+        ],
+        patch: undefined,
+        path: '/overridden/{id}',
+        post: undefined,
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              description: 'The operation-level override of the inherited parameter echoed back.'
+            },
+            document: {
+              components: {
+                parameters: {
+                  IdParam: {
+                    in: 'path',
+                    name: 'id',
+                    required: true,
+                    schema: { type: 'string' }
+                  },
+                  PageParam: {
+                    in: 'query',
+                    name: 'page',
+                    schema: { default: 1, type: 'integer' }
+                  }
+                }
+              },
+              info: { title: 'Parameter Inheritance', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/inherited/{id}': {
+                  get: {
+                    operationId: 'inheritsParams',
+                    responses: {
+                      '200': {
+                        description: 'The inherited path and query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ],
+                  post: {
+                    operationId: 'inheritsAndAdds',
+                    parameters: [
+                      {
+                        in: 'query',
+                        name: 'extra',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: "The inherited parameters plus this operation's own one echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  }
+                },
+                '/overridden/{id}': {
+                  get: {
+                    operationId: 'overridesParam',
+                    parameters: [
+                      {
+                        description: 'Overrides the inherited parameter with a different type.',
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'integer' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The operation-level override of the inherited parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ]
+                },
+                '/ref-param/{id}': {
+                  get: {
+                    operationId: 'refParam',
+                    parameters: [ { '$ref': '#/components/parameters/PageParam' } ],
+                    responses: {
+                      '200': {
+                        description: "The two $ref'd parameters echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/parameter-inheritance.yml',
+            originalComponent: {
+              description: 'The operation-level override of the inherited parameter echoed back.'
+            },
+            path: '/paths//overridden/{id}/get/responses/200',
+            pos: { col: 11, line: 57 }
+          },
+          contentOptions: [],
+          description: 'The operation-level override of the inherited parameter echoed back.',
+          headers: [],
+          id: 'response-3',
+          statusCode: 200
+        }
+      ],
+      summary: undefined,
+      tags: [ 'Inheritance' ]
+    },
+    <ref *5> {
+      '$ref': undefined,
+      '$src': {
+        component: '206 inspect chars',
+        document: '2327 inspect chars',
+        file: '<root>/test/specs/v3/parameter-inheritance.yml',
+        originalComponent: '206 inspect chars',
+        path: '/paths//ref-param/{id}/get',
+        pos: { col: 7, line: 62 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-4',
+      method: 'get',
+      name: 'refParam',
+      parameters: [
+        {
+          '$ref': {
+            '$ref': undefined,
+            '$src': {
+              component: {
+                in: 'path',
+                name: 'id',
+                required: true,
+                schema: { type: 'string' }
+              },
+              document: {
+                components: {
+                  parameters: {
+                    IdParam: {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    PageParam: {
+                      in: 'query',
+                      name: 'page',
+                      schema: { default: 1, type: 'integer' }
+                    }
+                  }
+                },
+                info: { title: 'Parameter Inheritance', version: '1.0.0' },
+                openapi: '3.0.0',
+                paths: {
+                  '/inherited/{id}': {
+                    get: {
+                      operationId: 'inheritsParams',
+                      responses: {
+                        '200': {
+                          description: 'The inherited path and query parameters echoed back.'
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [
+                      {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    post: {
+                      operationId: 'inheritsAndAdds',
+                      parameters: [
+                        {
+                          in: 'query',
+                          name: 'extra',
+                          schema: { type: 'string' }
+                        }
+                      ],
+                      responses: {
+                        '200': {
+                          description: "The inherited parameters plus this operation's own one echoed back."
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    }
+                  },
+                  '/overridden/{id}': {
+                    get: {
+                      operationId: 'overridesParam',
+                      parameters: [
+                        {
+                          description: 'Overrides the inherited parameter with a different type.',
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'integer' }
+                        }
+                      ],
+                      responses: {
+                        '200': {
+                          description: 'The operation-level override of the inherited parameter echoed back.'
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [
+                      {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'string' }
+                      }
+                    ]
+                  },
+                  '/ref-param/{id}': {
+                    get: {
+                      operationId: 'refParam',
+                      parameters: [
+                        { '$ref': '#/components/parameters/PageParam' }
+                      ],
+                      responses: {
+                        '200': {
+                          description: "The two $ref'd parameters echoed back."
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                  }
+                }
+              },
+              file: '<root>/test/specs/v3/parameter-inheritance.yml',
+              originalComponent: {
+                in: 'path',
+                name: 'id',
+                required: true,
+                schema: { type: 'string' }
+              },
+              path: '/components/parameters/IdParam',
+              pos: { col: 7, line: 73 }
+            },
+            allowEmptyValue: undefined,
+            allowReserved: undefined,
+            deprecated: false,
+            description: undefined,
+            explode: undefined,
+            id: 'parameter-7',
+            name: 'id',
+            required: true,
+            schema: {
+              '$ref': undefined,
+              '$src': {
+                component: '18 inspect chars',
+                document: '9 inspect chars',
+                file: '<root>/test/specs/v3/parameter-inheritance.yml',
+                originalComponent: '18 inspect chars',
+                path: '/components/parameters/IdParam/schema',
+                pos: { col: 9, line: 77 }
+              },
+              accessibility: 'all',
+              additionalProperties: undefined,
+              allOf: [],
+              anyOf: [],
+              const: undefined,
+              custom: {},
+              default: undefined,
+              deprecated: false,
+              description: undefined,
+              discriminator: undefined,
+              enum: undefined,
+              example: undefined,
+              format: undefined,
+              id: 'schema-7',
+              inheritedSchemas: [],
+              isNameGenerated: true,
+              items: undefined,
+              kind: 'string',
+              maxItems: undefined,
+              maxLength: undefined,
+              maximum: undefined,
+              minItems: undefined,
+              minLength: undefined,
+              minimum: undefined,
+              name: 'IdParam',
+              not: undefined,
+              nullable: false,
+              oneOf: [],
+              pattern: undefined,
+              properties: Map(0) {},
+              required: Set(0) {},
+              type: 'string'
+            },
+            style: undefined,
+            target: 'path'
+          },
+          '$src': {
+            component: { '$ref': '#/components/parameters/IdParam' },
+            document: {
+              components: {
+                parameters: {
+                  IdParam: {
+                    in: 'path',
+                    name: 'id',
+                    required: true,
+                    schema: { type: 'string' }
+                  },
+                  PageParam: {
+                    in: 'query',
+                    name: 'page',
+                    schema: { default: 1, type: 'integer' }
+                  }
+                }
+              },
+              info: { title: 'Parameter Inheritance', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/inherited/{id}': {
+                  get: {
+                    operationId: 'inheritsParams',
+                    responses: {
+                      '200': {
+                        description: 'The inherited path and query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ],
+                  post: {
+                    operationId: 'inheritsAndAdds',
+                    parameters: [
+                      {
+                        in: 'query',
+                        name: 'extra',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: "The inherited parameters plus this operation's own one echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  }
+                },
+                '/overridden/{id}': {
+                  get: {
+                    operationId: 'overridesParam',
+                    parameters: [
+                      {
+                        description: 'Overrides the inherited parameter with a different type.',
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'integer' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The operation-level override of the inherited parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ]
+                },
+                '/ref-param/{id}': {
+                  get: {
+                    operationId: 'refParam',
+                    parameters: [ { '$ref': '#/components/parameters/PageParam' } ],
+                    responses: {
+                      '200': {
+                        description: "The two $ref'd parameters echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/parameter-inheritance.yml',
+            originalComponent: { '$ref': '#/components/parameters/IdParam' },
+            path: '/paths//ref-param/{id}/parameters/0',
+            pos: { col: 9, line: 60 }
+          },
+          allowEmptyValue: undefined,
+          allowReserved: undefined,
+          deprecated: false,
+          description: undefined,
+          explode: undefined,
+          id: 'parameter-8',
+          name: 'id',
+          required: true,
+          schema: 'schema-7',
+          style: undefined,
+          target: 'path'
+        },
+        {
+          '$ref': {
+            '$ref': undefined,
+            '$src': {
+              component: {
+                in: 'query',
+                name: 'page',
+                schema: { default: 1, type: 'integer' }
+              },
+              document: {
+                components: {
+                  parameters: {
+                    IdParam: {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    PageParam: {
+                      in: 'query',
+                      name: 'page',
+                      schema: { default: 1, type: 'integer' }
+                    }
+                  }
+                },
+                info: { title: 'Parameter Inheritance', version: '1.0.0' },
+                openapi: '3.0.0',
+                paths: {
+                  '/inherited/{id}': {
+                    get: {
+                      operationId: 'inheritsParams',
+                      responses: {
+                        '200': {
+                          description: 'The inherited path and query parameters echoed back.'
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [
+                      {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    post: {
+                      operationId: 'inheritsAndAdds',
+                      parameters: [
+                        {
+                          in: 'query',
+                          name: 'extra',
+                          schema: { type: 'string' }
+                        }
+                      ],
+                      responses: {
+                        '200': {
+                          description: "The inherited parameters plus this operation's own one echoed back."
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    }
+                  },
+                  '/overridden/{id}': {
+                    get: {
+                      operationId: 'overridesParam',
+                      parameters: [
+                        {
+                          description: 'Overrides the inherited parameter with a different type.',
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'integer' }
+                        }
+                      ],
+                      responses: {
+                        '200': {
+                          description: 'The operation-level override of the inherited parameter echoed back.'
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [
+                      {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'string' }
+                      }
+                    ]
+                  },
+                  '/ref-param/{id}': {
+                    get: {
+                      operationId: 'refParam',
+                      parameters: [
+                        { '$ref': '#/components/parameters/PageParam' }
+                      ],
+                      responses: {
+                        '200': {
+                          description: "The two $ref'd parameters echoed back."
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                  }
+                }
+              },
+              file: '<root>/test/specs/v3/parameter-inheritance.yml',
+              originalComponent: {
+                in: 'query',
+                name: 'page',
+                schema: { default: 1, type: 'integer' }
+              },
+              path: '/components/parameters/PageParam',
+              pos: { col: 7, line: 79 }
+            },
+            allowEmptyValue: undefined,
+            allowReserved: undefined,
+            deprecated: false,
+            description: undefined,
+            explode: undefined,
+            id: 'parameter-9',
+            name: 'page',
+            required: false,
+            schema: {
+              '$ref': undefined,
+              '$src': {
+                component: '31 inspect chars',
+                document: '9 inspect chars',
+                file: '<root>/test/specs/v3/parameter-inheritance.yml',
+                originalComponent: '31 inspect chars',
+                path: '/components/parameters/PageParam/schema',
+                pos: { col: 9, line: 82 }
+              },
+              accessibility: 'all',
+              additionalProperties: undefined,
+              allOf: [],
+              anyOf: [],
+              const: undefined,
+              custom: {},
+              default: 1,
+              deprecated: false,
+              description: undefined,
+              discriminator: undefined,
+              enum: undefined,
+              example: undefined,
+              format: undefined,
+              id: 'schema-8',
+              inheritedSchemas: [],
+              isNameGenerated: true,
+              items: undefined,
+              kind: 'integer',
+              maxItems: undefined,
+              maxLength: undefined,
+              maximum: undefined,
+              minItems: undefined,
+              minLength: undefined,
+              minimum: undefined,
+              name: 'PageParam',
+              not: undefined,
+              nullable: false,
+              oneOf: [],
+              pattern: undefined,
+              properties: Map(0) {},
+              required: Set(0) {},
+              type: 'integer'
+            },
+            style: undefined,
+            target: 'query'
+          },
+          '$src': {
+            component: { '$ref': '#/components/parameters/PageParam' },
+            document: {
+              components: {
+                parameters: {
+                  IdParam: {
+                    in: 'path',
+                    name: 'id',
+                    required: true,
+                    schema: { type: 'string' }
+                  },
+                  PageParam: {
+                    in: 'query',
+                    name: 'page',
+                    schema: { default: 1, type: 'integer' }
+                  }
+                }
+              },
+              info: { title: 'Parameter Inheritance', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/inherited/{id}': {
+                  get: {
+                    operationId: 'inheritsParams',
+                    responses: {
+                      '200': {
+                        description: 'The inherited path and query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ],
+                  post: {
+                    operationId: 'inheritsAndAdds',
+                    parameters: [
+                      {
+                        in: 'query',
+                        name: 'extra',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: "The inherited parameters plus this operation's own one echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  }
+                },
+                '/overridden/{id}': {
+                  get: {
+                    operationId: 'overridesParam',
+                    parameters: [
+                      {
+                        description: 'Overrides the inherited parameter with a different type.',
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'integer' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The operation-level override of the inherited parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ]
+                },
+                '/ref-param/{id}': {
+                  get: {
+                    operationId: 'refParam',
+                    parameters: [ { '$ref': '#/components/parameters/PageParam' } ],
+                    responses: {
+                      '200': {
+                        description: "The two $ref'd parameters echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/parameter-inheritance.yml',
+            originalComponent: { '$ref': '#/components/parameters/PageParam' },
+            path: '/paths//ref-param/{id}/get/parameters/0',
+            pos: { col: 11, line: 65 }
+          },
+          allowEmptyValue: undefined,
+          allowReserved: undefined,
+          deprecated: false,
+          description: undefined,
+          explode: undefined,
+          id: 'parameter-10',
+          name: 'page',
+          required: false,
+          schema: 'schema-8',
+          style: undefined,
+          target: 'query'
+        }
+      ],
+      path: '/ref-param/{id}',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              operationId: 'refParam',
+              parameters: [ { '$ref': '#/components/parameters/PageParam' } ],
+              responses: {
+                '200': {
+                  description: "The two $ref'd parameters echoed back."
+                }
+              },
+              tags: [ 'Inheritance' ]
+            },
+            parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+          },
+          document: {
+            components: {
+              parameters: {
+                IdParam: {
+                  in: 'path',
+                  name: 'id',
+                  required: true,
+                  schema: { type: 'string' }
+                },
+                PageParam: {
+                  in: 'query',
+                  name: 'page',
+                  schema: { default: 1, type: 'integer' }
+                }
+              }
+            },
+            info: { title: 'Parameter Inheritance', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/inherited/{id}': {
+                get: {
+                  operationId: 'inheritsParams',
+                  responses: {
+                    '200': {
+                      description: 'The inherited path and query parameters echoed back.'
+                    }
+                  },
+                  tags: [ 'Inheritance' ]
+                },
+                parameters: [
+                  {
+                    in: 'path',
+                    name: 'id',
+                    required: true,
+                    schema: { type: 'string' }
+                  },
+                  {
+                    in: 'query',
+                    name: 'common',
+                    schema: { type: 'string' }
+                  }
+                ],
+                post: {
+                  operationId: 'inheritsAndAdds',
+                  parameters: [
+                    {
+                      in: 'query',
+                      name: 'extra',
+                      schema: { type: 'string' }
+                    }
+                  ],
+                  responses: {
+                    '200': {
+                      description: "The inherited parameters plus this operation's own one echoed back."
+                    }
+                  },
+                  tags: [ 'Inheritance' ]
+                }
+              },
+              '/overridden/{id}': {
+                get: {
+                  operationId: 'overridesParam',
+                  parameters: [
+                    {
+                      description: 'Overrides the inherited parameter with a different type.',
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'integer' }
+                    }
+                  ],
+                  responses: {
+                    '200': {
+                      description: 'The operation-level override of the inherited parameter echoed back.'
+                    }
+                  },
+                  tags: [ 'Inheritance' ]
+                },
+                parameters: [
+                  {
+                    in: 'path',
+                    name: 'id',
+                    required: true,
+                    schema: { type: 'string' }
+                  },
+                  {
+                    in: 'query',
+                    name: 'common',
+                    schema: { type: 'string' }
+                  }
+                ]
+              },
+              '/ref-param/{id}': {
+                get: {
+                  operationId: 'refParam',
+                  parameters: [ { '$ref': '#/components/parameters/PageParam' } ],
+                  responses: {
+                    '200': {
+                      description: "The two $ref'd parameters echoed back."
+                    }
+                  },
+                  tags: [ 'Inheritance' ]
+                },
+                parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+              }
+            }
+          },
+          file: '<root>/test/specs/v3/parameter-inheritance.yml',
+          originalComponent: {
+            get: {
+              operationId: 'refParam',
+              parameters: [ { '$ref': '#/components/parameters/PageParam' } ],
+              responses: {
+                '200': {
+                  description: "The two $ref'd parameters echoed back."
+                }
+              },
+              tags: [ 'Inheritance' ]
+            },
+            parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+          },
+          path: '/paths//ref-param/{id}',
+          pos: { col: 5, line: 59 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: [Circular *5],
+        head: undefined,
+        id: 'path-3',
+        options: undefined,
+        parameters: [
+          {
+            '$ref': {
+              '$ref': undefined,
+              '$src': {
+                component: {
+                  in: 'path',
+                  name: 'id',
+                  required: true,
+                  schema: { type: 'string' }
+                },
+                document: {
+                  components: {
+                    parameters: {
+                      IdParam: {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      PageParam: {
+                        in: 'query',
+                        name: 'page',
+                        schema: { default: 1, type: 'integer' }
+                      }
+                    }
+                  },
+                  info: { title: 'Parameter Inheritance', version: '1.0.0' },
+                  openapi: '3.0.0',
+                  paths: {
+                    '/inherited/{id}': {
+                      get: {
+                        operationId: 'inheritsParams',
+                        responses: {
+                          '200': {
+                            description: 'The inherited path and query parameters echoed back.'
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [
+                        {
+                          in: 'path',
+                          name: 'id',
+                          required: true,
+                          schema: { type: 'string' }
+                        },
+                        {
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'string' }
+                        }
+                      ],
+                      post: {
+                        operationId: 'inheritsAndAdds',
+                        parameters: [
+                          {
+                            in: 'query',
+                            name: 'extra',
+                            schema: { type: 'string' }
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: "The inherited parameters plus this operation's own one echoed back."
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      }
+                    },
+                    '/overridden/{id}': {
+                      get: {
+                        operationId: 'overridesParam',
+                        parameters: [
+                          {
+                            description: 'Overrides the inherited parameter with a different type.',
+                            in: 'query',
+                            name: 'common',
+                            schema: { type: 'integer' }
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: 'The operation-level override of the inherited parameter echoed back.'
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [
+                        {
+                          in: 'path',
+                          name: 'id',
+                          required: true,
+                          schema: { type: 'string' }
+                        },
+                        {
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'string' }
+                        }
+                      ]
+                    },
+                    '/ref-param/{id}': {
+                      get: {
+                        operationId: 'refParam',
+                        parameters: [
+                          {
+                            '$ref': '#/components/parameters/PageParam'
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            description: "The two $ref'd parameters echoed back."
+                          }
+                        },
+                        tags: [ 'Inheritance' ]
+                      },
+                      parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                    }
+                  }
+                },
+                file: '<root>/test/specs/v3/parameter-inheritance.yml',
+                originalComponent: {
+                  in: 'path',
+                  name: 'id',
+                  required: true,
+                  schema: { type: 'string' }
+                },
+                path: '/components/parameters/IdParam',
+                pos: { col: 7, line: 73 }
+              },
+              allowEmptyValue: undefined,
+              allowReserved: undefined,
+              deprecated: false,
+              description: undefined,
+              explode: undefined,
+              id: 'parameter-7',
+              name: 'id',
+              required: true,
+              schema: {
+                '$ref': undefined,
+                '$src': {
+                  component: '18 inspect chars',
+                  document: '9 inspect chars',
+                  file: '<root>/test/specs/v3/parameter-inheritance.yml',
+                  originalComponent: '18 inspect chars',
+                  path: '/components/parameters/IdParam/schema',
+                  pos: { col: 9, line: 77 }
+                },
+                accessibility: 'all',
+                additionalProperties: undefined,
+                allOf: [],
+                anyOf: [],
+                const: undefined,
+                custom: {},
+                default: undefined,
+                deprecated: false,
+                description: undefined,
+                discriminator: undefined,
+                enum: undefined,
+                example: undefined,
+                format: undefined,
+                id: 'schema-7',
+                inheritedSchemas: [],
+                isNameGenerated: true,
+                items: undefined,
+                kind: 'string',
+                maxItems: undefined,
+                maxLength: undefined,
+                maximum: undefined,
+                minItems: undefined,
+                minLength: undefined,
+                minimum: undefined,
+                name: 'IdParam',
+                not: undefined,
+                nullable: false,
+                oneOf: [],
+                pattern: undefined,
+                properties: Map(0) {},
+                required: Set(0) {},
+                type: 'string'
+              },
+              style: undefined,
+              target: 'path'
+            },
+            '$src': {
+              component: { '$ref': '#/components/parameters/IdParam' },
+              document: {
+                components: {
+                  parameters: {
+                    IdParam: {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    PageParam: {
+                      in: 'query',
+                      name: 'page',
+                      schema: { default: 1, type: 'integer' }
+                    }
+                  }
+                },
+                info: { title: 'Parameter Inheritance', version: '1.0.0' },
+                openapi: '3.0.0',
+                paths: {
+                  '/inherited/{id}': {
+                    get: {
+                      operationId: 'inheritsParams',
+                      responses: {
+                        '200': {
+                          description: 'The inherited path and query parameters echoed back.'
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [
+                      {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    post: {
+                      operationId: 'inheritsAndAdds',
+                      parameters: [
+                        {
+                          in: 'query',
+                          name: 'extra',
+                          schema: { type: 'string' }
+                        }
+                      ],
+                      responses: {
+                        '200': {
+                          description: "The inherited parameters plus this operation's own one echoed back."
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    }
+                  },
+                  '/overridden/{id}': {
+                    get: {
+                      operationId: 'overridesParam',
+                      parameters: [
+                        {
+                          description: 'Overrides the inherited parameter with a different type.',
+                          in: 'query',
+                          name: 'common',
+                          schema: { type: 'integer' }
+                        }
+                      ],
+                      responses: {
+                        '200': {
+                          description: 'The operation-level override of the inherited parameter echoed back.'
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [
+                      {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'string' }
+                      }
+                    ]
+                  },
+                  '/ref-param/{id}': {
+                    get: {
+                      operationId: 'refParam',
+                      parameters: [
+                        { '$ref': '#/components/parameters/PageParam' }
+                      ],
+                      responses: {
+                        '200': {
+                          description: "The two $ref'd parameters echoed back."
+                        }
+                      },
+                      tags: [ 'Inheritance' ]
+                    },
+                    parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                  }
+                }
+              },
+              file: '<root>/test/specs/v3/parameter-inheritance.yml',
+              originalComponent: { '$ref': '#/components/parameters/IdParam' },
+              path: '/paths//ref-param/{id}/parameters/0',
+              pos: { col: 9, line: 60 }
+            },
+            allowEmptyValue: undefined,
+            allowReserved: undefined,
+            deprecated: false,
+            description: undefined,
+            explode: undefined,
+            id: 'parameter-8',
+            name: 'id',
+            required: true,
+            schema: 'schema-7',
+            style: undefined,
+            target: 'path'
+          }
+        ],
+        patch: undefined,
+        path: '/ref-param/{id}',
+        post: undefined,
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: { description: "The two $ref'd parameters echoed back." },
+            document: {
+              components: {
+                parameters: {
+                  IdParam: {
+                    in: 'path',
+                    name: 'id',
+                    required: true,
+                    schema: { type: 'string' }
+                  },
+                  PageParam: {
+                    in: 'query',
+                    name: 'page',
+                    schema: { default: 1, type: 'integer' }
+                  }
+                }
+              },
+              info: { title: 'Parameter Inheritance', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/inherited/{id}': {
+                  get: {
+                    operationId: 'inheritsParams',
+                    responses: {
+                      '200': {
+                        description: 'The inherited path and query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ],
+                  post: {
+                    operationId: 'inheritsAndAdds',
+                    parameters: [
+                      {
+                        in: 'query',
+                        name: 'extra',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: "The inherited parameters plus this operation's own one echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  }
+                },
+                '/overridden/{id}': {
+                  get: {
+                    operationId: 'overridesParam',
+                    parameters: [
+                      {
+                        description: 'Overrides the inherited parameter with a different type.',
+                        in: 'query',
+                        name: 'common',
+                        schema: { type: 'integer' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The operation-level override of the inherited parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'common',
+                      schema: { type: 'string' }
+                    }
+                  ]
+                },
+                '/ref-param/{id}': {
+                  get: {
+                    operationId: 'refParam',
+                    parameters: [ { '$ref': '#/components/parameters/PageParam' } ],
+                    responses: {
+                      '200': {
+                        description: "The two $ref'd parameters echoed back."
+                      }
+                    },
+                    tags: [ 'Inheritance' ]
+                  },
+                  parameters: [ { '$ref': '#/components/parameters/IdParam' } ]
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/parameter-inheritance.yml',
+            originalComponent: { description: "The two $ref'd parameters echoed back." },
+            path: '/paths//ref-param/{id}/get/responses/200',
+            pos: { col: 11, line: 68 }
+          },
+          contentOptions: [],
+          description: "The two $ref'd parameters echoed back.",
+          headers: [],
+          id: 'response-4',
+          statusCode: 200
+        }
+      ],
+      summary: undefined,
+      tags: [ 'Inheritance' ]
+    }
+  ],
+  schemas: [
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '18 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/parameter-inheritance.yml',
+        originalComponent: '18 inspect chars',
+        path: '/paths//inherited/{id}/parameters/0/schema',
+        pos: { col: 11, line: 13 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-1',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'schema-1',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '18 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/parameter-inheritance.yml',
+        originalComponent: '18 inspect chars',
+        path: '/paths//inherited/{id}/parameters/1/schema',
+        pos: { col: 11, line: 17 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-2',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'schema-2',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '18 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/parameter-inheritance.yml',
+        originalComponent: '18 inspect chars',
+        path: '/paths//inherited/{id}/post/parameters/0/schema',
+        pos: { col: 13, line: 31 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-3',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'schema-3',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '18 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/parameter-inheritance.yml',
+        originalComponent: '18 inspect chars',
+        path: '/paths//overridden/{id}/parameters/0/schema',
+        pos: { col: 11, line: 41 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-4',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'schema-4',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '18 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/parameter-inheritance.yml',
+        originalComponent: '18 inspect chars',
+        path: '/paths//overridden/{id}/parameters/1/schema',
+        pos: { col: 11, line: 45 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-5',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'schema-5',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '19 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/parameter-inheritance.yml',
+        originalComponent: '19 inspect chars',
+        path: '/paths//overridden/{id}/get/parameters/0/schema',
+        pos: { col: 13, line: 54 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-6',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'integer',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'schema-6',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'integer'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '18 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/parameter-inheritance.yml',
+        originalComponent: '18 inspect chars',
+        path: '/components/parameters/IdParam/schema',
+        pos: { col: 9, line: 77 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-7',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'IdParam',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '31 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/parameter-inheritance.yml',
+        originalComponent: '31 inspect chars',
+        path: '/components/parameters/PageParam/schema',
+        pos: { col: 9, line: 82 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: 1,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-8',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'integer',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'PageParam',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'integer'
+    }
+  ],
+  services: [
+    {
+      '$ref': undefined,
+      description: undefined,
+      endpoints: [ 'endpoint-1', 'endpoint-2', 'endpoint-3', 'endpoint-4' ],
+      id: 'service-1',
+      name: 'Inheritance'
+    }
+  ]
+}

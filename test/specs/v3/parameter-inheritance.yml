@@ -1,0 +1,83 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Parameter Inheritance
+
+paths:
+  /inherited/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: common
+        in: query
+        schema:
+          type: string
+    get:
+      operationId: inheritsParams
+      tags: [Inheritance]
+      responses:
+        '200':
+          description: The inherited path and query parameters echoed back.
+    post:
+      operationId: inheritsAndAdds
+      tags: [Inheritance]
+      parameters:
+        - name: extra
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The inherited parameters plus this operation's own one echoed back.
+  /overridden/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: common
+        in: query
+        schema:
+          type: string
+    get:
+      operationId: overridesParam
+      tags: [Inheritance]
+      parameters:
+        - name: common
+          in: query
+          description: Overrides the inherited parameter with a different type.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The operation-level override of the inherited parameter echoed back.
+  /ref-param/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+    get:
+      operationId: refParam
+      tags: [Inheritance]
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+      responses:
+        '200':
+          description: The two $ref'd parameters echoed back.
+
+components:
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
