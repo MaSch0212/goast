@@ -1,0 +1,147 @@
+{
+  typescript: {
+    clients: {},
+    indexFiles: {
+      clientInterfaces: '<output>/clients.ts',
+      clients: '<output>/clients.ts',
+      models: '<output>/models.ts'
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/ref-siblings.yml#/components/schemas/Target',
+        additionalExports: [],
+        component: 'Target',
+        filePath: '<output>/models/target.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/target.ts',
+            name: 'Target',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/ref-siblings.yml#/components/schemas/Target',
+        additionalExports: [],
+        component: 'Target',
+        filePath: '<output>/models/target.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/target.ts',
+            name: 'Target',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/ref-siblings.yml#/components/schemas/RefWithTitle',
+        additionalExports: [],
+        component: 'RefWithTitle',
+        filePath: '<output>/models/ref-with-title.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/ref-with-title.ts',
+            name: 'RefWithTitle',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/ref-siblings.yml#/components/schemas/RefWithNullable',
+        additionalExports: [],
+        component: 'RefWithNullable',
+        filePath: '<output>/models/ref-with-nullable.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/ref-with-nullable.ts',
+            name: 'RefWithNullable',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/ref-siblings.yml#/components/schemas/RefWithDefault',
+        additionalExports: [],
+        component: 'RefWithDefault',
+        filePath: '<output>/models/ref-with-default.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/ref-with-default.ts',
+            name: 'RefWithDefault',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/ref-siblings.yml#/components/schemas/RefWithExample',
+        additionalExports: [],
+        component: 'RefWithExample',
+        filePath: '<output>/models/ref-with-example.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/ref-with-example.ts',
+            name: 'RefWithExample',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/ref-siblings.yml#/components/schemas/ObjectWithRefSiblingProperties',
+        additionalExports: [],
+        component: 'ObjectWithRefSiblingProperties',
+        filePath: '<output>/models/object-with-ref-sibling-properties.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/object-with-ref-sibling-properties.ts',
+            name: 'ObjectWithRefSiblingProperties',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/ref-siblings.yml#/components/schemas/Target',
+        additionalExports: [],
+        component: 'Target',
+        filePath: '<output>/models/target.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/target.ts',
+            name: 'Target',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/ref-siblings.yml#/components/schemas/Target',
+        additionalExports: [],
+        component: 'Target',
+        filePath: '<output>/models/target.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/target.ts',
+            name: 'Target',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      }
+    }
+  }
+}

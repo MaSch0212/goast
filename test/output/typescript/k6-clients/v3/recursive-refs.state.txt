@@ -1,0 +1,330 @@
+{
+  typescript: {
+    indexFiles: {
+      k6Clients: '<output>/clients.js',
+      k6ResponseModels: '<output>/responses.ts',
+      models: '<output>/models.ts'
+    },
+    k6Clients: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/SelfRecursive',
+        additionalExports: [],
+        component: 'SelfRecursive',
+        filePath: '<output>/models/self-recursive.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/self-recursive.ts',
+            name: 'SelfRecursive',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/MutualA',
+        additionalExports: [],
+        component: 'MutualA',
+        filePath: '<output>/models/mutual-a.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/mutual-a.ts',
+            name: 'MutualA',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/RecursiveThroughArray',
+        additionalExports: [],
+        component: 'RecursiveThroughArray',
+        filePath: '<output>/models/recursive-through-array.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/recursive-through-array.ts',
+            name: 'RecursiveThroughArray',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/RecursiveThroughArray/properties/items',
+        component: '({\n    nested?: RecursiveThroughArray;\n  })[]',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/recursive-through-array.ts',
+            name: 'RecursiveThroughArray',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/RecursiveThroughArray/properties/items/items',
+        component: '{\n  nested?: RecursiveThroughArray;\n}',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/recursive-through-array.ts',
+            name: 'RecursiveThroughArray',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/RecursiveThroughArray',
+        additionalExports: [],
+        component: 'RecursiveThroughArray',
+        filePath: '<output>/models/recursive-through-array.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/recursive-through-array.ts',
+            name: 'RecursiveThroughArray',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/RecursiveRequired',
+        additionalExports: [],
+        component: 'RecursiveRequired',
+        filePath: '<output>/models/recursive-required.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/recursive-required.ts',
+            name: 'RecursiveRequired',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/RecursiveRequired/properties/name',
+        component: 'string',
+        imports: []
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/RecursiveRequired',
+        additionalExports: [],
+        component: 'RecursiveRequired',
+        filePath: '<output>/models/recursive-required.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/recursive-required.ts',
+            name: 'RecursiveRequired',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/RecursiveThroughMap',
+        additionalExports: [],
+        component: 'RecursiveThroughMap',
+        filePath: '<output>/models/recursive-through-map.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/recursive-through-map.ts',
+            name: 'RecursiveThroughMap',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/RecursiveThroughMap',
+        additionalExports: [],
+        component: 'RecursiveThroughMap',
+        filePath: '<output>/models/recursive-through-map.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/recursive-through-map.ts',
+            name: 'RecursiveThroughMap',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/SelfRecursive/properties/name',
+        component: 'string',
+        imports: []
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/TreeNode',
+        additionalExports: [],
+        component: 'TreeNode',
+        filePath: '<output>/models/tree-node.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/tree-node.ts',
+            name: 'TreeNode',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/TreeNode/properties/name',
+        component: 'string',
+        imports: []
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/TreeNode',
+        additionalExports: [],
+        component: 'TreeNode',
+        filePath: '<output>/models/tree-node.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/tree-node.ts',
+            name: 'TreeNode',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/TreeNode/properties/children',
+        component: '(TreeNode)[]',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/tree-node.ts',
+            name: 'TreeNode',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/TreeNode',
+        additionalExports: [],
+        component: 'TreeNode',
+        filePath: '<output>/models/tree-node.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/tree-node.ts',
+            name: 'TreeNode',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/SelfRecursive',
+        additionalExports: [],
+        component: 'SelfRecursive',
+        filePath: '<output>/models/self-recursive.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/self-recursive.ts',
+            name: 'SelfRecursive',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/SelfRecursiveArray',
+        additionalExports: [],
+        component: 'SelfRecursiveArray',
+        filePath: '<output>/models/self-recursive-array.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/self-recursive-array.ts',
+            name: 'SelfRecursiveArray',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/SelfRecursiveArray/properties/children',
+        component: '(SelfRecursiveArray)[]',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/self-recursive-array.ts',
+            name: 'SelfRecursiveArray',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/SelfRecursiveArray',
+        additionalExports: [],
+        component: 'SelfRecursiveArray',
+        filePath: '<output>/models/self-recursive-array.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/self-recursive-array.ts',
+            name: 'SelfRecursiveArray',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/MutualA',
+        additionalExports: [],
+        component: 'MutualA',
+        filePath: '<output>/models/mutual-a.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/mutual-a.ts',
+            name: 'MutualA',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/MutualB',
+        additionalExports: [],
+        component: 'MutualB',
+        filePath: '<output>/models/mutual-b.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/mutual-b.ts',
+            name: 'MutualB',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/MutualB',
+        additionalExports: [],
+        component: 'MutualB',
+        filePath: '<output>/models/mutual-b.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/mutual-b.ts',
+            name: 'MutualB',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      }
+    }
+  }
+}

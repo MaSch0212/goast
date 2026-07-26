@@ -1,0 +1,73 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Recursive Refs
+
+paths:
+  /x:
+    x-ignore: true
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    SelfRecursive:
+      type: object
+      properties:
+        name:
+          type: string
+        child:
+          $ref: '#/components/schemas/SelfRecursive'
+    SelfRecursiveArray:
+      type: object
+      properties:
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/SelfRecursiveArray'
+    MutualA:
+      type: object
+      properties:
+        b:
+          $ref: '#/components/schemas/MutualB'
+    MutualB:
+      type: object
+      properties:
+        a:
+          $ref: '#/components/schemas/MutualA'
+    RecursiveThroughArray:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              nested:
+                $ref: '#/components/schemas/RecursiveThroughArray'
+    RecursiveRequired:
+      type: object
+      properties:
+        name:
+          type: string
+        parent:
+          $ref: '#/components/schemas/RecursiveRequired'
+      required:
+        - parent
+    RecursiveThroughMap:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/RecursiveThroughMap'
+    TreeNode:
+      type: object
+      properties:
+        name:
+          type: string
+        parent:
+          $ref: '#/components/schemas/TreeNode'
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/TreeNode'

@@ -1,0 +1,62 @@
+{
+  typescript: {
+    indexFiles: {
+      k6Clients: '<output>/clients.js',
+      k6ResponseModels: '<output>/responses.ts',
+      models: '<output>/models.ts'
+    },
+    k6Clients: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/root-ref.yml#/components/schemas/RefsRoot',
+        additionalExports: [],
+        component: 'RefsRoot',
+        filePath: '<output>/models/refs-root.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/refs-root.ts',
+            name: 'RefsRoot',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/root-ref.yml#/',
+        component: 'unknown',
+        imports: []
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/root-ref.yml#/',
+        component: 'unknown',
+        imports: []
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/root-ref.yml#/components/schemas/RefsComponents',
+        additionalExports: [],
+        component: 'RefsComponents',
+        filePath: '<output>/models/refs-components.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/refs-components.ts',
+            name: 'RefsComponents',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/root-ref.yml#/components',
+        component: 'unknown',
+        imports: []
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/root-ref.yml#/components',
+        component: 'unknown',
+        imports: []
+      }
+    }
+  }
+}

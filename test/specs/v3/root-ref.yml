@@ -1,0 +1,25 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Root Ref
+
+paths:
+  /x:
+    x-ignore: true
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    RefsRoot:
+      type: object
+      properties:
+        document:
+          $ref: '#'
+    RefsComponents:
+      type: object
+      properties:
+        allComponents:
+          $ref: '#/components'
