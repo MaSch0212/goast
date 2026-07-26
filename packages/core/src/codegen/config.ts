@@ -27,10 +27,14 @@ export type OpenApiGeneratorConfig =
      *   path is also taken). A counted file is written under a name no other generated file references. The
      *   generators compute a schema's file path from its name and use that same path when they emit an import or
      *   type reference, so the reference still points at the first file written. `'count'` makes a collision
-     *   inspectable instead of fatal; it does not make the output correct.
+     *   inspectable instead of fatal; it does not make the output correct. It also has a second failure mode
+     *   unrelated to collisions: with `clearOutputDir: false`, every regeneration finds the previous run's file
+     *   already on disk and counts up again, so re-running the generator against the same output directory silently
+     *   accumulates another `_N` file per schema on every run, forever, with no error to signal it.
      *
      * Is is recommended to use `'error'` to prevent issues of two schemas generating the same file and overwriting each other.
-     * If `clearOutputDir` is set to `false`, it is recommended to use `'override'` to ensure that the generated files are up to date.
+     * If `clearOutputDir` is set to `false`, it is recommended to use `'override'` instead of `'count'` to ensure
+     * that the generated files are up to date without accumulating stale counted copies on every run.
      * @default 'error'
      */
     existingFileBehavior: 'override' | 'skip' | 'error' | 'count';

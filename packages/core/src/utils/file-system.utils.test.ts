@@ -88,6 +88,20 @@ describe('writeGeneratedFile', () => {
       expect(fs.readFileSync(countedPath, 'utf-8')).toBe('new content');
     });
 
+    it('accumulates across successive runs: two writes to the same path produce X_1 then X_2', () => {
+      const filePath = join(tempDir, 'MyThing.kt');
+      const firstCountedPath = join(tempDir, 'MyThing_1.kt');
+      const secondCountedPath = join(tempDir, 'MyThing_2.kt');
+      fs.writeFileSync(filePath, 'original');
+
+      writeGeneratedFile(configWith('count'), filePath, 'run 1');
+      writeGeneratedFile(configWith('count'), filePath, 'run 2');
+
+      expect(fs.readFileSync(filePath, 'utf-8')).toBe('original');
+      expect(fs.readFileSync(firstCountedPath, 'utf-8')).toBe('run 1');
+      expect(fs.readFileSync(secondCountedPath, 'utf-8')).toBe('run 2');
+    });
+
     it('creates missing parent directories', () => {
       const filePath = join(tempDir, 'nested', 'dir', 'MyThing.kt');
 

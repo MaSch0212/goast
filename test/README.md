@@ -187,17 +187,17 @@ already isolates the concern.
 | `v3/recursive-refs.yml`    | self-recursion, mutual recursion, and recursion through an array, a map, and a required property — one schema in this file crashes a generator, see "Error snapshots" below |
 | `v3/external-refs/`        | a schema-only file with no `openapi`/`info`/`paths` (`shared/types.yml`) pulled in by `$ref` from a full document (`main.yml`), directly and through an array               |
 | `v3/root-ref.yml`          | `$ref: '#'` (the whole document) and `$ref: '#/components'`                                                                                                                 |
-| `v3/ref-siblings.yml`      | `$ref` beside other keywords (`description`, `title`, `nullable`, `default`, `example`) — 3.0 ignores the siblings, 3.1 merges them                                         |
+| `v3/ref-siblings.yml`      | `$ref` beside other keywords (`description`, `title`, `nullable`, `default`, `example`) under 3.0, which ignores them — see "Reading the corpus" for the 3.1 gap            |
 | `v3/json-schema-root.json` | a bare JSON Schema document as the root, no `openapi`/`info`/`paths` — the case commit `35a746b` fixed                                                                      |
 
 ### Naming
 
-| Spec                     | Isolates                                                                                                                                                                                                                                               |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `v3/name-collisions.yml` | schema names that a generator's normalization collapses onto each other (casing, separators, transliteration) — see "How to add a spec" below for what a collision actually does to the tree                                                           |
-| `v3/reserved-words.yml`  | Kotlin and TypeScript keywords used as type names and, separately, as property names                                                                                                                                                                   |
-| `v3/non-ascii-names.yml` | umlauts, CJK, Greek, Cyrillic, emoji, and a combining-mark name next to its precomposed equivalent                                                                                                                                                     |
-| `v3/extreme-names.yml`   | a 200-character name, numeric-leading names, punctuation-only names, and a casing-variety set (`camelCase`, `PascalCase`, `snake_case`, `SCREAMING_SNAKE`, `kebab-case`, an acronym, a leading-lowercase-before-capitals name) that must _not_ collide |
+| Spec                     | Isolates                                                                                                                                                                                                                                                                                               |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `v3/name-collisions.yml` | schema names that a generator's normalization collapses onto each other (casing, separators, transliteration) — see "How to add a spec" below for what a collision actually does to the tree                                                                                                           |
+| `v3/reserved-words.yml`  | Kotlin and TypeScript keywords used as type names and, separately, as property names                                                                                                                                                                                                                   |
+| `v3/non-ascii-names.yml` | umlauts, CJK, Greek, Cyrillic, emoji, and a combining-mark name next to its precomposed equivalent                                                                                                                                                                                                     |
+| `v3/extreme-names.yml`   | an 80-character name (see "Reading the corpus" for why it isn't 200), numeric-leading names, punctuation-only names, and a casing-variety set (`camelCase`, `PascalCase`, `snake_case`, `SCREAMING_SNAKE`, `kebab-case`, an acronym, a leading-lowercase-before-capitals name) that must _not_ collide |
 
 ### Parameters
 
@@ -253,6 +253,15 @@ A few entries need context a one-phrase table cell can't carry:
   `operationId: listPets` as evidence that this spec covers a mixed webhooks-plus-regular-operations document.
 - `v3/security-schemes.yml` declares `ApiKeyQuery` (apiKey in query) and `BasicAuth` (http basic) in
   `components.securitySchemes`, but no operation's `security` requires either — they're declared-only.
+- `v3/extreme-names.yml`'s long name is 80 characters, not the 200 the corpus plan originally asked for. At 200
+  characters the generated TypeScript path came out to 316 repo-relative characters, past what a Windows checkout
+  accepts without enabling `core.longpaths`; the name was shortened to 80 during execution (see the corpus-expansion
+  plan's Task 5). If you need a longer name to stress path-length handling further, this is the constraint you will hit
+  first, and it binds on Windows specifically, not on the harness or the generators.
+- **Coverage gap:** `v3/ref-siblings.yml` pins only the 3.0 half of the `$ref`-with-siblings behaviour — that 3.0
+  ignores sibling keywords beside a `$ref`. There is no `v3.1/ref-siblings.yml`; the 3.1 behaviour (merging the siblings
+  instead of ignoring them) is not pinned anywhere in the corpus. Read the row above as "the 3.0 side is covered," not
+  as evidence both versions' handling is exercised. If you need the 3.1 side covered, it isn't here yet.
 - **Coverage gap:** no entry in the corpus has both a top-level `webhooks` block and a non-empty `paths` block in the
   same document. The corpus-expansion plan asked for both "no `paths` at all" and a regular operation in the same file
   for `v3.1/webhooks.yml`, which turned out to be unsatisfiable together (a webhook-only document can't have `paths` and
@@ -285,13 +294,18 @@ never after**:
 ```bash
 deno fmt test/specs
 deno task test:output
-git diff                # review the new snapshot tree
+git add -A test/output && git diff --cached   # review the new snapshot tree
 ```
 
 and commit the generated tree. `discoverSpecs()` picks the new spec up automatically; nothing else needs to change. The
 fmt step must come first: the Kotlin and TypeScript generators stamp source-document line numbers into generated doc
 comments via `getSourceDocLine`, and reformatting a spec after generating its snapshot silently invalidates every
 stamped line number — check mode then fails on a machine that never reformatted the file, with no clue why.
+
+A brand-new spec's snapshot tree is untracked, so plain `git diff` prints nothing here — there is nothing tracked yet to
+diff against. Staging it first with `git add -A test/output` is what makes `git diff --cached` show the new files'
+content for review; `git status --porcelain test/output` is the cheaper alternative when you only need the list of
+paths, not their content.
 
 **`git diff --stat -- test/output` must stay empty for every _other_ spec's snapshots.** Adding a spec should only add
 new, untracked paths. A line of diff against an existing spec's tree means the new spec changed generation for something
@@ -301,10 +315,11 @@ before it gets committed alongside the new spec.
 **A filename collision is silent, not a failure.** The output tests run with `existingFileBehavior: 'count'`
 (`test/output-tests/output.test.ts`): if a spec has two schemas whose names normalize to the same file, generation does
 not fail — it writes `X.kt`, then `X_1.kt`, `X_2.kt`, and so on, and the run reports green. After adding a spec, look
-through the new tree for `_1`/`_2`-suffixed files before trusting a clean run; grep the diff for `_\d+\.` in the new
-paths. And per the option's own doc comment: a counted file is written under a name nothing else generated references
-(every other file's imports still point at the first file written), so `'count'` makes a collision inspectable, not
-correct.
+through the new tree for `_1`/`_2`-suffixed files before trusting a clean run — the new tree is untracked, so
+`git status --porcelain test/output | grep -E '_[0-9]+\.'` finds them; grepping plain `git diff` here finds nothing, for
+the same reason the review step above needs `git add` first. And per the option's own doc comment: a counted file is
+written under a name nothing else generated references (every other file's imports still point at the first file
+written), so `'count'` makes a collision inspectable, not correct.
 
 **Before committing, run the check gate — write mode alone does not prove the tree is right.**
 

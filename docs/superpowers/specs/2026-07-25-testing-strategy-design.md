@@ -180,14 +180,25 @@ emitting zero files is legitimate — `KotlinModelsGenerator` does exactly that 
 so only the combination of nothing generated and a populated snapshot is treated as a fault.
 
 **Error snapshots.** A wide edge-case corpus crossed with nine generators guarantees combinations that throw:
-`existingFileBehavior: 'error'` throws by design when two schemas map to one filename, which is precisely what the
-naming-collision specs provoke, and generators carry genuine bugs on unusual input. A thrown generation is therefore a
-recordable outcome, not a test failure: the harness catches it and snapshots the message to `<spec>.error.txt` beside
-the tree, with the file tree asserted empty. Committing the crash makes it reviewable — a PR that fixes a generator
-shows the `.error.txt` deleted and a real tree appearing, and a PR that introduces a crash shows the inverse. The
-alternative, letting throws fail the test, would leave the suite permanently red on a corpus this wide and force the
-narrower corpus the tier exists to avoid. A profile and spec pair has exactly one of the two snapshot forms, never
-both; possessing both is itself a failure.
+generators carry genuine bugs on unusual input, and a thrown generation is therefore a recordable outcome, not a test
+failure. The harness catches it and snapshots the message to `<spec>.error.txt` beside the tree, with the file tree
+asserted empty. Committing the crash makes it reviewable — a PR that fixes a generator shows the `.error.txt` deleted
+and a real tree appearing, and a PR that introduces a crash shows the inverse. The alternative, letting throws fail
+the test, would leave the suite permanently red on a corpus this wide and force the narrower corpus the tier exists to
+avoid. A profile and spec pair has exactly one of the two snapshot forms, never both; possessing both is itself a
+failure.
+
+This tier originally ran with `existingFileBehavior: 'error'`, which threw by design whenever two schemas normalized
+to the same filename — precisely what the naming-collision, extreme-names, and non-ascii-names specs provoke — so
+those three specs committed nothing but a one-line error and pinned nothing about how their other schemas normalized.
+The corpus-expansion phase's Task 5 replaced that with `existingFileBehavior: 'count'` for the output tests (an
+owner-approved deviation recorded in `docs/superpowers/plans/2026-07-25-corpus-expansion.md`): a collision now writes
+`X.kt`, then `X_1.kt`, `X_2.kt`, and so on, and the run stays green, at the cost of a counted file sitting under a
+name nothing else generated references. The 45 `.error.txt` files that filename-collision aborts used to produce were
+deleted along with the switch. What error snapshots still record today is a narrower thing: the ten Kotlin
+`v3/recursive-refs` stack overflows (`RangeError: Maximum call stack size exceeded`, one per Kotlin profile, all
+traced to a self-referencing `additionalProperties` map — see `test/README.md`'s "Error snapshots" section) — a real
+crash on unusual input, not a filename collision.
 
 **Log suppression.** The generators emit roughly 23 hardcoded `console.log` calls — `Generating … to <path>`, `Copying
 asset file …` — with no verbosity flag or logger seam anywhere in `packages/*/src`. Across hundreds of profile and spec
@@ -197,7 +208,7 @@ option to `OpenApiGeneratorConfig` would be the cleaner fix, but it is a public 
 service of a test concern, so it stays out of scope.
 
 **Determinism:** generators always run with `newLine: '\n'`, and comparison is byte-exact — a stray `\r` in a snapshot
-is a real bug, not noise to strip. `.gitattributes` gets `test/output/** text eol=lf` so a Windows checkout does not
+is a real bug, not noise to strip. `.gitattributes` gets `test/output/** -text` so a Windows checkout does not
 mangle the tree that CI validates on Linux. Absolute paths embedded in output — the `__source__` fields in generator
 state, and source-doc lines per `24a6f8d` — are normalized to `<root>/...` before comparison, reusing the logic in
 today's `verify.ts`. A committed tree must be machine-independent. Where the generator already emits relative paths the

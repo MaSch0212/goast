@@ -70,6 +70,18 @@ than folded in silently. Both arose in Task 5.
   instead and the generator defect registered as defect 18 in `2026-07-25-generator-bug-fixes.md`. The committed
   snapshot now reads `from '<output>/models/.ts'` — visibly wrong output, honestly recorded.
 
+A forward consequence of the `'count'` switch that nobody has acted on yet: under the old `'error'` behaviour,
+`v3/name-collisions`, `v3/extreme-names` and `v3/non-ascii-names` produced only `.error.txt` files, so nothing about
+their generated code was ever exercised; under `'count'` they now commit real trees, and those trees do not compile —
+five `data class MyThing` declarations in one Kotlin package for `name-collisions`
+(`test/output/kotlin/models@sb3/v3/name-collisions/com/openapi/generated/model/MyThing.kt` through `MyThing_4.kt`),
+plus the empty-identifier
+`data class (` / `export type  = {` output registered as defects 21 and 22 in `2026-07-25-generator-bug-fixes.md` for
+`extreme-names` and `non-ascii-names`. The testing-strategy design spec names tier 3 — not yet built — as the only
+tier that treats an edge-case spec producing uncompilable output as a failure; whoever builds tier 3 will have to
+decide what it does with these three specs (exclude them, accept a known-failing compile, or something else), and
+this note exists so that decision has the context that the `'count'` switch is what created the need for it.
+
 ## File Structure
 
 Created, 40 corpus entries:

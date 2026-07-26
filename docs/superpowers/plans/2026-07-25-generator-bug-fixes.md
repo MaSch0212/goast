@@ -241,6 +241,70 @@ A fix needs `fetch-client-generator.ts` to branch on `content[0].contentType`: b
 property for `multipart/form-data`, URL-encode for `application/x-www-form-urlencoded`, and keep `JSON.stringify` only
 for JSON-like media types.
 
+### Defect 21 — Kotlin and TypeScript both emit an unnamed type declaration for a schema whose normalized name is empty (found by phase 2b task 5, not scheduled)
+
+`getDeclarationTypeName` computes a type's emitted identifier as `toCasing(schema.name, ...)` with no fallback for the
+empty string, in both language generators:
+
+- Kotlin: `packages/kotlin/src/generators/models/model-generator.ts:658`, feeding `getClass` (`:94`) and `getInterface`
+  (`:120`).
+- TypeScript: `packages/typescript/src/generators/models/model-generator.ts:502`, feeding `getTypeAlias` (`:157`).
+
+For a schema whose name normalizes to the empty string via `getWords`'s ASCII-alphanumeric strip
+(`string.utils.ts:69`) — `___` in `v3/extreme-names.yml`, and `日本語`/`Ελληνικά`/`Кириллица` in
+`v3/non-ascii-names.yml` — this produces literally-empty type declarations: Kotlin writes `data class (` (invalid
+Kotlin — no identifier before the parameter list) and TypeScript writes `export type  = {` (invalid TypeScript — no
+identifier between `type` and `=`). Both are syntactically invalid, not merely badly named.
+
+Counted directly from the committed snapshots: Kotlin hits **40 files** (4 empty-named schemas — `___` from
+`extreme-names`, three from `non-ascii-names` — × 10 profiles: `models@sb3`, `models@sb4`, `okhttp3-clients@sb3`,
+`okhttp3-clients@sb4`, `spring-controllers@sb3`, `spring-controllers@sb3-strict`, `spring-controllers@sb4`,
+`spring-controllers@sb4-strict`, `spring-reactive-web-clients@sb3`, `spring-reactive-web-clients@sb4`), e.g.
+`test/output/kotlin/models@sb3/v3/extreme-names/com/openapi/generated/model/.kt` and
+`test/output/kotlin/models@sb3/v3/non-ascii-names/com/openapi/generated/model/_1.kt`. TypeScript hits **20 files**
+(the same 4 schemas × 5 profiles: `models`, `fetch-clients`, `angular-services`, `k6-clients`, `easy-network-stub`),
+e.g. `test/output/typescript/models/v3/extreme-names/models/.ts`.
+
+Cross-reference: distinct from **defect 8**, which covers the Kotlin *enum-constant* emission site (`getEnum`,
+`model-generator.ts:141,163`) for an enum value whose cased name is empty — a different generator function, pinned by
+a different corpus entry (`v3/enum-schemas`), producing a different symptom (a nameless enum constant and an empty
+`when` branch, not an unparseable type declaration). Distinct from **defect 18**, which is scoped to the TypeScript
+*import path* consequence of a file that already has this defect — `getImportKind` misclassifying the resulting
+empty-basename `.ts` file as a bare module specifier and leaking an absolute path into `models.ts`. Defect 18 assumes
+the empty-named file already exists; this defect is why that file's own declaration is invalid content in the first
+place, independent of how anything imports it.
+
+Not fixed here — this phase records defects rather than fixing them.
+
+### Defect 22 — Kotlin emits an unnamed constructor parameter for an object property whose normalized name is empty (found by phase 2b task 5, not scheduled)
+
+`getClassParameter` (`packages/kotlin/src/generators/models/model-generator.ts:308`) computes a property's Kotlin
+parameter name the same way — `toCasing(property.name, ctx.config.propertyNameCasing)`, no fallback — so a property
+whose name normalizes to empty emits `val : String? = null` inside an otherwise-valid `data class`: invalid Kotlin,
+missing the identifier between `val` and `:`.
+
+Pinned by `ObjectWithExtremeProperties`'s `''` property in `v3/extreme-names.yml` and
+`ObjectWithNonAsciiProperties`'s `日本語` property in `v3/non-ascii-names.yml` (`Ελληνικά` and `Кириллица` appear only
+as type names in the corpus, not as property names). **20 files** across the 10 Kotlin profiles (10 per spec), e.g.
+`test/output/kotlin/models@sb3/v3/extreme-names/com/openapi/generated/model/ObjectWithExtremeProperties.kt` and
+`test/output/kotlin/models@sb3/v3/non-ascii-names/com/openapi/generated/model/ObjectWithNonAsciiProperties.kt`.
+
+TypeScript has no equivalent defect at this site: `getProperties` (`typescript/.../model-generator.ts:231`) emits a
+property using its raw, uncased name as a quoted string-literal key rather than routing it through `toCasing`, so an
+empty or non-ASCII property name still produces a valid quoted key — `''?: string;` and `'日本語'?: string;` in
+`test/output/typescript/models/v3/extreme-names/models/object-with-extreme-properties.ts` and its `non-ascii-names`
+sibling. That is a compensating mechanism Kotlin's parameter-name position has no equivalent for, which is also why
+this defect is Kotlin-only where defect 21 above is not.
+
+Cross-reference: distinct from **defect 8** (the enum-constant site, not a class-property site) and from **defect
+18** (a TypeScript import-path consequence; inapplicable here since TypeScript has no property-level defect to leak
+a path from). Kept as its own entry rather than folded into defect 21 above because the emission site differs (a
+constructor-parameter declaration, not a type declaration) and so does a fix's scope (`getClassParameter` /
+`getInterfaceProperty`, not `getDeclarationTypeName`) — even though both share the same `getWords`-empties-a-name
+root cause.
+
+Not fixed here — this phase records defects rather than fixing them.
+
 ### Also registered, not scheduled
 
 Small, verified, and each needing either a decision or a home:
