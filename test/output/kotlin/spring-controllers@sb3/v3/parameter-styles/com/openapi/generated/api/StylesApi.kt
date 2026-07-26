@@ -113,7 +113,7 @@ interface StylesApi {
     }
 
     @Operation(operationId = "deepObject", deprecated = false)
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "The deep-object array parameter echoed back.", content = [Content()])])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "The deep-object parameter echoed back.", content = [Content()])])
     @RequestMapping(method = [RequestMethod.GET], value = [DEEP_OBJECT_PATH])
     suspend fun deepObject(
         @Parameter(required = false)
