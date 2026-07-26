@@ -48,6 +48,28 @@ stated principle and it beats hitting an approximate count. Task 9 amends the sp
 mapping next to `v3/discriminated-schemas.yml` — it gets its own new file instead. Editing a committed spec would
 legitimately churn its snapshots, and that would blunt the zero-churn gate that catches accidental behaviour changes.
 
+### Deviations taken during execution
+
+Two departures from "no harness, driver, profile, or generator code changes in this phase", both recorded here rather
+than folded in silently. Both arose in Task 5.
+
+- **`existingFileBehavior: 'count'` (owner decision).** Generators write one file per model, so a spec containing two
+  schemas whose names normalize to the same identifier aborted the whole document under the default `'error'` — three
+  of Task 5's four specs committed nothing but a one-line error and pinned nothing about how their other schemas
+  normalized. The plan's remedy would have been to split the colliding schemas into their own files. The owner chose
+  instead to add a fourth, non-fatal behaviour to `@goast/core` (`X.kt` → `X_1.kt` → `X_2.kt`) and opt the output tests
+  into it, keeping the file partition intact. The option's doc comment states its limitation: a counted file is written
+  under a name nothing references, so it makes a collision inspectable, not correct. `test/output-tests/output.test.ts`
+  now passes `existingFileBehavior: 'count'`.
+- **The tree-content output-directory neutralizer (controller ruling).** Turning on `'count'` let generation reach
+  `models.ts` for two specs for the first time, which exposed a non-determinism halt condition: a schema whose name
+  normalizes to the empty string produces a file whose basename is exactly `.ts`, `extname('.ts')` returns `''`, and the
+  TypeScript import resolver therefore wrote the harness's random per-run temp directory into a committed file.
+  `replaceOutputDir` was applied to `state.txt` and to generation-error text but never to tree file content. Fixing the
+  generator would have rendered the import as a plausible `./.ts` and destroyed the evidence, so the harness was fixed
+  instead and the generator defect registered as defect 18 in `2026-07-25-generator-bug-fixes.md`. The committed
+  snapshot now reads `from '<output>/models/.ts'` — visibly wrong output, honestly recorded.
+
 ## File Structure
 
 Created, 40 corpus entries:
@@ -548,8 +570,15 @@ git commit -m "test: add reference-resolution specs to the corpus"
   not PascalCase, because the names *are* the subject.
 - Produces: nothing later tasks depend on.
 
-Generators write one file per model and run with `existingFileBehavior: 'error'`, so a batch whose whole point is names
-that collapse onto each other will produce `.error.txt` snapshots. That is the finding, recorded. Report each.
+Generators write one file per model, so a batch whose whole point is names that collapse onto each other targets one path
+from two schemas. Under the `existingFileBehavior: 'error'` this task was written against, that aborted the whole
+document and produced an `.error.txt` — which recorded the collision but nothing about how the document's other schemas
+normalized. The output tests now run with `existingFileBehavior: 'count'` instead, so a collision emits `X_1`, `X_2`, …
+and the rest of the tree survives. See "Deviations taken during execution". Report every collision: which schema landed
+in which file, and whether anything still references the wrong declaration.
+
+The 200-character name in Step 4 was shortened to 80 during execution. At 200 its generated TypeScript path was 316
+repo-relative characters, past what a Windows checkout accepts without `core.longpaths`.
 
 - [ ] **Step 1: Author `test/specs/v3/name-collisions.yml`**
 
