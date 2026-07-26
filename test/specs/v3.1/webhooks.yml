@@ -1,0 +1,54 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: Webhooks
+
+webhooks:
+  petCreated:
+    post:
+      operationId: petCreated
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pet'
+      responses:
+        '200':
+          description: The webhook was received.
+  petDeleted:
+    post:
+      operationId: petDeleted
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+      responses:
+        '200':
+          description: The webhook was received.
+  pets:
+    get:
+      operationId: listPets
+      responses:
+        '200':
+          description: A list of pets.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+
+components:
+  schemas:
+    Pet:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+        name:
+          type: string

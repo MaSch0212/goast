@@ -1,0 +1,119 @@
+{
+  kotlin: {
+    clients: {
+      'service-1': {
+        __source__: 'tag:service-1',
+        packageName: 'com.openapi.generated.api.client',
+        typeName: 'Service1ApiClient'
+      }
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/json-input.json#/paths//things/get/responses/200/content/application/json/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Thing',
+              nullable: false,
+              packageName: 'com.openapi.generated.model',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/json-input.json#/components/schemas/Thing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Thing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/json-input.json#/components/schemas/Thing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Thing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/json-input.json#/components/schemas/Thing/properties/id',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/json-input.json#/components/schemas/Thing/properties/label',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/json-input.json#/components/schemas/Category',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Category',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/json-input.json#/components/schemas/Category',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Category',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/json-input.json#/components/schemas/Category/properties/name',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      }
+    }
+  }
+}

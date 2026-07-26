@@ -1,0 +1,37 @@
+{
+  typescript: {
+    indexFiles: { models: '<output>/models.ts' },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/put/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/delete/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/patch/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/sub-items/{subId}/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/sub-items/{subId}/get/parameters/1/schema',
+        component: 'string',
+        imports: []
+      }
+    }
+  }
+}

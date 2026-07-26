@@ -1,0 +1,108 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Operation Naming
+
+paths:
+  /items:
+    get:
+      tags: [Naming]
+      responses:
+        '200':
+          description: A list of items.
+    post:
+      tags: [Naming]
+      responses:
+        '200':
+          description: The created item.
+    head:
+      tags: [Naming]
+      responses:
+        '200':
+          description: Item headers.
+    options:
+      tags: [Naming]
+      responses:
+        '200':
+          description: Allowed methods.
+  /items/{id}:
+    get:
+      tags: [Naming]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The requested item.
+    put:
+      tags: [Naming]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The updated item.
+    delete:
+      tags: [Naming]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The item was deleted.
+    patch:
+      tags: [Naming]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The patched item.
+  /items/{id}/sub-items/{subId}:
+    get:
+      tags: [Naming]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: subId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The requested sub-item.
+  /:
+    get:
+      tags: [Naming]
+      responses:
+        '200':
+          description: The root resource.
+  /a/b/c/d/e:
+    get:
+      tags: [Naming]
+      responses:
+        '200':
+          description: A deeply nested resource.
+  /with-summary:
+    get:
+      tags: [Naming]
+      summary: Get the summary example
+      responses:
+        '200':
+          description: The summary example.

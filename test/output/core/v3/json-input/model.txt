@@ -1,0 +1,718 @@
+{
+  documents: [
+    {
+      components: {
+        schemas: {
+          Category: { properties: { name: { type: 'string' } }, type: 'object' },
+          Thing: {
+            properties: {
+              category: { '$ref': '#/components/schemas/Category' },
+              id: { type: 'string' },
+              label: { type: 'string' }
+            },
+            required: [ 'id', 'label' ],
+            type: 'object'
+          }
+        }
+      },
+      info: { title: 'Json Input', version: '1.0.0' },
+      openapi: '3.0.0',
+      paths: {
+        '/things': {
+          get: {
+            operationId: 'listThings',
+            responses: {
+              '200': {
+                content: {
+                  'application/json': {
+                    schema: {
+                      items: { '$ref': '#/components/schemas/Thing' },
+                      type: 'array'
+                    }
+                  }
+                },
+                description: 'A list of things.'
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  endpoints: [
+    <ref *1> {
+      '$ref': undefined,
+      '$src': {
+        component: '294 inspect chars',
+        document: '879 inspect chars',
+        file: '<root>/test/specs/v3/json-input.json',
+        originalComponent: '294 inspect chars',
+        path: '/paths//things/get',
+        pos: { col: 14, line: 9 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-1',
+      method: 'get',
+      name: 'listThings',
+      parameters: [],
+      path: '/things',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              operationId: 'listThings',
+              responses: {
+                '200': {
+                  content: {
+                    'application/json': {
+                      schema: {
+                        items: { '$ref': '#/components/schemas/Thing' },
+                        type: 'array'
+                      }
+                    }
+                  },
+                  description: 'A list of things.'
+                }
+              }
+            }
+          },
+          document: {
+            components: {
+              schemas: {
+                Category: {
+                  properties: { name: { type: 'string' } },
+                  type: 'object'
+                },
+                Thing: {
+                  properties: {
+                    category: { '$ref': '#/components/schemas/Category' },
+                    id: { type: 'string' },
+                    label: { type: 'string' }
+                  },
+                  required: [ 'id', 'label' ],
+                  type: 'object'
+                }
+              }
+            },
+            info: { title: 'Json Input', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/things': {
+                get: {
+                  operationId: 'listThings',
+                  responses: {
+                    '200': {
+                      content: {
+                        'application/json': {
+                          schema: {
+                            items: { '$ref': '#/components/schemas/Thing' },
+                            type: 'array'
+                          }
+                        }
+                      },
+                      description: 'A list of things.'
+                    }
+                  }
+                }
+              }
+            }
+          },
+          file: '<root>/test/specs/v3/json-input.json',
+          originalComponent: {
+            get: {
+              operationId: 'listThings',
+              responses: {
+                '200': {
+                  content: {
+                    'application/json': {
+                      schema: {
+                        items: { '$ref': '#/components/schemas/Thing' },
+                        type: 'array'
+                      }
+                    }
+                  },
+                  description: 'A list of things.'
+                }
+              }
+            }
+          },
+          path: '/paths//things',
+          pos: { col: 16, line: 8 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: [Circular *1],
+        head: undefined,
+        id: 'path-1',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/things',
+        post: undefined,
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              content: {
+                'application/json': {
+                  schema: {
+                    items: { '$ref': '#/components/schemas/Thing' },
+                    type: 'array'
+                  }
+                }
+              },
+              description: 'A list of things.'
+            },
+            document: {
+              components: {
+                schemas: {
+                  Category: {
+                    properties: { name: { type: 'string' } },
+                    type: 'object'
+                  },
+                  Thing: {
+                    properties: {
+                      category: { '$ref': '#/components/schemas/Category' },
+                      id: { type: 'string' },
+                      label: { type: 'string' }
+                    },
+                    required: [ 'id', 'label' ],
+                    type: 'object'
+                  }
+                }
+              },
+              info: { title: 'Json Input', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/things': {
+                  get: {
+                    operationId: 'listThings',
+                    responses: {
+                      '200': {
+                        content: {
+                          'application/json': {
+                            schema: {
+                              items: { '$ref': '#/components/schemas/Thing' },
+                              type: 'array'
+                            }
+                          }
+                        },
+                        description: 'A list of things.'
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/json-input.json',
+            originalComponent: {
+              content: {
+                'application/json': {
+                  schema: {
+                    items: { '$ref': '#/components/schemas/Thing' },
+                    type: 'array'
+                  }
+                }
+              },
+              description: 'A list of things.'
+            },
+            path: '/paths//things/get/responses/200',
+            pos: { col: 18, line: 12 }
+          },
+          contentOptions: [
+            {
+              '$ref': undefined,
+              '$src': {
+                component: {
+                  schema: {
+                    items: { '$ref': '#/components/schemas/Thing' },
+                    type: 'array'
+                  }
+                },
+                document: {
+                  components: {
+                    schemas: {
+                      Category: {
+                        properties: { name: { type: 'string' } },
+                        type: 'object'
+                      },
+                      Thing: {
+                        properties: {
+                          category: { '$ref': '#/components/schemas/Category' },
+                          id: { type: 'string' },
+                          label: { type: 'string' }
+                        },
+                        required: [ 'id', 'label' ],
+                        type: 'object'
+                      }
+                    }
+                  },
+                  info: { title: 'Json Input', version: '1.0.0' },
+                  openapi: '3.0.0',
+                  paths: {
+                    '/things': {
+                      get: {
+                        operationId: 'listThings',
+                        responses: {
+                          '200': {
+                            content: {
+                              'application/json': {
+                                schema: {
+                                  items: {
+                                    '$ref': '#/components/schemas/Thing'
+                                  },
+                                  type: 'array'
+                                }
+                              }
+                            },
+                            description: 'A list of things.'
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                file: '<root>/test/specs/v3/json-input.json',
+                originalComponent: {
+                  schema: {
+                    items: { '$ref': '#/components/schemas/Thing' },
+                    type: 'array'
+                  }
+                },
+                path: '/paths//things/get/responses/200/content/application/json',
+                pos: { col: 35, line: 15 }
+              },
+              id: 'content-1',
+              schema: 'schema-1',
+              type: 'application/json'
+            }
+          ],
+          description: 'A list of things.',
+          headers: [],
+          id: 'response-1',
+          statusCode: 200
+        }
+      ],
+      summary: undefined,
+      tags: []
+    }
+  ],
+  schemas: [
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '18 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/json-input.json',
+        originalComponent: '18 inspect chars',
+        path: '/components/schemas/Thing/properties/id',
+        pos: { col: 17, line: 35 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-4',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Thing_id',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '18 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/json-input.json',
+        originalComponent: '18 inspect chars',
+        path: '/components/schemas/Thing/properties/label',
+        pos: { col: 20, line: 38 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-5',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Thing_label',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '18 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/json-input.json',
+        originalComponent: '18 inspect chars',
+        path: '/components/schemas/Category/properties/name',
+        pos: { col: 19, line: 49 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-8',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Category_name',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '60 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/json-input.json',
+        originalComponent: '60 inspect chars',
+        path: '/components/schemas/Category',
+        pos: { col: 19, line: 46 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-7',
+      inheritedSchemas: [],
+      isNameGenerated: false,
+      items: undefined,
+      kind: 'object',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Category',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(1) { 'name' => { name: 'name', schema: 'schema-8' } },
+      required: Set(0) {},
+      type: 'object'
+    },
+    {
+      '$ref': 'schema-7',
+      '$src': {
+        component: '43 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/json-input.json',
+        originalComponent: '43 inspect chars',
+        path: '/components/schemas/Thing/properties/category',
+        pos: { col: 23, line: 41 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-6',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'object',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Thing_category',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(1) { 'name' => { name: 'name', schema: 'schema-8' } },
+      required: Set(0) {},
+      type: 'object'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '189 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/json-input.json',
+        originalComponent: '189 inspect chars',
+        path: '/components/schemas/Thing',
+        pos: { col: 16, line: 31 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-3',
+      inheritedSchemas: [],
+      isNameGenerated: false,
+      items: undefined,
+      kind: 'object',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Thing',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(3) {
+        'category' => { name: 'category', schema: 'schema-6' },
+        'id' => { name: 'id', schema: 'schema-4' },
+        'label' => { name: 'label', schema: 'schema-5' }
+      },
+      required: Set(2) { 'id', 'label' },
+      type: 'object'
+    },
+    {
+      '$ref': 'schema-3',
+      '$src': {
+        component: '40 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/json-input.json',
+        originalComponent: '40 inspect chars',
+        path: '/paths//things/get/responses/200/content/application/json/schema/items',
+        pos: { col: 28, line: 18 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-2',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'object',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'listThings_200_Response',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(3) {
+        'category' => { name: 'category', schema: 'schema-6' },
+        'id' => { name: 'id', schema: 'schema-4' },
+        'label' => { name: 'label', schema: 'schema-5' }
+      },
+      required: Set(2) { 'id', 'label' },
+      type: 'object'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '66 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/json-input.json',
+        originalComponent: '66 inspect chars',
+        path: '/paths//things/get/responses/200/content/application/json/schema',
+        pos: { col: 27, line: 16 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-1',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: {
+        '$ref': 'schema-3',
+        '$src': {
+          component: '40 inspect chars',
+          document: '9 inspect chars',
+          file: '<root>/test/specs/v3/json-input.json',
+          originalComponent: '40 inspect chars',
+          path: '/paths//things/get/responses/200/content/application/json/schema/items',
+          pos: { col: 28, line: 18 }
+        },
+        accessibility: 'all',
+        additionalProperties: undefined,
+        allOf: [],
+        anyOf: [],
+        const: undefined,
+        custom: {},
+        default: undefined,
+        deprecated: false,
+        description: undefined,
+        discriminator: undefined,
+        enum: undefined,
+        example: undefined,
+        format: undefined,
+        id: 'schema-2',
+        inheritedSchemas: [],
+        isNameGenerated: true,
+        items: undefined,
+        kind: 'object',
+        maxItems: undefined,
+        maxLength: undefined,
+        maximum: undefined,
+        minItems: undefined,
+        minLength: undefined,
+        minimum: undefined,
+        name: 'listThings_200_Response',
+        not: undefined,
+        nullable: false,
+        oneOf: [],
+        pattern: undefined,
+        properties: Map(3) {
+          'category' => { name: 'category', schema: 'schema-6' },
+          'id' => { name: 'id', schema: 'schema-4' },
+          'label' => { name: 'label', schema: 'schema-5' }
+        },
+        required: Set(2) { 'id', 'label' },
+        type: 'object'
+      },
+      kind: 'array',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'listThings_200_Response',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'array'
+    }
+  ],
+  services: [
+    {
+      '$ref': undefined,
+      description: undefined,
+      endpoints: [ 'endpoint-1' ],
+      id: 'service-1',
+      name: 'service-1'
+    }
+  ]
+}

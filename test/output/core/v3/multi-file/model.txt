@@ -1,0 +1,2883 @@
+{
+  documents: [
+    {
+      components: {
+        schemas: {
+          Owner: {
+            properties: {
+              contact: { '$ref': 'shared.yml#/components/schemas/Contact' },
+              id: { type: 'string' },
+              name: { type: 'string' },
+              pet: { '$ref': 'pets.yml#/components/schemas/Pet' }
+            },
+            required: [ 'id', 'name' ],
+            type: 'object'
+          }
+        }
+      },
+      info: { title: 'Owners', version: '1.0.0' },
+      openapi: '3.0.0',
+      paths: {
+        '/owners/{id}': {
+          get: {
+            operationId: 'getOwner',
+            parameters: [
+              {
+                in: 'path',
+                name: 'id',
+                required: true,
+                schema: { type: 'string' }
+              }
+            ],
+            responses: {
+              '200': {
+                content: {
+                  'application/json': { schema: { '$ref': '#/components/schemas/Owner' } }
+                },
+                description: 'The requested owner.'
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      components: {
+        schemas: {
+          Pet: {
+            properties: {
+              address: { '$ref': 'shared.yml#/components/schemas/Address' },
+              id: { type: 'string' },
+              name: { type: 'string' }
+            },
+            required: [ 'id', 'name' ],
+            type: 'object'
+          }
+        }
+      },
+      info: { title: 'Pets', version: '1.0.0' },
+      openapi: '3.0.0',
+      paths: {
+        '/pets': {
+          get: {
+            operationId: 'listPets',
+            responses: {
+              '200': {
+                content: {
+                  'application/json': {
+                    schema: {
+                      items: { '$ref': '#/components/schemas/Pet' },
+                      type: 'array'
+                    }
+                  }
+                },
+                description: 'A list of pets.'
+              }
+            }
+          },
+          post: {
+            operationId: 'createPet',
+            requestBody: {
+              content: {
+                'application/json': { schema: { '$ref': '#/components/schemas/Pet' } }
+              },
+              required: true
+            },
+            responses: {
+              '201': {
+                content: {
+                  'application/json': { schema: { '$ref': '#/components/schemas/Pet' } }
+                },
+                description: 'The created pet.'
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      components: {
+        schemas: {
+          Address: {
+            properties: { city: { type: 'string' }, street: { type: 'string' } },
+            type: 'object'
+          },
+          Contact: {
+            properties: { email: { type: 'string' }, phone: { type: 'string' } },
+            type: 'object'
+          }
+        }
+      },
+      info: { title: 'Shared', version: '1.0.0' },
+      openapi: '3.0.0',
+      paths: {
+        '/x': {
+          'x-ignore': true,
+          get: { responses: { '200': { description: '' } } }
+        }
+      }
+    }
+  ],
+  endpoints: [
+    <ref *1> {
+      '$ref': undefined,
+      '$src': {
+        component: '341 inspect chars',
+        document: '936 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/owners.yml',
+        originalComponent: '341 inspect chars',
+        path: '/paths//owners/{id}/get',
+        pos: { col: 7, line: 9 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-1',
+      method: 'get',
+      name: 'getOwner',
+      parameters: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              in: 'path',
+              name: 'id',
+              required: true,
+              schema: { type: 'string' }
+            },
+            document: {
+              components: {
+                schemas: {
+                  Owner: {
+                    properties: {
+                      contact: {
+                        '$ref': 'shared.yml#/components/schemas/Contact'
+                      },
+                      id: { type: 'string' },
+                      name: { type: 'string' },
+                      pet: { '$ref': 'pets.yml#/components/schemas/Pet' }
+                    },
+                    required: [ 'id', 'name' ],
+                    type: 'object'
+                  }
+                }
+              },
+              info: { title: 'Owners', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/owners/{id}': {
+                  get: {
+                    operationId: 'getOwner',
+                    parameters: [
+                      {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        content: {
+                          'application/json': {
+                            schema: { '$ref': '#/components/schemas/Owner' }
+                          }
+                        },
+                        description: 'The requested owner.'
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/multi-file/owners.yml',
+            originalComponent: {
+              in: 'path',
+              name: 'id',
+              required: true,
+              schema: { type: 'string' }
+            },
+            path: '/paths//owners/{id}/get/parameters/0',
+            pos: { col: 11, line: 11 }
+          },
+          allowEmptyValue: undefined,
+          allowReserved: undefined,
+          deprecated: false,
+          description: undefined,
+          explode: undefined,
+          id: 'parameter-1',
+          name: 'id',
+          required: true,
+          schema: 'schema-1',
+          style: undefined,
+          target: 'path'
+        }
+      ],
+      path: '/owners/{id}',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              operationId: 'getOwner',
+              parameters: [
+                {
+                  in: 'path',
+                  name: 'id',
+                  required: true,
+                  schema: { type: 'string' }
+                }
+              ],
+              responses: {
+                '200': {
+                  content: {
+                    'application/json': {
+                      schema: { '$ref': '#/components/schemas/Owner' }
+                    }
+                  },
+                  description: 'The requested owner.'
+                }
+              }
+            }
+          },
+          document: {
+            components: {
+              schemas: {
+                Owner: {
+                  properties: {
+                    contact: {
+                      '$ref': 'shared.yml#/components/schemas/Contact'
+                    },
+                    id: { type: 'string' },
+                    name: { type: 'string' },
+                    pet: { '$ref': 'pets.yml#/components/schemas/Pet' }
+                  },
+                  required: [ 'id', 'name' ],
+                  type: 'object'
+                }
+              }
+            },
+            info: { title: 'Owners', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/owners/{id}': {
+                get: {
+                  operationId: 'getOwner',
+                  parameters: [
+                    {
+                      in: 'path',
+                      name: 'id',
+                      required: true,
+                      schema: { type: 'string' }
+                    }
+                  ],
+                  responses: {
+                    '200': {
+                      content: {
+                        'application/json': {
+                          schema: { '$ref': '#/components/schemas/Owner' }
+                        }
+                      },
+                      description: 'The requested owner.'
+                    }
+                  }
+                }
+              }
+            }
+          },
+          file: '<root>/test/specs/v3/multi-file/owners.yml',
+          originalComponent: {
+            get: {
+              operationId: 'getOwner',
+              parameters: [
+                {
+                  in: 'path',
+                  name: 'id',
+                  required: true,
+                  schema: { type: 'string' }
+                }
+              ],
+              responses: {
+                '200': {
+                  content: {
+                    'application/json': {
+                      schema: { '$ref': '#/components/schemas/Owner' }
+                    }
+                  },
+                  description: 'The requested owner.'
+                }
+              }
+            }
+          },
+          path: '/paths//owners/{id}',
+          pos: { col: 5, line: 8 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: [Circular *1],
+        head: undefined,
+        id: 'path-1',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/owners/{id}',
+        post: undefined,
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              content: {
+                'application/json': { schema: { '$ref': '#/components/schemas/Owner' } }
+              },
+              description: 'The requested owner.'
+            },
+            document: {
+              components: {
+                schemas: {
+                  Owner: {
+                    properties: {
+                      contact: {
+                        '$ref': 'shared.yml#/components/schemas/Contact'
+                      },
+                      id: { type: 'string' },
+                      name: { type: 'string' },
+                      pet: { '$ref': 'pets.yml#/components/schemas/Pet' }
+                    },
+                    required: [ 'id', 'name' ],
+                    type: 'object'
+                  }
+                }
+              },
+              info: { title: 'Owners', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/owners/{id}': {
+                  get: {
+                    operationId: 'getOwner',
+                    parameters: [
+                      {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        content: {
+                          'application/json': {
+                            schema: { '$ref': '#/components/schemas/Owner' }
+                          }
+                        },
+                        description: 'The requested owner.'
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/multi-file/owners.yml',
+            originalComponent: {
+              content: {
+                'application/json': { schema: { '$ref': '#/components/schemas/Owner' } }
+              },
+              description: 'The requested owner.'
+            },
+            path: '/paths//owners/{id}/get/responses/200',
+            pos: { col: 11, line: 18 }
+          },
+          contentOptions: [
+            {
+              '$ref': undefined,
+              '$src': {
+                component: { schema: { '$ref': '#/components/schemas/Owner' } },
+                document: {
+                  components: {
+                    schemas: {
+                      Owner: {
+                        properties: {
+                          contact: {
+                            '$ref': 'shared.yml#/components/schemas/Contact'
+                          },
+                          id: { type: 'string' },
+                          name: { type: 'string' },
+                          pet: {
+                            '$ref': 'pets.yml#/components/schemas/Pet'
+                          }
+                        },
+                        required: [ 'id', 'name' ],
+                        type: 'object'
+                      }
+                    }
+                  },
+                  info: { title: 'Owners', version: '1.0.0' },
+                  openapi: '3.0.0',
+                  paths: {
+                    '/owners/{id}': {
+                      get: {
+                        operationId: 'getOwner',
+                        parameters: [
+                          {
+                            in: 'path',
+                            name: 'id',
+                            required: true,
+                            schema: { type: 'string' }
+                          }
+                        ],
+                        responses: {
+                          '200': {
+                            content: {
+                              'application/json': {
+                                schema: {
+                                  '$ref': '#/components/schemas/Owner'
+                                }
+                              }
+                            },
+                            description: 'The requested owner.'
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                file: '<root>/test/specs/v3/multi-file/owners.yml',
+                originalComponent: { schema: { '$ref': '#/components/schemas/Owner' } },
+                path: '/paths//owners/{id}/get/responses/200/content/application/json',
+                pos: { col: 15, line: 21 }
+              },
+              id: 'content-1',
+              schema: 'schema-2',
+              type: 'application/json'
+            }
+          ],
+          description: 'The requested owner.',
+          headers: [],
+          id: 'response-1',
+          statusCode: 200
+        }
+      ],
+      summary: undefined,
+      tags: []
+    },
+    <ref *2> {
+      '$ref': undefined,
+      '$src': {
+        component: '288 inspect chars',
+        document: '1253 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/pets.yml',
+        originalComponent: '288 inspect chars',
+        path: '/paths//pets/get',
+        pos: { col: 7, line: 9 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-2',
+      method: 'get',
+      name: 'listPets',
+      parameters: [],
+      path: '/pets',
+      pathInfo: <ref *3> {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              operationId: 'listPets',
+              responses: {
+                '200': {
+                  content: {
+                    'application/json': {
+                      schema: {
+                        items: { '$ref': '#/components/schemas/Pet' },
+                        type: 'array'
+                      }
+                    }
+                  },
+                  description: 'A list of pets.'
+                }
+              }
+            },
+            post: {
+              operationId: 'createPet',
+              requestBody: {
+                content: {
+                  'application/json': { schema: { '$ref': '#/components/schemas/Pet' } }
+                },
+                required: true
+              },
+              responses: {
+                '201': {
+                  content: {
+                    'application/json': { schema: { '$ref': '#/components/schemas/Pet' } }
+                  },
+                  description: 'The created pet.'
+                }
+              }
+            }
+          },
+          document: {
+            components: {
+              schemas: {
+                Pet: {
+                  properties: {
+                    address: {
+                      '$ref': 'shared.yml#/components/schemas/Address'
+                    },
+                    id: { type: 'string' },
+                    name: { type: 'string' }
+                  },
+                  required: [ 'id', 'name' ],
+                  type: 'object'
+                }
+              }
+            },
+            info: { title: 'Pets', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/pets': {
+                get: {
+                  operationId: 'listPets',
+                  responses: {
+                    '200': {
+                      content: {
+                        'application/json': {
+                          schema: {
+                            items: { '$ref': '#/components/schemas/Pet' },
+                            type: 'array'
+                          }
+                        }
+                      },
+                      description: 'A list of pets.'
+                    }
+                  }
+                },
+                post: {
+                  operationId: 'createPet',
+                  requestBody: {
+                    content: {
+                      'application/json': {
+                        schema: { '$ref': '#/components/schemas/Pet' }
+                      }
+                    },
+                    required: true
+                  },
+                  responses: {
+                    '201': {
+                      content: {
+                        'application/json': {
+                          schema: { '$ref': '#/components/schemas/Pet' }
+                        }
+                      },
+                      description: 'The created pet.'
+                    }
+                  }
+                }
+              }
+            }
+          },
+          file: '<root>/test/specs/v3/multi-file/pets.yml',
+          originalComponent: {
+            get: {
+              operationId: 'listPets',
+              responses: {
+                '200': {
+                  content: {
+                    'application/json': {
+                      schema: {
+                        items: { '$ref': '#/components/schemas/Pet' },
+                        type: 'array'
+                      }
+                    }
+                  },
+                  description: 'A list of pets.'
+                }
+              }
+            },
+            post: {
+              operationId: 'createPet',
+              requestBody: {
+                content: {
+                  'application/json': { schema: { '$ref': '#/components/schemas/Pet' } }
+                },
+                required: true
+              },
+              responses: {
+                '201': {
+                  content: {
+                    'application/json': { schema: { '$ref': '#/components/schemas/Pet' } }
+                  },
+                  description: 'The created pet.'
+                }
+              }
+            }
+          },
+          path: '/paths//pets',
+          pos: { col: 5, line: 8 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: [Circular *2],
+        head: undefined,
+        id: 'path-2',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/pets',
+        post: {
+          '$ref': undefined,
+          '$src': {
+            component: '352 inspect chars',
+            document: '1253 inspect chars',
+            file: '<root>/test/specs/v3/multi-file/pets.yml',
+            originalComponent: '352 inspect chars',
+            path: '/paths//pets/post',
+            pos: { col: 7, line: 20 }
+          },
+          custom: {},
+          deprecated: false,
+          description: undefined,
+          id: 'endpoint-3',
+          method: 'post',
+          name: 'createPet',
+          parameters: [],
+          path: '/pets',
+          pathInfo: [Circular *3],
+          requestBody: {
+            '$ref': undefined,
+            '$src': {
+              component: {
+                content: {
+                  'application/json': { schema: { '$ref': '#/components/schemas/Pet' } }
+                },
+                required: true
+              },
+              document: {
+                components: {
+                  schemas: {
+                    Pet: {
+                      properties: {
+                        address: {
+                          '$ref': 'shared.yml#/components/schemas/Address'
+                        },
+                        id: { type: 'string' },
+                        name: { type: 'string' }
+                      },
+                      required: [ 'id', 'name' ],
+                      type: 'object'
+                    }
+                  }
+                },
+                info: { title: 'Pets', version: '1.0.0' },
+                openapi: '3.0.0',
+                paths: {
+                  '/pets': {
+                    get: {
+                      operationId: 'listPets',
+                      responses: {
+                        '200': {
+                          content: {
+                            'application/json': {
+                              schema: {
+                                items: { '$ref': '#/components/schemas/Pet' },
+                                type: 'array'
+                              }
+                            }
+                          },
+                          description: 'A list of pets.'
+                        }
+                      }
+                    },
+                    post: {
+                      operationId: 'createPet',
+                      requestBody: {
+                        content: {
+                          'application/json': {
+                            schema: { '$ref': '#/components/schemas/Pet' }
+                          }
+                        },
+                        required: true
+                      },
+                      responses: {
+                        '201': {
+                          content: {
+                            'application/json': {
+                              schema: { '$ref': '#/components/schemas/Pet' }
+                            }
+                          },
+                          description: 'The created pet.'
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              file: '<root>/test/specs/v3/multi-file/pets.yml',
+              originalComponent: {
+                content: {
+                  'application/json': { schema: { '$ref': '#/components/schemas/Pet' } }
+                },
+                required: true
+              },
+              path: '/paths//pets/post/requestBody',
+              pos: { col: 9, line: 22 }
+            },
+            content: [
+              {
+                '$ref': undefined,
+                '$src': {
+                  component: { schema: { '$ref': '#/components/schemas/Pet' } },
+                  document: {
+                    components: {
+                      schemas: {
+                        Pet: {
+                          properties: {
+                            address: {
+                              '$ref': 'shared.yml#/components/schemas/Address'
+                            },
+                            id: { type: 'string' },
+                            name: { type: 'string' }
+                          },
+                          required: [ 'id', 'name' ],
+                          type: 'object'
+                        }
+                      }
+                    },
+                    info: { title: 'Pets', version: '1.0.0' },
+                    openapi: '3.0.0',
+                    paths: {
+                      '/pets': {
+                        get: {
+                          operationId: 'listPets',
+                          responses: {
+                            '200': {
+                              content: {
+                                'application/json': {
+                                  schema: {
+                                    items: {
+                                      '$ref': '#/components/schemas/Pet'
+                                    },
+                                    type: 'array'
+                                  }
+                                }
+                              },
+                              description: 'A list of pets.'
+                            }
+                          }
+                        },
+                        post: {
+                          operationId: 'createPet',
+                          requestBody: {
+                            content: {
+                              'application/json': {
+                                schema: { '$ref': '#/components/schemas/Pet' }
+                              }
+                            },
+                            required: true
+                          },
+                          responses: {
+                            '201': {
+                              content: {
+                                'application/json': {
+                                  schema: {
+                                    '$ref': '#/components/schemas/Pet'
+                                  }
+                                }
+                              },
+                              description: 'The created pet.'
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  file: '<root>/test/specs/v3/multi-file/pets.yml',
+                  originalComponent: { schema: { '$ref': '#/components/schemas/Pet' } },
+                  path: '/paths//pets/post/requestBody/content/application/json',
+                  pos: { col: 13, line: 25 }
+                },
+                id: 'content-3',
+                schema: 'schema-20',
+                type: 'application/json'
+              }
+            ],
+            description: undefined,
+            id: 'requestBody-1',
+            required: true
+          },
+          responses: [
+            {
+              '$ref': undefined,
+              '$src': {
+                component: {
+                  content: {
+                    'application/json': { schema: { '$ref': '#/components/schemas/Pet' } }
+                  },
+                  description: 'The created pet.'
+                },
+                document: {
+                  components: {
+                    schemas: {
+                      Pet: {
+                        properties: {
+                          address: {
+                            '$ref': 'shared.yml#/components/schemas/Address'
+                          },
+                          id: { type: 'string' },
+                          name: { type: 'string' }
+                        },
+                        required: [ 'id', 'name' ],
+                        type: 'object'
+                      }
+                    }
+                  },
+                  info: { title: 'Pets', version: '1.0.0' },
+                  openapi: '3.0.0',
+                  paths: {
+                    '/pets': {
+                      get: {
+                        operationId: 'listPets',
+                        responses: {
+                          '200': {
+                            content: {
+                              'application/json': {
+                                schema: {
+                                  items: {
+                                    '$ref': '#/components/schemas/Pet'
+                                  },
+                                  type: 'array'
+                                }
+                              }
+                            },
+                            description: 'A list of pets.'
+                          }
+                        }
+                      },
+                      post: {
+                        operationId: 'createPet',
+                        requestBody: {
+                          content: {
+                            'application/json': {
+                              schema: { '$ref': '#/components/schemas/Pet' }
+                            }
+                          },
+                          required: true
+                        },
+                        responses: {
+                          '201': {
+                            content: {
+                              'application/json': {
+                                schema: { '$ref': '#/components/schemas/Pet' }
+                              }
+                            },
+                            description: 'The created pet.'
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                file: '<root>/test/specs/v3/multi-file/pets.yml',
+                originalComponent: {
+                  content: {
+                    'application/json': { schema: { '$ref': '#/components/schemas/Pet' } }
+                  },
+                  description: 'The created pet.'
+                },
+                path: '/paths//pets/post/responses/201',
+                pos: { col: 11, line: 29 }
+              },
+              contentOptions: [
+                {
+                  '$ref': undefined,
+                  '$src': {
+                    component: { schema: { '$ref': '#/components/schemas/Pet' } },
+                    document: {
+                      components: {
+                        schemas: {
+                          Pet: {
+                            properties: {
+                              address: {
+                                '$ref': 'shared.yml#/components/schemas/Address'
+                              },
+                              id: { type: 'string' },
+                              name: { type: 'string' }
+                            },
+                            required: [ 'id', 'name' ],
+                            type: 'object'
+                          }
+                        }
+                      },
+                      info: { title: 'Pets', version: '1.0.0' },
+                      openapi: '3.0.0',
+                      paths: {
+                        '/pets': {
+                          get: {
+                            operationId: 'listPets',
+                            responses: {
+                              '200': {
+                                content: {
+                                  'application/json': {
+                                    schema: {
+                                      items: {
+                                        '$ref': '#/components/schemas/Pet'
+                                      },
+                                      type: 'array'
+                                    }
+                                  }
+                                },
+                                description: 'A list of pets.'
+                              }
+                            }
+                          },
+                          post: {
+                            operationId: 'createPet',
+                            requestBody: {
+                              content: {
+                                'application/json': {
+                                  schema: {
+                                    '$ref': '#/components/schemas/Pet'
+                                  }
+                                }
+                              },
+                              required: true
+                            },
+                            responses: {
+                              '201': {
+                                content: {
+                                  'application/json': {
+                                    schema: {
+                                      '$ref': '#/components/schemas/Pet'
+                                    }
+                                  }
+                                },
+                                description: 'The created pet.'
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    file: '<root>/test/specs/v3/multi-file/pets.yml',
+                    originalComponent: { schema: { '$ref': '#/components/schemas/Pet' } },
+                    path: '/paths//pets/post/responses/201/content/application/json',
+                    pos: { col: 15, line: 32 }
+                  },
+                  id: 'content-4',
+                  schema: 'schema-21',
+                  type: 'application/json'
+                }
+              ],
+              description: 'The created pet.',
+              headers: [],
+              id: 'response-3',
+              statusCode: 201
+            }
+          ],
+          summary: undefined,
+          tags: []
+        },
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              content: {
+                'application/json': {
+                  schema: {
+                    items: { '$ref': '#/components/schemas/Pet' },
+                    type: 'array'
+                  }
+                }
+              },
+              description: 'A list of pets.'
+            },
+            document: {
+              components: {
+                schemas: {
+                  Pet: {
+                    properties: {
+                      address: {
+                        '$ref': 'shared.yml#/components/schemas/Address'
+                      },
+                      id: { type: 'string' },
+                      name: { type: 'string' }
+                    },
+                    required: [ 'id', 'name' ],
+                    type: 'object'
+                  }
+                }
+              },
+              info: { title: 'Pets', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/pets': {
+                  get: {
+                    operationId: 'listPets',
+                    responses: {
+                      '200': {
+                        content: {
+                          'application/json': {
+                            schema: {
+                              items: { '$ref': '#/components/schemas/Pet' },
+                              type: 'array'
+                            }
+                          }
+                        },
+                        description: 'A list of pets.'
+                      }
+                    }
+                  },
+                  post: {
+                    operationId: 'createPet',
+                    requestBody: {
+                      content: {
+                        'application/json': {
+                          schema: { '$ref': '#/components/schemas/Pet' }
+                        }
+                      },
+                      required: true
+                    },
+                    responses: {
+                      '201': {
+                        content: {
+                          'application/json': {
+                            schema: { '$ref': '#/components/schemas/Pet' }
+                          }
+                        },
+                        description: 'The created pet.'
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/multi-file/pets.yml',
+            originalComponent: {
+              content: {
+                'application/json': {
+                  schema: {
+                    items: { '$ref': '#/components/schemas/Pet' },
+                    type: 'array'
+                  }
+                }
+              },
+              description: 'A list of pets.'
+            },
+            path: '/paths//pets/get/responses/200',
+            pos: { col: 11, line: 12 }
+          },
+          contentOptions: [
+            {
+              '$ref': undefined,
+              '$src': {
+                component: {
+                  schema: {
+                    items: { '$ref': '#/components/schemas/Pet' },
+                    type: 'array'
+                  }
+                },
+                document: {
+                  components: {
+                    schemas: {
+                      Pet: {
+                        properties: {
+                          address: {
+                            '$ref': 'shared.yml#/components/schemas/Address'
+                          },
+                          id: { type: 'string' },
+                          name: { type: 'string' }
+                        },
+                        required: [ 'id', 'name' ],
+                        type: 'object'
+                      }
+                    }
+                  },
+                  info: { title: 'Pets', version: '1.0.0' },
+                  openapi: '3.0.0',
+                  paths: {
+                    '/pets': {
+                      get: {
+                        operationId: 'listPets',
+                        responses: {
+                          '200': {
+                            content: {
+                              'application/json': {
+                                schema: {
+                                  items: {
+                                    '$ref': '#/components/schemas/Pet'
+                                  },
+                                  type: 'array'
+                                }
+                              }
+                            },
+                            description: 'A list of pets.'
+                          }
+                        }
+                      },
+                      post: {
+                        operationId: 'createPet',
+                        requestBody: {
+                          content: {
+                            'application/json': {
+                              schema: { '$ref': '#/components/schemas/Pet' }
+                            }
+                          },
+                          required: true
+                        },
+                        responses: {
+                          '201': {
+                            content: {
+                              'application/json': {
+                                schema: { '$ref': '#/components/schemas/Pet' }
+                              }
+                            },
+                            description: 'The created pet.'
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                file: '<root>/test/specs/v3/multi-file/pets.yml',
+                originalComponent: {
+                  schema: {
+                    items: { '$ref': '#/components/schemas/Pet' },
+                    type: 'array'
+                  }
+                },
+                path: '/paths//pets/get/responses/200/content/application/json',
+                pos: { col: 15, line: 15 }
+              },
+              id: 'content-2',
+              schema: 'schema-18',
+              type: 'application/json'
+            }
+          ],
+          description: 'A list of pets.',
+          headers: [],
+          id: 'response-2',
+          statusCode: 200
+        }
+      ],
+      summary: undefined,
+      tags: []
+    },
+    <ref *4> {
+      '$ref': undefined,
+      '$src': {
+        component: '352 inspect chars',
+        document: '1253 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/pets.yml',
+        originalComponent: '352 inspect chars',
+        path: '/paths//pets/post',
+        pos: { col: 7, line: 20 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-3',
+      method: 'post',
+      name: 'createPet',
+      parameters: [],
+      path: '/pets',
+      pathInfo: <ref *3> {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              operationId: 'listPets',
+              responses: {
+                '200': {
+                  content: {
+                    'application/json': {
+                      schema: {
+                        items: { '$ref': '#/components/schemas/Pet' },
+                        type: 'array'
+                      }
+                    }
+                  },
+                  description: 'A list of pets.'
+                }
+              }
+            },
+            post: {
+              operationId: 'createPet',
+              requestBody: {
+                content: {
+                  'application/json': { schema: { '$ref': '#/components/schemas/Pet' } }
+                },
+                required: true
+              },
+              responses: {
+                '201': {
+                  content: {
+                    'application/json': { schema: { '$ref': '#/components/schemas/Pet' } }
+                  },
+                  description: 'The created pet.'
+                }
+              }
+            }
+          },
+          document: {
+            components: {
+              schemas: {
+                Pet: {
+                  properties: {
+                    address: {
+                      '$ref': 'shared.yml#/components/schemas/Address'
+                    },
+                    id: { type: 'string' },
+                    name: { type: 'string' }
+                  },
+                  required: [ 'id', 'name' ],
+                  type: 'object'
+                }
+              }
+            },
+            info: { title: 'Pets', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/pets': {
+                get: {
+                  operationId: 'listPets',
+                  responses: {
+                    '200': {
+                      content: {
+                        'application/json': {
+                          schema: {
+                            items: { '$ref': '#/components/schemas/Pet' },
+                            type: 'array'
+                          }
+                        }
+                      },
+                      description: 'A list of pets.'
+                    }
+                  }
+                },
+                post: {
+                  operationId: 'createPet',
+                  requestBody: {
+                    content: {
+                      'application/json': {
+                        schema: { '$ref': '#/components/schemas/Pet' }
+                      }
+                    },
+                    required: true
+                  },
+                  responses: {
+                    '201': {
+                      content: {
+                        'application/json': {
+                          schema: { '$ref': '#/components/schemas/Pet' }
+                        }
+                      },
+                      description: 'The created pet.'
+                    }
+                  }
+                }
+              }
+            }
+          },
+          file: '<root>/test/specs/v3/multi-file/pets.yml',
+          originalComponent: {
+            get: {
+              operationId: 'listPets',
+              responses: {
+                '200': {
+                  content: {
+                    'application/json': {
+                      schema: {
+                        items: { '$ref': '#/components/schemas/Pet' },
+                        type: 'array'
+                      }
+                    }
+                  },
+                  description: 'A list of pets.'
+                }
+              }
+            },
+            post: {
+              operationId: 'createPet',
+              requestBody: {
+                content: {
+                  'application/json': { schema: { '$ref': '#/components/schemas/Pet' } }
+                },
+                required: true
+              },
+              responses: {
+                '201': {
+                  content: {
+                    'application/json': { schema: { '$ref': '#/components/schemas/Pet' } }
+                  },
+                  description: 'The created pet.'
+                }
+              }
+            }
+          },
+          path: '/paths//pets',
+          pos: { col: 5, line: 8 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: <ref *2> {
+          '$ref': undefined,
+          '$src': {
+            component: '288 inspect chars',
+            document: '1253 inspect chars',
+            file: '<root>/test/specs/v3/multi-file/pets.yml',
+            originalComponent: '288 inspect chars',
+            path: '/paths//pets/get',
+            pos: { col: 7, line: 9 }
+          },
+          custom: {},
+          deprecated: false,
+          description: undefined,
+          id: 'endpoint-2',
+          method: 'get',
+          name: 'listPets',
+          parameters: [],
+          path: '/pets',
+          pathInfo: [Circular *3],
+          requestBody: undefined,
+          responses: [
+            {
+              '$ref': undefined,
+              '$src': {
+                component: {
+                  content: {
+                    'application/json': {
+                      schema: {
+                        items: { '$ref': '#/components/schemas/Pet' },
+                        type: 'array'
+                      }
+                    }
+                  },
+                  description: 'A list of pets.'
+                },
+                document: {
+                  components: {
+                    schemas: {
+                      Pet: {
+                        properties: {
+                          address: {
+                            '$ref': 'shared.yml#/components/schemas/Address'
+                          },
+                          id: { type: 'string' },
+                          name: { type: 'string' }
+                        },
+                        required: [ 'id', 'name' ],
+                        type: 'object'
+                      }
+                    }
+                  },
+                  info: { title: 'Pets', version: '1.0.0' },
+                  openapi: '3.0.0',
+                  paths: {
+                    '/pets': {
+                      get: {
+                        operationId: 'listPets',
+                        responses: {
+                          '200': {
+                            content: {
+                              'application/json': {
+                                schema: {
+                                  items: {
+                                    '$ref': '#/components/schemas/Pet'
+                                  },
+                                  type: 'array'
+                                }
+                              }
+                            },
+                            description: 'A list of pets.'
+                          }
+                        }
+                      },
+                      post: {
+                        operationId: 'createPet',
+                        requestBody: {
+                          content: {
+                            'application/json': {
+                              schema: { '$ref': '#/components/schemas/Pet' }
+                            }
+                          },
+                          required: true
+                        },
+                        responses: {
+                          '201': {
+                            content: {
+                              'application/json': {
+                                schema: { '$ref': '#/components/schemas/Pet' }
+                              }
+                            },
+                            description: 'The created pet.'
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                file: '<root>/test/specs/v3/multi-file/pets.yml',
+                originalComponent: {
+                  content: {
+                    'application/json': {
+                      schema: {
+                        items: { '$ref': '#/components/schemas/Pet' },
+                        type: 'array'
+                      }
+                    }
+                  },
+                  description: 'A list of pets.'
+                },
+                path: '/paths//pets/get/responses/200',
+                pos: { col: 11, line: 12 }
+              },
+              contentOptions: [
+                {
+                  '$ref': undefined,
+                  '$src': {
+                    component: {
+                      schema: {
+                        items: { '$ref': '#/components/schemas/Pet' },
+                        type: 'array'
+                      }
+                    },
+                    document: {
+                      components: {
+                        schemas: {
+                          Pet: {
+                            properties: {
+                              address: {
+                                '$ref': 'shared.yml#/components/schemas/Address'
+                              },
+                              id: { type: 'string' },
+                              name: { type: 'string' }
+                            },
+                            required: [ 'id', 'name' ],
+                            type: 'object'
+                          }
+                        }
+                      },
+                      info: { title: 'Pets', version: '1.0.0' },
+                      openapi: '3.0.0',
+                      paths: {
+                        '/pets': {
+                          get: {
+                            operationId: 'listPets',
+                            responses: {
+                              '200': {
+                                content: {
+                                  'application/json': {
+                                    schema: {
+                                      items: {
+                                        '$ref': '#/components/schemas/Pet'
+                                      },
+                                      type: 'array'
+                                    }
+                                  }
+                                },
+                                description: 'A list of pets.'
+                              }
+                            }
+                          },
+                          post: {
+                            operationId: 'createPet',
+                            requestBody: {
+                              content: {
+                                'application/json': {
+                                  schema: {
+                                    '$ref': '#/components/schemas/Pet'
+                                  }
+                                }
+                              },
+                              required: true
+                            },
+                            responses: {
+                              '201': {
+                                content: {
+                                  'application/json': {
+                                    schema: {
+                                      '$ref': '#/components/schemas/Pet'
+                                    }
+                                  }
+                                },
+                                description: 'The created pet.'
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    file: '<root>/test/specs/v3/multi-file/pets.yml',
+                    originalComponent: {
+                      schema: {
+                        items: { '$ref': '#/components/schemas/Pet' },
+                        type: 'array'
+                      }
+                    },
+                    path: '/paths//pets/get/responses/200/content/application/json',
+                    pos: { col: 15, line: 15 }
+                  },
+                  id: 'content-2',
+                  schema: 'schema-18',
+                  type: 'application/json'
+                }
+              ],
+              description: 'A list of pets.',
+              headers: [],
+              id: 'response-2',
+              statusCode: 200
+            }
+          ],
+          summary: undefined,
+          tags: []
+        },
+        head: undefined,
+        id: 'path-2',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/pets',
+        post: [Circular *4],
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            content: {
+              'application/json': { schema: { '$ref': '#/components/schemas/Pet' } }
+            },
+            required: true
+          },
+          document: {
+            components: {
+              schemas: {
+                Pet: {
+                  properties: {
+                    address: {
+                      '$ref': 'shared.yml#/components/schemas/Address'
+                    },
+                    id: { type: 'string' },
+                    name: { type: 'string' }
+                  },
+                  required: [ 'id', 'name' ],
+                  type: 'object'
+                }
+              }
+            },
+            info: { title: 'Pets', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/pets': {
+                get: {
+                  operationId: 'listPets',
+                  responses: {
+                    '200': {
+                      content: {
+                        'application/json': {
+                          schema: {
+                            items: { '$ref': '#/components/schemas/Pet' },
+                            type: 'array'
+                          }
+                        }
+                      },
+                      description: 'A list of pets.'
+                    }
+                  }
+                },
+                post: {
+                  operationId: 'createPet',
+                  requestBody: {
+                    content: {
+                      'application/json': {
+                        schema: { '$ref': '#/components/schemas/Pet' }
+                      }
+                    },
+                    required: true
+                  },
+                  responses: {
+                    '201': {
+                      content: {
+                        'application/json': {
+                          schema: { '$ref': '#/components/schemas/Pet' }
+                        }
+                      },
+                      description: 'The created pet.'
+                    }
+                  }
+                }
+              }
+            }
+          },
+          file: '<root>/test/specs/v3/multi-file/pets.yml',
+          originalComponent: {
+            content: {
+              'application/json': { schema: { '$ref': '#/components/schemas/Pet' } }
+            },
+            required: true
+          },
+          path: '/paths//pets/post/requestBody',
+          pos: { col: 9, line: 22 }
+        },
+        content: [
+          {
+            '$ref': undefined,
+            '$src': {
+              component: { schema: { '$ref': '#/components/schemas/Pet' } },
+              document: {
+                components: {
+                  schemas: {
+                    Pet: {
+                      properties: {
+                        address: {
+                          '$ref': 'shared.yml#/components/schemas/Address'
+                        },
+                        id: { type: 'string' },
+                        name: { type: 'string' }
+                      },
+                      required: [ 'id', 'name' ],
+                      type: 'object'
+                    }
+                  }
+                },
+                info: { title: 'Pets', version: '1.0.0' },
+                openapi: '3.0.0',
+                paths: {
+                  '/pets': {
+                    get: {
+                      operationId: 'listPets',
+                      responses: {
+                        '200': {
+                          content: {
+                            'application/json': {
+                              schema: {
+                                items: { '$ref': '#/components/schemas/Pet' },
+                                type: 'array'
+                              }
+                            }
+                          },
+                          description: 'A list of pets.'
+                        }
+                      }
+                    },
+                    post: {
+                      operationId: 'createPet',
+                      requestBody: {
+                        content: {
+                          'application/json': {
+                            schema: { '$ref': '#/components/schemas/Pet' }
+                          }
+                        },
+                        required: true
+                      },
+                      responses: {
+                        '201': {
+                          content: {
+                            'application/json': {
+                              schema: { '$ref': '#/components/schemas/Pet' }
+                            }
+                          },
+                          description: 'The created pet.'
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              file: '<root>/test/specs/v3/multi-file/pets.yml',
+              originalComponent: { schema: { '$ref': '#/components/schemas/Pet' } },
+              path: '/paths//pets/post/requestBody/content/application/json',
+              pos: { col: 13, line: 25 }
+            },
+            id: 'content-3',
+            schema: 'schema-20',
+            type: 'application/json'
+          }
+        ],
+        description: undefined,
+        id: 'requestBody-1',
+        required: true
+      },
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              content: {
+                'application/json': { schema: { '$ref': '#/components/schemas/Pet' } }
+              },
+              description: 'The created pet.'
+            },
+            document: {
+              components: {
+                schemas: {
+                  Pet: {
+                    properties: {
+                      address: {
+                        '$ref': 'shared.yml#/components/schemas/Address'
+                      },
+                      id: { type: 'string' },
+                      name: { type: 'string' }
+                    },
+                    required: [ 'id', 'name' ],
+                    type: 'object'
+                  }
+                }
+              },
+              info: { title: 'Pets', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/pets': {
+                  get: {
+                    operationId: 'listPets',
+                    responses: {
+                      '200': {
+                        content: {
+                          'application/json': {
+                            schema: {
+                              items: { '$ref': '#/components/schemas/Pet' },
+                              type: 'array'
+                            }
+                          }
+                        },
+                        description: 'A list of pets.'
+                      }
+                    }
+                  },
+                  post: {
+                    operationId: 'createPet',
+                    requestBody: {
+                      content: {
+                        'application/json': {
+                          schema: { '$ref': '#/components/schemas/Pet' }
+                        }
+                      },
+                      required: true
+                    },
+                    responses: {
+                      '201': {
+                        content: {
+                          'application/json': {
+                            schema: { '$ref': '#/components/schemas/Pet' }
+                          }
+                        },
+                        description: 'The created pet.'
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/multi-file/pets.yml',
+            originalComponent: {
+              content: {
+                'application/json': { schema: { '$ref': '#/components/schemas/Pet' } }
+              },
+              description: 'The created pet.'
+            },
+            path: '/paths//pets/post/responses/201',
+            pos: { col: 11, line: 29 }
+          },
+          contentOptions: [
+            {
+              '$ref': undefined,
+              '$src': {
+                component: { schema: { '$ref': '#/components/schemas/Pet' } },
+                document: {
+                  components: {
+                    schemas: {
+                      Pet: {
+                        properties: {
+                          address: {
+                            '$ref': 'shared.yml#/components/schemas/Address'
+                          },
+                          id: { type: 'string' },
+                          name: { type: 'string' }
+                        },
+                        required: [ 'id', 'name' ],
+                        type: 'object'
+                      }
+                    }
+                  },
+                  info: { title: 'Pets', version: '1.0.0' },
+                  openapi: '3.0.0',
+                  paths: {
+                    '/pets': {
+                      get: {
+                        operationId: 'listPets',
+                        responses: {
+                          '200': {
+                            content: {
+                              'application/json': {
+                                schema: {
+                                  items: {
+                                    '$ref': '#/components/schemas/Pet'
+                                  },
+                                  type: 'array'
+                                }
+                              }
+                            },
+                            description: 'A list of pets.'
+                          }
+                        }
+                      },
+                      post: {
+                        operationId: 'createPet',
+                        requestBody: {
+                          content: {
+                            'application/json': {
+                              schema: { '$ref': '#/components/schemas/Pet' }
+                            }
+                          },
+                          required: true
+                        },
+                        responses: {
+                          '201': {
+                            content: {
+                              'application/json': {
+                                schema: { '$ref': '#/components/schemas/Pet' }
+                              }
+                            },
+                            description: 'The created pet.'
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                file: '<root>/test/specs/v3/multi-file/pets.yml',
+                originalComponent: { schema: { '$ref': '#/components/schemas/Pet' } },
+                path: '/paths//pets/post/responses/201/content/application/json',
+                pos: { col: 15, line: 32 }
+              },
+              id: 'content-4',
+              schema: 'schema-21',
+              type: 'application/json'
+            }
+          ],
+          description: 'The created pet.',
+          headers: [],
+          id: 'response-3',
+          statusCode: 201
+        }
+      ],
+      summary: undefined,
+      tags: []
+    }
+  ],
+  schemas: [
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '18 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/owners.yml',
+        originalComponent: '18 inspect chars',
+        path: '/paths//owners/{id}/get/parameters/0/schema',
+        pos: { col: 13, line: 15 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-1',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'schema-1',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '18 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/owners.yml',
+        originalComponent: '18 inspect chars',
+        path: '/components/schemas/Owner/properties/id',
+        pos: { col: 11, line: 31 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-4',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Owner_id',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '18 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/owners.yml',
+        originalComponent: '18 inspect chars',
+        path: '/components/schemas/Owner/properties/name',
+        pos: { col: 11, line: 33 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-5',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Owner_name',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '18 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/shared.yml',
+        originalComponent: '18 inspect chars',
+        path: '/components/schemas/Contact/properties/email',
+        pos: { col: 11, line: 27 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-8',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Contact_email',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '18 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/shared.yml',
+        originalComponent: '18 inspect chars',
+        path: '/components/schemas/Contact/properties/phone',
+        pos: { col: 11, line: 29 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-9',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Contact_phone',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '92 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/shared.yml',
+        originalComponent: '92 inspect chars',
+        path: '/components/schemas/Contact',
+        pos: { col: 7, line: 24 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-7',
+      inheritedSchemas: [],
+      isNameGenerated: false,
+      items: undefined,
+      kind: 'object',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Contact',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(2) {
+        'email' => { name: 'email', schema: 'schema-8' },
+        'phone' => { name: 'phone', schema: 'schema-9' }
+      },
+      required: Set(0) {},
+      type: 'object'
+    },
+    {
+      '$ref': 'schema-7',
+      '$src': {
+        component: '52 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/owners.yml',
+        originalComponent: '52 inspect chars',
+        path: '/components/schemas/Owner/properties/contact',
+        pos: { col: 11, line: 35 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-6',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'object',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Owner_contact',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(2) {
+        'email' => { name: 'email', schema: 'schema-8' },
+        'phone' => { name: 'phone', schema: 'schema-9' }
+      },
+      required: Set(0) {},
+      type: 'object'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '18 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/pets.yml',
+        originalComponent: '18 inspect chars',
+        path: '/components/schemas/Pet/properties/id',
+        pos: { col: 11, line: 42 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-12',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Pet_id',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '18 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/pets.yml',
+        originalComponent: '18 inspect chars',
+        path: '/components/schemas/Pet/properties/name',
+        pos: { col: 11, line: 44 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-13',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Pet_name',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '18 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/shared.yml',
+        originalComponent: '18 inspect chars',
+        path: '/components/schemas/Address/properties/street',
+        pos: { col: 11, line: 20 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-16',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Address_street',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '18 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/shared.yml',
+        originalComponent: '18 inspect chars',
+        path: '/components/schemas/Address/properties/city',
+        pos: { col: 11, line: 22 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-17',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Address_city',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '92 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/shared.yml',
+        originalComponent: '92 inspect chars',
+        path: '/components/schemas/Address',
+        pos: { col: 7, line: 17 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-15',
+      inheritedSchemas: [],
+      isNameGenerated: false,
+      items: undefined,
+      kind: 'object',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Address',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(2) {
+        'city' => { name: 'city', schema: 'schema-17' },
+        'street' => { name: 'street', schema: 'schema-16' }
+      },
+      required: Set(0) {},
+      type: 'object'
+    },
+    {
+      '$ref': 'schema-15',
+      '$src': {
+        component: '52 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/pets.yml',
+        originalComponent: '52 inspect chars',
+        path: '/components/schemas/Pet/properties/address',
+        pos: { col: 11, line: 46 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-14',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'object',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Pet_address',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(2) {
+        'city' => { name: 'city', schema: 'schema-17' },
+        'street' => { name: 'street', schema: 'schema-16' }
+      },
+      required: Set(0) {},
+      type: 'object'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '195 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/pets.yml',
+        originalComponent: '195 inspect chars',
+        path: '/components/schemas/Pet',
+        pos: { col: 7, line: 38 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-11',
+      inheritedSchemas: [],
+      isNameGenerated: false,
+      items: undefined,
+      kind: 'object',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Pet',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(3) {
+        'address' => { name: 'address', schema: 'schema-14' },
+        'id' => { name: 'id', schema: 'schema-12' },
+        'name' => { name: 'name', schema: 'schema-13' }
+      },
+      required: Set(2) { 'id', 'name' },
+      type: 'object'
+    },
+    {
+      '$ref': 'schema-11',
+      '$src': {
+        component: '46 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/owners.yml',
+        originalComponent: '46 inspect chars',
+        path: '/components/schemas/Owner/properties/pet',
+        pos: { col: 11, line: 37 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-10',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'object',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Owner_pet',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(3) {
+        'address' => { name: 'address', schema: 'schema-14' },
+        'id' => { name: 'id', schema: 'schema-12' },
+        'name' => { name: 'name', schema: 'schema-13' }
+      },
+      required: Set(2) { 'id', 'name' },
+      type: 'object'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '252 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/owners.yml',
+        originalComponent: '252 inspect chars',
+        path: '/components/schemas/Owner',
+        pos: { col: 7, line: 27 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-3',
+      inheritedSchemas: [],
+      isNameGenerated: false,
+      items: undefined,
+      kind: 'object',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Owner',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(4) {
+        'contact' => { name: 'contact', schema: 'schema-6' },
+        'id' => { name: 'id', schema: 'schema-4' },
+        'name' => { name: 'name', schema: 'schema-5' },
+        'pet' => { name: 'pet', schema: 'schema-10' }
+      },
+      required: Set(2) { 'id', 'name' },
+      type: 'object'
+    },
+    {
+      '$ref': 'schema-3',
+      '$src': {
+        component: '40 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/owners.yml',
+        originalComponent: '40 inspect chars',
+        path: '/paths//owners/{id}/get/responses/200/content/application/json/schema',
+        pos: { col: 17, line: 22 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-2',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'object',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'getOwner_200_Response',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(4) {
+        'contact' => { name: 'contact', schema: 'schema-6' },
+        'id' => { name: 'id', schema: 'schema-4' },
+        'name' => { name: 'name', schema: 'schema-5' },
+        'pet' => { name: 'pet', schema: 'schema-10' }
+      },
+      required: Set(2) { 'id', 'name' },
+      type: 'object'
+    },
+    {
+      '$ref': 'schema-11',
+      '$src': {
+        component: '38 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/pets.yml',
+        originalComponent: '38 inspect chars',
+        path: '/paths//pets/get/responses/200/content/application/json/schema/items',
+        pos: { col: 19, line: 18 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-19',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'object',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'listPets_200_Response',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(3) {
+        'address' => { name: 'address', schema: 'schema-14' },
+        'id' => { name: 'id', schema: 'schema-12' },
+        'name' => { name: 'name', schema: 'schema-13' }
+      },
+      required: Set(2) { 'id', 'name' },
+      type: 'object'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '64 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/pets.yml',
+        originalComponent: '64 inspect chars',
+        path: '/paths//pets/get/responses/200/content/application/json/schema',
+        pos: { col: 17, line: 16 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-18',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: {
+        '$ref': 'schema-11',
+        '$src': {
+          component: '38 inspect chars',
+          document: '9 inspect chars',
+          file: '<root>/test/specs/v3/multi-file/pets.yml',
+          originalComponent: '38 inspect chars',
+          path: '/paths//pets/get/responses/200/content/application/json/schema/items',
+          pos: { col: 19, line: 18 }
+        },
+        accessibility: 'all',
+        additionalProperties: undefined,
+        allOf: [],
+        anyOf: [],
+        const: undefined,
+        custom: {},
+        default: undefined,
+        deprecated: false,
+        description: undefined,
+        discriminator: undefined,
+        enum: undefined,
+        example: undefined,
+        format: undefined,
+        id: 'schema-19',
+        inheritedSchemas: [],
+        isNameGenerated: true,
+        items: undefined,
+        kind: 'object',
+        maxItems: undefined,
+        maxLength: undefined,
+        maximum: undefined,
+        minItems: undefined,
+        minLength: undefined,
+        minimum: undefined,
+        name: 'listPets_200_Response',
+        not: undefined,
+        nullable: false,
+        oneOf: [],
+        pattern: undefined,
+        properties: Map(3) {
+          'address' => { name: 'address', schema: 'schema-14' },
+          'id' => { name: 'id', schema: 'schema-12' },
+          'name' => { name: 'name', schema: 'schema-13' }
+        },
+        required: Set(2) { 'id', 'name' },
+        type: 'object'
+      },
+      kind: 'array',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'listPets_200_Response',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'array'
+    },
+    {
+      '$ref': 'schema-11',
+      '$src': {
+        component: '38 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/pets.yml',
+        originalComponent: '38 inspect chars',
+        path: '/paths//pets/post/requestBody/content/application/json/schema',
+        pos: { col: 15, line: 26 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-20',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'object',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'createPet_Request',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(3) {
+        'address' => { name: 'address', schema: 'schema-14' },
+        'id' => { name: 'id', schema: 'schema-12' },
+        'name' => { name: 'name', schema: 'schema-13' }
+      },
+      required: Set(2) { 'id', 'name' },
+      type: 'object'
+    },
+    {
+      '$ref': 'schema-11',
+      '$src': {
+        component: '38 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/multi-file/pets.yml',
+        originalComponent: '38 inspect chars',
+        path: '/paths//pets/post/responses/201/content/application/json/schema',
+        pos: { col: 17, line: 33 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-21',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'object',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'createPet_201_Response',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(3) {
+        'address' => { name: 'address', schema: 'schema-14' },
+        'id' => { name: 'id', schema: 'schema-12' },
+        'name' => { name: 'name', schema: 'schema-13' }
+      },
+      required: Set(2) { 'id', 'name' },
+      type: 'object'
+    }
+  ],
+  services: [
+    {
+      '$ref': undefined,
+      description: undefined,
+      endpoints: [ 'endpoint-1', 'endpoint-2', 'endpoint-3' ],
+      id: 'service-1',
+      name: 'service-1'
+    }
+  ]
+}

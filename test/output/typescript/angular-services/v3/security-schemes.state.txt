@@ -1,0 +1,43 @@
+{
+  typescript: {
+    indexFiles: {
+      models: '<output>/models.ts',
+      responseModels: '<output>/responses.ts',
+      services: '<output>/services.ts'
+    },
+    models: {},
+    services: {
+      'service-1': {
+        __source__: 'tag:service-1',
+        component: 'Service1Service',
+        filePath: '<output>/services/service-1.service.ts',
+        responseModels: {
+          'endpoint-1': {
+            component: 'InheritsSecurityApiResponse',
+            filePath: '<output>/models/responses/service-1-responses.model.ts'
+          },
+          'endpoint-2': {
+            component: 'OverridesSecurityApiResponse',
+            filePath: '<output>/models/responses/service-1-responses.model.ts'
+          },
+          'endpoint-3': {
+            component: 'NoSecurityApiResponse',
+            filePath: '<output>/models/responses/service-1-responses.model.ts'
+          },
+          'endpoint-4': {
+            component: 'MultiSecurityApiResponse',
+            filePath: '<output>/models/responses/service-1-responses.model.ts'
+          },
+          'endpoint-5': {
+            component: 'AndSecurityApiResponse',
+            filePath: '<output>/models/responses/service-1-responses.model.ts'
+          },
+          'endpoint-6': {
+            component: 'ScopedSecurityApiResponse',
+            filePath: '<output>/models/responses/service-1-responses.model.ts'
+          }
+        }
+      }
+    }
+  }
+}

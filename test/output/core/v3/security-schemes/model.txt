@@ -1,0 +1,1749 @@
+{
+  documents: [
+    {
+      components: {
+        securitySchemes: {
+          ApiKeyHeader: { in: 'header', name: 'X-Api-Key', type: 'apiKey' },
+          ApiKeyQuery: { in: 'query', name: 'api_key', type: 'apiKey' },
+          BasicAuth: { scheme: 'basic', type: 'http' },
+          BearerAuth: { bearerFormat: 'JWT', scheme: 'bearer', type: 'http' },
+          OAuth2: {
+            flows: {
+              authorizationCode: {
+                authorizationUrl: 'https://auth.example.com/authorize',
+                scopes: { read: 'Read access.', write: 'Write access.' },
+                tokenUrl: 'https://auth.example.com/token'
+              }
+            },
+            type: 'oauth2'
+          }
+        }
+      },
+      info: { title: 'Security Schemes', version: '1.0.0' },
+      openapi: '3.0.0',
+      paths: {
+        '/and-security': {
+          get: {
+            operationId: 'andSecurity',
+            responses: {
+              '200': {
+                description: 'An operation requiring two schemes together.'
+              }
+            },
+            security: [ { ApiKeyHeader: [], BearerAuth: [] } ]
+          }
+        },
+        '/inherits-security': {
+          get: {
+            operationId: 'inheritsSecurity',
+            responses: {
+              '200': {
+                description: 'An operation that inherits the document-level security.'
+              }
+            }
+          }
+        },
+        '/multi-security': {
+          get: {
+            operationId: 'multiSecurity',
+            responses: {
+              '200': {
+                description: 'An operation with two alternative security requirements.'
+              }
+            },
+            security: [ { ApiKeyHeader: [] }, { BearerAuth: [] } ]
+          }
+        },
+        '/no-security': {
+          get: {
+            operationId: 'noSecurity',
+            responses: {
+              '200': {
+                description: 'An operation explicitly marked as public.'
+              }
+            },
+            security: []
+          }
+        },
+        '/overrides-security': {
+          get: {
+            operationId: 'overridesSecurity',
+            responses: {
+              '200': {
+                description: 'An operation that overrides the document-level security.'
+              }
+            },
+            security: [ { BearerAuth: [] } ]
+          }
+        },
+        '/scoped': {
+          get: {
+            operationId: 'scopedSecurity',
+            responses: {
+              '200': {
+                description: 'An operation requiring an OAuth2 scheme with both scopes.'
+              }
+            },
+            security: [ { OAuth2: [ 'read', 'write' ] } ]
+          }
+        }
+      },
+      security: [ { ApiKeyHeader: [] } ]
+    }
+  ],
+  endpoints: [
+    <ref *1> {
+      '$ref': undefined,
+      '$src': {
+        component: '153 inspect chars',
+        document: '2375 inspect chars',
+        file: '<root>/test/specs/v3/security-schemes.yml',
+        originalComponent: '153 inspect chars',
+        path: '/paths//inherits-security/get',
+        pos: { col: 7, line: 12 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-1',
+      method: 'get',
+      name: 'inheritsSecurity',
+      parameters: [],
+      path: '/inherits-security',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              operationId: 'inheritsSecurity',
+              responses: {
+                '200': {
+                  description: 'An operation that inherits the document-level security.'
+                }
+              }
+            }
+          },
+          document: {
+            components: {
+              securitySchemes: {
+                ApiKeyHeader: { in: 'header', name: 'X-Api-Key', type: 'apiKey' },
+                ApiKeyQuery: { in: 'query', name: 'api_key', type: 'apiKey' },
+                BasicAuth: { scheme: 'basic', type: 'http' },
+                BearerAuth: { bearerFormat: 'JWT', scheme: 'bearer', type: 'http' },
+                OAuth2: {
+                  flows: {
+                    authorizationCode: {
+                      authorizationUrl: 'https://auth.example.com/authorize',
+                      scopes: { read: 'Read access.', write: 'Write access.' },
+                      tokenUrl: 'https://auth.example.com/token'
+                    }
+                  },
+                  type: 'oauth2'
+                }
+              }
+            },
+            info: { title: 'Security Schemes', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/and-security': {
+                get: {
+                  operationId: 'andSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation requiring two schemes together.'
+                    }
+                  },
+                  security: [ { ApiKeyHeader: [], BearerAuth: [] } ]
+                }
+              },
+              '/inherits-security': {
+                get: {
+                  operationId: 'inheritsSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation that inherits the document-level security.'
+                    }
+                  }
+                }
+              },
+              '/multi-security': {
+                get: {
+                  operationId: 'multiSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation with two alternative security requirements.'
+                    }
+                  },
+                  security: [ { ApiKeyHeader: [] }, { BearerAuth: [] } ]
+                }
+              },
+              '/no-security': {
+                get: {
+                  operationId: 'noSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation explicitly marked as public.'
+                    }
+                  },
+                  security: []
+                }
+              },
+              '/overrides-security': {
+                get: {
+                  operationId: 'overridesSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation that overrides the document-level security.'
+                    }
+                  },
+                  security: [ { BearerAuth: [] } ]
+                }
+              },
+              '/scoped': {
+                get: {
+                  operationId: 'scopedSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation requiring an OAuth2 scheme with both scopes.'
+                    }
+                  },
+                  security: [ { OAuth2: [ 'read', 'write' ] } ]
+                }
+              }
+            },
+            security: [ { ApiKeyHeader: [] } ]
+          },
+          file: '<root>/test/specs/v3/security-schemes.yml',
+          originalComponent: {
+            get: {
+              operationId: 'inheritsSecurity',
+              responses: {
+                '200': {
+                  description: 'An operation that inherits the document-level security.'
+                }
+              }
+            }
+          },
+          path: '/paths//inherits-security',
+          pos: { col: 5, line: 11 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: [Circular *1],
+        head: undefined,
+        id: 'path-1',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/inherits-security',
+        post: undefined,
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              description: 'An operation that inherits the document-level security.'
+            },
+            document: {
+              components: {
+                securitySchemes: {
+                  ApiKeyHeader: { in: 'header', name: 'X-Api-Key', type: 'apiKey' },
+                  ApiKeyQuery: { in: 'query', name: 'api_key', type: 'apiKey' },
+                  BasicAuth: { scheme: 'basic', type: 'http' },
+                  BearerAuth: {
+                    bearerFormat: 'JWT',
+                    scheme: 'bearer',
+                    type: 'http'
+                  },
+                  OAuth2: {
+                    flows: {
+                      authorizationCode: {
+                        authorizationUrl: 'https://auth.example.com/authorize',
+                        scopes: {
+                          read: 'Read access.',
+                          write: 'Write access.'
+                        },
+                        tokenUrl: 'https://auth.example.com/token'
+                      }
+                    },
+                    type: 'oauth2'
+                  }
+                }
+              },
+              info: { title: 'Security Schemes', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/and-security': {
+                  get: {
+                    operationId: 'andSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation requiring two schemes together.'
+                      }
+                    },
+                    security: [ { ApiKeyHeader: [], BearerAuth: [] } ]
+                  }
+                },
+                '/inherits-security': {
+                  get: {
+                    operationId: 'inheritsSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation that inherits the document-level security.'
+                      }
+                    }
+                  }
+                },
+                '/multi-security': {
+                  get: {
+                    operationId: 'multiSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation with two alternative security requirements.'
+                      }
+                    },
+                    security: [ { ApiKeyHeader: [] }, { BearerAuth: [] } ]
+                  }
+                },
+                '/no-security': {
+                  get: {
+                    operationId: 'noSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation explicitly marked as public.'
+                      }
+                    },
+                    security: []
+                  }
+                },
+                '/overrides-security': {
+                  get: {
+                    operationId: 'overridesSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation that overrides the document-level security.'
+                      }
+                    },
+                    security: [ { BearerAuth: [] } ]
+                  }
+                },
+                '/scoped': {
+                  get: {
+                    operationId: 'scopedSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation requiring an OAuth2 scheme with both scopes.'
+                      }
+                    },
+                    security: [ { OAuth2: [ 'read', 'write' ] } ]
+                  }
+                }
+              },
+              security: [ { ApiKeyHeader: [] } ]
+            },
+            file: '<root>/test/specs/v3/security-schemes.yml',
+            originalComponent: {
+              description: 'An operation that inherits the document-level security.'
+            },
+            path: '/paths//inherits-security/get/responses/200',
+            pos: { col: 11, line: 15 }
+          },
+          contentOptions: [],
+          description: 'An operation that inherits the document-level security.',
+          headers: [],
+          id: 'response-1',
+          statusCode: 200
+        }
+      ],
+      summary: undefined,
+      tags: []
+    },
+    <ref *2> {
+      '$ref': undefined,
+      '$src': {
+        component: '191 inspect chars',
+        document: '2375 inspect chars',
+        file: '<root>/test/specs/v3/security-schemes.yml',
+        originalComponent: '191 inspect chars',
+        path: '/paths//overrides-security/get',
+        pos: { col: 7, line: 18 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-2',
+      method: 'get',
+      name: 'overridesSecurity',
+      parameters: [],
+      path: '/overrides-security',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              operationId: 'overridesSecurity',
+              responses: {
+                '200': {
+                  description: 'An operation that overrides the document-level security.'
+                }
+              },
+              security: [ { BearerAuth: [] } ]
+            }
+          },
+          document: {
+            components: {
+              securitySchemes: {
+                ApiKeyHeader: { in: 'header', name: 'X-Api-Key', type: 'apiKey' },
+                ApiKeyQuery: { in: 'query', name: 'api_key', type: 'apiKey' },
+                BasicAuth: { scheme: 'basic', type: 'http' },
+                BearerAuth: { bearerFormat: 'JWT', scheme: 'bearer', type: 'http' },
+                OAuth2: {
+                  flows: {
+                    authorizationCode: {
+                      authorizationUrl: 'https://auth.example.com/authorize',
+                      scopes: { read: 'Read access.', write: 'Write access.' },
+                      tokenUrl: 'https://auth.example.com/token'
+                    }
+                  },
+                  type: 'oauth2'
+                }
+              }
+            },
+            info: { title: 'Security Schemes', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/and-security': {
+                get: {
+                  operationId: 'andSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation requiring two schemes together.'
+                    }
+                  },
+                  security: [ { ApiKeyHeader: [], BearerAuth: [] } ]
+                }
+              },
+              '/inherits-security': {
+                get: {
+                  operationId: 'inheritsSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation that inherits the document-level security.'
+                    }
+                  }
+                }
+              },
+              '/multi-security': {
+                get: {
+                  operationId: 'multiSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation with two alternative security requirements.'
+                    }
+                  },
+                  security: [ { ApiKeyHeader: [] }, { BearerAuth: [] } ]
+                }
+              },
+              '/no-security': {
+                get: {
+                  operationId: 'noSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation explicitly marked as public.'
+                    }
+                  },
+                  security: []
+                }
+              },
+              '/overrides-security': {
+                get: {
+                  operationId: 'overridesSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation that overrides the document-level security.'
+                    }
+                  },
+                  security: [ { BearerAuth: [] } ]
+                }
+              },
+              '/scoped': {
+                get: {
+                  operationId: 'scopedSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation requiring an OAuth2 scheme with both scopes.'
+                    }
+                  },
+                  security: [ { OAuth2: [ 'read', 'write' ] } ]
+                }
+              }
+            },
+            security: [ { ApiKeyHeader: [] } ]
+          },
+          file: '<root>/test/specs/v3/security-schemes.yml',
+          originalComponent: {
+            get: {
+              operationId: 'overridesSecurity',
+              responses: {
+                '200': {
+                  description: 'An operation that overrides the document-level security.'
+                }
+              },
+              security: [ { BearerAuth: [] } ]
+            }
+          },
+          path: '/paths//overrides-security',
+          pos: { col: 5, line: 17 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: [Circular *2],
+        head: undefined,
+        id: 'path-2',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/overrides-security',
+        post: undefined,
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              description: 'An operation that overrides the document-level security.'
+            },
+            document: {
+              components: {
+                securitySchemes: {
+                  ApiKeyHeader: { in: 'header', name: 'X-Api-Key', type: 'apiKey' },
+                  ApiKeyQuery: { in: 'query', name: 'api_key', type: 'apiKey' },
+                  BasicAuth: { scheme: 'basic', type: 'http' },
+                  BearerAuth: {
+                    bearerFormat: 'JWT',
+                    scheme: 'bearer',
+                    type: 'http'
+                  },
+                  OAuth2: {
+                    flows: {
+                      authorizationCode: {
+                        authorizationUrl: 'https://auth.example.com/authorize',
+                        scopes: {
+                          read: 'Read access.',
+                          write: 'Write access.'
+                        },
+                        tokenUrl: 'https://auth.example.com/token'
+                      }
+                    },
+                    type: 'oauth2'
+                  }
+                }
+              },
+              info: { title: 'Security Schemes', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/and-security': {
+                  get: {
+                    operationId: 'andSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation requiring two schemes together.'
+                      }
+                    },
+                    security: [ { ApiKeyHeader: [], BearerAuth: [] } ]
+                  }
+                },
+                '/inherits-security': {
+                  get: {
+                    operationId: 'inheritsSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation that inherits the document-level security.'
+                      }
+                    }
+                  }
+                },
+                '/multi-security': {
+                  get: {
+                    operationId: 'multiSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation with two alternative security requirements.'
+                      }
+                    },
+                    security: [ { ApiKeyHeader: [] }, { BearerAuth: [] } ]
+                  }
+                },
+                '/no-security': {
+                  get: {
+                    operationId: 'noSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation explicitly marked as public.'
+                      }
+                    },
+                    security: []
+                  }
+                },
+                '/overrides-security': {
+                  get: {
+                    operationId: 'overridesSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation that overrides the document-level security.'
+                      }
+                    },
+                    security: [ { BearerAuth: [] } ]
+                  }
+                },
+                '/scoped': {
+                  get: {
+                    operationId: 'scopedSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation requiring an OAuth2 scheme with both scopes.'
+                      }
+                    },
+                    security: [ { OAuth2: [ 'read', 'write' ] } ]
+                  }
+                }
+              },
+              security: [ { ApiKeyHeader: [] } ]
+            },
+            file: '<root>/test/specs/v3/security-schemes.yml',
+            originalComponent: {
+              description: 'An operation that overrides the document-level security.'
+            },
+            path: '/paths//overrides-security/get/responses/200',
+            pos: { col: 11, line: 23 }
+          },
+          contentOptions: [],
+          description: 'An operation that overrides the document-level security.',
+          headers: [],
+          id: 'response-2',
+          statusCode: 200
+        }
+      ],
+      summary: undefined,
+      tags: []
+    },
+    <ref *3> {
+      '$ref': undefined,
+      '$src': {
+        component: '139 inspect chars',
+        document: '2375 inspect chars',
+        file: '<root>/test/specs/v3/security-schemes.yml',
+        originalComponent: '139 inspect chars',
+        path: '/paths//no-security/get',
+        pos: { col: 7, line: 26 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-3',
+      method: 'get',
+      name: 'noSecurity',
+      parameters: [],
+      path: '/no-security',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              operationId: 'noSecurity',
+              responses: {
+                '200': {
+                  description: 'An operation explicitly marked as public.'
+                }
+              },
+              security: []
+            }
+          },
+          document: {
+            components: {
+              securitySchemes: {
+                ApiKeyHeader: { in: 'header', name: 'X-Api-Key', type: 'apiKey' },
+                ApiKeyQuery: { in: 'query', name: 'api_key', type: 'apiKey' },
+                BasicAuth: { scheme: 'basic', type: 'http' },
+                BearerAuth: { bearerFormat: 'JWT', scheme: 'bearer', type: 'http' },
+                OAuth2: {
+                  flows: {
+                    authorizationCode: {
+                      authorizationUrl: 'https://auth.example.com/authorize',
+                      scopes: { read: 'Read access.', write: 'Write access.' },
+                      tokenUrl: 'https://auth.example.com/token'
+                    }
+                  },
+                  type: 'oauth2'
+                }
+              }
+            },
+            info: { title: 'Security Schemes', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/and-security': {
+                get: {
+                  operationId: 'andSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation requiring two schemes together.'
+                    }
+                  },
+                  security: [ { ApiKeyHeader: [], BearerAuth: [] } ]
+                }
+              },
+              '/inherits-security': {
+                get: {
+                  operationId: 'inheritsSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation that inherits the document-level security.'
+                    }
+                  }
+                }
+              },
+              '/multi-security': {
+                get: {
+                  operationId: 'multiSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation with two alternative security requirements.'
+                    }
+                  },
+                  security: [ { ApiKeyHeader: [] }, { BearerAuth: [] } ]
+                }
+              },
+              '/no-security': {
+                get: {
+                  operationId: 'noSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation explicitly marked as public.'
+                    }
+                  },
+                  security: []
+                }
+              },
+              '/overrides-security': {
+                get: {
+                  operationId: 'overridesSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation that overrides the document-level security.'
+                    }
+                  },
+                  security: [ { BearerAuth: [] } ]
+                }
+              },
+              '/scoped': {
+                get: {
+                  operationId: 'scopedSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation requiring an OAuth2 scheme with both scopes.'
+                    }
+                  },
+                  security: [ { OAuth2: [ 'read', 'write' ] } ]
+                }
+              }
+            },
+            security: [ { ApiKeyHeader: [] } ]
+          },
+          file: '<root>/test/specs/v3/security-schemes.yml',
+          originalComponent: {
+            get: {
+              operationId: 'noSecurity',
+              responses: {
+                '200': {
+                  description: 'An operation explicitly marked as public.'
+                }
+              },
+              security: []
+            }
+          },
+          path: '/paths//no-security',
+          pos: { col: 5, line: 25 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: [Circular *3],
+        head: undefined,
+        id: 'path-3',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/no-security',
+        post: undefined,
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              description: 'An operation explicitly marked as public.'
+            },
+            document: {
+              components: {
+                securitySchemes: {
+                  ApiKeyHeader: { in: 'header', name: 'X-Api-Key', type: 'apiKey' },
+                  ApiKeyQuery: { in: 'query', name: 'api_key', type: 'apiKey' },
+                  BasicAuth: { scheme: 'basic', type: 'http' },
+                  BearerAuth: {
+                    bearerFormat: 'JWT',
+                    scheme: 'bearer',
+                    type: 'http'
+                  },
+                  OAuth2: {
+                    flows: {
+                      authorizationCode: {
+                        authorizationUrl: 'https://auth.example.com/authorize',
+                        scopes: {
+                          read: 'Read access.',
+                          write: 'Write access.'
+                        },
+                        tokenUrl: 'https://auth.example.com/token'
+                      }
+                    },
+                    type: 'oauth2'
+                  }
+                }
+              },
+              info: { title: 'Security Schemes', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/and-security': {
+                  get: {
+                    operationId: 'andSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation requiring two schemes together.'
+                      }
+                    },
+                    security: [ { ApiKeyHeader: [], BearerAuth: [] } ]
+                  }
+                },
+                '/inherits-security': {
+                  get: {
+                    operationId: 'inheritsSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation that inherits the document-level security.'
+                      }
+                    }
+                  }
+                },
+                '/multi-security': {
+                  get: {
+                    operationId: 'multiSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation with two alternative security requirements.'
+                      }
+                    },
+                    security: [ { ApiKeyHeader: [] }, { BearerAuth: [] } ]
+                  }
+                },
+                '/no-security': {
+                  get: {
+                    operationId: 'noSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation explicitly marked as public.'
+                      }
+                    },
+                    security: []
+                  }
+                },
+                '/overrides-security': {
+                  get: {
+                    operationId: 'overridesSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation that overrides the document-level security.'
+                      }
+                    },
+                    security: [ { BearerAuth: [] } ]
+                  }
+                },
+                '/scoped': {
+                  get: {
+                    operationId: 'scopedSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation requiring an OAuth2 scheme with both scopes.'
+                      }
+                    },
+                    security: [ { OAuth2: [ 'read', 'write' ] } ]
+                  }
+                }
+              },
+              security: [ { ApiKeyHeader: [] } ]
+            },
+            file: '<root>/test/specs/v3/security-schemes.yml',
+            originalComponent: {
+              description: 'An operation explicitly marked as public.'
+            },
+            path: '/paths//no-security/get/responses/200',
+            pos: { col: 11, line: 30 }
+          },
+          contentOptions: [],
+          description: 'An operation explicitly marked as public.',
+          headers: [],
+          id: 'response-3',
+          statusCode: 200
+        }
+      ],
+      summary: undefined,
+      tags: []
+    },
+    <ref *4> {
+      '$ref': undefined,
+      '$src': {
+        component: '209 inspect chars',
+        document: '2375 inspect chars',
+        file: '<root>/test/specs/v3/security-schemes.yml',
+        originalComponent: '209 inspect chars',
+        path: '/paths//multi-security/get',
+        pos: { col: 7, line: 33 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-4',
+      method: 'get',
+      name: 'multiSecurity',
+      parameters: [],
+      path: '/multi-security',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              operationId: 'multiSecurity',
+              responses: {
+                '200': {
+                  description: 'An operation with two alternative security requirements.'
+                }
+              },
+              security: [ { ApiKeyHeader: [] }, { BearerAuth: [] } ]
+            }
+          },
+          document: {
+            components: {
+              securitySchemes: {
+                ApiKeyHeader: { in: 'header', name: 'X-Api-Key', type: 'apiKey' },
+                ApiKeyQuery: { in: 'query', name: 'api_key', type: 'apiKey' },
+                BasicAuth: { scheme: 'basic', type: 'http' },
+                BearerAuth: { bearerFormat: 'JWT', scheme: 'bearer', type: 'http' },
+                OAuth2: {
+                  flows: {
+                    authorizationCode: {
+                      authorizationUrl: 'https://auth.example.com/authorize',
+                      scopes: { read: 'Read access.', write: 'Write access.' },
+                      tokenUrl: 'https://auth.example.com/token'
+                    }
+                  },
+                  type: 'oauth2'
+                }
+              }
+            },
+            info: { title: 'Security Schemes', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/and-security': {
+                get: {
+                  operationId: 'andSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation requiring two schemes together.'
+                    }
+                  },
+                  security: [ { ApiKeyHeader: [], BearerAuth: [] } ]
+                }
+              },
+              '/inherits-security': {
+                get: {
+                  operationId: 'inheritsSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation that inherits the document-level security.'
+                    }
+                  }
+                }
+              },
+              '/multi-security': {
+                get: {
+                  operationId: 'multiSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation with two alternative security requirements.'
+                    }
+                  },
+                  security: [ { ApiKeyHeader: [] }, { BearerAuth: [] } ]
+                }
+              },
+              '/no-security': {
+                get: {
+                  operationId: 'noSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation explicitly marked as public.'
+                    }
+                  },
+                  security: []
+                }
+              },
+              '/overrides-security': {
+                get: {
+                  operationId: 'overridesSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation that overrides the document-level security.'
+                    }
+                  },
+                  security: [ { BearerAuth: [] } ]
+                }
+              },
+              '/scoped': {
+                get: {
+                  operationId: 'scopedSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation requiring an OAuth2 scheme with both scopes.'
+                    }
+                  },
+                  security: [ { OAuth2: [ 'read', 'write' ] } ]
+                }
+              }
+            },
+            security: [ { ApiKeyHeader: [] } ]
+          },
+          file: '<root>/test/specs/v3/security-schemes.yml',
+          originalComponent: {
+            get: {
+              operationId: 'multiSecurity',
+              responses: {
+                '200': {
+                  description: 'An operation with two alternative security requirements.'
+                }
+              },
+              security: [ { ApiKeyHeader: [] }, { BearerAuth: [] } ]
+            }
+          },
+          path: '/paths//multi-security',
+          pos: { col: 5, line: 32 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: [Circular *4],
+        head: undefined,
+        id: 'path-4',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/multi-security',
+        post: undefined,
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              description: 'An operation with two alternative security requirements.'
+            },
+            document: {
+              components: {
+                securitySchemes: {
+                  ApiKeyHeader: { in: 'header', name: 'X-Api-Key', type: 'apiKey' },
+                  ApiKeyQuery: { in: 'query', name: 'api_key', type: 'apiKey' },
+                  BasicAuth: { scheme: 'basic', type: 'http' },
+                  BearerAuth: {
+                    bearerFormat: 'JWT',
+                    scheme: 'bearer',
+                    type: 'http'
+                  },
+                  OAuth2: {
+                    flows: {
+                      authorizationCode: {
+                        authorizationUrl: 'https://auth.example.com/authorize',
+                        scopes: {
+                          read: 'Read access.',
+                          write: 'Write access.'
+                        },
+                        tokenUrl: 'https://auth.example.com/token'
+                      }
+                    },
+                    type: 'oauth2'
+                  }
+                }
+              },
+              info: { title: 'Security Schemes', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/and-security': {
+                  get: {
+                    operationId: 'andSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation requiring two schemes together.'
+                      }
+                    },
+                    security: [ { ApiKeyHeader: [], BearerAuth: [] } ]
+                  }
+                },
+                '/inherits-security': {
+                  get: {
+                    operationId: 'inheritsSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation that inherits the document-level security.'
+                      }
+                    }
+                  }
+                },
+                '/multi-security': {
+                  get: {
+                    operationId: 'multiSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation with two alternative security requirements.'
+                      }
+                    },
+                    security: [ { ApiKeyHeader: [] }, { BearerAuth: [] } ]
+                  }
+                },
+                '/no-security': {
+                  get: {
+                    operationId: 'noSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation explicitly marked as public.'
+                      }
+                    },
+                    security: []
+                  }
+                },
+                '/overrides-security': {
+                  get: {
+                    operationId: 'overridesSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation that overrides the document-level security.'
+                      }
+                    },
+                    security: [ { BearerAuth: [] } ]
+                  }
+                },
+                '/scoped': {
+                  get: {
+                    operationId: 'scopedSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation requiring an OAuth2 scheme with both scopes.'
+                      }
+                    },
+                    security: [ { OAuth2: [ 'read', 'write' ] } ]
+                  }
+                }
+              },
+              security: [ { ApiKeyHeader: [] } ]
+            },
+            file: '<root>/test/specs/v3/security-schemes.yml',
+            originalComponent: {
+              description: 'An operation with two alternative security requirements.'
+            },
+            path: '/paths//multi-security/get/responses/200',
+            pos: { col: 11, line: 39 }
+          },
+          contentOptions: [],
+          description: 'An operation with two alternative security requirements.',
+          headers: [],
+          id: 'response-4',
+          statusCode: 200
+        }
+      ],
+      summary: undefined,
+      tags: []
+    },
+    <ref *5> {
+      '$ref': undefined,
+      '$src': {
+        component: '181 inspect chars',
+        document: '2375 inspect chars',
+        file: '<root>/test/specs/v3/security-schemes.yml',
+        originalComponent: '181 inspect chars',
+        path: '/paths//and-security/get',
+        pos: { col: 7, line: 42 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-5',
+      method: 'get',
+      name: 'andSecurity',
+      parameters: [],
+      path: '/and-security',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              operationId: 'andSecurity',
+              responses: {
+                '200': {
+                  description: 'An operation requiring two schemes together.'
+                }
+              },
+              security: [ { ApiKeyHeader: [], BearerAuth: [] } ]
+            }
+          },
+          document: {
+            components: {
+              securitySchemes: {
+                ApiKeyHeader: { in: 'header', name: 'X-Api-Key', type: 'apiKey' },
+                ApiKeyQuery: { in: 'query', name: 'api_key', type: 'apiKey' },
+                BasicAuth: { scheme: 'basic', type: 'http' },
+                BearerAuth: { bearerFormat: 'JWT', scheme: 'bearer', type: 'http' },
+                OAuth2: {
+                  flows: {
+                    authorizationCode: {
+                      authorizationUrl: 'https://auth.example.com/authorize',
+                      scopes: { read: 'Read access.', write: 'Write access.' },
+                      tokenUrl: 'https://auth.example.com/token'
+                    }
+                  },
+                  type: 'oauth2'
+                }
+              }
+            },
+            info: { title: 'Security Schemes', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/and-security': {
+                get: {
+                  operationId: 'andSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation requiring two schemes together.'
+                    }
+                  },
+                  security: [ { ApiKeyHeader: [], BearerAuth: [] } ]
+                }
+              },
+              '/inherits-security': {
+                get: {
+                  operationId: 'inheritsSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation that inherits the document-level security.'
+                    }
+                  }
+                }
+              },
+              '/multi-security': {
+                get: {
+                  operationId: 'multiSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation with two alternative security requirements.'
+                    }
+                  },
+                  security: [ { ApiKeyHeader: [] }, { BearerAuth: [] } ]
+                }
+              },
+              '/no-security': {
+                get: {
+                  operationId: 'noSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation explicitly marked as public.'
+                    }
+                  },
+                  security: []
+                }
+              },
+              '/overrides-security': {
+                get: {
+                  operationId: 'overridesSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation that overrides the document-level security.'
+                    }
+                  },
+                  security: [ { BearerAuth: [] } ]
+                }
+              },
+              '/scoped': {
+                get: {
+                  operationId: 'scopedSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation requiring an OAuth2 scheme with both scopes.'
+                    }
+                  },
+                  security: [ { OAuth2: [ 'read', 'write' ] } ]
+                }
+              }
+            },
+            security: [ { ApiKeyHeader: [] } ]
+          },
+          file: '<root>/test/specs/v3/security-schemes.yml',
+          originalComponent: {
+            get: {
+              operationId: 'andSecurity',
+              responses: {
+                '200': {
+                  description: 'An operation requiring two schemes together.'
+                }
+              },
+              security: [ { ApiKeyHeader: [], BearerAuth: [] } ]
+            }
+          },
+          path: '/paths//and-security',
+          pos: { col: 5, line: 41 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: [Circular *5],
+        head: undefined,
+        id: 'path-5',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/and-security',
+        post: undefined,
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              description: 'An operation requiring two schemes together.'
+            },
+            document: {
+              components: {
+                securitySchemes: {
+                  ApiKeyHeader: { in: 'header', name: 'X-Api-Key', type: 'apiKey' },
+                  ApiKeyQuery: { in: 'query', name: 'api_key', type: 'apiKey' },
+                  BasicAuth: { scheme: 'basic', type: 'http' },
+                  BearerAuth: {
+                    bearerFormat: 'JWT',
+                    scheme: 'bearer',
+                    type: 'http'
+                  },
+                  OAuth2: {
+                    flows: {
+                      authorizationCode: {
+                        authorizationUrl: 'https://auth.example.com/authorize',
+                        scopes: {
+                          read: 'Read access.',
+                          write: 'Write access.'
+                        },
+                        tokenUrl: 'https://auth.example.com/token'
+                      }
+                    },
+                    type: 'oauth2'
+                  }
+                }
+              },
+              info: { title: 'Security Schemes', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/and-security': {
+                  get: {
+                    operationId: 'andSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation requiring two schemes together.'
+                      }
+                    },
+                    security: [ { ApiKeyHeader: [], BearerAuth: [] } ]
+                  }
+                },
+                '/inherits-security': {
+                  get: {
+                    operationId: 'inheritsSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation that inherits the document-level security.'
+                      }
+                    }
+                  }
+                },
+                '/multi-security': {
+                  get: {
+                    operationId: 'multiSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation with two alternative security requirements.'
+                      }
+                    },
+                    security: [ { ApiKeyHeader: [] }, { BearerAuth: [] } ]
+                  }
+                },
+                '/no-security': {
+                  get: {
+                    operationId: 'noSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation explicitly marked as public.'
+                      }
+                    },
+                    security: []
+                  }
+                },
+                '/overrides-security': {
+                  get: {
+                    operationId: 'overridesSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation that overrides the document-level security.'
+                      }
+                    },
+                    security: [ { BearerAuth: [] } ]
+                  }
+                },
+                '/scoped': {
+                  get: {
+                    operationId: 'scopedSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation requiring an OAuth2 scheme with both scopes.'
+                      }
+                    },
+                    security: [ { OAuth2: [ 'read', 'write' ] } ]
+                  }
+                }
+              },
+              security: [ { ApiKeyHeader: [] } ]
+            },
+            file: '<root>/test/specs/v3/security-schemes.yml',
+            originalComponent: {
+              description: 'An operation requiring two schemes together.'
+            },
+            path: '/paths//and-security/get/responses/200',
+            pos: { col: 11, line: 48 }
+          },
+          contentOptions: [],
+          description: 'An operation requiring two schemes together.',
+          headers: [],
+          id: 'response-5',
+          statusCode: 200
+        }
+      ],
+      summary: undefined,
+      tags: []
+    },
+    <ref *6> {
+      '$ref': undefined,
+      '$src': {
+        component: '202 inspect chars',
+        document: '2375 inspect chars',
+        file: '<root>/test/specs/v3/security-schemes.yml',
+        originalComponent: '202 inspect chars',
+        path: '/paths//scoped/get',
+        pos: { col: 7, line: 51 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-6',
+      method: 'get',
+      name: 'scopedSecurity',
+      parameters: [],
+      path: '/scoped',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              operationId: 'scopedSecurity',
+              responses: {
+                '200': {
+                  description: 'An operation requiring an OAuth2 scheme with both scopes.'
+                }
+              },
+              security: [ { OAuth2: [ 'read', 'write' ] } ]
+            }
+          },
+          document: {
+            components: {
+              securitySchemes: {
+                ApiKeyHeader: { in: 'header', name: 'X-Api-Key', type: 'apiKey' },
+                ApiKeyQuery: { in: 'query', name: 'api_key', type: 'apiKey' },
+                BasicAuth: { scheme: 'basic', type: 'http' },
+                BearerAuth: { bearerFormat: 'JWT', scheme: 'bearer', type: 'http' },
+                OAuth2: {
+                  flows: {
+                    authorizationCode: {
+                      authorizationUrl: 'https://auth.example.com/authorize',
+                      scopes: { read: 'Read access.', write: 'Write access.' },
+                      tokenUrl: 'https://auth.example.com/token'
+                    }
+                  },
+                  type: 'oauth2'
+                }
+              }
+            },
+            info: { title: 'Security Schemes', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/and-security': {
+                get: {
+                  operationId: 'andSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation requiring two schemes together.'
+                    }
+                  },
+                  security: [ { ApiKeyHeader: [], BearerAuth: [] } ]
+                }
+              },
+              '/inherits-security': {
+                get: {
+                  operationId: 'inheritsSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation that inherits the document-level security.'
+                    }
+                  }
+                }
+              },
+              '/multi-security': {
+                get: {
+                  operationId: 'multiSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation with two alternative security requirements.'
+                    }
+                  },
+                  security: [ { ApiKeyHeader: [] }, { BearerAuth: [] } ]
+                }
+              },
+              '/no-security': {
+                get: {
+                  operationId: 'noSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation explicitly marked as public.'
+                    }
+                  },
+                  security: []
+                }
+              },
+              '/overrides-security': {
+                get: {
+                  operationId: 'overridesSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation that overrides the document-level security.'
+                    }
+                  },
+                  security: [ { BearerAuth: [] } ]
+                }
+              },
+              '/scoped': {
+                get: {
+                  operationId: 'scopedSecurity',
+                  responses: {
+                    '200': {
+                      description: 'An operation requiring an OAuth2 scheme with both scopes.'
+                    }
+                  },
+                  security: [ { OAuth2: [ 'read', 'write' ] } ]
+                }
+              }
+            },
+            security: [ { ApiKeyHeader: [] } ]
+          },
+          file: '<root>/test/specs/v3/security-schemes.yml',
+          originalComponent: {
+            get: {
+              operationId: 'scopedSecurity',
+              responses: {
+                '200': {
+                  description: 'An operation requiring an OAuth2 scheme with both scopes.'
+                }
+              },
+              security: [ { OAuth2: [ 'read', 'write' ] } ]
+            }
+          },
+          path: '/paths//scoped',
+          pos: { col: 5, line: 50 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: [Circular *6],
+        head: undefined,
+        id: 'path-6',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/scoped',
+        post: undefined,
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              description: 'An operation requiring an OAuth2 scheme with both scopes.'
+            },
+            document: {
+              components: {
+                securitySchemes: {
+                  ApiKeyHeader: { in: 'header', name: 'X-Api-Key', type: 'apiKey' },
+                  ApiKeyQuery: { in: 'query', name: 'api_key', type: 'apiKey' },
+                  BasicAuth: { scheme: 'basic', type: 'http' },
+                  BearerAuth: {
+                    bearerFormat: 'JWT',
+                    scheme: 'bearer',
+                    type: 'http'
+                  },
+                  OAuth2: {
+                    flows: {
+                      authorizationCode: {
+                        authorizationUrl: 'https://auth.example.com/authorize',
+                        scopes: {
+                          read: 'Read access.',
+                          write: 'Write access.'
+                        },
+                        tokenUrl: 'https://auth.example.com/token'
+                      }
+                    },
+                    type: 'oauth2'
+                  }
+                }
+              },
+              info: { title: 'Security Schemes', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/and-security': {
+                  get: {
+                    operationId: 'andSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation requiring two schemes together.'
+                      }
+                    },
+                    security: [ { ApiKeyHeader: [], BearerAuth: [] } ]
+                  }
+                },
+                '/inherits-security': {
+                  get: {
+                    operationId: 'inheritsSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation that inherits the document-level security.'
+                      }
+                    }
+                  }
+                },
+                '/multi-security': {
+                  get: {
+                    operationId: 'multiSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation with two alternative security requirements.'
+                      }
+                    },
+                    security: [ { ApiKeyHeader: [] }, { BearerAuth: [] } ]
+                  }
+                },
+                '/no-security': {
+                  get: {
+                    operationId: 'noSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation explicitly marked as public.'
+                      }
+                    },
+                    security: []
+                  }
+                },
+                '/overrides-security': {
+                  get: {
+                    operationId: 'overridesSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation that overrides the document-level security.'
+                      }
+                    },
+                    security: [ { BearerAuth: [] } ]
+                  }
+                },
+                '/scoped': {
+                  get: {
+                    operationId: 'scopedSecurity',
+                    responses: {
+                      '200': {
+                        description: 'An operation requiring an OAuth2 scheme with both scopes.'
+                      }
+                    },
+                    security: [ { OAuth2: [ 'read', 'write' ] } ]
+                  }
+                }
+              },
+              security: [ { ApiKeyHeader: [] } ]
+            },
+            file: '<root>/test/specs/v3/security-schemes.yml',
+            originalComponent: {
+              description: 'An operation requiring an OAuth2 scheme with both scopes.'
+            },
+            path: '/paths//scoped/get/responses/200',
+            pos: { col: 11, line: 58 }
+          },
+          contentOptions: [],
+          description: 'An operation requiring an OAuth2 scheme with both scopes.',
+          headers: [],
+          id: 'response-6',
+          statusCode: 200
+        }
+      ],
+      summary: undefined,
+      tags: []
+    }
+  ],
+  schemas: [],
+  services: [
+    {
+      '$ref': undefined,
+      description: undefined,
+      endpoints: [
+        'endpoint-1',
+        'endpoint-2',
+        'endpoint-3',
+        'endpoint-4',
+        'endpoint-5',
+        'endpoint-6'
+      ],
+      id: 'service-1',
+      name: 'service-1'
+    }
+  ]
+}

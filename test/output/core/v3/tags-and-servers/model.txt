@@ -1,0 +1,2132 @@
+{
+  documents: [
+    {
+      info: { title: 'Tags And Servers', version: '1.0.0' },
+      openapi: '3.0.0',
+      paths: {
+        '/one-tag': {
+          get: {
+            operationId: 'oneTag',
+            responses: { '200': { description: 'An operation with one tag.' } },
+            tags: [ 'Alpha' ]
+          }
+        },
+        '/op-server': {
+          get: {
+            operationId: 'opServer',
+            responses: {
+              '200': {
+                description: 'An operation with its own server override.'
+              }
+            },
+            servers: [
+              {
+                description: 'An operation-level server override.',
+                url: 'https://op.example.com/v1'
+              }
+            ]
+          }
+        },
+        '/path-server': {
+          get: {
+            operationId: 'pathServer',
+            responses: {
+              '200': {
+                description: 'An operation under a path-item-level server override.'
+              }
+            }
+          },
+          servers: [
+            {
+              description: 'A path-item-level server override.',
+              url: 'https://path.example.com/v1'
+            }
+          ]
+        },
+        '/shared-tag': {
+          get: {
+            operationId: 'sharedTag',
+            responses: {
+              '200': {
+                description: 'An operation sharing a tag with another.'
+              }
+            },
+            tags: [ 'Alpha' ]
+          }
+        },
+        '/tag-with-space': {
+          get: {
+            operationId: 'tagWithSpace',
+            responses: {
+              '200': {
+                description: 'An operation tagged with a name containing a space.'
+              }
+            },
+            tags: [ 'Tag With Space' ]
+          }
+        },
+        '/two-tags': {
+          get: {
+            operationId: 'twoTags',
+            responses: { '200': { description: 'An operation with two tags.' } },
+            tags: [ 'Alpha', 'Beta' ]
+          }
+        },
+        '/untagged': {
+          get: {
+            operationId: 'untagged',
+            responses: { '200': { description: 'An untagged operation.' } }
+          }
+        }
+      },
+      servers: [
+        {
+          description: 'The production server.',
+          url: 'https://api.example.com/v1'
+        },
+        {
+          url: 'https://{environment}.example.com/v1',
+          variables: {
+            environment: { default: 'staging', enum: [ 'staging', 'production' ] }
+          }
+        }
+      ],
+      tags: [ { description: 'The Alpha tag.', name: 'Alpha' } ]
+    }
+  ],
+  endpoints: [
+    <ref *1> {
+      '$ref': undefined,
+      '$src': {
+        component: '96 inspect chars',
+        document: '2183 inspect chars',
+        file: '<root>/test/specs/v3/tags-and-servers.yml',
+        originalComponent: '96 inspect chars',
+        path: '/paths//untagged/get',
+        pos: { col: 7, line: 24 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-1',
+      method: 'get',
+      name: 'untagged',
+      parameters: [],
+      path: '/untagged',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              operationId: 'untagged',
+              responses: { '200': { description: 'An untagged operation.' } }
+            }
+          },
+          document: {
+            info: { title: 'Tags And Servers', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/one-tag': {
+                get: {
+                  operationId: 'oneTag',
+                  responses: {
+                    '200': { description: 'An operation with one tag.' }
+                  },
+                  tags: [ 'Alpha' ]
+                }
+              },
+              '/op-server': {
+                get: {
+                  operationId: 'opServer',
+                  responses: {
+                    '200': {
+                      description: 'An operation with its own server override.'
+                    }
+                  },
+                  servers: [
+                    {
+                      description: 'An operation-level server override.',
+                      url: 'https://op.example.com/v1'
+                    }
+                  ]
+                }
+              },
+              '/path-server': {
+                get: {
+                  operationId: 'pathServer',
+                  responses: {
+                    '200': {
+                      description: 'An operation under a path-item-level server override.'
+                    }
+                  }
+                },
+                servers: [
+                  {
+                    description: 'A path-item-level server override.',
+                    url: 'https://path.example.com/v1'
+                  }
+                ]
+              },
+              '/shared-tag': {
+                get: {
+                  operationId: 'sharedTag',
+                  responses: {
+                    '200': {
+                      description: 'An operation sharing a tag with another.'
+                    }
+                  },
+                  tags: [ 'Alpha' ]
+                }
+              },
+              '/tag-with-space': {
+                get: {
+                  operationId: 'tagWithSpace',
+                  responses: {
+                    '200': {
+                      description: 'An operation tagged with a name containing a space.'
+                    }
+                  },
+                  tags: [ 'Tag With Space' ]
+                }
+              },
+              '/two-tags': {
+                get: {
+                  operationId: 'twoTags',
+                  responses: {
+                    '200': { description: 'An operation with two tags.' }
+                  },
+                  tags: [ 'Alpha', 'Beta' ]
+                }
+              },
+              '/untagged': {
+                get: {
+                  operationId: 'untagged',
+                  responses: { '200': { description: 'An untagged operation.' } }
+                }
+              }
+            },
+            servers: [
+              {
+                description: 'The production server.',
+                url: 'https://api.example.com/v1'
+              },
+              {
+                url: 'https://{environment}.example.com/v1',
+                variables: {
+                  environment: {
+                    default: 'staging',
+                    enum: [ 'staging', 'production' ]
+                  }
+                }
+              }
+            ],
+            tags: [ { description: 'The Alpha tag.', name: 'Alpha' } ]
+          },
+          file: '<root>/test/specs/v3/tags-and-servers.yml',
+          originalComponent: {
+            get: {
+              operationId: 'untagged',
+              responses: { '200': { description: 'An untagged operation.' } }
+            }
+          },
+          path: '/paths//untagged',
+          pos: { col: 5, line: 23 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: [Circular *1],
+        head: undefined,
+        id: 'path-1',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/untagged',
+        post: undefined,
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: { description: 'An untagged operation.' },
+            document: {
+              info: { title: 'Tags And Servers', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/one-tag': {
+                  get: {
+                    operationId: 'oneTag',
+                    responses: {
+                      '200': { description: 'An operation with one tag.' }
+                    },
+                    tags: [ 'Alpha' ]
+                  }
+                },
+                '/op-server': {
+                  get: {
+                    operationId: 'opServer',
+                    responses: {
+                      '200': {
+                        description: 'An operation with its own server override.'
+                      }
+                    },
+                    servers: [
+                      {
+                        description: 'An operation-level server override.',
+                        url: 'https://op.example.com/v1'
+                      }
+                    ]
+                  }
+                },
+                '/path-server': {
+                  get: {
+                    operationId: 'pathServer',
+                    responses: {
+                      '200': {
+                        description: 'An operation under a path-item-level server override.'
+                      }
+                    }
+                  },
+                  servers: [
+                    {
+                      description: 'A path-item-level server override.',
+                      url: 'https://path.example.com/v1'
+                    }
+                  ]
+                },
+                '/shared-tag': {
+                  get: {
+                    operationId: 'sharedTag',
+                    responses: {
+                      '200': {
+                        description: 'An operation sharing a tag with another.'
+                      }
+                    },
+                    tags: [ 'Alpha' ]
+                  }
+                },
+                '/tag-with-space': {
+                  get: {
+                    operationId: 'tagWithSpace',
+                    responses: {
+                      '200': {
+                        description: 'An operation tagged with a name containing a space.'
+                      }
+                    },
+                    tags: [ 'Tag With Space' ]
+                  }
+                },
+                '/two-tags': {
+                  get: {
+                    operationId: 'twoTags',
+                    responses: {
+                      '200': { description: 'An operation with two tags.' }
+                    },
+                    tags: [ 'Alpha', 'Beta' ]
+                  }
+                },
+                '/untagged': {
+                  get: {
+                    operationId: 'untagged',
+                    responses: {
+                      '200': { description: 'An untagged operation.' }
+                    }
+                  }
+                }
+              },
+              servers: [
+                {
+                  description: 'The production server.',
+                  url: 'https://api.example.com/v1'
+                },
+                {
+                  url: 'https://{environment}.example.com/v1',
+                  variables: {
+                    environment: {
+                      default: 'staging',
+                      enum: [ 'staging', 'production' ]
+                    }
+                  }
+                }
+              ],
+              tags: [ { description: 'The Alpha tag.', name: 'Alpha' } ]
+            },
+            file: '<root>/test/specs/v3/tags-and-servers.yml',
+            originalComponent: { description: 'An untagged operation.' },
+            path: '/paths//untagged/get/responses/200',
+            pos: { col: 11, line: 27 }
+          },
+          contentOptions: [],
+          description: 'An untagged operation.',
+          headers: [],
+          id: 'response-1',
+          statusCode: 200
+        }
+      ],
+      summary: undefined,
+      tags: []
+    },
+    <ref *2> {
+      '$ref': undefined,
+      '$src': {
+        component: '119 inspect chars',
+        document: '2183 inspect chars',
+        file: '<root>/test/specs/v3/tags-and-servers.yml',
+        originalComponent: '119 inspect chars',
+        path: '/paths//one-tag/get',
+        pos: { col: 7, line: 30 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-2',
+      method: 'get',
+      name: 'oneTag',
+      parameters: [],
+      path: '/one-tag',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              operationId: 'oneTag',
+              responses: { '200': { description: 'An operation with one tag.' } },
+              tags: [ 'Alpha' ]
+            }
+          },
+          document: {
+            info: { title: 'Tags And Servers', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/one-tag': {
+                get: {
+                  operationId: 'oneTag',
+                  responses: {
+                    '200': { description: 'An operation with one tag.' }
+                  },
+                  tags: [ 'Alpha' ]
+                }
+              },
+              '/op-server': {
+                get: {
+                  operationId: 'opServer',
+                  responses: {
+                    '200': {
+                      description: 'An operation with its own server override.'
+                    }
+                  },
+                  servers: [
+                    {
+                      description: 'An operation-level server override.',
+                      url: 'https://op.example.com/v1'
+                    }
+                  ]
+                }
+              },
+              '/path-server': {
+                get: {
+                  operationId: 'pathServer',
+                  responses: {
+                    '200': {
+                      description: 'An operation under a path-item-level server override.'
+                    }
+                  }
+                },
+                servers: [
+                  {
+                    description: 'A path-item-level server override.',
+                    url: 'https://path.example.com/v1'
+                  }
+                ]
+              },
+              '/shared-tag': {
+                get: {
+                  operationId: 'sharedTag',
+                  responses: {
+                    '200': {
+                      description: 'An operation sharing a tag with another.'
+                    }
+                  },
+                  tags: [ 'Alpha' ]
+                }
+              },
+              '/tag-with-space': {
+                get: {
+                  operationId: 'tagWithSpace',
+                  responses: {
+                    '200': {
+                      description: 'An operation tagged with a name containing a space.'
+                    }
+                  },
+                  tags: [ 'Tag With Space' ]
+                }
+              },
+              '/two-tags': {
+                get: {
+                  operationId: 'twoTags',
+                  responses: {
+                    '200': { description: 'An operation with two tags.' }
+                  },
+                  tags: [ 'Alpha', 'Beta' ]
+                }
+              },
+              '/untagged': {
+                get: {
+                  operationId: 'untagged',
+                  responses: { '200': { description: 'An untagged operation.' } }
+                }
+              }
+            },
+            servers: [
+              {
+                description: 'The production server.',
+                url: 'https://api.example.com/v1'
+              },
+              {
+                url: 'https://{environment}.example.com/v1',
+                variables: {
+                  environment: {
+                    default: 'staging',
+                    enum: [ 'staging', 'production' ]
+                  }
+                }
+              }
+            ],
+            tags: [ { description: 'The Alpha tag.', name: 'Alpha' } ]
+          },
+          file: '<root>/test/specs/v3/tags-and-servers.yml',
+          originalComponent: {
+            get: {
+              operationId: 'oneTag',
+              responses: { '200': { description: 'An operation with one tag.' } },
+              tags: [ 'Alpha' ]
+            }
+          },
+          path: '/paths//one-tag',
+          pos: { col: 5, line: 29 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: [Circular *2],
+        head: undefined,
+        id: 'path-2',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/one-tag',
+        post: undefined,
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: { description: 'An operation with one tag.' },
+            document: {
+              info: { title: 'Tags And Servers', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/one-tag': {
+                  get: {
+                    operationId: 'oneTag',
+                    responses: {
+                      '200': { description: 'An operation with one tag.' }
+                    },
+                    tags: [ 'Alpha' ]
+                  }
+                },
+                '/op-server': {
+                  get: {
+                    operationId: 'opServer',
+                    responses: {
+                      '200': {
+                        description: 'An operation with its own server override.'
+                      }
+                    },
+                    servers: [
+                      {
+                        description: 'An operation-level server override.',
+                        url: 'https://op.example.com/v1'
+                      }
+                    ]
+                  }
+                },
+                '/path-server': {
+                  get: {
+                    operationId: 'pathServer',
+                    responses: {
+                      '200': {
+                        description: 'An operation under a path-item-level server override.'
+                      }
+                    }
+                  },
+                  servers: [
+                    {
+                      description: 'A path-item-level server override.',
+                      url: 'https://path.example.com/v1'
+                    }
+                  ]
+                },
+                '/shared-tag': {
+                  get: {
+                    operationId: 'sharedTag',
+                    responses: {
+                      '200': {
+                        description: 'An operation sharing a tag with another.'
+                      }
+                    },
+                    tags: [ 'Alpha' ]
+                  }
+                },
+                '/tag-with-space': {
+                  get: {
+                    operationId: 'tagWithSpace',
+                    responses: {
+                      '200': {
+                        description: 'An operation tagged with a name containing a space.'
+                      }
+                    },
+                    tags: [ 'Tag With Space' ]
+                  }
+                },
+                '/two-tags': {
+                  get: {
+                    operationId: 'twoTags',
+                    responses: {
+                      '200': { description: 'An operation with two tags.' }
+                    },
+                    tags: [ 'Alpha', 'Beta' ]
+                  }
+                },
+                '/untagged': {
+                  get: {
+                    operationId: 'untagged',
+                    responses: {
+                      '200': { description: 'An untagged operation.' }
+                    }
+                  }
+                }
+              },
+              servers: [
+                {
+                  description: 'The production server.',
+                  url: 'https://api.example.com/v1'
+                },
+                {
+                  url: 'https://{environment}.example.com/v1',
+                  variables: {
+                    environment: {
+                      default: 'staging',
+                      enum: [ 'staging', 'production' ]
+                    }
+                  }
+                }
+              ],
+              tags: [ { description: 'The Alpha tag.', name: 'Alpha' } ]
+            },
+            file: '<root>/test/specs/v3/tags-and-servers.yml',
+            originalComponent: { description: 'An operation with one tag.' },
+            path: '/paths//one-tag/get/responses/200',
+            pos: { col: 11, line: 34 }
+          },
+          contentOptions: [],
+          description: 'An operation with one tag.',
+          headers: [],
+          id: 'response-2',
+          statusCode: 200
+        }
+      ],
+      summary: undefined,
+      tags: [ 'Alpha' ]
+    },
+    <ref *3> {
+      '$ref': undefined,
+      '$src': {
+        component: '129 inspect chars',
+        document: '2183 inspect chars',
+        file: '<root>/test/specs/v3/tags-and-servers.yml',
+        originalComponent: '129 inspect chars',
+        path: '/paths//two-tags/get',
+        pos: { col: 7, line: 37 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-3',
+      method: 'get',
+      name: 'twoTags',
+      parameters: [],
+      path: '/two-tags',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              operationId: 'twoTags',
+              responses: { '200': { description: 'An operation with two tags.' } },
+              tags: [ 'Alpha', 'Beta' ]
+            }
+          },
+          document: {
+            info: { title: 'Tags And Servers', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/one-tag': {
+                get: {
+                  operationId: 'oneTag',
+                  responses: {
+                    '200': { description: 'An operation with one tag.' }
+                  },
+                  tags: [ 'Alpha' ]
+                }
+              },
+              '/op-server': {
+                get: {
+                  operationId: 'opServer',
+                  responses: {
+                    '200': {
+                      description: 'An operation with its own server override.'
+                    }
+                  },
+                  servers: [
+                    {
+                      description: 'An operation-level server override.',
+                      url: 'https://op.example.com/v1'
+                    }
+                  ]
+                }
+              },
+              '/path-server': {
+                get: {
+                  operationId: 'pathServer',
+                  responses: {
+                    '200': {
+                      description: 'An operation under a path-item-level server override.'
+                    }
+                  }
+                },
+                servers: [
+                  {
+                    description: 'A path-item-level server override.',
+                    url: 'https://path.example.com/v1'
+                  }
+                ]
+              },
+              '/shared-tag': {
+                get: {
+                  operationId: 'sharedTag',
+                  responses: {
+                    '200': {
+                      description: 'An operation sharing a tag with another.'
+                    }
+                  },
+                  tags: [ 'Alpha' ]
+                }
+              },
+              '/tag-with-space': {
+                get: {
+                  operationId: 'tagWithSpace',
+                  responses: {
+                    '200': {
+                      description: 'An operation tagged with a name containing a space.'
+                    }
+                  },
+                  tags: [ 'Tag With Space' ]
+                }
+              },
+              '/two-tags': {
+                get: {
+                  operationId: 'twoTags',
+                  responses: {
+                    '200': { description: 'An operation with two tags.' }
+                  },
+                  tags: [ 'Alpha', 'Beta' ]
+                }
+              },
+              '/untagged': {
+                get: {
+                  operationId: 'untagged',
+                  responses: { '200': { description: 'An untagged operation.' } }
+                }
+              }
+            },
+            servers: [
+              {
+                description: 'The production server.',
+                url: 'https://api.example.com/v1'
+              },
+              {
+                url: 'https://{environment}.example.com/v1',
+                variables: {
+                  environment: {
+                    default: 'staging',
+                    enum: [ 'staging', 'production' ]
+                  }
+                }
+              }
+            ],
+            tags: [ { description: 'The Alpha tag.', name: 'Alpha' } ]
+          },
+          file: '<root>/test/specs/v3/tags-and-servers.yml',
+          originalComponent: {
+            get: {
+              operationId: 'twoTags',
+              responses: { '200': { description: 'An operation with two tags.' } },
+              tags: [ 'Alpha', 'Beta' ]
+            }
+          },
+          path: '/paths//two-tags',
+          pos: { col: 5, line: 36 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: [Circular *3],
+        head: undefined,
+        id: 'path-3',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/two-tags',
+        post: undefined,
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: { description: 'An operation with two tags.' },
+            document: {
+              info: { title: 'Tags And Servers', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/one-tag': {
+                  get: {
+                    operationId: 'oneTag',
+                    responses: {
+                      '200': { description: 'An operation with one tag.' }
+                    },
+                    tags: [ 'Alpha' ]
+                  }
+                },
+                '/op-server': {
+                  get: {
+                    operationId: 'opServer',
+                    responses: {
+                      '200': {
+                        description: 'An operation with its own server override.'
+                      }
+                    },
+                    servers: [
+                      {
+                        description: 'An operation-level server override.',
+                        url: 'https://op.example.com/v1'
+                      }
+                    ]
+                  }
+                },
+                '/path-server': {
+                  get: {
+                    operationId: 'pathServer',
+                    responses: {
+                      '200': {
+                        description: 'An operation under a path-item-level server override.'
+                      }
+                    }
+                  },
+                  servers: [
+                    {
+                      description: 'A path-item-level server override.',
+                      url: 'https://path.example.com/v1'
+                    }
+                  ]
+                },
+                '/shared-tag': {
+                  get: {
+                    operationId: 'sharedTag',
+                    responses: {
+                      '200': {
+                        description: 'An operation sharing a tag with another.'
+                      }
+                    },
+                    tags: [ 'Alpha' ]
+                  }
+                },
+                '/tag-with-space': {
+                  get: {
+                    operationId: 'tagWithSpace',
+                    responses: {
+                      '200': {
+                        description: 'An operation tagged with a name containing a space.'
+                      }
+                    },
+                    tags: [ 'Tag With Space' ]
+                  }
+                },
+                '/two-tags': {
+                  get: {
+                    operationId: 'twoTags',
+                    responses: {
+                      '200': { description: 'An operation with two tags.' }
+                    },
+                    tags: [ 'Alpha', 'Beta' ]
+                  }
+                },
+                '/untagged': {
+                  get: {
+                    operationId: 'untagged',
+                    responses: {
+                      '200': { description: 'An untagged operation.' }
+                    }
+                  }
+                }
+              },
+              servers: [
+                {
+                  description: 'The production server.',
+                  url: 'https://api.example.com/v1'
+                },
+                {
+                  url: 'https://{environment}.example.com/v1',
+                  variables: {
+                    environment: {
+                      default: 'staging',
+                      enum: [ 'staging', 'production' ]
+                    }
+                  }
+                }
+              ],
+              tags: [ { description: 'The Alpha tag.', name: 'Alpha' } ]
+            },
+            file: '<root>/test/specs/v3/tags-and-servers.yml',
+            originalComponent: { description: 'An operation with two tags.' },
+            path: '/paths//two-tags/get/responses/200',
+            pos: { col: 11, line: 41 }
+          },
+          contentOptions: [],
+          description: 'An operation with two tags.',
+          headers: [],
+          id: 'response-3',
+          statusCode: 200
+        }
+      ],
+      summary: undefined,
+      tags: [ 'Alpha', 'Beta' ]
+    },
+    <ref *4> {
+      '$ref': undefined,
+      '$src': {
+        component: '142 inspect chars',
+        document: '2183 inspect chars',
+        file: '<root>/test/specs/v3/tags-and-servers.yml',
+        originalComponent: '142 inspect chars',
+        path: '/paths//shared-tag/get',
+        pos: { col: 7, line: 44 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-4',
+      method: 'get',
+      name: 'sharedTag',
+      parameters: [],
+      path: '/shared-tag',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              operationId: 'sharedTag',
+              responses: {
+                '200': {
+                  description: 'An operation sharing a tag with another.'
+                }
+              },
+              tags: [ 'Alpha' ]
+            }
+          },
+          document: {
+            info: { title: 'Tags And Servers', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/one-tag': {
+                get: {
+                  operationId: 'oneTag',
+                  responses: {
+                    '200': { description: 'An operation with one tag.' }
+                  },
+                  tags: [ 'Alpha' ]
+                }
+              },
+              '/op-server': {
+                get: {
+                  operationId: 'opServer',
+                  responses: {
+                    '200': {
+                      description: 'An operation with its own server override.'
+                    }
+                  },
+                  servers: [
+                    {
+                      description: 'An operation-level server override.',
+                      url: 'https://op.example.com/v1'
+                    }
+                  ]
+                }
+              },
+              '/path-server': {
+                get: {
+                  operationId: 'pathServer',
+                  responses: {
+                    '200': {
+                      description: 'An operation under a path-item-level server override.'
+                    }
+                  }
+                },
+                servers: [
+                  {
+                    description: 'A path-item-level server override.',
+                    url: 'https://path.example.com/v1'
+                  }
+                ]
+              },
+              '/shared-tag': {
+                get: {
+                  operationId: 'sharedTag',
+                  responses: {
+                    '200': {
+                      description: 'An operation sharing a tag with another.'
+                    }
+                  },
+                  tags: [ 'Alpha' ]
+                }
+              },
+              '/tag-with-space': {
+                get: {
+                  operationId: 'tagWithSpace',
+                  responses: {
+                    '200': {
+                      description: 'An operation tagged with a name containing a space.'
+                    }
+                  },
+                  tags: [ 'Tag With Space' ]
+                }
+              },
+              '/two-tags': {
+                get: {
+                  operationId: 'twoTags',
+                  responses: {
+                    '200': { description: 'An operation with two tags.' }
+                  },
+                  tags: [ 'Alpha', 'Beta' ]
+                }
+              },
+              '/untagged': {
+                get: {
+                  operationId: 'untagged',
+                  responses: { '200': { description: 'An untagged operation.' } }
+                }
+              }
+            },
+            servers: [
+              {
+                description: 'The production server.',
+                url: 'https://api.example.com/v1'
+              },
+              {
+                url: 'https://{environment}.example.com/v1',
+                variables: {
+                  environment: {
+                    default: 'staging',
+                    enum: [ 'staging', 'production' ]
+                  }
+                }
+              }
+            ],
+            tags: [ { description: 'The Alpha tag.', name: 'Alpha' } ]
+          },
+          file: '<root>/test/specs/v3/tags-and-servers.yml',
+          originalComponent: {
+            get: {
+              operationId: 'sharedTag',
+              responses: {
+                '200': {
+                  description: 'An operation sharing a tag with another.'
+                }
+              },
+              tags: [ 'Alpha' ]
+            }
+          },
+          path: '/paths//shared-tag',
+          pos: { col: 5, line: 43 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: [Circular *4],
+        head: undefined,
+        id: 'path-4',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/shared-tag',
+        post: undefined,
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: { description: 'An operation sharing a tag with another.' },
+            document: {
+              info: { title: 'Tags And Servers', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/one-tag': {
+                  get: {
+                    operationId: 'oneTag',
+                    responses: {
+                      '200': { description: 'An operation with one tag.' }
+                    },
+                    tags: [ 'Alpha' ]
+                  }
+                },
+                '/op-server': {
+                  get: {
+                    operationId: 'opServer',
+                    responses: {
+                      '200': {
+                        description: 'An operation with its own server override.'
+                      }
+                    },
+                    servers: [
+                      {
+                        description: 'An operation-level server override.',
+                        url: 'https://op.example.com/v1'
+                      }
+                    ]
+                  }
+                },
+                '/path-server': {
+                  get: {
+                    operationId: 'pathServer',
+                    responses: {
+                      '200': {
+                        description: 'An operation under a path-item-level server override.'
+                      }
+                    }
+                  },
+                  servers: [
+                    {
+                      description: 'A path-item-level server override.',
+                      url: 'https://path.example.com/v1'
+                    }
+                  ]
+                },
+                '/shared-tag': {
+                  get: {
+                    operationId: 'sharedTag',
+                    responses: {
+                      '200': {
+                        description: 'An operation sharing a tag with another.'
+                      }
+                    },
+                    tags: [ 'Alpha' ]
+                  }
+                },
+                '/tag-with-space': {
+                  get: {
+                    operationId: 'tagWithSpace',
+                    responses: {
+                      '200': {
+                        description: 'An operation tagged with a name containing a space.'
+                      }
+                    },
+                    tags: [ 'Tag With Space' ]
+                  }
+                },
+                '/two-tags': {
+                  get: {
+                    operationId: 'twoTags',
+                    responses: {
+                      '200': { description: 'An operation with two tags.' }
+                    },
+                    tags: [ 'Alpha', 'Beta' ]
+                  }
+                },
+                '/untagged': {
+                  get: {
+                    operationId: 'untagged',
+                    responses: {
+                      '200': { description: 'An untagged operation.' }
+                    }
+                  }
+                }
+              },
+              servers: [
+                {
+                  description: 'The production server.',
+                  url: 'https://api.example.com/v1'
+                },
+                {
+                  url: 'https://{environment}.example.com/v1',
+                  variables: {
+                    environment: {
+                      default: 'staging',
+                      enum: [ 'staging', 'production' ]
+                    }
+                  }
+                }
+              ],
+              tags: [ { description: 'The Alpha tag.', name: 'Alpha' } ]
+            },
+            file: '<root>/test/specs/v3/tags-and-servers.yml',
+            originalComponent: { description: 'An operation sharing a tag with another.' },
+            path: '/paths//shared-tag/get/responses/200',
+            pos: { col: 11, line: 48 }
+          },
+          contentOptions: [],
+          description: 'An operation sharing a tag with another.',
+          headers: [],
+          id: 'response-4',
+          statusCode: 200
+        }
+      ],
+      summary: undefined,
+      tags: [ 'Alpha' ]
+    },
+    <ref *5> {
+      '$ref': undefined,
+      '$src': {
+        component: '145 inspect chars',
+        document: '2183 inspect chars',
+        file: '<root>/test/specs/v3/tags-and-servers.yml',
+        originalComponent: '145 inspect chars',
+        path: '/paths//path-server/get',
+        pos: { col: 7, line: 54 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-5',
+      method: 'get',
+      name: 'pathServer',
+      parameters: [],
+      path: '/path-server',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              operationId: 'pathServer',
+              responses: {
+                '200': {
+                  description: 'An operation under a path-item-level server override.'
+                }
+              }
+            },
+            servers: [
+              {
+                description: 'A path-item-level server override.',
+                url: 'https://path.example.com/v1'
+              }
+            ]
+          },
+          document: {
+            info: { title: 'Tags And Servers', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/one-tag': {
+                get: {
+                  operationId: 'oneTag',
+                  responses: {
+                    '200': { description: 'An operation with one tag.' }
+                  },
+                  tags: [ 'Alpha' ]
+                }
+              },
+              '/op-server': {
+                get: {
+                  operationId: 'opServer',
+                  responses: {
+                    '200': {
+                      description: 'An operation with its own server override.'
+                    }
+                  },
+                  servers: [
+                    {
+                      description: 'An operation-level server override.',
+                      url: 'https://op.example.com/v1'
+                    }
+                  ]
+                }
+              },
+              '/path-server': {
+                get: {
+                  operationId: 'pathServer',
+                  responses: {
+                    '200': {
+                      description: 'An operation under a path-item-level server override.'
+                    }
+                  }
+                },
+                servers: [
+                  {
+                    description: 'A path-item-level server override.',
+                    url: 'https://path.example.com/v1'
+                  }
+                ]
+              },
+              '/shared-tag': {
+                get: {
+                  operationId: 'sharedTag',
+                  responses: {
+                    '200': {
+                      description: 'An operation sharing a tag with another.'
+                    }
+                  },
+                  tags: [ 'Alpha' ]
+                }
+              },
+              '/tag-with-space': {
+                get: {
+                  operationId: 'tagWithSpace',
+                  responses: {
+                    '200': {
+                      description: 'An operation tagged with a name containing a space.'
+                    }
+                  },
+                  tags: [ 'Tag With Space' ]
+                }
+              },
+              '/two-tags': {
+                get: {
+                  operationId: 'twoTags',
+                  responses: {
+                    '200': { description: 'An operation with two tags.' }
+                  },
+                  tags: [ 'Alpha', 'Beta' ]
+                }
+              },
+              '/untagged': {
+                get: {
+                  operationId: 'untagged',
+                  responses: { '200': { description: 'An untagged operation.' } }
+                }
+              }
+            },
+            servers: [
+              {
+                description: 'The production server.',
+                url: 'https://api.example.com/v1'
+              },
+              {
+                url: 'https://{environment}.example.com/v1',
+                variables: {
+                  environment: {
+                    default: 'staging',
+                    enum: [ 'staging', 'production' ]
+                  }
+                }
+              }
+            ],
+            tags: [ { description: 'The Alpha tag.', name: 'Alpha' } ]
+          },
+          file: '<root>/test/specs/v3/tags-and-servers.yml',
+          originalComponent: {
+            get: {
+              operationId: 'pathServer',
+              responses: {
+                '200': {
+                  description: 'An operation under a path-item-level server override.'
+                }
+              }
+            },
+            servers: [
+              {
+                description: 'A path-item-level server override.',
+                url: 'https://path.example.com/v1'
+              }
+            ]
+          },
+          path: '/paths//path-server',
+          pos: { col: 5, line: 50 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: [Circular *5],
+        head: undefined,
+        id: 'path-5',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/path-server',
+        post: undefined,
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              description: 'An operation under a path-item-level server override.'
+            },
+            document: {
+              info: { title: 'Tags And Servers', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/one-tag': {
+                  get: {
+                    operationId: 'oneTag',
+                    responses: {
+                      '200': { description: 'An operation with one tag.' }
+                    },
+                    tags: [ 'Alpha' ]
+                  }
+                },
+                '/op-server': {
+                  get: {
+                    operationId: 'opServer',
+                    responses: {
+                      '200': {
+                        description: 'An operation with its own server override.'
+                      }
+                    },
+                    servers: [
+                      {
+                        description: 'An operation-level server override.',
+                        url: 'https://op.example.com/v1'
+                      }
+                    ]
+                  }
+                },
+                '/path-server': {
+                  get: {
+                    operationId: 'pathServer',
+                    responses: {
+                      '200': {
+                        description: 'An operation under a path-item-level server override.'
+                      }
+                    }
+                  },
+                  servers: [
+                    {
+                      description: 'A path-item-level server override.',
+                      url: 'https://path.example.com/v1'
+                    }
+                  ]
+                },
+                '/shared-tag': {
+                  get: {
+                    operationId: 'sharedTag',
+                    responses: {
+                      '200': {
+                        description: 'An operation sharing a tag with another.'
+                      }
+                    },
+                    tags: [ 'Alpha' ]
+                  }
+                },
+                '/tag-with-space': {
+                  get: {
+                    operationId: 'tagWithSpace',
+                    responses: {
+                      '200': {
+                        description: 'An operation tagged with a name containing a space.'
+                      }
+                    },
+                    tags: [ 'Tag With Space' ]
+                  }
+                },
+                '/two-tags': {
+                  get: {
+                    operationId: 'twoTags',
+                    responses: {
+                      '200': { description: 'An operation with two tags.' }
+                    },
+                    tags: [ 'Alpha', 'Beta' ]
+                  }
+                },
+                '/untagged': {
+                  get: {
+                    operationId: 'untagged',
+                    responses: {
+                      '200': { description: 'An untagged operation.' }
+                    }
+                  }
+                }
+              },
+              servers: [
+                {
+                  description: 'The production server.',
+                  url: 'https://api.example.com/v1'
+                },
+                {
+                  url: 'https://{environment}.example.com/v1',
+                  variables: {
+                    environment: {
+                      default: 'staging',
+                      enum: [ 'staging', 'production' ]
+                    }
+                  }
+                }
+              ],
+              tags: [ { description: 'The Alpha tag.', name: 'Alpha' } ]
+            },
+            file: '<root>/test/specs/v3/tags-and-servers.yml',
+            originalComponent: {
+              description: 'An operation under a path-item-level server override.'
+            },
+            path: '/paths//path-server/get/responses/200',
+            pos: { col: 11, line: 57 }
+          },
+          contentOptions: [],
+          description: 'An operation under a path-item-level server override.',
+          headers: [],
+          id: 'response-5',
+          statusCode: 200
+        }
+      ],
+      summary: undefined,
+      tags: []
+    },
+    <ref *6> {
+      '$ref': undefined,
+      '$src': {
+        component: '249 inspect chars',
+        document: '2183 inspect chars',
+        file: '<root>/test/specs/v3/tags-and-servers.yml',
+        originalComponent: '249 inspect chars',
+        path: '/paths//op-server/get',
+        pos: { col: 7, line: 60 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-6',
+      method: 'get',
+      name: 'opServer',
+      parameters: [],
+      path: '/op-server',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              operationId: 'opServer',
+              responses: {
+                '200': {
+                  description: 'An operation with its own server override.'
+                }
+              },
+              servers: [
+                {
+                  description: 'An operation-level server override.',
+                  url: 'https://op.example.com/v1'
+                }
+              ]
+            }
+          },
+          document: {
+            info: { title: 'Tags And Servers', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/one-tag': {
+                get: {
+                  operationId: 'oneTag',
+                  responses: {
+                    '200': { description: 'An operation with one tag.' }
+                  },
+                  tags: [ 'Alpha' ]
+                }
+              },
+              '/op-server': {
+                get: {
+                  operationId: 'opServer',
+                  responses: {
+                    '200': {
+                      description: 'An operation with its own server override.'
+                    }
+                  },
+                  servers: [
+                    {
+                      description: 'An operation-level server override.',
+                      url: 'https://op.example.com/v1'
+                    }
+                  ]
+                }
+              },
+              '/path-server': {
+                get: {
+                  operationId: 'pathServer',
+                  responses: {
+                    '200': {
+                      description: 'An operation under a path-item-level server override.'
+                    }
+                  }
+                },
+                servers: [
+                  {
+                    description: 'A path-item-level server override.',
+                    url: 'https://path.example.com/v1'
+                  }
+                ]
+              },
+              '/shared-tag': {
+                get: {
+                  operationId: 'sharedTag',
+                  responses: {
+                    '200': {
+                      description: 'An operation sharing a tag with another.'
+                    }
+                  },
+                  tags: [ 'Alpha' ]
+                }
+              },
+              '/tag-with-space': {
+                get: {
+                  operationId: 'tagWithSpace',
+                  responses: {
+                    '200': {
+                      description: 'An operation tagged with a name containing a space.'
+                    }
+                  },
+                  tags: [ 'Tag With Space' ]
+                }
+              },
+              '/two-tags': {
+                get: {
+                  operationId: 'twoTags',
+                  responses: {
+                    '200': { description: 'An operation with two tags.' }
+                  },
+                  tags: [ 'Alpha', 'Beta' ]
+                }
+              },
+              '/untagged': {
+                get: {
+                  operationId: 'untagged',
+                  responses: { '200': { description: 'An untagged operation.' } }
+                }
+              }
+            },
+            servers: [
+              {
+                description: 'The production server.',
+                url: 'https://api.example.com/v1'
+              },
+              {
+                url: 'https://{environment}.example.com/v1',
+                variables: {
+                  environment: {
+                    default: 'staging',
+                    enum: [ 'staging', 'production' ]
+                  }
+                }
+              }
+            ],
+            tags: [ { description: 'The Alpha tag.', name: 'Alpha' } ]
+          },
+          file: '<root>/test/specs/v3/tags-and-servers.yml',
+          originalComponent: {
+            get: {
+              operationId: 'opServer',
+              responses: {
+                '200': {
+                  description: 'An operation with its own server override.'
+                }
+              },
+              servers: [
+                {
+                  description: 'An operation-level server override.',
+                  url: 'https://op.example.com/v1'
+                }
+              ]
+            }
+          },
+          path: '/paths//op-server',
+          pos: { col: 5, line: 59 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: [Circular *6],
+        head: undefined,
+        id: 'path-6',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/op-server',
+        post: undefined,
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              description: 'An operation with its own server override.'
+            },
+            document: {
+              info: { title: 'Tags And Servers', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/one-tag': {
+                  get: {
+                    operationId: 'oneTag',
+                    responses: {
+                      '200': { description: 'An operation with one tag.' }
+                    },
+                    tags: [ 'Alpha' ]
+                  }
+                },
+                '/op-server': {
+                  get: {
+                    operationId: 'opServer',
+                    responses: {
+                      '200': {
+                        description: 'An operation with its own server override.'
+                      }
+                    },
+                    servers: [
+                      {
+                        description: 'An operation-level server override.',
+                        url: 'https://op.example.com/v1'
+                      }
+                    ]
+                  }
+                },
+                '/path-server': {
+                  get: {
+                    operationId: 'pathServer',
+                    responses: {
+                      '200': {
+                        description: 'An operation under a path-item-level server override.'
+                      }
+                    }
+                  },
+                  servers: [
+                    {
+                      description: 'A path-item-level server override.',
+                      url: 'https://path.example.com/v1'
+                    }
+                  ]
+                },
+                '/shared-tag': {
+                  get: {
+                    operationId: 'sharedTag',
+                    responses: {
+                      '200': {
+                        description: 'An operation sharing a tag with another.'
+                      }
+                    },
+                    tags: [ 'Alpha' ]
+                  }
+                },
+                '/tag-with-space': {
+                  get: {
+                    operationId: 'tagWithSpace',
+                    responses: {
+                      '200': {
+                        description: 'An operation tagged with a name containing a space.'
+                      }
+                    },
+                    tags: [ 'Tag With Space' ]
+                  }
+                },
+                '/two-tags': {
+                  get: {
+                    operationId: 'twoTags',
+                    responses: {
+                      '200': { description: 'An operation with two tags.' }
+                    },
+                    tags: [ 'Alpha', 'Beta' ]
+                  }
+                },
+                '/untagged': {
+                  get: {
+                    operationId: 'untagged',
+                    responses: {
+                      '200': { description: 'An untagged operation.' }
+                    }
+                  }
+                }
+              },
+              servers: [
+                {
+                  description: 'The production server.',
+                  url: 'https://api.example.com/v1'
+                },
+                {
+                  url: 'https://{environment}.example.com/v1',
+                  variables: {
+                    environment: {
+                      default: 'staging',
+                      enum: [ 'staging', 'production' ]
+                    }
+                  }
+                }
+              ],
+              tags: [ { description: 'The Alpha tag.', name: 'Alpha' } ]
+            },
+            file: '<root>/test/specs/v3/tags-and-servers.yml',
+            originalComponent: {
+              description: 'An operation with its own server override.'
+            },
+            path: '/paths//op-server/get/responses/200',
+            pos: { col: 11, line: 66 }
+          },
+          contentOptions: [],
+          description: 'An operation with its own server override.',
+          headers: [],
+          id: 'response-6',
+          statusCode: 200
+        }
+      ],
+      summary: undefined,
+      tags: []
+    },
+    <ref *7> {
+      '$ref': undefined,
+      '$src': {
+        component: '175 inspect chars',
+        document: '2183 inspect chars',
+        file: '<root>/test/specs/v3/tags-and-servers.yml',
+        originalComponent: '175 inspect chars',
+        path: '/paths//tag-with-space/get',
+        pos: { col: 7, line: 69 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-7',
+      method: 'get',
+      name: 'tagWithSpace',
+      parameters: [],
+      path: '/tag-with-space',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              operationId: 'tagWithSpace',
+              responses: {
+                '200': {
+                  description: 'An operation tagged with a name containing a space.'
+                }
+              },
+              tags: [ 'Tag With Space' ]
+            }
+          },
+          document: {
+            info: { title: 'Tags And Servers', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/one-tag': {
+                get: {
+                  operationId: 'oneTag',
+                  responses: {
+                    '200': { description: 'An operation with one tag.' }
+                  },
+                  tags: [ 'Alpha' ]
+                }
+              },
+              '/op-server': {
+                get: {
+                  operationId: 'opServer',
+                  responses: {
+                    '200': {
+                      description: 'An operation with its own server override.'
+                    }
+                  },
+                  servers: [
+                    {
+                      description: 'An operation-level server override.',
+                      url: 'https://op.example.com/v1'
+                    }
+                  ]
+                }
+              },
+              '/path-server': {
+                get: {
+                  operationId: 'pathServer',
+                  responses: {
+                    '200': {
+                      description: 'An operation under a path-item-level server override.'
+                    }
+                  }
+                },
+                servers: [
+                  {
+                    description: 'A path-item-level server override.',
+                    url: 'https://path.example.com/v1'
+                  }
+                ]
+              },
+              '/shared-tag': {
+                get: {
+                  operationId: 'sharedTag',
+                  responses: {
+                    '200': {
+                      description: 'An operation sharing a tag with another.'
+                    }
+                  },
+                  tags: [ 'Alpha' ]
+                }
+              },
+              '/tag-with-space': {
+                get: {
+                  operationId: 'tagWithSpace',
+                  responses: {
+                    '200': {
+                      description: 'An operation tagged with a name containing a space.'
+                    }
+                  },
+                  tags: [ 'Tag With Space' ]
+                }
+              },
+              '/two-tags': {
+                get: {
+                  operationId: 'twoTags',
+                  responses: {
+                    '200': { description: 'An operation with two tags.' }
+                  },
+                  tags: [ 'Alpha', 'Beta' ]
+                }
+              },
+              '/untagged': {
+                get: {
+                  operationId: 'untagged',
+                  responses: { '200': { description: 'An untagged operation.' } }
+                }
+              }
+            },
+            servers: [
+              {
+                description: 'The production server.',
+                url: 'https://api.example.com/v1'
+              },
+              {
+                url: 'https://{environment}.example.com/v1',
+                variables: {
+                  environment: {
+                    default: 'staging',
+                    enum: [ 'staging', 'production' ]
+                  }
+                }
+              }
+            ],
+            tags: [ { description: 'The Alpha tag.', name: 'Alpha' } ]
+          },
+          file: '<root>/test/specs/v3/tags-and-servers.yml',
+          originalComponent: {
+            get: {
+              operationId: 'tagWithSpace',
+              responses: {
+                '200': {
+                  description: 'An operation tagged with a name containing a space.'
+                }
+              },
+              tags: [ 'Tag With Space' ]
+            }
+          },
+          path: '/paths//tag-with-space',
+          pos: { col: 5, line: 68 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: [Circular *7],
+        head: undefined,
+        id: 'path-7',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/tag-with-space',
+        post: undefined,
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              description: 'An operation tagged with a name containing a space.'
+            },
+            document: {
+              info: { title: 'Tags And Servers', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/one-tag': {
+                  get: {
+                    operationId: 'oneTag',
+                    responses: {
+                      '200': { description: 'An operation with one tag.' }
+                    },
+                    tags: [ 'Alpha' ]
+                  }
+                },
+                '/op-server': {
+                  get: {
+                    operationId: 'opServer',
+                    responses: {
+                      '200': {
+                        description: 'An operation with its own server override.'
+                      }
+                    },
+                    servers: [
+                      {
+                        description: 'An operation-level server override.',
+                        url: 'https://op.example.com/v1'
+                      }
+                    ]
+                  }
+                },
+                '/path-server': {
+                  get: {
+                    operationId: 'pathServer',
+                    responses: {
+                      '200': {
+                        description: 'An operation under a path-item-level server override.'
+                      }
+                    }
+                  },
+                  servers: [
+                    {
+                      description: 'A path-item-level server override.',
+                      url: 'https://path.example.com/v1'
+                    }
+                  ]
+                },
+                '/shared-tag': {
+                  get: {
+                    operationId: 'sharedTag',
+                    responses: {
+                      '200': {
+                        description: 'An operation sharing a tag with another.'
+                      }
+                    },
+                    tags: [ 'Alpha' ]
+                  }
+                },
+                '/tag-with-space': {
+                  get: {
+                    operationId: 'tagWithSpace',
+                    responses: {
+                      '200': {
+                        description: 'An operation tagged with a name containing a space.'
+                      }
+                    },
+                    tags: [ 'Tag With Space' ]
+                  }
+                },
+                '/two-tags': {
+                  get: {
+                    operationId: 'twoTags',
+                    responses: {
+                      '200': { description: 'An operation with two tags.' }
+                    },
+                    tags: [ 'Alpha', 'Beta' ]
+                  }
+                },
+                '/untagged': {
+                  get: {
+                    operationId: 'untagged',
+                    responses: {
+                      '200': { description: 'An untagged operation.' }
+                    }
+                  }
+                }
+              },
+              servers: [
+                {
+                  description: 'The production server.',
+                  url: 'https://api.example.com/v1'
+                },
+                {
+                  url: 'https://{environment}.example.com/v1',
+                  variables: {
+                    environment: {
+                      default: 'staging',
+                      enum: [ 'staging', 'production' ]
+                    }
+                  }
+                }
+              ],
+              tags: [ { description: 'The Alpha tag.', name: 'Alpha' } ]
+            },
+            file: '<root>/test/specs/v3/tags-and-servers.yml',
+            originalComponent: {
+              description: 'An operation tagged with a name containing a space.'
+            },
+            path: '/paths//tag-with-space/get/responses/200',
+            pos: { col: 11, line: 73 }
+          },
+          contentOptions: [],
+          description: 'An operation tagged with a name containing a space.',
+          headers: [],
+          id: 'response-7',
+          statusCode: 200
+        }
+      ],
+      summary: undefined,
+      tags: [ 'Tag With Space' ]
+    }
+  ],
+  schemas: [],
+  services: [
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '48 inspect chars',
+        document: '2183 inspect chars',
+        file: '<root>/test/specs/v3/tags-and-servers.yml',
+        originalComponent: '48 inspect chars',
+        path: '/tags/0',
+        pos: { col: 5, line: 18 }
+      },
+      description: 'The Alpha tag.',
+      endpoints: [ 'endpoint-2', 'endpoint-3', 'endpoint-4' ],
+      id: 'service-1',
+      name: 'Alpha'
+    },
+    {
+      '$ref': undefined,
+      description: undefined,
+      endpoints: [ 'endpoint-1', 'endpoint-5', 'endpoint-6' ],
+      id: 'service-2',
+      name: 'service-2'
+    },
+    {
+      '$ref': undefined,
+      description: undefined,
+      endpoints: [ 'endpoint-3' ],
+      id: 'service-3',
+      name: 'Beta'
+    },
+    {
+      '$ref': undefined,
+      description: undefined,
+      endpoints: [ 'endpoint-7' ],
+      id: 'service-4',
+      name: 'Tag With Space'
+    }
+  ]
+}

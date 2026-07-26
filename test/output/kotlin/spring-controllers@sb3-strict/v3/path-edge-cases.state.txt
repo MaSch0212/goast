@@ -1,0 +1,83 @@
+{
+  kotlin: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/path-edge-cases.yml#/paths//overlap/{id}/get/parameters/0/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/path-edge-cases.yml#/paths//{id}/get/parameters/0/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/path-edge-cases.yml#/paths//a/{p1}/b/{p2}/c/{p3}/get/parameters/0/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/path-edge-cases.yml#/paths//a/{p1}/b/{p2}/c/{p3}/get/parameters/1/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/path-edge-cases.yml#/paths//a/{p1}/b/{p2}/c/{p3}/get/parameters/2/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      }
+    },
+    services: {
+      'service-1': {
+        __source__: 'tag:Paths',
+        apiController: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'PathsApiController'
+        },
+        apiDelegate: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'PathsApiDelegate'
+        },
+        apiInterface: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'PathsApi'
+        }
+      }
+    }
+  }
+}

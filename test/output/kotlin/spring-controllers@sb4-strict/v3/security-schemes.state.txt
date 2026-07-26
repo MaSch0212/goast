@@ -1,0 +1,22 @@
+{
+  kotlin: {
+    models: {},
+    services: {
+      'service-1': {
+        __source__: 'tag:service-1',
+        apiController: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'Service1ApiController'
+        },
+        apiDelegate: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'Service1ApiDelegate'
+        },
+        apiInterface: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'Service1Api'
+        }
+      }
+    }
+  }
+}

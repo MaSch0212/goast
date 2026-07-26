@@ -1,0 +1,85 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Security Schemes
+
+security:
+  - ApiKeyHeader: []
+
+paths:
+  /inherits-security:
+    get:
+      operationId: inheritsSecurity
+      responses:
+        '200':
+          description: An operation that inherits the document-level security.
+  /overrides-security:
+    get:
+      operationId: overridesSecurity
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: An operation that overrides the document-level security.
+  /no-security:
+    get:
+      operationId: noSecurity
+      security: []
+      responses:
+        '200':
+          description: An operation explicitly marked as public.
+  /multi-security:
+    get:
+      operationId: multiSecurity
+      security:
+        - ApiKeyHeader: []
+        - BearerAuth: []
+      responses:
+        '200':
+          description: An operation with two alternative security requirements.
+  /and-security:
+    get:
+      operationId: andSecurity
+      security:
+        - ApiKeyHeader: []
+          BearerAuth: []
+      responses:
+        '200':
+          description: An operation requiring two schemes together.
+  /scoped:
+    get:
+      operationId: scopedSecurity
+      security:
+        - OAuth2:
+            - read
+            - write
+      responses:
+        '200':
+          description: An operation requiring an OAuth2 scheme with both scopes.
+
+components:
+  securitySchemes:
+    ApiKeyHeader:
+      type: apiKey
+      in: header
+      name: X-Api-Key
+    ApiKeyQuery:
+      type: apiKey
+      in: query
+      name: api_key
+    BasicAuth:
+      type: http
+      scheme: basic
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.example.com/authorize
+          tokenUrl: https://auth.example.com/token
+          scopes:
+            read: Read access.
+            write: Write access.

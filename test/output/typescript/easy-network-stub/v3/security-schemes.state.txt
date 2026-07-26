@@ -1,0 +1,13 @@
+{
+  typescript: {
+    indexFiles: { models: '<output>/models.ts', stubs: '<output>/stubs.ts' },
+    models: {},
+    stubs: {
+      'service-1': {
+        __source__: 'tag:service-1',
+        component: 'Service1Stubs',
+        filePath: '<output>/stubs/service-1.stubs.ts'
+      }
+    }
+  }
+}

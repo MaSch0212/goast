@@ -1,0 +1,27 @@
+{
+  kotlin: {
+    clients: {
+      'service-1': {
+        __source__: '<root>/test/specs/v3/tags-and-servers.yml#/tags/0',
+        packageName: 'com.openapi.generated.api.client',
+        typeName: 'AlphaApiClient'
+      },
+      'service-2': {
+        __source__: 'tag:service-2',
+        packageName: 'com.openapi.generated.api.client',
+        typeName: 'Service2ApiClient'
+      },
+      'service-3': {
+        __source__: 'tag:Beta',
+        packageName: 'com.openapi.generated.api.client',
+        typeName: 'BetaApiClient'
+      },
+      'service-4': {
+        __source__: 'tag:Tag With Space',
+        packageName: 'com.openapi.generated.api.client',
+        typeName: 'TagWithSpaceApiClient'
+      }
+    },
+    models: {}
+  }
+}

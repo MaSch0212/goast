@@ -1,0 +1,45 @@
+{
+  typescript: {
+    clients: {
+      'service-1': {
+        __source__: 'tag:Paths',
+        client: {
+          component: 'PathsClient',
+          filePath: '<output>/clients/paths-client.ts'
+        }
+      }
+    },
+    indexFiles: {
+      clientInterfaces: '<output>/clients.ts',
+      clients: '<output>/clients.ts',
+      models: '<output>/models.ts'
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/path-edge-cases.yml#/paths//overlap/{id}/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/path-edge-cases.yml#/paths//{id}/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/path-edge-cases.yml#/paths//a/{p1}/b/{p2}/c/{p3}/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/path-edge-cases.yml#/paths//a/{p1}/b/{p2}/c/{p3}/get/parameters/1/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/path-edge-cases.yml#/paths//a/{p1}/b/{p2}/c/{p3}/get/parameters/2/schema',
+        component: 'string',
+        imports: []
+      }
+    }
+  }
+}
