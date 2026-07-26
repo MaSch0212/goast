@@ -164,6 +164,46 @@ a path whose basename is **exactly** `.ts`, `.js`, or `.json` (i.e. an empty com
 `'module'` — basename equality with the extension, not a prefix match (a prefix match would also wrongly capture
 `.tsx`, `.tsconfig`, or `.jsonc`, which are not this bug).
 
+### Defect 19 — `spring-controllers` writes `responseCode = null` for `default` and range-coded responses, likely uncompilable (found by phase 2b task 7, not scheduled)
+
+`getApiInterfaceEndpointMethodAnnnotations` (`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:211-212`) builds each `@ApiResponse`'s `responseCode` argument as
+`kt.string(response.statusCode?.toString())`. `response.statusCode` is only populated for an exact numeric code; a
+`default` response or a range code (`2XX`, `4XX`, `5XX`) leaves it `undefined`, so `response.statusCode?.toString()`
+is `undefined` and `kt.string(undefined)` constructs a `KtString` with `value: null`. `KtString.onWrite`
+(`packages/kotlin/src/ast/nodes/string.ts:43-45`) renders a `null` value as the bare token `null`, unconditionally —
+there is no branch that omits the argument or substitutes a sentinel string. The result, written straight into
+generated Kotlin source, is `ApiResponse(responseCode = null, ...)`.
+
+**This is very likely a compile break, not merely lost information — high-confidence-unverified, not established.**
+`io.swagger.v3.oas.annotations.responses.ApiResponse.responseCode()` is declared as a non-nullable `String` annotation
+element (with a non-null default, `"default"`), and neither the Kotlin nor the Java annotation-argument grammar
+permits assigning `null` to a non-nullable-typed element — so every generated `ResponsesApi.kt` containing this
+pattern almost certainly fails to compile. Secondary to the compile break: `default`, `2XX`, `4XX` and `5XX` all
+collapse to the identical `responseCode = null`, so even if this somehow compiled, the four are indistinguishable
+from each other and from a genuine `default` in the emitted annotation. **Neither the phase 2b task 7 worker nor its
+reviewer compiled the affected file** — this repo has no Kotlin compilation step in its test suite (see the register's
+introduction), so the committed snapshot is the only record of this pattern; the compile-break claim rests on the
+swagger-annotations contract and the generator/AST source, not on a compiler run.
+
+Affected files (all four `spring-controllers` profiles, since `springBootVersion` and `strictResponseEntities` do not
+touch this code path):
+
+- `test/output/kotlin/spring-controllers@sb3/v3/response-variants/com/openapi/generated/api/ResponsesApi.kt:51,62,96-98,112-113`
+- `test/output/kotlin/spring-controllers@sb3-strict/v3/response-variants/com/openapi/generated/api/ResponsesApi.kt:54,65,99-101,115-116`
+- `test/output/kotlin/spring-controllers@sb4/v3/response-variants/com/openapi/generated/api/ResponsesApi.kt:51,62,96-98,112-113`
+- `test/output/kotlin/spring-controllers@sb4-strict/v3/response-variants/com/openapi/generated/api/ResponsesApi.kt:54,65,99-101,115-116`
+
+(the `-strict` variants carry one extra annotation argument per response and so are shifted a few lines relative to
+the plain variants; the pattern and site count are otherwise identical.)
+
+Pinned by `v3/response-variants` — specifically `successAndDefault` (`default` alongside `200`), `onlyDefault`
+(`default` alone), `rangeCodes` (`2XX`/`4XX`/`5XX` alone) and `mixedExactAndRange` (`200` + `2XX` + `default`
+together). Not fixed here — this phase records defects rather than fixing them. A fix needs to decide what a
+range-coded or `default` response's `responseCode` should read as (Swagger/OpenAPI tooling elsewhere typically uses
+the literal string `"default"` for the default response and has no standard representation for a range code in this
+particular annotation field); that decision, plus verifying the fix actually compiles, belongs to whichever batch
+picks this up.
+
 ### Also registered, not scheduled
 
 Small, verified, and each needing either a decision or a home:
