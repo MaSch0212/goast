@@ -29,7 +29,7 @@ webhooks:
       responses:
         '200':
           description: The webhook was received.
-  pets:
+  petsRequested:
     get:
       operationId: listPets
       responses:
