@@ -32,17 +32,20 @@ const units = enabled ? await discoverCompileUnits(profiles, specs) : [];
 
 const hostTsUnits = units.filter((u) => u.language === 'typescript' && HOST_TS_PROFILES.has(u.profile));
 
+/** TypeScript profiles that pull in npm packages, so they are checked in the `node` container. */
+const CONTAINER_TS_PROFILES = ['angular-services', 'k6-clients', 'easy-network-stub'] as const;
+
 /**
  * Compiles once per group, then asserts once per unit.
  *
  * The compile step is its own `it` so that a build failure is reported as one failure naming the
  * group, rather than as the same error repeated by every unit in it.
  *
- * Guarded by `enabled` too, and not just the empty `hostTsUnits` array: with `enabled` false the
- * `describe` call below would still register one passing "compiles every host TypeScript unit" test
- * (trivially, over zero units), which is exactly the "782 ignored steps" this file exists to avoid —
- * a registered-and-passing test is not the same as no test, so the opt-in guard needs the whole
- * `describe` to not run at all.
+ * Both the host group and the per-profile container groups live under one `enabled` guard, not just the
+ * empty `hostTsUnits`/`CONTAINER_TS_PROFILES` filters: with `enabled` false a `describe` call still
+ * registers one passing "compiles every ... unit" test (trivially, over zero units), which is exactly
+ * the "782 ignored steps" this file exists to avoid — a registered-and-passing test is not the same as
+ * no test, so the opt-in guard needs every `describe` call to not run at all.
  */
 if (enabled) {
   describe('typescript/host (deno check)', () => {
@@ -58,18 +61,7 @@ if (enabled) {
       });
     }
   });
-}
 
-/** TypeScript profiles that pull in npm packages, so they are checked in the `node` container. */
-const CONTAINER_TS_PROFILES = ['angular-services', 'k6-clients', 'easy-network-stub'] as const;
-
-/**
- * Same shape as the host group above, one `describe` per profile so a build failure in one profile
- * doesn't stop the others from running. Guarded by `enabled` for the same reason as the host group: an
- * empty `CONTAINER_TS_PROFILES` filter still leaves `describe` itself registering a trivially-passing
- * "compiles every unit" test when `enabled` is false, which the opt-in guard must prevent outright.
- */
-if (enabled) {
   for (const profile of CONTAINER_TS_PROFILES) {
     const profileUnits = units.filter((u) => u.language === 'typescript' && u.profile === profile);
 

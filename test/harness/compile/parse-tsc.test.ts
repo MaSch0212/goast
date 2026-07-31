@@ -44,7 +44,86 @@ describe('parseTscDiagnostics', () => {
 
   it('parses the captured fixture, so a tsc upgrade that changes the format fails here first', async () => {
     const fixture = await Deno.readTextFile(new URL('../fixtures/tsc-errors.txt', import.meta.url));
-    const diagnostics = parseTscDiagnostics(fixture);
-    expect(diagnostics.length).toBeGreaterThan(0);
+
+    // Captured from a real `check.mjs` run over `angular-services/v3/non-ascii-names`, with the whole
+    // profile (not just the one unit) mounted at `/tree` — the same shape `runTsc` itself produces, so
+    // the file's path carries the `v3/non-ascii-names/...` prefix a lone-unit mount would not have shown.
+    // An exact `toEqual` (not just "some diagnostics came out") is what makes a partial format drift —
+    // say, the code losing its digits, or a column shifting by one — fail here instead of silently
+    // reshaping a committed snapshot.
+    expect(parseTscDiagnostics(fixture)).toEqual([
+      {
+        file: 'v3/non-ascii-names/models/.ts',
+        line: 1,
+        column: 14,
+        message: "TS1005 '{' expected.",
+      },
+      {
+        file: 'v3/non-ascii-names/models/.ts',
+        line: 2,
+        column: 5,
+        message: "TS2304 Cannot find name 'value'.",
+      },
+      {
+        file: 'v3/non-ascii-names/models/.ts',
+        line: 2,
+        column: 11,
+        message: 'TS1109 Expression expected.',
+      },
+      {
+        file: 'v3/non-ascii-names/models/.ts',
+        line: 2,
+        column: 13,
+        message: "TS2693 'string' only refers to a type, but is being used as a value here.",
+      },
+      {
+        file: 'v3/non-ascii-names/models/_1.ts',
+        line: 1,
+        column: 14,
+        message: "TS1005 '{' expected.",
+      },
+      {
+        file: 'v3/non-ascii-names/models/_1.ts',
+        line: 2,
+        column: 5,
+        message: "TS2304 Cannot find name 'value'.",
+      },
+      {
+        file: 'v3/non-ascii-names/models/_1.ts',
+        line: 2,
+        column: 11,
+        message: 'TS1109 Expression expected.',
+      },
+      {
+        file: 'v3/non-ascii-names/models/_1.ts',
+        line: 2,
+        column: 13,
+        message: "TS2693 'string' only refers to a type, but is being used as a value here.",
+      },
+      {
+        file: 'v3/non-ascii-names/models/_2.ts',
+        line: 1,
+        column: 14,
+        message: "TS1005 '{' expected.",
+      },
+      {
+        file: 'v3/non-ascii-names/models/_2.ts',
+        line: 2,
+        column: 5,
+        message: "TS2304 Cannot find name 'value'.",
+      },
+      {
+        file: 'v3/non-ascii-names/models/_2.ts',
+        line: 2,
+        column: 11,
+        message: 'TS1109 Expression expected.',
+      },
+      {
+        file: 'v3/non-ascii-names/models/_2.ts',
+        line: 2,
+        column: 13,
+        message: "TS2693 'string' only refers to a type, but is being used as a value here.",
+      },
+    ]);
   });
 });
