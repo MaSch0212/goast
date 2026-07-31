@@ -110,8 +110,13 @@ function isWindowsDrivePath(path: string): boolean {
  * matched that host, and a later, differently-hosted comparison disagreed on it. Parsing manually here
  * keeps the conversion itself independent of which OS is running it, which is what lets a single test
  * process exercise both the Windows-drive and the POSIX branch and confirm they agree.
+ *
+ * Exported for {@link parseKotlinDiagnostics} in `parse-kotlin.ts`, which needs the identical
+ * conversion for the `file:///path:line:col` diagnostics Kotlin itself emits: `node:url`'s
+ * `fileURLToPath` is the wrong tool there for exactly the reason above, verified directly — it throws
+ * on this repo's own Windows checkouts for the POSIX-style URLs a Linux-image compiler run produces.
  */
-function decodeFileUrl(url: string): string | undefined {
+export function decodeFileUrl(url: string): string | undefined {
   let parsed: URL;
   try {
     parsed = new URL(url);

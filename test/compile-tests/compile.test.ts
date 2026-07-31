@@ -12,6 +12,7 @@ import {
 import { profiles } from '../output-tests/profiles.ts';
 import { compileRootDir } from './paths.ts';
 import { runDenoCheck } from './runners/deno-check.ts';
+import { runKotlin } from './runners/kotlin.ts';
 import { runTsc } from './runners/tsc.ts';
 
 /**
@@ -79,6 +80,27 @@ if (enabled) {
       }
     });
   }
+
+  /** Kotlin profiles gated so far. Task 6 scales this to all ten. */
+  const KOTLIN_PROFILES = ['models@sb3'] as const;
+
+  const kotlinUnits = units.filter((u) =>
+    u.language === 'kotlin' && (KOTLIN_PROFILES as readonly string[]).includes(u.profile)
+  );
+
+  describe('kotlin (gradle)', () => {
+    let results: Map<string, Diagnostic[]> | undefined;
+
+    it('compiles every Kotlin unit', async () => {
+      results = await runKotlin(kotlinUnits);
+    });
+
+    for (const unit of kotlinUnits) {
+      it(unit.id, async () => {
+        await verifyUnit(unit, results);
+      });
+    }
+  });
 }
 
 async function verifyUnit(unit: CompileUnit, results: Map<string, Diagnostic[]> | undefined): Promise<void> {
