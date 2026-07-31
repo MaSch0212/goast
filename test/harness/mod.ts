@@ -1,3 +1,4 @@
+export * from './compile/mod.ts';
 export * from './declutter.ts';
 export * from './paths.ts';
 export * from './snapshot/mod.ts';
