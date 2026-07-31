@@ -86,9 +86,17 @@ describe('parseDenoCheckDiagnostics', () => {
     const fixture = await Deno.readTextFile(
       new URL('../fixtures/deno-check-errors.txt', import.meta.url),
     );
-    const diagnostics = parseDenoCheckDiagnostics(fixture);
 
-    expect(diagnostics.length).toBeGreaterThan(0);
-    for (const diagnostic of diagnostics) expect(diagnostic.message).not.toBe('');
+    // `toEqual` here, not just a shape check: the hand-written cases above pin `error: TS2322 [ERROR]:`,
+    // a shape real Deno 2.6.8 does not actually produce (see `ERROR_LINE`'s doc comment) — the fixture
+    // is the only case in this file pinning what a real run looks like, so it needs to assert the real
+    // parsed value, not merely that parsing produced *something*.
+    const FIXTURE_URL = 'file:///C:/repo/test/output/typescript/models/v3/extreme-names/models.ts';
+    expect(parseDenoCheckDiagnostics(fixture)).toEqual([{
+      file: fileURLToPath(FIXTURE_URL),
+      line: 1,
+      column: 23,
+      message: `TS2307 Import "<output>/models/.ts" not a dependency and not in import map from "${FIXTURE_URL}"`,
+    }]);
   });
 });

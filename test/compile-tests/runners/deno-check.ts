@@ -2,6 +2,7 @@ import { join } from 'node:path';
 
 import { type CompileUnit, type Diagnostic, relativizeDiagnostic } from '@goast/test-harness';
 import { parseDenoCheckDiagnostics } from '../../harness/compile/parse-deno-check.ts';
+import { normalizeMessageUrls } from './normalize-message-urls.ts';
 
 /**
  * Barrel files a unit is checked through. Every one that exists is passed to the same `deno check`
@@ -60,7 +61,8 @@ export async function runDenoCheck(units: readonly CompileUnit[]): Promise<Map<s
     const output = new TextDecoder().decode(stdout) + new TextDecoder().decode(stderr);
 
     const diagnostics = parseDenoCheckDiagnostics(output)
-      .map((diagnostic) => relativizeDiagnostic(diagnostic, unit.treeDir));
+      .map((diagnostic) => relativizeDiagnostic(diagnostic, unit.treeDir))
+      .map((diagnostic) => ({ ...diagnostic, message: normalizeMessageUrls(diagnostic.message, unit.treeDir) }));
 
     if (code !== 0 && diagnostics.length === 0) {
       throw new Error(

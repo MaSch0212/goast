@@ -1,5 +1,5 @@
 Check test/output/typescript/models/v3/extreme-names/models.ts
-TS2307 [ERROR]: Import "<output>/models/.ts" not a dependency and not in import map from "file:///E:/MaSch0212/goast/test/output/typescript/models/v3/extreme-names/models.ts"
-    at file:///E:/MaSch0212/goast/test/output/typescript/models/v3/extreme-names/models.ts:1:23
+TS2307 [ERROR]: Import "<output>/models/.ts" not a dependency and not in import map from "file:///C:/repo/test/output/typescript/models/v3/extreme-names/models.ts"
+    at file:///C:/repo/test/output/typescript/models/v3/extreme-names/models.ts:1:23
 
 error: Type checking failed.
