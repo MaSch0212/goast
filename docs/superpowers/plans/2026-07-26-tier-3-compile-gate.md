@@ -29,8 +29,13 @@ commits its errors.
 - One commit per task.
 - **Never run bare `deno task test`** while working on this plan. It runs the tier-2 output tests in *write* mode (which
   is intended for the everyday loop, see Task 7) and would rewrite committed snapshots, masking exactly what you are
-  measuring. Use `deno test -A packages test/harness` for unit tests and
+  measuring. Use `deno test -A packages/core packages/kotlin packages/typescript test/harness` for unit tests and
   `GOAST_SNAPSHOT=check deno test -A test/output-tests` for tier 2.
+- **Name the workspace members individually in that command; do not shorten it to `deno test -A packages test/harness`.**
+  Measured during Task 1: a directory argument spanning several workspace members runs each member's tests once per
+  member, so `deno test -A packages` reports 309 tests for the 103 that exist and takes 52s. The member-explicit form
+  reports the true 128 (42 core + 27 kotlin + 34 typescript + 25 harness) in 17s. A tripled count is not just slow — it
+  makes a before/after comparison meaningless, which is what the gate is for.
 
 ## Design decisions
 
@@ -728,7 +733,7 @@ export * from './compile/mod.ts';
 ```bash
 deno fmt --check
 deno lint
-deno test -A packages test/harness
+deno test -A packages/core packages/kotlin packages/typescript test/harness
 ```
 
 Expected: all pass. `git diff --stat -- test/output test/specs` must be empty.
@@ -1462,7 +1467,7 @@ Add `export * from './docker.ts';` to `test/harness/mod.ts` in alphabetical posi
 ```bash
 deno fmt --check
 deno lint
-deno test -A packages test/harness
+deno test -A packages/core packages/kotlin packages/typescript test/harness
 git add test/harness
 git commit -m "test(harness): add the Docker layer for tiers 3 and 4"
 ```
@@ -1881,7 +1886,7 @@ nowhere in the register as a new discovery.**
 - [ ] **Step 11: Commit**
 
 ```bash
-deno fmt --check && deno lint && deno test -A packages test/harness
+deno fmt --check && deno lint && deno test -A packages/core packages/kotlin packages/typescript test/harness
 git add test/docker test/harness test/compile-tests test/compile
 git commit -m "test(compile): gate angular, k6 and easy-network-stub with tsc in Docker"
 ```
@@ -2460,7 +2465,7 @@ decides Task 6's approach.
 
 ```bash
 GOAST_COMPILE=1 GOAST_SNAPSHOT=check deno test -A test/compile-tests
-deno fmt --check && deno lint && deno test -A packages test/harness
+deno fmt --check && deno lint && deno test -A packages/core packages/kotlin packages/typescript test/harness
 git add test/docker test/harness test/compile-tests test/compile
 git commit -m "test(compile): gate kotlin models@sb3 with a synthesized Gradle build"
 ```
@@ -2671,7 +2676,7 @@ Add a `## Tier 3: compile gate` section after the tier-2 material, matching the 
 - [ ] **Step 7: Commit**
 
 ```bash
-deno fmt --check && deno lint && deno test -A packages test/harness
+deno fmt --check && deno lint && deno test -A packages/core packages/kotlin packages/typescript test/harness
 git add deno.json .gitattributes test/README.md test/compile-tests
 git commit -m "test(compile): wire the tier-3 tasks, orphan sweep, and docs"
 ```
