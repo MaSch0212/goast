@@ -4,6 +4,7 @@ import {
   buildImage,
   type CompileUnit,
   type Diagnostic,
+  normalizeMessageUrls,
   relativizeDiagnostic,
   repoRootDir,
   runContainer,
@@ -13,7 +14,6 @@ import { parseKotlinDiagnostics } from '../../harness/compile/parse-kotlin.ts';
 const CONTEXT_DIR = join(repoRootDir, 'test', 'docker', 'kotlin');
 const TREE_MOUNT = '/output';
 const WORK_MOUNT = '/work';
-const GRADLE_VOLUME = 'goast-gradle-cache';
 
 /** Dependency lines per profile family, keyed by the profile name's prefix before `@`. */
 const DEPENDENCIES: Record<string, string[]> = {
@@ -43,12 +43,29 @@ const DEPENDENCIES: Record<string, string[]> = {
     'add("implementation", "com.fasterxml.jackson.core:jackson-annotations:2.18.2")',
     'add("implementation", "org.springframework:spring-webflux")',
     'add("implementation", "io.projectreactor:reactor-core")',
-    'add("implementation", "org.jetbrains.kotlinx:kotlinx-coroutines-reactor")',
+    // Verified directly against the real `spring-reactive-web-clients@sb3`/`@sb4` corpus: it imports
+    // `jakarta.validation.Valid`/`jakarta.validation.constraints.Min`, the identical omission Task 5
+    // found and fixed for `models`. It does **not** import anything from `kotlinx.*` — its
+    // `awaitBody`/`awaitExchange`/`awaitBodilessEntity` calls are Spring WebFlux's own Kotlin coroutine
+    // extension functions (`org.springframework.web.reactive.function.client.*`, shipped inside
+    // `spring-webflux` itself since Spring 5.2), not `kotlinx-coroutines-reactor`'s `mono {}`/`flux {}`
+    // builders — so that coordinate (present in the plan's original table) is dropped here as unused,
+    // confirmed by `grep -rl kotlinx test/output/kotlin/spring-reactive-web-clients@sb{3,4}` finding
+    // zero files.
+    'add("implementation", "jakarta.validation:jakarta.validation-api")',
   ],
   'okhttp3-clients': [
     'add("implementation", "io.swagger.core.v3:swagger-annotations:2.2.30")',
     'add("implementation", "com.squareup.okhttp3:okhttp:4.12.0")',
     'add("implementation", "com.fasterxml.jackson.module:jackson-module-kotlin")',
+    // Verified directly: `okhttp3-clients@sb3`/`@sb4` import both `jakarta.validation.Valid` and
+    // `jakarta.validation.constraints.Min`, the same omission as `models` and
+    // `spring-reactive-web-clients` above. Unlike `kotlinx-coroutines-reactor` above,
+    // `jackson-module-kotlin` itself is genuinely used here (`jacksonObjectMapper()` is called directly,
+    // confirmed by grep) — the warm-cache gap it exposed (`kotlin-stdlib-common:2.2.0`, see
+    // `warmup/build.gradle.kts`) is fixed by adding the missing coordinate to the warmup, not by removing
+    // this dependency.
+    'add("implementation", "jakarta.validation:jakarta.validation-api")',
   ],
 };
 
@@ -58,18 +75,36 @@ const BOM: Record<'sb3' | 'sb4', string> = {
 };
 
 /**
- * Gradle's own per-task status line for a `compileKotlin` task that had zero source files to compile:
- * `> Task :u0001:compileKotlin NO-SOURCE`.
+ * Gradle's own per-task status line for a `compileKotlin` task: `> Task :u0001:compileKotlin
+ * <SUFFIX>` where `<SUFFIX>` is `NO-SOURCE`, `UP-TO-DATE`, `FROM-CACHE`, `SKIPPED`, `FAILED`, or empty (a
+ * task that actually executed and printed output — Gradle does not print an explicit "success" suffix).
  *
- * This is this task's equivalent of `runTsc`'s `##GOAST-ROOT##` coverage check. Verified directly with
- * a spike subproject deliberately pointed at a nonexistent `srcDir`: the task state is `NO-SOURCE`, the
- * task exits successfully, and — critically — a `doFirst` block added to the task **never runs**, so a
- * build-script-side source-count marker (the first approach tried here) cannot observe this case at
- * all; only Gradle's own console line does. A unit whose tree path is wrong for any reason (a typo in
- * `synthesizeGradleBuild`, a unit whose corpus directory holds no `.kt` files) would otherwise compile
- * trivially and report nothing, indistinguishable from a genuinely clean unit.
+ * Matches the **general** form, not one fixed suffix, because the bare header alone is not a reliable
+ * "this task ran" signal on its own: verified directly with a 44-subproject fault-injection run (one
+ * subproject given an unresolvable dependency, mirroring a real offline-resolution failure), some failing
+ * tasks print *only* their `FAILED` line — no separate bare header ever appears for them anywhere in the
+ * log, unlike a task that fails after already printing diagnostic output. Matching
+ * `compileKotlin(.*)` and reading whatever trails it — including nothing — is what makes the "did this
+ * project's task run at all" check below reliable regardless of which of these shapes a given task
+ * produced.
+ *
+ * This line is also this task's equivalent of `runTsc`'s `##GOAST-ROOT##` coverage check, for the
+ * `NO-SOURCE` suffix specifically: verified directly with a spike subproject deliberately pointed at a
+ * nonexistent `srcDir`, the task state is `NO-SOURCE`, the task exits successfully, and — critically — a
+ * `doFirst` block added to the task **never runs**, so a build-script-side source-count marker (the first
+ * approach tried here) cannot observe this case at all; only Gradle's own console line does. A unit whose
+ * tree path is wrong for any reason (a typo in `synthesizeGradleBuild`, a unit whose corpus directory
+ * holds no `.kt` files) would otherwise compile trivially and report nothing, indistinguishable from a
+ * genuinely clean unit.
+ *
+ * `NO-SOURCE` only proves a unit's `srcDir` resolved to a non-empty directory — it does not by itself
+ * prove the unit's sources actually finished compiling. That is what the `FAILED`-suffix check below is
+ * for: a task can print neither `NO-SOURCE` nor any `e:` diagnostic and still have failed outright (an
+ * offline dependency-resolution error, a worker crash, an OOM), which would otherwise be recorded as a
+ * clean unit purely because the vacuous-green guard only looks at the *whole build's* diagnostic count,
+ * not each task's own outcome.
  */
-const NO_SOURCE = /^> Task :(u\d+):compileKotlin NO-SOURCE$/;
+const TASK_LINE = /^> Task :(u\d+):compileKotlin(.*)$/;
 
 /**
  * Generates the settings and root build script for a one-subproject-per-unit Gradle build.
@@ -162,13 +197,21 @@ export async function runKotlin(units: readonly CompileUnit[]): Promise<Map<stri
     await Deno.writeTextFile(join(workDir, 'settings.gradle.kts'), settings);
     await Deno.writeTextFile(join(workDir, 'build.gradle.kts'), build);
 
+    // No named volume over `GRADLE_USER_HOME`: `--offline` never downloads anything at run time, so a
+    // persistent cache volume cannot accumulate value across runs — it can only go stale. Verified
+    // directly, and load-bearing: Docker seeds a named volume from the image layer's own directory
+    // content only the *first* time that (empty) volume is mounted; once seeded, rebuilding the image
+    // with a changed warmup (a new content-hash tag) does not refresh it. Two stale `goast-test-kotlin`
+    // tags and one `goast-gradle-cache` volume coexisting is exactly how a fixed-name volume would hide a
+    // warmup fix behind a cache that never gets invalidated. Every measurement in this file's own doc
+    // comments was re-confirmed with no volume mounted at all — same result, no slower — so there is
+    // nothing to keep it for.
     const { code, stdout, stderr, timedOut } = await runContainer({
       image,
       mounts: [
         { source: join(repoRootDir, 'test', 'output'), target: TREE_MOUNT, readOnly: true },
         { source: workDir, target: WORK_MOUNT },
       ],
-      volumes: [{ name: GRADLE_VOLUME, target: '/home/gradle/.gradle' }],
       workdir: WORK_MOUNT,
       timeoutMs: 30 * 60 * 1000,
     });
@@ -184,15 +227,37 @@ export async function runKotlin(units: readonly CompileUnit[]): Promise<Map<stri
     }
 
     const output = stdout + stderr;
-
-    // See NO_SOURCE's doc comment: a unit whose `srcDir` is broken compiles trivially and reports
-    // nothing, which is indistinguishable from a genuinely clean unit without this check.
     const unitIdByProjectId = new Map([...projectIds.entries()].map(([unitId, projectId]) => [projectId, unitId]));
-    const uncovered: string[] = [];
+
+    // Every project's `compileKotlin` task line, whatever its suffix (including none). See TASK_LINE's
+    // doc comment for why the general form is required and the bare header alone is not enough.
+    const printedProjectIds = new Set<string>();
+    const noSourceProjectIds = new Set<string>();
+    const failedProjectIds = new Set<string>();
     for (const line of output.split('\n')) {
-      const match = NO_SOURCE.exec(line.trimEnd());
-      if (match !== null) uncovered.push(unitIdByProjectId.get(match[1]) ?? match[1]);
+      const match = TASK_LINE.exec(line.trimEnd());
+      if (match === null) continue;
+      printedProjectIds.add(match[1]);
+      const suffix = match[2].trim();
+      if (suffix === 'NO-SOURCE') noSourceProjectIds.add(match[1]);
+      if (suffix === 'FAILED') failedProjectIds.add(match[1]);
     }
+
+    // A unit whose project never printed a `compileKotlin` line at all: Gradle never reached it (a
+    // whole-build configuration failure, a crash before the task graph ran). Its result cannot be trusted
+    // either way.
+    const missingStatus = units.filter((unit) => !printedProjectIds.has(projectIds.get(unit.id)!));
+    if (missingStatus.length > 0) {
+      throw new Error(
+        `${missingStatus.length} unit(s) never printed a compileKotlin status line at all: ` +
+          `${missingStatus.map((u) => u.id).join(', ')}. Gradle may not have reached them; their result ` +
+          `cannot be trusted either way.\n\n${output}`,
+      );
+    }
+
+    // See TASK_LINE's doc comment: a unit whose `srcDir` is broken compiles trivially and reports
+    // nothing, which is indistinguishable from a genuinely clean unit without this check.
+    const uncovered = [...noSourceProjectIds].map((projectId) => unitIdByProjectId.get(projectId) ?? projectId);
     if (uncovered.length > 0) {
       throw new Error(
         `${uncovered.length} unit(s) contributed no source files to their Gradle compilation ` +
@@ -219,7 +284,27 @@ export async function runKotlin(units: readonly CompileUnit[]): Promise<Map<stri
         );
       }
       const treeDir = `${TREE_MOUNT}/kotlin/${unit.profile}/${unit.versionDir}/${unit.spec}`;
-      results.get(unit.id)!.push(relativizeDiagnostic(diagnostic, treeDir));
+      results.get(unit.id)!.push({
+        ...relativizeDiagnostic(diagnostic, treeDir),
+        message: normalizeMessageUrls(diagnostic.message, treeDir),
+      });
+    }
+
+    // A project whose task line says `FAILED` but which owns zero attributed diagnostics: the build
+    // failed for that unit for a reason that never produced an `e:` line (an offline dependency
+    // resolution error, a worker crash, an OOM — see TASK_LINE's doc comment). Without this check that
+    // unit's empty diagnostic list is indistinguishable from a genuine pass, and `verifyCompileDiagnostics`
+    // would record it clean.
+    const failedWithoutDiagnostics = [...failedProjectIds]
+      .map((projectId) => unitIdByProjectId.get(projectId))
+      .filter((unitId): unitId is string => unitId !== undefined && results.get(unitId)!.length === 0);
+    if (failedWithoutDiagnostics.length > 0) {
+      throw new Error(
+        `${failedWithoutDiagnostics.length} unit(s) FAILED to compile but produced no attributable ` +
+          `diagnostic: ${failedWithoutDiagnostics.join(', ')}. This usually means an offline dependency ` +
+          'resolution failure, a worker crash, or an OOM — the unit cannot be recorded as clean.\n\n' +
+          output,
+      );
     }
 
     return results;

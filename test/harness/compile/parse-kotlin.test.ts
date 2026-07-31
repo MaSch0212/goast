@@ -30,6 +30,34 @@ describe('parseKotlinDiagnostics', () => {
 
   it('parses the captured fixture, so a Kotlin upgrade that changes the format fails here first', async () => {
     const fixture = await Deno.readTextFile(new URL('../fixtures/kotlin-errors.txt', import.meta.url));
-    expect(parseKotlinDiagnostics(fixture).length).toBeGreaterThan(0);
+    // Asserts the full parsed array, not just its length: a length-only check would still pass if a
+    // format drift silently dropped one diagnostic's position or corrupted its message while another
+    // still parsed, which is exactly the kind of partial breakage a format change could cause.
+    expect(parseKotlinDiagnostics(fixture)).toEqual([
+      {
+        file: '/output/kotlin/models@sb3/v3/extreme-names/com/openapi/generated/model/.kt',
+        line: 6,
+        column: 11,
+        message: 'Syntax error: Name expected.',
+      },
+      {
+        file: '/output/kotlin/models@sb3/v3/extreme-names/com/openapi/generated/model/A.kt',
+        line: 6,
+        column: 12,
+        message: 'Redeclaration:',
+      },
+      {
+        file: '/output/kotlin/models@sb3/v3/extreme-names/com/openapi/generated/model/A_1.kt',
+        line: 6,
+        column: 12,
+        message: 'Redeclaration:',
+      },
+      {
+        file: '/output/kotlin/models@sb3/v3/extreme-names/com/openapi/generated/model/ObjectWithExtremeProperties.kt',
+        line: 20,
+        column: 8,
+        message: 'Syntax error: Parameter name expected.',
+      },
+    ]);
   });
 });

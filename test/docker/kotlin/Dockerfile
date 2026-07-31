@@ -4,7 +4,6 @@ FROM gradle:8.14-jdk21
 # the synthesized build never invalidates it.
 WORKDIR /opt/warmup
 COPY warmup/ ./
-COPY versions.gradle.kts /opt/goast/versions.gradle.kts
 RUN gradle --no-daemon warm && rm -rf /opt/warmup
 
 # GRADLE_USER_HOME holds the cache the layer above populated. The synthesized build is mounted at
