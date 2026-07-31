@@ -10,6 +10,31 @@ import { buildImage, dockerRunArgs, hashBuildContext, imageTag, requireDocker, r
 // Docker-free.
 const hasDocker = await requireDocker().then(() => true).catch(() => false);
 
+/**
+ * Builds (or, after the first call, reuses via the inspect-skip path) the trivial image shared by
+ * the `buildImage`/`runContainer` tests below. The build context is a temp dir that's removed once
+ * the image exists; only the resulting tag is needed afterward.
+ */
+async function buildSmokeImage(): Promise<string> {
+  const dir = await Deno.makeTempDir();
+  try {
+    await Deno.writeTextFile(join(dir, 'Dockerfile'), 'FROM alpine:3.20\n');
+    return await buildImage('docker-smoke', dir);
+  } finally {
+    await Deno.remove(dir, { recursive: true });
+  }
+}
+
+/** `docker ps -a --filter name=<name>` reports nothing once the daemon has removed the container. */
+async function containerExists(name: string): Promise<boolean> {
+  const { stdout } = await new Deno.Command('docker', {
+    args: ['ps', '-a', '--filter', `name=${name}`, '--format', '{{.Names}}'],
+    stdout: 'piped',
+    stderr: 'null',
+  }).output();
+  return new TextDecoder().decode(stdout).trim() !== '';
+}
+
 describe('dockerRunArgs', () => {
   it('always removes the container, so a failed run leaves nothing behind', () => {
     expect(dockerRunArgs({ image: 'img' })).toEqual(['run', '--rm', 'img']);
@@ -115,8 +140,7 @@ describe('requireDocker', () => {
 
 describe('buildImage and runContainer', () => {
   // Real coverage when Docker is present, silent skip otherwise — the shape that keeps tiers 1
-  // and 2 (and a Docker-less run of this file) Docker-free. A timeout assertion is intentionally
-  // omitted: it would need a real sleep to be reliable, which is slow and flaky.
+  // and 2 (and a Docker-less run of this file) Docker-free.
   it('builds a trivial image, runs commands in it, and skips a rebuild of the same context', {
     ignore: !hasDocker,
   }, async () => {
@@ -150,4 +174,43 @@ describe('buildImage and runContainer', () => {
       await Deno.remove(dir, { recursive: true });
     }
   });
+
+  // A container running well past its timeout must be killed through the daemon, not just have its
+  // local CLI client disconnected — that's the whole point of naming it. 3000ms is comfortably above
+  // container start latency (well under a second for a cached alpine image) but far below the 60s
+  // sleep, so the run can only complete this quickly by having been killed.
+  it('kills a timed-out container through the daemon, leaving none behind', {
+    ignore: !hasDocker,
+  }, async () => {
+    const tag = await buildSmokeImage();
+    const name = `goast-test-timeout-${crypto.randomUUID().slice(0, 8)}`;
+
+    const started = performance.now();
+    const result = await runContainer({
+      image: tag,
+      args: ['sh', '-c', 'sleep 60'],
+      name,
+      timeoutMs: 3000,
+    });
+    const elapsedMs = performance.now() - started;
+
+    // The run must return at all (pre-fix, killing only the client could leave `process.output()`
+    // unresolved) and it must return quickly — nowhere near the 60s sleep.
+    expect(elapsedMs).toBeLessThan(30_000);
+    expect(result.timedOut).toBe(true);
+
+    // The actual point: the container must be gone, not merely disconnected-from. `AutoRemove` fires
+    // once the daemon has stopped the container, which is normally immediate; poll briefly instead of
+    // sleeping a fixed amount in case it needs a moment.
+    const deadline = Date.now() + 5000;
+    let gone = !(await containerExists(name));
+    while (!gone && Date.now() < deadline) {
+      await new Promise((resolve) => setTimeout(resolve, 200));
+      gone = !(await containerExists(name));
+    }
+    expect(gone).toBe(true);
+  });
+
+  // A normal (non-timeout) non-zero exit reporting `timedOut === false` is already covered by the
+  // `failing` case in the test above; not duplicated here.
 });
