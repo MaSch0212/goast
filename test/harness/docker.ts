@@ -17,9 +17,15 @@ export type RunContainerOptions = {
   workdir?: string;
   /** Defaults to 15 minutes. The container is killed when it expires. */
   timeoutMs?: number;
+  /**
+   * Explicit container name, so a timed-out run can be found and killed through the daemon rather
+   * than only through its (unresponsive) `docker` CLI client. `runContainer` generates one when
+   * omitted.
+   */
+  name?: string;
 };
 
-export type ContainerResult = { code: number; stdout: string; stderr: string };
+export type ContainerResult = { code: number; stdout: string; stderr: string; timedOut: boolean };
 
 const DEFAULT_TIMEOUT_MS = 15 * 60 * 1000;
 
@@ -51,11 +57,25 @@ function normalizeMountPath(path: string): string {
   return path.replace(/\\/g, '/');
 }
 
+/**
+ * `--mount` is a comma-delimited spec, so a comma in a path would silently split into extra fields
+ * instead of failing loudly.
+ */
+function assertNoComma(value: string, description: string): void {
+  if (value.includes(',')) {
+    throw new Error(`Docker mount ${description} must not contain a comma: ${value}`);
+  }
+}
+
 /** The `docker run` argv, split out from {@link runContainer} so it can be asserted directly. */
 export function dockerRunArgs(options: RunContainerOptions): string[] {
   const args = ['run', '--rm'];
 
+  if (options.name !== undefined) args.push('--name', options.name);
+
   for (const mount of options.mounts ?? []) {
+    assertNoComma(mount.source, 'source');
+    assertNoComma(mount.target, 'target');
     const spec = `type=bind,source=${normalizeMountPath(mount.source)},target=${mount.target}` +
       (mount.readOnly === true ? ',readonly' : '');
     args.push('--mount', spec);
@@ -135,22 +155,44 @@ export async function buildImage(name: string, contextDir: string): Promise<stri
   return tag;
 }
 
-/** Runs a container to completion, killing it if `timeoutMs` expires. */
+/**
+ * Runs a container to completion, killing it if `timeoutMs` expires.
+ *
+ * The container is always named, either explicitly or with a generated name, and the timeout path
+ * kills it through the daemon (`docker kill <name>`) rather than only the local `docker` CLI client.
+ * `--rm` only triggers the daemon's auto-remove once the container actually stops; killing just the
+ * client (which is not `docker run`'s signal-proxying target) leaves the container running and
+ * unremoved on the host.
+ */
 export async function runContainer(options: RunContainerOptions): Promise<ContainerResult> {
   await requireDocker();
 
+  const name = options.name ?? `goast-test-${crypto.randomUUID()}`;
   const process = new Deno.Command('docker', {
-    args: dockerRunArgs(options),
+    args: dockerRunArgs({ ...options, name }),
     stdout: 'piped',
     stderr: 'piped',
   }).spawn();
 
+  let timedOut = false;
   const timeout = setTimeout(() => {
-    try {
-      process.kill('SIGKILL');
-    } catch {
-      // Already exited; nothing to kill.
-    }
+    timedOut = true;
+    (async () => {
+      try {
+        await new Deno.Command('docker', {
+          args: ['kill', name],
+          stdout: 'null',
+          stderr: 'null',
+        }).output();
+      } catch {
+        // Best effort; killing the client below still unblocks `process.output()`.
+      }
+      try {
+        process.kill('SIGKILL');
+      } catch {
+        // Already exited; nothing to kill.
+      }
+    })();
   }, options.timeoutMs ?? DEFAULT_TIMEOUT_MS);
 
   try {
@@ -159,6 +201,7 @@ export async function runContainer(options: RunContainerOptions): Promise<Contai
       code,
       stdout: new TextDecoder().decode(stdout),
       stderr: new TextDecoder().decode(stderr),
+      timedOut,
     };
   } finally {
     clearTimeout(timeout);
