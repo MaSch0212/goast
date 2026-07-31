@@ -1,8 +1,7 @@
 import { join } from 'node:path';
 
-import { type CompileUnit, type Diagnostic, relativizeDiagnostic } from '@goast/test-harness';
+import { type CompileUnit, type Diagnostic, normalizeMessageUrls, relativizeDiagnostic } from '@goast/test-harness';
 import { parseDenoCheckDiagnostics } from '../../harness/compile/parse-deno-check.ts';
-import { normalizeMessageUrls } from './normalize-message-urls.ts';
 
 /**
  * Barrel files a unit is checked through. Every one that exists is passed to the same `deno check`
