@@ -66,6 +66,24 @@ reserved-word defect, and name deduplication is a later phase with its own diffs
 `TS2456` — are open-ended design work, and blocking the compile gate behind them would leave the repo with no compile
 coverage for however long they take.
 
+### The gate is opt-in, and the mechanism is not obvious
+
+`deno.json` sets `test.include` to `["packages", "test"]`, so `deno test -A` — which is what `deno task test` runs —
+would discover `test/compile-tests/` and start Docker, breaking the constraint two lines above. Three mechanisms were
+measured before choosing:
+
+- Adding `test/compile-tests` to `test.exclude` **does not work**: an explicit path argument does not override
+  `test.exclude`, so `deno test test/compile-tests` would then find nothing. Verified empirically.
+- Naming the files so bare discovery misses them (`compile-gate.ts` rather than `compile.test.ts`) works only when each
+  file is named individually on the command line — `deno test <dir>` applies the naming convention and finds nothing.
+  Verified empirically. That makes adding a third file a silent no-op, so it is rejected.
+- **Chosen:** the driver reads `GOAST_COMPILE` at module top level and **registers no tests at all** when it is unset.
+  Bare `deno test -A` loads the module, runs nothing, and starts no container. Registering nothing rather than skipping
+  matters: 782 ignored steps in the everyday run would be noise nobody reads.
+
+`test:compile` and `test:compile:check` set `GOAST_COMPILE=1`. Module load still enumerates units, which is filesystem
+work and touches no container.
+
 ### The invariant that keeps the gate honest
 
 **A non-zero compiler exit with zero parsed diagnostics is a harness failure, never a clean unit.** A parser that
@@ -112,6 +130,7 @@ Created:
 | `test/docker/kotlin/Dockerfile`               | JDK + Gradle, dependency cache pre-warmed in a layer                          |
 | `test/docker/kotlin/versions.gradle.kts`      | every dependency coordinate, consumed by both the image and the synthesis     |
 | `test/docker/kotlin/warmup/`                  | the throwaway project the image builds to populate the cache layer            |
+| `test/compile-tests/paths.ts`                  | `compileRootDir`, so no module has to import a `.test.ts` file                 |
 | `test/compile-tests/compile.test.ts`          | the tier-3 driver                                                            |
 | `test/compile-tests/orphans.test.ts`          | orphan sweep over `test/compile/`                                            |
 | `test/compile-tests/runners/deno-check.ts`    | runs `deno check`, returns diagnostics per unit                               |
@@ -973,11 +992,26 @@ export async function runDenoCheck(units: readonly CompileUnit[]): Promise<Map<s
 
 - [ ] **Step 7: Write the driver, host groups only**
 
-Create `test/compile-tests/compile.test.ts`:
+First create `test/compile-tests/paths.ts`, so that no module has to import a `.test.ts` file:
 
 ```ts
 import { join } from 'node:path';
 
+import { repoRootDir } from '@goast/test-harness';
+
+/**
+ * Root of the committed compile diagnostics.
+ *
+ * Deliberately outside `test/output`, which means "written by a generator": mixing in files written by
+ * a compiler would blur that, and tier 2's orphan sweep walks `test/output` and would report every
+ * diagnostics file as an orphan.
+ */
+export const compileRootDir: string = join(repoRootDir, 'test', 'compile');
+```
+
+Then create `test/compile-tests/compile.test.ts`:
+
+```ts
 import { describe, it } from '@std/testing/bdd';
 
 import {
@@ -986,21 +1020,28 @@ import {
   type Diagnostic,
   discoverCompileUnits,
   discoverSpecs,
-  repoRootDir,
   verifyCompileDiagnostics,
 } from '@goast/test-harness';
 
 import { profiles } from '../output-tests/profiles.ts';
+import { compileRootDir } from './paths.ts';
 import { runDenoCheck } from './runners/deno-check.ts';
 
-/** Committed diagnostics live outside `test/output`, which means "written by a generator". */
-export const compileRootDir: string = join(repoRootDir, 'test', 'compile');
+/**
+ * Tier 3 is opt-in, and this guard is what makes it so.
+ *
+ * `deno.json` includes all of `test/` in test discovery, so `deno task test` would otherwise find this
+ * file and start a container — breaking the rule that tiers 1 and 2 never touch Docker. Registering no
+ * tests at all, rather than registering skipped ones, keeps 782 ignored steps out of the everyday run.
+ * `deno task test:compile` sets the variable.
+ */
+const enabled = (Deno.env.get('GOAST_COMPILE') ?? '') !== '';
 
 /** TypeScript profiles that need no npm package, so they are checked on the host. */
 const HOST_TS_PROFILES = new Set(['models', 'fetch-clients']);
 
-const specs = await discoverSpecs();
-const units = await discoverCompileUnits(profiles, specs);
+const specs = enabled ? await discoverSpecs() : [];
+const units = enabled ? await discoverCompileUnits(profiles, specs) : [];
 
 const hostTsUnits = units.filter((u) => u.language === 'typescript' && HOST_TS_PROFILES.has(u.profile));
 
@@ -1037,8 +1078,16 @@ async function verifyUnit(unit: CompileUnit, results: Map<string, Diagnostic[]> 
 - [ ] **Step 8: Run the gate in write mode and read what it found**
 
 ```bash
-GOAST_SNAPSHOT=write deno test -A test/compile-tests
+GOAST_COMPILE=1 GOAST_SNAPSHOT=write deno test -A test/compile-tests
 ```
+
+Then prove the opt-in guard works, which is the constraint it exists to protect:
+
+```bash
+deno test -A test/compile-tests
+```
+
+Expected: `0 passed`, and no container started. Report both results.
 
 Expected: passes, and creates snapshot files under `test/compile/typescript/`. Then look:
 
@@ -1055,7 +1104,7 @@ do not fix it.**
 - [ ] **Step 9: Prove the gate is deterministic and check mode agrees**
 
 ```bash
-GOAST_SNAPSHOT=check deno test -A test/compile-tests
+GOAST_COMPILE=1 GOAST_SNAPSHOT=check deno test -A test/compile-tests
 ```
 
 Expected: passes with no file changes. Then `git status --porcelain test/compile` must show nothing but the untracked
@@ -1068,7 +1117,7 @@ This is a deliberate fault injection, and it is the one test that proves the gat
 break the parser by replacing the body of `parseDenoCheckDiagnostics` with `return [];`, then run:
 
 ```bash
-GOAST_SNAPSHOT=check deno test -A test/compile-tests
+GOAST_COMPILE=1 GOAST_SNAPSHOT=check deno test -A test/compile-tests
 ```
 
 Expected: fails with `but no diagnostics were parsed`. Restore the parser and confirm the suite passes again. Report both
@@ -1820,8 +1869,8 @@ for (const profile of CONTAINER_TS_PROFILES) {
 - [ ] **Step 10: Run in write mode, then check mode, and report what the gate found**
 
 ```bash
-GOAST_SNAPSHOT=write deno test -A test/compile-tests
-GOAST_SNAPSHOT=check deno test -A test/compile-tests
+GOAST_COMPILE=1 GOAST_SNAPSHOT=write deno test -A test/compile-tests
+GOAST_COMPILE=1 GOAST_SNAPSHOT=check deno test -A test/compile-tests
 ```
 
 Expected: write mode passes and creates snapshots; check mode passes with no changes. Record the wall-clock time of the
@@ -2391,7 +2440,7 @@ describe('kotlin (gradle)', () => {
 Then:
 
 ```bash
-GOAST_SNAPSHOT=write deno test -A test/compile-tests
+GOAST_COMPILE=1 GOAST_SNAPSHOT=write deno test -A test/compile-tests
 ```
 
 **Record the wall-clock time, split into image build, Gradle configuration, and compilation.** Gradle prints
@@ -2410,7 +2459,7 @@ decides Task 6's approach.
 - [ ] **Step 11: Check mode, then commit**
 
 ```bash
-GOAST_SNAPSHOT=check deno test -A test/compile-tests
+GOAST_COMPILE=1 GOAST_SNAPSHOT=check deno test -A test/compile-tests
 deno fmt --check && deno lint && deno test -A packages test/harness
 git add test/docker test/harness test/compile-tests test/compile
 git commit -m "test(compile): gate kotlin models@sb3 with a synthesized Gradle build"
@@ -2478,7 +2527,7 @@ Expected: PASS, 5 steps.
 - [ ] **Step 3: Run the full Kotlin gate in write mode**
 
 ```bash
-GOAST_SNAPSHOT=write deno test -A test/compile-tests
+GOAST_COMPILE=1 GOAST_SNAPSHOT=write deno test -A test/compile-tests
 ```
 
 Expected: passes, with snapshots for every failing unit. Record the wall-clock time and the split between configuration
@@ -2487,7 +2536,7 @@ and compilation. Compare against Task 5's numbers scaled by 512/44 and say wheth
 - [ ] **Step 4: Prove determinism**
 
 ```bash
-GOAST_SNAPSHOT=check deno test -A test/compile-tests
+GOAST_COMPILE=1 GOAST_SNAPSHOT=check deno test -A test/compile-tests
 ```
 
 Expected: passes with no changes. A Gradle build with `--parallel` is where non-determinism would show up, and the sort
@@ -2538,7 +2587,7 @@ import { it } from '@std/testing/bdd';
 import { compileSnapshotFile, discoverCompileUnits, discoverSpecs, findOrphanSnapshots } from '@goast/test-harness';
 
 import { profiles } from '../output-tests/profiles.ts';
-import { compileRootDir } from './compile.test.ts';
+import { compileRootDir } from './paths.ts';
 
 it('has no orphaned compile snapshots', async () => {
   const specs = await discoverSpecs();
@@ -2565,8 +2614,8 @@ Expected: PASS. If it fails, the listed paths are snapshots for units that no lo
 In `deno.json`, add to `tasks`:
 
 ```json
-"test:compile": "GOAST_SNAPSHOT=write deno test -A test/compile-tests",
-"test:compile:check": "GOAST_SNAPSHOT=check deno test -A test/compile-tests",
+"test:compile": "GOAST_COMPILE=1 GOAST_SNAPSHOT=write deno test -A test/compile-tests",
+"test:compile:check": "GOAST_COMPILE=1 GOAST_SNAPSHOT=check deno test -A test/compile-tests",
 "test:check": "GOAST_SNAPSHOT=check deno test -A",
 "test:all": "deno task test:check && deno task test:compile:check"
 ```
