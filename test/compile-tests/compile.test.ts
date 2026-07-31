@@ -12,6 +12,7 @@ import {
 import { profiles } from '../output-tests/profiles.ts';
 import { compileRootDir } from './paths.ts';
 import { runDenoCheck } from './runners/deno-check.ts';
+import { runTsc } from './runners/tsc.ts';
 
 /**
  * Tier 3 is opt-in, and this guard is what makes it so.
@@ -57,6 +58,35 @@ if (enabled) {
       });
     }
   });
+}
+
+/** TypeScript profiles that pull in npm packages, so they are checked in the `node` container. */
+const CONTAINER_TS_PROFILES = ['angular-services', 'k6-clients', 'easy-network-stub'] as const;
+
+/**
+ * Same shape as the host group above, one `describe` per profile so a build failure in one profile
+ * doesn't stop the others from running. Guarded by `enabled` for the same reason as the host group: an
+ * empty `CONTAINER_TS_PROFILES` filter still leaves `describe` itself registering a trivially-passing
+ * "compiles every unit" test when `enabled` is false, which the opt-in guard must prevent outright.
+ */
+if (enabled) {
+  for (const profile of CONTAINER_TS_PROFILES) {
+    const profileUnits = units.filter((u) => u.language === 'typescript' && u.profile === profile);
+
+    describe(`typescript/${profile} (tsc)`, () => {
+      let results: Map<string, Diagnostic[]> | undefined;
+
+      it('compiles every unit', async () => {
+        results = await runTsc(profile, profileUnits);
+      });
+
+      for (const unit of profileUnits) {
+        it(unit.id, async () => {
+          await verifyUnit(unit, results);
+        });
+      }
+    });
+  }
 }
 
 async function verifyUnit(unit: CompileUnit, results: Map<string, Diagnostic[]> | undefined): Promise<void> {

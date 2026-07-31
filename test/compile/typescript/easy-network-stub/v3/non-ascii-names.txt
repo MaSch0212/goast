@@ -1,0 +1,8 @@
+models/_1.ts:1:14 TS1005 '{' expected.
+models/_1.ts:2:5 TS2304 Cannot find name 'value'.
+models/_1.ts:2:11 TS1109 Expression expected.
+models/_1.ts:2:13 TS2693 'string' only refers to a type, but is being used as a value here.
+models/_2.ts:1:14 TS1005 '{' expected.
+models/_2.ts:2:5 TS2304 Cannot find name 'value'.
+models/_2.ts:2:11 TS1109 Expression expected.
+models/_2.ts:2:13 TS2693 'string' only refers to a type, but is being used as a value here.
