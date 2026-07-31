@@ -41,6 +41,16 @@ describe('formatDiagnostics', () => {
       .toBe('<no file> no file\na.kt no position\n');
   });
 
+  it('orders file-less diagnostics numerically too, not by string', () => {
+    expect(formatDiagnostics([d('', 10, 1, 'ten'), d('', 9, 1, 'nine')]))
+      .toBe('<no file>:9:1 nine\n<no file>:10:1 ten\n');
+  });
+
+  it('sorts a position-less diagnostic before a positioned one in the same file', () => {
+    expect(formatDiagnostics([d('a.kt', 5, 1, 'positioned'), d('a.kt', null, null, 'bare')]))
+      .toBe('a.kt bare\na.kt:5:1 positioned\n');
+  });
+
   it('collapses a multi-line message onto one line so a diagnostic is always one snapshot line', () => {
     expect(formatDiagnostics([d('a.kt', 1, 1, 'first\n  second\n\n  third')]))
       .toBe('a.kt:1:1 first second third\n');

@@ -12,8 +12,10 @@ import type { Diagnostic } from './types.ts';
  */
 export function formatDiagnostics(diagnostics: readonly Diagnostic[]): string {
   const lines = new Set<string>();
-  for (const diagnostic of diagnostics) lines.add(renderDiagnostic(diagnostic));
-  return [...lines].sort(compareRendered).map((line) => `${line}\n`).join('');
+  for (const diagnostic of [...diagnostics].sort(compareDiagnostics)) {
+    lines.add(renderDiagnostic(diagnostic));
+  }
+  return [...lines].map((line) => `${line}\n`).join('');
 }
 
 function renderDiagnostic(diagnostic: Diagnostic): string {
@@ -32,29 +34,28 @@ function collapse(message: string): string {
 }
 
 /**
- * Orders rendered lines by file, then numeric line, then numeric column, then message.
+ * Orders diagnostics by file, then numeric line, then numeric column, then message.
  *
- * Plain string comparison would put line 10 before line 9, which makes a snapshot diff hard to read
- * for no benefit.
+ * Compares the structured fields directly rather than round-tripping through the rendered string:
+ * the rendered `<no file>` sentinel contains a space, which broke an earlier regex-based
+ * re-parse of the rendered line. A `null` line or column sorts before any number, so a
+ * position-less diagnostic in a file precedes a positioned one in the same file.
  */
-function compareRendered(a: string, b: string): number {
-  const pa = splitRendered(a);
-  const pb = splitRendered(b);
-  if (pa.file !== pb.file) return pa.file < pb.file ? -1 : 1;
-  if (pa.line !== pb.line) return pa.line - pb.line;
-  if (pa.column !== pb.column) return pa.column - pb.column;
-  return pa.message < pb.message ? -1 : pa.message > pb.message ? 1 : 0;
+function compareDiagnostics(a: Diagnostic, b: Diagnostic): number {
+  if (a.file !== b.file) return a.file < b.file ? -1 : 1;
+  const line = compareNullableNumber(a.line, b.line);
+  if (line !== 0) return line;
+  const column = compareNullableNumber(a.column, b.column);
+  if (column !== 0) return column;
+  return a.message < b.message ? -1 : a.message > b.message ? 1 : 0;
 }
 
-function splitRendered(line: string): { file: string; line: number; column: number; message: string } {
-  const match = /^(?<file>\S+?)(?::(?<line>\d+)(?::(?<column>\d+))?)? (?<message>.*)$/.exec(line);
-  if (match?.groups === undefined) return { file: line, line: -1, column: -1, message: '' };
-  return {
-    file: match.groups.file,
-    line: match.groups.line === undefined ? -1 : Number(match.groups.line),
-    column: match.groups.column === undefined ? -1 : Number(match.groups.column),
-    message: match.groups.message,
-  };
+/** `null` sorts before any number. */
+function compareNullableNumber(a: number | null, b: number | null): number {
+  if (a === b) return 0;
+  if (a === null) return -1;
+  if (b === null) return 1;
+  return a - b;
 }
 
 /**
