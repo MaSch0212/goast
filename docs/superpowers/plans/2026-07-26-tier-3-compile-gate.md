@@ -83,7 +83,7 @@ measured before choosing:
   file is named individually on the command line — `deno test <dir>` applies the naming convention and finds nothing.
   Verified empirically. That makes adding a third file a silent no-op, so it is rejected.
 - **Chosen:** the driver reads `GOAST_COMPILE` at module top level and **registers no tests at all** when it is unset.
-  Bare `deno test -A` loads the module, runs nothing, and starts no container. Registering nothing rather than skipping
+  Bare `deno test -A` loads the module, registers no compile-unit tests, and starts no container. The count is not necessarily zero — pure Docker-free unit tests colocated in `test/compile-tests/` are discovered unconditionally and should be; the invariant is "no container", not a test count. Registering nothing rather than skipping
   matters: 782 ignored steps in the everyday run would be noise nobody reads.
 
 `test:compile` and `test:compile:check` set `GOAST_COMPILE=1`. Module load still enumerates units, which is filesystem
@@ -1092,7 +1092,10 @@ Then prove the opt-in guard works, which is the constraint it exists to protect:
 deno test -A test/compile-tests
 ```
 
-Expected: `0 passed`, and no container started. Report both results.
+Expected: no container started, and no compile-unit tests registered. Note that the count is not necessarily `0 passed`:
+`test/compile-tests/` also holds pure Docker-free unit tests colocated with the functions they cover (the tsc and
+Kotlin diagnostic parsers, `synthesizeGradleBuild`), which are discovered unconditionally and should be. The invariant
+this guard protects is that tiers 1 and 2 never touch Docker — not a particular test count. Report both results.
 
 Expected: passes, and creates snapshot files under `test/compile/typescript/`. Then look:
 
