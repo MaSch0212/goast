@@ -2769,6 +2769,18 @@ git commit -m "docs: register the compile failures the tier-3 gate surfaced"
 - **Tier 4.** Reference server, reference client, case table, and the kitchen-sink spec are phases 5 through 7.
   `docker.ts` is built here with tier 4 in mind — hence `hostGateway`, which tier 3 never uses — because building it
   twice would be worse than one unused option.
+- **The `testcontainers` npm package**, evaluated during execution at the owner's request and rejected on evidence.
+  `npm:testcontainers@11` imports fine under Deno, but every runtime strategy fails with `Could not find a working
+  container runtime strategy`, both with `DOCKER_HOST` unset and with an explicit npipe. One layer down,
+  `npm:dockerode@4` against `//./pipe/docker_engine` fails with `socket hang up`, so Deno's Node compatibility cannot
+  speak the Windows named pipe Docker Desktop exposes; testcontainers is built on dockerode, so the blocker is
+  structural rather than configuration. It would likely work over a unix socket on Linux CI, but a tier that runs in CI
+  and not on the maintainer's machine defeats "Deno and Docker are the only prerequisites". Three reasons it would
+  still be the weaker fit even on Linux: it does not expose `buildx --cache-to type=gha,mode=max`, which this plan
+  needs; tier 3's workload is one-shot batch, the weakest fit for a library built around service containers you wait on
+  and connect to; and it adds a Ryuk reaper container plus native optional dependencies (`ssh2`, `cpu-features`) whose
+  build scripts Deno skips. The tempting case was tier 4's Spring Boot health polling — the same Windows blocker
+  applies there, which is why `docker.ts` carries `hostGateway` itself.
 - **`deno task test`'s write-mode default.** The spec intends the everyday loop to be write mode, so this plan does not
   change it. Task 7 adds `test:check` and documents the trap instead of silently changing behaviour the spec asked for.
 
