@@ -2781,6 +2781,25 @@ git commit -m "docs: register the compile failures the tier-3 gate surfaced"
   and connect to; and it adds a Ryuk reaper container plus native optional dependencies (`ssh2`, `cpu-features`) whose
   build scripts Deno skips. The tempting case was tier 4's Spring Boot health polling — the same Windows blocker
   applies there, which is why `docker.ts` carries `hostGateway` itself.
+- **TypeScript 7 (`tsgo`, the Go rewrite)**, evaluated during execution at the owner's request and deferred, not
+  rejected. `@typescript/native-preview@7.0.0-dev.20260707.2` is genuinely ~10× faster (0.10s user against 0.98s for
+  `tsc` 5.7.3 on the same corpus file) and it does check `.js` files carrying `// @ts-check` JSDoc, which was the main
+  worry for `k6-clients`. The blocker is that **`tsgo` has the same syntax-error short-circuit as the TS5 CLI**: given a
+  program with a syntax error, a type error and a JSDoc error it reports only `TS1128` on the syntax error, and both
+  `TS2322`s reappear once the syntax error is removed. Every profile contains such a file (defect 21), so adopting the
+  `tsgo` CLI would restore exactly the blind spot `check.mjs` exists to remove. An unstable JS API does ship
+  (`./unstable/sync`, exporting `API`, `Program`, `Checker`, `DiagnosticCategory`, `Snapshot` — `npm view` hides it
+  because the package declares no `main`), so a port is conceivable, but the entry point exposes only
+  `ensureInitialized`/`parseConfigFile`/`updateSnapshot`/`close`/`getTimingInfo`, the diagnostics path is not evident,
+  and it is an `unstable/`-namespaced dev build. The payoff is ~15-20s against a 23s TypeScript group, while Kotlin's
+  512 units dominate the phase's wall clock — so this is the wrong place to spend it. Revisit when the native API
+  stabilises, or if the TypeScript group ever becomes the bottleneck.
+- **Transitive npm pins in the `node` image.** Direct dependencies are exact-pinned and verified in-image, but the
+  brief tells the implementer to delete the lockfile `npm install --package-lock-only` produces, so transitives float
+  and the image's content hash does not fully determine its contents. `skipLibCheck: true` blunts the impact, since a
+  transitive's own declarations are not checked. Recorded rather than fixed: committing a lockfile would add a second
+  place to keep in sync with `package.json`, and the alternative worth considering later is `npm ci` against a
+  committed lockfile as the single source.
 - **`deno task test`'s write-mode default.** The spec intends the everyday loop to be write mode, so this plan does not
   change it. Task 7 adds `test:check` and documents the trap instead of silently changing behaviour the spec asked for.
 
