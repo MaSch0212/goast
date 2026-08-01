@@ -45,13 +45,13 @@ Every entry was found by the phase-2b corpus and independently verified by a rev
 | # | Defect | Site | Pinned by |
 | - | ------ | ---- | --------- |
 | 6 | `anyOf` is rendered as an **intersection** of `Partial<>` instead of a union. `AnyOfPrimitives` becomes `(Partial<string>) & (Partial<number>)`, which collapses to `never`. Every `anyOf` in the corpus is semantically wrong. | `generators/models/model-generator.ts:363-366` | `v3/anyof-schemas` (all names) |
-| 7 | 18 × `TS2456` circular-type-alias errors: composed schemas are emitted as bare `type` aliases, which TypeScript forbids from referencing themselves. Assess feasibility — emitting an `interface` for object-shaped composed schemas is the known fix. If it proves disproportionate, document and defer rather than silently skipping. **Compile gate:** `test/compile/typescript/models/v3/discriminator-variants.txt` and its four profile siblings — `TS2456 Type alias 'X' circularly references itself.`, **105 occurrences across 10 units** (21 per TypeScript profile: 18 in `v3/discriminator-variants` plus 3 in `v3/anyof-cycle`, which the original count did not include). Largest single TypeScript defect the gate found. | model emission | `v3/discriminator-variants` |
+| 7 | **105 ×** `TS2456` circular-type-alias errors (the original count of 18 was one spec in one profile): composed schemas are emitted as bare `type` aliases, which TypeScript forbids from referencing themselves. Assess feasibility — emitting an `interface` for object-shaped composed schemas is the known fix. If it proves disproportionate, document and defer rather than silently skipping. **Compile gate:** `test/compile/typescript/models/v3/discriminator-variants.txt`, `…/v3/anyof-cycle.txt` and the same pair under the other four TypeScript profiles — `TS2456 Type alias 'X' circularly references itself.`, **105 occurrences across 10 units** (two units in each of the 5 profiles; 21 occurrences per profile, being 18 in `v3/discriminator-variants` plus 3 in `v3/anyof-cycle`, which the original count did not include). Largest TypeScript defect the gate found on both occurrences and units. | model emission | `v3/discriminator-variants` |
 
 ### Batch 3 — Kotlin generator
 
 | # | Defect | Site | Pinned by |
 | - | ------ | ---- | --------- |
-| 8 | Enum values whose cased name is empty emit a nameless constant (`("1"),`) and an empty `when` branch. Invalid Kotlin. Root cause is `getWords` stripping leading digits (`string.utils.ts:70`), so `toCasing('1')` is `''`. | `generators/models/model-generator.ts:141,163` | `v3/enum-schemas` `IntEnum`, `NumEnum`, `EnumWithNumericStrings`, `EnumWithEmptyString`, `MixedEnum` |
+| 8 | Enum values whose cased name is empty emit a nameless constant (`("1"),`) and an empty `when` branch. Invalid Kotlin. Root cause is `getWords` stripping leading digits (`string.utils.ts:70`), so `toCasing('1')` is `''`. **Compile gate: the "Invalid Kotlin" claim no longer holds.** `v3/enum-schemas` compiles clean in all ten Kotlin profiles — the only snapshot is `test/compile/kotlin/okhttp3-clients@sb4/v3/enum-schemas.txt`, carrying nothing but that profile's unrelated `Serializer.kt` pair (defect 26). Every constant is named and every `when` branch has a label: `IntEnum` emits `_1`/`_2`/`_3`, `NumEnum` emits `_1_1`/`_2_2`/`_3_3`, `EnumWithEmptyString` emits `_EMPTY`, `MixedEnum` emits `ONE`/`_2`/`TRUE`/`NULL`. Fixed by `ae6fd17`, an ancestor of the commit adding this note. Annotated rather than removed: the row may still cover concerns beyond the compile break, so re-scoping it belongs to whoever picks it up. | `generators/models/model-generator.ts:141,163` | `v3/enum-schemas` `IntEnum`, `NumEnum`, `EnumWithNumericStrings`, `EnumWithEmptyString`, `MixedEnum` |
 | 9 | The `anyOf` traversal has no visited-set, so a branch cycling back to its own holder overflows the stack. The same cycle through `oneOf` is handled. | `generators/models/model-generator.ts` anyOf walk | `v3/anyof-cycle` (10 error snapshots) |
 | 10 | A nested `oneOf` inside an `allOf` is silently dropped; only the sibling property survives. | model merge | `v3/nested-composition` `AllOfContainingOneOf`, `PropertyOfNestedComposition` |
 | 11 | A same-name conflicting-type `allOf` merge silently drops one side with no marker. | model merge | `v3/allof-schemas` `AllOfConflicting` |
@@ -91,7 +91,7 @@ renderer already does. Check whether Kotlin has the same split before assuming i
 
 | # | Defect | Site | Pinned by |
 | - | ------ | ---- | --------- |
-| 16 | For an implicit or partially-mapped discriminator, the generated Kotlin does not compile: the base interface hoists **every** subtype's properties, while each subtype implements neither the discriminator property nor the hoisted ones, and its own properties lack `override`. Both halves of the contract are broken in opposite directions. **12 model files × 10 profiles = 120 uncompilable files.** | Kotlin base/subtype member computation; `collectSubSchemaProperties` never gives a subtype its base's properties | `v3/discriminator-variants` |
+| 16 | For an implicit or partially-mapped discriminator, the generated Kotlin does not compile: the base interface hoists **every** subtype's properties, while each subtype implements neither the discriminator property nor the hoisted ones, and its own properties lack `override`. Both halves of the contract are broken in opposite directions. **12 model files × 10 profiles = 120 uncompilable files.** **Compile gate: this compile claim no longer holds, and the 120 figure is stale.** `v3/discriminator-variants` compiles clean in all ten Kotlin profiles — the only snapshot is `test/compile/kotlin/okhttp3-clients@sb4/v3/discriminator-variants.txt`, carrying nothing but that profile's unrelated `Serializer.kt` pair (defect 26). The output is now correct rather than merely compiling: `ImplicitBase.kt` declares `petType` alone instead of hoisting every subtype's property, and `ImplicitDog.kt` carries `override val petType: String = "ImplicitDog"` — so both halves of the contract this row describes are closed. Fixed by `38c3e0e`, an ancestor of the commit adding this note. Annotated rather than deleted: the row may still cover concerns beyond the compile break, so re-scoping it belongs to whoever picks it up. | Kotlin base/subtype member computation; `collectSubSchemaProperties` never gives a subtype its base's properties | `v3/discriminator-variants` |
 
 Example, from `test/output/kotlin/models@sb3/v3/discriminator-variants/**`:
 
@@ -343,8 +343,19 @@ Not fixed here — this phase records defects rather than fixing them.
 result to the AST unexamined. Nothing downstream examines it either: `KtParameter.onWrite`
 (`packages/kotlin/src/ast/nodes/parameter.ts:81`) and `KtProperty.onWrite`
 (`packages/kotlin/src/ast/nodes/property.ts:168`) each do `builder.append(this.inject.beforeName, this.name,
-this.inject.afterName)` and nothing more. There is no backtick-quoting step and no keyword list anywhere in
-`packages/kotlin`. A property named after a Kotlin **hard** keyword therefore emits an identifier the parser rejects.
+this.inject.afterName)` and nothing more. A property named after a Kotlin **hard** keyword therefore emits an
+identifier the parser rejects.
+
+**A backtick-quoting helper does exist, it is the natural fix site, and two separate things are wrong with it.**
+`toKotlinPropertyName` (`packages/kotlin/src/utils.ts:18-23`) returns a backticked name for any value failing
+`/^[a-zA-Z_$][a-zA-Z_$0-9]*$/`, and `KotlinFileGenerator.toPropertyName`
+(`packages/kotlin/src/generators/file-generator.ts:18-20`) already composes it with `toCasing` — precisely the
+composition `getClassParameter` open-codes at `:308`. First, **it has zero callers**: `grep -rn "toPropertyName"
+packages/` matches only its own definition and the import that feeds it, so the model generator bypasses it entirely.
+Second, **routing through it unchanged would fix nothing here**, because it guards on identifier *charset* alone, and
+`class`, `val`, `is`, `in` and `this` all match that pattern and would pass through unquoted. There is no keyword list
+anywhere in `packages/kotlin`. A fix therefore needs both halves — route `:308` and `:338` through the helper *and*
+give the helper a hard-keyword denylist. Either alone leaves this defect standing.
 
 `test/output/kotlin/models@sb3/v3/reserved-words/com/openapi/generated/model/ObjectWithReservedProperties.kt` declares
 nine properties, all unbackticked: `class` (`:10`), `val` (`:15`), `is` (`:20`), `in` (`:25`), `function` (`:30`),
@@ -362,9 +373,12 @@ two `Conflicting declarations:`, two `Syntax error: Parameter name expected.` an
 
 **Compile gate:** `test/compile/kotlin/models@sb3/v3/reserved-words.txt` and its 9 profile siblings —
 `Syntax error: Parameter name expected.` (60), `Conflicting declarations:` (60) and `An explicit type is required on a
-value parameter.` (10). **130 occurrences across 10 units**, 13 per unit, byte-identical in all ten Kotlin profiles
-because this is a model-emission defect no profile option touches. Second-largest Kotlin defect the gate found, after
-defect 26.
+value parameter.` (10). **130 occurrences across 10 units**, 13 per unit, and those 13 are identical in all ten Kotlin
+profiles because this is a model-emission defect no profile option touches. (The snapshot *files* are byte-identical
+in nine; `okhttp3-clients@sb4`'s carries two extra lines that belong to defect 26.) **Largest Kotlin defect the gate
+found by occurrence count** — 130, ahead of defect 28's 115 and defect 26's 106. By units affected it is the smallest
+of the Kotlin set at 10, because it is one model file per profile. The two metrics give near-opposite orders across
+defects 23, 26 and 28, so any ranking here should say which one it means.
 
 Pinned by `v3/reserved-words` (`ObjectWithReservedProperties`). Cross-reference: distinct from **defect 22** above,
 which shares the emission site (`getClassParameter`) and one message shape but not the root cause — that one is an
@@ -391,8 +405,10 @@ named after a Kotlin keyword or type. At least eight shadow a name Kotlin's defa
 
 **Compile gate: zero diagnostics, and that is the finding.** Every one of those nineteen classes in the corpus has
 the same body — a single `val value: String? = null` — which is self-consistent whichever `String` it means, so
-no `test/compile/kotlin/*/v3/reserved-words.txt` mentions any file other than `ObjectWithReservedProperties.kt`. Both
-the task-8 brief and its addendum assumed this symptom was among the gate's compile breaks. It is not, and an entry
+no `test/compile/kotlin/*/v3/reserved-words.txt` mentions any **model** file other than
+`ObjectWithReservedProperties.kt` — `okhttp3-clients@sb4`'s snapshot additionally carries that profile's
+`Serializer.kt` pair, which is defect 26 and has nothing to do with this spec. Both the
+task-8 brief and its addendum assumed this symptom was among the gate's compile breaks. It is not, and an entry
 claiming a snapshot for it would be citing evidence that does not exist. The defect is real and **latent**: it needs
 only a sibling model in the same package using a shadowed type generically — `val items: List<Thing>`, where the
 shadowing `List` takes no type arguments — to become a compile error, and short of that it silently retypes every
@@ -479,7 +495,9 @@ stating, because "every unit of a profile fails" otherwise reads as a harness or
 **Compile gate:** `test/compile/kotlin/okhttp3-clients@sb4/v3/simple-schemas.txt` and its 52 siblings —
 `Serializer.kt:14:45 Unresolved reference 'WRITE_DATES_AS_TIMESTAMPS'.` plus the knock-on `:15:14 Unresolved reference
 'configure'.` (the failed call yields an error type, so the chained call cannot resolve either). **106 occurrences
-across 53 units — every unit of the profile.** Largest single defect the gate found in either language.
+across 53 units — every unit of the profile.** **Widest defect the gate found in either language by units affected**,
+at 53 against defect 27's 32; by occurrence count its 106 places it third among the Kotlin defects, behind defect 23's
+130 and defect 28's 115.
 
 Witness: `test/output/kotlin/okhttp3-clients@sb4/v3/simple-schemas/com/openapi/generated/api/client/infrastructure/Serializer.kt:14`.
 Scoped to `okhttp3-clients@sb4`; `@sb3` emits the Jackson 2 API against Jackson 2 and is clean here. **This is the
