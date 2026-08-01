@@ -883,13 +883,13 @@ Small, verified, and each needing either a decision or a home:
 - **`generator.ts`'s `if (result)` guard before `mergeDeep` is dead code, unlike defect 40 above.**
   `for (const key in x)` over `null`/`undefined` is a documented no-op — it does not throw — so calling
   `mergeDeep(input, undefined)` unconditionally is harmless: the loop does nothing and the recursive call returns
-  `input` unchanged. Removing the guard changes no test's outcome. **The committed test's own explanatory comment is
-  incorrect**: `packages/core/src/codegen/generator.test.ts:122-124` asserts "mergeDeep does `for (const key in
-  source)`, which throws on `undefined`" — verified false by direct execution (`for (const key in undefined) {}`
-  completes with no error). The test itself (`'skips merging a falsy provider result instead of passing it to
-  mergeDeep'`, line 121) still passes, because a falsy result genuinely is skipped before ever reaching `mergeDeep` —
-  only the comment's stated reason for needing the guard is wrong, not the assertion. Flagged here rather than
-  silently left as an authoritative-sounding but incorrect explanation for the next reader.
+  `input` unchanged. Removing the guard changes no test's outcome. The committed test's comment originally asserted the
+  opposite — that `mergeDeep`'s `for (const key in source)` "throws on `undefined`" — which is false by direct
+  execution (`for (const key in undefined) {}` completes with no error). **That comment has since been corrected**, in
+  `8ade171`, along with the test's title, which had claimed an unobservable distinction ("…instead of passing it to
+  `mergeDeep`") between calling `mergeDeep` with a falsy result and skipping it. The test now pins the observable
+  contract instead: a falsy provider result cannot corrupt the accumulated output. See
+  `packages/core/src/codegen/generator.test.ts`. The guard itself is still dead code, which is why this bullet stays.
 - **`endpoints-generator.ts` and `services-generator.ts`'s memoization caches (`existingEndpointResults`,
   `existingServiceResults`) are read but never written by anything in this repo.** Both base classes only ever call
   `.get()` on the map (`endpoints-generator.ts:53`, `services-generator.ts:53`); every real subclass's
@@ -936,12 +936,12 @@ Small, verified, and each needing either a decision or a home:
 - **Both file-builder constructors take a full config rather than a `Partial<…>`** —
   `packages/kotlin/src/file-builder.ts:34` (`constructor(packageName?: string, options?: KotlinGeneratorConfig)`) and
   `packages/typescript/src/file-builder.ts:40` (`constructor(filePath?: string, options?: TypeScriptGeneratorConfig)`).
-  This is the root cause of a 47-fold duplication across 44 test files: pinning `newLine` requires
+  This is the root cause of a 48-fold duplication across 44 test files: pinning `newLine` requires
   `{ ...defaultKotlinGeneratorConfig, newLine: '\n' } as KotlinGeneratorConfig` (or the TypeScript equivalent), and
   the cast is unavoidable because `defaultKotlinGeneratorConfig` is typed
   `DefaultGenerationProviderConfig<KotlinGeneratorConfig>` (`packages/kotlin/src/config.ts:37`), which makes every
   inherited field optional in the *type* even though the runtime object is complete — the same shape on the
-  TypeScript side. Verified by direct count: 47 occurrences of `as KotlinGeneratorConfig`/`as TypeScriptGeneratorConfig`
+  TypeScript side. Verified by direct count: 48 occurrences of `as KotlinGeneratorConfig`/`as TypeScriptGeneratorConfig`
   across 44 `*.test.ts` files. All 12 production call sites (`new KotlinFileBuilder(...)`/`new
   TypeScriptFileBuilder(...)` outside `*.test.ts` — 8 in `packages/kotlin`, 4 in `packages/typescript`) pass either
   `ctx.config` directly or a full config value forwarded unchanged from a caller; none passes a partial object. So
