@@ -116,7 +116,11 @@ describe('ktPrimaryConstructor', () => {
   let builder: KotlinFileBuilder;
 
   beforeEach(() => {
-    builder = new KotlinFileBuilder();
+    // A fixed newLine keeps the expectations below host-independent.
+    builder = new KotlinFileBuilder(
+      undefined,
+      { ...defaultKotlinGeneratorConfig, newLine: '\n' } as KotlinGeneratorConfig,
+    );
   });
 
   it('should not write anything if there are no parameters, accessModifier, or annotations', () => {

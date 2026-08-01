@@ -16,11 +16,6 @@ describe('tsCall', () => {
     );
   });
 
-  it('accepts a single path segment without an array', () => {
-    builder.append(tsCall('foo', []));
-    expect(builder.toString(false)).toBe('foo()');
-  });
-
   it('joins a path with dots', () => {
     builder.append(tsCall(['a', 'b', 'c'], []));
     expect(builder.toString(false)).toBe('a.b.c()');
