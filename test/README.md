@@ -374,7 +374,7 @@ group plus a "The compile step did not run" failure for each of their 674 units.
 anywhere, and running only it takes naming it:
 
 ```bash
-GOAST_COMPILE=1 GOAST_SNAPSHOT=check deno test -A test/compile-tests --filter "typescript/host"
+deno task test:compile:host
 ```
 
 **Diagnostics are snapshots, the same shape as tier 2's error snapshots but inverted.** A unit that compiles cleanly has
