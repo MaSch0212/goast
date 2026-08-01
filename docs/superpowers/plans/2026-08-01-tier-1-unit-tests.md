@@ -30,6 +30,25 @@ one existing test that already solves that problem.
   `{ newLine: '\n' }` on the builder under test and compares against a literal `\n`. The rule's purpose is that a test's
   expectations must not accidentally depend on the host; where host-dependence is the thing being tested, the import is
   correct and must carry a comment saying so.
+- **Pinning `newLine` is mandatory, not decorative — added during execution.** `KotlinFileBuilder` and
+  `TypeScriptFileBuilder` both default `newLine` to the host's `os.EOL`, so on Windows a builder constructed as
+  `new KotlinFileBuilder()` emits `\r\n` and every multi-line expectation written with a literal `\n` fails. Neither
+  constructor takes a `Partial<…>`, so the pin is:
+
+  ```ts
+  builder = new KotlinFileBuilder(
+    undefined,
+    { ...defaultKotlinGeneratorConfig, newLine: '\n' } as KotlinGeneratorConfig,
+  );
+  ```
+
+  The cast is necessary: `defaultKotlinGeneratorConfig` is typed `DefaultGenerationProviderConfig<KotlinGeneratorConfig>`,
+  which makes fields inherited from `OpenApiGeneratorConfig` (including `indent`) optional in the type even though the
+  literal sets them, so the spread alone fails `deno check` with `TS2345`. Task 3's review verified at runtime that the
+  spread preserves `indent` and that an unpinned builder really does report `\r\n` on this host. The typescript form is
+  identical with `defaultTypeScriptGeneratorConfig` / `TypeScriptGeneratorConfig`. **Task 5's sample code below predates
+  this discovery and constructs its builders unpinned — pin them.** A `toString(options)` call or a bare
+  `SourceBuilder`/`StringBuilder` takes the un-cast `{ newLine: '\n' }` instead.
 - One top-level `describe` per exported symbol, in a file colocated as `<symbol-file>.test.ts`.
 - No `stub(fs, ...)`. Real IO against a temp directory where IO is unavoidable.
 - `deno fmt --check` and `deno lint` must pass before every commit.
