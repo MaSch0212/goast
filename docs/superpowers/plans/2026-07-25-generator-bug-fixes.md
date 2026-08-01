@@ -45,7 +45,7 @@ Every entry was found by the phase-2b corpus and independently verified by a rev
 | # | Defect | Site | Pinned by |
 | - | ------ | ---- | --------- |
 | 6 | `anyOf` is rendered as an **intersection** of `Partial<>` instead of a union. `AnyOfPrimitives` becomes `(Partial<string>) & (Partial<number>)`, which collapses to `never`. Every `anyOf` in the corpus is semantically wrong. | `generators/models/model-generator.ts:363-366` | `v3/anyof-schemas` (all names) |
-| 7 | 18 × `TS2456` circular-type-alias errors: composed schemas are emitted as bare `type` aliases, which TypeScript forbids from referencing themselves. Assess feasibility — emitting an `interface` for object-shaped composed schemas is the known fix. If it proves disproportionate, document and defer rather than silently skipping. | model emission | `v3/discriminator-variants` |
+| 7 | 18 × `TS2456` circular-type-alias errors: composed schemas are emitted as bare `type` aliases, which TypeScript forbids from referencing themselves. Assess feasibility — emitting an `interface` for object-shaped composed schemas is the known fix. If it proves disproportionate, document and defer rather than silently skipping. **Compile gate:** `test/compile/typescript/models/v3/discriminator-variants.txt` and its four profile siblings — `TS2456 Type alias 'X' circularly references itself.`, **105 occurrences across 10 units** (21 per TypeScript profile: 18 in `v3/discriminator-variants` plus 3 in `v3/anyof-cycle`, which the original count did not include). Largest single TypeScript defect the gate found. | model emission | `v3/discriminator-variants` |
 
 ### Batch 3 — Kotlin generator
 
@@ -159,12 +159,23 @@ reviewable instead of a randomly-named temp path that changed on every run. Befo
 `models.ts` was ever written for either spec, so this defect's committed-output consequence was invisible until
 task 5's round 2 switched to `existingFileBehavior: 'count'` and let generation run far enough to reach it.
 
+**Compile gate:** `test/compile/typescript/models/v3/extreme-names.txt` (and the `v3/non-ascii-names` sibling, and
+both under `fetch-clients`) — `TS2307 Import "<output>/models/.ts" not a dependency and not in import map from
+"models.ts"`, **4 occurrences across 4 units**. One diagnostic per spec rather than one per empty-named schema,
+because only the schema whose file basename is exactly `.ts` is misclassified; the `_1.ts`/`_2.ts` counted siblings
+have real basenames and resolve correctly. **The gate under-reports this defect.** The identical leaked line is
+present in all five TypeScript profiles' `models.ts`, but only the two host-checked ones (`models`, `fetch-clients` —
+`test/compile-tests/compile.test.ts:29`) report it. `tsc` 5.7.3 under `test/docker/node/tsconfig.base.json` reports
+nothing for the same line in `angular-services`, `k6-clients` and `easy-network-stub`. Why is not established here; a
+zero-binding `export type {  } from …` being elided before resolution is the plausible reason and is unverified. Do
+not read the three silent profiles as unaffected.
+
 Not fixed here — this phase records defects rather than fixing them. The fix belongs in `getImportKind`: also treat
 a path whose basename is **exactly** `.ts`, `.js`, or `.json` (i.e. an empty component name) as `'file'`, not
 `'module'` — basename equality with the extension, not a prefix match (a prefix match would also wrongly capture
 `.tsx`, `.tsconfig`, or `.jsonc`, which are not this bug).
 
-### Defect 19 — `spring-controllers` writes `responseCode = null` for `default` and range-coded responses, likely uncompilable (found by phase 2b task 7, not scheduled)
+### Defect 19 — `spring-controllers` writes `responseCode = null` for `default` and range-coded responses, uncompilable (found by phase 2b task 7, confirmed by the tier-3 compile gate, not scheduled)
 
 `getApiInterfaceEndpointMethodAnnnotations` (`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:211-212`) builds each `@ApiResponse`'s `responseCode` argument as
 `kt.string(response.statusCode?.toString())`. `response.statusCode` is only populated for an exact numeric code; a
@@ -174,16 +185,19 @@ is `undefined` and `kt.string(undefined)` constructs a `KtString` with `value: n
 there is no branch that omits the argument or substitutes a sentinel string. The result, written straight into
 generated Kotlin source, is `ApiResponse(responseCode = null, ...)`.
 
-**This is very likely a compile break, not merely lost information — high-confidence-unverified, not established.**
+**This is a compile break, not merely lost information — established, no longer a prediction.**
 `io.swagger.v3.oas.annotations.responses.ApiResponse.responseCode()` is declared as a non-nullable `String` annotation
 element (with a non-null default, `"default"`), and neither the Kotlin nor the Java annotation-argument grammar
-permits assigning `null` to a non-nullable-typed element — so every generated `ResponsesApi.kt` containing this
-pattern almost certainly fails to compile. Secondary to the compile break: `default`, `2XX`, `4XX` and `5XX` all
-collapse to the identical `responseCode = null`, so even if this somehow compiled, the four are indistinguishable
-from each other and from a genuine `default` in the emitted annotation. **Neither the phase 2b task 7 worker nor its
-reviewer compiled the affected file** — this repo has no Kotlin compilation step in its test suite (see the register's
-introduction), so the committed snapshot is the only record of this pattern; the compile-break claim rests on the
-swagger-annotations contract and the generator/AST source, not on a compiler run.
+permits assigning `null` to a non-nullable-typed element. Phase 2b registered that as high-confidence-**unverified**:
+neither the task 7 worker nor its reviewer compiled the affected file, because the repo had no Kotlin compilation step
+at the time. The tier-3 gate compiles it, and the prediction was correct — including the predicted site count.
+Secondary to the compile break: `default`, `2XX`, `4XX` and `5XX` all collapse to the identical `responseCode = null`,
+so even if this had compiled, the four would be indistinguishable from each other and from a genuine `default` in the
+emitted annotation.
+
+**Compile gate:** `test/compile/kotlin/spring-controllers@sb3/v3/response-variants.txt` (and the `@sb3-strict`,
+`@sb4`, `@sb4-strict` siblings) — `Null cannot be a value of a non-null type 'String'.`, **28 occurrences across
+4 units**, 7 per file, exactly one per site listed below and at exactly the lines listed below.
 
 Affected files (all four `spring-controllers` profiles, since `springBootVersion` and `strictResponseEntities` do not
 touch this code path):
@@ -265,6 +279,18 @@ Counted directly from the committed snapshots: Kotlin hits **40 files** (4 empty
 (the same 4 schemas × 5 profiles: `models`, `fetch-clients`, `angular-services`, `k6-clients`, `easy-network-stub`),
 e.g. `test/output/typescript/models/v3/extreme-names/models/.ts`.
 
+**Compile gate:** Kotlin — `test/compile/kotlin/models@sb3/v3/extreme-names.txt` and its 19 siblings,
+`Syntax error: Name expected.`, **40 occurrences across 20 units**, matching the 40 predicted files exactly.
+TypeScript — `test/compile/typescript/angular-services/v3/extreme-names.txt` and its 5 siblings, **48 occurrences
+across 6 units**, four surface shapes of the one root cause per file: `TS1005 '{' expected.` at the missing
+identifier, then `TS2304 Cannot find name 'X'.` / `TS1109 Expression expected.` / `TS2693 'X' only refers to a type,
+but is being used as a value here.` as `tsc` re-reads the object body `{ prop?: string; }` as a conditional
+expression. All four were confirmed to come from this defect and nothing else. Only 12 of the 20 TypeScript files are
+reachable: the host runner enters each unit through its barrels alone (`ENTRY_POINTS`,
+`test/compile-tests/runners/deno-check.ts:12`), and under `models` and `fetch-clients` the barrel's import of the
+empty-named file is exactly what defect 18 breaks — so the file is never in the program and its content is never
+checked. The 8 masked files are not evidence of a narrower blast radius.
+
 Cross-reference: distinct from **defect 8**, which covers the Kotlin *enum-constant* emission site (`getEnum`,
 `model-generator.ts:141,163`) for an enum value whose cased name is empty — a different generator function, pinned by
 a different corpus entry (`v3/enum-schemas`), producing a different symptom (a nameless enum constant and an empty
@@ -289,6 +315,11 @@ as type names in the corpus, not as property names). **20 files** across the 10 
 `test/output/kotlin/models@sb3/v3/extreme-names/com/openapi/generated/model/ObjectWithExtremeProperties.kt` and
 `test/output/kotlin/models@sb3/v3/non-ascii-names/com/openapi/generated/model/ObjectWithNonAsciiProperties.kt`.
 
+**Compile gate:** `test/compile/kotlin/models@sb3/v3/extreme-names.txt` and its 19 siblings —
+`Syntax error: Parameter name expected.`, **20 occurrences across 20 units**, matching the 20 predicted files exactly.
+That message shape occurs 80 times in the committed snapshots overall; the other 60 are in `v3/reserved-words` and
+belong to **defect 23** below, not here. Counting the shape rather than the spec would overstate this entry fourfold.
+
 TypeScript has no equivalent defect at this site: `getProperties` (`typescript/.../model-generator.ts:231`) emits a
 property using its raw, uncased name as a quoted string-literal key rather than routing it through `toCasing`, so an
 empty or non-ASCII property name still produces a valid quoted key — `''?: string;` and `'日本語'?: string;` in
@@ -304,6 +335,315 @@ constructor-parameter declaration, not a type declaration) and so does a fix's s
 root cause.
 
 Not fixed here — this phase records defects rather than fixing them.
+
+### Defect 23 — Kotlin emits hard keywords unbackticked as property and constructor-parameter names (found by phase 2b task 5, confirmed by the tier-3 compile gate, not scheduled)
+
+`getClassParameter` (`packages/kotlin/src/generators/models/model-generator.ts:308`) and `getInterfaceProperty`
+(`:338`) both compute a Kotlin identifier as `toCasing(property.name, ctx.config.propertyNameCasing)` and hand the
+result to the AST unexamined. Nothing downstream examines it either: `KtParameter.onWrite`
+(`packages/kotlin/src/ast/nodes/parameter.ts:81`) and `KtProperty.onWrite`
+(`packages/kotlin/src/ast/nodes/property.ts:168`) each do `builder.append(this.inject.beforeName, this.name,
+this.inject.afterName)` and nothing more. There is no backtick-quoting step and no keyword list anywhere in
+`packages/kotlin`. A property named after a Kotlin **hard** keyword therefore emits an identifier the parser rejects.
+
+`test/output/kotlin/models@sb3/v3/reserved-words/com/openapi/generated/model/ObjectWithReservedProperties.kt` declares
+nine properties, all unbackticked: `class` (`:10`), `val` (`:15`), `is` (`:20`), `in` (`:25`), `function` (`:30`),
+`default` (`:35`), `constructor` (`:40`), `prototype` (`:45`), `this` (`:50`). **Exactly five break** — `class`,
+`val`, `is`, `in`, `this`, the hard keywords. The other four compile clean, and that is the load-bearing detail:
+`constructor` is a Kotlin **soft** keyword and is legal as an identifier, while `function`, `default` and `prototype`
+are not Kotlin keywords at all (Kotlin's is `fun`, not `function`). So the fix is a hard-keyword denylist plus
+backtick-quoting, **not** a general "looks reserved" filter — a filter broad enough to catch those four would rename
+identifiers that are correct today and churn snapshots for nothing.
+
+Thirteen diagnostics for five broken properties, because `val val:` alone yields **five** where the other four yield
+two each: the parser cannot tell where the `val` modifier ends and the name begins, so its block (`:12-15`) carries
+two `Conflicting declarations:`, two `Syntax error: Parameter name expected.` and the file's only
+`An explicit type is required on a value parameter.`
+
+**Compile gate:** `test/compile/kotlin/models@sb3/v3/reserved-words.txt` and its 9 profile siblings —
+`Syntax error: Parameter name expected.` (60), `Conflicting declarations:` (60) and `An explicit type is required on a
+value parameter.` (10). **130 occurrences across 10 units**, 13 per unit, byte-identical in all ten Kotlin profiles
+because this is a model-emission defect no profile option touches. Second-largest Kotlin defect the gate found, after
+defect 26.
+
+Pinned by `v3/reserved-words` (`ObjectWithReservedProperties`). Cross-reference: distinct from **defect 22** above,
+which shares the emission site (`getClassParameter`) and one message shape but not the root cause — that one is an
+identifier `getWords` emptied, this one is a perfectly well-formed identifier the *language* reserves. Defect 22 is
+fixed by supplying a fallback name; this one by quoting a name that is already right. Distinct from **defect 24**
+below, which is the same corpus entry and the same "the name is a Kotlin keyword" intuition applied in a *type*-name
+position, and which the gate does not catch at all. Not fixed here — this phase records defects rather than fixing
+them.
+
+### Defect 24 — a Kotlin schema named after a `kotlin.*` type shadows that type for its whole package (found by phase 2b task 5, **not** caught by the tier-3 compile gate, not scheduled)
+
+`getDeclarationTypeName` (`packages/kotlin/src/generators/models/model-generator.ts:657-658`) computes a type's
+emitted identifier as `toCasing(args.schema.name, ctx.config.typeNameCasing)` and never checks it against the names
+Kotlin's default imports already bind. A schema named `String`, `Int`, `List`, `Map`, `Any` or `Unit` is emitted as a
+top-level class in `com.openapi.generated.model`, and a class declared in a package outranks a default import for
+every other file in that package — so from that point on `String` in that package means the generated data class, not
+`kotlin.String`.
+
+`test/output/kotlin/models@sb3/v3/reserved-words/com/openapi/generated/model/` holds twenty files, nineteen of them
+named after a Kotlin keyword or type. At least eight shadow a name Kotlin's default imports already bind: `Any.kt`,
+`Int.kt`, `List.kt`, `Map.kt`, `String.kt`, `Unit.kt` and `Enum.kt` against `kotlin.*`, plus `Class.kt` against
+`java.lang.*`, which is also default-imported on the JVM. `String.kt:6-11` is the clearest witness — it declares
+`data class String(… val value: String? = null)`, where the property's type resolves to the class being declared.
+
+**Compile gate: zero diagnostics, and that is the finding.** Every one of those nineteen classes in the corpus has
+the same body — a single `val value: String? = null` — which is self-consistent whichever `String` it means, so
+no `test/compile/kotlin/*/v3/reserved-words.txt` mentions any file other than `ObjectWithReservedProperties.kt`. Both
+the task-8 brief and its addendum assumed this symptom was among the gate's compile breaks. It is not, and an entry
+claiming a snapshot for it would be citing evidence that does not exist. The defect is real and **latent**: it needs
+only a sibling model in the same package using a shadowed type generically — `val items: List<Thing>`, where the
+shadowing `List` takes no type arguments — to become a compile error, and short of that it silently retypes every
+`String`-typed property in the package.
+
+Pinned by `v3/reserved-words`, identically in all ten Kotlin profiles. Cross-reference: **kept separate from defect
+23** rather than folded into it, on three grounds — a different emission site (`getDeclarationTypeName`, a type-name
+position, against `getClassParameter`/`getInterfaceProperty`, a property-name position), a different fix (qualify or
+rename, against backtick-quote), and, decisively, a different evidential status: 130 committed diagnostics against
+none. One entry covering both would have to either lend this symptom defect 23's evidence or lend defect 23 this
+symptom's uncertainty. Related to the open dedup question in "Also registered, not scheduled" below only in that a
+rename-based fix would need the same policy.
+
+Not fixed here — this phase records defects rather than fixing them. A fix chooses between emitting every `kotlin.*`
+reference fully qualified (`kotlin.String` rather than `String`), which is mechanical and complete, and renaming the
+colliding declaration, which is a naming policy. Whichever is chosen, **verifying it needs a corpus addition first** —
+a model in the same package that actually uses a shadowed type generically — because the corpus as it stands would
+show no snapshot change either way.
+
+### Defect 25 — the `_N` file-name disambiguation renames the file and never the declaration, so colliding Kotlin models redeclare each other (found by the tier-3 compile gate, not scheduled)
+
+Two schemas whose names normalize to one Kotlin identifier target one output path. `writeGeneratedFile`
+(`packages/core/src/utils/file-system.utils.ts:81`) resolves that under `existingFileBehavior: 'count'` by calling
+`getCountedFilePath` (`:68`, invoked at `:92`), which inserts `_1`, `_2`, … before the extension until it finds a free
+path. It operates on the path string alone; it never sees, and could not change, the identifier inside the file. That
+identifier was fixed much earlier by `getDeclarationTypeName`
+(`packages/kotlin/src/generators/models/model-generator.ts:657-658`) and is never revisited. The result is N
+differently-named files declaring the same class in the same package — which in Kotlin is one namespace, not N.
+
+**Compile gate:** `test/compile/kotlin/models@sb3/v3/name-collisions.txt` and its 19 siblings — `Redeclaration:`,
+**90 occurrences across 20 units**, 9 per profile, from two corpus entries:
+
+- `v3/name-collisions`, 7 per profile — `MyThing.kt`, `MyThing_1.kt` … `MyThing_4.kt`, five files each declaring
+  `data class MyThing` (from `myThing`, `MyThing`, `my_thing`, `my-thing`, `my thing`), plus `Thing2.kt` and
+  `Thing2_1.kt`, two declaring `data class Thing2` (from `Thing2` and `Thing_2`).
+- `v3/extreme-names`, 2 per profile — `A.kt` and `A_1.kt`, both declaring `data class A`, from the case-only pair `A`
+  and `a`. The brief and the corpus-expansion deviation note both name only the `MyThing` group; this second corpus
+  entry hits the same defect and is easy to miss.
+
+**Kotlin only.** TypeScript emits one module per model with a kebab-cased filename and no package-level namespace, so
+`my-thing.ts` and `my-thing_1.ts` each export their own `MyThing` without conflict. There is no
+`test/compile/typescript/*/v3/name-collisions.txt` at all — an absence that is informative rather than missing.
+
+**Structurally invisible before phase 2b.** Under the previous `existingFileBehavior: 'error'`, `v3/name-collisions`,
+`v3/extreme-names` and `v3/non-ascii-names` aborted on the first collision and committed nothing but a one-line
+`.error.txt` — no tree, so nothing to compile. `test/output-tests/output.test.ts:22` now passes `'count'`. That switch
+was an owner decision recorded in `docs/superpowers/plans/2026-07-25-corpus-expansion.md` under "Deviations taken
+during execution", whose closing note predicted this outcome in as many words ("those trees do not compile — five
+`data class MyThing` declarations in one Kotlin package") and left tier 3's response to whoever built it. This entry
+is that response: recorded as a defect, with the specs kept in the gate rather than excluded from it.
+
+Cross-reference: this entry records the **compile consequence** of one located mechanism. The general absence it sits
+inside — "No name deduplication exists anywhere in the three packages" — stays where it is, as the unnumbered design
+note at the end of "Also registered, not scheduled" below, and was deliberately **not** promoted to a numbered defect
+on this evidence. The two are not the same claim: that note is about the core transform composing names that can
+collide and needing a dedup *design*, with no site and no obvious right answer; this entry is about the one place in
+the codebase that looks like deduplication and is not, which has a `path:line` and is fixable on its own terms.
+Fixing this entry — make the counter rename the declaration too, or refuse the collision outright — does not answer
+the design question, and answering the design question would make this entry unreachable rather than correct. Not
+fixed here — this phase records defects rather than fixing them.
+
+### Defect 26 — `okhttp3-clients@sb4` emits a Jackson 2 `SerializationFeature` member against Jackson 3 (found by the tier-3 compile gate, not scheduled)
+
+The static-serializer template branches on `springBootVersion` and gets the Jackson 3 migration almost entirely right,
+then splices in one member Jackson 3 removed. In
+`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-clients-generator.ts:158`, inside the
+`springBootVersion === 4` branch:
+
+```ts
+.configure(${kt.refs.jackson.serializationFeature(springBootVersion)}.WRITE_DATES_AS_TIMESTAMPS, false)
+```
+
+`kt.refs.jackson.serializationFeature` (`packages/kotlin/src/ast/references/jackson.ts:42-45`) resolves correctly to
+`tools.jackson.databind.SerializationFeature` for Spring Boot 4. `WRITE_DATES_AS_TIMESTAMPS` is a bare literal, and
+Jackson 3 moved date handling off `SerializationFeature`. The sb3 branch at `:164` uses the same literal correctly
+against Jackson 2.
+
+**This is not a gate dependency gap.** Every other `tools.jackson` name in the same generated file resolves — the
+`ObjectMapper`, `SerializationFeature` and `DeserializationFeature` imports, `jacksonMapperBuilder()`,
+`.findAndAddModules()`, `.changeDefaultPropertyInclusion { … }`, and
+`DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES` on the very next line. Only the member is missing. Worth
+stating, because "every unit of a profile fails" otherwise reads as a harness or image problem.
+
+**Compile gate:** `test/compile/kotlin/okhttp3-clients@sb4/v3/simple-schemas.txt` and its 52 siblings —
+`Serializer.kt:14:45 Unresolved reference 'WRITE_DATES_AS_TIMESTAMPS'.` plus the knock-on `:15:14 Unresolved reference
+'configure'.` (the failed call yields an error type, so the chained call cannot resolve either). **106 occurrences
+across 53 units — every unit of the profile.** Largest single defect the gate found in either language.
+
+Witness: `test/output/kotlin/okhttp3-clients@sb4/v3/simple-schemas/com/openapi/generated/api/client/infrastructure/Serializer.kt:14`.
+Scoped to `okhttp3-clients@sb4`; `@sb3` emits the Jackson 2 API against Jackson 2 and is clean here. **This is the
+class of defect that gating both Spring Boot lines exists to find** — a single-line gate would have missed it
+entirely. Not fixed here — this phase records defects rather than fixing them; a fix needs Jackson 3's replacement for
+the feature, a lookup this entry deliberately does not guess at.
+
+### Defect 27 — `okhttp3-clients` delegates to `ApiClient` with an argument order that only matches `serializer: 'parameter'` (found by the tier-3 compile gate, not scheduled)
+
+The generated `ApiClient` base has two possible parameter orders, chosen by `ctx.config.serializer` at
+`okhttp3-clients-generator.ts:129-131`:
+
+```ts
+ctx.config.serializer === 'parameter'
+  ? 'val baseUrl: String, val objectMapper: ObjectMapper, val client: Factory = defaultClient'
+  : 'val baseUrl: String, val client: Factory = defaultClient, val objectMapper: ObjectMapper = Serializer.jacksonObjectMapper',
+```
+
+Each generated subclass computes the same flag (`serializerAsParameter`, `okhttp3-client-generator.ts:59`) and uses it
+to order its *own* constructor parameters (`:69`, `:76`) — but its `super(…)` argument list is a constant:
+
+```ts
+delegateArguments: ['basePath', 'objectMapper', 'client'],   // okhttp3-client-generator.ts:85
+```
+
+which matches only the `'parameter'` shape. Under the default `serializer: 'static'`, which is what every corpus
+profile uses, the base is `(baseUrl, client, objectMapper)` and the positional call hands `objectMapper` to the
+`Call.Factory` slot and `client` to the `ObjectMapper` slot. Kotlin reports both, which is why the diagnostic always
+arrives as a symmetric pair on one line.
+
+**Compile gate:** `test/compile/kotlin/okhttp3-clients@sb3/v2/parameter-locations.txt` and its 31 siblings —
+`ParametersApiClient.kt:23:25 Argument type mismatch: actual type is 'ObjectMapper', but 'Call.Factory' was expected.`
+and `:23:39 … actual type is 'Call.Factory', but 'ObjectMapper' was expected.` **76 occurrences across 32 units**
+(`@sb3` and `@sb4`, 16 units each — the 16 being the units whose spec has operations and therefore a client class; a
+models-only spec emits no subclass and no diagnostic). Two occurrences per client class, so `v3/tags-and-servers`
+contributes 8 rather than 2.
+
+Witness: `test/output/kotlin/okhttp3-clients@sb3/v2/parameter-locations/com/openapi/generated/api/client/ParametersApiClient.kt:23`
+against the base at `…/api/client/infrastructure/ApiClient.kt:26`. Independent of `springBootVersion` — it
+reproduces identically on both lines, which is the contrast with defect 26 above. Not fixed here — this phase
+records defects rather than fixing them. The fix is to derive `delegateArguments` from `serializerAsParameter` as the
+list above it already is, rather than to reorder the base: the `'parameter'` path is not exercised by the corpus, so
+nothing here shows it is broken, and reordering the base would be a change made blind.
+
+### Defect 28 — `spring-reactive-web-clients` puts `awaitExchange`'s `Any` bound on the wrong Spring Boot line (found by the tier-3 compile gate, not scheduled)
+
+Each generated `…Requests.kt` emits a `suspend fun <T> WebClient.<operation>(responseHandler: suspend (ClientResponse)
+-> T): T` extension that forwards to Spring's `awaitExchange`.
+`spring-reactive-web-client-generator.ts:164-166` decides whether `T` carries an `Any` bound:
+
+```ts
+// Spring 7's `WebClient.awaitExchange` is `<V : Any>`, so the `<T>` overloads need an `Any` bound to infer.
+generics: [
+  kt.genericParameter('T', ctx.config.springBootVersion === 4 ? { constraint: kt.refs.any() } : undefined),
+],
+```
+
+The guard names the wrong version. `@sb4` gets `<T : Any>` and compiles; `@sb3` gets a bare `<T>` and fails, and its
+diagnostic states the expectation directly — `'SuspendFunction1<ClientResponse, T & Any>' was expected`. It is the
+Spring 6 signature on the Boot 3 line that needs the bound, and that is exactly the line the guard withholds it from.
+Whether Spring 7 also needs it is **not** settled by the gate — `@sb4` emits the bound and compiles, so both readings
+survive — but making the constraint unconditional is known to satisfy both lines as they stand.
+
+**Compile gate:** `test/compile/kotlin/spring-reactive-web-clients@sb3/v3/json-input.txt` and its 15 siblings —
+`Argument type mismatch: actual type is 'SuspendFunction1<ClientResponse, T (of fun <T> WebClient.<op>)>', but
+'SuspendFunction1<ClientResponse, T (of fun <T> WebClient.<op>) & Any>' was expected.` **115 occurrences across 16
+units, `@sb3` only**, one per generated extension function. **This is the entire explanation for that profile's
+snapshot asymmetry**: `@sb3` has 20 committed snapshots against `@sb4`'s 5 for the same 53 units, and the 15 extra are
+this defect and nothing else.
+
+Compare `test/output/kotlin/spring-reactive-web-clients@sb3/v3/json-input/com/openapi/generated/api/client/Service1Requests.kt:21`
+(`suspend fun <T> WebClient.listThings(…)`) with its `@sb4` sibling at the same line
+(`suspend fun <T : Any> WebClient.listThings(…)`) — same generator, same spec, one token apart. Pinned by every
+`spring-reactive-web-clients@sb3` unit that has operations. Like defect 26 this is visible only to a gate that
+compiles both Spring Boot lines, and unlike defect 26 it is the *older* line that breaks. Not fixed here — this phase
+records defects rather than fixing them.
+
+### Defect 29 — a multipart file parameter is typed non-nullable regardless of `required`, then given a `null` default (found by the tier-3 compile gate, not scheduled)
+
+Both multipart-capable Kotlin client generators short-circuit the file case before the nullability decision is made:
+
+- `okhttp3-client-generator.ts:431-434` — `getParameterType` returns `kt.refs.java.file()` as soon as
+  `parameter.multipart?.isFile` is true. Only the fall-through at `:436-439` passes `nullable: !parameter.required`.
+- `spring-reactive-web-client-generator.ts:436-439` — identical shape, returning `ctx.refs.apiRequestFile()`, with
+  `nullable: !parameter.required` again reached only by the fall-through at `:441-444`.
+
+`getParameterDefaultValue` (`okhttp3-client-generator.ts:450`, and its reactive twin at `:447`) is *correct*: it emits
+a default only when `!parameter.required`, and for a file part carrying no schema default that default is `null`. The
+two halves therefore contradict each other — the type says the parameter cannot be null, the default says it is —
+and the emitted signature is `fun fileAndFields(file: File = null, …)`. The reactive generator already knows the
+parameter is optional where it builds the body (`spring-reactive-web-client-generator.ts:277` picks `parameterName` or
+`${parameterName}?` from `p.required && !p.schema?.nullable`); only the type declaration is missing that test.
+
+**Compile gate:** `test/compile/kotlin/okhttp3-clients@sb3/v3/multipart-bodies.txt` and 3 siblings —
+`Null cannot be a value of a non-null type 'File'.` and `Null cannot be a value of a non-null type 'ApiRequestFile'.`
+**36 occurrences across 4 units**, splitting **18 against `'File'`** (`okhttp3-clients@sb3` and `@sb4`, 9 each) and
+**18 against `'ApiRequestFile'`** (`spring-reactive-web-clients@sb3` and `@sb4`, 9 each). Both types must be covered;
+a fix aimed at `java.io.File` alone would leave half the occurrences standing.
+
+Nine per unit is three operations × three emission sites. `v3/multipart-bodies.yml` has four operations with a file
+part: `singleFile` lists `file` under `required` and correctly emits `file: File` with no default, while
+`fileAndFields`, `withEncoding` and `optionalFile` do not and each emits `file: File = null` three times — from the
+public function, the `…WithHttpInfo` overload and the private `…RequestConfig` helper. See
+`test/output/kotlin/okhttp3-clients@sb3/v3/multipart-bodies/com/openapi/generated/api/client/MultipartApiClient.kt:49`
+(correct, required) against `:188`, `:230` and `:248` (broken, optional).
+
+Pinned by `v3/multipart-bodies`. Cross-reference: distinct from **defect 20**, the TypeScript `fetch-clients`
+multipart *serialization* defect pinned by the same spec — a different language, a different generator, and a
+wire-format bug rather than a signature that will not compile. Not fixed here — this phase records defects rather than
+fixing them. The fix is to give the file branch the same `nullable: !parameter.required` its fall-through already has,
+in both generators.
+
+### Defect 30 — the Angular and k6 response-model barrels re-export a multi-tagged operation's response type once per tag (found by the tier-3 compile gate, not scheduled)
+
+An operation carrying two tags is generated into one service per tag, and each service emits its own response-model
+type named after the operation. The barrel then re-exports both without deduplicating:
+
+- `packages/typescript/src/generators/services/angular-services/angular-services-generator.ts:277-282` —
+  `getResponseModelsIndexFileContent` flat-maps every service's `responseModels` straight into one `ts.export(…)` per
+  entry.
+- `packages/typescript/src/generators/services/k6-clients/k6-clients-generator.ts:164-169` — the same, as a value
+  export rather than a type export.
+
+Nothing between the flat-map and the emit asks whether a component name has already been exported.
+
+**Compile gate:** `test/compile/typescript/angular-services/v3/tags-and-servers.txt` and
+`test/compile/typescript/k6-clients/v3/tags-and-servers.txt` — `TS2300 Duplicate identifier 'TwoTagsApiResponse'.`
+**4 occurrences across 2 units**, two per barrel, because TypeScript flags both the first declaration and the second.
+
+Pinned by `v3/tags-and-servers`, whose `twoTags` operation is tagged `[Alpha, Beta]`.
+`test/output/typescript/angular-services/v3/tags-and-servers/responses.ts:1` exports `TwoTagsApiResponse` from
+`alpha-responses.model` and `:2` exports it again from `beta-responses.model`. The two definitions are textually
+identical — which is what makes deduplicating the barrel a safe fix, and is worth re-confirming before one is written.
+`easy-network-stub` and `fetch-clients` generate no such barrel and are unaffected; the `models` profile generates no
+services at all.
+
+Cross-reference: a name collision, but not **defect 25**'s. These names are identical by construction rather than by
+normalization, they collide in a barrel's export scope rather than a package's declaration scope, and the fix is local
+to the two barrel builders. Not fixed here — this phase records defects rather than fixing them.
+
+### Defect 31 — `easy-network-stub` emits `OPTIONS` and `HEAD` into a stub API whose `HttpMethod` union rejects them (found by the tier-3 compile gate, not scheduled)
+
+`EasyNetworkStubGenerator` passes each operation's HTTP method through verbatim:
+`packages/typescript/src/generators/services/easy-network-stub/easy-network-stub-generator.ts:160` emits
+`ts.string(endpoint.method.toUpperCase())` as the first argument to `this.stubWrapper.stub2<…>()(…)` (`:159`). The
+`easy-network-stub` package types that argument as `HttpMethod`, and in the version the gate pins
+(`easy-network-stub@9.0.0`, `test/docker/node/package.json`) that union admits neither `OPTIONS` nor `HEAD`. OpenAPI
+permits both.
+
+**Compile gate:** `test/compile/typescript/easy-network-stub/v3/operation-naming.txt` —
+`stubs/naming.stubs.ts:195:7 TS2345 Argument of type '"OPTIONS"' is not assignable to parameter of type 'HttpMethod'.`
+and `:213:7` for `'"HEAD"'`. **2 occurrences across 1 unit** — the smallest defect the gate found, and the only one
+confined to a single unit.
+
+Pinned by `v3/operation-naming`, the only corpus spec declaring `options:` and `head:` operations. The same generated
+file emits ten other method literals — `GET` ×6, `POST`, `PUT`, `DELETE`, `PATCH` — and all ten compile clean, so
+the generator's method handling is right for everything the target library models. Scoped to `easy-network-stub`; the
+other four TypeScript profiles hand the method to their own request builders, which do not constrain it to a union.
+
+Not fixed here — this phase records defects rather than fixing them, and this one needs a decision before it needs a
+fix: skip operations the target library cannot stub, emit them with a cast and a comment, or take the constraint
+upstream. What it should not keep doing is silently generating a stub file that does not type-check. Note also that
+this defect is a property of the pinned library version and could resolve with no generator change at all if
+`easy-network-stub` widens the union — so a fix should pin the expectation in a test, not only in the snapshot.
 
 ### Also registered, not scheduled
 
@@ -327,7 +667,10 @@ Small, verified, and each needing either a decision or a home:
   and merges every branch regardless of discriminator. Pre-existing at the top level; no output impact.
 - **No name deduplication exists anywhere in the three packages.** Batch 1's nested-naming fix replaced opaque ordinal
   fallbacks, which were collision-free by construction, with composed names that are not. A dedup mechanism is a design
-  task.
+  task. **Left as a design note deliberately, not promoted**, now that the tier-3 gate has proved one consequence is a
+  compile break: that consequence has a located mechanism and its own numbered entry, **defect 25** above, while this
+  note remains the open design question the entry's fix does not settle. See defect 25's cross-reference for why the
+  two are not the same claim.
 
 ### Explicitly out of scope
 
