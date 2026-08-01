@@ -170,6 +170,15 @@ nothing for the same line in `angular-services`, `k6-clients` and `easy-network-
 zero-binding `export type {  } from …` being elided before resolution is the plausible reason and is unverified. Do
 not read the three silent profiles as unaffected.
 
+Cross-reference: **must not land before defect 21 is fixed.** `deno check` refuses to build a module graph
+containing any unparseable module, root or merely imported — it reports only that one error and checks nothing
+else — so `runDenoCheck`'s workaround (`test/compile-tests/runners/deno-check.ts`) drops an unparseable file from
+the root list and retries, which excludes it only while it stays unreachable from every other root. Fixing this
+defect resolves the `<output>/models/.ts` specifier into a real import, making the still-unparseable `models/.ts`
+(defect 21) reachable from `models.ts` instead of merely a root, so the workaround can no longer exclude it: the
+four affected units (`models`/`fetch-clients` × `extreme-names`/`non-ascii-names`) would fail loudly with a harness
+error instead of the diagnostics defect 21 records. Land defect 21's fix first.
+
 Not fixed here — this phase records defects rather than fixing them. The fix belongs in `getImportKind`: also treat
 a path whose basename is **exactly** `.ts`, `.js`, or `.json` (i.e. an empty component name) as `'file'`, not
 `'module'` — basename equality with the extension, not a prefix match (a prefix match would also wrongly capture
@@ -285,11 +294,23 @@ TypeScript — `test/compile/typescript/angular-services/v3/extreme-names.txt` a
 across 6 units**, four surface shapes of the one root cause per file: `TS1005 '{' expected.` at the missing
 identifier, then `TS2304 Cannot find name 'X'.` / `TS1109 Expression expected.` / `TS2693 'X' only refers to a type,
 but is being used as a value here.` as `tsc` re-reads the object body `{ prop?: string; }` as a conditional
-expression. All four were confirmed to come from this defect and nothing else. Only 12 of the 20 TypeScript files are
-reachable: the host runner enters each unit through its barrels alone (`ENTRY_POINTS`,
-`test/compile-tests/runners/deno-check.ts:12`), and under `models` and `fetch-clients` the barrel's import of the
-empty-named file is exactly what defect 18 breaks — so the file is never in the program and its content is never
-checked. The 8 masked files are not evidence of a narrower blast radius.
+expression. All four were confirmed to come from this defect and nothing else. All 20 TypeScript files are reachable:
+the host runner passes every `.ts` file in a unit to `deno check` rather than entering through a barrel
+(`test/compile-tests/runners/deno-check.ts`), so `models` and `fetch-clients` no longer depend on defect 18's broken
+import to reach the empty-named file. Checking it directly surfaced **8 new diagnostic lines across 4 units**, all
+one message — `The module's source code could not be parsed: Expected '{', got '='` — one occurrence each in
+`models/v3/extreme-names` and `fetch-clients/v3/extreme-names`, three each in `models/v3/non-ascii-names` and
+`fetch-clients/v3/non-ascii-names` (`test/compile/typescript/models/v3/extreme-names.txt`,
+`fetch-clients/v3/extreme-names.txt`, `models/v3/non-ascii-names.txt`, `fetch-clients/v3/non-ascii-names.txt`).
+
+Cross-reference: **defect 21 must be fixed before defect 18.** `deno check` refuses to build a module graph
+containing any unparseable module, root or merely imported — it reports only that one error and checks nothing
+else — so `runDenoCheck`'s workaround (`test/compile-tests/runners/deno-check.ts`) drops an unparseable file from
+the root list and retries, which excludes it only while it stays unreachable from every other root. Fixing defect 18
+resolves the `<output>/models/.ts` specifier into a real import, making the still-unparseable `models/.ts` (this
+defect) reachable from `models.ts` instead of merely a root, so the workaround can no longer exclude it: the four
+affected units (`models`/`fetch-clients` × `extreme-names`/`non-ascii-names`) would fail loudly with a harness error
+instead of reporting the diagnostics above. Land this defect's fix first.
 
 Cross-reference: distinct from **defect 8**, which covers the Kotlin *enum-constant* emission site (`getEnum`,
 `model-generator.ts:141,163`) for an enum value whose cased name is empty — a different generator function, pinned by
