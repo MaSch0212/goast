@@ -21,7 +21,7 @@ import { runTsc } from './runners/tsc.ts';
  *
  * `deno.json` includes all of `test/` in test discovery, so `deno task test` would otherwise find this
  * file and start a container — breaking the rule that tiers 1 and 2 never touch Docker. Registering no
- * tests at all, rather than registering skipped ones, keeps 782 ignored steps out of the everyday run.
+ * tests at all, rather than registering skipped ones, keeps 797 ignored steps out of the everyday run.
  * `deno task test:compile` sets the variable.
  */
 const enabled = (Deno.env.get('GOAST_COMPILE') ?? '') !== '';
@@ -60,15 +60,15 @@ const KOTLIN_PROFILES = [
 /**
  * The fewest units a healthy corpus can produce, below which the run is a harness failure.
  *
- * 782 units exist today (108 + 162 + 512). A floor tracking that number exactly would fail on every
+ * 797 units exist today (110 + 165 + 522). A floor tracking that number exactly would fail on every
  * corpus addition, and a floor of 1 would defend nothing — the shape being defended against is a
  * corpus that has *collapsed*: a renamed `test/output` subtree, a `profiles.ts` that throws before it
  * registers anything, a discovery walk that silently matches no directory. With `units` empty every
  * `describe` below still registers a passing "compiles every … unit" test over zero units, so the gate
  * reports green having compiled nothing.
  *
- * 700 is chosen as the largest round number below `782 - 108`: losing even the *smallest* of the three
- * execution groups outright leaves 674 and trips it, while ~80 units of slack absorbs the ordinary
+ * 700 is chosen as the largest round number below `797 - 110`: losing even the *smallest* of the three
+ * execution groups outright leaves 687 and trips it, while ~80 units of slack absorbs the ordinary
  * removal of a spec or two (a spec is worth roughly 15 units across the profiles that generate it)
  * without a test edit. Per-group and per-profile emptiness is checked separately below, which is the
  * finer-grained guard; this is the blunt backstop for a shrink neither of those sees.
@@ -100,7 +100,7 @@ const kotlinUnits = units.filter((u) =>
  * Both the host group and the per-profile container groups live under one `enabled` guard, not just the
  * empty `hostTsUnits`/`CONTAINER_TS_PROFILES` filters: with `enabled` false a `describe` call still
  * registers one passing "compiles every ... unit" test (trivially, over zero units), which is exactly
- * the "782 ignored steps" this file exists to avoid — a registered-and-passing test is not the same as
+ * the "797 ignored steps" this file exists to avoid — a registered-and-passing test is not the same as
  * no test, so the opt-in guard needs every `describe` call to not run at all.
  *
  * The `unit discovery` block belongs inside the guard for the opposite reason: with `enabled` false,
