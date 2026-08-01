@@ -52,7 +52,12 @@ dependencies {
         add(configurationName, "org.springframework:spring-webflux")
         add(configurationName, "org.springframework:spring-context")
         add(configurationName, "io.projectreactor:reactor-core")
-        add(configurationName, "org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+        // `org.jetbrains.kotlinx:kotlinx-coroutines-reactor` was here until Task 6 removed it. It is in
+        // no `DEPENDENCIES` entry — `kotlin.ts` drops it as unused for `spring-reactive-web-clients`,
+        // whose `awaitBody`/`awaitExchange` are Spring WebFlux's own extensions — and
+        // `grep -rl kotlinx test/output/kotlin` finds zero files. Warming it dragged
+        // `kotlinx-coroutines-core` and its `kotlin-stdlib` constraint into both configurations for
+        // nothing.
         add(configurationName, "jakarta.validation:jakarta.validation-api")
         add(configurationName, "jakarta.annotation:jakarta.annotation-api")
         // Verified directly, from a pristine image layer with no named volume: once
@@ -79,13 +84,41 @@ dependencies {
     // cannot go in the loop above: the sb3 BOM (Spring Boot 3.5.6) does not manage `tools.jackson`, so a
     // version-less declaration against `sb3` fails to resolve outright.
     //
-    // Jackson 2's module is *removed* from the loop for the same reason in reverse — sb4's generated
-    // tree imports nothing from `com.fasterxml.jackson.databind`, so warming it against the sb4 BOM
-    // would put artifacts in the cache that no real subproject asks for while making the warmed graph
-    // differ from the real one. Both configurations resolving the same graph the real build resolves is
-    // the property that makes `--offline` work; a superset is not automatically safe, because a larger
-    // graph can resolve a shared transitive *upwards* and leave the version the smaller real graph
-    // wants uncached.
+    // Jackson 2's module is sb3-only because sb4's generated tree imports nothing from
+    // `com.fasterxml.jackson.databind`.
+    //
+    // ---- The invariant this file has to satisfy, stated precisely ----
+    //
+    // It is NOT "each warmed configuration resolves the same graph as the real build". That is
+    // unachievable here and this file does not do it: `sb3` and `sb4` are each ONE configuration
+    // holding the union of every family's coordinates, whereas the real gate resolves EIGHT disjoint
+    // per-family graphs (four families x two variants). Pruning a coordinate shrinks the union; it
+    // never makes the union equal to any one real graph.
+    //
+    // The actual invariant is a superset relation over resolved coordinates:
+    //
+    //     for each variant v: { GAVs resolved by warm_v } union { GAVs resolved by compileClasspath }
+    //         MUST CONTAIN  the union of the GAVs resolved by all four real families at variant v
+    //
+    // GAV = group:artifact:VERSION. The version is the whole point, and it is why membership in
+    // `DEPENDENCIES` does NOT imply warm: a coordinate is only warm at the exact version the real graph
+    // asks for. A larger graph can resolve a shared transitive *upwards* (newest-wins conflict
+    // resolution), so the union can hold `foo:2.0` while a real family's smaller graph wants `foo:1.9`
+    // and fails offline. That is the general form of the `kotlin-stdlib-common:2.2.0` failure above.
+    //
+    // Two consequences a maintainer must not skip:
+    //   * ADDING a coordinate here does not prove anything is warm, and neither does deleting one prove
+    //     it is safe. Pruning changes conflict resolution and can *lower* a transitive out of the cache.
+    //   * Only a per-GAV diff can establish the relation. Reading the two lists side by side cannot:
+    //     the versions that matter are transitive and appear in neither list.
+    //
+    // So verify it, do not reason about it. Resolve all eight real (family x variant) configurations
+    // and both warmed ones in a scratch Gradle project, and diff the resolved artifact sets — a real
+    // family's set minus its variant's warmed set must be empty. Model each real configuration as its
+    // `DEPENDENCIES` lines PLUS `org.jetbrains.kotlin:kotlin-stdlib` at the plugin version: the
+    // `kotlin("jvm")` plugin adds that to every subproject's `implementation`, and a model that omits it
+    // resolves a different graph and reports gaps that do not exist. Task 6 ran exactly this check
+    // against the coordinate set below and measured zero uncovered artifacts across all eight.
     sb3("com.fasterxml.jackson.module:jackson-module-kotlin")
     sb4("tools.jackson.module:jackson-module-kotlin")
 }
