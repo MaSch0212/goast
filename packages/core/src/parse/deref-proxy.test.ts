@@ -80,6 +80,31 @@ describe('createDerefProxy', () => {
     expect('description' in proxy).toBe(true);
   });
 
+  it('reports a target-owned property as present via in', () => {
+    const proxy = createDerefProxy({ type: 'object' } as OpenApiSchema, src('/a'));
+    expect('type' in proxy).toBe(true);
+  });
+
+  it('reports a property on neither target nor ref as absent via in', () => {
+    const ref = derefAt('/b', { description: 'from ref' });
+    const proxy = createDerefProxy({ type: 'object' } as OpenApiSchema, src('/a'), ref as never);
+    expect('zzzNotPresent' in proxy).toBe(false);
+  });
+
+  it('silently no-ops when $ref is set to a non-object, non-undefined value', () => {
+    // `set`'s first branch only handles `typeof value === 'object' || typeof value === 'undefined'`; a
+    // string falls past it into the generic `_overwrittenValues[prop] = value` path and the trap still
+    // returns `true`. But `get` intercepts `prop === '$ref'` before ever consulting `_overwrittenValues`,
+    // so the write is permanently invisible: the original ref is neither replaced nor cleared. Pinning
+    // this actual (almost certainly unintended) behaviour, not endorsing it.
+    const ref = derefAt('/b', { description: 'from ref' });
+    const proxy = createDerefProxy({} as OpenApiSchema, src('/a'), ref as never);
+    const result = Reflect.set(proxy, '$ref', 'not-an-object');
+    expect(result).toBe(true);
+    expect(proxy.$ref).toBe(ref);
+    expect(proxy.description).toBe('from ref');
+  });
+
   it('lists target keys, ref keys, $ref and $src from ownKeys, but not from Object.keys', () => {
     // The handler implements `ownKeys` but not `getOwnPropertyDescriptor`. `Object.getOwnPropertyNames`
     // (and `Reflect.ownKeys`) go straight through `ownKeys` and report the full virtual key set. But
