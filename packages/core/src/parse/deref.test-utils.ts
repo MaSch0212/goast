@@ -23,6 +23,12 @@ const NESTED_SCHEMA_KEYS = ['allOf', 'anyOf', 'oneOf', 'not', 'items', 'prefixIt
  * through to the `$ref` target for any property the value itself lacks, and that fallthrough is the
  * behaviour most transform code depends on. A plain object with a `$src` field would pass the shape
  * check and silently skip it.
+ *
+ * **`file` is always `'test.yml'`, so `path` alone has to be unique.** Collection and transformation
+ * both key on `${$src.file}#${$src.path}` and dedup on that key, so two fixtures built at the same
+ * `path` — even when they stand for objects in two different documents — silently collapse into one.
+ * There is no error; the second one is simply dropped. Give every fixture in a multi-document scenario
+ * its own `path`.
  */
 export function derefAt<T extends object>(path: string, value: Partial<T>, ref?: Deref<T>): Deref<T> {
   return createDerefProxy(
