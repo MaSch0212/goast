@@ -684,6 +684,176 @@ upstream. What it should not keep doing is silently generating a stub file that 
 this defect is a property of the pinned library version and could resolve with no generator change at all if
 `easy-network-stub` widens the union — so a fix should pin the expectation in a test, not only in the snapshot.
 
+### Defect 32 — `collectResponse` treats a response's entire `headers` map as one item, so no named header is ever
+collected, and a header literally named `"type"` crashes it (found by the tier-1 unit tests, not scheduled)
+
+`collectResponse` (`packages/core/src/collect/collector.ts:125-136`) calls `collect(data, responses.headers, ...)` at
+line 128. `responses.headers` is a `Record<string, OpenApiHeader>`, and `collect` (`collect/helpers.ts:5-21`) treats
+any non-array, non-nullish argument as **one** item, handing the whole map to the callback rather than iterating it by
+key — iterating by key is what `collectRecord` (`helpers.ts:23-36`) does, and `collectResponse` never calls it. So
+`isSchema`/`collectHeader` run exactly once, against the headers object itself, never against an individual named
+header: a header's own schema is never reachable through `collectResponse`, for either the Swagger 2 schema shape or
+the OpenAPI 3 `{schema: …}` shape.
+
+Worse, `isSchema` (`collector.ts:121-123`) tests `obj['type'] !== undefined`. If a header happens to be named literally
+`"type"`, `responses.headers['type']` is truthy, so `isSchema` misreads the *map* as a schema and calls
+`collectSchema(data, header)` (the header map, not a schema) — `collectSchema` (`collector.ts:77-101`) immediately
+dereferences `schema.$src.file` at line 79, and the map has no `$src`, so this throws
+`TypeError: Cannot read properties of undefined (reading 'file')`.
+
+**Tier 1:** `packages/core/src/collect/collector.test.ts`, describe block `'response header schema-or-header
+discrimination'` (line 453) — `'does not collect an ordinarily-named response header at all: the headers record is
+examined as a whole, not per name'` (line 462), `'does not collect an OpenAPI 3 style header schema either, for the
+same reason'` (line 485), and `'crashes when a header happens to be named "type": the whole headers record is then
+misread as a schema and collectSchema dereferences its missing $src'` (line 511, asserting `toThrow(TypeError)`).
+
+Not fixed here — this phase records defects rather than fixing them. The fix is to route `responses.headers` through
+`collectRecord`, the way every other named-map field in this file already does.
+
+### Defect 33 — `x-ignore: true` on an operation is not honoured, because the per-method loop reads `pathItem[method]`
+directly instead of through `collect`/`collectRecord` (found by the tier-1 unit tests, not scheduled)
+
+`x-ignore` is checked in exactly two places in the whole codebase: `collect` and `collectRecord`
+(`packages/core/src/collect/helpers.ts:14,18,33`) — confirmed by `grep -rn "x-ignore" packages/`, which matches
+nothing else. `collectPathItem` (`packages/core/src/collect/collector.ts:56-75`) reads each HTTP method directly off
+the path item — `const operation = pathItem[m];` at line 60 — bypassing both helpers entirely. An operation carrying
+`x-ignore: true` is therefore collected and generated exactly like any other operation; nothing downstream re-checks
+the flag.
+
+**Tier 1:** `packages/core/src/collect/collector.test.ts`, describe block `'endpoint collection'` — `'does not skip an
+operation carrying x-ignore: the per-method loop reads pathItem[method] directly, bypassing the
+collect()/collectRecord() ignore check'` (line 371).
+
+Not fixed here — this phase records defects rather than fixing them.
+
+### Defect 34 — `getCustomFields` silently drops an `x-*` vendor extension inherited through `$ref`, because it
+enumerates with `for...in` over a proxy whose `getOwnPropertyDescriptor` trap is missing (found by the tier-1 unit
+tests, not scheduled)
+
+`getCustomFields` (`packages/core/src/transform/helpers.ts:187-196`) collects vendor extensions with
+`for (const key in schema)` (line 189). A `for...in` loop walks a proxy's `[[OwnPropertyKeys]]` (the `ownKeys` trap)
+and then, per key, its `[[GetOwnProperty]]` (the `getOwnPropertyDescriptor` trap) to decide enumerability.
+`createDerefProxy`'s handler (`packages/core/src/parse/deref-proxy.ts`) implements `ownKeys` (lines 59-69) — which
+reports keys from both the target *and* the `$ref` target — but defines **no** `getOwnPropertyDescriptor` trap at all,
+so that step falls back to querying the real, unproxied target. A key that exists only on the `$ref` target (never
+overridden locally) has no descriptor there and is silently skipped, exactly like `Object.keys` on the same proxy (see
+the deref-proxy test cited below).
+
+`getCustomFields` is called on real `Deref<...>` proxies in production at `transform-schema.ts:80`
+(`custom: getCustomFields(schema)`) and `transform-endpoint.ts:52` (`custom: getCustomFields(endpointInfo.operation)`).
+So a vendor extension declared only on a schema's `$ref` target, with no local override, is silently absent from the
+transformed model and therefore from generated output — even though the value is reachable and correct via direct
+property access (`schema['x-vendor']` still returns it; only enumeration is affected).
+
+**Tier 1:** the underlying mechanism is pinned by `packages/core/src/parse/deref-proxy.test.ts:108`, `'lists target
+keys, ref keys, $ref and $src from ownKeys, but not from Object.keys'`. **No test currently calls `getCustomFields`
+itself against this scenario** — Task 6's report reproduced it empirically (a throwaway script, since deleted) and
+explicitly declined to add a test because `helpers.test.ts` was outside that task's file list; no later task added one
+either. This is a real coverage gap on one of the least obvious, highest-impact defects on this list — flagged here
+rather than silently left implicit.
+
+Not fixed here — this phase records defects rather than fixing them.
+
+### Defect 35 — `combineParameters` matches a path parameter against an operation parameter by `name` alone, ignoring
+`target`, so a same-named query parameter displaces a path parameter (found by the tier-1 unit tests, not scheduled)
+
+`combineParameters` (`packages/core/src/transform/transform-endpoint.ts:253-264`) finds a colliding parameter with
+`result.findIndex((p) => p.name === opParam.name)` (line 256) and, on a match, **replaces** the path-level entry with
+the operation-level one. OpenAPI identifies a parameter by the pair `(name, in)`, not by `name` alone, so an
+operation-level query parameter named `id` on `/pets/{id}` overwrites the path-level `id` parameter instead of
+coexisting with it. Every downstream consumer that filters by `target` — `packages/core/src/utils/endpoint.utils.ts:5`
+(`p.target === 'query'`) and the generators' own `target === 'path'`/`'query'`/`'header'` filters, e.g.
+`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:481`,
+`spring-controller-generator.ts:404`, `spring-reactive-web-client-generator.ts:402`, and
+`packages/typescript/src/generators/services/fetch-clients/fetch-client-generator.ts:98` — never sees the lost path
+parameter, so a generated client for `/pets/{id}` has no `id` path argument to substitute.
+
+**Tier 1:** `packages/core/src/transform/transform-endpoint.test.ts`, describe block `'parameter combination'` —
+`'replaces a path parameter with a same-named operation parameter in a DIFFERENT position'` (line 221).
+
+Not fixed here — this phase records defects rather than fixing them.
+
+### Defect 36 — the implicit (untagged) service omits `$src`, while a tag-derived service always sets it (found by the
+tier-1 unit tests, not scheduled)
+
+`transformEndpoint` (`packages/core/src/transform/transform-endpoint.ts:55-68`) creates one `ApiService` per tag an
+operation carries, falling back to the empty-string tag when it carries none. The object literal for a newly-seen tag
+(lines 60-66) has no `$src` field at all, unlike `transformTag` (`packages/core/src/transform/transform-document.ts:
+20-30`), whose `ApiService` always sets `$src` from the tag object (lines 21-24). A consumer that reads
+`service.$src.file` unconditionally crashes for the implicit, untagged service — and `services-generator.ts:61`
+already carries a defensive `service.$src ? ... : 'tag:${service.name}'` ternary, which only makes sense as a
+workaround for exactly this gap.
+
+**Tier 1:** `packages/core/src/transform/transform-endpoint.test.ts`, describe block `'service attachment'` —
+`'creates the implicit service without a $src, unlike a tag-derived service'` (line 101).
+
+Not fixed here — this phase records defects rather than fixing them.
+
+### Defect 37 — `ApiPath.path` goes stale on a `transformed.paths` cache hit reached via a different path string (found
+by the tier-1 unit tests, not scheduled)
+
+`transformApiPath` (`packages/core/src/transform/transform-endpoint.ts:78-118`) keeps two caches: `context.paths`,
+keyed by the path string, and `context.transformed.paths`, keyed by the path item's own identifier (line 88). The
+`path` field is set exactly once, at construction (line 101, `path: path`), from whichever path string reached the
+constructor first. A second call that misses `context.paths` (a different path string) but hits
+`context.transformed.paths` (the same underlying path-item object, e.g. via a `$ref`) returns the cached `ApiPath` at
+line 89 without ever revisiting `path`. So the second endpoint's `pathInfo.path` reports the *first* endpoint's path
+string, not its own. This is a plausible latent bug for OpenAPI 3.1's Referenced Path Item Object: a document with
+`paths: { '/pets': {...}, '/pets-alias': { $ref: '#/paths/~1pets' } }` would produce an `ApiPath` for `/pets-alias`
+whose `.path` field reads `/pets`.
+
+**Tier 1:** `packages/core/src/transform/transform-endpoint.test.ts`, describe block `'path transformation'` —
+`'separates the two path caches: one pathItem object reused under two different path strings'` (line 143).
+
+Not fixed here — this phase records defects rather than fixing them.
+
+### Defect 38 — `statusCode: Number(status) || undefined` maps the numeric string `'0'` to `undefined`, the same
+bucket as `'default'` and a wildcard range (found by the tier-1 unit tests, not scheduled)
+
+`transformResponse` (`packages/core/src/transform/transform-endpoint.ts:205`) computes
+`statusCode: Number(status) || undefined`. `Number('0')` is `0`, which is falsy, so the `||` collapses a genuine (if
+unusual) `'0'` status code to `undefined` — indistinguishable from `'default'` or a range code like `'2XX'`.
+Cross-reference **defect 19**, the `responseCode = null` consequence in the Kotlin `spring-controllers` generator
+(`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:211-212`), which is
+downstream of the same "no status code" bucket this line produces.
+
+**Tier 1:** `packages/core/src/transform/transform-endpoint.test.ts`, describe block `'responses'` — `'also leaves
+statusCode undefined for the numeric string "0"'` (line 285).
+
+Not fixed here — this phase records defects rather than fixing them.
+
+### Defect 39 — `OpenApiGenerator.use()` mutates the receiver's own `_providers` array before copying it, so branching
+twice off one generator leaks the second branch's providers into the first (found by the tier-1 unit tests, not
+scheduled)
+
+`use()` (`packages/core/src/codegen/generator.ts:41-48`) does `this._providers.push({ provider, config })` (line 46) —
+mutating the array already stored on `this` — and only afterwards constructs the returned generator from
+`[...this._providers]` (line 47). So calling `.use()` twice on the same base generator does not produce two
+independent branches: the second call's push lands on the same array the first call already mutated, and the
+generator returned from the *second* call inherits the *first* call's provider too. A generator meant as a shared,
+reusable starting point silently accumulates every provider ever branched off it.
+
+**Tier 1:** `packages/core/src/codegen/generator.test.ts` — `'accumulates providers on the receiver as well as the
+returned generator'` (line 97).
+
+Not fixed here — this phase records defects rather than fixing them.
+
+### Defect 40 — `mergeDeep`'s array-concatenation branch is unreachable, so two providers contributing to the same
+array-valued output key merge by index instead of concatenating (found by the tier-1 unit tests, not scheduled)
+
+`mergeDeep` (`packages/core/src/codegen/generator.ts:134-155`) tests `value && typeof value === 'object'` (line 143)
+before `Array.isArray(value)` (line 146). Every non-null array satisfies the first condition — arrays are objects —
+so the concatenating branch below it can never run; an array-valued key is always routed into the object-merge
+branch instead, which recurses `mergeDeep(target[key], value)` and, because array indices are just string keys,
+overwrites by index. Two providers contributing `['a', 'b']` and `['c']` to the same output key merge to
+`['c', 'b']`, not `['a', 'b', 'c']`.
+
+**Tier 1:** `packages/core/src/codegen/generator.test.ts` — `'merges arrays from two providers element-wise rather
+than concatenating them'` (line 108).
+
+Not fixed here — this phase records defects rather than fixing them. Cited by the plan's Global Constraints and
+Out-of-scope notes as a fix that would change generated output and therefore belong to a separate phase.
+
 ### Also registered, not scheduled
 
 Small, verified, and each needing either a decision or a home:
@@ -710,6 +880,46 @@ Small, verified, and each needing either a decision or a home:
   compile break: that consequence has a located mechanism and its own numbered entry, **defect 25** above, while this
   note remains the open design question the entry's fix does not settle. See defect 25's cross-reference for why the
   two are not the same claim.
+- **`generator.ts`'s `if (result)` guard before `mergeDeep` is dead code, unlike defect 40 above.**
+  `for (const key in x)` over `null`/`undefined` is a documented no-op — it does not throw — so calling
+  `mergeDeep(input, undefined)` unconditionally is harmless: the loop does nothing and the recursive call returns
+  `input` unchanged. Removing the guard changes no test's outcome. **The committed test's own explanatory comment is
+  incorrect**: `packages/core/src/codegen/generator.test.ts:122-124` asserts "mergeDeep does `for (const key in
+  source)`, which throws on `undefined`" — verified false by direct execution (`for (const key in undefined) {}`
+  completes with no error). The test itself (`'skips merging a falsy provider result instead of passing it to
+  mergeDeep'`, line 121) still passes, because a falsy result genuinely is skipped before ever reaching `mergeDeep` —
+  only the comment's stated reason for needing the guard is wrong, not the assertion. Flagged here rather than
+  silently left as an authoritative-sounding but incorrect explanation for the next reader.
+- **`endpoints-generator.ts` and `services-generator.ts`'s memoization caches (`existingEndpointResults`,
+  `existingServiceResults`) are read but never written by anything in this repo.** Both base classes only ever call
+  `.get()` on the map (`endpoints-generator.ts:53`, `services-generator.ts:53`); every real subclass's
+  `addEndpointResult`/`addServiceResult` writes into the output object instead (e.g.
+  `okhttp3-clients-generator.ts:70-72`, `ctx.output.kotlin.clients[service.id] = result`), never into the cache. Unlike
+  defect 40's `mergeDeep` branch, this is dead *in practice*, not *by construction*: nothing stops a subclass from
+  populating the map directly, and a synthetic test pins that the early-return branch works correctly if it ever is
+  used (`endpoints-generator.test.ts:118`, `'returns the cached result and skips generateEndpoint when
+  existingEndpointResults is pre-populated'`). No generated output is affected today because nothing currently
+  produces two `ApiEndpoint`/`ApiService` objects sharing an id within one provider run.
+- **`deref-proxy.ts`'s `set` trap silently no-ops when `$ref` is written a non-object, non-`undefined` value.** The
+  first branch of `set` (`packages/core/src/parse/deref-proxy.ts:43-46`) only recognizes
+  `typeof value === 'object' || typeof value === 'undefined'`; a string falls through to the generic
+  `_overwrittenValues[prop] = value` path, and the trap still returns `true` (a well-formed write, per the Proxy
+  invariants). But `get` (lines 23-40) intercepts `prop === '$ref'` before ever consulting `_overwrittenValues`, so the
+  write is permanently invisible — the original ref is neither replaced nor cleared. Pinned by
+  `packages/core/src/parse/deref-proxy.test.ts:94`, `'silently no-ops when $ref is set to a non-object, non-undefined
+  value'`. No known call site writes a non-object to `$ref` in production; recorded because the escape hatch exists
+  and is easy to trip over by accident.
+- **`createTypeof` is exported** from `packages/typescript/src/ast/nodes/typeof.ts:35`, and grepping for the bare
+  identifier finds no importer anywhere in `packages/` or `test/` outside its own defining file. The framing that
+  "every sibling node keeps its factory private" needs correcting, though: `createExport` (`ast/nodes/export.ts:46`)
+  and `createMethod` (`ast/nodes/method.ts:131`) are exported the identical way, with the identical property — zero
+  direct importers of the bare name, the functionality reached only through the wrapped `tsExport`/`tsMethod`/
+  `tsTypeof` convenience objects (which *are* used throughout the generators). `createPropertySetter`/
+  `createPropertyGetter` (`ast/nodes/property-accessor.ts:167,171`) are a different case entirely — also exported, but
+  genuinely imported and used, by `ast/nodes/property.ts:10-11` and directly by `property-accessor.test.ts`. So the
+  actual, verified shape of this observation is: three node files (`export.ts`, `method.ts`, `typeof.ts`) export a
+  redundant raw factory alongside their public `tsXxx` wrapper, where every other sibling keeps it module-private;
+  `createTypeof` is one instance of a three-way pattern, not a singleton.
 
 ### Explicitly out of scope
 

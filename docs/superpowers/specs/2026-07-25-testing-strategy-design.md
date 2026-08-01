@@ -146,7 +146,10 @@ Existing tests are retained and normalized to one convention:
 - No `stub(fs, ...)`. Tier 2 performs real IO.
 
 New coverage targets `@goast/core`'s untested directories: `parse/` (document loading, `$ref` resolution, deref
-proxying, version detection), `transform/` (document, endpoint, and schema transformation), `collect/`, and `codegen/`.
+proxying), `transform/` (document, endpoint, and schema transformation), `collect/`, and `codegen/`. `parse/` has no
+version-detection function to test: Swagger 2 versus OpenAPI 3 is handled structurally in `collect/collector.ts`,
+whose `collectDocument` reads `document.definitions` beside `document.components.schemas` unconditionally and never
+inspects `document.openapi` or `document.swagger`.
 
 ## Tier 2: Output Snapshots
 

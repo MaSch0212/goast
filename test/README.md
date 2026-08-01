@@ -17,6 +17,117 @@ Deno and Docker. The everyday loop — tiers 1 and 2 — needs only Deno; Docker
 | 3 | Compile     | Is the generated code valid in its language?          | `deno task test:compile` | active     |
 | 4 | Integration | Does the generated code behave correctly on the wire? | `deno task test:it`      | phases 5-7 |
 
+## Tier 1: unit tests
+
+Tier 1 answers one question: does this function do what it says, in isolation? It calls exported functions directly and
+asserts on their return values, thrown errors, or (for a builder) the text a builder renders. It never asserts on
+generated _file_ content — a tree of `.kt`/`.ts` files written to disk, or a snapshot under `test/output/` — that is
+tier 2's job, and a tier-1 test that needs a generated tree to exist is written in the wrong tier. `deno task test` runs
+it; no Docker, no network (see the `parse/` note below), no generated output.
+
+The convention every test in this tier follows:
+
+- `it`, never `test` — `@std/testing/bdd`'s `it`, consistently, replacing an earlier mix of the two.
+- `import { expect } from '@std/expect'`, never the `@std/expect/expect` subpath.
+- Literal `\n`, never `EOL` from `node:os` — see the one deliberate carve-out below.
+- One top-level `describe` per exported symbol, colocated as `<symbol-file>.test.ts` beside the file it covers.
+- No `stub(fs, ...)`. Verified: zero occurrences anywhere under `packages/` or `test/`.
+- Real IO against a temp directory (`Deno.makeTempDir`, cleaned up in `afterEach`) when a function's contract is IO
+  itself and cannot be tested any other way — e.g. `packages/core/src/codegen/generator.test.ts`,
+  `packages/core/src/parse/parser.test.ts`, and `packages/core/src/utils/file-system.utils.test.ts`.
+
+**The `EOL` carve-out.** `SourceBuilder`/`StringBuilder` default `newLine` to `os.EOL` (`@default os.EOL` on
+`StringBuilderOptions.newLine`, `packages/core/src/utils/string-builder/options.ts`), so on Windows an unpinned builder
+emits `\r\n` and every `\n`-literal expectation in the suite would fail. Every expectation in the suite except one
+therefore constructs its builder with `newLine: '\n'` pinned explicitly. The one exception is
+`packages/core/src/utils/source-builder.test.ts:28` (`'should initialize with default options'`), whose entire purpose
+is to check that documented default — asserting it against `defaultSourceBuilderOptions.newLine` (the same constant the
+constructor reads) would be tautological, so it imports `EOL` from `node:os` independently instead, and a
+`CONVENTION CARVE-OUT` comment at the top of the file tells a future `node:os` sweep not to delete that import. Tier 2's
+output test pins the same `newLine: '\n'` for the same reason, at `test/output-tests/output.test.ts:22` — the generated
+line ending is a _setting_, not a language constant, and the committed snapshots depend on it being pinned to `\n`
+rather than whatever the CI or contributor's OS happens to default to.
+
+**Pinning `newLine` is mandatory for any test that renders builder output**, and `KotlinFileBuilder` and
+`TypeScriptFileBuilder` make that slightly more than a one-word option: neither constructor takes a
+`Partial<...GeneratorConfig>`, so the idiom is:
+
+```ts
+new KotlinFileBuilder(undefined, { ...defaultKotlinGeneratorConfig, newLine: '\n' } as KotlinGeneratorConfig);
+```
+
+(and the `TypeScriptFileBuilder`/`defaultTypeScriptGeneratorConfig` equivalent). **The `as` cast is necessary, not
+laziness.** `defaultKotlinGeneratorConfig` is typed `DefaultGenerationProviderConfig<KotlinGeneratorConfig>`
+(`packages/core/src/codegen/generator.ts`), which is defined as
+`Omit<T, keyof OpenApiGeneratorConfig> & Partial<Pick<T, keyof OpenApiGeneratorConfig>>` — it makes every field
+`KotlinGeneratorConfig` inherits from the base `OpenApiGeneratorConfig` (including `indent`) _optional in the type_,
+even though the literal object actually sets `indent: { type: 'spaces', count: 4 }` at runtime. So
+`{ ...defaultKotlinGeneratorConfig, newLine: '\n' }` has a _type_ where `indent` is possibly `undefined`, which fails
+`deno check` with `TS2345` when the object needs to satisfy plain `KotlinGeneratorConfig` (where `indent` is required) —
+verified at runtime that the spread does preserve `indent` regardless; only the type is the problem. 44 test files (16
+under `packages/kotlin`, 28 under `packages/typescript`) carry this exact cast today. The next person to see it and
+assume it is cargo cult should read this paragraph first.
+
+**`dedent(n)` from `@goast/test-harness`** (`test/harness/string.utils.ts`) strips `n` leading spaces from every line of
+a template literal, so a test can indent its expected multi-line string to match the surrounding code without that
+indentation becoming part of the string under test. It deliberately does **not** touch line endings — there is no
+line-ending helper in the harness at all. Its predecessor, `normalizeEOL`, rewrote `\n` to the host's `EOL`, which made
+every expectation depend on which OS ran the suite; two tests could pass on Windows and fail on Linux for reasons
+unrelated to what they asserted. `normalizeEOL` was retired for exactly that reason once literal `\n` (pinned via
+`newLine: '\n'`, above) replaced every host-dependent expectation it used to paper over.
+
+**`derefAt`, `derefSchemaAt`, and `createTransformerContext` are _not_ exported from `@goast/test-harness`.** They live
+beside the production code they exercise, as `packages/core/src/parse/deref.test-utils.ts` (`derefAt`, `derefSchemaAt`)
+and `packages/core/src/transform/transform.test-utils.ts` (`createTransformerContext`), and every consumer imports them
+by relative path — there is no barrel export for either file. This was not the original plan: `derefAt`/`derefSchemaAt`
+were meant to live in the harness so `transform`/`collect` tests could reuse the real `createDerefProxy`
+(`packages/core/src/parse/deref-proxy.ts`) instead of a hand-rolled stand-in — a plain object with a `$src` field passes
+the shape check but silently skips the proxy's `$ref`-fallthrough behaviour that most transform code actually depends
+on. Doing that would have required `test/harness` to import from `packages/core`, and `createDerefProxy` is deliberately
+not part of core's public API (absent from `packages/core/mod.ts`), so the harness would have had to reach it by a
+relative import outside its own directory. That was checked empirically, not assumed: running
+`deno task npm:test-harness` with such an import in place made `dnt` abort with:
+
+```
+Error stripping prefix of .../packages/core/src/parse/deref-proxy.ts with base .../test/harness
+```
+
+because `dnt` refuses to bundle a file outside the project root it was invoked with. So both fixture files are colocated
+inside `packages/core` instead, named with the `*.test-utils.ts` suffix specifically because Deno's test discovery does
+not treat that suffix as a test file and `deno task npm:core` does not ship it in the published package — both were
+verified, not assumed. If you find yourself wanting to "tidy up" by moving these into the harness, re-run that
+`npm:test-harness` check first; it will fail the same way it did before.
+
+`derefAt(path, value, ref?)` wraps `value` in a real `createDerefProxy` at the given `$src.path`; `derefSchemaAt` does
+the same but recurses into nested schema keys (`allOf`, `anyOf`, `oneOf`, `properties`, etc.) first, so a nested schema
+is itself a proxy at its own sub-path — the shape the real parser produces, and the shape collection's and
+transformation's `$src`-keyed dedup needs to behave the way it does in production. `createTransformerContext` builds the
+same context shape `transformOpenApi` builds internally, kept in lockstep with that literal deliberately: a test-only
+context that only fills the fields one function happens to read would still pass when that function starts reading
+another field, turning a real regression into a green suite.
+
+**Hazard: `derefAt` hardcodes `$src.file` to `'test.yml'`.** Collection and transformation both key their dedup maps on
+`${$src.file}#${$src.path}`, so two fixtures built at the same `path` — even meant to represent objects in two different
+documents — silently collapse into one, with no error; the second is simply dropped. This already produced one test that
+looked like it was asserting real deduplication but was actually just observing the fixture collide with itself. The
+hazard is documented on `derefAt` itself, and it is worth repeating here because it is the single easiest way to write a
+test that looks like it proves something and proves nothing: give every fixture in a multi-document or multi-object
+scenario its own `path`.
+
+`test/compile/` and `test/output/` are off limits to tier 1 — neither is read nor written by anything under
+`packages/**/*.test.ts` — and a tier-1 test that needs generated output to exist to make its assertion belongs in tier 2
+or tier 3 instead. One deliberate exception to "no network": `packages/core/src/parse/parser.test.ts` stubs
+`globalThis.fetch` (not the filesystem) to cover `OpenApiParser`'s URL-download failure path without depending on a real
+host; a real request to a refused port measured ~2s on this host, well past this file's tens-of-milliseconds budget, and
+a real successful download would make tier 1 network-dependent, so that branch is left uncovered deliberately rather
+than faked.
+
+**A pointer, not a repeat:** several tier-1 tests in this repo pin behaviour that is a known, real generator or
+transform defect — not the behaviour anyone would design on purpose. Every one of them is catalogued in
+[`docs/superpowers/plans/2026-07-25-generator-bug-fixes.md`](../docs/superpowers/plans/2026-07-25-generator-bug-fixes.md),
+each entry naming the tier-1 test that pins it. Read a surprising assertion in a tier-1 test as a possible pointer to
+that register before assuming either the test or the code is wrong.
+
 ## Snapshot modes
 
 Tier 2 compares generated output against trees committed under `test/output/`. It runs in one of two modes:
@@ -474,6 +585,7 @@ test/
     paths.ts          # repo root and spec directory paths
     declutter.ts      # strips noise from parsed ApiData before snapshotting
     docker.ts         # docker CLI wrapper for tiers 3 and 4 (build, run, image tagging)
+    string.utils.ts   # dedent(n): strips template-literal indentation, deliberately EOL-agnostic (see Tier 1 above)
   specs/              # OpenAPI corpus, one spec per file or per directory, under v2/v3/v3.1
   output-tests/       # tier 2: profiles.ts registry, output/core-model/orphans tests
   output/             # committed tier 2 snapshots (see "Snapshot forms" above)
