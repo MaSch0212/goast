@@ -2,6 +2,7 @@ import { join } from 'node:path';
 
 import { expect } from '@std/expect';
 import { afterEach, beforeEach, describe, it } from '@std/testing/bdd';
+import { stub } from '@std/testing/mock';
 
 import { OpenApiParser } from './parser.ts';
 
@@ -50,6 +51,27 @@ paths: {}
 
   it('propagates a read failure for a file that does not exist', async () => {
     await expect(new OpenApiParser().parseApi(join(dir, 'missing.yml'))).rejects.toThrow();
+  });
+
+  it('treats an http(s) name as a URL and names it verbatim when the download fails', async () => {
+    // A real request to a refused port took a measured ~2s on this host (see report), well past
+    // the tens-of-milliseconds budget for this file, so this stubs `fetch` instead — the
+    // constraint bans stubbing the filesystem, not `fetch`. This is the only test in the suite
+    // that touches the network surface, and it is stubbed for its whole body: `fetchStub.restore()`
+    // runs in `finally` so the real `fetch` is back even if the assertion fails, and because
+    // nothing here awaits past the `finally`, no request can escape into a later test.
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => Promise.resolve(new Response(null, { status: 404, statusText: 'Not Found' })),
+    );
+    try {
+      await expect(new OpenApiParser().parseApi('http://example.test/api.yml')).rejects.toThrow(
+        'Unable to download http://example.test/api.yml: Not Found',
+      );
+    } finally {
+      fetchStub.restore();
+    }
   });
 
   it('resolves a local $ref and exposes the target through $ref', async () => {
