@@ -78,4 +78,36 @@ describe('verifyText', () => {
       expect(error.message).toContain('Snapshot file does not exist');
     });
   });
+
+  // The engine is shared with tier 3, which points its readers at `deno task test:compile`; tier 2's
+  // own callers pass nothing and must keep getting tier 2's task.
+  describe('update command', () => {
+    it('names `deno task test:output` by default, in both check-mode messages', async () => {
+      await withTempDir(async (dir) => {
+        const file = join(dir, 'state.txt');
+        const missing = await verifyText(file, 'a\n', { mode: 'check' }).catch((e: Error) => e) as Error;
+        expect(missing.message).toContain('Run `deno task test:output` to create it');
+
+        await verifyText(file, 'a\n', { mode: 'write' });
+        const mismatch = await verifyText(file, 'b\n', { mode: 'check' }).catch((e: Error) => e) as Error;
+        expect(mismatch.message).toContain('Run `deno task test:output` to update the snapshot');
+      });
+    });
+
+    it('names the caller-supplied task instead, in both check-mode messages', async () => {
+      await withTempDir(async (dir) => {
+        const file = join(dir, 'state.txt');
+        const options = { mode: 'check', updateCommand: 'deno task test:compile' } as const;
+
+        const missing = await verifyText(file, 'a\n', options).catch((e: Error) => e) as Error;
+        expect(missing.message).toContain('Run `deno task test:compile` to create it');
+        expect(missing.message).not.toContain('test:output');
+
+        await verifyText(file, 'a\n', { mode: 'write' });
+        const mismatch = await verifyText(file, 'b\n', options).catch((e: Error) => e) as Error;
+        expect(mismatch.message).toContain('Run `deno task test:compile` to update the snapshot');
+        expect(mismatch.message).not.toContain('test:output');
+      });
+    });
+  });
 });

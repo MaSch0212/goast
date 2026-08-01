@@ -5,6 +5,15 @@ import { verifyText } from '../snapshot/verify-text.ts';
 import { formatDiagnostics } from './diagnostics.ts';
 import type { CompileUnit, Diagnostic } from './types.ts';
 
+/**
+ * The task that regenerates tier 3's snapshots.
+ *
+ * Every message this file produces names it, including the ones it delegates to {@link verifyText}:
+ * that engine defaults to tier 2's `deno task test:output`, which regenerates nothing under
+ * `test/compile/` and would leave a newly-failing unit failing with the same message.
+ */
+const COMPILE_UPDATE_COMMAND = 'deno task test:compile';
+
 /** Where a unit's diagnostics are committed. */
 export function compileSnapshotFile(compileRootDir: string, unit: CompileUnit): string {
   return join(compileRootDir, unit.language, unit.profile, unit.versionDir, `${unit.spec}.txt`);
@@ -24,9 +33,10 @@ export async function verifyCompileDiagnostics(
   options: VerifyOptions = {},
 ): Promise<void> {
   const mode = options.mode ?? resolveSnapshotMode();
+  const updateCommand = options.updateCommand ?? COMPILE_UPDATE_COMMAND;
 
   if (diagnostics.length > 0) {
-    await verifyText(snapshotFile, formatDiagnostics(diagnostics), { mode });
+    await verifyText(snapshotFile, formatDiagnostics(diagnostics), { mode, updateCommand });
     return;
   }
 
@@ -42,7 +52,7 @@ export async function verifyCompileDiagnostics(
   if (mode === 'check') {
     throw new Error(
       `${snapshotFile} is committed, but this unit no longer fails to compile.\n\n` +
-        'A generator fix probably landed. Run `deno task test:compile` and commit the deletion.',
+        `A generator fix probably landed. Run \`${updateCommand}\` and commit the deletion.`,
     );
   }
 

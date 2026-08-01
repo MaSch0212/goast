@@ -2,7 +2,7 @@ import { dirname } from 'node:path';
 
 import { ensureDir } from '@std/fs/ensure-dir';
 
-import { resolveSnapshotMode, type VerifyOptions } from './mode.ts';
+import { DEFAULT_UPDATE_COMMAND, resolveSnapshotMode, type VerifyOptions } from './mode.ts';
 import { normalizePaths } from './normalize.ts';
 import { firstTextDifference, formatDifferenceExcerpt } from './text-diff.ts';
 
@@ -16,6 +16,7 @@ const encoder = new TextEncoder();
  */
 export async function verifyText(snapshotFile: string, text: string, options: VerifyOptions = {}): Promise<void> {
   const mode = options.mode ?? resolveSnapshotMode();
+  const updateCommand = options.updateCommand ?? DEFAULT_UPDATE_COMMAND;
   const normalized = normalizePaths(text);
 
   let expected: string | undefined;
@@ -31,10 +32,10 @@ export async function verifyText(snapshotFile: string, text: string, options: Ve
     if (expected === undefined) {
       throw new Error(
         `Snapshot file does not exist: ${snapshotFile}\n\n` +
-          'Run `deno task test:output` to create it, then commit the result.',
+          `Run \`${updateCommand}\` to create it, then commit the result.`,
       );
     }
-    throw new Error(formatTextMismatch(snapshotFile, expected, normalized));
+    throw new Error(formatTextMismatch(snapshotFile, expected, normalized, updateCommand));
   }
 
   await ensureDir(dirname(snapshotFile));
@@ -42,7 +43,12 @@ export async function verifyText(snapshotFile: string, text: string, options: Ve
   console.info(`snapshot updated ${snapshotFile}`);
 }
 
-function formatTextMismatch(snapshotFile: string, expected: string, actual: string): string {
+function formatTextMismatch(
+  snapshotFile: string,
+  expected: string,
+  actual: string,
+  updateCommand: string,
+): string {
   const lines = [`Snapshot mismatch: ${snapshotFile}`, ''];
   const difference = firstTextDifference(encoder.encode(expected), encoder.encode(actual));
 
@@ -50,6 +56,6 @@ function formatTextMismatch(snapshotFile: string, expected: string, actual: stri
     lines.push(`First difference at line ${difference.lineNumber}:`, ...formatDifferenceExcerpt(difference));
   }
 
-  lines.push('', 'Run `deno task test:output` to update the snapshot, then commit the result.');
+  lines.push('', `Run \`${updateCommand}\` to update the snapshot, then commit the result.`);
   return lines.join('\n');
 }

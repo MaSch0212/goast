@@ -50,7 +50,40 @@ describe('verifyCompileDiagnostics', () => {
   });
 
   it('passes in both modes for a clean unit with no snapshot', async () => {
-    await verifyCompileDiagnostics(file, [], { mode: 'check' });
     await verifyCompileDiagnostics(file, [], { mode: 'write' });
+    await verifyCompileDiagnostics(file, [], { mode: 'check' });
+  });
+
+  // Every check-mode failure this function can produce must name tier 3's task. Two of the three
+  // reach the message through `verifyText`, whose own default is tier 2's `deno task test:output` —
+  // running that regenerates nothing under `test/compile/` and leaves the run red with the same
+  // message, so a wrong command here is worse than no command.
+  describe('names the tier 3 task in every check-mode failure', () => {
+    async function messageFor(promise: Promise<void>): Promise<string> {
+      const error = await promise.catch((e: Error) => e) as Error;
+      expect(error).toBeInstanceOf(Error);
+      return error.message;
+    }
+
+    it('when a failing unit has no committed snapshot', async () => {
+      const message = await messageFor(verifyCompileDiagnostics(file, one, { mode: 'check' }));
+      expect(message).toContain('deno task test:compile');
+      expect(message).not.toContain('test:output');
+    });
+
+    it('when a committed snapshot no longer matches', async () => {
+      await verifyCompileDiagnostics(file, one, { mode: 'write' });
+      const other: Diagnostic[] = [{ file: 'a.kt', line: 2, column: 1, message: 'different' }];
+      const message = await messageFor(verifyCompileDiagnostics(file, other, { mode: 'check' }));
+      expect(message).toContain('deno task test:compile');
+      expect(message).not.toContain('test:output');
+    });
+
+    it('when the unit now compiles but a snapshot is still committed', async () => {
+      await verifyCompileDiagnostics(file, one, { mode: 'write' });
+      const message = await messageFor(verifyCompileDiagnostics(file, [], { mode: 'check' }));
+      expect(message).toContain('deno task test:compile');
+      expect(message).not.toContain('test:output');
+    });
   });
 });
