@@ -39,6 +39,11 @@ class TestEndpointsGenerator
   protected override generateAdditionalFiles(): void {
     this.additionalFilesCalled = true;
   }
+
+  /** Exposes the protected `buildContext` so a test can seed `existingEndpointResults` before calling `getEndpointResult`. */
+  public buildTestContext(context: OpenApiGeneratorContext<Input>): Context {
+    return this.buildContext(context);
+  }
 }
 
 const makeEndpoint = (id: string, name: string): ApiEndpoint =>
@@ -108,5 +113,21 @@ describe('OpenApiEndpointsGenerationProviderBase', () => {
     await generator.generate(makeContext(makeData([first, second])));
 
     expect(generator.generatedEndpoints).toEqual([first, second]);
+  });
+
+  it('returns the cached result and skips generateEndpoint when existingEndpointResults is pre-populated', async () => {
+    // Nothing in this repo currently writes to `existingEndpointResults` (see the finding above),
+    // but the early-return branch is not unreachable by construction the way mergeDeep's dead
+    // Array.isArray branch is -- nothing stops a subclass from populating the map directly. This
+    // pins that the branch itself still works correctly, independent of whether anything uses it.
+    const generator = new TestEndpointsGenerator();
+    const ctx = generator.buildTestContext(makeContext(makeData([])));
+    const cached: EndpointOutput = { name: 'from-cache' };
+    ctx.existingEndpointResults.set('preset', cached);
+
+    const result = await generator.getEndpointResult(ctx, makeEndpoint('preset', 'ignored'));
+
+    expect(result).toBe(cached);
+    expect(generator.generatedEndpoints).toEqual([]);
   });
 });

@@ -39,6 +39,16 @@ class TestServicesGenerator
   protected override generateAdditionalFiles(): void {
     this.additionalFilesCalled = true;
   }
+
+  /** Exposes the protected `buildContext` so a test can seed `existingServiceResults` before calling `getServiceResult`. */
+  public buildTestContext(context: OpenApiGeneratorContext<Input>): Context {
+    return this.buildContext(context);
+  }
+
+  /** Exposes the protected `getServiceResult` for the same reason. */
+  public runGetServiceResult(ctx: Context, service: ApiService): Promise<ServiceOutput> {
+    return this.getServiceResult(ctx, service);
+  }
 }
 
 const makeService = (id: string, name: string, withSrc: boolean): ApiService =>
@@ -113,5 +123,20 @@ describe('OpenApiServicesGenerationProviderBase', () => {
     await generator.generate(makeContext(makeData([first, second])));
 
     expect(generator.generatedServices).toEqual([first, second]);
+  });
+
+  it('returns the cached result and skips generateService when existingServiceResults is pre-populated', async () => {
+    // As with endpoints-generator: nothing currently writes to this cache, but the early-return
+    // branch is reachable by construction -- a subclass could populate it directly -- so it is
+    // pinned here independent of current usage.
+    const generator = new TestServicesGenerator();
+    const ctx = generator.buildTestContext(makeContext(makeData([])));
+    const cached: ServiceOutput = { name: 'from-cache' };
+    ctx.existingServiceResults.set('preset', cached);
+
+    const result = await generator.runGetServiceResult(ctx, makeService('preset', 'ignored', true));
+
+    expect(result).toBe(cached);
+    expect(generator.generatedServices).toEqual([]);
   });
 });

@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, it } from '@std/testing/bdd';
 
 import type { ApiData } from '../transform/api-types.ts';
 import { OpenApiGenerator } from './generator.ts';
+import type { AnyConfig, OpenApiGenerationProvider, OpenApiGeneratorContext } from './types.ts';
 
 const emptyData = (): ApiData => ({ documents: [], services: [], endpoints: [], schemas: [] });
 
@@ -115,5 +116,121 @@ describe('OpenApiGenerator', () => {
     // first, so the concatenating branch below it is dead code. Two providers contributing to the same
     // array key overwrite by index instead of appending.
     expect(result.items).toEqual(['c', 'b']);
+  });
+
+  it('skips merging a falsy provider result instead of passing it to mergeDeep', async () => {
+    // mergeDeep does `for (const key in source)`, which throws on `undefined`; the `if (result)`
+    // guard around the merge call is what keeps a provider that returns nothing from crashing the
+    // whole chain.
+    const generator = new OpenApiGenerator({ outputDir: join(dir, 'out') })
+      .useFn(() => undefined)
+      .useFn(() => ({ a: 1 }));
+
+    await expect(generator.generate(emptyData())).resolves.toEqual({ a: 1 });
+  });
+
+  it("clears a provider's own outputDir (from its config) when the generator's clearOutputDir is true", async () => {
+    const providerOut = join(dir, 'provider-out');
+    await Deno.mkdir(providerOut);
+    await Deno.writeTextFile(join(providerOut, 'stale.txt'), 'old');
+
+    const generator = new OpenApiGenerator({ outputDir: join(dir, 'out'), clearOutputDir: true })
+      .useFn(() => ({}), { outputDir: providerOut } as never);
+
+    await generator.generate(emptyData());
+
+    await expect(Deno.stat(join(providerOut, 'stale.txt'))).rejects.toThrow();
+  });
+
+  it("ensures (without clearing) a provider's own outputDir when the generator's clearOutputDir is false", async () => {
+    const providerOut = join(dir, 'provider-out');
+    await Deno.mkdir(providerOut);
+    await Deno.writeTextFile(join(providerOut, 'stale.txt'), 'old');
+
+    const generator = new OpenApiGenerator({ outputDir: join(dir, 'out'), clearOutputDir: false })
+      .useFn(() => ({}), { outputDir: providerOut } as never);
+
+    await generator.generate(emptyData());
+
+    expect(await Deno.readTextFile(join(providerOut, 'stale.txt'))).toBe('old');
+  });
+
+  it("creates a provider's own outputDir when it does not exist yet, regardless of clearOutputDir", async () => {
+    const providerOut = join(dir, 'provider-out', 'nested');
+
+    const generator = new OpenApiGenerator({ outputDir: join(dir, 'out'), clearOutputDir: false })
+      .useFn(() => ({}), { outputDir: providerOut } as never);
+
+    await generator.generate(emptyData());
+
+    expect((await Deno.stat(providerOut)).isDirectory).toBe(true);
+  });
+
+  it('ignores a provider config outputDir that is not a non-empty string', async () => {
+    // Exercises the rest of the `'outputDir' in config && config.outputDir && typeof ... === 'string'`
+    // guard: an empty string is falsy, so it is skipped like an absent outputDir would be.
+    const generator = new OpenApiGenerator({ outputDir: join(dir, 'out') })
+      .useFn(() => ({}), { outputDir: '' } as never);
+
+    await expect(generator.generate(emptyData())).resolves.toEqual({});
+  });
+
+  it('registers a provider via useValue and runs its generate method', async () => {
+    const provider: OpenApiGenerationProvider<Record<string, unknown>, { a: number }, AnyConfig> = {
+      generate(_context: OpenApiGeneratorContext<Record<string, unknown>>) {
+        return { a: 1 };
+      },
+    };
+    const generator = new OpenApiGenerator({ outputDir: join(dir, 'out') }).useValue(provider);
+
+    expect(await generator.generate(emptyData())).toEqual({ a: 1 });
+  });
+
+  it('registers a provider via useType and runs its generate method', async () => {
+    class ValueProvider implements OpenApiGenerationProvider<Record<string, unknown>, { a: number }, AnyConfig> {
+      generate(_context: OpenApiGeneratorContext<Record<string, unknown>>) {
+        return { a: 1 };
+      }
+    }
+    const generator = new OpenApiGenerator({ outputDir: join(dir, 'out') }).useType(ValueProvider);
+
+    expect(await generator.generate(emptyData())).toEqual({ a: 1 });
+  });
+
+  it('parseAndGenerate parses real spec files and feeds the resulting data to the providers', async () => {
+    const file = join(dir, 'api.yml');
+    await Deno.writeTextFile(
+      file,
+      `openapi: 3.0.0\ninfo:\n  title: Test\n  version: '1.0'\npaths: {}\n`,
+    );
+
+    const generator = new OpenApiGenerator({ outputDir: join(dir, 'out') })
+      .useFn((context) => ({ docCount: context.data.documents.length }));
+
+    expect(await generator.parseAndGenerate(file)).toEqual({ docCount: 1 });
+  });
+
+  it('parseAndGenerateFromDir only picks up .yml/.yaml/.json files, further narrowed by an optional filter', async () => {
+    const specDir = join(dir, 'specs');
+    await Deno.mkdir(specDir);
+    const minimalYaml = `openapi: 3.0.0\ninfo:\n  title: Test\n  version: '1.0'\npaths: {}\n`;
+    const minimalJson = JSON.stringify({ openapi: '3.0.0', info: { title: 'Test', version: '1.0' }, paths: {} });
+
+    await Deno.writeTextFile(join(specDir, 'a.yml'), minimalYaml);
+    await Deno.writeTextFile(join(specDir, 'b.yaml'), minimalYaml);
+    await Deno.writeTextFile(join(specDir, 'c.json'), minimalJson);
+    await Deno.writeTextFile(join(specDir, 'notes.txt'), 'not a spec');
+
+    const withDocCount = (context: OpenApiGeneratorContext<Record<string, unknown>>) => ({
+      docCount: context.data.documents.length,
+    });
+
+    const allGenerator = new OpenApiGenerator({ outputDir: join(dir, 'out') }).useFn(withDocCount);
+    expect(await allGenerator.parseAndGenerateFromDir(specDir)).toEqual({ docCount: 3 });
+
+    const filteredGenerator = new OpenApiGenerator({ outputDir: join(dir, 'out2') }).useFn(withDocCount);
+    expect(
+      await filteredGenerator.parseAndGenerateFromDir(specDir, { filter: (file) => file.endsWith('a.yml') }),
+    ).toEqual({ docCount: 1 });
   });
 });
