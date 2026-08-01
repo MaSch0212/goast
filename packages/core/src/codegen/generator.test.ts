@@ -118,10 +118,13 @@ describe('OpenApiGenerator', () => {
     expect(result.items).toEqual(['c', 'b']);
   });
 
-  it('skips merging a falsy provider result instead of passing it to mergeDeep', async () => {
-    // mergeDeep does `for (const key in source)`, which throws on `undefined`; the `if (result)`
-    // guard around the merge call is what keeps a provider that returns nothing from crashing the
-    // whole chain.
+  it('ignores a provider that returns nothing, leaving earlier providers intact', async () => {
+    // The `if (result)` guard is defensive, not load-bearing: `for (const key in undefined)` is a
+    // no-op, so `mergeDeep(input, undefined)` would return `input` unchanged anyway. Removing the
+    // guard does not change this test's outcome — see the `if (result)` bullet under "Also
+    // registered, not scheduled" in docs/superpowers/plans/2026-07-25-generator-bug-fixes.md.
+    // What this pins is the observable contract: a falsy provider result cannot corrupt the
+    // accumulated output.
     const generator = new OpenApiGenerator({ outputDir: join(dir, 'out') })
       .useFn(() => undefined)
       .useFn(() => ({ a: 1 }));
