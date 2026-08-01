@@ -16,8 +16,8 @@
     "test:unit": "deno test -A packages",
     "test:output": "GOAST_SNAPSHOT=write deno test -A test/output-tests",
     "test:output:check": "GOAST_SNAPSHOT=check deno test -A test/output-tests",
-    "test:compile": "GOAST_COMPILE=1 GOAST_SNAPSHOT=write deno test -A test/compile-tests",
-    "test:compile:check": "GOAST_COMPILE=1 GOAST_SNAPSHOT=check deno test -A test/compile-tests",
+    "test:compile": "GOAST_COMPILE=1 GOAST_SNAPSHOT=write deno test -A test/compile-tests test/harness/docker.test.ts",
+    "test:compile:check": "GOAST_COMPILE=1 GOAST_SNAPSHOT=check deno test -A test/compile-tests test/harness/docker.test.ts",
     "test:check": "GOAST_SNAPSHOT=check deno test -A",
     "test:all": "deno task test:check && deno task test:compile:check",
     "pg": "deno run -A playground.ts"

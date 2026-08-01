@@ -5,10 +5,26 @@ import { afterEach, beforeEach, describe, it } from '@std/testing/bdd';
 
 import { buildImage, dockerRunArgs, hashBuildContext, imageTag, requireDocker, runContainer } from './docker.ts';
 
-// Probed once, so the smoke test below gives real coverage on a machine with Docker and is a
-// silent skip on one without — keeping tiers 1 and 2 (and this file, on a Docker-less machine)
-// Docker-free.
-const hasDocker = await requireDocker().then(() => true).catch(() => false);
+/**
+ * The container-starting tests at the bottom of this file are opt-in behind `GOAST_COMPILE`, the same
+ * guard `test/compile-tests/compile.test.ts` uses and for the same reason.
+ *
+ * This file is a workspace-member unit test, so it is inside `deno.json`'s default `test.include` and
+ * every one of `deno task test`, `test:harness`, `test:check` and `test:all` reaches it. An
+ * `it({ ignore: !hasDocker })` flag does not keep tiers 1 and 2 Docker-free — it only keeps them
+ * *runnable* without Docker; on a machine that has Docker those tests run, build an image and start
+ * containers, which is exactly what the "tiers 1 and 2 must stay Docker-free" rule forbids (measured:
+ * the unit suite goes from ~17s to ~60s and leaves a `goast-test-docker-smoke` image behind).
+ *
+ * Registering nothing rather than registering ignored tests, for the same reason `compile.test.ts`
+ * gives: a `describe` that runs is a `describe` whose body executes, and an ignored test is still a
+ * line of noise in every everyday run.
+ *
+ * The coverage is not lost — `deno task test:compile` and `test:compile:check` name this file
+ * explicitly alongside `test/compile-tests`, so it runs with the rest of tier 3. Docker is a hard
+ * prerequisite there, so these tests assert rather than skip when it is missing.
+ */
+const enabled = (Deno.env.get('GOAST_COMPILE') ?? '') !== '';
 
 /**
  * Builds (or, after the first call, reuses via the inspect-skip path) the trivial image shared by
@@ -138,79 +154,75 @@ describe('requireDocker', () => {
   });
 });
 
-describe('buildImage and runContainer', () => {
-  // Real coverage when Docker is present, silent skip otherwise — the shape that keeps tiers 1
-  // and 2 (and a Docker-less run of this file) Docker-free.
-  it('builds a trivial image, runs commands in it, and skips a rebuild of the same context', {
-    ignore: !hasDocker,
-  }, async () => {
-    const dir = await Deno.makeTempDir();
-    try {
-      await Deno.writeTextFile(join(dir, 'Dockerfile'), 'FROM alpine:3.20\n');
+if (enabled) {
+  describe('buildImage and runContainer', () => {
+    it('builds a trivial image, runs commands in it, and skips a rebuild of the same context', async () => {
+      const dir = await Deno.makeTempDir();
+      try {
+        await Deno.writeTextFile(join(dir, 'Dockerfile'), 'FROM alpine:3.20\n');
 
-      const tag = await buildImage('docker-smoke', dir);
-      expect(tag).toBe(imageTag('docker-smoke', await hashBuildContext(dir)));
+        const tag = await buildImage('docker-smoke', dir);
+        expect(tag).toBe(imageTag('docker-smoke', await hashBuildContext(dir)));
 
-      const ok = await runContainer({ image: tag, args: ['echo', 'hello-from-container'] });
-      expect(ok.code).toBe(0);
-      expect(ok.stdout).toContain('hello-from-container');
-      expect(ok.timedOut).toBe(false);
+        const ok = await runContainer({ image: tag, args: ['echo', 'hello-from-container'] });
+        expect(ok.code).toBe(0);
+        expect(ok.stdout).toContain('hello-from-container');
+        expect(ok.timedOut).toBe(false);
 
-      const failing = await runContainer({ image: tag, args: ['sh', '-c', 'exit 7'] });
-      expect(failing.code).toBe(7);
-      expect(failing.timedOut).toBe(false);
+        const failing = await runContainer({ image: tag, args: ['sh', '-c', 'exit 7'] });
+        expect(failing.code).toBe(7);
+        expect(failing.timedOut).toBe(false);
 
-      // Building the same context again must take the inspect-skip path, not rebuild: same tag,
-      // and the image the first build produced must still be the one on disk.
-      const tagAgain = await buildImage('docker-smoke', dir);
-      expect(tagAgain).toBe(tag);
-      const inspectAgain = await new Deno.Command('docker', {
-        args: ['image', 'inspect', tagAgain],
-        stdout: 'null',
-        stderr: 'null',
-      }).output();
-      expect(inspectAgain.code).toBe(0);
-    } finally {
-      await Deno.remove(dir, { recursive: true });
-    }
-  });
-
-  // A container running well past its timeout must be killed through the daemon, not just have its
-  // local CLI client disconnected — that's the whole point of naming it. 3000ms is comfortably above
-  // container start latency (well under a second for a cached alpine image) but far below the 60s
-  // sleep, so the run can only complete this quickly by having been killed.
-  it('kills a timed-out container through the daemon, leaving none behind', {
-    ignore: !hasDocker,
-  }, async () => {
-    const tag = await buildSmokeImage();
-    const name = `goast-test-timeout-${crypto.randomUUID().slice(0, 8)}`;
-
-    const started = performance.now();
-    const result = await runContainer({
-      image: tag,
-      args: ['sh', '-c', 'sleep 60'],
-      name,
-      timeoutMs: 3000,
+        // Building the same context again must take the inspect-skip path, not rebuild: same tag,
+        // and the image the first build produced must still be the one on disk.
+        const tagAgain = await buildImage('docker-smoke', dir);
+        expect(tagAgain).toBe(tag);
+        const inspectAgain = await new Deno.Command('docker', {
+          args: ['image', 'inspect', tagAgain],
+          stdout: 'null',
+          stderr: 'null',
+        }).output();
+        expect(inspectAgain.code).toBe(0);
+      } finally {
+        await Deno.remove(dir, { recursive: true });
+      }
     });
-    const elapsedMs = performance.now() - started;
 
-    // The run must return at all (pre-fix, killing only the client could leave `process.output()`
-    // unresolved) and it must return quickly — nowhere near the 60s sleep.
-    expect(elapsedMs).toBeLessThan(30_000);
-    expect(result.timedOut).toBe(true);
+    // A container running well past its timeout must be killed through the daemon, not just have its
+    // local CLI client disconnected — that's the whole point of naming it. 3000ms is comfortably above
+    // container start latency (well under a second for a cached alpine image) but far below the 60s
+    // sleep, so the run can only complete this quickly by having been killed.
+    it('kills a timed-out container through the daemon, leaving none behind', async () => {
+      const tag = await buildSmokeImage();
+      const name = `goast-test-timeout-${crypto.randomUUID().slice(0, 8)}`;
 
-    // The actual point: the container must be gone, not merely disconnected-from. `AutoRemove` fires
-    // once the daemon has stopped the container, which is normally immediate; poll briefly instead of
-    // sleeping a fixed amount in case it needs a moment.
-    const deadline = Date.now() + 5000;
-    let gone = !(await containerExists(name));
-    while (!gone && Date.now() < deadline) {
-      await new Promise((resolve) => setTimeout(resolve, 200));
-      gone = !(await containerExists(name));
-    }
-    expect(gone).toBe(true);
+      const started = performance.now();
+      const result = await runContainer({
+        image: tag,
+        args: ['sh', '-c', 'sleep 60'],
+        name,
+        timeoutMs: 3000,
+      });
+      const elapsedMs = performance.now() - started;
+
+      // The run must return at all (pre-fix, killing only the client could leave `process.output()`
+      // unresolved) and it must return quickly — nowhere near the 60s sleep.
+      expect(elapsedMs).toBeLessThan(30_000);
+      expect(result.timedOut).toBe(true);
+
+      // The actual point: the container must be gone, not merely disconnected-from. `AutoRemove` fires
+      // once the daemon has stopped the container, which is normally immediate; poll briefly instead of
+      // sleeping a fixed amount in case it needs a moment.
+      const deadline = Date.now() + 5000;
+      let gone = !(await containerExists(name));
+      while (!gone && Date.now() < deadline) {
+        await new Promise((resolve) => setTimeout(resolve, 200));
+        gone = !(await containerExists(name));
+      }
+      expect(gone).toBe(true);
+    });
+
+    // A normal (non-timeout) non-zero exit reporting `timedOut === false` is already covered by the
+    // `failing` case in the test above; not duplicated here.
   });
-
-  // A normal (non-timeout) non-zero exit reporting `timedOut === false` is already covered by the
-  // `failing` case in the test above; not duplicated here.
-});
+}
