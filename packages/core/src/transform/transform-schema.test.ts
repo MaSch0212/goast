@@ -3,19 +3,8 @@ import { describe, it } from '@std/testing/bdd';
 
 import { derefSchemaAt } from '../parse/deref.test-utils.ts';
 import type { ApiSchema } from './api-types.ts';
-import { IdGenerator } from './helpers.ts';
 import { transformSchema } from './transform-schema.ts';
-import { defaultOpenApiTransformerOptions, type OpenApiTransformerContext } from './types.ts';
-
-function createContext(): OpenApiTransformerContext {
-  return {
-    config: { ...defaultOpenApiTransformerOptions },
-    idGenerator: new IdGenerator(),
-    incompleteSchemas: new Map(),
-    schemas: new Map(),
-    transformed: { schemas: new Map() },
-  } as unknown as OpenApiTransformerContext;
-}
+import { createTransformerContext } from './transform.test-utils.ts';
 
 describe('transformSchema', () => {
   describe('OpenAPI 3.1 type arrays', () => {
@@ -25,7 +14,7 @@ describe('transformSchema', () => {
         allOf: [{ type: 'object' }],
       });
 
-      const result = transformSchema(createContext(), schema);
+      const result = transformSchema(createTransformerContext(), schema);
 
       expect(result.kind).toBe('object');
       expect(result.nullable).toBe(true);
@@ -39,7 +28,7 @@ describe('transformSchema', () => {
       });
       const schema = derefSchemaAt('/components/schemas/NullableRef', { type: ['null'] }, target);
 
-      const result = transformSchema(createContext(), schema);
+      const result = transformSchema(createTransformerContext(), schema);
 
       expect(result.nullable).toBe(true);
       expect(result.kind).toBe('string');
@@ -49,7 +38,7 @@ describe('transformSchema', () => {
     it('treats a "null"-only type array without a $ref as the null type', () => {
       const schema = derefSchemaAt('/components/schemas/NullOnly', { type: ['null'] });
 
-      const result = transformSchema(createContext(), schema);
+      const result = transformSchema(createTransformerContext(), schema);
 
       expect(result.kind).toBe('null');
       expect(result.nullable).toBe(true);
@@ -58,7 +47,7 @@ describe('transformSchema', () => {
     it('keeps more than one remaining type as a multi-type schema', () => {
       const schema = derefSchemaAt('/components/schemas/MultiType', { type: ['string', 'integer', 'null'] });
 
-      const result = transformSchema(createContext(), schema);
+      const result = transformSchema(createTransformerContext(), schema);
 
       expect(result.kind).toBe('multi-type');
       expect((result as ApiSchema<'multi-type'>).type).toEqual(['string', 'integer']);
@@ -71,7 +60,7 @@ describe('transformSchema', () => {
         allOf: [{ type: 'object' }],
       });
 
-      const result = transformSchema(createContext(), schema);
+      const result = transformSchema(createTransformerContext(), schema);
 
       // Not `multi-type`: nothing would re-run the kind decision, and both generators would then drop the
       // `allOf` — Kotlin refuses a declaration for `multi-type`, TypeScript renders a bare union.
@@ -86,7 +75,7 @@ describe('transformSchema', () => {
         allOf: [{ type: 'object' }],
       });
 
-      const result = transformSchema(createContext(), schema);
+      const result = transformSchema(createTransformerContext(), schema);
 
       expect(result.kind).toBe('combined');
       expect((result as ApiSchema<'combined'>).allOf).toHaveLength(1);
@@ -95,11 +84,11 @@ describe('transformSchema', () => {
 
     it('reports an empty type array as nullable, like the scalar null type', () => {
       const empty = transformSchema(
-        createContext(),
+        createTransformerContext(),
         derefSchemaAt('/components/schemas/EmptyTypeArray', { type: [] }),
       );
       const scalar = transformSchema(
-        createContext(),
+        createTransformerContext(),
         derefSchemaAt('/components/schemas/NullScalar', { type: 'null' }),
       );
 
@@ -118,7 +107,7 @@ describe('transformSchema', () => {
         items: { type: 'boolean' },
       });
 
-      const result = transformSchema(createContext(), schema) as ApiSchema<'array'>;
+      const result = transformSchema(createTransformerContext(), schema) as ApiSchema<'array'>;
 
       expect(result.kind).toBe('array');
       expect(result.items).toBeUndefined();
@@ -131,7 +120,7 @@ describe('transformSchema', () => {
         items: { type: 'boolean' },
       });
 
-      const result = transformSchema(createContext(), schema) as ApiSchema<'array'>;
+      const result = transformSchema(createTransformerContext(), schema) as ApiSchema<'array'>;
 
       expect(result.kind).toBe('array');
       expect(result.nullable).toBe(true);
@@ -144,7 +133,7 @@ describe('transformSchema', () => {
         items: { type: 'string' },
       });
 
-      const result = transformSchema(createContext(), schema) as ApiSchema<'array'>;
+      const result = transformSchema(createTransformerContext(), schema) as ApiSchema<'array'>;
 
       expect(result.items?.kind).toBe('string');
     });
