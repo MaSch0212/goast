@@ -1,0 +1,1 @@
+com/openapi/generated/api/client/PetsRequests.kt:22:53 Argument type mismatch: actual type is 'SuspendFunction1<ClientResponse, T (of fun <T> WebClient.getPet)>', but 'SuspendFunction1<ClientResponse, T (of fun <T> WebClient.getPet) & Any>' was expected.

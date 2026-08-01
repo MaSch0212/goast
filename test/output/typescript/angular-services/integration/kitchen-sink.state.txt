@@ -1,0 +1,69 @@
+{
+  typescript: {
+    indexFiles: {
+      models: '<output>/models.ts',
+      responseModels: '<output>/responses.ts',
+      services: '<output>/services.ts'
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//pets/{id}/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet',
+        additionalExports: [],
+        component: 'Pet',
+        filePath: '<output>/models/pet.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/pet.ts',
+            name: 'Pet',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet',
+        additionalExports: [],
+        component: 'Pet',
+        filePath: '<output>/models/pet.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/pet.ts',
+            name: 'Pet',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet/properties/id',
+        component: 'string',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet/properties/name',
+        component: 'string',
+        imports: []
+      }
+    },
+    services: {
+      'service-1': {
+        __source__: 'tag:Pets',
+        component: 'PetsService',
+        filePath: '<output>/services/pets.service.ts',
+        responseModels: {
+          'endpoint-1': {
+            component: 'GetPetApiResponse',
+            filePath: '<output>/models/responses/pets-responses.model.ts'
+          }
+        }
+      }
+    }
+  }
+}

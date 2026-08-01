@@ -5,11 +5,24 @@ import { walk } from '@std/fs/walk';
 import { specsDir } from './paths.ts';
 import type { OpenApiVersion } from './types.ts';
 
-/** Corpus version directories, mapped to the OpenAPI version they hold. */
-export const SPEC_VERSION_DIRS: { readonly v2: '2.0'; readonly v3: '3.0'; readonly 'v3.1': '3.1' } = {
+/**
+ * Corpus roots, mapped to the OpenAPI version each holds.
+ *
+ * `integration` is not a version directory — it is the curated tier-4 kitchen-sink, pinned to 3.0. It
+ * lives here rather than in a tier-4-only walk because tier 4 imports the *committed* generated tree
+ * (the spec requires that what runs is byte-identical to what was reviewed), and only tier 2 commits
+ * trees. Being a root also gets it tier-3 compile coverage for free.
+ */
+export const SPEC_VERSION_DIRS: {
+  readonly v2: '2.0';
+  readonly v3: '3.0';
+  readonly 'v3.1': '3.1';
+  readonly integration: '3.0';
+} = {
   'v2': '2.0',
   'v3': '3.0',
   'v3.1': '3.1',
+  'integration': '3.0',
 } as const satisfies Record<string, OpenApiVersion>;
 
 export type SpecVersionDir = keyof typeof SPEC_VERSION_DIRS;

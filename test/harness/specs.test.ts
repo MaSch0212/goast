@@ -18,7 +18,7 @@ describe('discoverSpecs', () => {
 
   it('covers every version directory', async () => {
     const specs = await discoverSpecs();
-    expect(new Set(specs.map((s) => s.versionDir))).toEqual(new Set(['v2', 'v3', 'v3.1']));
+    expect(new Set(specs.map((s) => s.versionDir))).toEqual(new Set(['v2', 'v3', 'v3.1', 'integration']));
     expect(new Set(specs.map((s) => s.version))).toEqual(new Set(['2.0', '3.0', '3.1']));
   });
 
@@ -93,5 +93,14 @@ describe('discoverSpecs', () => {
     } finally {
       await Deno.remove(root, { recursive: true });
     }
+  });
+
+  it('treats integration/ as a fourth root, pinned to OpenAPI 3.0', async () => {
+    const specs = await discoverSpecs();
+    const kitchenSink = specs.find((s) => s.versionDir === 'integration' && s.name === 'kitchen-sink');
+
+    expect(kitchenSink).toBeDefined();
+    expect(kitchenSink!.version).toBe('3.0');
+    expect(kitchenSink!.files).toHaveLength(1);
   });
 });
