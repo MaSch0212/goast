@@ -1,10 +1,9 @@
-import { EOL } from 'node:os';
-
-import { expect } from '@std/expect/expect';
+import { expect } from '@std/expect';
 import { beforeEach, describe, it } from '@std/testing/bdd';
 
-import { normalizeEOL } from '@goast/test-harness';
+import { dedent } from '@goast/test-harness';
 
+import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from '../../config.ts';
 import { TypeScriptFileBuilder } from '../../file-builder.ts';
 import { tsDecorator } from './decorator.ts';
 import { tsDoc } from './doc.ts';
@@ -15,48 +14,52 @@ import { tsParameter } from './parameter.ts';
 let builder: TypeScriptFileBuilder;
 
 beforeEach(() => {
-  builder = new TypeScriptFileBuilder();
+  // A fixed newLine keeps the expectations below host-independent.
+  builder = new TypeScriptFileBuilder(
+    undefined,
+    { ...defaultTypeScriptGeneratorConfig, newLine: '\n' } as TypeScriptGeneratorConfig,
+  );
 });
 
 describe('tsFunction', () => {
   it('should write the name of the function', () => {
     builder.append(tsFunction('X'));
-    expect(builder.toString(false)).toBe('function X() {}' + EOL);
+    expect(builder.toString(false)).toBe('function X() {}\n');
   });
 
   it('should write the generics if they exist', () => {
     builder.append(tsFunction('X', { generics: [tsGenericParameter('T'), tsGenericParameter('U')] }));
-    expect(builder.toString(false)).toBe('function X<T, U>() {}' + EOL);
+    expect(builder.toString(false)).toBe('function X<T, U>() {}\n');
   });
 
   it('should write the parameters if they exist', () => {
     builder.append(tsFunction('X', { parameters: [tsParameter('y'), tsParameter('z')] }));
-    expect(builder.toString(false)).toBe('function X(y, z) {}' + EOL);
+    expect(builder.toString(false)).toBe('function X(y, z) {}\n');
   });
 
   it('should write the return type if it exists', () => {
     builder.append(tsFunction('X', { returnType: 'number' }));
-    expect(builder.toString(false)).toBe('function X(): number {}' + EOL);
+    expect(builder.toString(false)).toBe('function X(): number {}\n');
   });
 
   it('should write the body if it exists', () => {
     builder.append(tsFunction('X', { body: 'return 42;' }));
-    expect(builder.toString(false)).toBe(`function X() {${EOL}  return 42;${EOL}}${EOL}`);
+    expect(builder.toString(false)).toBe('function X() {\n  return 42;\n}\n');
   });
 
   it('should write export keyword if configured', () => {
     builder.append(tsFunction('X', { export: true }));
-    expect(builder.toString(false)).toBe('export function X() {}' + EOL);
+    expect(builder.toString(false)).toBe('export function X() {}\n');
   });
 
   it('should write documenation if it exists', () => {
     builder.append(tsFunction('X', { doc: tsDoc({ description: 'description' }) }));
-    expect(builder.toString(false)).toBe(`/**${EOL} * description${EOL} */${EOL}function X() {}${EOL}`);
+    expect(builder.toString(false)).toBe('/**\n * description\n */\nfunction X() {}\n');
   });
 
   it('should write decorators if they exist', () => {
     builder.append(tsFunction('X', { decorators: [tsDecorator('decorator')] }));
-    expect(builder.toString(false)).toBe(`@decorator${EOL}function X() {}${EOL}`);
+    expect(builder.toString(false)).toBe('@decorator\nfunction X() {}\n');
   });
 
   it('should write all the parts of the function', () => {
@@ -72,7 +75,7 @@ describe('tsFunction', () => {
       }),
     );
     expect(builder.toString(false)).toBe(
-      normalizeEOL(8)(
+      dedent(8)(
         `/**
          * description
          */
@@ -118,7 +121,7 @@ describe('tsFunction', () => {
       }),
     );
     expect(builder.toString(false)).toBe(
-      normalizeEOL(8)(
+      dedent(8)(
         `║b║║bd║
         /**
          * description
