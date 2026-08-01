@@ -358,15 +358,24 @@ exactly that reason. The gate covers **782 units** across three execution groups
 between when running it locally:
 
 - **108 host TypeScript** units (`models`, `fetch-clients`) — type-checked on the runner directly with `deno check`, no
-  container.
+  container. Every `.ts` file in the unit is handed to `deno check`, not a barrel: entering through a barrel and
+  following imports checks only what the barrel reaches, and 41 of these 108 units contain at least one file it does not
+  — 58 files, of which 20 are generated model files the generator emits and never exports. Those are exactly the files
+  defects 18, 21 and 22 are about, so an entry-point gate was blind to the defects it exists to catch.
 - **162 containerized TypeScript** units (`angular-services`, `k6-clients`, `easy-network-stub`) — compiled with `tsc`
   inside the `node` image, because these profiles' output assumes npm packages a bare `deno check` doesn't have.
 - **512 Kotlin** units (ten profiles — `models`, `okhttp3-clients`, `spring-reactive-web-clients`, and
   `spring-controllers` in both its plain and `-strict` forms, each crossed with Spring Boot 3 and 4) — compiled in one
   Gradle build inside the `kotlin` image.
 
-**Docker is required for the containerized TypeScript and Kotlin groups.** `models` and `fetch-clients` need only Deno,
-so a Docker-less checkout can still exercise part of the gate.
+**Docker is required for the containerized TypeScript and Kotlin groups.** On a checkout without it,
+`deno task test:compile` does not degrade gracefully — it produces one real `requireDocker` failure per containerized
+group plus a "The compile step did not run" failure for each of their 674 units. The host group is the part that runs
+anywhere, and running only it takes naming it:
+
+```bash
+GOAST_COMPILE=1 GOAST_SNAPSHOT=check deno test -A test/compile-tests --filter "typescript/host"
+```
 
 **Diagnostics are snapshots, the same shape as tier 2's error snapshots but inverted.** A unit that compiles cleanly has
 **no committed file at all** — absence _is_ the pass, not "not yet checked." A unit that fails commits its errors to
@@ -377,8 +386,8 @@ newly-failing unit with no committed snapshot fails the run, and (`verifyCompile
 `test/harness/compile/verify.ts`) a committed snapshot for a unit that now compiles cleanly _also_ fails the run rather
 than passing silently — a fix has to land as a reviewed deletion, not disappear on the next write-mode run.
 
-149 snapshot files are committed today (126 Kotlin, 23 TypeScript, 99,456 bytes total). **These record real, unfixed
-generator defects, not accepted behaviour** — see
+149 snapshot files are committed today (126 Kotlin, 23 TypeScript, 812 diagnostics, 100,136 bytes total). **These record
+real, unfixed generator defects, not accepted behaviour** — see
 [`docs/superpowers/plans/2026-07-25-generator-bug-fixes.md`](../docs/superpowers/plans/2026-07-25-generator-bug-fixes.md)
 for the catalog. Do not read a committed diagnostics file as a specification of correct output.
 
@@ -389,11 +398,24 @@ deno task test:compile        # write mode: regenerates snapshots, changes show 
 deno task test:compile:check  # check mode: the CI-equivalent, fails on any drift
 ```
 
+A full check-mode pass measures 12m47s (14 passed, 816 steps) on a warm image cache, of which the Kotlin group is
+12m10s. The other three groups together are 19s. Budget above 15 minutes for any job timeout.
+
+**No CI job runs this tier yet.** Wiring it into `.github/workflows/` belongs to phase 8 of the testing-strategy spec.
+Until then the only thing enforcing a committed diagnostics file against reality is somebody running
+`deno task test:compile:check` by hand, so treat a green pull request as saying nothing about tier 3.
+
 **Tier 3 is opt-in via `GOAST_COMPILE`.** `deno.json`'s `test.include` covers all of `test/`, so without a guard
 `deno task test` (and every plain `deno test -A`) would discover `compile.test.ts` and start a container — breaking the
 rule that tiers 1 and 2 never touch Docker. `compile.test.ts` registers zero tests when `GOAST_COMPILE` is unset, so
 `deno test -A test/compile-tests` runs almost nothing by design; that is not the suite being broken. `orphans.test.ts`,
 below, is deliberately outside that guard, so it does run in the everyday suite, and it needs no Docker.
+
+`test/harness/docker.test.ts` is under the same guard, which is why both `test:compile` tasks name it alongside
+`test/compile-tests`. It is a tier-1 unit test file by location, but its `buildImage`/`runContainer` coverage builds a
+real image and starts real containers, and registering those with an `ignore: !hasDocker` flag does not keep tiers 1 and
+2 Docker-free — it only keeps them _runnable_ without Docker. On a machine that has Docker they ran, and took the unit
+suite from ~17s to ~60s.
 
 **Warnings are deliberately discarded; only errors are recorded.** A warning does not make generated code invalid, which
 is the question this tier asks, and warning output is far more volatile across compiler versions than error output —
@@ -408,7 +430,11 @@ underneath its parser — a green run here is a real green run, not the parser h
 because the generated TypeScript uses extensionless relative imports by design (a normal style under
 `moduleResolution: "bundler"`/`"node16"`), which Deno's native resolver otherwise rejects wholesale. That is a real
 relaxation of what this gate proves relative to a plain `tsc` run, worth knowing before treating a clean `deno check`
-result as equivalent to one.
+result as equivalent to one. `deno check` also refuses to build a module graph containing any file it cannot parse — it
+reports that one file and type-checks nothing else — so `runDenoCheck` records the parse failure, drops that file from
+its root list, and runs again until the graph loads. That is why the host group reports one diagnostic per unparseable
+file where the containerized group reports four: `tsc` recovers from a syntax error and keeps reporting, Deno's parser
+does not.
 
 **Compiler and dependency versions are pinned, hand-synchronised, with no machine-enforced source of truth:**
 
@@ -434,19 +460,24 @@ current claims don't name exactly, so a dropped profile or a renamed spec surfac
 diagnostics committed forever while every test stays green. Unlike the rest of tier 3 it needs no Docker and is not
 behind `GOAST_COMPILE`, so it runs in the everyday suite.
 
+**An orphan has to be deleted by hand; no mode clears it.** `verifyCompileDiagnostics` removes a stale snapshot only for
+a unit `discoverCompileUnits` still finds, and an orphan by definition has no unit — so `deno task test:compile` will
+not clear it however many times it is run. The failure says so, and names the files.
+
 ## Layout
 
 ```
 test/
   harness/            # the test harness, published locally as @goast/test-harness
     snapshot/         # the snapshot engine (mode, tree, text-diff, normalize, verify-*, orphans)
-    compile/          # the compile-gate engine (unit discovery, diagnostic parsers, verify, orphans)
+    compile/          # the compile-gate engine (unit discovery, diagnostic parsers, verify)
     paths.ts          # repo root and spec directory paths
     declutter.ts      # strips noise from parsed ApiData before snapshotting
+    docker.ts         # docker CLI wrapper for tiers 3 and 4 (build, run, image tagging)
   specs/              # OpenAPI corpus, one spec per file or per directory, under v2/v3/v3.1
   output-tests/       # tier 2: profiles.ts registry, output/core-model/orphans tests
   output/             # committed tier 2 snapshots (see "Snapshot forms" above)
   compile-tests/      # tier 3: driver (compile.test.ts), paths.ts, per-language runners, orphans test
-  compile/            # committed tier 3 diagnostics (see "Tier 3: compile gate" below)
+  compile/            # committed tier 3 diagnostics (see "Tier 3: compile gate" above)
   docker/             # image contexts for the tier 3 compilers (kotlin/, node/)
 ```
