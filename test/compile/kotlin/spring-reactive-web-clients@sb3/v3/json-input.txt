@@ -1,0 +1,1 @@
+com/openapi/generated/api/client/Service1Requests.kt:22:55 Argument type mismatch: actual type is 'SuspendFunction1<ClientResponse, T (of fun <T> WebClient.listThings)>', but 'SuspendFunction1<ClientResponse, T (of fun <T> WebClient.listThings) & Any>' was expected.

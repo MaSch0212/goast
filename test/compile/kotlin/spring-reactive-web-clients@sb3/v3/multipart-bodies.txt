@@ -1,0 +1,16 @@
+com/openapi/generated/api/client/MultipartRequests.kt:26:59 Argument type mismatch: actual type is 'SuspendFunction1<ClientResponse, T (of fun <T> WebClient.singleFile)>', but 'SuspendFunction1<ClientResponse, T (of fun <T> WebClient.singleFile) & Any>' was expected.
+com/openapi/generated/api/client/MultipartRequests.kt:54:63 Argument type mismatch: actual type is 'SuspendFunction1<ClientResponse, T (of fun <T> WebClient.multipleFiles)>', but 'SuspendFunction1<ClientResponse, T (of fun <T> WebClient.multipleFiles) & Any>' was expected.
+com/openapi/generated/api/client/MultipartRequests.kt:75:32 Null cannot be a value of a non-null type 'ApiRequestFile'.
+com/openapi/generated/api/client/MultipartRequests.kt:92:32 Null cannot be a value of a non-null type 'ApiRequestFile'.
+com/openapi/generated/api/client/MultipartRequests.kt:103:25 Argument type mismatch: actual type is 'SuspendFunction1<ClientResponse, T (of fun <T> WebClient.fileAndFields)>', but 'SuspendFunction1<ClientResponse, T (of fun <T> WebClient.fileAndFields) & Any>' was expected.
+com/openapi/generated/api/client/MultipartRequests.kt:113:32 Null cannot be a value of a non-null type 'ApiRequestFile'.
+com/openapi/generated/api/client/MultipartRequests.kt:139:69 Argument type mismatch: actual type is 'SuspendFunction1<ClientResponse, T (of fun <T> WebClient.nestedObjectPart)>', but 'SuspendFunction1<ClientResponse, T (of fun <T> WebClient.nestedObjectPart) & Any>' was expected.
+com/openapi/generated/api/client/MultipartRequests.kt:167:59 Argument type mismatch: actual type is 'SuspendFunction1<ClientResponse, T (of fun <T> WebClient.refPart)>', but 'SuspendFunction1<ClientResponse, T (of fun <T> WebClient.refPart) & Any>' was expected.
+com/openapi/generated/api/client/MultipartRequests.kt:188:32 Null cannot be a value of a non-null type 'ApiRequestFile'.
+com/openapi/generated/api/client/MultipartRequests.kt:205:32 Null cannot be a value of a non-null type 'ApiRequestFile'.
+com/openapi/generated/api/client/MultipartRequests.kt:216:25 Argument type mismatch: actual type is 'SuspendFunction1<ClientResponse, T (of fun <T> WebClient.withEncoding)>', but 'SuspendFunction1<ClientResponse, T (of fun <T> WebClient.withEncoding) & Any>' was expected.
+com/openapi/generated/api/client/MultipartRequests.kt:226:32 Null cannot be a value of a non-null type 'ApiRequestFile'.
+com/openapi/generated/api/client/MultipartRequests.kt:244:63 Null cannot be a value of a non-null type 'ApiRequestFile'.
+com/openapi/generated/api/client/MultipartRequests.kt:251:67 Null cannot be a value of a non-null type 'ApiRequestFile'.
+com/openapi/generated/api/client/MultipartRequests.kt:252:61 Argument type mismatch: actual type is 'SuspendFunction1<ClientResponse, T (of fun <T> WebClient.optionalFile)>', but 'SuspendFunction1<ClientResponse, T (of fun <T> WebClient.optionalFile) & Any>' was expected.
+com/openapi/generated/api/client/MultipartRequests.kt:261:62 Null cannot be a value of a non-null type 'ApiRequestFile'.

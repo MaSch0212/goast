@@ -1,0 +1,9 @@
+com/openapi/generated/api/client/infrastructure/Serializer.kt:14:45 Unresolved reference 'WRITE_DATES_AS_TIMESTAMPS'.
+com/openapi/generated/api/client/infrastructure/Serializer.kt:15:14 Unresolved reference 'configure'.
+com/openapi/generated/model/MyThing.kt:6:12 Redeclaration:
+com/openapi/generated/model/MyThing_1.kt:6:12 Redeclaration:
+com/openapi/generated/model/MyThing_2.kt:6:12 Redeclaration:
+com/openapi/generated/model/MyThing_3.kt:6:12 Redeclaration:
+com/openapi/generated/model/MyThing_4.kt:6:12 Redeclaration:
+com/openapi/generated/model/Thing2.kt:6:12 Redeclaration:
+com/openapi/generated/model/Thing2_1.kt:6:12 Redeclaration:

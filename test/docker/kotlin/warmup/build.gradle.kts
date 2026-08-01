@@ -37,6 +37,12 @@ val sb4 by configurations.creating
 // of its own (each is resolved through whichever BOM constrains it), so there is nothing for the two
 // configurations to disagree about, and duplication keeps the cache warm no matter which BOM line a
 // real subproject picks.
+//
+// The loop is for coordinates `kotlin.ts` puts in a family's `shared` list. A coordinate that lives in
+// a `sb3`/`sb4` slot there must be added *after* the loop instead, against that one configuration —
+// see the two blocks below the loop. Adding a variant-specific coordinate to the loop declares it
+// against the other line's BOM as well, which for a Jackson 3 artifact means the sb3 BOM, which does
+// not manage it: no version, and the image build fails during `RUN gradle warm`.
 dependencies {
     for (configurationName in listOf("sb3", "sb4")) {
         add(configurationName, "io.swagger.core.v3:swagger-annotations:2.2.30")
@@ -47,7 +53,6 @@ dependencies {
         add(configurationName, "org.springframework:spring-context")
         add(configurationName, "io.projectreactor:reactor-core")
         add(configurationName, "org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-        add(configurationName, "com.fasterxml.jackson.module:jackson-module-kotlin")
         add(configurationName, "jakarta.validation:jakarta.validation-api")
         add(configurationName, "jakarta.annotation:jakarta.annotation-api")
         // Verified directly, from a pristine image layer with no named volume: once
@@ -59,11 +64,30 @@ dependencies {
         // (`Could not resolve org.jetbrains.kotlin:kotlin-stdlib-common:2.2.0 ... No cached version
         // available for offline mode`). `jackson-module-kotlin` itself is genuinely used by generated
         // `okhttp3-clients` code (`jacksonObjectMapper()`), so the fix is adding this coordinate, not
-        // removing that one — see `kotlin.ts`'s `DEPENDENCIES['okhttp3-clients']` comment.
+        // removing that one — see `kotlin.ts`'s `DEPENDENCIES['okhttp3-clients']` comment. (Task 6 moved
+        // the two `jackson-module-kotlin` declarations themselves below the loop, one per variant; this
+        // line stays in the loop because it is pinned outright and both lines need it warm.)
         add(configurationName, "org.jetbrains.kotlin:kotlin-stdlib-common:2.2.0")
     }
     sb3(platform("org.springframework.boot:spring-boot-dependencies:3.5.6"))
     sb4(platform("org.springframework.boot:spring-boot-dependencies:4.0.0"))
+
+    // Variant-specific, mirroring `DEPENDENCIES['okhttp3-clients'].sb3`/`.sb4` in `kotlin.ts`.
+    //
+    // `okhttp3-clients@sb4` is generated against Jackson 3, whose Maven coordinates moved to the
+    // `tools.jackson.*` groups; its sb3 sibling still uses Jackson 2's `com.fasterxml.jackson.*`. These
+    // cannot go in the loop above: the sb3 BOM (Spring Boot 3.5.6) does not manage `tools.jackson`, so a
+    // version-less declaration against `sb3` fails to resolve outright.
+    //
+    // Jackson 2's module is *removed* from the loop for the same reason in reverse — sb4's generated
+    // tree imports nothing from `com.fasterxml.jackson.databind`, so warming it against the sb4 BOM
+    // would put artifacts in the cache that no real subproject asks for while making the warmed graph
+    // differ from the real one. Both configurations resolving the same graph the real build resolves is
+    // the property that makes `--offline` work; a superset is not automatically safe, because a larger
+    // graph can resolve a shared transitive *upwards* and leave the version the smaller real graph
+    // wants uncached.
+    sb3("com.fasterxml.jackson.module:jackson-module-kotlin")
+    sb4("tools.jackson.module:jackson-module-kotlin")
 }
 
 tasks.register("warm") {

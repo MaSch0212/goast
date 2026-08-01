@@ -1,0 +1,7 @@
+com/openapi/generated/api/ResponsesApi.kt:51:229 Null cannot be a value of a non-null type 'String'.
+com/openapi/generated/api/ResponsesApi.kt:62:55 Null cannot be a value of a non-null type 'String'.
+com/openapi/generated/api/ResponsesApi.kt:96:40 Null cannot be a value of a non-null type 'String'.
+com/openapi/generated/api/ResponsesApi.kt:97:40 Null cannot be a value of a non-null type 'String'.
+com/openapi/generated/api/ResponsesApi.kt:98:40 Null cannot be a value of a non-null type 'String'.
+com/openapi/generated/api/ResponsesApi.kt:112:40 Null cannot be a value of a non-null type 'String'.
+com/openapi/generated/api/ResponsesApi.kt:113:40 Null cannot be a value of a non-null type 'String'.

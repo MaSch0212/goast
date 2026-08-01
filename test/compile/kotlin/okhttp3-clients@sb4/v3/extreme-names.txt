@@ -1,0 +1,6 @@
+com/openapi/generated/api/client/infrastructure/Serializer.kt:14:45 Unresolved reference 'WRITE_DATES_AS_TIMESTAMPS'.
+com/openapi/generated/api/client/infrastructure/Serializer.kt:15:14 Unresolved reference 'configure'.
+com/openapi/generated/model/.kt:6:11 Syntax error: Name expected.
+com/openapi/generated/model/A.kt:6:12 Redeclaration:
+com/openapi/generated/model/A_1.kt:6:12 Redeclaration:
+com/openapi/generated/model/ObjectWithExtremeProperties.kt:20:8 Syntax error: Parameter name expected.

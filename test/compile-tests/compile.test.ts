@@ -81,8 +81,26 @@ if (enabled) {
     });
   }
 
-  /** Kotlin profiles gated so far. Task 6 scales this to all ten. */
-  const KOTLIN_PROFILES = ['models@sb3'] as const;
+  /**
+   * Every Kotlin profile in the corpus, all compiled in one Gradle build.
+   *
+   * Listed explicitly rather than derived from `profiles.ts` so that adding a generator profile is a
+   * deliberate act here: a new profile needs a `DEPENDENCIES` entry and matching warmup coordinates in
+   * `runners/kotlin.ts` before it can compile at all, and silently picking it up would surface that as
+   * a wall of unresolved-reference diagnostics attributed to the generator.
+   */
+  const KOTLIN_PROFILES = [
+    'models@sb3',
+    'models@sb4',
+    'okhttp3-clients@sb3',
+    'okhttp3-clients@sb4',
+    'spring-controllers@sb3',
+    'spring-controllers@sb3-strict',
+    'spring-controllers@sb4',
+    'spring-controllers@sb4-strict',
+    'spring-reactive-web-clients@sb3',
+    'spring-reactive-web-clients@sb4',
+  ] as const;
 
   const kotlinUnits = units.filter((u) =>
     u.language === 'kotlin' && (KOTLIN_PROFILES as readonly string[]).includes(u.profile)

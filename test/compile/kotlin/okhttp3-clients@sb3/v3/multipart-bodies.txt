@@ -1,0 +1,11 @@
+com/openapi/generated/api/client/MultipartApiClient.kt:27:25 Argument type mismatch: actual type is 'ObjectMapper', but 'Call.Factory' was expected.
+com/openapi/generated/api/client/MultipartApiClient.kt:27:39 Argument type mismatch: actual type is 'Call.Factory', but 'ObjectMapper' was expected.
+com/openapi/generated/api/client/MultipartApiClient.kt:188:22 Null cannot be a value of a non-null type 'File'.
+com/openapi/generated/api/client/MultipartApiClient.kt:230:22 Null cannot be a value of a non-null type 'File'.
+com/openapi/generated/api/client/MultipartApiClient.kt:248:22 Null cannot be a value of a non-null type 'File'.
+com/openapi/generated/api/client/MultipartApiClient.kt:425:22 Null cannot be a value of a non-null type 'File'.
+com/openapi/generated/api/client/MultipartApiClient.kt:467:22 Null cannot be a value of a non-null type 'File'.
+com/openapi/generated/api/client/MultipartApiClient.kt:485:22 Null cannot be a value of a non-null type 'File'.
+com/openapi/generated/api/client/MultipartApiClient.kt:523:35 Null cannot be a value of a non-null type 'File'.
+com/openapi/generated/api/client/MultipartApiClient.kt:555:47 Null cannot be a value of a non-null type 'File'.
+com/openapi/generated/api/client/MultipartApiClient.kt:563:56 Null cannot be a value of a non-null type 'File'.

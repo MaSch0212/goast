@@ -1,0 +1,15 @@
+com/openapi/generated/api/client/infrastructure/Serializer.kt:14:45 Unresolved reference 'WRITE_DATES_AS_TIMESTAMPS'.
+com/openapi/generated/api/client/infrastructure/Serializer.kt:15:14 Unresolved reference 'configure'.
+com/openapi/generated/model/ObjectWithReservedProperties.kt:7:5 Conflicting declarations:
+com/openapi/generated/model/ObjectWithReservedProperties.kt:10:9 Syntax error: Parameter name expected.
+com/openapi/generated/model/ObjectWithReservedProperties.kt:12:5 An explicit type is required on a value parameter.
+com/openapi/generated/model/ObjectWithReservedProperties.kt:12:5 Conflicting declarations:
+com/openapi/generated/model/ObjectWithReservedProperties.kt:15:8 Syntax error: Parameter name expected.
+com/openapi/generated/model/ObjectWithReservedProperties.kt:15:9 Conflicting declarations:
+com/openapi/generated/model/ObjectWithReservedProperties.kt:15:12 Syntax error: Parameter name expected.
+com/openapi/generated/model/ObjectWithReservedProperties.kt:17:5 Conflicting declarations:
+com/openapi/generated/model/ObjectWithReservedProperties.kt:20:9 Syntax error: Parameter name expected.
+com/openapi/generated/model/ObjectWithReservedProperties.kt:22:5 Conflicting declarations:
+com/openapi/generated/model/ObjectWithReservedProperties.kt:25:9 Syntax error: Parameter name expected.
+com/openapi/generated/model/ObjectWithReservedProperties.kt:47:5 Conflicting declarations:
+com/openapi/generated/model/ObjectWithReservedProperties.kt:50:9 Syntax error: Parameter name expected.
