@@ -22,6 +22,28 @@ const AT_LINE = /^\s+at (?<url>file:\/\/\S*?):(?<line>\d+):(?<column>\d+)$/;
 const SUMMARY_LINE = 'error: Type checking failed.';
 
 /**
+ * How every `deno check` failure that is a *graph-load* error rather than a type error begins.
+ *
+ * `deno check` refuses to build a module graph at all when any module in it — a root or one merely
+ * imported — fails to parse: it prints this one error, exits non-zero, and type-checks nothing. The
+ * whole unit's remaining diagnostics are lost with it, which is why {@link runDenoCheck} has to detect
+ * this case by name rather than treat it as one diagnostic among others. Exported for exactly that.
+ */
+export const UNPARSEABLE_MODULE_PREFIX = "The module's source code could not be parsed";
+
+/**
+ * The graph-load error above, whose position is inline rather than on a following `at` line.
+ *
+ * Matched before {@link ERROR_LINE}, whose uncoded `error: <message>` alternative would otherwise
+ * swallow the whole line — position included — into a positionless diagnostic's message. The trailing
+ * `at <url>:<line>:<column>` is anchored to the end of the line, so the greedy message group cannot
+ * eat it even when the parser's own detail text contains ` at `.
+ */
+const UNPARSEABLE_LINE = new RegExp(
+  `^error: (?<message>${UNPARSEABLE_MODULE_PREFIX}.*) at (?<url>file://\\S*?):(?<line>\\d+):(?<column>\\d+)$`,
+);
+
+/**
  * Parses `deno check` output into diagnostics.
  *
  * The format is human-oriented and has no machine alternative, so this is anchored on the two lines
@@ -32,6 +54,9 @@ const SUMMARY_LINE = 'error: Type checking failed.';
  * An error with no `at` line — a module-resolution failure, for instance — is kept with no position
  * rather than dropped. Dropping it would let a whole unit fail to resolve while the gate reported
  * nothing.
+ *
+ * {@link UNPARSEABLE_MODULE_PREFIX}'s graph-load error is the one exception to the two-line shape: it
+ * carries its position inline, and is matched first for that reason.
  */
 export function parseDenoCheckDiagnostics(output: string): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
@@ -39,6 +64,17 @@ export function parseDenoCheckDiagnostics(output: string): Diagnostic[] {
 
   for (let i = 0; i < lines.length; i++) {
     if (lines[i] === SUMMARY_LINE) continue;
+
+    const unparseable = UNPARSEABLE_LINE.exec(lines[i]);
+    if (unparseable?.groups !== undefined) {
+      diagnostics.push({
+        file: fileURLToPath(unparseable.groups.url),
+        line: Number(unparseable.groups.line),
+        column: Number(unparseable.groups.column),
+        message: unparseable.groups.message,
+      });
+      continue;
+    }
 
     const error = ERROR_LINE.exec(lines[i]);
     if (error?.groups === undefined) continue;

@@ -60,6 +60,50 @@ describe('parseDenoCheckDiagnostics', () => {
     }]);
   });
 
+  // A real Deno 2.6.8 abort, captured verbatim: the position is inline rather than on a following `at`
+  // line, and `ERROR_LINE`'s uncoded alternative would otherwise swallow the whole line — position and
+  // all — into one positionless diagnostic's message.
+  it('extracts the position from the unparseable-module abort, which carries it inline', () => {
+    const output = [
+      `error: The module's source code could not be parsed: Expected '{', got '=' at ${B_URL}:1:14`,
+      '',
+      '  export type  = {',
+      '               ~',
+    ].join('\n');
+
+    expect(parseDenoCheckDiagnostics(output)).toEqual([{
+      file: fileURLToPath(B_URL),
+      line: 1,
+      column: 14,
+      message: `The module's source code could not be parsed: Expected '{', got '='`,
+    }]);
+  });
+
+  it('keeps the whole detail when the abort detail itself contains " at "', () => {
+    const output = `error: The module's source code could not be parsed: unexpected token at line 3 at ${B_URL}:3:1\n`;
+
+    expect(parseDenoCheckDiagnostics(output)).toEqual([{
+      file: fileURLToPath(B_URL),
+      line: 3,
+      column: 1,
+      message: `The module's source code could not be parsed: unexpected token at line 3`,
+    }]);
+  });
+
+  // The prefix, not the position, is what `runDenoCheck` keys its abort handling on — so a future Deno
+  // that stops printing a parseable position must still be recognised as an abort (and then fail loudly
+  // for having no file to exclude), never mistaken for an ordinary diagnostic.
+  it('still reports the abort prefix when no position is attached', () => {
+    const output = `error: The module's source code could not be parsed: Expected '{', got '='\n`;
+
+    expect(parseDenoCheckDiagnostics(output)).toEqual([{
+      file: '',
+      line: null,
+      column: null,
+      message: `The module's source code could not be parsed: Expected '{', got '='`,
+    }]);
+  });
+
   it('finds no diagnostics in clean output', () => {
     expect(parseDenoCheckDiagnostics('Check file:///repo/a.ts\n')).toEqual([]);
   });
