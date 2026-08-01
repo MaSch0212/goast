@@ -746,11 +746,11 @@ transformed model and therefore from generated output — even though the value 
 property access (`schema['x-vendor']` still returns it; only enumeration is affected).
 
 **Tier 1:** the underlying mechanism is pinned by `packages/core/src/parse/deref-proxy.test.ts:108`, `'lists target
-keys, ref keys, $ref and $src from ownKeys, but not from Object.keys'`. **No test currently calls `getCustomFields`
-itself against this scenario** — Task 6's report reproduced it empirically (a throwaway script, since deleted) and
-explicitly declined to add a test because `helpers.test.ts` was outside that task's file list; no later task added one
-either. This is a real coverage gap on one of the least obvious, highest-impact defects on this list — flagged here
-rather than silently left implicit.
+keys, ref keys, $ref and $src from ownKeys, but not from Object.keys'`. `getCustomFields` itself is now pinned by
+`packages/core/src/transform/helpers.test.ts`, describe block `'getCustomFields'` — `'silently drops an x- extension
+inherited through $ref, though direct access still returns it'` and, as its discriminating counterpart, `'does keep an
+x- extension the schema owns locally, even when it also has a $ref'`. The first proves the drop; the second proves the
+drop is specific to inherited keys rather than `getCustomFields` returning `{}` unconditionally.
 
 Not fixed here — this phase records defects rather than fixing them.
 

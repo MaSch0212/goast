@@ -1,5 +1,6 @@
 import { expect, fn } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
+import { derefAt } from '../parse/deref.test-utils.ts';
 import type { OpenApiDocument } from '../parse/openapi-types.ts';
 import type { Deref } from '../parse/types.ts';
 import { parseYamlWithInfo } from '../utils/yaml-info.ts';
@@ -295,6 +296,25 @@ describe('getCustomFields', () => {
       'custom-field-1': { key1: 'value1' },
       'custom-field-2': ['value2'],
     });
+  });
+
+  // Pins defect 34 (see the register). `getCustomFields` enumerates with `for…in`, which consults
+  // the proxy's `getOwnPropertyDescriptor` trap — and `createDerefProxy` does not define one, so
+  // enumeration falls through to the unproxied target and a key that exists only on the `$ref`
+  // target is skipped. Direct access still returns it. When the trap is added, this test must flip.
+  it('silently drops an x- extension inherited through $ref, though direct access still returns it', () => {
+    const target = derefAt<Record<string, unknown>>('/components/schemas/Target', { 'x-vendor': 'v' });
+    const source = derefAt<Record<string, unknown>>('/components/schemas/Source', {}, target);
+
+    expect(source['x-vendor']).toBe('v');
+    expect(getCustomFields(source)).toEqual({});
+  });
+
+  it('does keep an x- extension the schema owns locally, even when it also has a $ref', () => {
+    const target = derefAt<Record<string, unknown>>('/components/schemas/Target2', { 'x-vendor': 'v' });
+    const source = derefAt<Record<string, unknown>>('/components/schemas/Source2', { 'x-local': 'own' }, target);
+
+    expect(getCustomFields(source)).toEqual({ local: 'own' });
   });
 });
 
