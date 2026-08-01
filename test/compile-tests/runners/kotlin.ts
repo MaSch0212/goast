@@ -151,8 +151,70 @@ const BOM: Record<'sb3' | 'sb4', string> = {
  * offline dependency-resolution error, a worker crash, an OOM), which would otherwise be recorded as a
  * clean unit purely because the vacuous-green guard only looks at the *whole build's* diagnostic count,
  * not each task's own outcome.
+ *
+ * Every suffix in that enumeration has a branch in {@link scanTaskLines}, and so does a suffix outside
+ * it: `UP-TO-DATE`, `FROM-CACHE` and `SKIPPED` were previously fed into neither the `NO-SOURCE` nor the
+ * `FAILED` set and so recorded as "ran and clean" — see {@link NOT_EXECUTED_SUFFIXES}.
  */
 const TASK_LINE = /^> Task :(u\d+):compileKotlin(.*)$/;
+
+/**
+ * Suffixes meaning "Gradle decided not to run this task", so its console output carries no
+ * diagnostics for the unit and an empty diagnostic list says nothing about whether it compiles.
+ *
+ * Unreachable today, and only by accident of configuration rather than by design: the work dir is a
+ * fresh temp dir with no named volume (see {@link runKotlin}), and Gradle's build cache is off, so
+ * no task has prior state to be up to date with. Re-introducing a cache volume — which this plan
+ * already did once and then removed — would make `UP-TO-DATE` reachable, and without this branch a
+ * unit that was last compiled against a stale tree would be recorded clean.
+ */
+const NOT_EXECUTED_SUFFIXES = new Set(['UP-TO-DATE', 'FROM-CACHE', 'SKIPPED']);
+
+/** What one Gradle run said about each unit's `compileKotlin` task. */
+export type TaskStates = {
+  /** Every project that printed a `compileKotlin` line at all, whatever its suffix. */
+  printed: Set<string>;
+  /** Projects whose task found no sources — see {@link TASK_LINE}. */
+  noSource: Set<string>;
+  /** Projects whose task failed. A task can print both a bare header and a `FAILED` line. */
+  failed: Set<string>;
+  /** Projects Gradle skipped: {@link NOT_EXECUTED_SUFFIXES}, mapped to the suffix seen. */
+  notExecuted: Map<string, string>;
+  /** Projects whose suffix this runner does not recognise, mapped to the suffix seen. */
+  unknown: Map<string, string>;
+};
+
+/**
+ * Classifies every `compileKotlin` task line in a Gradle log.
+ *
+ * Split out from {@link runKotlin} so all six suffix cases can be asserted directly — three of them
+ * (see {@link NOT_EXECUTED_SUFFIXES}) cannot be produced by the container run as it is configured.
+ */
+export function scanTaskLines(output: string): TaskStates {
+  const states: TaskStates = {
+    printed: new Set(),
+    noSource: new Set(),
+    failed: new Set(),
+    notExecuted: new Map(),
+    unknown: new Map(),
+  };
+
+  for (const line of output.split('\n')) {
+    const match = TASK_LINE.exec(line.trimEnd());
+    if (match === null) continue;
+    const [, projectId, rawSuffix] = match;
+    const suffix = rawSuffix.trim();
+    states.printed.add(projectId);
+
+    if (suffix === '') continue; // Executed; Gradle prints no explicit success suffix.
+    if (suffix === 'NO-SOURCE') states.noSource.add(projectId);
+    else if (suffix === 'FAILED') states.failed.add(projectId);
+    else if (NOT_EXECUTED_SUFFIXES.has(suffix)) states.notExecuted.set(projectId, suffix);
+    else states.unknown.set(projectId, suffix);
+  }
+
+  return states;
+}
 
 /**
  * Generates the settings and root build script for a one-subproject-per-unit Gradle build.
@@ -283,17 +345,8 @@ export async function runKotlin(units: readonly CompileUnit[]): Promise<Map<stri
 
     // Every project's `compileKotlin` task line, whatever its suffix (including none). See TASK_LINE's
     // doc comment for why the general form is required and the bare header alone is not enough.
-    const printedProjectIds = new Set<string>();
-    const noSourceProjectIds = new Set<string>();
-    const failedProjectIds = new Set<string>();
-    for (const line of output.split('\n')) {
-      const match = TASK_LINE.exec(line.trimEnd());
-      if (match === null) continue;
-      printedProjectIds.add(match[1]);
-      const suffix = match[2].trim();
-      if (suffix === 'NO-SOURCE') noSourceProjectIds.add(match[1]);
-      if (suffix === 'FAILED') failedProjectIds.add(match[1]);
-    }
+    const taskStates = scanTaskLines(output);
+    const { printed: printedProjectIds, noSource: noSourceProjectIds, failed: failedProjectIds } = taskStates;
 
     // A unit whose project never printed a `compileKotlin` line at all: Gradle never reached it (a
     // whole-build configuration failure, a crash before the task graph ran). Its result cannot be trusted
@@ -315,6 +368,30 @@ export async function runKotlin(units: readonly CompileUnit[]): Promise<Map<stri
         `${uncovered.length} unit(s) contributed no source files to their Gradle compilation ` +
           `(NO-SOURCE): ${uncovered.join(', ')}. The srcDir is broken for them; a unit reporting no ` +
           'diagnostics for this reason has not actually been checked.',
+      );
+    }
+
+    // Gradle declined to run the task, so the log holds no diagnostics for the unit and its empty
+    // result means "not checked", not "clean". See NOT_EXECUTED_SUFFIXES for why this is unreachable
+    // as the run is configured today, and why relying on that would be relying on an accident.
+    const notExecuted = describeProjects(taskStates.notExecuted, unitIdByProjectId);
+    if (notExecuted.length > 0) {
+      throw new Error(
+        `${notExecuted.length} unit(s) did not compile because Gradle declined to run their task: ` +
+          `${notExecuted.join(', ')}. Their sources were never read on this run, so an empty diagnostic ` +
+          'list is not evidence that they compile. Something is reusing prior build state — a cache ' +
+          'volume over GRADLE_USER_HOME, or the build cache having been enabled.',
+      );
+    }
+
+    // A suffix this runner has no branch for: whatever Gradle meant by it, recording the unit clean
+    // would be a guess. See TASK_LINE's doc comment for the enumerated set.
+    const unknownState = describeProjects(taskStates.unknown, unitIdByProjectId);
+    if (unknownState.length > 0) {
+      throw new Error(
+        `${unknownState.length} unit(s) reported a compileKotlin task state this runner does not ` +
+          `recognise: ${unknownState.join(', ')}. Gradle's set of task-state suffixes has probably ` +
+          'changed; classify the new one in scanTaskLines before trusting these units.',
       );
     }
 
@@ -363,6 +440,11 @@ export async function runKotlin(units: readonly CompileUnit[]): Promise<Map<stri
   } finally {
     await Deno.remove(workDir, { recursive: true });
   }
+}
+
+/** `<unit id> (<suffix>)` per entry, so a failure names the unit rather than the internal project id. */
+function describeProjects(bySuffix: Map<string, string>, unitIdByProjectId: Map<string, string>): string[] {
+  return [...bySuffix].map(([projectId, suffix]) => `${unitIdByProjectId.get(projectId) ?? projectId} (${suffix})`);
 }
 
 /** Longest matching prefix, so `v3/a` never claims a diagnostic belonging to `v3/ab`. */

@@ -2,7 +2,7 @@ import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
 import type { CompileUnit } from '@goast/test-harness';
-import { synthesizeGradleBuild } from './kotlin.ts';
+import { scanTaskLines, synthesizeGradleBuild } from './kotlin.ts';
 
 const unit = (profile: string, versionDir: 'v3' | 'v3.1', spec: string): CompileUnit => ({
   language: 'kotlin',
@@ -74,5 +74,73 @@ describe('synthesizeGradleBuild', () => {
     const { projectIds } = synthesizeGradleBuild(units, '/output');
     expect(projectIds.get('kotlin/models@sb3/v3/s0')).toBe('u0001');
     expect(projectIds.get('kotlin/models@sb3/v3/s10')).toBe('u0011');
+  });
+});
+
+describe('scanTaskLines', () => {
+  it('treats an empty suffix as executed, and nothing else', () => {
+    const states = scanTaskLines('> Task :u0001:compileKotlin\n');
+    expect([...states.printed]).toEqual(['u0001']);
+    expect([...states.noSource]).toEqual([]);
+    expect([...states.failed]).toEqual([]);
+    expect([...states.notExecuted]).toEqual([]);
+    expect([...states.unknown]).toEqual([]);
+  });
+
+  it('classifies NO-SOURCE and FAILED', () => {
+    const states = scanTaskLines(
+      ['> Task :u0001:compileKotlin NO-SOURCE', '> Task :u0002:compileKotlin FAILED'].join('\n'),
+    );
+    expect([...states.noSource]).toEqual(['u0001']);
+    expect([...states.failed]).toEqual(['u0002']);
+    expect([...states.notExecuted]).toEqual([]);
+    expect([...states.unknown]).toEqual([]);
+  });
+
+  // The regression this exists for: all three were previously matched by TASK_LINE, added to
+  // `printed`, and then classified as neither NO-SOURCE nor FAILED — i.e. recorded as "ran and clean"
+  // while Gradle had not read a single source file.
+  it('classifies every state in which Gradle declined to run the task', () => {
+    const states = scanTaskLines([
+      '> Task :u0001:compileKotlin UP-TO-DATE',
+      '> Task :u0002:compileKotlin FROM-CACHE',
+      '> Task :u0003:compileKotlin SKIPPED',
+    ].join('\n'));
+
+    expect([...states.notExecuted]).toEqual([['u0001', 'UP-TO-DATE'], ['u0002', 'FROM-CACHE'], ['u0003', 'SKIPPED']]);
+    expect([...states.noSource]).toEqual([]);
+    expect([...states.failed]).toEqual([]);
+    expect([...states.unknown]).toEqual([]);
+  });
+
+  it('isolates a suffix it does not recognise rather than reading it as success', () => {
+    const states = scanTaskLines('> Task :u0007:compileKotlin SOMETHING-NEW\n');
+    expect([...states.unknown]).toEqual([['u0007', 'SOMETHING-NEW']]);
+    expect([...states.printed]).toEqual(['u0007']);
+    expect([...states.noSource]).toEqual([]);
+    expect([...states.failed]).toEqual([]);
+    expect([...states.notExecuted]).toEqual([]);
+  });
+
+  // Real Gradle output: a task that prints diagnostics before failing emits a bare header *and* a
+  // FAILED line, and the log is full of lines that are not task headers at all.
+  it('tolerates a project printing both a bare header and a FAILED line, and ignores other output', () => {
+    const states = scanTaskLines([
+      '> Task :u0004:compileKotlin',
+      'e: file:///output/kotlin/models@sb3/v3/a/A.kt:1:1 Name expected',
+      '> Task :u0004:compileKotlin FAILED',
+      '> Task :u0004:compileJava SKIPPED',
+      'FAILURE: Build completed with 1 failure.',
+    ].join('\n'));
+
+    expect([...states.printed]).toEqual(['u0004']);
+    expect([...states.failed]).toEqual(['u0004']);
+    expect([...states.notExecuted]).toEqual([]);
+    expect([...states.unknown]).toEqual([]);
+  });
+
+  it('ignores a trailing carriage return, so a CRLF log classifies the same', () => {
+    expect([...scanTaskLines('> Task :u0001:compileKotlin UP-TO-DATE\r\n').notExecuted])
+      .toEqual([['u0001', 'UP-TO-DATE']]);
   });
 });
