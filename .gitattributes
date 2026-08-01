@@ -4,6 +4,11 @@
 test/output/** -text
 test/output/** linguist-generated=true
 
+# Compile-gate diagnostics (tier 3, see test/README.md). Same reasoning as test/output/** above: these
+# are compiler output, not source, and must not have line endings rewritten in either direction.
+test/compile/** linguist-generated
+test/compile/** -text
+
 # Asset sources copied verbatim by generators (see packages/core/src/utils/asset-manager.ts). Keep
 # them LF in every working tree so a Windows checkout with core.autocrlf=true doesn't inject CRLFs
 # into files that generators copy byte-for-byte into the (byte-exact) snapshot.

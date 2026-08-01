@@ -16,6 +16,10 @@
     "test:unit": "deno test -A packages",
     "test:output": "GOAST_SNAPSHOT=write deno test -A test/output-tests",
     "test:output:check": "GOAST_SNAPSHOT=check deno test -A test/output-tests",
+    "test:compile": "GOAST_COMPILE=1 GOAST_SNAPSHOT=write deno test -A test/compile-tests",
+    "test:compile:check": "GOAST_COMPILE=1 GOAST_SNAPSHOT=check deno test -A test/compile-tests",
+    "test:check": "GOAST_SNAPSHOT=check deno test -A",
+    "test:all": "deno task test:check && deno task test:compile:check",
     "pg": "deno run -A playground.ts"
   },
   "imports": {
@@ -36,7 +40,7 @@
   "fmt": {
     "lineWidth": 120,
     "singleQuote": true,
-    "exclude": ["npm/**/*", "out/**/*", "coverage/**/*", "docs/superpowers/**", "test/output/**"]
+    "exclude": ["npm/**/*", "out/**/*", "coverage/**/*", "docs/superpowers/**", "test/output/**", "test/compile/**"]
   },
   "lint": {
     "exclude": [
@@ -44,6 +48,7 @@
       "out/**/*",
       "coverage/**/*",
       "test/output/**",
+      "test/compile/**",
       "playground.ts",
       "**/assets/**/*"
     ]
