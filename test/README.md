@@ -424,11 +424,15 @@ The Gradle build runs `--offline`, so **a new dependency has to be added to both
 — nothing keeps them in sync automatically, and this drift has already caused a real offline-resolution failure on this
 plan. Treat every edit to one as needing a matching look at the other.
 
-`test/compile-tests/orphans.test.ts` is tier 3's equivalent of `test/output-tests/orphans.test.ts` above: it compares
-`test/compile/`'s committed files against what `discoverCompileUnits` currently claims, and fails if it finds a snapshot
-nothing claims any more — a dropped profile or a renamed spec that would otherwise leave stale diagnostics committed
-forever while every test stays green. Unlike the rest of tier 3 it needs no Docker and is not behind `GOAST_COMPILE`, so
-it runs in the everyday suite.
+`test/compile-tests/orphans.test.ts` is tier 3's equivalent of `test/output-tests/orphans.test.ts` above, but it uses a
+different function: `findOrphanFiles`, not `findOrphanSnapshots`. `findOrphanSnapshots` collapses a path to its
+shallowest unclaimed ancestor _directory_, which is correct for tier 2's tree-shaped snapshots but would silently
+absolve a stale tier 3 file — every tier 3 snapshot is standalone at an exactly-claimed path, so a renamed spec's
+leftover diagnostics would sit unnoticed among a still-live sibling spec's files in the same directory.
+`findOrphanFiles` has no such escape hatch: it reports every file under `test/compile/` that `discoverCompileUnits`'s
+current claims don't name exactly, so a dropped profile or a renamed spec surfaces immediately instead of leaving stale
+diagnostics committed forever while every test stays green. Unlike the rest of tier 3 it needs no Docker and is not
+behind `GOAST_COMPILE`, so it runs in the everyday suite.
 
 ## Layout
 

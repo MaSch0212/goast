@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
-import { findOrphanSnapshots } from './orphans.ts';
+import { findOrphanFiles, findOrphanSnapshots } from './orphans.ts';
 
 async function withTree(
   files: string[],
@@ -87,5 +87,30 @@ describe('findOrphanSnapshots', () => {
 
   it('returns nothing for a missing root', async () => {
     expect(await findOrphanSnapshots(join('does', 'not', 'exist'), [])).toEqual([]);
+  });
+});
+
+describe('findOrphanFiles', () => {
+  it('reports an unclaimed file sitting among claimed siblings', async () => {
+    // The exact case findOrphanSnapshots misses: a live sibling spec in the same directory must not
+    // absolve the stale one, since every file here is a standalone snapshot, not part of a tree.
+    await withTree(
+      ['kotlin/models@sb3/v3/extreme-names.txt', 'kotlin/models@sb3/v3/does-not-exist.txt'],
+      async (root) => {
+        expect(await findOrphanFiles(root, ['kotlin/models@sb3/v3/extreme-names.txt'])).toEqual([
+          'kotlin/models@sb3/v3/does-not-exist.txt',
+        ]);
+      },
+    );
+  });
+
+  it('reports nothing when every file is claimed', async () => {
+    await withTree(['kotlin/models@sb3/v3/extreme-names.txt'], async (root) => {
+      expect(await findOrphanFiles(root, ['kotlin/models@sb3/v3/extreme-names.txt'])).toEqual([]);
+    });
+  });
+
+  it('returns nothing for a missing root', async () => {
+    expect(await findOrphanFiles(join('does', 'not', 'exist'), [])).toEqual([]);
   });
 });

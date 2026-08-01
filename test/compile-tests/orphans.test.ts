@@ -3,7 +3,7 @@ import { relative } from 'node:path';
 import { expect } from '@std/expect';
 import { it } from '@std/testing/bdd';
 
-import { compileSnapshotFile, discoverCompileUnits, discoverSpecs, findOrphanSnapshots } from '@goast/test-harness';
+import { compileSnapshotFile, discoverCompileUnits, discoverSpecs, findOrphanFiles } from '@goast/test-harness';
 
 import { profiles } from '../output-tests/profiles.ts';
 import { compileRootDir } from './paths.ts';
@@ -15,5 +15,5 @@ it('has no orphaned compile snapshots', async () => {
     relative(compileRootDir, compileSnapshotFile(compileRootDir, unit)).replace(/\\/g, '/')
   );
 
-  expect(await findOrphanSnapshots(compileRootDir, expected)).toEqual([]);
+  expect(await findOrphanFiles(compileRootDir, expected)).toEqual([]);
 });

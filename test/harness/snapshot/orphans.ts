@@ -77,3 +77,38 @@ function hasClaimBeneath(prefix: string, claimed: Set<string>): boolean {
   }
   return false;
 }
+
+/**
+ * Finds files under `root` that are not in `expected`, exactly.
+ *
+ * {@link findOrphanSnapshots} is the right rule when a snapshot base is a *directory* — tier 2's tree
+ * plus `.state.txt`/`.error.txt` — because a file inside a claimed tree legitimately belongs to it, and
+ * the ancestor-collapsing walk it does is what turns a whole dropped profile into one entry instead of
+ * one per file. That same collapsing is wrong when every snapshot is a *standalone file at an exactly
+ * claimed path*, as tier 3's compile diagnostics are: a renamed spec leaves an unclaimed file sitting
+ * among claimed siblings, and {@link findOrphanSnapshots} absolves it the moment it finds a claim
+ * anywhere beneath the file's parent directory — which a live sibling spec always provides. This
+ * function has no such escape hatch: every file not named exactly in `expected` is reported, so a
+ * renamed or dropped spec's stale diagnostics surface even though the directory around them is still
+ * very much alive.
+ */
+export async function findOrphanFiles(root: string, expected: Iterable<string>): Promise<string[]> {
+  const claimed = new Set(expected);
+  const orphans: string[] = [];
+
+  let info: Deno.FileInfo;
+  try {
+    info = await Deno.stat(root);
+  } catch (error) {
+    if (error instanceof Deno.errors.NotFound) return [];
+    throw error;
+  }
+  if (!info.isDirectory) throw new Error(`Not a directory: ${root}`);
+
+  for await (const entry of walk(root, { includeDirs: false, includeSymlinks: false })) {
+    const path = relative(root, entry.path).replace(/\\/g, '/');
+    if (!claimed.has(path)) orphans.push(path);
+  }
+
+  return orphans.sort();
+}
