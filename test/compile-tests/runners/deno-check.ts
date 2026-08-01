@@ -152,9 +152,9 @@ async function checkUnit(unit: CompileUnit, files: readonly string[]): Promise<D
       if (!roots.delete(pathKey(failure.file))) {
         throw new Error(
           `deno check cannot parse ${failure.file === '' ? '<unknown file>' : failure.file}, and it is ` +
-            `not one of ${unit.id}'s own root files, so it cannot be excluded — every remaining file in ` +
-            'the unit therefore goes unchecked and the unit cannot be reported on at all. Either an ' +
-            'import inside the unit reaches an unparseable file, or the error line no longer carries a ' +
+            `not among the files still passed as roots for ${unit.id}, so it cannot be excluded that way — every ` +
+            'remaining file in the unit therefore goes unchecked and the unit cannot be reported on at all. Either ' +
+            'an import inside the unit reaches an unparseable file, or the error line no longer carries a ' +
             `parseable position.\n\n${output}`,
         );
       }
