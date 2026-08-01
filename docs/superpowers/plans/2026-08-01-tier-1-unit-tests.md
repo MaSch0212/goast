@@ -22,6 +22,14 @@ one existing test that already solves that problem.
 - `it` everywhere. No `test(` from `@std/testing/bdd`.
 - `import { expect } from '@std/expect'`. Never `'@std/expect/expect'`.
 - Literal `\n` in expected strings. Never `EOL` from `node:os`. Tests must not depend on host OS line endings.
+  **One carve-out, added during execution:** a test whose *subject* is that a default equals the host line ending may
+  import `EOL` from `node:os`, because that is the only way to assert it without comparing the implementation to itself.
+  `SourceBuilder` and `StringBuilder` default `newLine` to `os.EOL` in production code, so
+  `expect(new SourceBuilder().options.newLine).toBe(defaultSourceBuilderOptions.newLine)` is definitionally true and
+  passes even when the default is wrong — verified by mutation during Task 2's review. Every *other* expectation pins
+  `{ newLine: '\n' }` on the builder under test and compares against a literal `\n`. The rule's purpose is that a test's
+  expectations must not accidentally depend on the host; where host-dependence is the thing being tested, the import is
+  correct and must carry a comment saying so.
 - One top-level `describe` per exported symbol, in a file colocated as `<symbol-file>.test.ts`.
 - No `stub(fs, ...)`. Real IO against a temp directory where IO is unavoidable.
 - `deno fmt --check` and `deno lint` must pass before every commit.
@@ -2691,6 +2699,11 @@ it. Add `## Tier 1: unit tests` before `## Snapshot modes`, covering:
 - The convention, as the six rules: `it` not `test`, `@std/expect` not `@std/expect/expect`, literal `\n` not `EOL`,
   one top-level `describe` per exported symbol in a colocated `<symbol-file>.test.ts`, no `stub(fs, ...)`, and real IO
   against a temp directory when IO is unavoidable.
+- The `EOL` carve-out from Global Constraints, and why it exists: `SourceBuilder`/`StringBuilder` default `newLine` to
+  `os.EOL`, so the one test asserting that default must import `EOL` independently or it degenerates into comparing the
+  implementation to itself. Say that every other expectation pins `newLine: '\n'`, and that tier 2's output test does the
+  same at `test/output-tests/output.test.ts:22` — a reader needs to know the generated line ending is a *setting*, not a
+  constant, and that the committed snapshots depend on it being pinned.
 - `dedent(n)` from `@goast/test-harness`: what it does, that it deliberately does not touch line endings, and that its
   predecessor `normalizeEOL` was retired because host-dependent expectations made a passing suite meaningless.
 - `derefAt` / `derefSchemaAt` / `createTransformerContext` from `@goast/test-harness`: what each builds and why core
