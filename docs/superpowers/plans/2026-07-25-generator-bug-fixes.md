@@ -933,6 +933,55 @@ Small, verified, and each needing either a decision or a home:
   actual, verified shape of this observation is: three node files (`export.ts`, `method.ts`, `typeof.ts`) export a
   redundant raw factory alongside their public `tsXxx` wrapper, where every other sibling keeps it module-private;
   `createTypeof` is one instance of a three-way pattern, not a singleton.
+- **Both file-builder constructors take a full config rather than a `Partial<…>`** —
+  `packages/kotlin/src/file-builder.ts:34` (`constructor(packageName?: string, options?: KotlinGeneratorConfig)`) and
+  `packages/typescript/src/file-builder.ts:40` (`constructor(filePath?: string, options?: TypeScriptGeneratorConfig)`).
+  This is the root cause of a 47-fold duplication across 44 test files: pinning `newLine` requires
+  `{ ...defaultKotlinGeneratorConfig, newLine: '\n' } as KotlinGeneratorConfig` (or the TypeScript equivalent), and
+  the cast is unavoidable because `defaultKotlinGeneratorConfig` is typed
+  `DefaultGenerationProviderConfig<KotlinGeneratorConfig>` (`packages/kotlin/src/config.ts:37`), which makes every
+  inherited field optional in the *type* even though the runtime object is complete — the same shape on the
+  TypeScript side. Verified by direct count: 47 occurrences of `as KotlinGeneratorConfig`/`as TypeScriptGeneratorConfig`
+  across 44 `*.test.ts` files. All 12 production call sites (`new KotlinFileBuilder(...)`/`new
+  TypeScriptFileBuilder(...)` outside `*.test.ts` — 8 in `packages/kotlin`, 4 in `packages/typescript`) pass either
+  `ctx.config` directly or a full config value forwarded unchanged from a caller; none passes a partial object. So
+  changing both constructors to accept `Partial<KotlinGeneratorConfig>`/`Partial<TypeScriptGeneratorConfig>` and merge
+  with defaults — the way `SourceBuilder`'s own constructor already does for `Partial<SourceBuilderOptions>` — is
+  backwards-compatible and cannot alter generated output. This is the entry point for a follow-up phase: fix the two
+  constructors, then collapse the 44 pins down to `{ newLine: '\n' }` with no cast.
+- **`addSourceIfTest`'s `!result.__source__` guard** (`packages/core/src/codegen/internal-utils.ts:3`) gives a `$ref`
+  wrapper schema the *target's* provenance rather than its own. `getSchemaResult`
+  (`packages/core/src/codegen/schemas-generator.ts:53-68`) resolves a pure-`$ref` schema to its target via
+  `getSchemaReference`, recurses to get (or generate) the target's result, and only then calls `addSourceIfTest` with
+  the *wrapper* schema's own `$src`. Because the recursive call already stamped `__source__` from the target's own
+  `$src`, the guard's refusal to overwrite an existing value means the wrapper's `__source__` — populated only when
+  `ctx.config.__test__` is set, which the tier-2 harness does (`test/output-tests/profiles.ts:30-31`) — reads the
+  *target's* `$src.file`/`$src.path`, not the wrapper's own. Pinned by task 11's synthetic test (see
+  `task-11-report.md`). No production-output consequence beyond that `__test__`-only field is established here;
+  flagged because the direction (target wins over wrapper) is a real, verified choice this code makes, not because
+  it is known to be wrong.
+- **`tryParseYamlOrJson` is far more lenient than assumed** (`packages/core/src/parse/parser.ts:183`). Task 7 tried
+  roughly a dozen "obviously broken" YAML snippets — including `{ this is: [not valid` — and every one of them
+  recovered silently via the `yaml` package's `parseDocument().toJS()` instead of throwing. The one input confirmed
+  to throw is an alias to an anchor that was never defined (`a: *undefined\n`, `Unresolved alias (the anchor must be
+  set before the alias): undefined`). So a malformed spec is far more likely to parse into some garbage document
+  object than to raise the "unparseable content" error `parser.ts` otherwise handles — decoding failure is not a
+  reliable signal for a malformed OpenAPI document.
+- **`resolveReference` leaves `$ref` as `undefined`** (`packages/core/src/parse/parser.ts:79`, resolving via
+  `resolveReference` at `:112-131`) when a reference resolves to a non-object value — e.g. `$ref: '#/info/title'`,
+  a string. `resolveReference` returns `undefined` in that case (`:128-129` guards `typeof value === 'object'`
+  before recursing), and the deref proxy's `set` trap accepts an `undefined` assignment silently
+  (`typeof value === 'undefined'` is allowed), storing `this._ref = undefined` — so `Source.$ref` reads back as
+  `undefined`, not a thrown error and not the unresolved reference string. Pinned by task 7's `'leaves $ref undefined
+  when it resolves to a non-object value'` test in `packages/core/src/parse/parser.test.ts`.
+- **The `Deref<OpenApiDiscriminator>` special case** in `packages/core/src/parse/types.ts:12-16` (`_DerefDiscriminator`)
+  drops `$src`/`$ref`: every other branch of `_Deref<T>` adds `$src: DerefSource<T>` and `$ref?: Deref<T>` to the
+  mapped type, but the discriminator branch is `Omit<OpenApiDiscriminator, 'mapping'> & { mapping?: Record<string,
+  Deref<OpenApiSchema>> }` alone — no `$src`, no `$ref`. Confirmed by task 8: a plain `{ propertyName, mapping }`
+  object literal (not wrapped in `derefAt`/`derefSchemaAt`) type-checks and behaves correctly as a
+  `Deref<OpenApiDiscriminator>`, because nothing in `collectResponse` or its neighbours ever dereferences
+  `schema.discriminator.$src`. Consistent with production code never reading that field off a discriminator; flagged
+  as a documented asymmetry in the `Deref` type rather than a defect.
 
 ### Explicitly out of scope
 
