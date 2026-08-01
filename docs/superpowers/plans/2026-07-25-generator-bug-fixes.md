@@ -909,6 +909,19 @@ Small, verified, and each needing either a decision or a home:
   `packages/core/src/parse/deref-proxy.test.ts:94`, `'silently no-ops when $ref is set to a non-object, non-undefined
   value'`. No known call site writes a non-object to `$ref` in production; recorded because the escape hatch exists
   and is easy to trip over by accident.
+- **`deref-proxy.ts`'s `get` treats an explicit `undefined` as "absent" on both sides, so writing `undefined` cannot
+  shadow a `$ref` value, and a target's own real `undefined`-valued property falls through to the `$ref` anyway.**
+  `get` (`packages/core/src/parse/deref-proxy.ts:23-40`) only treats `_overwrittenValues[prop]` as a shadow when
+  `!== undefined` (line 30), and only treats the target's own property as present under the same `!== undefined` test
+  (line 33). So `(proxy as any).description = undefined` does not clear an inherited `description` — the read still
+  falls through to `$ref` — and a target constructed with an explicit `{ description: undefined }` behaves
+  identically to one that never had the key at all. Pinned by `packages/core/src/parse/deref-proxy.test.ts:122`
+  (`'does not let writing undefined shadow the ref value (a likely oversight, flagged for Task 12)'`) and `:131`
+  (`'falls through to the ref even when the target has an explicit own undefined value (flagged for Task 12)'`). No
+  production call site currently assigns `undefined` to a proxy property or constructs a target with an explicit
+  `undefined` field (verified: no such shape outside test files under `transform/` or `collect/`), so this has no
+  established generated-output consequence today — recorded because both tests explicitly flagged themselves for this
+  task in their own descriptions.
 - **`createTypeof` is exported** from `packages/typescript/src/ast/nodes/typeof.ts:35`, and grepping for the bare
   identifier finds no importer anywhere in `packages/` or `test/` outside its own defining file. The framing that
   "every sibling node keeps its factory private" needs correcting, though: `createExport` (`ast/nodes/export.ts:46`)
