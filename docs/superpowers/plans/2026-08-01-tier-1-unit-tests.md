@@ -71,8 +71,14 @@ one existing test that already solves that problem.
 - `stub(fs` appears in zero test files. That convention rule is already satisfied; nothing to do.
 - **`normalizeEOL` is called 23 times and every single call passes an indent count** — `normalizeEOL(8)(...)`. Its
   `normalizeEOL(str: string): string` overload has **zero callers**. See Task 1.
-- `test/harness` does **not** currently import `@goast/core`. Task 6 adds that edge; its Step 1 verifies the npm build
-  still works and states the fallback.
+- `test/harness` does **not** import `@goast/core`, and **cannot** — measured during Task 6, which took its documented
+  fallback. `createDerefProxy` is not exported from `@goast/core`'s barrel, and reaching it by relative path from
+  `test/harness` makes `deno task npm:test-harness` fail outright: dnt refuses to bundle a file outside its project root
+  (`Error stripping prefix of …/packages/core/src/parse/deref-proxy.ts with base …/test/harness`). So **every shared test
+  fixture that needs core internals lives inside `packages/core` as a `*.test-utils.ts` file**, imported by relative
+  path: `parse/deref.test-utils.ts` (Task 6) and `transform/transform.test-utils.ts` (Task 9). Deno does not discover
+  `*.test-utils.ts` as a test file, and `deno task npm:core` does not ship it — both verified. Task 6's exported names and
+  signatures are unchanged by the fallback; only the specifier is.
 - **There is no version-detection code in `@goast/core`.** The spec's tier-1 paragraph lists "version detection" as a
   `parse/` concern; grep finds only type declarations and unrelated comments. Swagger 2 versus OpenAPI 3 is handled
   *structurally and implicitly* in `collect/collector.ts` — `document.definitions` beside `document.components.schemas`,
@@ -1100,8 +1106,7 @@ test now fails, the fixture is not faithful and the fixture is wrong, not the te
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
-import { derefAt } from '@goast/test-harness';
-
+import { derefAt } from './deref.test-utils.ts';
 import { createDerefProxy } from './deref-proxy.ts';
 import type { OpenApiDocument, OpenApiSchema } from './openapi-types.ts';
 import type { Deref } from './types.ts';
@@ -1494,7 +1499,7 @@ seconds.
 
 **Interfaces:**
 
-- Consumes: `derefAt` and `derefSchemaAt` from `@goast/test-harness` (Task 6).
+- Consumes: `derefAt` and `derefSchemaAt` from `packages/core/src/parse/deref.test-utils.ts` (Task 6).
 - Produces: nothing other tasks consume.
 
 `collectOpenApi(apis)` walks documents and returns `{ documents, schemas: Map, endpoints: Map }`. Both maps are keyed
@@ -1507,8 +1512,7 @@ is done structurally, by reading both shapes unconditionally, never by inspectin
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
-import { derefAt, derefSchemaAt } from '@goast/test-harness';
-
+import { derefAt, derefSchemaAt } from '../parse/deref.test-utils.ts';
 import type { OpenApiDocument } from '../parse/openapi-types.ts';
 import type { Deref } from '../parse/types.ts';
 import { collectOpenApi } from './collector.ts';
@@ -1743,13 +1747,12 @@ Report every expectation whose value you corrected after running, and everything
 - Create: `packages/core/src/transform/transform-document.test.ts`
 - Create: `packages/core/src/transform/transformer.test.ts`
 - Modify: `packages/core/src/transform/transform-schema.test.ts`
-- Create: `test/harness/transform-context.ts`
-- Modify: `test/harness/mod.ts`
+- Create: `packages/core/src/transform/transform.test-utils.ts`
 
 **Interfaces:**
 
-- Consumes: `derefAt` from `@goast/test-harness` (Task 6).
-- Produces, exported from `@goast/test-harness`:
+- Consumes: `derefAt` from `packages/core/src/parse/deref.test-utils.ts` (Task 6).
+- Produces, exported from `packages/core/src/transform/transform.test-utils.ts`:
   `createTransformerContext(options?: Partial<OpenApiTransformerOptions>): OpenApiTransformerContext` — a fully
   populated context with a fresh `IdGenerator` and every `Map` initialized, matching what `transformOpenApi` builds.
 - Consumed by Tasks 9, 10 and 11.
@@ -1759,13 +1762,17 @@ fields `transformSchema` touches. `transformDocument` and `transformEndpoint` to
 
 - [ ] **Step 1: Write the shared context factory**
 
-Create `test/harness/transform-context.ts`. Mirror `transformOpenApi`'s own context literal
+Create `packages/core/src/transform/transform.test-utils.ts`. Mirror `transformOpenApi`'s own context literal
 (`packages/core/src/transform/transformer.ts:16-35`) exactly, so a test context and a production context cannot drift:
 
 ```ts
-import { IdGenerator } from '@goast/core';
-import type { OpenApiCollectorData, OpenApiTransformerContext, OpenApiTransformerOptions } from '@goast/core';
-import { defaultOpenApiTransformerOptions } from '@goast/core';
+import type { OpenApiCollectorData } from '../collect/types.ts';
+import { IdGenerator } from './helpers.ts';
+import {
+  defaultOpenApiTransformerOptions,
+  type OpenApiTransformerContext,
+  type OpenApiTransformerOptions,
+} from './types.ts';
 
 /**
  * Builds the same context `transformOpenApi` builds, so a unit test of one transform step sees the
@@ -1814,7 +1821,9 @@ deno eval "import { IdGenerator, defaultOpenApiTransformerOptions } from '@goast
 Expected: `function object`. If either is missing, import by relative path and report it; do not widen core's public
 API for a test.
 
-Add `export * from './transform-context.ts';` to `test/harness/mod.ts`.
+It is a `*.test-utils.ts` file inside `packages/core`, mirroring `parse/deref.test-utils.ts` from Task 6 — Deno does
+not discover it as a test file and `deno task npm:core` does not ship it. There is no barrel export; consumers import it
+by relative path.
 
 - [ ] **Step 2: Switch `transform-schema.test.ts` to the shared factory**
 
@@ -1833,7 +1842,8 @@ and registers a `$ref`-reached tag in `transformed.services` but **not** in `ser
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
-import { createTransformerContext, derefAt } from '@goast/test-harness';
+import { derefAt } from '../parse/deref.test-utils.ts';
+import { createTransformerContext } from './transform.test-utils.ts';
 
 import type { OpenApiDocument } from '../parse/openapi-types.ts';
 import type { Deref } from '../parse/types.ts';
@@ -1910,8 +1920,7 @@ option merge, not the individual steps — those have their own files.
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
-import { derefAt, derefSchemaAt } from '@goast/test-harness';
-
+import { derefAt, derefSchemaAt } from '../parse/deref.test-utils.ts';
 import type { OpenApiCollectorData } from '../collect/types.ts';
 import type { OpenApiDocument } from '../parse/openapi-types.ts';
 import type { Deref } from '../parse/types.ts';
@@ -2009,7 +2018,8 @@ a `transformed.*` map keyed by `getOpenApiObjectIdentifier`.
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
-import { createTransformerContext, derefAt, derefSchemaAt } from '@goast/test-harness';
+import { derefAt, derefSchemaAt } from '../parse/deref.test-utils.ts';
+import { createTransformerContext } from './transform.test-utils.ts';
 
 import type { OpenApiCollectorEndpointInfo } from '../collect/types.ts';
 import { transformEndpoint } from './transform-endpoint.ts';
