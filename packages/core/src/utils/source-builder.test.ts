@@ -1,12 +1,18 @@
+// CONVENTION CARVE-OUT — do not delete this import while sweeping for `node:os` usage.
+// Every other expectation in this file pins `newLine: '\n'` explicitly and asserts against a
+// literal `\n`, per the no-node:os convention. This one test is different: its entire subject is
+// the documented contract that SourceBuilder's default `newLine` IS the host's line ending
+// (`@default os.EOL` on `StringBuilderOptions.newLine`, string-builder/options.ts). Asserting that
+// against `defaultSourceBuilderOptions.newLine` (the same constant the constructor reads) would be
+// tautological — the constructor always echoes back whatever that constant holds, so the test
+// could never fail even if the constant were wrong. Importing `EOL` independently from `node:os`
+// is what makes this a real check instead of a comparison of the implementation to itself.
+import { EOL } from 'node:os';
+
 import { expect } from '@std/expect';
 import { beforeEach, describe, it } from '@std/testing/bdd';
 
-import {
-  builderTemplate,
-  defaultSourceBuilderOptions,
-  SourceBuilder,
-  type SourceBuilderOptions,
-} from './source-builder.ts';
+import { builderTemplate, SourceBuilder, type SourceBuilderOptions } from './source-builder.ts';
 import { appendValueGroup } from './string-builder/utils.ts';
 
 describe('SourceBuilder', () => {
@@ -22,7 +28,7 @@ describe('SourceBuilder', () => {
     it('should initialize with default options', () => {
       const options = new SourceBuilder().options;
       expect(options.indent).toEqual({ type: 'spaces', count: 2 });
-      expect(options.newLine).toBe(defaultSourceBuilderOptions.newLine);
+      expect(options.newLine).toBe(EOL);
     });
   });
 
