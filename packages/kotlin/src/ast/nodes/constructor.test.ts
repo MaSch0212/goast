@@ -1,10 +1,9 @@
-import { EOL } from 'node:os';
-
-import { expect } from '@std/expect/expect';
+import { expect } from '@std/expect';
 import { beforeEach, describe, it } from '@std/testing/bdd';
 
-import { normalizeEOL } from '@goast/test-harness';
+import { dedent } from '@goast/test-harness';
 
+import { defaultKotlinGeneratorConfig, type KotlinGeneratorConfig } from '../../config.ts';
 import { KotlinFileBuilder } from '../../file-builder.ts';
 import { ktAnnotation } from './annotation.ts';
 import { ktConstructor } from './constructor.ts';
@@ -14,42 +13,46 @@ describe('ktConstructor', () => {
   let builder: KotlinFileBuilder;
 
   beforeEach(() => {
-    builder = new KotlinFileBuilder();
+    // A fixed newLine keeps the expectations below host-independent.
+    builder = new KotlinFileBuilder(
+      undefined,
+      { ...defaultKotlinGeneratorConfig, newLine: '\n' } as KotlinGeneratorConfig,
+    );
   });
 
   it('should write an empty constructor', () => {
     builder.append(ktConstructor([], null));
-    expect(builder.toString(false)).toBe(`constructor() {}${EOL}`);
+    expect(builder.toString(false)).toBe('constructor() {}\n');
   });
 
   it('should write a constructor with parameters', () => {
     builder.append(ktConstructor([ktParameter('x', 'Int')], null));
-    expect(builder.toString(false)).toBe(`constructor(x: Int) {}${EOL}`);
+    expect(builder.toString(false)).toBe('constructor(x: Int) {}\n');
   });
 
   it('should write a constructor with a body', () => {
     builder.append(ktConstructor([], 'println("Hello")'));
-    expect(builder.toString(false)).toBe(`constructor() {${EOL}    println("Hello")${EOL}}${EOL}`);
+    expect(builder.toString(false)).toBe('constructor() {\n    println("Hello")\n}\n');
   });
 
   it('should write access modifiers if they exist', () => {
     builder.append(ktConstructor([], null, { accessModifier: 'private' }));
-    expect(builder.toString(false)).toBe(`private constructor() {}${EOL}`);
+    expect(builder.toString(false)).toBe('private constructor() {}\n');
   });
 
   it('should write all annotations', () => {
     builder.append(ktConstructor([], null, { annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')] }));
-    expect(builder.toString(false)).toBe(`@Inject${EOL}@Optional${EOL}constructor() {}${EOL}`);
+    expect(builder.toString(false)).toBe('@Inject\n@Optional\nconstructor() {}\n');
   });
 
   it('should write delegation without arguments', () => {
     builder.append(ktConstructor([], null, { delegateTarget: 'this' }));
-    expect(builder.toString(false)).toBe(`constructor() : this() {}${EOL}`);
+    expect(builder.toString(false)).toBe('constructor() : this() {}\n');
   });
 
   it('should write delegation with arguments', () => {
     builder.append(ktConstructor([], null, { delegateTarget: 'super', delegateArguments: ['42', 'true'] }));
-    expect(builder.toString(false)).toBe(`constructor() : super(42, true) {}${EOL}`);
+    expect(builder.toString(false)).toBe('constructor() : super(42, true) {}\n');
   });
 
   it('should write all the parts of the constructor', () => {
@@ -62,7 +65,7 @@ describe('ktConstructor', () => {
       }),
     );
     expect(builder.toString(false)).toBe(
-      normalizeEOL(8)(
+      dedent(8)(
         `@Inject
         @Optional
         private constructor(x: Int) : this(42, true) {
@@ -97,7 +100,7 @@ describe('ktConstructor', () => {
       }),
     );
     expect(builder.toString(false)).toBe(
-      normalizeEOL(8)(
+      dedent(8)(
         `║b║║ba║@Inject
         @Optional
         ║aa║║bm║private ║am║constructor║bp║(x: Int)║ap║ : ║bd║this(42, true)║ad║ ║bb║{

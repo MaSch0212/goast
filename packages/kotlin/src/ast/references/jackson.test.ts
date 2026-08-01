@@ -1,4 +1,4 @@
-import { expect } from '@std/expect/expect';
+import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
 import * as jackson from './jackson.ts';

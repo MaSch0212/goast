@@ -1,6 +1,4 @@
-import { EOL } from 'node:os';
-
-import { expect } from '@std/expect/expect';
+import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
 import { StringBuilder } from '@goast/core';
@@ -85,8 +83,9 @@ describe('ImportCollection', () => {
       const importCollection = new ImportCollection();
       importCollection.addImport('SomeClass', 'some.package');
       importCollection.addImport('AnotherClass', 'another.package');
-      expect(importCollection.toString()).toBe(
-        `import another.package.AnotherClass${EOL}import some.package.SomeClass${EOL}`,
+      // A fixed newLine keeps the expectation below host-independent.
+      expect(importCollection.toString({ newLine: '\n' })).toBe(
+        'import another.package.AnotherClass\nimport some.package.SomeClass\n',
       );
     });
   });
@@ -96,9 +95,10 @@ describe('ImportCollection', () => {
       const importCollection = new ImportCollection();
       importCollection.addImport('SomeClass', 'some.package');
       importCollection.addImport('AnotherClass', 'another.package');
-      const builder = new StringBuilder();
+      // A fixed newLine keeps the expectation below host-independent.
+      const builder = new StringBuilder({ newLine: '\n' });
       importCollection.writeTo(builder);
-      expect(builder.toString()).toBe(`import another.package.AnotherClass${EOL}import some.package.SomeClass${EOL}`);
+      expect(builder.toString()).toBe('import another.package.AnotherClass\nimport some.package.SomeClass\n');
     });
   });
 
@@ -110,8 +110,9 @@ describe('ImportCollection', () => {
       }
 
       const base = 'import org.springframework.web.reactive.function.client';
-      expect(importCollection.toString()).toBe(
-        `${base}.awaitBody${EOL}${base}.awaitExchange${EOL}${base}.ClientResponse${EOL}${base}.WebClient${EOL}`,
+      // A fixed newLine keeps the expectation below host-independent.
+      expect(importCollection.toString({ newLine: '\n' })).toBe(
+        `${base}.awaitBody\n${base}.awaitExchange\n${base}.ClientResponse\n${base}.WebClient\n`,
       );
     });
 
@@ -119,8 +120,9 @@ describe('ImportCollection', () => {
       const importCollection = new ImportCollection();
       importCollection.addImport('Thing', 'org.example.Zebra');
       importCollection.addImport('Thing', 'org.example.apple');
-      expect(importCollection.toString()).toBe(
-        `import org.example.apple.Thing${EOL}import org.example.Zebra.Thing${EOL}`,
+      // A fixed newLine keeps the expectation below host-independent.
+      expect(importCollection.toString({ newLine: '\n' })).toBe(
+        'import org.example.apple.Thing\nimport org.example.Zebra.Thing\n',
       );
     });
   });
@@ -133,6 +135,7 @@ describe('ImportCollection', () => {
     importCollection.addImport('Int', 'kotlin');
     importCollection.addImport('MyClass', 'myPackage');
     importCollection.addImport('MyOtherClass', 'myPackage');
-    expect(importCollection.toString()).toBe(`import myPackage.MyOtherClass${EOL}`);
+    // A fixed newLine keeps the expectation below host-independent.
+    expect(importCollection.toString({ newLine: '\n' })).toBe('import myPackage.MyOtherClass\n');
   });
 });

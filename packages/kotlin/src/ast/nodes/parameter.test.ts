@@ -1,8 +1,7 @@
-import { EOL } from 'node:os';
-
-import { expect } from '@std/expect/expect';
+import { expect } from '@std/expect';
 import { beforeEach, describe, it } from '@std/testing/bdd';
 
+import { defaultKotlinGeneratorConfig, type KotlinGeneratorConfig } from '../../config.ts';
 import { KotlinFileBuilder } from '../../file-builder.ts';
 import { ktAnnotation } from './annotation.ts';
 import { ktParameter } from './parameter.ts';
@@ -11,7 +10,11 @@ describe('ktParameter', () => {
   let builder: KotlinFileBuilder;
 
   beforeEach(() => {
-    builder = new KotlinFileBuilder();
+    // A fixed newLine keeps the expectations below host-independent.
+    builder = new KotlinFileBuilder(
+      undefined,
+      { ...defaultKotlinGeneratorConfig, newLine: '\n' } as KotlinGeneratorConfig,
+    );
   });
 
   describe('single parameter', () => {
@@ -32,7 +35,7 @@ describe('ktParameter', () => {
 
     it('should write all annotations', () => {
       builder.append(ktParameter('x', 'Int', { annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')] }));
-      expect(builder.toString(false)).toBe(`@Inject${EOL}@Optional${EOL}x: Int`);
+      expect(builder.toString(false)).toBe('@Inject\n@Optional\nx: Int');
     });
 
     it('should write all the parts of the parameter', () => {
@@ -43,7 +46,7 @@ describe('ktParameter', () => {
           annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')],
         }),
       );
-      expect(builder.toString(false)).toBe(`@Inject${EOL}@Optional${EOL}vararg x: Int = 42`);
+      expect(builder.toString(false)).toBe('@Inject\n@Optional\nvararg x: Int = 42');
     });
 
     it('should render injections', () => {
@@ -60,22 +63,22 @@ describe('ktParameter', () => {
 
     it('should write a single parameter', () => {
       ktParameter.write(builder, [ktParameter('x', 'Int')]);
-      expect(builder.toString(false)).toBe(`(x: Int)`);
+      expect(builder.toString(false)).toBe('(x: Int)');
     });
 
     it('should write all the parameters', () => {
       ktParameter.write(builder, [ktParameter('x', 'Int'), ktParameter('y', 'String')]);
-      expect(builder.toString(false)).toBe(`(x: Int, y: String)`);
+      expect(builder.toString(false)).toBe('(x: Int, y: String)');
     });
 
     it('should multiline if there are more than 2 parameters', () => {
       ktParameter.write(builder, [ktParameter('x', 'Int'), ktParameter('y', 'String'), ktParameter('z', 'Boolean')]);
-      expect(builder.toString(false)).toBe(`(${EOL}    x: Int,${EOL}    y: String,${EOL}    z: Boolean${EOL})`);
+      expect(builder.toString(false)).toBe('(\n    x: Int,\n    y: String,\n    z: Boolean\n)');
     });
 
     it('should multiline if there are annotations', () => {
       ktParameter.write(builder, [ktParameter('x', 'Int', { annotations: [ktAnnotation('Inject')] })]);
-      expect(builder.toString(false)).toBe(`(${EOL}    @Inject${EOL}    x: Int${EOL})`);
+      expect(builder.toString(false)).toBe('(\n    @Inject\n    x: Int\n)');
     });
 
     it('shoudl add spacing if one parameter has annotations', () => {
@@ -83,7 +86,7 @@ describe('ktParameter', () => {
         ktParameter('x', 'Int'),
         ktParameter('y', 'String', { annotations: [ktAnnotation('Inject')] }),
       ]);
-      expect(builder.toString(false)).toBe(`(${EOL}    x: Int,${EOL}${EOL}    @Inject${EOL}    y: String${EOL})`);
+      expect(builder.toString(false)).toBe('(\n    x: Int,\n\n    @Inject\n    y: String\n)');
     });
   });
 });
@@ -92,7 +95,11 @@ describe('ktClassParameter', () => {
   let builder: KotlinFileBuilder;
 
   beforeEach(() => {
-    builder = new KotlinFileBuilder();
+    // A fixed newLine keeps the expectations below host-independent.
+    builder = new KotlinFileBuilder(
+      undefined,
+      { ...defaultKotlinGeneratorConfig, newLine: '\n' } as KotlinGeneratorConfig,
+    );
   });
 
   describe('single class parameter', () => {
@@ -140,7 +147,7 @@ describe('ktClassParameter', () => {
       builder.append(
         ktParameter.class('x', 'Int', { annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')] }),
       );
-      expect(builder.toString(false)).toBe(`@Inject${EOL}@Optional${EOL}x: Int`);
+      expect(builder.toString(false)).toBe('@Inject\n@Optional\nx: Int');
     });
 
     it('should write all the parts of the class parameter', () => {
@@ -154,7 +161,7 @@ describe('ktClassParameter', () => {
           annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')],
         }),
       );
-      expect(builder.toString(false)).toBe(`@Inject${EOL}@Optional${EOL}private override vararg var x: Int = 42`);
+      expect(builder.toString(false)).toBe('@Inject\n@Optional\nprivate override vararg var x: Int = 42');
     });
 
     it('should render injections', () => {
@@ -183,7 +190,7 @@ describe('ktClassParameter', () => {
         }),
       );
       expect(builder.toString(false)).toBe(
-        `║b║║ba║@Inject${EOL}@Optional${EOL}║aa║║bm║private override vararg ║am║var ║bn║x║an║: ║bt║Int║at║ = ║bd║42║ad║║a║`,
+        '║b║║ba║@Inject\n@Optional\n║aa║║bm║private override vararg ║am║var ║bn║x║an║: ║bt║Int║at║ = ║bd║42║ad║║a║',
       );
     });
   });

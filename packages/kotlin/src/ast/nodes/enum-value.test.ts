@@ -1,10 +1,9 @@
-import { EOL } from 'node:os';
-
-import { expect } from '@std/expect/expect';
+import { expect } from '@std/expect';
 import { beforeEach, describe, it } from '@std/testing/bdd';
 
-import { normalizeEOL } from '@goast/test-harness';
+import { dedent } from '@goast/test-harness';
 
+import { defaultKotlinGeneratorConfig, type KotlinGeneratorConfig } from '../../config.ts';
 import { KotlinFileBuilder } from '../../file-builder.ts';
 import { ktAnnotation } from './annotation.ts';
 import { ktDoc } from './doc.ts';
@@ -14,7 +13,11 @@ describe('ktEnumValue', () => {
   let builder: KotlinFileBuilder;
 
   beforeEach(() => {
-    builder = new KotlinFileBuilder();
+    // A fixed newLine keeps the expectations below host-independent.
+    builder = new KotlinFileBuilder(
+      undefined,
+      { ...defaultKotlinGeneratorConfig, newLine: '\n' } as KotlinGeneratorConfig,
+    );
   });
 
   it('should write enum value', () => {
@@ -29,12 +32,12 @@ describe('ktEnumValue', () => {
 
   it('should write enum value with documenation', () => {
     builder.append(ktEnumValue('FOO', { doc: ktDoc('This is a foo') }));
-    expect(builder.toString(false)).toBe(`/**${EOL} * This is a foo${EOL} */${EOL}FOO`);
+    expect(builder.toString(false)).toBe('/**\n * This is a foo\n */\nFOO');
   });
 
   it('should write enum value with annotations', () => {
     builder.append(ktEnumValue('FOO', { annotations: [ktAnnotation('Deprecated')] }));
-    expect(builder.toString(false)).toBe(`@Deprecated${EOL}FOO`);
+    expect(builder.toString(false)).toBe('@Deprecated\nFOO');
   });
 
   it('should write enum value with members', () => {
@@ -43,7 +46,7 @@ describe('ktEnumValue', () => {
         members: ['// Comment 1', '// Comment 2'],
       }),
     );
-    expect(builder.toString(false)).toBe(`FOO {${EOL}    // Comment 1${EOL}    // Comment 2${EOL}}`);
+    expect(builder.toString(false)).toBe('FOO {\n    // Comment 1\n    // Comment 2\n}');
   });
 
   it('should write enum value with all options', () => {
@@ -56,7 +59,7 @@ describe('ktEnumValue', () => {
       }),
     );
     expect(builder.toString(false)).toBe(
-      normalizeEOL(8)(
+      dedent(8)(
         `/**
          * This is a foo
          */
@@ -95,7 +98,7 @@ describe('ktEnumValue', () => {
       }),
     );
     expect(builder.toString(false)).toBe(
-      normalizeEOL(8)(
+      dedent(8)(
         `║b║║bd║
         /**
          * This is a foo
@@ -115,7 +118,11 @@ describe('writeKtEnumValues', () => {
   let builder: KotlinFileBuilder;
 
   beforeEach(() => {
-    builder = new KotlinFileBuilder();
+    // A fixed newLine keeps the expectations below host-independent.
+    builder = new KotlinFileBuilder(
+      undefined,
+      { ...defaultKotlinGeneratorConfig, newLine: '\n' } as KotlinGeneratorConfig,
+    );
   });
 
   it('should write enum values in single line', () => {
@@ -131,7 +138,7 @@ describe('writeKtEnumValues', () => {
       ktEnumValue('QUX'),
       ktEnumValue('QUUX'),
     ]);
-    expect(builder.toString(false)).toBe(`FOO,${EOL}BAR,${EOL}BAZ,${EOL}QUX,${EOL}QUUX`);
+    expect(builder.toString(false)).toBe('FOO,\nBAR,\nBAZ,\nQUX,\nQUUX');
   });
 
   it('should write enum values with space between', () => {
@@ -140,6 +147,6 @@ describe('writeKtEnumValues', () => {
       ktEnumValue('BAR', { annotations: [ktAnnotation('Deprecated')] }),
       ktEnumValue('BAZ'),
     ]);
-    expect(builder.toString(false)).toBe(`FOO,${EOL}${EOL}@Deprecated${EOL}BAR,${EOL}${EOL}BAZ`);
+    expect(builder.toString(false)).toBe('FOO,\n\n@Deprecated\nBAR,\n\nBAZ');
   });
 });
