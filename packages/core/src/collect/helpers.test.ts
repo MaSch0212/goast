@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import { expect, fn } from '@std/expect';
-import { beforeEach, describe, it, test } from '@std/testing/bdd';
+import { beforeEach, describe, it } from '@std/testing/bdd';
 import { collect, collectRecord } from './helpers.ts';
 import type { OpenApiCollectorData } from './types.ts';
 
@@ -12,20 +12,20 @@ describe('collect', () => {
     testFunc = fn(() => {}) as any;
   });
 
-  test('collect should handle null and undefined input', () => {
+  it('collect should handle null and undefined input', () => {
     collect(data, null, testFunc);
     collect(data, undefined, testFunc);
     expect(testFunc).toHaveBeenCalledTimes(0);
   });
 
-  test('collect should handle single non-array input', () => {
+  it('collect should handle single non-array input', () => {
     const obj = { 'x-id': 'test' };
     collect(data, obj, testFunc);
     expect(testFunc).toHaveBeenCalledTimes(1);
     expect(testFunc).toHaveBeenCalledWith(data, obj);
   });
 
-  test('collect should handle array input', () => {
+  it('collect should handle array input', () => {
     const obj = [{ 'x-id': 'foo' }, { 'x-id': 'bar' }, { 'x-id': 'baz' }];
     collect(data, obj, testFunc);
     expect(testFunc).toHaveBeenCalledTimes(3);
@@ -34,7 +34,7 @@ describe('collect', () => {
     expect(testFunc).toHaveBeenCalledWith(data, obj[2]);
   });
 
-  test('collect should handle array input with null or undefined values', () => {
+  it('collect should handle array input with null or undefined values', () => {
     const obj = [{ 'x-id': 'foo' }, null, { 'x-id': 'bar' }, undefined, { 'x-id': 'baz' }];
     collect(data, obj, testFunc);
     expect(testFunc).toHaveBeenCalledTimes(3);
@@ -43,7 +43,7 @@ describe('collect', () => {
     expect(testFunc).toHaveBeenCalledWith(data, obj[4]);
   });
 
-  test('collect should not call func for null or undefined array elements', () => {
+  it('collect should not call func for null or undefined array elements', () => {
     const obj = [null, undefined];
     collect(data, obj, testFunc);
     expect(testFunc).toHaveBeenCalledTimes(0);

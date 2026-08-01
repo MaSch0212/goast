@@ -1,5 +1,3 @@
-import { EOL } from 'node:os';
-
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
@@ -69,21 +67,21 @@ describe('append', () => {
 
 describe('appendLine', () => {
   it('should append a string followed by a new line to the end of the StringBuilder', () => {
-    const sb = new StringBuilder();
+    const sb = new StringBuilder({ newLine: '\n' });
     sb.appendLine('hello');
-    expect(sb.toString()).toEqual(`hello${EOL}`);
+    expect(sb.toString()).toEqual('hello\n');
   });
 
   it('should append multiple strings followed by a new line to the end of the StringBuilder', () => {
-    const sb = new StringBuilder();
+    const sb = new StringBuilder({ newLine: '\n' });
     sb.appendLine('hello', 'world');
-    expect(sb.toString()).toEqual(`helloworld${EOL}`);
+    expect(sb.toString()).toEqual('helloworld\n');
   });
 
   it('should ignore nullish or empty strings', () => {
-    const sb = new StringBuilder();
+    const sb = new StringBuilder({ newLine: '\n' });
     sb.appendLine('', null, undefined, 'hello');
-    expect(sb.toString()).toEqual(`hello${EOL}`);
+    expect(sb.toString()).toEqual('hello\n');
   });
 
   it('should append a string followed by a custom new line to the end of the StringBuilder', () => {
@@ -138,10 +136,10 @@ describe('prepend', () => {
 
 describe('prependLine', () => {
   it('should prepend a string followed by a new line to the beginning of the StringBuilder', () => {
-    const sb = new StringBuilder();
+    const sb = new StringBuilder({ newLine: '\n' });
     sb.append('world');
     sb.prependLine('hello');
-    expect(sb.toString()).toEqual(`hello${EOL}world`);
+    expect(sb.toString()).toEqual('hello\nworld');
   });
 
   it('should prepend a string followed by a custom new line to the beginning of the StringBuilder', () => {
@@ -155,24 +153,24 @@ describe('prependLine', () => {
   });
 
   it('should prepend multiple strings followed by a new line to the beginning of the StringBuilder', () => {
-    const sb = new StringBuilder();
+    const sb = new StringBuilder({ newLine: '\n' });
     sb.append('world');
     sb.prependLine('hello', 'there');
-    expect(sb.toString()).toEqual(`hellothere${EOL}world`);
+    expect(sb.toString()).toEqual('hellothere\nworld');
   });
 
   it('should ignore nullish or empty strings', () => {
-    const sb = new StringBuilder();
+    const sb = new StringBuilder({ newLine: '\n' });
     sb.append('world');
     sb.prependLine('', null, undefined, 'hello');
-    expect(sb.toString()).toEqual(`hello${EOL}world`);
+    expect(sb.toString()).toEqual('hello\nworld');
   });
 
   it('should prepend a string built by another StringBuilder', () => {
-    const sb = new StringBuilder();
+    const sb = new StringBuilder({ newLine: '\n' });
     sb.append('world');
     sb.prependLine((builder) => builder.append('hello '));
-    expect(sb.toString()).toEqual(`hello ${EOL}world`);
+    expect(sb.toString()).toEqual('hello \nworld');
   });
 
   it('should create the StringBuilder for the function with the same options as the current StringBuilder', () => {

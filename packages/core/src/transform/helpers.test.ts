@@ -1,5 +1,5 @@
 import { expect, fn } from '@std/expect';
-import { describe, test } from '@std/testing/bdd';
+import { describe, it } from '@std/testing/bdd';
 import type { OpenApiDocument } from '../parse/openapi-types.ts';
 import type { Deref } from '../parse/types.ts';
 import { parseYamlWithInfo } from '../utils/yaml-info.ts';
@@ -19,27 +19,27 @@ import type { OpenApiTransformerContext } from './types.ts';
 describe('determineSchemaKind', () => {
   const ctx = { config: { unknownTypeBehavior: 'keep-unknown' } } as OpenApiTransformerContext;
 
-  test('returns "oneOf" if schema has "oneOf" property', () => {
+  it('returns "oneOf" if schema has "oneOf" property', () => {
     const schema = { oneOf: [{}] };
     expect(determineSchemaKind(ctx, schema)).toBe('oneOf');
   });
 
-  test('returns "combined" if schema has "allOf" or "anyOf" property', () => {
+  it('returns "combined" if schema has "allOf" or "anyOf" property', () => {
     const schema = { allOf: [{}], anyOf: [{}] };
     expect(determineSchemaKind(ctx, schema)).toBe('combined');
   });
 
-  test('returns "multi-type" if schema has "type" property as an array', () => {
+  it('returns "multi-type" if schema has "type" property as an array', () => {
     const schema = { type: ['string', 'number'] };
     expect(determineSchemaKind(ctx, schema)).toBe('multi-type');
   });
 
-  test('returns "multi-type" if a 3.1 type array is combined with "allOf"', () => {
+  it('returns "multi-type" if a 3.1 type array is combined with "allOf"', () => {
     const schema = { type: ['object', 'null'], allOf: [{ type: 'object' }] };
     expect(determineSchemaKind(ctx, schema)).toBe('multi-type');
   });
 
-  test('returns "multi-type" if a 3.1 type array is combined with "anyOf"', () => {
+  it('returns "multi-type" if a 3.1 type array is combined with "anyOf"', () => {
     const schema = { type: ['string', 'null'], anyOf: [{ type: 'string' }] };
     expect(determineSchemaKind(ctx, schema)).toBe('multi-type');
   });
@@ -47,14 +47,14 @@ describe('determineSchemaKind', () => {
   // A type array with two or more non-null types is not normalized away by `transformSchema`, so nothing
   // re-runs this function for it. It therefore has to keep yielding the same kind as before the 3.1 type
   // array was given precedence, otherwise such a schema silently loses its `allOf` merge downstream.
-  test('still returns "combined" if a type array with two or more non-null types has "allOf"', () => {
+  it('still returns "combined" if a type array with two or more non-null types has "allOf"', () => {
     expect(determineSchemaKind(ctx, { type: ['string', 'integer'], allOf: [{ type: 'string' }] })).toBe('combined');
     expect(determineSchemaKind(ctx, { type: ['string', 'integer', 'null'], anyOf: [{ type: 'string' }] })).toBe(
       'combined',
     );
   });
 
-  test('still returns "object" if a type array with two or more non-null types has "allOf" and properties', () => {
+  it('still returns "object" if a type array with two or more non-null types has "allOf" and properties', () => {
     expect(
       determineSchemaKind(ctx, { type: ['string', 'integer'], properties: { a: {} }, allOf: [{ type: 'object' }] }),
     ).toBe('object');
@@ -67,24 +67,24 @@ describe('determineSchemaKind', () => {
     ).toBe('object');
   });
 
-  test('returns "multi-type" for a type array with two or more non-null types and no composition', () => {
+  it('returns "multi-type" for a type array with two or more non-null types and no composition', () => {
     expect(determineSchemaKind(ctx, { type: ['string', 'integer'] })).toBe('multi-type');
     expect(determineSchemaKind(ctx, { type: ['string', 'integer', 'null'] })).toBe('multi-type');
   });
 
-  test('returns the value of "type" property if it is a string', () => {
+  it('returns the value of "type" property if it is a string', () => {
     const schema = { type: 'string' };
     expect(determineSchemaKind(ctx, schema)).toBe('string');
   });
 
-  test('returns "unknown" if schema has no recognizable properties', () => {
+  it('returns "unknown" if schema has no recognizable properties', () => {
     const schema = {};
     expect(determineSchemaKind(ctx, schema)).toBe('unknown');
   });
 });
 
 describe('determineSchemaName', () => {
-  test('returns the schema title if it exists', () => {
+  it('returns the schema title if it exists', () => {
     const schema = {
       title: 'TestSchema',
       $src: {
@@ -101,7 +101,7 @@ describe('determineSchemaName', () => {
     });
   });
 
-  test("returns the json schema file name if the schema title doesn't exist", () => {
+  it("returns the json schema file name if the schema title doesn't exist", () => {
     const schema = {
       $src: {
         path: '/',
@@ -117,7 +117,7 @@ describe('determineSchemaName', () => {
     });
   });
 
-  test('returns the schema name extracted from $src.path if it starts with "/components/schemas/"', () => {
+  it('returns the schema name extracted from $src.path if it starts with "/components/schemas/"', () => {
     const schema = {
       $src: {
         file: 'my-api.yml',
@@ -133,7 +133,7 @@ describe('determineSchemaName', () => {
     });
   });
 
-  test('returns the schema name extracted from $src.path if it starts with "/definitions/"', () => {
+  it('returns the schema name extracted from $src.path if it starts with "/definitions/"', () => {
     const schema = {
       $src: {
         file: 'my-api.yml',
@@ -149,7 +149,7 @@ describe('determineSchemaName', () => {
     });
   });
 
-  test('returns a generated name based on the $src.path for response schemas', () => {
+  it('returns a generated name based on the $src.path for response schemas', () => {
     const schema = {
       $src: {
         file: 'my-api.yml',
@@ -165,7 +165,7 @@ describe('determineSchemaName', () => {
     });
   });
 
-  test('composes the names of inline objects nested more than one level deep', () => {
+  it('composes the names of inline objects nested more than one level deep', () => {
     const document = parseYamlWithInfo(`
 components:
   schemas:
@@ -206,7 +206,7 @@ components:
     });
   });
 
-  test('returns the provided id if no other name can be determined', () => {
+  it('returns the provided id if no other name can be determined', () => {
     const schema = {
       $src: {
         file: 'my-api.yml',
@@ -219,7 +219,7 @@ components:
     expect(determineSchemaName(schema, 'TestId')).toEqual({ name: 'TestId', isGenerated: true });
   });
 
-  test('prints nothing for a schema without $src', () => {
+  it('prints nothing for a schema without $src', () => {
     const lines: string[] = [];
     const original = console.log;
     console.log = (...args: unknown[]) => lines.push(args.join(' '));
@@ -237,34 +237,34 @@ components:
 });
 
 describe('determineSchemaAccessibility', () => {
-  test('returns "readOnly" if "readOnly" property is true and "writeOnly" property is false or undefined', () => {
+  it('returns "readOnly" if "readOnly" property is true and "writeOnly" property is false or undefined', () => {
     const schema = { readOnly: true };
     expect(determineSchemaAccessibility(schema)).toBe('readOnly');
   });
 
-  test('returns "writeOnly" if "writeOnly" property is true and "readOnly" property is false or undefined', () => {
+  it('returns "writeOnly" if "writeOnly" property is true and "readOnly" property is false or undefined', () => {
     const schema = { writeOnly: true };
     expect(determineSchemaAccessibility(schema)).toBe('writeOnly');
   });
 
-  test('returns "none" if both "readOnly" and "writeOnly" properties are true', () => {
+  it('returns "none" if both "readOnly" and "writeOnly" properties are true', () => {
     const schema = { readOnly: true, writeOnly: true };
     expect(determineSchemaAccessibility(schema)).toBe('none');
   });
 
-  test('returns "all" if neither "readOnly" nor "writeOnly" properties are true', () => {
+  it('returns "all" if neither "readOnly" nor "writeOnly" properties are true', () => {
     const schema = {};
     expect(determineSchemaAccessibility(schema)).toBe('all');
   });
 });
 
 describe('getCustomFields', () => {
-  test('returns an empty object if no custom fields are present', () => {
+  it('returns an empty object if no custom fields are present', () => {
     const schema = { type: 'string' };
     expect(getCustomFields(schema)).toEqual({});
   });
 
-  test('returns an object containing all custom fields starting with "x-"', () => {
+  it('returns an object containing all custom fields starting with "x-"', () => {
     const schema = {
       type: 'string',
       'x-custom-field-1': 'value1',
@@ -276,7 +276,7 @@ describe('getCustomFields', () => {
     });
   });
 
-  test('returns an object containing only custom fields starting with "x-"', () => {
+  it('returns an object containing only custom fields starting with "x-"', () => {
     const schema = {
       type: 'string',
       'x-custom-field-1': 'value1',
@@ -285,7 +285,7 @@ describe('getCustomFields', () => {
     expect(getCustomFields(schema)).toEqual({ 'custom-field-1': 'value1' });
   });
 
-  test('returns an object with the same values as the original custom fields', () => {
+  it('returns an object with the same values as the original custom fields', () => {
     const schema = {
       type: 'string',
       'x-custom-field-1': { key1: 'value1' },
@@ -299,7 +299,7 @@ describe('getCustomFields', () => {
 });
 
 describe('determineEndpointName', () => {
-  test('returns the operationId if it exists', () => {
+  it('returns the operationId if it exists', () => {
     const endpointInfo = {
       method: 'get',
       path: '/users',
@@ -308,12 +308,12 @@ describe('determineEndpointName', () => {
     expect(determineEndpointName(endpointInfo)).toBe('getUserList');
   });
 
-  test('returns a generated name based on the method and path if operationId is not present', () => {
+  it('returns a generated name based on the method and path if operationId is not present', () => {
     const endpointInfo = { method: 'post', path: '/users/{userId}/comments', operation: {} };
     expect(determineEndpointName(endpointInfo)).toBe('post_users_:userId_comments');
   });
 
-  test('replaces path parameters with their names in the generated name', () => {
+  it('replaces path parameters with their names in the generated name', () => {
     const endpointInfo = {
       method: 'get',
       path: '/users/{userId}/comments/{commentId}',
@@ -322,7 +322,7 @@ describe('determineEndpointName', () => {
     expect(determineEndpointName(endpointInfo)).toBe('get_users_:userId_comments_:commentId');
   });
 
-  test('replaces slashes in the path with underscores in the generated name', () => {
+  it('replaces slashes in the path with underscores in the generated name', () => {
     const endpointInfo = { method: 'put', path: '/users/{userId}/profile-picture', operation: {} };
     expect(determineEndpointName(endpointInfo)).toBe('put_users_:userId_profile-picture');
   });
@@ -331,28 +331,28 @@ describe('determineEndpointName', () => {
 describe('transformAdditionalProperties', () => {
   const context = {} as OpenApiTransformerContext;
 
-  test('returns undefined if additionalProperties is undefined or null', () => {
+  it('returns undefined if additionalProperties is undefined or null', () => {
     const schema1 = { additionalProperties: undefined };
     const schema2 = { additionalProperties: null };
     expect(transformAdditionalProperties(context, schema1, () => ({}) as ApiSchema)).toBeUndefined();
     expect(transformAdditionalProperties(context, schema2, () => ({}) as ApiSchema)).toBeUndefined();
   });
 
-  test('returns a boolean value if additionalProperties is a boolean value', () => {
+  it('returns a boolean value if additionalProperties is a boolean value', () => {
     const schema1 = { additionalProperties: true };
     const schema2 = { additionalProperties: false };
     expect(transformAdditionalProperties(context, schema1, () => ({}) as ApiSchema)).toBe(true);
     expect(transformAdditionalProperties(context, schema2, () => ({}) as ApiSchema)).toBe(false);
   });
 
-  test('calls transformSchema with the additionalProperties schema if it exists', () => {
+  it('calls transformSchema with the additionalProperties schema if it exists', () => {
     const schema = { additionalProperties: { type: 'string' } };
     const transformSchema = fn(() => ({})) as () => ApiSchema;
     transformAdditionalProperties(context, schema, transformSchema);
     expect(transformSchema).toHaveBeenCalledWith(context, schema.additionalProperties);
   });
 
-  test('returns the result of calling transformSchema with the additionalProperties schema if it exists', () => {
+  it('returns the result of calling transformSchema with the additionalProperties schema if it exists', () => {
     const schema = { additionalProperties: { type: 'string' } };
     const transformedSchema = { type: 'string' } as ApiSchema;
     const transformSchema = fn(() => transformedSchema) as () => ApiSchema;
@@ -363,13 +363,13 @@ describe('transformAdditionalProperties', () => {
 describe('transformSchemaProperties', () => {
   const context = {} as OpenApiTransformerContext;
 
-  test('returns an empty array if properties is undefined', () => {
+  it('returns an empty array if properties is undefined', () => {
     const schema = {};
     const transformSchema = fn(() => ({})) as () => ApiSchema;
     expect(transformSchemaProperties(context, schema, transformSchema).size).toEqual(0);
   });
 
-  test('calls transformSchema with each property schema and builds an array of ApiSchemaProperties', () => {
+  it('calls transformSchema with each property schema and builds an array of ApiSchemaProperties', () => {
     const schema = {
       properties: {
         prop1: { type: 'string' } as ApiSchema,
@@ -396,7 +396,7 @@ describe('transformSchemaProperties', () => {
     expect(transformSchema).toHaveBeenCalledWith(context, schema.properties.prop2);
   });
 
-  test('ignores properties with the name "$src"', () => {
+  it('ignores properties with the name "$src"', () => {
     const schema = { properties: { prop1: { type: 'string' }, $src: { path: '/test/schema' } } };
     const transformedSchema1 = { type: 'string' } as ApiSchema;
     const transformSchema = fn(() => transformedSchema1) as () => ApiSchema;
@@ -408,20 +408,20 @@ describe('transformSchemaProperties', () => {
 });
 
 describe('IdGenerator', () => {
-  test('generates unique ids based on the provided name', () => {
+  it('generates unique ids based on the provided name', () => {
     const idGenerator = new IdGenerator();
     const id1 = idGenerator.generateId('test');
     const id2 = idGenerator.generateId('test');
     expect(id1).not.toBe(id2);
   });
 
-  test('generates ids with the format "{name}-{n}"', () => {
+  it('generates ids with the format "{name}-{n}"', () => {
     const idGenerator = new IdGenerator();
     const id1 = idGenerator.generateId('test');
     expect(id1).toMatch(/^test-\d+$/);
   });
 
-  test('increments the id number for each new id generated with the same name', () => {
+  it('increments the id number for each new id generated with the same name', () => {
     const idGenerator = new IdGenerator();
     const id1 = idGenerator.generateId('test');
     const id2 = idGenerator.generateId('test');

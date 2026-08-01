@@ -1,5 +1,5 @@
 import { expect } from '@std/expect';
-import { describe, test } from '@std/testing/bdd';
+import { describe, it } from '@std/testing/bdd';
 
 import { createDerefProxy } from '../parse/deref-proxy.ts';
 import type { OpenApiDocument, OpenApiSchema } from '../parse/openapi-types.ts';
@@ -62,7 +62,7 @@ function derefAt(path: string, schema: Record<string, unknown>, ref?: Deref<Open
 
 describe('transformSchema', () => {
   describe('OpenAPI 3.1 type arrays', () => {
-    test('marks a schema with an "object"/"null" type array and an allOf as a nullable object', () => {
+    it('marks a schema with an "object"/"null" type array and an allOf as a nullable object', () => {
       const schema = derefSchema('NullableWithAllOf', {
         type: ['object', 'null'],
         allOf: [{ type: 'object' }],
@@ -75,7 +75,7 @@ describe('transformSchema', () => {
       expect((result as ApiSchema<'object'>).allOf).toHaveLength(1);
     });
 
-    test('resolves a "null"-only type array next to a $ref to the referenced type', () => {
+    it('resolves a "null"-only type array next to a $ref to the referenced type', () => {
       const target = derefSchema('NullableEnum', { type: ['string', 'null'], enum: ['one', 'two'] });
       const schema = derefSchema('NullableRef', { type: ['null'] }, target);
 
@@ -86,7 +86,7 @@ describe('transformSchema', () => {
       expect((result as ApiSchema<'string'>).type).toBe('string');
     });
 
-    test('treats a "null"-only type array without a $ref as the null type', () => {
+    it('treats a "null"-only type array without a $ref as the null type', () => {
       const schema = derefSchema('NullOnly', { type: ['null'] });
 
       const result = transformSchema(createContext(), schema);
@@ -95,7 +95,7 @@ describe('transformSchema', () => {
       expect(result.nullable).toBe(true);
     });
 
-    test('keeps more than one remaining type as a multi-type schema', () => {
+    it('keeps more than one remaining type as a multi-type schema', () => {
       const schema = derefSchema('MultiType', { type: ['string', 'integer', 'null'] });
 
       const result = transformSchema(createContext(), schema);
@@ -105,7 +105,7 @@ describe('transformSchema', () => {
       expect(result.nullable).toBe(true);
     });
 
-    test('keeps the allOf of a type array with two or more non-null types, and still reports it nullable', () => {
+    it('keeps the allOf of a type array with two or more non-null types, and still reports it nullable', () => {
       const schema = derefSchema('MultiTypeWithAllOf', {
         type: ['string', 'integer', 'null'],
         allOf: [{ type: 'object' }],
@@ -120,7 +120,7 @@ describe('transformSchema', () => {
       expect(result.nullable).toBe(true);
     });
 
-    test('keeps the allOf of an all-null type array instead of collapsing to the bare null type', () => {
+    it('keeps the allOf of an all-null type array instead of collapsing to the bare null type', () => {
       const schema = derefSchema('NullWithAllOf', { type: ['null'], allOf: [{ type: 'object' }] });
 
       const result = transformSchema(createContext(), schema);
@@ -130,7 +130,7 @@ describe('transformSchema', () => {
       expect(result.nullable).toBe(true);
     });
 
-    test('reports an empty type array as nullable, like the scalar null type', () => {
+    it('reports an empty type array as nullable, like the scalar null type', () => {
       const empty = transformSchema(createContext(), derefSchema('EmptyTypeArray', { type: [] }));
       const scalar = transformSchema(createContext(), derefSchema('NullScalar', { type: 'null' }));
 
@@ -142,7 +142,7 @@ describe('transformSchema', () => {
   });
 
   describe('prefixItems', () => {
-    test('does not present a tuple with a rest schema as an array of the rest type', () => {
+    it('does not present a tuple with a rest schema as an array of the rest type', () => {
       const schema = derefSchema('TupleWithRest', {
         type: 'array',
         prefixItems: [{ type: 'string' }, { type: 'integer' }],
@@ -155,7 +155,7 @@ describe('transformSchema', () => {
       expect(result.items).toBeUndefined();
     });
 
-    test('does not present a nullable tuple with a rest schema as an array of the rest type', () => {
+    it('does not present a nullable tuple with a rest schema as an array of the rest type', () => {
       const schema = derefSchema('NullableTupleWithRest', {
         type: ['array', 'null'],
         prefixItems: [{ type: 'string' }, { type: 'integer' }],
@@ -169,7 +169,7 @@ describe('transformSchema', () => {
       expect(result.items).toBeUndefined();
     });
 
-    test('leaves a plain array with only items untouched', () => {
+    it('leaves a plain array with only items untouched', () => {
       const schema = derefSchema('ArrayOfString', { type: 'array', items: { type: 'string' } });
 
       const result = transformSchema(createContext(), schema) as ApiSchema<'array'>;
