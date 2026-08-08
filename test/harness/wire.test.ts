@@ -1,7 +1,30 @@
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
-import { diffRequest, formatDeviations, normalizeHeaders, parseQuery, readBody } from './wire.ts';
+import {
+  diffRequest,
+  diffResult,
+  formatDeviations,
+  IGNORED_HEADERS,
+  normalizeHeaders,
+  parseQuery,
+  readBody,
+} from './wire.ts';
+
+describe('IGNORED_HEADERS', () => {
+  it('ignores the incidental transport headers', () => {
+    expect(IGNORED_HEADERS.has('host')).toBe(true);
+    expect(IGNORED_HEADERS.has('user-agent')).toBe(true);
+    expect(IGNORED_HEADERS.has('accept-encoding')).toBe(true);
+    expect(IGNORED_HEADERS.has('content-length')).toBe(true);
+    expect(IGNORED_HEADERS.has('connection')).toBe(true);
+  });
+
+  it('does not ignore headers a generator controls', () => {
+    expect(IGNORED_HEADERS.has('content-type')).toBe(false);
+    expect(IGNORED_HEADERS.has('authorization')).toBe(false);
+  });
+});
 
 describe('normalizeHeaders', () => {
   it('lower-cases names and drops the incidental ones', () => {
@@ -56,6 +79,36 @@ describe('readBody', () => {
       { name: 'photo', filename: 'p.txt', contentType: 'text/plain', value: 'data' },
     ]);
   });
+
+  it('parses a form-urlencoded body into a multi-map', async () => {
+    const request = new Request('http://x/p', {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body: 'name=Rex&tag=a&tag=b',
+    });
+
+    expect(await readBody(request)).toEqual({ kind: 'form', fields: { name: ['Rex'], tag: ['a', 'b'] } });
+  });
+
+  it('reads a text/plain body verbatim', async () => {
+    const request = new Request('http://x/p', {
+      method: 'POST',
+      headers: { 'content-type': 'text/plain' },
+      body: 'plain text body',
+    });
+
+    expect(await readBody(request)).toEqual({ kind: 'text', value: 'plain text body' });
+  });
+
+  it('base64-encodes a body whose content type is none of the above', async () => {
+    const request = new Request('http://x/p', {
+      method: 'POST',
+      headers: { 'content-type': 'application/octet-stream' },
+      body: new Uint8Array([104, 101, 108, 108, 111]), // "hello"
+    });
+
+    expect(await readBody(request)).toEqual({ kind: 'binary', base64: 'aGVsbG8=' });
+  });
 });
 
 describe('diffRequest', () => {
@@ -81,6 +134,30 @@ describe('diffRequest', () => {
     const withHeader = { ...actual, headers: { 'x-trace': 't' } };
 
     expect(diffRequest({ path: '/pets/abc def', query: { tags: ['a,b'] } }, withHeader)).toEqual([]);
+  });
+});
+
+describe('diffResult', () => {
+  it('reports nothing when the result matches, regardless of key order', () => {
+    expect(diffResult({ id: 'abc', name: 'Rex' }, { name: 'Rex', id: 'abc' })).toEqual([]);
+  });
+
+  it('reports a deviation when the actual result is missing an expected field', () => {
+    expect(diffResult({ id: 'abc', name: 'Rex' }, { id: 'abc' })).toEqual([
+      { field: 'result', expected: '{"id":"abc","name":"Rex"}', actual: '{"id":"abc"}' },
+    ]);
+  });
+
+  it('reports a deviation when the actual result has an unexpected extra field', () => {
+    expect(diffResult({ id: 'abc' }, { id: 'abc', name: 'Rex' })).toEqual([
+      { field: 'result', expected: '{"id":"abc"}', actual: '{"id":"abc","name":"Rex"}' },
+    ]);
+  });
+
+  it('reports a deviation when a shared field has a different value', () => {
+    expect(diffResult({ id: 'abc' }, { id: 'xyz' })).toEqual([
+      { field: 'result', expected: '{"id":"abc"}', actual: '{"id":"xyz"}' },
+    ]);
   });
 });
 
