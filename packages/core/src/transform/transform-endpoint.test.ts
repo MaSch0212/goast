@@ -295,6 +295,63 @@ describe('transformEndpoint', () => {
       expect(endpoint.responses[0].statusCode).toBeUndefined();
     });
 
+    // `statusCode` deliberately keeps its lossy shape; `statusKey` is the spec's own response key, which is
+    // what an emitted `@ApiResponse(responseCode = …)` needs. Defect 19 existed because only the former was
+    // kept, so `default`, `2XX`, `4XX` and `5XX` were indistinguishable from each other and from a missing
+    // code — and the Kotlin generator rendered all of them as the bare token `null`.
+    it('keeps the exact numeric response key in statusKey', () => {
+      const context = createTransformerContext();
+      const endpoint = transformEndpoint(
+        context,
+        endpointInfo('/a', 'get', {
+          operationId: 'a',
+          responses: { '200': derefAt('/paths/~1a/get/responses/200', { description: 'ok' }) },
+        }),
+      );
+
+      expect(endpoint.responses[0].statusKey).toBe('200');
+    });
+
+    it('keeps "default" in statusKey', () => {
+      const context = createTransformerContext();
+      const endpoint = transformEndpoint(
+        context,
+        endpointInfo('/a', 'get', {
+          operationId: 'a',
+          responses: { default: derefAt('/paths/~1a/get/responses/default', { description: 'fallback' }) },
+        }),
+      );
+
+      expect(endpoint.responses[0].statusKey).toBe('default');
+    });
+
+    it('keeps a range code such as 2XX in statusKey', () => {
+      const context = createTransformerContext();
+      const endpoint = transformEndpoint(
+        context,
+        endpointInfo('/a', 'get', {
+          operationId: 'a',
+          responses: { '2XX': derefAt('/paths/~1a/get/responses/2XX', { description: 'any success' }) },
+        }),
+      );
+
+      expect(endpoint.responses[0].statusKey).toBe('2XX');
+    });
+
+    it('keeps the numeric string "0" in statusKey, which statusCode cannot represent', () => {
+      const context = createTransformerContext();
+      const endpoint = transformEndpoint(
+        context,
+        endpointInfo('/a', 'get', {
+          operationId: 'a',
+          responses: { '0': derefAt('/paths/~1a/get/responses/0', { description: 'weird' }) },
+        }),
+      );
+
+      expect(endpoint.responses[0].statusKey).toBe('0');
+      expect(endpoint.responses[0].statusCode).toBeUndefined();
+    });
+
     // This pins the brief's literal scenario: wrapping the whole `responses` record in a deref proxy
     // and asserting that `$src`/`$ref` are not read back as status codes. It passes — but not for the
     // reason the brief states. `Object.keys()` on a proxy only reports a key when the proxy's

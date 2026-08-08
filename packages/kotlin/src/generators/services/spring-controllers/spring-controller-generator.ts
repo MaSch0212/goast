@@ -209,7 +209,10 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
                   kt.call(kt.refs.swagger.apiResponse(), [
                     kt.argument.named(
                       'responseCode',
-                      kt.string(response.statusCode?.toString()),
+                      // The spec's own response key, not `statusCode`: that field is `undefined` for
+                      // `default` and every range code, and `kt.string(undefined)` renders the bare token
+                      // `null`, which is not assignable to this non-nullable annotation element.
+                      kt.string(response.statusKey),
                     ),
                     response.description
                       ? kt.argument.named(

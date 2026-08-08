@@ -804,7 +804,8 @@
           description: 'A templated overlap segment.',
           headers: [],
           id: 'response-1',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -1226,7 +1227,8 @@
           description: 'A literal overlap segment.',
           headers: [],
           id: 'response-2',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -1652,7 +1654,8 @@
           description: 'A path segment containing a dot.',
           headers: [],
           id: 'response-3',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -2078,7 +2081,8 @@
           description: 'A path segment containing a dash.',
           headers: [],
           id: 'response-4',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -2508,7 +2512,8 @@
           description: 'A path segment containing an underscore.',
           headers: [],
           id: 'response-5',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -2934,7 +2939,8 @@
           description: 'A path segment containing a tilde.',
           headers: [],
           id: 'response-6',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -3360,7 +3366,8 @@
           description: 'A path segment containing a colon.',
           headers: [],
           id: 'response-7',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -3790,7 +3797,8 @@
           description: 'A path segment containing an at sign.',
           headers: [],
           id: 'response-8',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -4216,7 +4224,8 @@
           description: 'A path with a trailing slash.',
           headers: [],
           id: 'response-9',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -4873,7 +4882,8 @@
           description: 'A path that is a parameter in its entirety.',
           headers: [],
           id: 'response-10',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -5966,7 +5976,8 @@
           description: 'Three parameters interleaved with literals.',
           headers: [],
           id: 'response-11',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -6400,7 +6411,8 @@
           description: 'A path with casing variety in its segments.',
           headers: [],
           id: 'response-12',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -6822,7 +6834,8 @@
           description: 'A very deep path.',
           headers: [],
           id: 'response-13',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,

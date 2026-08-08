@@ -363,7 +363,8 @@
           description: 'An untagged operation.',
           headers: [],
           id: 'response-1',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -639,7 +640,8 @@
           description: 'An operation with one tag.',
           headers: [],
           id: 'response-2',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -915,7 +917,8 @@
           description: 'An operation with two tags.',
           headers: [],
           id: 'response-3',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -1199,7 +1202,8 @@
           description: 'An operation sharing a tag with another.',
           headers: [],
           id: 'response-4',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -1497,7 +1501,8 @@
           description: 'An operation under a path-item-level server override.',
           headers: [],
           id: 'response-5',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -1795,7 +1800,8 @@
           description: 'An operation with its own server override.',
           headers: [],
           id: 'response-6',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -2083,7 +2089,8 @@
           description: 'An operation tagged with a name containing a space.',
           headers: [],
           id: 'response-7',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,

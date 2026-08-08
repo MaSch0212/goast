@@ -33,7 +33,7 @@ interface WidgetsApi {
             ApiResponse(responseCode = "400", description = "The request was invalid.", content = [Content(mediaType = "application/json", schema = Schema(implementation = Error::class))]),
             ApiResponse(responseCode = "404", description = "The widget was not found.", content = [Content(mediaType = "application/json", schema = Schema(implementation = Error::class))]),
             ApiResponse(responseCode = "500", description = "An internal error occurred.", content = [Content(mediaType = "application/json", schema = Schema(implementation = Error::class))]),
-            ApiResponse(responseCode = null, description = "An unexpected error occurred.", content = [Content(mediaType = "application/json", schema = Schema(implementation = Error::class))])
+            ApiResponse(responseCode = "default", description = "An unexpected error occurred.", content = [Content(mediaType = "application/json", schema = Schema(implementation = Error::class))])
         ])
     @RequestMapping(method = [RequestMethod.GET], value = [GET_WIDGET_PATH])
     suspend fun getWidget(

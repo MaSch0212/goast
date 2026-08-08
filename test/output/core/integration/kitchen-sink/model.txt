@@ -2467,7 +2467,8 @@
               description: 'The pet was deleted.',
               headers: [],
               id: 'response-3',
-              statusCode: 204
+              statusCode: 204,
+              statusKey: '204'
             }
           ],
           summary: undefined,
@@ -5489,7 +5490,8 @@
               description: 'The updated pet.',
               headers: [],
               id: 'response-2',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -6447,7 +6449,8 @@
           description: 'The pet.',
           headers: [],
           id: 'response-1',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -8521,7 +8524,8 @@
               description: 'The pet was deleted.',
               headers: [],
               id: 'response-3',
-              statusCode: 204
+              statusCode: 204,
+              statusKey: '204'
             }
           ],
           summary: undefined,
@@ -10052,7 +10056,8 @@
               description: 'The pet.',
               headers: [],
               id: 'response-1',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -12394,7 +12399,8 @@
           description: 'The updated pet.',
           headers: [],
           id: 'response-2',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -14982,7 +14988,8 @@
               description: 'The pet.',
               headers: [],
               id: 'response-1',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -18002,7 +18009,8 @@
               description: 'The updated pet.',
               headers: [],
               id: 'response-2',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -18463,7 +18471,8 @@
           description: 'The pet was deleted.',
           headers: [],
           id: 'response-3',
-          statusCode: 204
+          statusCode: 204,
+          statusKey: '204'
         }
       ],
       summary: undefined,
@@ -20843,7 +20852,8 @@
           description: 'The pet was created.',
           headers: [],
           id: 'response-4',
-          statusCode: 201
+          statusCode: 201,
+          statusKey: '201'
         }
       ],
       summary: undefined,
@@ -23249,7 +23259,8 @@
           description: 'The photo was accepted.',
           headers: [],
           id: 'response-5',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -26104,7 +26115,8 @@
           description: 'The note was added.',
           headers: [],
           id: 'response-6',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -28635,7 +28647,8 @@
             }
           ],
           id: 'response-7',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         },
         {
           '$ref': undefined,
@@ -29584,7 +29597,8 @@
           description: 'The request was invalid.',
           headers: [],
           id: 'response-8',
-          statusCode: 400
+          statusCode: 400,
+          statusKey: '400'
         },
         {
           '$ref': undefined,
@@ -30533,7 +30547,8 @@
           description: 'The widget was not found.',
           headers: [],
           id: 'response-9',
-          statusCode: 404
+          statusCode: 404,
+          statusKey: '404'
         },
         {
           '$ref': undefined,
@@ -31482,7 +31497,8 @@
           description: 'An internal error occurred.',
           headers: [],
           id: 'response-10',
-          statusCode: 500
+          statusCode: 500,
+          statusKey: '500'
         },
         {
           '$ref': undefined,
@@ -32431,7 +32447,8 @@
           description: 'An unexpected error occurred.',
           headers: [],
           id: 'response-11',
-          statusCode: undefined
+          statusCode: undefined,
+          statusKey: 'default'
         }
       ],
       summary: undefined,
@@ -34813,7 +34830,8 @@
           description: 'The blob was stored.',
           headers: [],
           id: 'response-12',
-          statusCode: 201
+          statusCode: 201,
+          statusKey: '201'
         }
       ],
       summary: undefined,
@@ -37679,7 +37697,8 @@
           description: 'All four parameter locations echoed back.',
           headers: [],
           id: 'response-13',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -40089,7 +40108,8 @@
           description: 'The style/explode query array parameters echoed back.',
           headers: [],
           id: 'response-14',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -41535,7 +41555,8 @@
           description: 'The simple-style path array parameter echoed back.',
           headers: [],
           id: 'response-15',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -43441,7 +43462,8 @@
           description: 'A path and a query parameter whose values require percent-encoding.',
           headers: [],
           id: 'response-16',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,

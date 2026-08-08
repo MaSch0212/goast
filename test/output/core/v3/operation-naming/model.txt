@@ -453,7 +453,8 @@
               description: 'Item headers.',
               headers: [],
               id: 'response-4',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -619,7 +620,8 @@
               description: 'Allowed methods.',
               headers: [],
               id: 'response-3',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -787,7 +789,8 @@
               description: 'The created item.',
               headers: [],
               id: 'response-2',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -929,7 +932,8 @@
           description: 'A list of items.',
           headers: [],
           id: 'response-1',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -1272,7 +1276,8 @@
               description: 'A list of items.',
               headers: [],
               id: 'response-1',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -1437,7 +1442,8 @@
               description: 'Item headers.',
               headers: [],
               id: 'response-4',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -1603,7 +1609,8 @@
               description: 'Allowed methods.',
               headers: [],
               id: 'response-3',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -1749,7 +1756,8 @@
           description: 'The created item.',
           headers: [],
           id: 'response-2',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -2092,7 +2100,8 @@
               description: 'A list of items.',
               headers: [],
               id: 'response-1',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -2257,7 +2266,8 @@
               description: 'Item headers.',
               headers: [],
               id: 'response-4',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -2427,7 +2437,8 @@
               description: 'The created item.',
               headers: [],
               id: 'response-2',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -2569,7 +2580,8 @@
           description: 'Allowed methods.',
           headers: [],
           id: 'response-3',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -2912,7 +2924,8 @@
               description: 'A list of items.',
               headers: [],
               id: 'response-1',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -3079,7 +3092,8 @@
               description: 'Allowed methods.',
               headers: [],
               id: 'response-3',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -3247,7 +3261,8 @@
               description: 'The created item.',
               headers: [],
               id: 'response-2',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -3389,7 +3404,8 @@
           description: 'Item headers.',
           headers: [],
           id: 'response-4',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -4100,7 +4116,8 @@
               description: 'The item was deleted.',
               headers: [],
               id: 'response-7',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -4428,7 +4445,8 @@
               description: 'The patched item.',
               headers: [],
               id: 'response-8',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -4752,7 +4770,8 @@
               description: 'The updated item.',
               headers: [],
               id: 'response-6',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -4893,7 +4912,8 @@
           description: 'The requested item.',
           headers: [],
           id: 'response-5',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -5604,7 +5624,8 @@
               description: 'The item was deleted.',
               headers: [],
               id: 'response-7',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -5927,7 +5948,8 @@
               description: 'The requested item.',
               headers: [],
               id: 'response-5',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -6253,7 +6275,8 @@
               description: 'The patched item.',
               headers: [],
               id: 'response-8',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -6397,7 +6420,8 @@
           description: 'The updated item.',
           headers: [],
           id: 'response-6',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -7110,7 +7134,8 @@
               description: 'The requested item.',
               headers: [],
               id: 'response-5',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -7436,7 +7461,8 @@
               description: 'The patched item.',
               headers: [],
               id: 'response-8',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -7760,7 +7786,8 @@
               description: 'The updated item.',
               headers: [],
               id: 'response-6',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -7901,7 +7928,8 @@
           description: 'The item was deleted.',
           headers: [],
           id: 'response-7',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -8612,7 +8640,8 @@
               description: 'The item was deleted.',
               headers: [],
               id: 'response-7',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -8935,7 +8964,8 @@
               description: 'The requested item.',
               headers: [],
               id: 'response-5',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -9264,7 +9294,8 @@
               description: 'The updated item.',
               headers: [],
               id: 'response-6',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -9405,7 +9436,8 @@
           description: 'The patched item.',
           headers: [],
           id: 'response-8',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -10034,7 +10066,8 @@
           description: 'The requested sub-item.',
           headers: [],
           id: 'response-9',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -10338,7 +10371,8 @@
           description: 'The root resource.',
           headers: [],
           id: 'response-10',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -10642,7 +10676,8 @@
           description: 'A deeply nested resource.',
           headers: [],
           id: 'response-11',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -10948,7 +10983,8 @@
           description: 'The summary example.',
           headers: [],
           id: 'response-12',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: 'Get the summary example',

@@ -32,6 +32,21 @@ function createParameter(deprecated: boolean, description?: string): ApiParamete
   } as unknown as ApiParameter as ApiParameterWithMultipartInfo;
 }
 
+function createEndpointWithResponses(statusKeys: string[]): ApiEndpoint {
+  return {
+    name: 'responses',
+    method: 'get',
+    path: '/responses',
+    responses: statusKeys.map((statusKey) => ({
+      statusKey,
+      statusCode: Number(statusKey) || undefined,
+      description: undefined,
+      headers: [],
+      contentOptions: [],
+    })),
+  } as unknown as ApiEndpoint;
+}
+
 class TestGenerator extends DefaultKotlinSpringControllerGenerator {
   /** The rendered `@Parameter(...)` annotation of a generated method parameter. */
   public swaggerParameterAnnotation(parameter: ApiParameterWithMultipartInfo): string | undefined {
@@ -39,6 +54,13 @@ class TestGenerator extends DefaultKotlinSpringControllerGenerator {
     return result.annotations
       .map((a) => SourceBuilder.build((b) => a.write(b as KotlinFileBuilder), config).trim())
       .find((a) => a.startsWith('@Parameter'));
+  }
+
+  /** Every rendered `responseCode = …` argument of the generated `@ApiResponses` annotation. */
+  public responseCodes(endpointWithResponses: ApiEndpoint): string[] {
+    return this.getApiInterfaceEndpointMethodAnnnotations(createContext(), endpointWithResponses)
+      .map((a) => SourceBuilder.build((b) => a.write(b as KotlinFileBuilder), config))
+      .flatMap((rendered) => [...rendered.matchAll(/responseCode = ("[^"]*"|null)/g)].map((m) => m[1]));
   }
 }
 
@@ -64,6 +86,31 @@ describe('DefaultKotlinSpringControllerGenerator', () => {
       const annotation = new TestGenerator().swaggerParameterAnnotation(createParameter(false, 'Still supported.'));
 
       expect(annotation).toBe('@Parameter(description = "Still supported.", required = false)');
+    });
+  });
+
+  // `ApiResponse.responseCode()` is a non-nullable annotation element, so the bare token `null` does not
+  // compile — 28 occurrences across the four spring-controllers variants. Rendering the spec's own response
+  // key fixes the compile break and also makes `default`, `2XX`, `4XX` and `5XX` distinguishable, which the
+  // old `statusCode?.toString()` collapsed into one indistinguishable `null`.
+  describe('getApiInterfaceEndpointMethodAnnnotations', () => {
+    it('renders an exact status code as a quoted string', () => {
+      expect(new TestGenerator().responseCodes(createEndpointWithResponses(['200']))).toEqual(['"200"']);
+    });
+
+    it('renders the default response as "default" rather than null', () => {
+      expect(new TestGenerator().responseCodes(createEndpointWithResponses(['default']))).toEqual(['"default"']);
+    });
+
+    it('keeps range codes distinct from each other and from default', () => {
+      expect(new TestGenerator().responseCodes(createEndpointWithResponses(['2XX', '4XX', '5XX', 'default'])))
+        .toEqual(['"2XX"', '"4XX"', '"5XX"', '"default"']);
+    });
+
+    it('never emits a bare null', () => {
+      const codes = new TestGenerator().responseCodes(createEndpointWithResponses(['200', '2XX', 'default']));
+
+      expect(codes).not.toContain('null');
     });
   });
 });

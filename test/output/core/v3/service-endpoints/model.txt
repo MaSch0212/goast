@@ -991,7 +991,8 @@
               description: 'The created pet.',
               headers: [],
               id: 'response-2',
-              statusCode: 201
+              statusCode: 201,
+              statusKey: '201'
             },
             {
               '$ref': undefined,
@@ -1138,7 +1139,8 @@
               description: 'Invalid input.',
               headers: [],
               id: 'response-3',
-              statusCode: 400
+              statusCode: 400,
+              statusKey: '400'
             }
           ],
           summary: undefined,
@@ -1467,7 +1469,8 @@
           description: 'A list of pets.',
           headers: [],
           id: 'response-1',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -2054,7 +2057,8 @@
               description: 'A list of pets.',
               headers: [],
               id: 'response-1',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -2663,7 +2667,8 @@
           description: 'The created pet.',
           headers: [],
           id: 'response-2',
-          statusCode: 201
+          statusCode: 201,
+          statusKey: '201'
         },
         {
           '$ref': undefined,
@@ -2806,7 +2811,8 @@
           description: 'Invalid input.',
           headers: [],
           id: 'response-3',
-          statusCode: 400
+          statusCode: 400,
+          statusKey: '400'
         }
       ],
       summary: undefined,
@@ -3527,7 +3533,8 @@
               description: 'Pet deleted.',
               headers: [],
               id: 'response-6',
-              statusCode: 204
+              statusCode: 204,
+              statusKey: '204'
             }
           ],
           summary: undefined,
@@ -3845,7 +3852,8 @@
           description: 'The requested pet.',
           headers: [],
           id: 'response-4',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         },
         {
           '$ref': undefined,
@@ -3988,7 +3996,8 @@
           description: 'Pet not found.',
           headers: [],
           id: 'response-5',
-          statusCode: 404
+          statusCode: 404,
+          statusKey: '404'
         }
       ],
       summary: undefined,
@@ -4875,7 +4884,8 @@
               description: 'The requested pet.',
               headers: [],
               id: 'response-4',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             },
             {
               '$ref': undefined,
@@ -5022,7 +5032,8 @@
               description: 'Pet not found.',
               headers: [],
               id: 'response-5',
-              statusCode: 404
+              statusCode: 404,
+              statusKey: '404'
             }
           ],
           summary: undefined,
@@ -5182,7 +5193,8 @@
           description: 'Pet deleted.',
           headers: [],
           id: 'response-6',
-          statusCode: 204
+          statusCode: 204,
+          statusKey: '204'
         }
       ],
       summary: undefined,
@@ -5698,7 +5710,8 @@
           description: 'A pet.',
           headers: [],
           id: 'response-7',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         },
         {
           '$ref': undefined,
@@ -5997,7 +6010,8 @@
           description: 'An owner.',
           headers: [],
           id: 'response-8',
-          statusCode: 202
+          statusCode: 202,
+          statusKey: '202'
         }
       ],
       summary: undefined,

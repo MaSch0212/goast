@@ -1376,7 +1376,8 @@
           description: 'The JSON body was accepted.',
           headers: [],
           id: 'response-1',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -2539,7 +2540,8 @@
           description: 'The optional JSON body was accepted.',
           headers: [],
           id: 'response-2',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -3752,7 +3754,8 @@
           description: 'The inline JSON body was accepted.',
           headers: [],
           id: 'response-3',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -4941,7 +4944,8 @@
           description: 'The array of payloads was accepted.',
           headers: [],
           id: 'response-4',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -6096,7 +6100,8 @@
           description: 'The primitive JSON body was accepted.',
           headers: [],
           id: 'response-5',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -7243,7 +7248,8 @@
           description: 'The text body was accepted.',
           headers: [],
           id: 'response-6',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -8402,7 +8408,8 @@
           description: 'The binary body was accepted.',
           headers: [],
           id: 'response-7',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -9549,7 +9556,8 @@
           description: 'The body of any content type was accepted.',
           headers: [],
           id: 'response-8',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -11316,7 +11324,8 @@
           description: 'One of the three content types was accepted.',
           headers: [],
           id: 'response-9',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -12525,7 +12534,8 @@
           description: 'The form body was accepted.',
           headers: [],
           id: 'response-10',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -13692,7 +13702,8 @@
           description: 'The described body was accepted.',
           headers: [],
           id: 'response-11',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -15412,7 +15423,8 @@
           description: 'The shared request body was accepted.',
           headers: [],
           id: 'response-12',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,

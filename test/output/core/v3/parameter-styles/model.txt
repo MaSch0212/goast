@@ -1016,7 +1016,8 @@
           description: 'The form-style, exploded array parameter echoed back.',
           headers: [],
           id: 'response-1',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -1817,7 +1818,8 @@
           description: 'The form-style, non-exploded array parameter echoed back.',
           headers: [],
           id: 'response-2',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -2642,7 +2644,8 @@
           description: 'The form-style, exploded object parameter echoed back.',
           headers: [],
           id: 'response-3',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -3443,7 +3446,8 @@
           description: 'The space-delimited array parameter echoed back.',
           headers: [],
           id: 'response-4',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -4244,7 +4248,8 @@
           description: 'The pipe-delimited array parameter echoed back.',
           headers: [],
           id: 'response-5',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -5065,7 +5070,8 @@
           description: 'The deep-object parameter echoed back.',
           headers: [],
           id: 'response-6',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -5870,7 +5876,8 @@
           description: 'The simple-style path parameter echoed back.',
           headers: [],
           id: 'response-7',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -6675,7 +6682,8 @@
           description: 'The label-style path parameter echoed back.',
           headers: [],
           id: 'response-8',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -7480,7 +7488,8 @@
           description: 'The matrix-style path parameter echoed back.',
           headers: [],
           id: 'response-9',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -8281,7 +8290,8 @@
           description: 'The simple-style header parameter echoed back.',
           headers: [],
           id: 'response-10',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,

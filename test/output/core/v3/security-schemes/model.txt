@@ -357,7 +357,8 @@
           description: 'An operation that inherits the document-level security.',
           headers: [],
           id: 'response-1',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -630,7 +631,8 @@
           description: 'An operation that overrides the document-level security.',
           headers: [],
           id: 'response-2',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -903,7 +905,8 @@
           description: 'An operation explicitly marked as public.',
           headers: [],
           id: 'response-3',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -1176,7 +1179,8 @@
           description: 'An operation with two alternative security requirements.',
           headers: [],
           id: 'response-4',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -1449,7 +1453,8 @@
           description: 'An operation requiring two schemes together.',
           headers: [],
           id: 'response-5',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -1722,7 +1727,8 @@
           description: 'An operation requiring an OAuth2 scheme with both scopes.',
           headers: [],
           id: 'response-6',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,

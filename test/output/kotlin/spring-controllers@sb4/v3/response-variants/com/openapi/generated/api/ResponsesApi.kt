@@ -48,7 +48,7 @@ interface ResponsesApi {
     }
 
     @Operation(operationId = "successAndDefault", deprecated = false)
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "The thing was found.", content = [Content(mediaType = "application/json", schema = Schema(implementation = Thing::class))]), ApiResponse(responseCode = null, description = "An unexpected error occurred.", content = [Content(mediaType = "application/json", schema = Schema(implementation = Error::class))])])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "The thing was found.", content = [Content(mediaType = "application/json", schema = Schema(implementation = Thing::class))]), ApiResponse(responseCode = "default", description = "An unexpected error occurred.", content = [Content(mediaType = "application/json", schema = Schema(implementation = Error::class))])])
     @RequestMapping(method = [RequestMethod.GET], value = [SUCCESS_AND_DEFAULT_PATH])
     suspend fun successAndDefault(): ResponseEntity<*> {
         try {
@@ -59,7 +59,7 @@ interface ResponsesApi {
     }
 
     @Operation(operationId = "onlyDefault", deprecated = false)
-    @ApiResponses(value = [ApiResponse(responseCode = null, description = "Whatever happens, this is the response.", content = [Content(mediaType = "application/json", schema = Schema(implementation = Error::class))])])
+    @ApiResponses(value = [ApiResponse(responseCode = "default", description = "Whatever happens, this is the response.", content = [Content(mediaType = "application/json", schema = Schema(implementation = Error::class))])])
     @RequestMapping(method = [RequestMethod.GET], value = [ONLY_DEFAULT_PATH])
     suspend fun onlyDefault(): ResponseEntity<*> {
         try {
@@ -93,9 +93,9 @@ interface ResponsesApi {
 
     @Operation(operationId = "rangeCodes", deprecated = false)
     @ApiResponses(value = [
-            ApiResponse(responseCode = null, description = "Any success.", content = [Content(mediaType = "application/json", schema = Schema(implementation = Thing::class))]),
-            ApiResponse(responseCode = null, description = "Any client error.", content = [Content(mediaType = "application/json", schema = Schema(implementation = Error::class))]),
-            ApiResponse(responseCode = null, description = "Any server error.", content = [Content(mediaType = "application/json", schema = Schema(implementation = Error::class))])
+            ApiResponse(responseCode = "2XX", description = "Any success.", content = [Content(mediaType = "application/json", schema = Schema(implementation = Thing::class))]),
+            ApiResponse(responseCode = "4XX", description = "Any client error.", content = [Content(mediaType = "application/json", schema = Schema(implementation = Error::class))]),
+            ApiResponse(responseCode = "5XX", description = "Any server error.", content = [Content(mediaType = "application/json", schema = Schema(implementation = Error::class))])
         ])
     @RequestMapping(method = [RequestMethod.GET], value = [RANGE_CODES_PATH])
     suspend fun rangeCodes(): ResponseEntity<*> {
@@ -109,8 +109,8 @@ interface ResponsesApi {
     @Operation(operationId = "mixedExactAndRange", deprecated = false)
     @ApiResponses(value = [
             ApiResponse(responseCode = "200", description = "The thing was found.", content = [Content(mediaType = "application/json", schema = Schema(implementation = Thing::class))]),
-            ApiResponse(responseCode = null, description = "Some other success.", content = [Content(mediaType = "application/json", schema = Schema(implementation = OtherThing::class))]),
-            ApiResponse(responseCode = null, description = "An unexpected error occurred.", content = [Content(mediaType = "application/json", schema = Schema(implementation = Error::class))])
+            ApiResponse(responseCode = "2XX", description = "Some other success.", content = [Content(mediaType = "application/json", schema = Schema(implementation = OtherThing::class))]),
+            ApiResponse(responseCode = "default", description = "An unexpected error occurred.", content = [Content(mediaType = "application/json", schema = Schema(implementation = Error::class))])
         ])
     @RequestMapping(method = [RequestMethod.GET], value = [MIXED_EXACT_AND_RANGE_PATH])
     suspend fun mixedExactAndRange(): ResponseEntity<*> {

@@ -1322,7 +1322,8 @@
           description: 'The thing already existed.',
           headers: [],
           id: 'response-1',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         },
         {
           '$ref': undefined,
@@ -2013,7 +2014,8 @@
           description: 'The thing was created.',
           headers: [],
           id: 'response-2',
-          statusCode: 201
+          statusCode: 201,
+          statusKey: '201'
         }
       ],
       summary: undefined,
@@ -3085,7 +3087,8 @@
           description: 'The thing was found.',
           headers: [],
           id: 'response-3',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         },
         {
           '$ref': undefined,
@@ -3768,7 +3771,8 @@
           description: 'An unexpected error occurred.',
           headers: [],
           id: 'response-4',
-          statusCode: undefined
+          statusCode: undefined,
+          statusKey: 'default'
         }
       ],
       summary: undefined,
@@ -4824,7 +4828,8 @@
           description: 'Whatever happens, this is the response.',
           headers: [],
           id: 'response-5',
-          statusCode: undefined
+          statusCode: undefined,
+          statusKey: 'default'
         }
       ],
       summary: undefined,
@@ -5499,7 +5504,8 @@
           description: 'There is nothing to return.',
           headers: [],
           id: 'response-6',
-          statusCode: 204
+          statusCode: 204,
+          statusKey: '204'
         }
       ],
       summary: undefined,
@@ -6186,7 +6192,8 @@
           description: 'The request succeeded, with no response body.',
           headers: [],
           id: 'response-7',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -7274,7 +7281,8 @@
           description: 'Any success.',
           headers: [],
           id: 'response-8',
-          statusCode: undefined
+          statusCode: undefined,
+          statusKey: '2XX'
         },
         {
           '$ref': undefined,
@@ -7957,7 +7965,8 @@
           description: 'Any client error.',
           headers: [],
           id: 'response-9',
-          statusCode: undefined
+          statusCode: undefined,
+          statusKey: '4XX'
         },
         {
           '$ref': undefined,
@@ -8640,7 +8649,8 @@
           description: 'Any server error.',
           headers: [],
           id: 'response-10',
-          statusCode: undefined
+          statusCode: undefined,
+          statusKey: '5XX'
         }
       ],
       summary: undefined,
@@ -9728,7 +9738,8 @@
           description: 'The thing was found.',
           headers: [],
           id: 'response-11',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         },
         {
           '$ref': undefined,
@@ -10419,7 +10430,8 @@
           description: 'Some other success.',
           headers: [],
           id: 'response-12',
-          statusCode: undefined
+          statusCode: undefined,
+          statusKey: '2XX'
         },
         {
           '$ref': undefined,
@@ -11102,7 +11114,8 @@
           description: 'An unexpected error occurred.',
           headers: [],
           id: 'response-13',
-          statusCode: undefined
+          statusCode: undefined,
+          statusKey: 'default'
         }
       ],
       summary: undefined,
@@ -12222,7 +12235,8 @@
           description: 'The thing was found.',
           headers: [],
           id: 'response-14',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         },
         {
           '$ref': undefined,
@@ -12905,7 +12919,8 @@
           description: 'The request was invalid.',
           headers: [],
           id: 'response-15',
-          statusCode: 400
+          statusCode: 400,
+          statusKey: '400'
         },
         {
           '$ref': undefined,
@@ -13588,7 +13603,8 @@
           description: 'Authentication is required.',
           headers: [],
           id: 'response-16',
-          statusCode: 401
+          statusCode: 401,
+          statusKey: '401'
         },
         {
           '$ref': undefined,
@@ -14271,7 +14287,8 @@
           description: 'The thing was not found.',
           headers: [],
           id: 'response-17',
-          statusCode: 404
+          statusCode: 404,
+          statusKey: '404'
         },
         {
           '$ref': undefined,
@@ -14954,7 +14971,8 @@
           description: 'An internal error occurred.',
           headers: [],
           id: 'response-18',
-          statusCode: 500
+          statusCode: 500,
+          statusKey: '500'
         }
       ],
       summary: undefined,
@@ -16366,7 +16384,8 @@
           description: 'The thing, as JSON or as plain text.',
           headers: [],
           id: 'response-19',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -17414,7 +17433,8 @@
           description: 'A plain string.',
           headers: [],
           id: 'response-20',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -18496,7 +18516,8 @@
           description: 'An array of things.',
           headers: [],
           id: 'response-21',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -19541,7 +19562,8 @@
             description: 'A response shared through components.responses.',
             headers: [],
             id: 'response-22',
-            statusCode: 200
+            statusCode: 200,
+            statusKey: '200'
           },
           '$src': {
             component: { '$ref': '#/components/responses/SharedResponse' },
@@ -20212,7 +20234,8 @@
           description: 'A response shared through components.responses.',
           headers: [],
           id: 'response-23',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,

@@ -105,6 +105,15 @@ export type ApiContent = ApiContentComponent & {
 
 export type ApiExampleComponent = ApiComponent<OpenApiResponse>;
 export type ApiResponse = ApiExampleComponent & {
+  /**
+   * The response key exactly as the spec wrote it: an exact code (`'200'`), a range (`'2XX'`), or
+   * `'default'`.
+   *
+   * Kept alongside {@link statusCode} because that field is lossy by construction —
+   * `Number(status) || undefined` collapses `default`, every range code and the literal `'0'` into
+   * `undefined`. Anything that has to *emit* a status code needs this one.
+   */
+  statusKey: string;
   statusCode: number | undefined;
   description: string | undefined;
   headers: ApiHeader[];

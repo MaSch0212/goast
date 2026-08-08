@@ -1428,7 +1428,8 @@
               description: "The inherited parameters plus this operation's own one echoed back.",
               headers: [],
               id: 'response-2',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -1563,7 +1564,8 @@
           description: 'The inherited path and query parameters echoed back.',
           headers: [],
           id: 'response-1',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -2603,7 +2605,8 @@
               description: 'The inherited path and query parameters echoed back.',
               headers: [],
               id: 'response-1',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -3022,7 +3025,8 @@
           description: "The inherited parameters plus this operation's own one echoed back.",
           headers: [],
           id: 'response-2',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -3956,7 +3960,8 @@
           description: 'The operation-level override of the inherited parameter echoed back.',
           headers: [],
           id: 'response-3',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -5179,7 +5184,8 @@
           description: "The two $ref'd parameters echoed back.",
           headers: [],
           id: 'response-4',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,

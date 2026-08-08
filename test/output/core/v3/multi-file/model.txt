@@ -459,7 +459,8 @@
           description: 'The requested owner.',
           headers: [],
           id: 'response-1',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -976,7 +977,8 @@
               description: 'The created pet.',
               headers: [],
               id: 'response-3',
-              statusCode: 201
+              statusCode: 201,
+              statusKey: '201'
             }
           ],
           summary: undefined,
@@ -1167,7 +1169,8 @@
           description: 'A list of pets.',
           headers: [],
           id: 'response-2',
-          statusCode: 200
+          statusCode: 200,
+          statusKey: '200'
         }
       ],
       summary: undefined,
@@ -1536,7 +1539,8 @@
               description: 'A list of pets.',
               headers: [],
               id: 'response-2',
-              statusCode: 200
+              statusCode: 200,
+              statusKey: '200'
             }
           ],
           summary: undefined,
@@ -1871,7 +1875,8 @@
           description: 'The created pet.',
           headers: [],
           id: 'response-3',
-          statusCode: 201
+          statusCode: 201,
+          statusKey: '201'
         }
       ],
       summary: undefined,
