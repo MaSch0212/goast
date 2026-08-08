@@ -579,7 +579,7 @@ the feature, a lookup this entry deliberately does not guess at.
 
 **Fixed:** `f13fe6f` adds a dedicated `dateTimeFeature` reference (`packages/kotlin/src/ast/references/jackson.ts:57`
 — Jackson 3 only, no `springBootVersion` parameter, since Jackson 2 has nothing to switch on) and uses it in the
-Spring Boot 4 static-serializer branch (`okhttp3-clients-generator.ts:158`) in place of
+Spring Boot 4 static-serializer branch (`okhttp3-clients-generator.ts:160`) in place of
 `serializationFeature(springBootVersion).WRITE_DATES_AS_TIMESTAMPS`; the `@sb3` branch, which already targets
 Jackson 2 correctly, is untouched. Drove `Unresolved reference 'WRITE_DATES_AS_TIMESTAMPS'` and its knock-on
 `Unresolved reference 'configure'` to zero across **108 occurrences across 54 units** — every unit of the profile,
@@ -603,7 +603,7 @@ ctx.config.serializer === 'parameter'
   : 'val baseUrl: String, val client: Factory = defaultClient, val objectMapper: ObjectMapper = Serializer.jacksonObjectMapper',
 ```
 
-Each generated subclass computes the same flag (`serializerAsParameter`, `okhttp3-client-generator.ts:59`) and uses it
+Each generated subclass computes the same flag (`serializerAsParameter`, `okhttp3-client-generator.ts:71`) and uses it
 to order its *own* constructor parameters (`:69`, `:76`) — but its `super(…)` argument list is a constant:
 
 ```ts
@@ -630,7 +630,7 @@ list above it already is, rather than to reorder the base: the `'parameter'` pat
 nothing here shows it is broken, and reordering the base would be a change made blind.
 
 **Fixed:** `73b89a7` extracts the decision into `getClientDelegateArguments(serializerAsParameter: boolean):
-string[]` (`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:65-67`) and calls it
+string[]` (`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:66-68`) and calls it
 for the `super(…)` argument list (`:96`), so the delegate call now derives its order from the same flag — and
 therefore agrees with — the subclass's own constructor parameter order, instead of the constant
 `['basePath', 'objectMapper', 'client']` that matched only `serializer: 'parameter'`. Drove the
@@ -689,16 +689,16 @@ unrelated `File`/`ApiRequestFile` nullability lines alone, one of which shifted 
 
 Both multipart-capable Kotlin client generators short-circuit the file case before the nullability decision is made:
 
-- `okhttp3-client-generator.ts:431-434` — `getParameterType` returns `kt.refs.java.file()` as soon as
-  `parameter.multipart?.isFile` is true. Only the fall-through at `:436-439` passes `nullable: !parameter.required`.
-- `spring-reactive-web-client-generator.ts:436-439` — identical shape, returning `ctx.refs.apiRequestFile()`, with
+- `okhttp3-client-generator.ts:443-447` — `getParameterType` returns `kt.refs.java.file()` as soon as
+  `parameter.multipart?.isFile` is true. Only the fall-through at `:448-451` passes `nullable: !parameter.required`.
+- `spring-reactive-web-client-generator.ts:435-438` — identical shape, returning `ctx.refs.apiRequestFile()`, with
   `nullable: !parameter.required` again reached only by the fall-through at `:441-444`.
 
 `getParameterDefaultValue` (`okhttp3-client-generator.ts:450`, and its reactive twin at `:447`) is *correct*: it emits
 a default only when `!parameter.required`, and for a file part carrying no schema default that default is `null`. The
 two halves therefore contradict each other — the type says the parameter cannot be null, the default says it is —
 and the emitted signature is `fun fileAndFields(file: File = null, …)`. The reactive generator already knows the
-parameter is optional where it builds the body (`spring-reactive-web-client-generator.ts:277` picks `parameterName` or
+parameter is optional where it builds the body (`spring-reactive-web-client-generator.ts:276` picks `parameterName` or
 `${parameterName}?` from `p.required && !p.schema?.nullable`); only the type declaration is missing that test.
 
 **Compile gate:** `test/compile/kotlin/okhttp3-clients@sb3/v3/multipart-bodies.txt` and 3 siblings —
@@ -852,8 +852,8 @@ the operation-level one. OpenAPI identifies a parameter by the pair `(name, in)`
 operation-level query parameter named `id` on `/pets/{id}` overwrites the path-level `id` parameter instead of
 coexisting with it. Every downstream consumer that filters by `target` — `packages/core/src/utils/endpoint.utils.ts:5`
 (`p.target === 'query'`) and the generators' own `target === 'path'`/`'query'`/`'header'` filters, e.g.
-`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:481`,
-`spring-controller-generator.ts:404`, `spring-reactive-web-client-generator.ts:402`, and
+`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:493`,
+`spring-controller-generator.ts:407`, `spring-reactive-web-client-generator.ts:401`, and
 `packages/typescript/src/generators/services/fetch-clients/fetch-client-generator.ts:98` — never sees the lost path
 parameter, so a generated client for `/pets/{id}` has no `id` path argument to substitute.
 
@@ -1060,7 +1060,7 @@ building a single method's parameter type and serialization from `content[0]` al
 
 Both Kotlin client generators pick each endpoint's success response the same way:
 
-- `packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:506`
+- `packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:507`
 - `packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:476`
 
 ```ts
