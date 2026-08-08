@@ -103,11 +103,10 @@ export const cases: ApiCase[] = [
     pathTemplate: '/pets/{id}',
     expectRequest: { path: '/pets/abc' },
     response: { status: 204 },
-    // JUDGMENT CALL: `deletePet` generates `Promise<TypedResponse<void>>`, and `_VoidResponse` omits
-    // `.json()` entirely — a driver cannot parse a body that was never typed as parseable. The only
-    // thing a driver can reasonably report for a void response is its status. Task 7 Step 4 measures
-    // the generated client directly and Step 5's plan text says outright that updating `expectResult`
-    // is part of that task if the shape does not match, so this is a starting point, not a final claim.
+    // CONFIRMED (Task 7 Step 4): `deletePet` generates `Promise<TypedResponse<void>>`, and
+    // `_VoidResponse` omits `.json()` entirely — a driver cannot parse a body that was never typed as
+    // parseable. The only thing a driver can reasonably report for a void response is its status, and
+    // running the generated client against the reference server confirms exactly this shape.
     expectResult: { status: 204 },
     directions: ['client', 'server'],
   },
@@ -196,13 +195,15 @@ export const cases: ApiCase[] = [
       headers: { 'content-type': 'application/json' },
       body: { message: 'Invalid widget id', code: 400 },
     },
-    // PROVISIONAL — non-2xx `expectResult`. `getWidget` returns `Promise<TypedResponse<Widget>>` for
-    // every status; `fetch` never rejects on an HTTP error status, so a 400 still resolves. The brief
-    // says the client hands back "the TypedResponse itself" here, so this asserts on `status` rather
-    // than a parsed body — but the exact shape a driver reports (bare number vs. `{ status }`, whether
-    // it reads `response.ok` first) is only knowable by running the client, which Task 7 Step 4 does.
-    // Confirm/correct against that measurement.
-    expectResult: { status: 400 },
+    // MEASURED (Task 7 Step 4): `getWidget` returns `Promise<TypedResponse<Widget>>` unconditionally —
+    // there is no per-status overload, so the type gives a caller no way to know, from the signature
+    // alone, that a particular call might come back non-2xx. `fetch` never rejects on an HTTP error
+    // status, and `TypedResponse<Widget>`'s `.json()` is therefore just as callable on a 400 as on a
+    // 200; running it against the reference server confirms it resolves with the actual response body
+    // (mis-typed as `Widget`, but that is a static-only claim `JSON.parse` does not check). A driver
+    // restricted to what the generated signature allows has no reason to read `.status` instead, so
+    // this asserts on the decoded body, matching `response.body` above.
+    expectResult: { message: 'Invalid widget id', code: 400 },
     directions: ['client', 'server'],
   },
   {
@@ -216,8 +217,8 @@ export const cases: ApiCase[] = [
       headers: { 'content-type': 'application/json' },
       body: { message: 'Widget not found', code: 404 },
     },
-    // PROVISIONAL — see getWidget/badRequest above; same reasoning, confirm against Task 7 Step 4.
-    expectResult: { status: 404 },
+    // MEASURED — see getWidget/badRequest above; same reasoning.
+    expectResult: { message: 'Widget not found', code: 404 },
     directions: ['client', 'server'],
   },
   {
@@ -231,8 +232,8 @@ export const cases: ApiCase[] = [
       headers: { 'content-type': 'application/json' },
       body: { message: 'Internal error', code: 500 },
     },
-    // PROVISIONAL — see getWidget/badRequest above; same reasoning, confirm against Task 7 Step 4.
-    expectResult: { status: 500 },
+    // MEASURED — see getWidget/badRequest above; same reasoning.
+    expectResult: { message: 'Internal error', code: 500 },
     directions: ['client', 'server'],
   },
   {
@@ -248,8 +249,8 @@ export const cases: ApiCase[] = [
       headers: { 'content-type': 'application/json' },
       body: { message: 'Unexpected error', code: 503 },
     },
-    // PROVISIONAL — see getWidget/badRequest above; same reasoning, confirm against Task 7 Step 4.
-    expectResult: { status: 503 },
+    // MEASURED — see getWidget/badRequest above; same reasoning.
+    expectResult: { message: 'Unexpected error', code: 503 },
     directions: ['client', 'server'],
   },
 

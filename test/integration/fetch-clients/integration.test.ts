@@ -1,0 +1,88 @@
+import { expect } from '@std/expect';
+import { describe, it } from '@std/testing/bdd';
+
+import {
+  diffRequest,
+  diffResult,
+  formatDeviations,
+  startRefServer,
+  verifyWireDeviations,
+  wireRootDir,
+  wireSnapshotFile,
+} from '@goast/test-harness';
+
+import { casesFor } from '../../cases/cases.ts';
+
+const PROFILE = 'fetch-clients';
+
+describe(`integration/${PROFILE}`, () => {
+  it('drives every client case and records its deviations', async () => {
+    const cases = casesFor(PROFILE, 'client');
+    const server = await startRefServer(cases);
+
+    let output: string;
+    try {
+      const command = new Deno.Command(Deno.execPath(), {
+        args: [
+          'run',
+          '-A',
+          '--check',
+          '--unstable-sloppy-imports',
+          new URL('./driver.ts', import.meta.url).pathname,
+          server.baseUrl,
+        ],
+        stdout: 'piped',
+        stderr: 'piped',
+      });
+      const result = await command.output();
+      const stderr = new TextDecoder().decode(result.stderr);
+      expect(result.code, `driver exited ${result.code}\n${stderr}`).toBe(0);
+      output = new TextDecoder().decode(result.stdout);
+    } finally {
+      await server.close();
+    }
+
+    const reported = new Map<string, unknown>();
+    for (const line of output.split('\n').filter((l) => l.trim() !== '')) {
+      const parsed = JSON.parse(line) as { caseId: string; result: unknown };
+      reported.set(parsed.caseId, parsed.result);
+    }
+
+    // Drift protection: a forgotten case must fail loudly, not quietly shrink coverage.
+    expect([...reported.keys()].sort()).toEqual(cases.map((c) => c.id).sort());
+
+    // Unlike the oracle round-trip (task 6), a *generated* client can send a request the reference
+    // server's route pattern does not recognize at all — the untouched `UrlBuilder.build()` never
+    // percent-encodes a path parameter, so a value containing `/` splits into an extra path segment
+    // and the request lands in `server.surplus` (418) instead of the case's queue. That is a real,
+    // attributable deviation, not a harness failure, so it is folded into the affected case's artifact
+    // below rather than failing the whole run outright. What remains a hard failure is a surplus count
+    // that does not match the number of cases nothing was recorded for — that combination means a
+    // request went missing for a reason this loop cannot explain (a stray retry, a duplicate call), and
+    // must not be silently absorbed into some other case's deviation text.
+    const unmatchedCases = cases.filter((c) => !server.recorded.has(c.id));
+    expect(server.surplus.length, 'unattributed surplus request(s) — see comment above').toBe(unmatchedCases.length);
+    const surplusQueue = [...server.surplus];
+
+    for (const apiCase of cases) {
+      const recorded = server.recorded.get(apiCase.id);
+      const deviations = recorded === undefined
+        ? [{
+          field: 'request',
+          expected: "one request matching this case's route",
+          actual: (() => {
+            const unmatched = surplusQueue.shift();
+            return unmatched === undefined
+              ? 'no request received at all'
+              : `${unmatched.method} ${unmatched.path} matched no route (server answered 418)`;
+          })(),
+        }]
+        : [
+          ...diffRequest(apiCase.expectRequest, recorded),
+          ...diffResult(apiCase.expectResult, reported.get(apiCase.id)),
+        ];
+
+      await verifyWireDeviations(wireSnapshotFile(wireRootDir, PROFILE, apiCase.id), formatDeviations(deviations));
+    }
+  });
+});

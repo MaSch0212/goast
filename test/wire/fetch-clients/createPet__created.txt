@@ -1,0 +1,3 @@
+body
+  expected {"kind":"json","value":{"id":"new1","name":"Fido"}}
+  actual   {"kind":"text","value":"{\"id\":\"new1\",\"name\":\"Fido\"}"}

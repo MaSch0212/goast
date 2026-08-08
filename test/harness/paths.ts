@@ -18,3 +18,6 @@ export const specsDir: string = join(_repoRootDir, 'test', 'specs');
 
 /** Root of the committed tier-2 snapshots. */
 export const snapshotRootDir: string = join(_repoRootDir, 'test', 'output');
+
+/** Root of the committed tier-4 wire deviations. */
+export const wireRootDir: string = join(_repoRootDir, 'test', 'wire');
