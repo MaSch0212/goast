@@ -108,6 +108,19 @@ describe('dockerRunArgs', () => {
     expect(() => dockerRunArgs({ image: 'img', mounts: [{ source: '/a', target: '/t,b' }] }))
       .toThrow('must not contain a comma');
   });
+
+  it('overrides the image entrypoint when one is given', () => {
+    const args = dockerRunArgs({ image: 'img', entrypoint: 'gradle', args: ['run'] });
+
+    // Before the image name, or Docker reads it as a container argument.
+    expect(args.slice(0, 3)).toEqual(['run', '--rm', '--entrypoint']);
+    expect(args[3]).toBe('gradle');
+    expect(args.slice(-2)).toEqual(['img', 'run']);
+  });
+
+  it('omits the flag when no entrypoint is given', () => {
+    expect(dockerRunArgs({ image: 'img' })).not.toContain('--entrypoint');
+  });
 });
 
 describe('imageTag', () => {

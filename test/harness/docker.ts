@@ -23,6 +23,13 @@ export type RunContainerOptions = {
    * omitted.
    */
   name?: string;
+  /**
+   * Replaces the image's `ENTRYPOINT`.
+   *
+   * The `kotlin` image pins `gradle … compileKotlin` for tier 3, so tier 4 — which needs a different
+   * task and none of `--continue`/`--parallel` — has to replace it rather than append to it.
+   */
+  entrypoint?: string;
 };
 
 export type ContainerResult = { code: number; stdout: string; stderr: string; timedOut: boolean };
@@ -72,6 +79,7 @@ export function dockerRunArgs(options: RunContainerOptions): string[] {
   const args = ['run', '--rm'];
 
   if (options.name !== undefined) args.push('--name', options.name);
+  if (options.entrypoint !== undefined) args.push('--entrypoint', options.entrypoint);
 
   for (const mount of options.mounts ?? []) {
     assertNoComma(mount.source, 'source');
