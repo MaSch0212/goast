@@ -55,6 +55,17 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
     return appendValueGroup([this.getClientClass(ctx, {})]);
   }
 
+  /**
+   * The `super(…)` arguments, in the base class's own parameter order.
+   *
+   * The base's order is chosen by `serializer` at `okhttp3-clients-generator.ts:129-131`, and this list is
+   * positional, so the two must be derived from the same flag. Defect 27 was this list being a constant that
+   * matched only the `'parameter'` shape while every corpus profile uses the default `'static'`.
+   */
+  protected getClientDelegateArguments(serializerAsParameter: boolean): string[] {
+    return serializerAsParameter ? ['basePath', 'objectMapper', 'client'] : ['basePath', 'client', 'objectMapper'];
+  }
+
   protected getClientClass(ctx: Context, _args: Args.GetClientClass): kt.Class<Builder> {
     const serializerAsParameter = ctx.config.serializer === 'parameter';
     return kt.class(this.getApiClientName(ctx, {}), {
@@ -82,7 +93,7 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
         null,
         {
           delegateTarget: 'super',
-          delegateArguments: ['basePath', 'objectMapper', 'client'],
+          delegateArguments: this.getClientDelegateArguments(serializerAsParameter),
         },
       ),
       companionObject: this.getClientCompanionObject(ctx, {}),

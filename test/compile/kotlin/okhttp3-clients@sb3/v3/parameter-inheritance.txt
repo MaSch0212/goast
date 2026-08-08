@@ -1,2 +1,0 @@
-com/openapi/generated/api/client/InheritanceApiClient.kt:23:25 Argument type mismatch: actual type is 'ObjectMapper', but 'Call.Factory' was expected.
-com/openapi/generated/api/client/InheritanceApiClient.kt:23:39 Argument type mismatch: actual type is 'Call.Factory', but 'ObjectMapper' was expected.

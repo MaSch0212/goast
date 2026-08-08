@@ -20,7 +20,7 @@ class Service2ApiClient(
     basePath: String = defaultBasePath,
     client: Factory = defaultClient,
     objectMapper: ObjectMapper = Serializer.jacksonObjectMapper
-) : ApiClient(basePath, objectMapper, client) {
+) : ApiClient(basePath, client, objectMapper) {
     companion object {
         @JvmStatic
         val defaultBasePath: String by lazy {
