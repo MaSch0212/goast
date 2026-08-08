@@ -352,6 +352,22 @@ describe('transformEndpoint', () => {
       expect(endpoint.responses[0].statusCode).toBeUndefined();
     });
 
+    // The one statusKey path not yet covered above: a response reached through $ref (see the "$ref
+    // recursion" describe block below for the general recursion behavior). This pins that the *wrapper's*
+    // own status key ends up in statusKey, not the target's — the corpus's own `v3/response-variants`
+    // `refResponse` case exercises exactly this shape.
+    it("keeps the wrapper's own status key for a $ref-resolved response", () => {
+      const context = createTransformerContext();
+      const target = derefAt('/components/responses/Shared', { description: 'shared' });
+      const response = derefAt('/paths/~1a/get/responses/200', {}, target);
+      const endpoint = transformEndpoint(
+        context,
+        endpointInfo('/a', 'get', { operationId: 'a', responses: { '200': response } }),
+      );
+
+      expect(endpoint.responses[0].statusKey).toBe('200');
+    });
+
     // This pins the brief's literal scenario: wrapping the whole `responses` record in a deref proxy
     // and asserting that `$src`/`$ref` are not read back as status codes. It passes — but not for the
     // reason the brief states. `Object.keys()` on a proxy only reports a key when the proxy's

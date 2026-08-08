@@ -636,10 +636,10 @@ therefore agrees with — the subclass's own constructor parameter order, instea
 `['basePath', 'objectMapper', 'client']` that matched only `serializer: 'parameter'`. Drove the
 `ObjectMapper`/`Call.Factory` argument-mismatch pair to zero across **92 occurrences across 34 units**: the 32
 units originally predicted (76 occurrences) plus 2 kitchen-sink units the corpus later added, one per Spring Boot
-line (16 occurrences, 8 each). At this commit `@sb3`'s 17 units reached zero total diagnostics immediately — 16
-fully deleted, `v3/multipart-bodies.txt` surviving on defect 29's unrelated lines alone — while `@sb4`'s 17 units
-still carried defect 26's Jackson diagnostic and did not reach zero until `f13fe6f` landed afterward; the final
-state after both fixes matches `@sb3`'s.
+line (16 occurrences, 8 each). At this commit `@sb3`'s 17 units reached zero of this defect's diagnostics
+immediately — 16 fully deleted, `v3/multipart-bodies.txt` surviving on defect 29's unrelated lines alone —
+while `@sb4`'s 17 units still carried defect 26's Jackson diagnostic and did not reach zero until `f13fe6f`
+landed afterward; the final state after both fixes matches `@sb3`'s.
 
 ### Defect 28 — `spring-reactive-web-clients` puts `awaitExchange`'s `Any` bound on the wrong Spring Boot line (found by the tier-3 compile gate, fixed by 01493d4)
 
@@ -1056,6 +1056,55 @@ Not fixed here — this phase records defects rather than fixing them. A fix nee
 one overload (or a discriminated body parameter) per declared media type in `requestBody.content`, rather than
 building a single method's parameter type and serialization from `content[0]` alone.
 
+### Defect 45 — the Kotlin client success-response predicate is order-dependent, so an error schema can win as the success return type (found by the final whole-branch review of the tier-4 unblock plan, not scheduled)
+
+Both Kotlin client generators pick each endpoint's success response the same way:
+
+- `packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:506`
+- `packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:476`
+
+```ts
+endpoint.responses.find((x) => !x.statusCode || (x.statusCode >= 200 && x.statusCode < 300))
+```
+
+`!x.statusCode` is the predicate's first disjunct and is true for `default`, every range code (`2XX`/`4XX`/`5XX`) and
+the literal `'0'` — `statusCode` is `undefined` in all four cases, by construction (defect 38). So `find` returns
+whichever response satisfies the predicate first **in spec declaration order**, not whichever is actually the success
+response. A response meant to describe an error can therefore become the client's declared success return type.
+
+**Live witness, already in the committed tree:** `test/specs/v3/response-variants.yml`'s `onlyDefault` operation
+(`default` alone, no exact code) generates `fun onlyDefault(): Error` at
+`test/output/kotlin/okhttp3-clients@sb3/v3/response-variants/com/openapi/generated/api/client/ResponsesApiClient.kt:180`
+— the operation's error schema, declared as the success return type. The sibling `successAndDefault` operation
+returns `Thing` correctly, but only because `'200'` (line 29) is declared before `default` (line 35) in the YAML;
+swapping those two keys would make `successAndDefault` return `Error` too, on both affected Kotlin client targets.
+
+This compiles clean, so **tiers 1-3 cannot see it** — the emitted Kotlin is syntactically and type-correct regardless
+of which response `find` picks; it is wrong only at runtime, against whichever response the server actually sends.
+That is why it matters now: `okhttp3-clients` and `spring-reactive-web-clients` are both tier-4 targets in the next
+phase, where a wrong deserialization target surfaces as an opaque Jackson failure rather than as "the generator
+picked the wrong response".
+
+`integration/kitchen-sink.yml`'s `getWidget` operation is **safe today** — it declares `'200'` (line 149) before
+`default` (line 178), so `find` reaches the exact code first, and the next phase will not hit this defect through
+that operation. This safety is incidental, resting entirely on declaration order, not on any check the generator
+performs.
+
+**Cross-reference defect 19.** Its fix added `statusKey` (`packages/core/src/transform/api-types.ts:116`), the field
+that makes the correct predicate expressible at all: prefer an exact 2xx status, then a `2XX` range, then `default`.
+Before `statusKey` existed, `getResponseSchema` had no way to distinguish those three cases from one another —
+`statusCode` collapses all of them to `undefined` alike. `statusKey` is the enabler for a fix, not a fix itself; this
+entry does not attempt one, since correcting the predicate would change generated output, which this phase's scope
+excludes.
+
+**Compile gate:** records nothing for this defect, and that absence is the point. A `find` that resolves to the wrong
+branch of a well-typed union still produces well-typed, compilable Kotlin — nothing in tiers 1-3 evaluates which
+response was semantically the right one to return, only whether the emitted code parses and type-checks. Only a live
+wire exchange (tier 4) can tell the two apart, which is exactly the phase this defect is being registered ahead of.
+
+Pinned by `v3/response-variants` — `onlyDefault` (the wrong-type case) and `successAndDefault` (the safe-by-
+declaration-order case). Not fixed here — this phase records defects rather than fixing them.
+
 ### Also registered, not scheduled
 
 Small, verified, and each needing either a decision or a home:
@@ -1190,7 +1239,21 @@ Small, verified, and each needing either a decision or a home:
   compile gate existed: a generator passing an `undefined` through `kt.string` produces syntactically valid but
   semantically wrong Kotlin. Defect 19 fixed its own caller; the footgun remains for every other caller. A fix needs
   to decide whether a null-valued `KtString` should throw at construction or render an empty string, and auditing
-  existing callers is part of that decision.
+  existing callers is part of that decision. **The audit is now done, and it finds exactly one unguarded caller:**
+  `spring-controller-generator.ts:365`, `parameter.schema?.enum?.map((x) => kt.string(x?.toString()))`, building a
+  `@Schema`'s `allowableValues` from a **parameter**'s enum. Every other non-literal `kt.string(...)` caller in
+  `packages/kotlin/src` is either guarded by a truthiness check on the same value (`spring-controller-generator.ts:190`,
+  `:195`, `:220`, `:338-341`, and `model-generator.ts:461`, `:487`) or wrapped in `String(...)`
+  (`spring-controller-generator.ts:356`, `:400`, and `model-generator.ts:144-164`). A parameter schema with
+  `enum: ['a', 'b', null]` would emit `@Schema(allowableValues = ["a", "b", null])`, and `allowableValues()` is a
+  `String[]` — the identical `Null cannot be a value of a non-null type 'String'.` break defect 19 just closed, in the
+  same file. The corpus misses it: `test/specs/v3/enum-schemas.yml:37` and `test/specs/v3.1/enum-schemas.yml:46` do
+  have a `null` enum member, but only on `MixedEnum`, a **model** schema, which takes the `String(x)`-wrapped path at
+  `model-generator.ts:144-164`, not this one — no corpus parameter schema has a `null` enum member.
+  `grep "allowableValues = \[.*null" test/output/kotlin/spring-controllers@sb3` (checked against the committed
+  snapshots) returns nothing, confirming no case reproduces it. Stays an observation rather than a numbered defect for
+  exactly that reason — no corpus case reaches it — and is not fixed here, matching every other entry in this
+  section.
 - **`ApiResponse.statusCode` remains lossy on purpose.** `Number(status) || undefined`
   (`packages/core/src/transform/transform-endpoint.ts:206`) still maps `'0'` to `undefined` — this is **defect 38**,
   which stays open. `statusKey`, added by defect 19's fix, is the non-lossy field; anything that needs to emit or
@@ -1204,6 +1267,19 @@ Small, verified, and each needing either a decision or a home:
   wrappers are distinct spec nodes with their own correct keys — only the shared `$ref` target's own `statusKey`
   is affected, and nothing reads it that way. The corpus does not exercise it: `v3/response-variants` has exactly
   one `$ref`'d response under exactly one key. Register as an observation; do not fix.
+- **`spring-controllers` advertises a `default`/range-coded response for which it gives a hand-written delegate no
+  typed factory to return.** `getApiResponseEntityClass`'s companion object
+  (`spring-controller-generator.ts:521-537`) builds one `ApiResponseEntity` factory per numeric status code —
+  `Array.from(new Set([...ctx.config.defaultStatusCodes, 501, ...endpoint.responses.map((x) => x.statusCode)]
+  .filter(notNullish)))`, matched back to a response with `x.statusCode === code` — and that is **correct** use of
+  `statusCode` rather than `statusKey`: `getReasonPhrase(code)` needs an actual number, and a `2XX` range or
+  `default` has no reason phrase to look up. Not a defect. But defect 19's fix means the sibling `@ApiResponses`
+  annotation now documents every response by its `statusKey`, including `default` and any range code, while this
+  factory list still only ever covers exact numeric codes. `integration/kitchen-sink.yml`'s `getWidget` declares
+  `200`, `400`, `404`, `500` and `default` — verified above — so a delegate author hand-writing `getWidget`'s
+  implementation finds four typed `ApiResponseEntity` factories and no fifth one for `default`. The four numeric
+  factories cover every case the operation can concretely construct; the absence is a reading hazard for whoever
+  writes that delegate next, not a bug in this generator. Register as an observation for the next phase; do not fix.
 
 ### Explicitly out of scope
 

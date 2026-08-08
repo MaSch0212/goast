@@ -124,6 +124,8 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
       let fileContent = (await getAssetFileContent(sourcePath))
         .replace(/@PACKAGE_NAME@/g, ctx.infrastructurePackageName);
       if (file === 'ApiClient.kt') {
+        // This order is positional and must agree with the delegate call's own argument order —
+        // `getClientDelegateArguments` in okhttp3-client-generator.ts is the other side of that agreement.
         fileContent = fileContent.replace(
           /@API_CLIENT_PARAMETERS@/,
           ctx.config.serializer === 'parameter'
