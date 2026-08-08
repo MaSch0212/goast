@@ -23,8 +23,10 @@
     "test:compile:clean": "rm -rf .goast-cache/gradle-work",
     "test:integration": "GOAST_SNAPSHOT=write deno test -A test/integration test/integration-tests",
     "test:integration:check": "GOAST_SNAPSHOT=check deno test -A test/integration test/integration-tests",
+    "test:integration:kotlin": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=write deno test -A test/integration/kotlin-clients",
+    "test:integration:kotlin:check": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=check deno test -A test/integration/kotlin-clients",
     "test:check": "GOAST_SNAPSHOT=check deno test -A",
-    "test:all": "deno task test:check && deno task test:compile:check && deno task test:integration:check",
+    "test:all": "deno task test:check && deno task test:compile:check && deno task test:integration:check && deno task test:integration:kotlin:check",
     "pg": "deno run -A playground.ts"
   },
   "imports": {
