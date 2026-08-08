@@ -12,9 +12,14 @@
 // Every `<op>ApiClient` operation is a *blocking*, non-suspend member function returning the decoded
 // body directly and throwing `ClientException`/`ServerException` on any non-2xx response — there is no
 // per-status overload (see PetsApiClient.kt). `getWidget`'s four error cases are driven through exactly
-// that throwing method, the same one an ordinary caller would use, and `errorResultJson` unpacks
-// whatever the thrown exception's `response` field (a `ClientError`/`ServerError`) actually carries,
-// rather than reshaping the case table to fit what this client can return.
+// that throwing method, the same one an ordinary caller would use, and `errorResultJson` reports only
+// `.statusCode`. This is deliberate, not a shortcut: `ClientError`/`ServerError` DO carry a `body` field
+// (`ApiClient.kt`'s `response.body?.string()`), but it is raw, undecoded response *text* behind an
+// `Any?` — nothing on this throwing path ever runs it through the `ObjectMapper`. Reconstructing the
+// decoded `{message, code}` shape from that text here would be *this driver* doing the decoding the
+// client itself refuses to do, and the resulting artifact would misreport conformance with the case
+// table's `expectResult` for the single biggest behavioral difference this phase exists to find: these
+// clients throw instead of handing back a decoded error body at all.
 //
 // A `<op>` method that returns `Unit` on success (deletePet, uploadPetPhoto, allLocations, styleMatrix,
 // pathStyleSimple, getEncoded) gives a caller no way at all to recover the response status from its
@@ -35,10 +40,8 @@ import com.openapi.generated.api.client.BlobsApiClient
 import com.openapi.generated.api.client.ParamsApiClient
 import com.openapi.generated.api.client.PetsApiClient
 import com.openapi.generated.api.client.WidgetsApiClient
-import com.openapi.generated.api.client.infrastructure.ClientError
 import com.openapi.generated.api.client.infrastructure.ClientException
 import com.openapi.generated.api.client.infrastructure.Serializer
-import com.openapi.generated.api.client.infrastructure.ServerError
 import com.openapi.generated.api.client.infrastructure.ServerException
 import com.openapi.generated.model.Pet
 import com.openapi.generated.model.PetUpdate
@@ -68,29 +71,19 @@ private fun runCase(caseId: String, block: () -> String) {
 }
 
 /**
- * Unwraps whatever body a thrown `ClientException`/`ServerException` carried.
- *
- * `ClientError.body`/`ServerError.body` are the *raw* response text (`response.body?.string()` in
- * `ApiClient.request`), not a decoded object — the throwing wrapper never runs it through the
- * `ObjectMapper` at all. This validates that text as JSON and reports it verbatim when it is (which is
- * what every `getWidget` error case's body actually is), and falls back to just the status code
- * otherwise, the same fallback shape a void response gets.
+ * Reports only the status code a thrown `ClientException`/`ServerException` carried — the same fallback
+ * shape a void response gets, and deliberately not the decoded case-table `expectResult` shape. See the
+ * file comment: `.response`'s `body` field is raw, undecoded text (`ApiClient.kt`'s
+ * `response.body?.string()`); reconstructing `{message, code}` from it here would report this driver's
+ * own decoding as if the client had done it, hiding the very thing this phase measures.
  */
 private fun errorResultJson(e: Throwable): String {
-    val (statusCode, rawBody) = when (e) {
-        is ClientException -> e.statusCode to ((e.response as? ClientError<*>)?.body as? String)
-        is ServerException -> e.statusCode to ((e.response as? ServerError<*>)?.body as? String)
+    val statusCode = when (e) {
+        is ClientException -> e.statusCode
+        is ServerException -> e.statusCode
         else -> throw e
     }
-    val decoded = rawBody?.takeIf { it.isNotBlank() }?.let {
-        try {
-            mapper.readTree(it)
-            it
-        } catch (_: Exception) {
-            null
-        }
-    }
-    return decoded ?: mapper.writeValueAsString(mapOf("status" to statusCode))
+    return mapper.writeValueAsString(mapOf("status" to statusCode))
 }
 
 fun main() {

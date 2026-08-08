@@ -21,8 +21,13 @@
 // form (`webClient.getPet(id)`) uses `.retrieve().awaitBody<T>()`/`.awaitBodilessEntity()`, and
 // `retrieve()` applies WebClient's default status handling: it throws `WebClientResponseException` on
 // any 4xx/5xx, the same "no per-status overload" shape as okhttp3's plain methods. `getWidget`'s four
-// error cases are driven through exactly that throwing form, and `errorResultJson` unpacks whatever
-// `WebClientResponseException.responseBodyAsString` actually carries.
+// error cases are driven through exactly that throwing form, and `errorResultJson` reports only
+// `.statusCode`. This is deliberate, not a shortcut: `WebClientResponseException` does carry
+// `responseBodyAsString`, but that text is never decoded by the throwing call path — reconstructing the
+// case table's `{message, code}` shape from it here would be this driver doing the decoding the client
+// itself refuses to do, misreporting conformance with `expectResult` for the single biggest behavioral
+// difference this phase exists to find: these clients throw instead of handing back a decoded error
+// body at all.
 //
 // A `<op>` whose 2xx response has no body (deletePet, uploadPetPhoto, allLocations, styleMatrix,
 // pathStyleSimple, getEncoded) returns bare `Unit` from that parameterless form, with no way to recover
@@ -108,18 +113,13 @@ private suspend fun runCase(caseId: String, block: suspend () -> String) {
 }
 
 /**
- * Unwraps whatever body a thrown `WebClientResponseException` carried.
- *
- * `responseBodyAsString` is the raw response text, never decoded by the throwing call path. With no JSON
- * library available to validate it properly (see the file comment), this reports it verbatim whenever it
- * looks like a JSON object or array — which is what every `getWidget` error case's body actually is — and
- * falls back to just the status code otherwise, the same fallback shape a void response gets.
+ * Reports only the status code a thrown `WebClientResponseException` carried — the same fallback shape a
+ * void response gets, and deliberately not the decoded case-table `expectResult` shape. See the file
+ * comment: `responseBodyAsString` is raw, undecoded text; reconstructing `{message, code}` from it here
+ * would report this driver's own decoding as if the client had done it, hiding the very thing this phase
+ * measures.
  */
-private fun errorResultJson(e: WebClientResponseException): String {
-    val rawBody = e.responseBodyAsString.trim()
-    val looksLikeJson = rawBody.isNotEmpty() && (rawBody.startsWith("{") || rawBody.startsWith("["))
-    return if (looksLikeJson) rawBody else jsonValue(mapOf("status" to e.statusCode.value()))
-}
+private fun errorResultJson(e: WebClientResponseException): String = jsonValue(mapOf("status" to e.statusCode.value()))
 
 fun main(): Unit = runBlocking {
     val baseUrl = System.getenv("GOAST_BASE_URL") ?: error("GOAST_BASE_URL is not set")

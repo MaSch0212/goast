@@ -114,8 +114,12 @@ const RUNTIME_COROUTINE_DEPENDENCIES: readonly string[] = [
  * family inside the very same configuration, which pulls the matching Jackson databind artifact
  * transitively at whichever version each Spring Boot BOM manages it at — so this coordinate, version-less
  * and BOM-managed exactly like the platform import beside it, resolves offline with nothing new to warm.
- * `okhttp3-clients` units pick up an extra, already-satisfied line here; that is harmless duplication,
- * not a new resolution.
+ *
+ * Applied only to `spring-reactive-web-clients` units in {@link synthesizeDriverBuild} (guarded by
+ * `unit.family`), not unconditionally to all four: the okhttp3 family already gets this artifact
+ * transitively through `jackson-module-kotlin` (see `kotlinDependenciesFor`'s `okhttp3-clients` entry),
+ * so adding it there again would be redundant rather than closing a real gap, and the guard lets the
+ * build state its own reason instead of relying on a comment to explain harmless duplication.
  */
 const RUNTIME_JSON_CODEC_DEPENDENCIES: Readonly<Record<'sb3' | 'sb4', string>> = {
   sb3: 'add("implementation", "com.fasterxml.jackson.core:jackson-databind")',
@@ -175,7 +179,9 @@ export function synthesizeDriverBuild(
     `    add("implementation", platform("${KOTLIN_BOM[unit.variant]}"))`,
     ...dependencies.map((line) => `    ${line}`),
     ...RUNTIME_COROUTINE_DEPENDENCIES.map((line) => `    ${line}`),
-    `    ${RUNTIME_JSON_CODEC_DEPENDENCIES[unit.variant]}`,
+    // Only `spring-reactive-web-clients` needs this closed explicitly — see
+    // RUNTIME_JSON_CODEC_DEPENDENCIES's doc comment for why okhttp3 already has it transitively.
+    ...(unit.family === 'spring-reactive-web-clients' ? [`    ${RUNTIME_JSON_CODEC_DEPENDENCIES[unit.variant]}`] : []),
     '}',
     '',
     'sourceSets["main"].kotlin.srcDirs("' + treeDir + '", "' + driverDir + '")',
