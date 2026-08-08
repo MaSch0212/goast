@@ -846,8 +846,8 @@ Not fixed here — this phase records defects rather than fixing them.
 ### Defect 35 — `combineParameters` matches a path parameter against an operation parameter by `name` alone, ignoring
 `target`, so a same-named query parameter displaces a path parameter (found by the tier-1 unit tests, not scheduled)
 
-`combineParameters` (`packages/core/src/transform/transform-endpoint.ts:253-264`) finds a colliding parameter with
-`result.findIndex((p) => p.name === opParam.name)` (line 256) and, on a match, **replaces** the path-level entry with
+`combineParameters` (`packages/core/src/transform/transform-endpoint.ts:254-265`) finds a colliding parameter with
+`result.findIndex((p) => p.name === opParam.name)` (line 257) and, on a match, **replaces** the path-level entry with
 the operation-level one. OpenAPI identifies a parameter by the pair `(name, in)`, not by `name` alone, so an
 operation-level query parameter named `id` on `/pets/{id}` overwrites the path-level `id` parameter instead of
 coexisting with it. Every downstream consumer that filters by `target` — `packages/core/src/utils/endpoint.utils.ts:5`
@@ -899,7 +899,7 @@ Not fixed here — this phase records defects rather than fixing them.
 ### Defect 38 — `statusCode: Number(status) || undefined` maps the numeric string `'0'` to `undefined`, the same
 bucket as `'default'` and a wildcard range (found by the tier-1 unit tests, not scheduled)
 
-`transformResponse` (`packages/core/src/transform/transform-endpoint.ts:205`) computes
+`transformResponse` (`packages/core/src/transform/transform-endpoint.ts:206`) computes
 `statusCode: Number(status) || undefined`. `Number('0')` is `0`, which is falsy, so the `||` collapses a genuine (if
 unusual) `'0'` status code to `undefined` — indistinguishable from `'default'` or a range code like `'2XX'`.
 Cross-reference **defect 19**, the `responseCode = null` consequence in the Kotlin `spring-controllers` generator
