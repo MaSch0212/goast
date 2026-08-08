@@ -1,0 +1,1 @@
+com/openapi/generated/api/WidgetsApi.kt:36:40 Null cannot be a value of a non-null type 'String'.

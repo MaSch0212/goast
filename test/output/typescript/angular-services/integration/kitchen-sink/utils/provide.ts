@@ -1,4 +1,7 @@
+import { BlobsService } from '../services/blobs.service';
+import { ParamsService } from '../services/params.service';
 import { PetsService } from '../services/pets.service';
+import { WidgetsService } from '../services/widgets.service';
 import { ApiConfiguration } from './api-configuration';
 
 import type { Provider } from '@angular/core';
@@ -7,5 +10,11 @@ import type { Provider } from '@angular/core';
  * Provides all the API services.
  */
 export function provideApi(config?: ApiConfiguration): Provider {
-  return [config ? { provide: ApiConfiguration, useValue: config } : ApiConfiguration, PetsService];
+  return [
+    config ? { provide: ApiConfiguration, useValue: config } : ApiConfiguration,
+    PetsService,
+    WidgetsService,
+    BlobsService,
+    ParamsService
+  ];
 }

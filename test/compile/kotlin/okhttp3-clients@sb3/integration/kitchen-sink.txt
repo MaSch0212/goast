@@ -1,2 +1,8 @@
-com/openapi/generated/api/client/PetsApiClient.kt:25:25 Argument type mismatch: actual type is 'ObjectMapper', but 'Call.Factory' was expected.
-com/openapi/generated/api/client/PetsApiClient.kt:25:39 Argument type mismatch: actual type is 'Call.Factory', but 'ObjectMapper' was expected.
+com/openapi/generated/api/client/BlobsApiClient.kt:25:25 Argument type mismatch: actual type is 'ObjectMapper', but 'Call.Factory' was expected.
+com/openapi/generated/api/client/BlobsApiClient.kt:25:39 Argument type mismatch: actual type is 'Call.Factory', but 'ObjectMapper' was expected.
+com/openapi/generated/api/client/ParamsApiClient.kt:23:25 Argument type mismatch: actual type is 'ObjectMapper', but 'Call.Factory' was expected.
+com/openapi/generated/api/client/ParamsApiClient.kt:23:39 Argument type mismatch: actual type is 'Call.Factory', but 'ObjectMapper' was expected.
+com/openapi/generated/api/client/PetsApiClient.kt:28:25 Argument type mismatch: actual type is 'ObjectMapper', but 'Call.Factory' was expected.
+com/openapi/generated/api/client/PetsApiClient.kt:28:39 Argument type mismatch: actual type is 'Call.Factory', but 'ObjectMapper' was expected.
+com/openapi/generated/api/client/WidgetsApiClient.kt:25:25 Argument type mismatch: actual type is 'ObjectMapper', but 'Call.Factory' was expected.
+com/openapi/generated/api/client/WidgetsApiClient.kt:25:39 Argument type mismatch: actual type is 'Call.Factory', but 'ObjectMapper' was expected.
