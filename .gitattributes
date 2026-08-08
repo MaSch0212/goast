@@ -9,6 +9,11 @@ test/output/** linguist-generated=true
 test/compile/** linguist-generated
 test/compile/** -text
 
+# Tier-4 wire deviations (see test/README.md). Generated comparison output, not source; same
+# line-ending reasoning as test/output/** and test/compile/** above.
+test/wire/** linguist-generated
+test/wire/** -text
+
 # Asset sources copied verbatim by generators (see packages/core/src/utils/asset-manager.ts). Keep
 # them LF in every working tree so a Windows checkout with core.autocrlf=true doesn't inject CRLFs
 # into files that generators copy byte-for-byte into the (byte-exact) snapshot.

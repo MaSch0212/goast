@@ -21,8 +21,10 @@
     "test:compile:host": "GOAST_COMPILE=1 GOAST_SNAPSHOT=check deno test -A test/compile-tests --filter \"typescript/host\"",
     "test:compile:cold": "GOAST_GRADLE_CACHE=0 GOAST_COMPILE=1 GOAST_SNAPSHOT=check deno test -A test/compile-tests test/harness/docker.test.ts",
     "test:compile:clean": "rm -rf .goast-cache/gradle-work",
+    "test:integration": "GOAST_SNAPSHOT=write deno test -A test/integration test/integration-tests",
+    "test:integration:check": "GOAST_SNAPSHOT=check deno test -A test/integration test/integration-tests",
     "test:check": "GOAST_SNAPSHOT=check deno test -A",
-    "test:all": "deno task test:check && deno task test:compile:check",
+    "test:all": "deno task test:check && deno task test:compile:check && deno task test:integration:check",
     "pg": "deno run -A playground.ts"
   },
   "imports": {
@@ -50,7 +52,8 @@
       ".goast-cache/**/*",
       "docs/superpowers/**",
       "test/output/**",
-      "test/compile/**"
+      "test/compile/**",
+      "test/wire/**"
     ]
   },
   "lint": {
@@ -61,6 +64,7 @@
       ".goast-cache/**/*",
       "test/output/**",
       "test/compile/**",
+      "test/wire/**",
       "playground.ts",
       "**/assets/**/*"
     ]

@@ -227,7 +227,7 @@ the literal string `"default"` for the default response and has no standard repr
 particular annotation field); that decision, plus verifying the fix actually compiles, belongs to whichever batch
 picks this up.
 
-### Defect 20 — the TypeScript fetch client JSON-stringifies every `multipart/form-data` body (found by phase 2b task 9, not scheduled)
+### Defect 20 — the TypeScript fetch client JSON-stringifies every request body and never sets a `content-type` header, regardless of the declared media type (found by phase 2b task 9, confirmed broader in scope by the tier-4 wire contract, not scheduled)
 
 `FetchClientsGenerator`'s request builder (`packages/typescript/src/generators/services/fetch-clients/fetch-client-generator.ts:226`) decides how to serialize a request body from schema presence alone:
 
@@ -249,6 +249,20 @@ Five of the seven (`singleFile`, `multipleFiles`, `fileAndFields`, `withEncoding
 field in the body, so the data-loss consequence above applies to those five; `nestedObjectPart` and `refPart` have no
 `Blob` field and only mis-serialize.
 
+**The tier-4 wire contract (phase 5) establishes this is not scoped to `multipart/form-data`.** Grepping the whole
+generated `fetch-clients` tree for a `content-type` (or `Content-Type`) header assignment turns up zero hits — no
+generated method for any content type sets one, matching the code excerpt above having no branch that ever would.
+Driving the generated `PetsClient`/`BlobsClient` against the reference server (`test/integration/fetch-clients/`)
+confirms the wire consequence for the other media types this defect's original framing did not cover: `fetch`'s own
+default `content-type` for a plain-string body is `text/plain;charset=UTF-8`, not `application/json`, so a JSON body
+(`updatePet/json`, `createPet/created`) and a form body (`updatePet/form`) both arrive at the server mis-typed as
+`text/plain` and are read back as an opaque JSON-stringified string rather than the parsed value the case expects —
+the same failure mode as the multipart case above, minus the `Blob`-specific data loss, because there is no
+`Content-Type`-driven branch anywhere to get right in the first place. The data-loss consequence itself is also wider
+than multipart: `uploadBlob/ok` posts a bare `Blob` under `application/octet-stream` (no multipart envelope at all),
+and `JSON.stringify` on a `Blob` still produces `"{}"`, discarding the file content exactly as it does inside a
+multipart part.
+
 **Scoped to the `fetch-clients` profile only.** The other two TypeScript client generators that emit multipart
 operations both delegate to a shared, content-type-aware request builder instead of inlining `JSON.stringify`:
 `k6-clients` and `angular-services` both emit `rb.body(params.body, 'multipart/form-data')`
@@ -263,6 +277,14 @@ being serialized wrong regardless of `encoding`. Not fixed here — this phase r
 A fix needs `fetch-client-generator.ts` to branch on `content[0].contentType`: build a `FormData` and `append` each
 property for `multipart/form-data`, URL-encode for `application/x-www-form-urlencoded`, and keep `JSON.stringify` only
 for JSON-like media types.
+
+**Tier 4:** `test/wire/fetch-clients/updatePet__json.txt`, `updatePet__form.txt`, `createPet__created.txt`,
+`uploadBlob__ok.txt` and `uploadPetPhoto__ok.txt` — each a `body` deviation whose `actual` is the JSON-stringified,
+mis-typed request the reference server received. `addPetNote__text.txt`'s second stanza (its `body` deviation,
+`actual` reading `{"kind":"text","value":"\"plain text body\""}` — the value quoted twice) is this same mechanism;
+its first stanza (`header.content-type`, `expected text/plain` / `actual text/plain;charset=UTF-8`) is not part of
+this defect — that is `fetch`'s own default charset parameter for a string body, not something the generator
+controls, and the media type itself is correct.
 
 ### Defect 21 — Kotlin and TypeScript both emit an unnamed type declaration for a schema whose normalized name is empty (found by phase 2b task 5, not scheduled)
 
@@ -853,6 +875,78 @@ than concatenating them'` (line 108).
 
 Not fixed here — this phase records defects rather than fixing them. Cited by the plan's Global Constraints and
 Out-of-scope notes as a fix that would change generated output and therefore belong to a separate phase.
+
+### Defect 41 — `UrlBuilder` percent-encodes nothing, so a reserved character in a path or query value corrupts the request line (found by the tier-4 wire contract, not scheduled)
+
+`UrlBuilder` (`packages/typescript/assets/client/fetch/fetch-client.utils.ts`, copied verbatim into every generated
+TypeScript client's `utils/fetch-client.utils.ts`) never encodes a value on either side of a URL. `withPathParam`
+(lines 28-31) stores `String(value)` as-is; `build()` (lines 44-51) substitutes it into the path template with a bare
+string replace at line 48, with no `encodeURIComponent` anywhere in the chain. `withQueryParam` (lines 33-42) is the
+same for the query side: `this.queryParams[name] = String(value)` at line 39, then `build()` joins pairs as
+`` `${key}=${this.queryParams[key]}` `` at line 46, again with no encoding.
+
+A path value containing `/` therefore splits into an extra path segment instead of staying inside the one segment its
+`{param}` template placeholder occupies, and a query value containing `&` or `=` corrupts the query string's own
+key/value structure. Both are exactly the characters OpenAPI's `getEncoded` kitchen-sink case exists to exercise.
+
+**Tier 4:** `test/wire/fetch-clients/getEncoded__ok.txt` — `getEncoded`'s path value `abc def/x` needed percent-encoding
+to survive as the single path segment `/encoded/{value}` expects; instead the literal `/` splits the URL into an
+extra segment, so the request matches no route at all and lands in the reference server's surplus bucket (answered
+418) rather than producing a request/response content diff. Recorded as `getEncoded/ok`'s deviation: `expected one
+request matching this case's route` / `actual get /encoded/abc%20def/x matched no route (server answered 418)`. The
+query side of the same case (`raw: 'a&b=c'`, encoded by the URL itself as `raw=a%26b%3Dc`) never gets driven far
+enough to surface a second, independent deviation, since the request already fails to match a route on the path
+alone — the query-encoding half of this defect is inferred from reading `UrlBuilder.build()` directly, not from a
+second committed artifact.
+
+Not fixed here — this phase records defects rather than fixing them. A fix needs `encodeURIComponent` on both the
+substituted path-parameter value in `build()`'s path replace and each query key/value pair, applied once each value
+is stringified rather than left to the caller.
+
+### Defect 42 — no `style`/`explode` support: every query or path array is comma-joined via `String(value)` regardless of the parameter's declared style (found by the tier-4 wire contract, not scheduled)
+
+`UrlBuilder.withQueryParam` (`packages/typescript/assets/client/fetch/fetch-client.utils.ts:33-42`) and
+`withPathParam` (`:28-31`) both coerce whatever value they are given — including an array — through `String(value)`.
+`Array.prototype.toString` comma-joins with no brackets and no repetition, which is OpenAPI's `style: form, explode:
+false` (or `style: simple, explode: false` for a path array). It is never what OpenAPI's own *default* asks for:
+`style: form, explode: true` for a query array means repeated keys (`?formExploded=a&formExploded=b`), and
+`style: spaceDelimited` means a single space-joined value — neither of which `UrlBuilder` can produce, because it has
+no parameter carrying `style` or `explode` at all;
+`test/output/typescript/fetch-clients/integration/kitchen-sink/clients/params-client.ts:52-54` passes each array
+straight to `withQueryParam` with no style-specific branch in sight.
+
+Two of the five cases in the kitchen-sink's style matrix happen to match by construction rather than by the generator
+doing anything right: `formUnexploded` (`style: form, explode: false`) is comma-joined by definition, and
+`pathStyleSimple` (`style: simple`, also comma-joined) coincidentally lands on the same serialization `String(value)`
+produces — both correctly produce **no** artifact, which is coverage working as intended, not a gap.
+
+**Tier 4:** `test/wire/fetch-clients/styleMatrix__formExploded.txt` — `query.formExploded` expected `["a","b"]`
+(repeated keys), actual `["a,b"]` (comma-joined). `test/wire/fetch-clients/styleMatrix__spaceDelimited.txt` —
+`query.spaceDelimited` expected `["a b"]` (space-joined), actual `["a,b"]` (comma-joined, the same wrong join in both
+cases since `UrlBuilder` has exactly one join strategy).
+
+Not fixed here — this phase records defects rather than fixing them. A fix needs `withQueryParam`/`withPathParam` to
+receive the parameter's `style`/`explode` and branch: repeated `append` calls for `explode: true`, a space or pipe
+join for `spaceDelimited`/`pipeDelimited`, and the current comma join kept only for the styles that actually call for
+it.
+
+### Defect 43 — cookie parameters are not implemented: a generated method takes no argument for a `cookie`-location parameter and never sets a `Cookie` header (found by the tier-4 wire contract, not scheduled)
+
+`ParamsClient.allLocations` (`test/output/typescript/fetch-clients/integration/kitchen-sink/clients/params-client.ts:20-24`)
+is generated from an operation whose spec declares four parameters — path, query, header, and a `session` cookie
+parameter — and its signature is `{ pathParam: string; queryParam?: string; xHeaderParam?: string }`: three fields,
+not four. Nothing in the method body (lines 25-39) references `session` or constructs a `Cookie` header from
+anything. The cookie parameter is not merely unencoded or mis-styled the way defects 41 and 42 leave their targets —
+there is no code path capable of sending it at all, and no caller of this method can satisfy that parameter through
+any argument the generated type accepts.
+
+**Tier 4:** `test/wire/fetch-clients/allLocations__ok.txt` — `header.cookie` expected `session=abc123`, actual
+`<absent>`.
+
+Not fixed here — this phase records defects rather than fixing them. A fix needs the fetch-client generator's
+parameter-collection pass (whichever function currently filters to `target === 'path' | 'query' | 'header'` — see
+defect 35's list of that filter's other call sites) to also collect `target === 'cookie'` parameters into the method
+signature, and the request-building code to join them into one `Cookie` header value.
 
 ### Also registered, not scheduled
 

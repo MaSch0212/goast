@@ -10,12 +10,12 @@ Deno and Docker. The everyday loop — tiers 1 and 2 — needs only Deno; Docker
 
 ## Tiers
 
-| # | Tier        | Question                                              | Command                  | Status     |
-| - | ----------- | ----------------------------------------------------- | ------------------------ | ---------- |
-| 1 | Unit        | Does this function do what it says?                   | `deno task test`         | active     |
-| 2 | Output      | Did the generated text change?                        | `deno task test:output`  | active     |
-| 3 | Compile     | Is the generated code valid in its language?          | `deno task test:compile` | active     |
-| 4 | Integration | Does the generated code behave correctly on the wire? | `deno task test:it`      | phases 5-7 |
+| # | Tier        | Question                                              | Command                      | Status                 |
+| - | ----------- | ----------------------------------------------------- | ---------------------------- | ---------------------- |
+| 1 | Unit        | Does this function do what it says?                   | `deno task test`             | active                 |
+| 2 | Output      | Did the generated text change?                        | `deno task test:output`      | active                 |
+| 3 | Compile     | Is the generated code valid in its language?          | `deno task test:compile`     | active                 |
+| 4 | Integration | Does the generated code behave correctly on the wire? | `deno task test:integration` | phase 5: fetch-clients |
 
 ## Tier 1: unit tests
 
@@ -575,6 +575,84 @@ behind `GOAST_COMPILE`, so it runs in the everyday suite.
 a unit `discoverCompileUnits` still finds, and an orphan by definition has no unit — so `deno task test:compile` will
 not clear it however many times it is run. The failure says so, and names the files.
 
+## Tier 4: integration
+
+Tier 3 proves the generated code compiles. Tier 4 asks a different question again: does it put the right bytes on the
+wire, and hand back the right value to its caller? A unit that type-checks can still build the wrong request body, drop
+a parameter, or mis-encode a path segment — none of which `deno check` or `tsc` can see, because all of those are
+runtime behaviour, not a type error.
+
+**The case table is the single source of truth.** `test/cases/cases.ts` declares 19 cases, each one API call: the
+request it must produce (`expectRequest`), the canned response the reference server hands back (`response`), and what
+the generated client must return to its caller (`expectResult`). Three consumers read the same table so nothing can
+drift out from under a fourth: `test/integration/oracles.test.ts` (Task 6) proves the table itself round-trips through a
+handwritten reference client and the reference server with zero deviations — the contract proof every other tier-4
+result depends on, see below; `test/integration/fetch-clients/integration.test.ts` (this phase's one target) drives the
+_generated_ client against the same table; and `test/integration-tests/orphans.test.ts` sweeps the committed artifacts
+against it. `casesFor(profile, direction)` is the only path to a filtered table, so drift protection — comparing the ids
+a driver reported against the ids it was asked for — computes both sides the same way.
+
+**Drivers hardcode their arguments instead of reading the table.** `test/integration/fetch-clients/driver.ts` writes
+`pets.getPet({ id: 'abc' })` literally, one call per case, rather than dispatching dynamically off `expectRequest`.
+Writing the call in typed TypeScript _is_ the assertion that the generated signature is usable; reading arguments from
+JSON would need a dynamic dispatch layer that erases exactly what is under test.
+
+**Deviations are committed artifacts, the same shape as tier 3's diagnostics.** A case that conforms exactly has no
+file. A case where the generated client's actual wire behaviour differs from the table gets
+`test/wire/<profile>/<caseId-with-slashes-as-double-underscore>.txt`, holding one `field`/`expected`/`actual` block per
+difference. `deno task test:integration` regenerates in write mode; a file disappearing on a later run means a generator
+fix landed, and check mode refuses to pass with a stale file still committed — the same reviewable-deletion discipline
+as `verifyCompileDiagnostics`. Ten such artifacts are committed today, all traced to confirmed generator defects in
+[`docs/superpowers/plans/2026-07-25-generator-bug-fixes.md`](../docs/superpowers/plans/2026-07-25-generator-bug-fixes.md)
+(defects 20, 41, 42 and 43) — not fixed here, per this phase's rule that a generator fix changes generated output and
+belongs to its own phase.
+
+**An absent artifact means "no declared field deviated," not "the request was wire-correct."** This is the single most
+misreadable thing about this tier, for three concrete, verified reasons:
+
+- `diffRequest` compares only headers a case's `expectRequest` **declares**. 11 of the 19 cases declare no headers at
+  all, so an empty artifact for those says nothing about header correctness beyond the fields the table happened to
+  name.
+- `PetsClient` and `WidgetsClient` are constructed with `authorization`/`x-api-key` headers that every request the
+  instance makes carries — so, e.g., `getPet/ok`'s actual request has an `authorization` header nothing in its
+  `expectRequest` declares, and it is invisible to the diff for that reason, not because it is correct.
+- `updatePet/json` declares no `content-type` in its `expectRequest`. The generated client never sets one on any
+  body-bearing request (see defect 20's extended scope, linked above), but because that case's table entry doesn't name
+  the header, the defect that is very much occurring on that request produces **no artifact at all** — it only becomes
+  visible on cases that do declare a `content-type` (`addPetNote/text`) or that declare a body shape the missing header
+  derails (`updatePet/json` and `updatePet/form`'s bodies still deviate, just not via a header diff).
+
+Relatedly, and stated the same way `test/integration/oracles.test.ts`'s class doc comment states it: a deviation
+artifact means **the generated client differs from the declared table** — this tier does not by itself adjudicate
+whether the table or the generator is the one that's wrong. Task 7's classification pass, recorded in that task's
+report, is what turned each of these ten into a confirmed generator defect rather than leaving that judgment implicit.
+
+**The oracle-agreement test is load-bearing, not one test among many.** `test/integration/oracles.test.ts` proves the
+case table itself is representable on the wire and round-trips through a handwritten reference client and reference
+server that share no code with each other or with any generator. Nothing else in this tier means anything until that
+test passes — a table that cannot even round-trip through two oracles built expressly to agree with it cannot be trusted
+as the standard a generated client is measured against.
+
+**`test/specs/integration/` is a corpus root like any other.** The kitchen-sink spec that backs the case table lives
+there and is picked up by `discoverSpecs()`, so it also gets ordinary tier-2 snapshots under `test/output/` and tier-3
+compile coverage under `test/compile/`, exactly like every other spec in the corpus. Tier 4 itself imports the generated
+client from the **committed** `test/output/typescript/fetch-clients/integration/kitchen-sink/` tree, not a
+freshly-generated one, so what the driver runs against is exactly what a reviewer already saw in a tier-2 diff.
+
+**This phase covers `fetch-clients` only, with no Docker.** Unlike tier 3, nothing here starts a container or takes
+minutes — the whole run is a loopback HTTP server and one `deno run` subprocess — so tier 4 needs no opt-in guard in
+this phase and runs as part of plain `deno task test`, which is a feature: the everyday loop catches a broken driver.
+Phases 6 and 7 add the containerized targets (`okhttp3-clients`, `spring-reactive-web-clients`, `spring-controllers`,
+`angular-services`, `k6-clients`, `easy-network-stub`) behind a `GOAST_INTEGRATION` guard, the same way tier 3 is
+guarded behind `GOAST_COMPILE` — those targets, unlike this one, will need it.
+
+The commands:
+
+```bash
+deno task test:integration        # write mode: regenerates wire deviation artifacts
+deno task test:integration:check  # check mode: the CI-equivalent, fails on any drift
+```
+
 ## Layout
 
 ```
@@ -582,14 +660,23 @@ test/
   harness/            # the test harness, published locally as @goast/test-harness
     snapshot/         # the snapshot engine (mode, tree, text-diff, normalize, verify-*, orphans)
     compile/          # the compile-gate engine (unit discovery, diagnostic parsers, verify)
+    integration/      # the tier-4 wire engine (verify.ts: wireSnapshotFile, verifyWireDeviations)
     paths.ts          # repo root and spec directory paths
     declutter.ts      # strips noise from parsed ApiData before snapshotting
     docker.ts         # docker CLI wrapper for tiers 3 and 4 (build, run, image tagging)
     string.utils.ts   # dedent(n): strips template-literal indentation, deliberately EOL-agnostic (see Tier 1 above)
+    ref-server.ts     # tier-4 reference server: an in-process HTTP server driven by the case table
+    ref-client.ts     # tier-4 reference client: issues a case's expectRequest with raw fetch
+    wire.ts           # tier-4 wire normalization and diffing (readBody, stable, diffRequest, diffResult)
   specs/              # OpenAPI corpus, one spec per file or per directory, under v2/v3/v3.1
+    integration/      # the kitchen-sink spec backing the tier-4 case table (also a normal corpus entry)
   output-tests/       # tier 2: profiles.ts registry, output/core-model/orphans tests
   output/             # committed tier 2 snapshots (see "Snapshot forms" above)
   compile-tests/      # tier 3: driver (compile.test.ts), paths.ts, per-language runners, orphans test
   compile/            # committed tier 3 diagnostics (see "Tier 3: compile gate" above)
   docker/             # image contexts for the tier 3 compilers (kotlin/, node/)
+  cases/              # the tier-4 case table (cases.ts, casesFor, types.ts) — the shared source of truth
+  integration/        # tier-4 tests: the oracle-agreement proof, and one driver per target (fetch-clients/)
+  integration-tests/  # tier-4 orphan sweep (see "Tier 4: integration" above)
+  wire/               # committed tier-4 deviation artifacts, one profile subdirectory per target
 ```
