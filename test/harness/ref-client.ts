@@ -45,7 +45,12 @@ export async function issueCase(baseUrl: string, apiCase: ApiCase): Promise<Resp
 
   const built = buildBody(body);
   const requestHeaders = new Headers(headers ?? {});
-  if (built.contentType !== undefined) requestHeaders.set('content-type', built.contentType);
+  // A case-declared content-type wins: setting the body-kind default unconditionally would make a
+  // declared content-type self-fulfilling, and the table would have no way to express one that
+  // differs from the body kind's default.
+  if (built.contentType !== undefined && !requestHeaders.has('content-type')) {
+    requestHeaders.set('content-type', built.contentType);
+  }
 
   return await fetch(`${baseUrl}${path}${queryString === '' ? '' : `?${queryString}`}`, {
     method: apiCase.method.toUpperCase(),
