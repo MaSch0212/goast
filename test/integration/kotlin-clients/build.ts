@@ -94,6 +94,35 @@ const RUNTIME_COROUTINE_DEPENDENCIES: readonly string[] = [
 ];
 
 /**
+ * A runtime-only JSON codec, needed only by `spring-reactive-web-clients`.
+ *
+ * `kotlinDependenciesFor('spring-reactive-web-clients', …)` deliberately carries no Jackson databind
+ * coordinate: the generated tree never imports it directly, because WebFlux's default
+ * `Jackson2JsonEncoder`/`Jackson2JsonDecoder` are wired up through `spring-web`'s *optional* dependency
+ * on it, and Gradle does not pull an optional Maven dependency in transitively. That gap is invisible to
+ * tier 3 — the compile gate never runs a line of generated code — but running this driver hits it on
+ * essentially every JSON-bodied call: `UnsupportedMediaTypeException: Content type 'application/json'
+ * not supported for bodyType=...`, on both the request-encode and response-decode side. A real caller of
+ * this generated client would hit the identical wall the moment they used it outside a Spring Boot
+ * starter (which bundles `jackson-databind` transitively via `spring-boot-starter-json`) — no change to
+ * the generated declaration shape could route around it, so this is a driver-only *runtime* dependency
+ * gap, the same kind of gap `RUNTIME_COROUTINE_DEPENDENCIES` above already exists to close, not a
+ * `kotlinDependenciesFor` entry.
+ *
+ * Verified directly against the warm image before adding this: `sb3`/`sb4` in
+ * `test/docker/kotlin/warmup/build.gradle.kts` already resolve `jackson-module-kotlin` for the okhttp3
+ * family inside the very same configuration, which pulls the matching Jackson databind artifact
+ * transitively at whichever version each Spring Boot BOM manages it at — so this coordinate, version-less
+ * and BOM-managed exactly like the platform import beside it, resolves offline with nothing new to warm.
+ * `okhttp3-clients` units pick up an extra, already-satisfied line here; that is harmless duplication,
+ * not a new resolution.
+ */
+const RUNTIME_JSON_CODEC_DEPENDENCIES: Readonly<Record<'sb3' | 'sb4', string>> = {
+  sb3: 'add("implementation", "com.fasterxml.jackson.core:jackson-databind")',
+  sb4: 'add("implementation", "tools.jackson.core:jackson-databind")',
+};
+
+/**
  * Generates the settings and build scripts for one driver's single-project Gradle build.
  *
  * `treeMount` and `driverMount` are container paths, not host paths — the caller (Task 6) mounts the
@@ -146,6 +175,7 @@ export function synthesizeDriverBuild(
     `    add("implementation", platform("${KOTLIN_BOM[unit.variant]}"))`,
     ...dependencies.map((line) => `    ${line}`),
     ...RUNTIME_COROUTINE_DEPENDENCIES.map((line) => `    ${line}`),
+    `    ${RUNTIME_JSON_CODEC_DEPENDENCIES[unit.variant]}`,
     '}',
     '',
     'sourceSets["main"].kotlin.srcDirs("' + treeDir + '", "' + driverDir + '")',
