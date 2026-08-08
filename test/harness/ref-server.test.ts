@@ -101,4 +101,31 @@ describe('startRefServer', () => {
       await server.close();
     }
   });
+
+  it('binds loopback by default', async () => {
+    const server = await startRefServer([]);
+    try {
+      expect(server.baseUrl).toBe(`http://127.0.0.1:${server.port}`);
+    } finally {
+      await server.close();
+    }
+  });
+
+  // Containerized drivers reach the host through `host.docker.internal`, which resolves to the bridge
+  // address, not loopback — so a loopback-only listener refuses them. Binding every interface is scoped
+  // to those runs and must never become the default.
+  it('can bind every interface for a containerized driver', async () => {
+    const server = await startRefServer([], { hostname: '0.0.0.0' });
+    try {
+      const response = await fetch(`http://127.0.0.1:${server.port}/pets/unmatched`);
+      await response.body?.cancel();
+
+      // 418 is the server's "no case matched this route" answer, so reaching it at all proves the
+      // listener accepted a connection that a loopback-only bind would also have accepted — what this
+      // pins is that passing a hostname does not break serving.
+      expect(response.status).toBe(418);
+    } finally {
+      await server.close();
+    }
+  });
 });
