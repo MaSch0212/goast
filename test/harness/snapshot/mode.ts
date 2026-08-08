@@ -24,7 +24,14 @@ export type VerifyOptions = {
   updateCommand?: string;
 };
 
-const FALSY_ENV_VALUES = new Set(['', '0', 'false']);
+/**
+ * Values of a boolean-ish environment variable that mean "off".
+ *
+ * Exported because more than one switch keys off `CI` the same way — {@link resolveSnapshotMode} here
+ * and the Kotlin runner's Gradle work-dir mode — and two hand-rolled copies of this set would be free
+ * to drift apart.
+ */
+export const FALSY_ENV_VALUES: ReadonlySet<string> = new Set(['', '0', 'false']);
 
 /**
  * Resolves the snapshot mode from the environment.

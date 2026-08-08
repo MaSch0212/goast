@@ -4,6 +4,7 @@ import {
   buildImage,
   type CompileUnit,
   type Diagnostic,
+  FALSY_ENV_VALUES,
   normalizeMessageUrls,
   relativizeDiagnostic,
   repoRootDir,
@@ -14,6 +15,92 @@ import { parseKotlinDiagnostics } from '../../harness/compile/parse-kotlin.ts';
 const CONTEXT_DIR = join(repoRootDir, 'test', 'docker', 'kotlin');
 const TREE_MOUNT = '/output';
 const WORK_MOUNT = '/work';
+
+/**
+ * Where a persistent Gradle project directory lives. Git-ignored: it is a local build cache, not a
+ * committed artifact, and it holds absolute container paths that mean nothing on another machine.
+ */
+const WORK_CACHE_DIR = join(repoRootDir, '.goast-cache', 'gradle-work');
+
+/**
+ * The Gradle properties for one work mode, written into the project dir rather than baked into the
+ * image's entrypoint, so changing them costs nothing and never invalidates the warm dependency layer.
+ *
+ * `configuration-cache` is the one that matters at this corpus size: the build configures one
+ * subproject per unit — hundreds of them — and the configuration cache skips that phase entirely on a
+ * hit. It caches the *task graph*, never task outputs, so unlike the build cache it cannot manufacture
+ * a false "clean" even if this file's reasoning about reuse were wrong.
+ *
+ * `caching` (the build cache) can, which is why {@link REUSED_SUFFIXES} argues its safety explicitly.
+ * Its local directory is pinned inside the project dir by the settings script, so persistence needs no
+ * volume over `GRADLE_USER_HOME` — the trap that made the previous attempt at caching here worse than
+ * useless, because Docker seeds a named volume only on first mount and a stale one then hides warmup
+ * fixes behind a cache nothing invalidates.
+ *
+ * The heap bump is not an optimization: configuring this many subprojects under the default heap is
+ * close enough to the limit that an OOM shows up as a truncated log, which this runner can only report
+ * as an untrustworthy run.
+ */
+export function gradleProperties(mode: GradleWorkMode): string {
+  const lines = ['org.gradle.jvmargs=-Xmx3g'];
+
+  // Both caches only pay off when something later reads them, and in `ephemeral` mode nothing can:
+  // the project dir holding both is deleted when the run ends. Measured, not assumed — enabling them
+  // against an ephemeral dir took the full gate from 12m06s to 15m50s, because storing a configuration
+  // cache entry for hundreds of subprojects is real work and every byte of it was then discarded. CI
+  // runs ephemeral, so leaving these on unconditionally would have made the clean-room build slower
+  // for no benefit whatsoever.
+  if (mode === 'persistent') {
+    lines.push('org.gradle.caching=true', 'org.gradle.configuration-cache=true');
+  }
+
+  return lines.join('\n') + '\n';
+}
+
+/**
+ * How {@link runKotlin} chooses its Gradle project directory.
+ *
+ * Measured on the full 522-unit gate, so the trade-off is not guesswork:
+ *
+ * | run                                    | wall clock |
+ * | -------------------------------------- | ---------- |
+ * | before any of this (no caches, default heap) | 12m06s |
+ * | `ephemeral` (caches off, `-Xmx3g`)     | 11m07s     |
+ * | `persistent`, cold cache               | 11m07s     |
+ * | `persistent`, warm cache               | **1m46s**  |
+ *
+ * The warm run recompiled nothing: 0 of 522 `build/classes/kotlin/main` directories were modified
+ * during it, while the gate still passed against snapshots recorded with caching disabled entirely.
+ * That equivalence — cached path, identical diagnostics — is the property that makes reuse safe to
+ * rely on, and it is why the snapshots were deliberately recorded on an uncached run first.
+ *
+ * Note that `-Xmx3g` is worth its line on its own: it accounts for the 12m06s -> 11m07s step, before
+ * any cache is involved. Configuring this many subprojects under the default heap was close enough to
+ * the limit to cost real time.
+ */
+export type GradleWorkMode = 'persistent' | 'ephemeral';
+
+/**
+ * `persistent` reuses one project dir across runs so Gradle's own up-to-date checks and caches apply;
+ * `ephemeral` uses a fresh temp dir, so every task runs from nothing.
+ *
+ * Defaults the opposite way from most switches here — persistent locally, ephemeral on CI — because
+ * the two have different jobs. Locally the bottleneck is iteration: recompiling every unit to learn
+ * that sixteen changed is most of a working day's waiting. On CI the job is to be the clean-room
+ * result everything else is checked against, and it starts from an empty checkout anyway, so there is
+ * no prior state to reuse and nothing to gain from pretending otherwise.
+ */
+export function resolveGradleWorkMode(
+  get: (key: string) => string | undefined = (key) => Deno.env.get(key),
+): GradleWorkMode {
+  const explicit = get('GOAST_GRADLE_CACHE');
+  if (explicit !== undefined && explicit !== '') {
+    return FALSY_ENV_VALUES.has(explicit) ? 'ephemeral' : 'persistent';
+  }
+
+  const ci = get('CI');
+  return ci !== undefined && !FALSY_ENV_VALUES.has(ci) ? 'ephemeral' : 'persistent';
+}
 
 /**
  * Dependency lines for one profile family.
@@ -159,16 +246,43 @@ const BOM: Record<'sb3' | 'sb4', string> = {
 const TASK_LINE = /^> Task :(u\d+):compileKotlin(.*)$/;
 
 /**
- * Suffixes meaning "Gradle decided not to run this task", so its console output carries no
- * diagnostics for the unit and an empty diagnostic list says nothing about whether it compiles.
+ * Suffixes meaning "Gradle reused a prior successful result for this task".
  *
- * Unreachable today, and only by accident of configuration rather than by design: the work dir is a
- * fresh temp dir with no named volume (see {@link runKotlin}), and Gradle's build cache is off, so
- * no task has prior state to be up to date with. Re-introducing a cache volume — which this plan
- * already did once and then removed — would make `UP-TO-DATE` reachable, and without this branch a
- * unit that was last compiled against a stale tree would be recorded clean.
+ * **These are a legitimate zero-error result, not an unchecked unit**, and that is a claim about
+ * Gradle's semantics rather than a convenience:
+ *
+ *   * A task is only `UP-TO-DATE` when its inputs and outputs are unchanged *and its previous
+ *     execution succeeded*. A failed `compileKotlin` is never recorded as up to date; it re-runs on
+ *     the next invocation and re-prints its `e:` lines.
+ *   * The build cache only ever stores outputs for tasks that succeeded, so `FROM-CACHE` carries the
+ *     same guarantee.
+ *   * Source files are hashed as task inputs, so a unit whose tree changed *cannot* be up to date.
+ *     (An earlier revision of this comment claimed the opposite — that a skipped unit might have been
+ *     "last compiled against a stale tree" — and used it to justify rejecting these suffixes
+ *     outright. That reasoning was wrong.)
+ *   * {@link parseKotlinDiagnostics} keeps only `e:` errors and drops `w:` warnings. This is what
+ *     makes the above sufficient: a compile that succeeded *with warnings* is cacheable and would
+ *     print nothing on reuse, so if warnings were recorded, reuse could hide them. They are not.
+ *
+ * Therefore reuse implies "previous run of these exact inputs succeeded" implies "zero errors", and
+ * an empty diagnostic list is the correct result. Units that genuinely fail are never reused — they
+ * recompile and re-report every run.
+ *
+ * The JDK is the one input Gradle would not otherwise track, so {@link synthesizeGradleBuild}
+ * declares it explicitly as a task input property.
  */
-const NOT_EXECUTED_SUFFIXES = new Set(['UP-TO-DATE', 'FROM-CACHE', 'SKIPPED']);
+const REUSED_SUFFIXES = new Set(['UP-TO-DATE', 'FROM-CACHE']);
+
+/**
+ * Suffixes meaning "Gradle declined to run this task", so its console output carries no diagnostics
+ * and an empty diagnostic list says nothing about whether the unit compiles.
+ *
+ * `SKIPPED` is emphatically *not* in {@link REUSED_SUFFIXES}: it means the task was disabled or
+ * excluded (an `onlyIf` predicate, `-x`), which carries no evidence that it ever succeeded. Nothing
+ * in this runner's configuration should produce it, and if it appears, recording the unit clean would
+ * be a guess.
+ */
+const NOT_EXECUTED_SUFFIXES = new Set(['SKIPPED']);
 
 /** What one Gradle run said about each unit's `compileKotlin` task. */
 export type TaskStates = {
@@ -178,7 +292,13 @@ export type TaskStates = {
   noSource: Set<string>;
   /** Projects whose task failed. A task can print both a bare header and a `FAILED` line. */
   failed: Set<string>;
-  /** Projects Gradle skipped: {@link NOT_EXECUTED_SUFFIXES}, mapped to the suffix seen. */
+  /**
+   * Projects whose task Gradle reused a prior successful result for: {@link REUSED_SUFFIXES}, mapped
+   * to the suffix seen. Treated as executed-and-clean — see that set's doc comment for why that is
+   * sound.
+   */
+  reused: Map<string, string>;
+  /** Projects Gradle declined to run: {@link NOT_EXECUTED_SUFFIXES}, mapped to the suffix seen. */
   notExecuted: Map<string, string>;
   /** Projects whose suffix this runner does not recognise, mapped to the suffix seen. */
   unknown: Map<string, string>;
@@ -187,14 +307,16 @@ export type TaskStates = {
 /**
  * Classifies every `compileKotlin` task line in a Gradle log.
  *
- * Split out from {@link runKotlin} so all six suffix cases can be asserted directly — three of them
- * (see {@link NOT_EXECUTED_SUFFIXES}) cannot be produced by the container run as it is configured.
+ * Split out from {@link runKotlin} so every suffix case can be asserted directly. `UP-TO-DATE` and
+ * `FROM-CACHE` are reachable whenever the persistent work dir holds prior state (see
+ * {@link REUSED_SUFFIXES}); `SKIPPED` should never appear.
  */
 export function scanTaskLines(output: string): TaskStates {
   const states: TaskStates = {
     printed: new Set(),
     noSource: new Set(),
     failed: new Set(),
+    reused: new Map(),
     notExecuted: new Map(),
     unknown: new Map(),
   };
@@ -209,6 +331,7 @@ export function scanTaskLines(output: string): TaskStates {
     if (suffix === '') continue; // Executed; Gradle prints no explicit success suffix.
     if (suffix === 'NO-SOURCE') states.noSource.add(projectId);
     else if (suffix === 'FAILED') states.failed.add(projectId);
+    else if (REUSED_SUFFIXES.has(suffix)) states.reused.set(projectId, suffix);
     else if (NOT_EXECUTED_SUFFIXES.has(suffix)) states.notExecuted.set(projectId, suffix);
     else states.unknown.set(projectId, suffix);
   }
@@ -272,12 +395,33 @@ export function synthesizeGradleBuild(
         `        add("implementation", platform("${BOM[variant]}"))`,
         ...dependencies.map((line) => `        ${line}`),
         `    }`,
+        // The JDK is the one thing that changes what the compiler does without Gradle noticing.
+        // Source files, the build script and the resolved compile classpath are all tracked inputs
+        // already, and Gradle scopes its own project state by Gradle version — but nothing here
+        // declares a toolchain, so the compiler just uses the container's daemon JVM. Bump the base
+        // image's JDK and these tasks could stay UP-TO-DATE while the recorded result came from the
+        // old one. Declaring it as an input property fixes that without changing what gets compiled;
+        // declaring a `jvmToolchain` instead would also change the compilation target, which could
+        // move the committed diagnostics and needs its own verified run.
+        //
+        // Matched by task name rather than by importing `KotlinCompile` so a change in the Kotlin
+        // plugin's type hierarchy cannot silently stop matching.
+        `    tasks.matching { it.name == "compileKotlin" }.configureEach {`,
+        `        inputs.property("jvmVersion", System.getProperty("java.vm.version"))`,
+        `    }`,
         `}`,
       ].join('\n'),
     );
   });
 
-  const settings = ['rootProject.name = "goast-compile-gate"', ...includes].join('\n') + '\n';
+  // The build cache's local directory is pinned inside the project dir so that persisting the project
+  // dir persists the cache too. See GRADLE_PROPERTIES for why this is deliberately not a volume over
+  // GRADLE_USER_HOME.
+  const settings = [
+    'rootProject.name = "goast-compile-gate"',
+    'buildCache { local { directory = File(rootDir, ".build-cache") } }',
+    ...includes,
+  ].join('\n') + '\n';
   const build = [
     'plugins { kotlin("jvm") version "2.2.0" apply false }',
     '',
@@ -306,20 +450,28 @@ export async function runKotlin(units: readonly CompileUnit[]): Promise<Map<stri
   const image = await buildImage('kotlin', CONTEXT_DIR);
   const { settings, build, projectIds } = synthesizeGradleBuild(units, TREE_MOUNT);
 
-  const workDir = await Deno.makeTempDir({ prefix: 'goast-gradle-' });
+  const workMode = resolveGradleWorkMode();
+  const workDir = workMode === 'persistent' ? WORK_CACHE_DIR : await Deno.makeTempDir({ prefix: 'goast-gradle-' });
   try {
+    await Deno.mkdir(workDir, { recursive: true });
     await Deno.writeTextFile(join(workDir, 'settings.gradle.kts'), settings);
     await Deno.writeTextFile(join(workDir, 'build.gradle.kts'), build);
+    await Deno.writeTextFile(join(workDir, 'gradle.properties'), gradleProperties(workMode));
 
-    // No named volume over `GRADLE_USER_HOME`: `--offline` never downloads anything at run time, so a
-    // persistent cache volume cannot accumulate value across runs — it can only go stale. Verified
-    // directly, and load-bearing: Docker seeds a named volume from the image layer's own directory
-    // content only the *first* time that (empty) volume is mounted; once seeded, rebuilding the image
-    // with a changed warmup (a new content-hash tag) does not refresh it. Two stale `goast-test-kotlin`
-    // tags and one `goast-gradle-cache` volume coexisting is exactly how a fixed-name volume would hide a
-    // warmup fix behind a cache that never gets invalidated. Every measurement in this file's own doc
-    // comments was re-confirmed with no volume mounted at all — same result, no slower — so there is
-    // nothing to keep it for.
+    // Still no named volume over `GRADLE_USER_HOME`, and that decision is unchanged: `--offline` never
+    // downloads anything at run time, so a dependency-cache volume cannot accumulate value across runs
+    // — it can only go stale. Verified directly, and load-bearing: Docker seeds a named volume from the
+    // image layer's own directory content only the *first* time that (empty) volume is mounted; once
+    // seeded, rebuilding the image with a changed warmup (a new content-hash tag) does not refresh it.
+    // Two stale `goast-test-kotlin` tags and one `goast-gradle-cache` volume coexisting is exactly how a
+    // fixed-name volume would hide a warmup fix behind a cache that never gets invalidated.
+    //
+    // What DOES persist between runs is the project dir, bind-mounted from the host (see
+    // `resolveGradleWorkMode`). Gradle keeps task state, the configuration cache and — per the settings
+    // script — the local build cache inside the project dir, so reuse needs nothing mounted over
+    // `GRADLE_USER_HOME` and cannot go stale the way a seeded volume can: a bind mount always shows
+    // exactly what is on the host, and every input Gradle keys on is either hashed by Gradle itself or
+    // declared as a task input.
     const { code, stdout, stderr, timedOut } = await runContainer({
       image,
       mounts: [
@@ -372,15 +524,15 @@ export async function runKotlin(units: readonly CompileUnit[]): Promise<Map<stri
     }
 
     // Gradle declined to run the task, so the log holds no diagnostics for the unit and its empty
-    // result means "not checked", not "clean". See NOT_EXECUTED_SUFFIXES for why this is unreachable
-    // as the run is configured today, and why relying on that would be relying on an accident.
+    // result means "not checked", not "clean". Reuse (UP-TO-DATE/FROM-CACHE) is deliberately NOT in
+    // this set — see REUSED_SUFFIXES for why reuse is a sound zero-error result and SKIPPED is not.
     const notExecuted = describeProjects(taskStates.notExecuted, unitIdByProjectId);
     if (notExecuted.length > 0) {
       throw new Error(
         `${notExecuted.length} unit(s) did not compile because Gradle declined to run their task: ` +
           `${notExecuted.join(', ')}. Their sources were never read on this run, so an empty diagnostic ` +
-          'list is not evidence that they compile. Something is reusing prior build state — a cache ' +
-          'volume over GRADLE_USER_HOME, or the build cache having been enabled.',
+          'list is not evidence that they compile. A task is only SKIPPED when something disabled or ' +
+          'excluded it (an onlyIf predicate, -x); nothing in this runner should do that.',
       );
     }
 
@@ -438,7 +590,9 @@ export async function runKotlin(units: readonly CompileUnit[]): Promise<Map<stri
 
     return results;
   } finally {
-    await Deno.remove(workDir, { recursive: true });
+    // A persistent project dir is the whole point of `persistent` mode — deleting it here would make
+    // every run a cold one while looking like it cached. `deno task test:compile:clean` removes it.
+    if (workMode === 'ephemeral') await Deno.remove(workDir, { recursive: true });
   }
 }
 

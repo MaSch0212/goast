@@ -2,7 +2,7 @@ import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
 import type { CompileUnit } from '@goast/test-harness';
-import { scanTaskLines, synthesizeGradleBuild } from './kotlin.ts';
+import { gradleProperties, resolveGradleWorkMode, scanTaskLines, synthesizeGradleBuild } from './kotlin.ts';
 
 const unit = (profile: string, versionDir: 'v3' | 'v3.1', spec: string): CompileUnit => ({
   language: 'kotlin',
@@ -23,6 +23,23 @@ describe('synthesizeGradleBuild', () => {
     expect(settings).toContain('include("u0001")');
     expect(settings).not.toContain('@');
     expect(projectIds.get('kotlin/models@sb3/v3.1/webhooks')).toBe('u0001');
+  });
+
+  // Without this, reuse across runs is unsound in exactly one way: a JDK bump changes what the
+  // compiler does, and it is the only such input Gradle does not hash on its own.
+  it('declares the JDK as a compileKotlin input so a JDK bump invalidates the task', () => {
+    const { build } = synthesizeGradleBuild([unit('models@sb3', 'v3', 'a')], '/output');
+
+    expect(build).toContain('tasks.matching { it.name == "compileKotlin" }.configureEach {');
+    expect(build).toContain('inputs.property("jvmVersion", System.getProperty("java.vm.version"))');
+  });
+
+  // The local build cache has to live inside the project dir, because the project dir is the only
+  // thing that persists between runs — GRADLE_USER_HOME is a discarded container layer.
+  it('pins the build cache directory inside the project dir', () => {
+    const { settings } = synthesizeGradleBuild([unit('models@sb3', 'v3', 'a')], '/output');
+
+    expect(settings).toContain('buildCache { local { directory = File(rootDir, ".build-cache") } }');
   });
 
   it('points each subproject at its tree under the mount, not at the host path', () => {
@@ -97,17 +114,22 @@ describe('scanTaskLines', () => {
     expect([...states.unknown]).toEqual([]);
   });
 
-  // The regression this exists for: all three were previously matched by TASK_LINE, added to
-  // `printed`, and then classified as neither NO-SOURCE nor FAILED — i.e. recorded as "ran and clean"
-  // while Gradle had not read a single source file.
-  it('classifies every state in which Gradle declined to run the task', () => {
+  // Two different meanings that must not share a bucket. UP-TO-DATE and FROM-CACHE mean Gradle reused
+  // a prior *successful* result, so zero errors is the right answer for them; SKIPPED means the task
+  // was disabled or excluded and never succeeded at all, so it carries no evidence either way.
+  //
+  // The original regression this guards is still guarded: all three used to be matched by TASK_LINE,
+  // added to `printed`, and then classified as neither NO-SOURCE nor FAILED — recorded as "ran and
+  // clean" by falling through every branch. Each now lands in a bucket named for what it means.
+  it('separates reuse of a successful result from a task that was never run', () => {
     const states = scanTaskLines([
       '> Task :u0001:compileKotlin UP-TO-DATE',
       '> Task :u0002:compileKotlin FROM-CACHE',
       '> Task :u0003:compileKotlin SKIPPED',
     ].join('\n'));
 
-    expect([...states.notExecuted]).toEqual([['u0001', 'UP-TO-DATE'], ['u0002', 'FROM-CACHE'], ['u0003', 'SKIPPED']]);
+    expect([...states.reused]).toEqual([['u0001', 'UP-TO-DATE'], ['u0002', 'FROM-CACHE']]);
+    expect([...states.notExecuted]).toEqual([['u0003', 'SKIPPED']]);
     expect([...states.noSource]).toEqual([]);
     expect([...states.failed]).toEqual([]);
     expect([...states.unknown]).toEqual([]);
@@ -140,7 +162,61 @@ describe('scanTaskLines', () => {
   });
 
   it('ignores a trailing carriage return, so a CRLF log classifies the same', () => {
-    expect([...scanTaskLines('> Task :u0001:compileKotlin UP-TO-DATE\r\n').notExecuted])
+    expect([...scanTaskLines('> Task :u0001:compileKotlin UP-TO-DATE\r\n').reused])
       .toEqual([['u0001', 'UP-TO-DATE']]);
+  });
+});
+
+describe('gradleProperties', () => {
+  it('raises the heap in both modes, because configuring this many subprojects needs it', () => {
+    for (const mode of ['persistent', 'ephemeral'] as const) {
+      expect(gradleProperties(mode)).toContain('org.gradle.jvmargs=-Xmx3g');
+    }
+  });
+
+  it('enables both caches when the project dir survives the run', () => {
+    const properties = gradleProperties('persistent');
+
+    expect(properties).toContain('org.gradle.caching=true');
+    expect(properties).toContain('org.gradle.configuration-cache=true');
+  });
+
+  // Measured: leaving these on for an ephemeral run cost 12m06s -> 15m50s, all of it spent storing
+  // caches into a directory that is deleted before anything can read them.
+  it('leaves both caches off when the project dir is thrown away, so storing them costs nothing', () => {
+    const properties = gradleProperties('ephemeral');
+
+    expect(properties).not.toContain('caching');
+    expect(properties).not.toContain('configuration-cache');
+  });
+});
+
+describe('resolveGradleWorkMode', () => {
+  const env = (values: Record<string, string>) => (key: string): string | undefined => values[key];
+
+  it('defaults to persistent locally, where iteration speed is the point', () => {
+    expect(resolveGradleWorkMode(env({}))).toBe('persistent');
+  });
+
+  it('defaults to ephemeral on CI, so the clean-room result reuses nothing', () => {
+    expect(resolveGradleWorkMode(env({ CI: 'true' }))).toBe('ephemeral');
+  });
+
+  it('reads a falsy CI the same as no CI at all', () => {
+    for (const value of ['', '0', 'false']) {
+      expect(resolveGradleWorkMode(env({ CI: value }))).toBe('persistent');
+    }
+  });
+
+  // The override has to work in both directions: forcing a cold run locally to reproduce a CI result,
+  // and forcing reuse on CI once phase 8 gives it somewhere to persist to.
+  it('lets GOAST_GRADLE_CACHE override the CI default either way', () => {
+    expect(resolveGradleWorkMode(env({ CI: 'true', GOAST_GRADLE_CACHE: '1' }))).toBe('persistent');
+    expect(resolveGradleWorkMode(env({ GOAST_GRADLE_CACHE: '0' }))).toBe('ephemeral');
+  });
+
+  it('ignores an empty GOAST_GRADLE_CACHE rather than reading it as off', () => {
+    expect(resolveGradleWorkMode(env({ GOAST_GRADLE_CACHE: '' }))).toBe('persistent');
+    expect(resolveGradleWorkMode(env({ CI: 'true', GOAST_GRADLE_CACHE: '' }))).toBe('ephemeral');
   });
 });
