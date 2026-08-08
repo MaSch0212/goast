@@ -2,6 +2,7 @@ export * from './compile/mod.ts';
 export * from './declutter.ts';
 export * from './docker.ts';
 export * from './integration/mod.ts';
+export * from './kotlin/mod.ts';
 export * from './paths.ts';
 export * from './ref-client.ts';
 export * from './ref-server.ts';
