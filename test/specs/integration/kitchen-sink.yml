@@ -106,6 +106,33 @@ paths:
         '200':
           description: The photo was accepted.
 
+  # A text/plain request body. Wire-observable in its own right: the body must arrive as the raw
+  # string with a `text/plain` content type, which is a different shape from every other body kind
+  # in this spec.
+  /pets/{id}/note:
+    post:
+      operationId: addPetNote
+      tags: [Pets]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: The note was added.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+
   /widgets/{id}:
     get:
       operationId: getWidget

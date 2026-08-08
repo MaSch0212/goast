@@ -384,5 +384,74 @@ class PetsApiClient(
         )
     }
 
+    /**
+     * @throws IllegalStateException If the request is not correctly configured
+     * @throws IOException Rethrows the OkHttp execute method exception
+     * @throws UnsupportedOperationException If the API returns an informational or redirection response
+     * @throws ClientException If the API returns a client error response
+     * @throws ServerException If the API returns a server error response
+     */
+    @Throws(
+        IllegalStateException::class,
+        IOException::class,
+        UnsupportedOperationException::class,
+        ClientException::class,
+        ServerException::class
+    )
+    fun addPetNote(id: String, string: String): Pet {
+        val localVarResponse = addPetNoteWithHttpInfo(id, string)
+
+        return when (localVarResponse.responseType) {
+            ResponseType.Success -> (localVarResponse as Success<*>).data as Pet
+            ResponseType.Informational -> throw UnsupportedOperationException("Client does not support Informational responses.")
+            ResponseType.Redirection -> throw UnsupportedOperationException("Client does not support Redirection responses.")
+            ResponseType.ClientError -> {
+                val localVarError = localVarResponse as ClientError<*>
+                throw ClientException(
+                    "Client error : ${localVarError.statusCode} ${localVarError.message.orEmpty()}",
+                    localVarError.statusCode,
+                    localVarResponse
+                )
+            }
+
+            ResponseType.ServerError -> {
+                val localVarError = localVarResponse as ServerError<*>
+                throw ServerException(
+                    "Server error : ${localVarError.statusCode} ${localVarError.message.orEmpty()}",
+                    localVarError.statusCode,
+                    localVarResponse
+                )
+            }
+        }
+    }
+
+    /**
+     * @throws IllegalStateException If the request is not correctly configured
+     * @throws IOException Rethrows the OkHttp execute method exception
+     */
+    @Throws(IllegalStateException::class, IOException::class)
+    fun addPetNoteWithHttpInfo(id: String, string: String): ApiResponse<Pet?> {
+        val localVariableConfig = addPetNoteRequestConfig(id, string)
+        return request<String, Pet>(localVariableConfig)
+    }
+
+    /**
+     * To obtain the request config of the operation addPetNote
+     */
+    private fun addPetNoteRequestConfig(id: String, string: String): RequestConfig<String> {
+        val localVariableBody = string
+        val localVariableQuery: MultiValueMap = mutableMapOf<String, List<String>>()
+        val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
+        localVariableHeaders["Content-Type"] = "text/plain"
+        return RequestConfig(
+            method = RequestMethod.POST,
+            path = "/pets/${encodeURIComponent(id.toString())}/note",
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            requiresAuthentication = false,
+            body = localVariableBody
+        )
+    }
+
     private fun encodeURIComponent(uriComponent: String): String = HttpUrl.Builder().scheme("http").host("localhost").addPathSegment(uriComponent).build().encodedPathSegments[0]
 }

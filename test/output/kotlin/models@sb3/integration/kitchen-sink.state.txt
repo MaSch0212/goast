@@ -360,7 +360,7 @@
         }
       },
       'schema-36': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//widgets/{id}/get/parameters/0/schema',
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//pets/{id}/note/post/parameters/0/schema',
         type: KtReference {
           classReference: false,
           generics: [],
@@ -372,31 +372,31 @@
         }
       },
       'schema-37': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Widget',
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//pets/{id}/note/post/requestBody/content/text/plain/schema',
         type: KtReference {
           classReference: false,
           generics: [],
           inject: {},
-          name: 'Widget',
+          name: 'String',
           nullable: false,
-          packageName: 'com.openapi.generated.model',
+          packageName: 'kotlin',
           subReference: null
         }
       },
       'schema-38': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Widget',
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet',
         type: KtReference {
           classReference: false,
           generics: [],
           inject: {},
-          name: 'Widget',
+          name: 'Pet',
           nullable: false,
           packageName: 'com.openapi.generated.model',
           subReference: null
         }
       },
       'schema-39': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Widget/properties/id',
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//widgets/{id}/get/parameters/0/schema',
         type: KtReference {
           classReference: false,
           generics: [],
@@ -420,6 +420,42 @@
         }
       },
       'schema-40': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Widget',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Widget',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-41': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Widget',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Widget',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-42': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Widget/properties/id',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-43': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Widget/properties/name',
         type: KtReference {
           classReference: false,
@@ -431,7 +467,7 @@
           subReference: null
         }
       },
-      'schema-41': {
+      'schema-44': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Widget/properties/price',
         type: KtReference {
           classReference: false,
@@ -443,51 +479,15 @@
           subReference: null
         }
       },
-      'schema-42': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error',
-        type: KtReference {
-          classReference: false,
-          generics: [],
-          inject: {},
-          name: 'Error',
-          nullable: false,
-          packageName: 'com.openapi.generated.model',
-          subReference: null
-        }
-      },
-      'schema-43': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error',
-        type: KtReference {
-          classReference: false,
-          generics: [],
-          inject: {},
-          name: 'Error',
-          nullable: false,
-          packageName: 'com.openapi.generated.model',
-          subReference: null
-        }
-      },
-      'schema-44': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error/properties/message',
-        type: KtReference {
-          classReference: false,
-          generics: [],
-          inject: {},
-          name: 'String',
-          nullable: false,
-          packageName: 'kotlin',
-          subReference: null
-        }
-      },
       'schema-45': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error/properties/code',
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error',
         type: KtReference {
           classReference: false,
           generics: [],
           inject: {},
-          name: 'Int',
+          name: 'Error',
           nullable: false,
-          packageName: 'kotlin',
+          packageName: 'com.openapi.generated.model',
           subReference: null
         }
       },
@@ -504,31 +504,7 @@
         }
       },
       'schema-47': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error',
-        type: KtReference {
-          classReference: false,
-          generics: [],
-          inject: {},
-          name: 'Error',
-          nullable: false,
-          packageName: 'com.openapi.generated.model',
-          subReference: null
-        }
-      },
-      'schema-48': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error',
-        type: KtReference {
-          classReference: false,
-          generics: [],
-          inject: {},
-          name: 'Error',
-          nullable: false,
-          packageName: 'com.openapi.generated.model',
-          subReference: null
-        }
-      },
-      'schema-49': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//blobs/post/requestBody/content/application/octet-stream/schema',
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error/properties/message',
         type: KtReference {
           classReference: false,
           generics: [],
@@ -536,6 +512,30 @@
           name: 'String',
           nullable: false,
           packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-48': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error/properties/code',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-49': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Error',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
           subReference: null
         }
       },
@@ -552,31 +552,31 @@
         }
       },
       'schema-50': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/BlobRef',
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error',
         type: KtReference {
           classReference: false,
           generics: [],
           inject: {},
-          name: 'BlobRef',
+          name: 'Error',
           nullable: false,
           packageName: 'com.openapi.generated.model',
           subReference: null
         }
       },
       'schema-51': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/BlobRef',
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error',
         type: KtReference {
           classReference: false,
           generics: [],
           inject: {},
-          name: 'BlobRef',
+          name: 'Error',
           nullable: false,
           packageName: 'com.openapi.generated.model',
           subReference: null
         }
       },
       'schema-52': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/BlobRef/properties/id',
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//blobs/post/requestBody/content/application/octet-stream/schema',
         type: KtReference {
           classReference: false,
           generics: [],
@@ -588,31 +588,31 @@
         }
       },
       'schema-53': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//locations/{pathParam}/get/parameters/0/schema',
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/BlobRef',
         type: KtReference {
           classReference: false,
           generics: [],
           inject: {},
-          name: 'String',
+          name: 'BlobRef',
           nullable: false,
-          packageName: 'kotlin',
+          packageName: 'com.openapi.generated.model',
           subReference: null
         }
       },
       'schema-54': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//locations/{pathParam}/get/parameters/1/schema',
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/BlobRef',
         type: KtReference {
           classReference: false,
           generics: [],
           inject: {},
-          name: 'String',
+          name: 'BlobRef',
           nullable: false,
-          packageName: 'kotlin',
+          packageName: 'com.openapi.generated.model',
           subReference: null
         }
       },
       'schema-55': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//locations/{pathParam}/get/parameters/2/schema',
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/BlobRef/properties/id',
         type: KtReference {
           classReference: false,
           generics: [],
@@ -624,7 +624,7 @@
         }
       },
       'schema-56': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//locations/{pathParam}/get/parameters/3/schema',
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//locations/{pathParam}/get/parameters/0/schema',
         type: KtReference {
           classReference: false,
           generics: [],
@@ -636,6 +636,54 @@
         }
       },
       'schema-57': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//locations/{pathParam}/get/parameters/1/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-58': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//locations/{pathParam}/get/parameters/2/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-59': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//locations/{pathParam}/get/parameters/3/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet/properties/nickname',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-60': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/get/parameters/0/schema',
         type: KtReference {
           classReference: false,
@@ -657,7 +705,7 @@
           subReference: null
         }
       },
-      'schema-58': {
+      'schema-61': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/get/parameters/0/schema/items',
         type: KtReference {
           classReference: false,
@@ -669,7 +717,7 @@
           subReference: null
         }
       },
-      'schema-59': {
+      'schema-62': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/get/parameters/1/schema',
         type: KtReference {
           classReference: false,
@@ -691,19 +739,7 @@
           subReference: null
         }
       },
-      'schema-6': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet/properties/nickname',
-        type: KtReference {
-          classReference: false,
-          generics: [],
-          inject: {},
-          name: 'String',
-          nullable: true,
-          packageName: 'kotlin',
-          subReference: null
-        }
-      },
-      'schema-60': {
+      'schema-63': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/get/parameters/1/schema/items',
         type: KtReference {
           classReference: false,
@@ -715,7 +751,7 @@
           subReference: null
         }
       },
-      'schema-61': {
+      'schema-64': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/get/parameters/2/schema',
         type: KtReference {
           classReference: false,
@@ -737,7 +773,7 @@
           subReference: null
         }
       },
-      'schema-62': {
+      'schema-65': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/get/parameters/2/schema/items',
         type: KtReference {
           classReference: false,
@@ -749,7 +785,7 @@
           subReference: null
         }
       },
-      'schema-63': {
+      'schema-66': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/{values}/get/parameters/0/schema',
         type: KtReference {
           classReference: false,
@@ -771,7 +807,7 @@
           subReference: null
         }
       },
-      'schema-64': {
+      'schema-67': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/{values}/get/parameters/0/schema/items',
         type: KtReference {
           classReference: false,
@@ -783,7 +819,7 @@
           subReference: null
         }
       },
-      'schema-65': {
+      'schema-68': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//encoded/{value}/get/parameters/0/schema',
         type: KtReference {
           classReference: false,
@@ -795,7 +831,7 @@
           subReference: null
         }
       },
-      'schema-66': {
+      'schema-69': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//encoded/{value}/get/parameters/1/schema',
         type: KtReference {
           classReference: false,
@@ -807,8 +843,8 @@
           subReference: null
         }
       },
-      'schema-67': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//widgets/{id}/get/responses/200/headers/X-Rate-Limit/schema',
+      'schema-7': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet/properties/age',
         type: KtReference {
           classReference: false,
           generics: [],
@@ -819,8 +855,8 @@
           subReference: null
         }
       },
-      'schema-7': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet/properties/age',
+      'schema-70': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//widgets/{id}/get/responses/200/headers/X-Rate-Limit/schema',
         type: KtReference {
           classReference: false,
           generics: [],

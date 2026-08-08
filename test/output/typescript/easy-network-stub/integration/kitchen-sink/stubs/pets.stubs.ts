@@ -39,12 +39,20 @@ const uploadPetPhotoResponder = getStubResponder<{
     500: never;
   }>();
 
+const addPetNoteResponder = getStubResponder<{
+    200: Pet;
+    401: never;
+    403: never;
+    500: never;
+  }>();
+
 export class PetsStubs extends EasyNetworkStubBase {
   private static readonly GET_PET_PATH = 'pets/{id:string}' as const;
   private static readonly UPDATE_PET_PATH = 'pets/{id:string}' as const;
   private static readonly DELETE_PET_PATH = 'pets/{id:string}' as const;
   private static readonly CREATE_PET_PATH = 'pets' as const;
   private static readonly UPLOAD_PET_PHOTO_PATH = 'pets/{id:string}/photo' as const;
+  private static readonly ADD_PET_NOTE_PATH = 'pets/{id:string}/note' as const;
 
   private readonly _getPetRequests: (StubRequestInfo<typeof PetsStubs.GET_PET_PATH, unknown>)[] = [];
   private readonly _updatePetRequests: (StubRequestInfo<typeof PetsStubs.UPDATE_PET_PATH, PetUpdate>)[] = [];
@@ -54,6 +62,7 @@ export class PetsStubs extends EasyNetworkStubBase {
         file: Blob;
         caption?: string;
       }>)[] = [];
+  private readonly _addPetNoteRequests: (StubRequestInfo<typeof PetsStubs.ADD_PET_NOTE_PATH, string>)[] = [];
 
   public get getPetRequests(): readonly (StubRequestInfo<typeof PetsStubs.GET_PET_PATH, unknown>)[] {
     return this._getPetRequests;
@@ -72,6 +81,9 @@ export class PetsStubs extends EasyNetworkStubBase {
         caption?: string;
       }>)[] {
     return this._uploadPetPhotoRequests;
+  }
+  public get addPetNoteRequests(): readonly (StubRequestInfo<typeof PetsStubs.ADD_PET_NOTE_PATH, string>)[] {
+    return this._addPetNoteRequests;
   }
 
   public stubGetPet(response: StrictRouteResponseCallback<
@@ -170,12 +182,31 @@ export class PetsStubs extends EasyNetworkStubBase {
     return this;
   }
 
+  public stubAddPetNote(response: StrictRouteResponseCallback<
+      string,
+      typeof PetsStubs.ADD_PET_NOTE_PATH,
+      typeof addPetNoteResponder
+    >): this {
+    this.stubWrapper.stub2<string>()(
+      'POST',
+      PetsStubs.ADD_PET_NOTE_PATH,
+      async (request) => {
+        if (this.stubWrapper.options.rememberRequests) {
+          this._addPetNoteRequests.push(request);
+        }
+        throw await response(addPetNoteResponder, request);
+      }
+    );
+    return this;
+  }
+
   public override reset(): void {
     this._getPetRequests.length = 0;
     this._updatePetRequests.length = 0;
     this._deletePetRequests.length = 0;
     this._createPetRequests.length = 0;
     this._uploadPetPhotoRequests.length = 0;
+    this._addPetNoteRequests.length = 0;
     super.reset();
   }
 }

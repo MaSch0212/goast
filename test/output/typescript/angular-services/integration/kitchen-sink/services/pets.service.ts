@@ -7,7 +7,7 @@ import { RequestBuilder } from '../utils/request-builder';
 
 import type { PetUpdate } from '../models/pet-update';
 import type { Pet } from '../models/pet';
-import type { CreatePetApiResponse, DeletePetApiResponse, GetPetApiResponse, UpdatePetApiResponse, UploadPetPhotoApiResponse } from '../models/responses/pets-responses.model';
+import type { AddPetNoteApiResponse, CreatePetApiResponse, DeletePetApiResponse, GetPetApiResponse, UpdatePetApiResponse, UploadPetPhotoApiResponse } from '../models/responses/pets-responses.model';
 import type { AbortablePromise } from '../utils/angular-service.utils';
 
 /**
@@ -50,6 +50,14 @@ type UploadPetPhotoParams = {
     };
   };
 
+/**
+ * Parameters for operation addPetNote
+ */
+type AddPetNoteParams = {
+    id: string;
+    body: string;
+  };
+
 @Injectable()
 export class PetsService extends ApiBaseService {
   private static readonly GET_PET_PATH = '/pets/{id}';
@@ -57,6 +65,7 @@ export class PetsService extends ApiBaseService {
   private static readonly DELETE_PET_PATH = '/pets/{id}';
   private static readonly CREATE_PET_PATH = '/pets';
   private static readonly UPLOAD_PET_PHOTO_PATH = '/pets/{id}/photo';
+  private static readonly ADD_PET_NOTE_PATH = '/pets/{id}/note';
 
   public getPet(params: GetPetParams, context?: HttpContext): AbortablePromise<GetPetApiResponse> {
     const rb = new RequestBuilder(this.rootUrl, PetsService.GET_PET_PATH, 'get');
@@ -148,6 +157,27 @@ export class PetsService extends ApiBaseService {
       this.http.request(rb.build({
         responseType: 'text',
         accept: '*/*',
+        context,
+      })),
+      {
+        errorResponseTypes: {
+          401: 'text',
+          403: 'text',
+          500: 'text',
+        }
+      }
+    )
+  }
+
+  public addPetNote(params: AddPetNoteParams, context?: HttpContext): AbortablePromise<AddPetNoteApiResponse> {
+    const rb = new RequestBuilder(this.rootUrl, PetsService.ADD_PET_NOTE_PATH, 'post');
+    rb.path('id', params.id, {});
+    rb.body(params.body, 'text/plain');
+
+    return waitForResponse<AddPetNoteApiResponse>(
+      this.http.request(rb.build({
+        responseType: 'json',
+        accept: 'application/json',
         context,
       })),
       {

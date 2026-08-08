@@ -1,5 +1,6 @@
 package com.openapi.generated.api
 
+import com.openapi.generated.api.PetsApi.AddPetNoteResponseEntity
 import com.openapi.generated.api.PetsApi.CreatePetResponseEntity
 import com.openapi.generated.api.PetsApi.DeletePetResponseEntity
 import com.openapi.generated.api.PetsApi.GetPetResponseEntity
@@ -38,5 +39,9 @@ interface PetsApiDelegate {
         caption: String?
     ): UploadPetPhotoResponseEntity<*> {
         return UploadPetPhotoResponseEntity.notImplemented()
+    }
+
+    suspend fun addPetNote(id: String, string: String): AddPetNoteResponseEntity<*> {
+        return AddPetNoteResponseEntity.notImplemented()
     }
 }

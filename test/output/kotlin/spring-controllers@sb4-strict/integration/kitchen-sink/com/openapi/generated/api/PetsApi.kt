@@ -29,6 +29,7 @@ interface PetsApi {
         const val DELETE_PET_PATH = "/pets/{id}"
         const val CREATE_PET_PATH = "/pets"
         const val UPLOAD_PET_PHOTO_PATH = "/pets/{id}/photo"
+        const val ADD_PET_NOTE_PATH = "/pets/{id}/note"
     }
 
     fun getDelegate(): PetsApiDelegate = object : PetsApiDelegate {}
@@ -119,6 +120,25 @@ interface PetsApi {
     ): ResponseEntity<*> {
         try {
             return getDelegate().uploadPetPhoto(id, file, caption)
+        } catch (e: Throwable) {
+            return getExceptionHandler()?.handleApiException(e) ?: throw e
+        }
+    }
+
+    @Operation(operationId = "addPetNote", deprecated = false)
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "The note was added.", content = [Content(mediaType = "application/json", schema = Schema(implementation = Pet::class))])])
+    @RequestMapping(method = [RequestMethod.POST], value = [ADD_PET_NOTE_PATH], consumes = ["text/plain"])
+    suspend fun addPetNote(
+        @Parameter(required = true)
+        @PathVariable("id")
+        id: String,
+
+        @Parameter(required = true)
+        @RequestBody
+        string: String
+    ): ResponseEntity<*> {
+        try {
+            return getDelegate().addPetNote(id, string)
         } catch (e: Throwable) {
             return getExceptionHandler()?.handleApiException(e) ?: throw e
         }
@@ -251,6 +271,34 @@ interface PetsApi {
             fun notImplemented(headers: MultiValueMap<String, String>? = null) = UploadPetPhotoResponseEntity<Unit>(null, 501, headers)
 
             fun ok(headers: MultiValueMap<String, String>? = null) = UploadPetPhotoResponseEntity<Unit>(null, 200, headers)
+        }
+    }
+
+    /**
+     * Response entity for addPetNote.
+     */
+    class AddPetNoteResponseEntity<T : Any> private constructor(
+        body: T?,
+        rawStatus: Int,
+        headers: MultiValueMap<String, String>? = null
+    ) : ResponseEntity<T>(body, headers, rawStatus) {
+        companion object {
+            fun badRequest(headers: MultiValueMap<String, String>? = null) = AddPetNoteResponseEntity<Unit>(null, 400, headers)
+
+            fun unauthorized(headers: MultiValueMap<String, String>? = null) = AddPetNoteResponseEntity<Unit>(null, 401, headers)
+
+            fun forbidden(headers: MultiValueMap<String, String>? = null) = AddPetNoteResponseEntity<Unit>(null, 403, headers)
+
+            fun internalServerError(headers: MultiValueMap<String, String>? = null) = AddPetNoteResponseEntity<Unit>(null, 500, headers)
+
+            fun notImplemented(headers: MultiValueMap<String, String>? = null) = AddPetNoteResponseEntity<Unit>(null, 501, headers)
+
+            fun ok(body: Pet, headers: MultiValueMap<String, String>? = null) = AddPetNoteResponseEntity<Pet>(body, 200, LinkedMultiValueMap<String, String>().also {
+                        if (headers != null) {
+                            it.putAll(headers)
+                        }
+                        it.addIfAbsent("Content-Type", "application/json")
+                    })
         }
     }
 }

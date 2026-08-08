@@ -65,23 +65,25 @@ export const cases: ApiCase[] = [
     expectResult: { id: 'abc', name: 'Rex', age: 4 },
     directions: ['client', 'server'],
   },
-  // JUDGMENT CALL: the kitchen-sink spec declares only `application/json` and
-  // `application/x-www-form-urlencoded` on `updatePet` (Task 2's checklist deliberately omits
-  // `text/plain` from the spec's content types). Task 3's own checklist still asks for one case per
-  // `BodyExpectation` kind, including `text`, and there is no operation anywhere in the spec that
-  // declares a text body. Rather than inventing a fictitious operation, this reuses `updatePet`'s
-  // routing to exercise `wire.ts`'s `text` path through the oracle round-trip (Task 6) only.
-  // `directions: ['server']` deliberately excludes it from `casesFor('fetch-clients', 'client')`,
-  // because the generated `updatePet(params, body: PetUpdate)` has no parameter that could carry a
-  // bare string — including it in the client direction would force Task 7 to write TypeScript that
-  // does not type-check against the committed client.
+  // --- Pets: addPetNote — a text/plain body -----------------------------------------------------
+  // An earlier revision of this table faked this case: it claimed `updatePet` sent `text/plain`,
+  // which that operation does not declare, and scoped it to `directions: ['server']` so nothing
+  // would ever try to drive it. The owner ruled the spec should carry a real `text/plain` operation
+  // instead, so `addPetNote` was added to the kitchen-sink and this case now describes it honestly
+  // and runs in both directions.
+  //
+  // The generated client is expected to DEVIATE here, and recording that is the point: it emits
+  // `JSON.stringify(body)` with no `content-type`, so a `text/plain` body of `plain text body`
+  // reaches the wire as the JSON string `"plain text body"` — quoted. Per this phase's design that
+  // becomes a committed deviation artifact, not an `except` entry.
   {
-    id: 'updatePet/text',
-    operationId: 'updatePet',
-    method: 'put',
-    pathTemplate: '/pets/{id}',
+    id: 'addPetNote/text',
+    operationId: 'addPetNote',
+    method: 'post',
+    pathTemplate: '/pets/{id}/note',
     expectRequest: {
-      path: '/pets/abc',
+      path: '/pets/abc/note',
+      headers: { 'content-type': 'text/plain' },
       body: { kind: 'text', value: 'plain text body' },
     },
     response: {
@@ -90,7 +92,7 @@ export const cases: ApiCase[] = [
       body: { id: 'abc', name: 'Rex' },
     },
     expectResult: { id: 'abc', name: 'Rex' },
-    directions: ['server'],
+    directions: ['client', 'server'],
   },
 
   // --- Pets: deletePet — 204 no-content ---------------------------------------------------------

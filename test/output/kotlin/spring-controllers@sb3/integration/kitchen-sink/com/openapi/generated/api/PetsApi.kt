@@ -27,6 +27,7 @@ interface PetsApi {
         const val DELETE_PET_PATH = "/pets/{id}"
         const val CREATE_PET_PATH = "/pets"
         const val UPLOAD_PET_PHOTO_PATH = "/pets/{id}/photo"
+        const val ADD_PET_NOTE_PATH = "/pets/{id}/note"
     }
 
     fun getDelegate(): PetsApiDelegate = object : PetsApiDelegate {}
@@ -117,6 +118,25 @@ interface PetsApi {
     ): ResponseEntity<*> {
         try {
             return getDelegate().uploadPetPhoto(id, file, caption)
+        } catch (e: Throwable) {
+            return getExceptionHandler()?.handleApiException(e) ?: throw e
+        }
+    }
+
+    @Operation(operationId = "addPetNote", deprecated = false)
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "The note was added.", content = [Content(mediaType = "application/json", schema = Schema(implementation = Pet::class))])])
+    @RequestMapping(method = [RequestMethod.POST], value = [ADD_PET_NOTE_PATH], consumes = ["text/plain"])
+    suspend fun addPetNote(
+        @Parameter(required = true)
+        @PathVariable("id")
+        id: String,
+
+        @Parameter(required = true)
+        @RequestBody
+        string: String
+    ): ResponseEntity<*> {
+        try {
+            return getDelegate().addPetNote(id, string)
         } catch (e: Throwable) {
             return getExceptionHandler()?.handleApiException(e) ?: throw e
         }

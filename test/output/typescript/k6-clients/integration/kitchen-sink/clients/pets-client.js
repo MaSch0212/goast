@@ -7,7 +7,7 @@ import { RequestBuilder } from '../utils/request-builder';
 
  * @import { PetUpdate } from '../models/pet-update';
  * @import { Pet } from '../models/pet';
- * @import { CreatePetApiResponse, DeletePetApiResponse, GetPetApiResponse, UpdatePetApiResponse, UploadPetPhotoApiResponse } from '../models/responses/pets-responses';
+ * @import { AddPetNoteApiResponse, CreatePetApiResponse, DeletePetApiResponse, GetPetApiResponse, UpdatePetApiResponse, UploadPetPhotoApiResponse } from '../models/responses/pets-responses';
  */
 
 /**
@@ -50,11 +50,20 @@ import { RequestBuilder } from '../utils/request-builder';
  *   }} body
  */
 
+/**
+ * Parameters for operation addPetNote
+ *
+ * @typedef AddPetNoteParams
+ * @property {string} id
+ * @property {string} body
+ */
+
 const GET_PET_PATH = '/pets/{id}';
 const UPDATE_PET_PATH = '/pets/{id}';
 const DELETE_PET_PATH = '/pets/{id}';
 const CREATE_PET_PATH = '/pets';
 const UPLOAD_PET_PHOTO_PATH = '/pets/{id}/photo';
+const ADD_PET_NOTE_PATH = '/pets/{id}/note';
 
 /**
  * @property {string} rootUrl The root URL for this client.
@@ -153,6 +162,24 @@ export class PetsClient {
     return /** @type {UploadPetPhotoApiResponse} */ (
       await rb.buildAsync({
         accept: '*/*',
+        params: this.getK6Params(k6Params),
+      })
+    );
+  }
+
+  /**
+   * @param {AddPetNoteParams} params
+   * @param {Params} [k6Params]
+   * @returns {Promise<AddPetNoteApiResponse>}
+   */
+  async addPetNote(params, k6Params) {
+    const rb = new RequestBuilder(this.rootUrl, ADD_PET_NOTE_PATH, 'post');
+    rb.path('id', params.id, {});
+    rb.body(params.body, 'text/plain');
+
+    return /** @type {AddPetNoteApiResponse} */ (
+      await rb.buildAsync({
+        accept: 'application/json',
         params: this.getK6Params(k6Params),
       })
     );

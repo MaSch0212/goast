@@ -36,4 +36,8 @@ interface PetsApiDelegate {
     ): ResponseEntity<Unit> {
         return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
     }
+
+    suspend fun addPetNote(id: String, string: String): ResponseEntity<Pet> {
+        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+    }
 }

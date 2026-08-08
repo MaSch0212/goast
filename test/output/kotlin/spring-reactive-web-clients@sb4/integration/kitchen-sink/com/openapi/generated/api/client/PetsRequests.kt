@@ -155,4 +155,33 @@ object PetsRequests {
                         }
                         .build()))
     }
+
+    suspend fun WebClient.addPetNote(id: String, string: String): Pet {
+        return this
+            .addPetNoteRequest(id, string)
+            .retrieve()
+            .awaitBody<Pet>()
+    }
+
+    suspend fun <T : Any> WebClient.addPetNote(
+        id: String,
+        string: String,
+        responseHandler: suspend (ClientResponse) -> T
+    ): T {
+        return this.addPetNoteRequest(id, string).awaitExchange(responseHandler)
+    }
+
+    fun addPetNoteUri(id: String): String {
+        return UriComponentsBuilder.fromPath("pets/{id}/note")
+            .buildAndExpand(mapOf("id" to id.toString()))
+            .toUriString()
+    }
+
+    fun WebClient.addPetNoteRequest(id: String, string: String): RequestHeadersSpec<*> {
+        return this.method(HttpMethod.POST)
+            .uri(addPetNoteUri(id))
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.parseMediaType("text/plain"))
+            .bodyValue(string)
+    }
 }

@@ -285,42 +285,32 @@
         imports: []
       },
       'schema-36': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//widgets/{id}/get/parameters/0/schema',
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//pets/{id}/note/post/parameters/0/schema',
         component: 'string',
         imports: []
       },
       'schema-37': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Widget',
-        additionalExports: [],
-        component: 'Widget',
-        filePath: '<output>/models/widget.ts',
-        imports: [
-          {
-            kind: 'file',
-            modulePath: '<output>/models/widget.ts',
-            name: 'Widget',
-            type: 'type-import'
-          }
-        ],
-        kind: 'type'
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//pets/{id}/note/post/requestBody/content/text/plain/schema',
+        component: 'string',
+        imports: []
       },
       'schema-38': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Widget',
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet',
         additionalExports: [],
-        component: 'Widget',
-        filePath: '<output>/models/widget.ts',
+        component: 'Pet',
+        filePath: '<output>/models/pet.ts',
         imports: [
           {
             kind: 'file',
-            modulePath: '<output>/models/widget.ts',
-            name: 'Widget',
+            modulePath: '<output>/models/pet.ts',
+            name: 'Pet',
             type: 'type-import'
           }
         ],
         kind: 'type'
       },
       'schema-39': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Widget/properties/id',
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//widgets/{id}/get/parameters/0/schema',
         component: 'string',
         imports: []
       },
@@ -330,54 +320,64 @@
         imports: []
       },
       'schema-40': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Widget',
+        additionalExports: [],
+        component: 'Widget',
+        filePath: '<output>/models/widget.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/widget.ts',
+            name: 'Widget',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-41': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Widget',
+        additionalExports: [],
+        component: 'Widget',
+        filePath: '<output>/models/widget.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/widget.ts',
+            name: 'Widget',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-42': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Widget/properties/id',
+        component: 'string',
+        imports: []
+      },
+      'schema-43': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Widget/properties/name',
         component: 'string',
         imports: []
       },
-      'schema-41': {
+      'schema-44': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Widget/properties/price',
         component: 'number',
         imports: []
       },
-      'schema-42': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error',
-        additionalExports: [],
-        component: 'Error',
-        filePath: '<output>/models/error.ts',
-        imports: [
-          {
-            kind: 'file',
-            modulePath: '<output>/models/error.ts',
-            name: 'Error',
-            type: 'type-import'
-          }
-        ],
-        kind: 'type'
-      },
-      'schema-43': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error',
-        additionalExports: [],
-        component: 'Error',
-        filePath: '<output>/models/error.ts',
-        imports: [
-          {
-            kind: 'file',
-            modulePath: '<output>/models/error.ts',
-            name: 'Error',
-            type: 'type-import'
-          }
-        ],
-        kind: 'type'
-      },
-      'schema-44': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error/properties/message',
-        component: 'string',
-        imports: []
-      },
       'schema-45': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error/properties/code',
-        component: 'number',
-        imports: []
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error',
+        additionalExports: [],
+        component: 'Error',
+        filePath: '<output>/models/error.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/error.ts',
+            name: 'Error',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
       },
       'schema-46': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error',
@@ -395,21 +395,16 @@
         kind: 'type'
       },
       'schema-47': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error',
-        additionalExports: [],
-        component: 'Error',
-        filePath: '<output>/models/error.ts',
-        imports: [
-          {
-            kind: 'file',
-            modulePath: '<output>/models/error.ts',
-            name: 'Error',
-            type: 'type-import'
-          }
-        ],
-        kind: 'type'
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error/properties/message',
+        component: 'string',
+        imports: []
       },
       'schema-48': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error/properties/code',
+        component: 'number',
+        imports: []
+      },
+      'schema-49': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error',
         additionalExports: [],
         component: 'Error',
@@ -423,11 +418,6 @@
           }
         ],
         kind: 'type'
-      },
-      'schema-49': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//blobs/post/requestBody/content/application/octet-stream/schema',
-        component: 'Blob',
-        imports: []
       },
       'schema-5': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet/properties/name',
@@ -435,21 +425,41 @@
         imports: []
       },
       'schema-50': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/BlobRef',
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error',
         additionalExports: [],
-        component: 'BlobRef',
-        filePath: '<output>/models/blob-ref.ts',
+        component: 'Error',
+        filePath: '<output>/models/error.ts',
         imports: [
           {
             kind: 'file',
-            modulePath: '<output>/models/blob-ref.ts',
-            name: 'BlobRef',
+            modulePath: '<output>/models/error.ts',
+            name: 'Error',
             type: 'type-import'
           }
         ],
         kind: 'type'
       },
       'schema-51': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error',
+        additionalExports: [],
+        component: 'Error',
+        filePath: '<output>/models/error.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/error.ts',
+            name: 'Error',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-52': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//blobs/post/requestBody/content/application/octet-stream/schema',
+        component: 'Blob',
+        imports: []
+      },
+      'schema-53': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/BlobRef',
         additionalExports: [],
         component: 'BlobRef',
@@ -464,44 +474,44 @@
         ],
         kind: 'type'
       },
-      'schema-52': {
+      'schema-54': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/BlobRef',
+        additionalExports: [],
+        component: 'BlobRef',
+        filePath: '<output>/models/blob-ref.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/blob-ref.ts',
+            name: 'BlobRef',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-55': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/BlobRef/properties/id',
         component: 'string',
         imports: []
       },
-      'schema-53': {
+      'schema-56': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//locations/{pathParam}/get/parameters/0/schema',
         component: 'string',
         imports: []
       },
-      'schema-54': {
+      'schema-57': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//locations/{pathParam}/get/parameters/1/schema',
         component: 'string',
         imports: []
       },
-      'schema-55': {
+      'schema-58': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//locations/{pathParam}/get/parameters/2/schema',
         component: 'string',
         imports: []
       },
-      'schema-56': {
+      'schema-59': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//locations/{pathParam}/get/parameters/3/schema',
         component: 'string',
-        imports: []
-      },
-      'schema-57': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/get/parameters/0/schema',
-        component: '(string)[]',
-        imports: []
-      },
-      'schema-58': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/get/parameters/0/schema/items',
-        component: 'string',
-        imports: []
-      },
-      'schema-59': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/get/parameters/1/schema',
-        component: '(string)[]',
         imports: []
       },
       'schema-6': {
@@ -510,47 +520,62 @@
         imports: []
       },
       'schema-60': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/get/parameters/0/schema',
+        component: '(string)[]',
+        imports: []
+      },
+      'schema-61': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/get/parameters/0/schema/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-62': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/get/parameters/1/schema',
+        component: '(string)[]',
+        imports: []
+      },
+      'schema-63': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/get/parameters/1/schema/items',
         component: 'string',
         imports: []
       },
-      'schema-61': {
+      'schema-64': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/get/parameters/2/schema',
         component: '(string)[]',
         imports: []
       },
-      'schema-62': {
+      'schema-65': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/get/parameters/2/schema/items',
         component: 'string',
         imports: []
       },
-      'schema-63': {
+      'schema-66': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/{values}/get/parameters/0/schema',
         component: '(string)[]',
         imports: []
       },
-      'schema-64': {
+      'schema-67': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/{values}/get/parameters/0/schema/items',
         component: 'string',
         imports: []
       },
-      'schema-65': {
+      'schema-68': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//encoded/{value}/get/parameters/0/schema',
         component: 'string',
         imports: []
       },
-      'schema-66': {
+      'schema-69': {
         __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//encoded/{value}/get/parameters/1/schema',
         component: 'string',
         imports: []
       },
-      'schema-67': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//widgets/{id}/get/responses/200/headers/X-Rate-Limit/schema',
+      'schema-7': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet/properties/age',
         component: 'number',
         imports: []
       },
-      'schema-7': {
-        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet/properties/age',
+      'schema-70': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//widgets/{id}/get/responses/200/headers/X-Rate-Limit/schema',
         component: 'number',
         imports: []
       },

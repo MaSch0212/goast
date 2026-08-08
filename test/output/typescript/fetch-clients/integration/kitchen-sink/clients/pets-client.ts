@@ -115,4 +115,25 @@ export class PetsClient {
     Object.defineProperty(response, 'isVoidResponse', { value: true });
     return response as unknown as Promise<TypedResponse<void>>;
   }
+
+  /**
+   * @param params Parameters for the endpoint.
+   * @param body Body for the endpoint.
+   */
+  public addPetNote(params: {
+      id: string;
+    }, body: string): Promise<TypedResponse<Pet>> {
+    const url = new UrlBuilder(this.options.baseUrl)
+      .withPath('/pets/{id}/note')
+      .withPathParam('id', params.id)
+      .build();
+    const headers = { ...this.options.headers };
+    const response = (this.options.fetch ?? fetch)(url, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(body),
+    });
+    Object.defineProperty(response, 'isVoidResponse', { value: false });
+    return response as unknown as Promise<TypedResponse<Pet>>;
+  }
 }
