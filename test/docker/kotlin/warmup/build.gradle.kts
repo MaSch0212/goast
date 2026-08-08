@@ -52,12 +52,13 @@ dependencies {
         add(configurationName, "org.springframework:spring-webflux")
         add(configurationName, "org.springframework:spring-context")
         add(configurationName, "io.projectreactor:reactor-core")
-        // `org.jetbrains.kotlinx:kotlinx-coroutines-reactor` was here until Task 6 removed it. It is in
+        // `org.jetbrains.kotlinx:kotlinx-coroutines-reactor` was removed from here once before. It is in
         // no `DEPENDENCIES` entry — `kotlin.ts` drops it as unused for `spring-reactive-web-clients`,
         // whose `awaitBody`/`awaitExchange` are Spring WebFlux's own extensions — and
-        // `grep -rl kotlinx test/output/kotlin` finds zero files. Warming it dragged
-        // `kotlinx-coroutines-core` and its `kotlin-stdlib` constraint into both configurations for
-        // nothing.
+        // `grep -rl kotlinx test/output/kotlin` finds zero files, so compilation genuinely never needs
+        // it. It (and `kotlinx-coroutines-core`, for `runBlocking`) is warmed again below the
+        // `kotlin-stdlib-common` line, not for compiling but for a tier-4 driver *running* generated code
+        // — see that comment for why running needs what compiling does not.
         add(configurationName, "jakarta.validation:jakarta.validation-api")
         add(configurationName, "jakarta.annotation:jakarta.annotation-api")
         // Verified directly, from a pristine image layer with no named volume: once
@@ -73,6 +74,12 @@ dependencies {
         // the two `jackson-module-kotlin` declarations themselves below the loop, one per variant; this
         // line stays in the loop because it is pinned outright and both lines need it warm.)
         add(configurationName, "org.jetbrains.kotlin:kotlin-stdlib-common:2.2.0")
+        // Runtime-only, and deliberately absent from the compile-time list above: a tier-4 driver enters
+        // a coroutine from `main` via `runBlocking` (coroutines-core) and WebFlux's `awaitBody`/
+        // `awaitExchange` bridge a Reactor publisher into a suspension at run time (coroutines-reactor).
+        // Neither BOM manages these, so both carry an explicit version.
+        add(configurationName, "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+        add(configurationName, "org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
     }
     sb3(platform("org.springframework.boot:spring-boot-dependencies:3.5.6"))
     sb4(platform("org.springframework.boot:spring-boot-dependencies:4.0.0"))
