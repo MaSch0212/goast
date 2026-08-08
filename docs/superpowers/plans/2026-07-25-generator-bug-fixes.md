@@ -278,20 +278,26 @@ A fix needs `fetch-client-generator.ts` to branch on `content[0].contentType`: b
 property for `multipart/form-data`, URL-encode for `application/x-www-form-urlencoded`, and keep `JSON.stringify` only
 for JSON-like media types.
 
-**Tier 4:** `test/wire/fetch-clients/updatePet__json.txt`, `updatePet__form.txt`, `createPet__created.txt`,
-`uploadBlob__ok.txt` and `uploadPetPhoto__ok.txt` — each a `body` deviation whose `actual` is the JSON-stringified,
-mis-typed request the reference server received. `addPetNote__text.txt`'s second stanza (its `body` deviation,
-`actual` reading `{"kind":"text","value":"\"plain text body\""}` — the value quoted twice) is this same mechanism;
-its first stanza (`header.content-type`, `expected text/plain` / `actual text/plain;charset=UTF-8`) is **not**
-counted as part of this defect, on a narrower ground than "the generator doesn't control it" — it does, by omission:
-had the generator set `content-type: text/plain` from the declared media type (the fix below), `fetch` would never
-reach its own default and the charset difference would not exist. The reason this stanza stays unregistered is that
-the *value* `fetch` defaults to is a correct media type with an extra parameter, not a wrong one — `text/plain` is
-what the case expects, `;charset=UTF-8` is additional information the case's `expectRequest` does not ask about at
-all, not a contradiction of it. That is a case-table strictness question, not a generator defect. One consequence
-worth flagging for whoever fixes this defect: because `addPetNote/text` conforms once the generator sets any
-`content-type`, fixing it deletes `addPetNote__text.txt` **in full**, charset stanza included — so a reviewer of that
-future deletion should not go looking for a second register entry the charset half never had.
+**Tier 4:** `test/wire/fetch-clients/updatePet__json.txt`, `createPet__created.txt`, `uploadBlob__ok.txt` and
+`uploadPetPhoto__ok.txt` — each a `body` deviation whose `actual` is the JSON-stringified, mis-typed request the
+reference server received. `addPetNote__text.txt`'s second stanza (its `body` deviation, `actual` reading
+`{"kind":"text","value":"\"plain text body\""}` — the value quoted twice) is this same mechanism; its first stanza
+(`header.content-type`, `expected text/plain` / `actual text/plain;charset=UTF-8`) is **not** counted as part of this
+defect, on a narrower ground than "the generator doesn't control it" — it does, by omission: had the generator set
+`content-type: text/plain` from the declared media type (the fix below), `fetch` would never reach its own default
+and the charset difference would not exist. The reason this stanza stays unregistered is that the *value* `fetch`
+defaults to is a correct media type with an extra parameter, not a wrong one — `text/plain` is what the case expects,
+`;charset=UTF-8` is additional information the case's `expectRequest` does not ask about at all, not a contradiction
+of it. That is a case-table strictness question, not a generator defect. One consequence worth flagging for whoever
+fixes this defect: because `addPetNote/text` conforms once the generator sets any `content-type`, fixing it deletes
+`addPetNote__text.txt` **in full**, charset stanza included — so a reviewer of that future deletion should not go
+looking for a second register entry the charset half never had.
+
+`updatePet__form.txt` is **not** listed above, though this operation is the other's two-content-type sibling and
+`updatePet/json` is. This defect's fix — branching the one generated `updatePet` method on `content[0].contentType`
+— only ever reaches the first declared media type; `updatePet`'s second media type
+(`application/x-www-form-urlencoded`) has no generated code path at all to fix, which is a distinct, unregistered-
+until-now mechanism. See **defect 44**, which owns that artifact and explains why this defect's fix cannot reach it.
 
 ### Defect 21 — Kotlin and TypeScript both emit an unnamed type declaration for a schema whose normalized name is empty (found by phase 2b task 5, not scheduled)
 
@@ -925,10 +931,11 @@ no parameter carrying `style` or `explode` at all;
 `test/output/typescript/fetch-clients/integration/kitchen-sink/clients/params-client.ts:52-54` passes each array
 straight to `withQueryParam` with no style-specific branch in sight.
 
-Two of the five cases in the kitchen-sink's style matrix happen to match by construction rather than by the generator
-doing anything right: `formUnexploded` (`style: form, explode: false`) is comma-joined by definition, and
-`pathStyleSimple` (`style: simple`, also comma-joined) coincidentally lands on the same serialization `String(value)`
-produces — both correctly produce **no** artifact, which is coverage working as intended, not a gap.
+Two of the four cases in the kitchen-sink's style matrix — the three `styleMatrix` cases plus `pathStyleSimple` —
+happen to match by construction rather than by the generator doing anything right: `formUnexploded` (`style: form,
+explode: false`) is comma-joined by definition, and `pathStyleSimple` (`style: simple`, also comma-joined)
+coincidentally lands on the same serialization `String(value)` produces — both correctly produce **no** artifact,
+which is coverage working as intended, not a gap.
 
 **Tier 4:** `test/wire/fetch-clients/styleMatrix__formExploded.txt` — `query.formExploded` expected `["a","b"]`
 (repeated keys), actual `["a,b"]` (comma-joined). `test/wire/fetch-clients/styleMatrix__spaceDelimited.txt` —
@@ -957,6 +964,43 @@ Not fixed here — this phase records defects rather than fixing them. A fix nee
 parameter-collection pass (whichever function currently filters to `target === 'path' | 'query' | 'header'` — see
 defect 35's list of that filter's other call sites) to also collect `target === 'cookie'` parameters into the method
 signature, and the request-building code to join them into one `Cookie` header value.
+
+### Defect 44 — a multi-media-type `requestBody` collapses to its first declared content entry, with no way for a caller to select another (found by the tier-4 wire contract, not scheduled)
+
+`getInterfaceEndpointMethod` (`packages/typescript/src/generators/services/fetch-clients/fetch-client-generator.ts:100`)
+computes the body parameter's type from `endpoint.requestBody?.content[0]?.schema` alone, and the serialization branch
+defect 20 describes (`:226`) reads the identical `content[0]`. Neither ever looks at `content[1]` or beyond. For an
+operation whose `requestBody.content` declares more than one media type, the generated client has exactly one method,
+one body parameter type, and one body-building path — all built from the first declared entry. A second content entry
+is not merely mis-serialized (defect 20's claim about the entry that *is* reached): it is unreachable. No overload
+exists, no parameter accepts it, and no caller of the generated client has any way to ask for it.
+
+`updatePet` (`test/specs/integration/kitchen-sink.yml:33-41`) declares two media types on one `requestBody`:
+`application/json` at line 36, `application/x-www-form-urlencoded` at line 39, both against `PetUpdate`. The generated
+`PetsClient.updatePet` (`test/output/typescript/fetch-clients/integration/kitchen-sink/clients/pets-client.ts:42-57`)
+is a single method, `updatePet(params, body: PetUpdate)`, that always `JSON.stringify`s `body` (line 53) — there is no
+second signature, and no way through this client to send the operation's `application/x-www-form-urlencoded`
+alternative at all.
+
+This is why defect 20's fix cannot make every artifact in its own scope disappear. Defect 20's fix branches the
+*existing single* method's serialization on `content[0].contentType` — for `updatePet` that is `application/json`, so
+the fix corrects `updatePet/json` but leaves `updatePet/form` deviating forever, because there is no second signature
+for a `content[0]`-keyed branch to route into. The two defects are distinct mechanisms that happen to produce
+identical-looking artifact text today: defect 20 is the wrong serialization for the media type the generated code
+*does* reach; this entry is the absence of any code path to the media type it doesn't.
+
+**Tier 4:** `test/wire/fetch-clients/updatePet__form.txt` — `body` deviation, `actual` reading
+`{"kind":"text","value":"{\"name\":\"Rex\",\"age\":4}"}`, the same JSON-stringify-with-no-content-type shape defect 20
+produces for its own artifacts. Cross-reference: this artifact was previously listed under defect 20's **Tier 4**
+element alongside `updatePet__json.txt`; it has moved here because defect 20's registered fix (branch the one method
+on `content[0].contentType`) provably cannot delete it — see the reasoning above — while `updatePet__json.txt` stays
+with defect 20 because that same fix does resolve it. Read the two entries together, not as duplicates: a future
+reviewer who sees defect 20's fix land and delete `updatePet__json.txt` while `updatePet__form.txt` survives should
+land here, not conclude the fix was incomplete on its own terms.
+
+Not fixed here — this phase records defects rather than fixing them. A fix needs the fetch-client generator to emit
+one overload (or a discriminated body parameter) per declared media type in `requestBody.content`, rather than
+building a single method's parameter type and serialization from `content[0]` alone.
 
 ### Also registered, not scheduled
 

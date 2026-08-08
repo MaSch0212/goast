@@ -62,7 +62,23 @@ export async function readBody(request: Request): Promise<RecordedBody> {
 
   const bytes = new Uint8Array(await request.arrayBuffer());
   if (bytes.length === 0) return { kind: 'none' };
-  return { kind: 'binary', base64: btoa(String.fromCharCode(...bytes)) };
+  return { kind: 'binary', base64: bytesToBase64(bytes) };
+}
+
+/**
+ * Converts bytes to base64 in fixed-size chunks.
+ *
+ * `btoa(String.fromCharCode(...bytes))` spreads the whole buffer as call arguments, which stack-
+ * overflows well before a realistic upload's size (harmless only for the current `"hello"` fixture).
+ * Building the string in bounded chunks keeps memory use flat regardless of payload size.
+ */
+function bytesToBase64(bytes: Uint8Array): string {
+  const chunkSize = 8192;
+  let binary = '';
+  for (let offset = 0; offset < bytes.length; offset += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(offset, offset + chunkSize));
+  }
+  return btoa(binary);
 }
 
 /** Stable JSON, so an object's key order cannot make two equal values compare unequal. */
@@ -82,9 +98,15 @@ function compare(field: string, expected: unknown, actual: unknown, into: Deviat
 /**
  * Compares one recorded request against its expectation.
  *
- * Only what the expectation *mentions* is compared. A header the case does not name is not a
- * deviation: the case table declares the contract, and a runtime that adds `accept` is not a
- * generator defect. Query and body are compared whenever the expectation names them.
+ * Headers are the one field compared only where the expectation *mentions* them: a header the case does
+ * not name is not a deviation, because the runtime adds `accept`, `host`, `content-length` and friends
+ * that no case declares, and a case-declared contract cannot punish a header it never asked about.
+ *
+ * Query and body have no such excuse — the runtime never invents a query parameter or a request body —
+ * so both are compared unconditionally, defaulting an undeclared `expected.query` to `{}` and an
+ * undeclared `expected.body` to `{ kind: 'none' }`. This is what lets this function see a parameter
+ * emitted into the wrong location, or a body attached to a request the case declares none for; leaving
+ * either comparison conditional on the expectation naming the field would make it blind to exactly that.
  */
 export function diffRequest(expected: ApiCase['expectRequest'], actual: RecordedRequest): Deviation[] {
   const deviations: Deviation[] = [];
@@ -93,10 +115,9 @@ export function diffRequest(expected: ApiCase['expectRequest'], actual: Recorded
     deviations.push({ field: 'path', expected: expected.path, actual: actual.path });
   }
 
-  if (expected.query !== undefined) {
-    const keys = [...new Set([...Object.keys(expected.query), ...Object.keys(actual.query)])].sort();
-    for (const key of keys) compare(`query.${key}`, expected.query[key], actual.query[key], deviations);
-  }
+  const expectedQuery = expected.query ?? {};
+  const queryKeys = [...new Set([...Object.keys(expectedQuery), ...Object.keys(actual.query)])].sort();
+  for (const key of queryKeys) compare(`query.${key}`, expectedQuery[key], actual.query[key], deviations);
 
   for (const [name, value] of Object.entries(expected.headers ?? {})) {
     const lower = name.toLowerCase();
@@ -105,7 +126,7 @@ export function diffRequest(expected: ApiCase['expectRequest'], actual: Recorded
     }
   }
 
-  if (expected.body !== undefined) compare('body', expected.body, actual.body, deviations);
+  compare('body', expected.body ?? { kind: 'none' }, actual.body, deviations);
 
   return deviations;
 }

@@ -73,9 +73,13 @@ const params = new ParamsClient({ baseUrl });
 }
 
 {
+  // `File`, not a plain `Blob`: the case declares filename 'photo.png', which only a fixed generator
+  // producing real multipart output (`form.append('file', body.file)`) could ever send — a plain `Blob`
+  // would come out as `"blob"`. `File extends Blob`, so this still type-checks against the generated
+  // `file: Blob` signature, and it makes the declared case honest without depending on that fix landing.
   const response = await pets.uploadPetPhoto(
     { id: 'abc' },
-    { file: new Blob(['binarydata'], { type: 'image/png' }), caption: 'A good boy' },
+    { file: new File(['binarydata'], 'photo.png', { type: 'image/png' }), caption: 'A good boy' },
   );
   emit('uploadPetPhoto/ok', { status: response.status });
   await response.body?.cancel();

@@ -1,5 +1,6 @@
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
+import * as YAML from 'yaml';
 
 import { cases, casesFor } from './cases.ts';
 
@@ -27,6 +28,26 @@ describe('cases', () => {
     const covered = new Set(cases.map((c) => c.operationId));
 
     expect(operationIds.filter((id) => !covered.has(id))).toEqual([]);
+  });
+
+  it('resolves every case to a real (operationId, method, pathTemplate) triple in the kitchen-sink spec', async () => {
+    // The other direction from the test above: that spec coverage does not by itself prove a case's own
+    // pathTemplate/method/operationId are correct. cases.ts:69-73 documents a case that once claimed a
+    // pathTemplate the spec didn't actually declare that operation under, and still passed every other
+    // check — the contract proof issues expectRequest verbatim, so a wrong pathTemplate still routes and
+    // still round-trips, and the resulting deviation gets attributed to the generator instead of to the
+    // table. This test is what would have caught that.
+    const specText = await Deno.readTextFile(
+      new URL('../specs/integration/kitchen-sink.yml', import.meta.url),
+    );
+    const spec = YAML.parse(specText) as { paths: Record<string, Record<string, { operationId?: string }>> };
+
+    const unresolved = cases.filter((c) => {
+      const operation = spec.paths[c.pathTemplate]?.[c.method];
+      return operation?.operationId !== c.operationId;
+    }).map((c) => c.id);
+
+    expect(unresolved).toEqual([]);
   });
 });
 

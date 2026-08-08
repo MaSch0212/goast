@@ -22,14 +22,17 @@ export type MultipartPart = {
   value: string;
 };
 
-/** A request as the reference server actually received it, after parsing. */
-export type RecordedBody =
-  | { kind: 'none' }
-  | { kind: 'json'; value: unknown }
-  | { kind: 'form'; fields: Record<string, string[]> }
-  | { kind: 'multipart'; parts: MultipartPart[] }
-  | { kind: 'text'; value: string }
-  | { kind: 'binary'; base64: string };
+/**
+ * A request body as the reference server actually received it, after parsing.
+ *
+ * Deliberately the same type as `BodyExpectation`, not merely a coincidentally-identical one: `wire.ts`'s
+ * `compare('body', expected, actual)` (in `diffRequest`) puts a `BodyExpectation` and a `RecordedBody`
+ * side by side and is only sound because every variant of one is a variant of the other. Declaring this
+ * as an alias rather than a second literal union makes that soundness structural — a variant added to
+ * `BodyExpectation` without a matching parse case in `wire.ts#readBody` would otherwise compile silently
+ * and produce a permanent, undetected deviation for every case using it.
+ */
+export type RecordedBody = BodyExpectation;
 
 export type RecordedRequest = {
   method: HttpMethod;

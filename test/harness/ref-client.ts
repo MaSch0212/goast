@@ -39,6 +39,10 @@ function buildBody(body: BodyExpectation | undefined): { body: BodyInit | null; 
 export async function issueCase(baseUrl: string, apiCase: ApiCase): Promise<Response> {
   const { path, query, headers, body } = apiCase.expectRequest;
 
+  // `URLSearchParams.toString()` renders a space as `+`, where OpenAPI's `spaceDelimited` style
+  // specifies `%20`. Harmless here because `diffRequest` compares the query as a decoded multi-map
+  // (`parseQuery` decodes both `+` and `%20` back to a literal space), never as raw wire bytes — but it
+  // is a real spot where "the right bytes on the wire" is not what this oracle actually checks.
   const search = new URLSearchParams();
   for (const [key, values] of Object.entries(query ?? {})) for (const value of values) search.append(key, value);
   const queryString = search.toString();

@@ -135,6 +135,22 @@ describe('diffRequest', () => {
 
     expect(diffRequest({ path: '/pets/abc def', query: { tags: ['a,b'] } }, withHeader)).toEqual([]);
   });
+
+  it('reports a query parameter the expectation does not declare, unlike a header', () => {
+    const withQuery = { ...actual, query: { extra: ['x'] } };
+
+    expect(diffRequest({ path: '/pets/abc def' }, withQuery)).toEqual([
+      { field: 'query.extra', expected: 'undefined', actual: '["x"]' },
+    ]);
+  });
+
+  it('reports a body the expectation does not declare, unlike a header', () => {
+    const withBody = { ...actual, query: {}, body: { kind: 'text' as const, value: 'surprise' } };
+
+    expect(diffRequest({ path: '/pets/abc def' }, withBody)).toEqual([
+      { field: 'body', expected: '{"kind":"none"}', actual: '{"kind":"text","value":"surprise"}' },
+    ]);
+  });
 });
 
 describe('diffResult', () => {

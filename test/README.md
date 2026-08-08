@@ -604,8 +604,8 @@ difference. `deno task test:integration` regenerates in write mode; a file disap
 fix landed, and check mode refuses to pass with a stale file still committed — the same reviewable-deletion discipline
 as `verifyCompileDiagnostics`. Ten such artifacts are committed today, all traced to confirmed generator defects in
 [`docs/superpowers/plans/2026-07-25-generator-bug-fixes.md`](../docs/superpowers/plans/2026-07-25-generator-bug-fixes.md)
-(defects 20, 41, 42 and 43) — not fixed here, per this phase's rule that a generator fix changes generated output and
-belongs to its own phase.
+(defects 20, 41, 42, 43 and 44) — not fixed here, per this phase's rule that a generator fix changes generated output
+and belongs to its own phase.
 
 **An absent artifact means "no declared field deviated," not "the request was wire-correct."** This is the single most
 misreadable thing about this tier, for three concrete, verified reasons:
@@ -641,10 +641,16 @@ freshly-generated one, so what the driver runs against is exactly what a reviewe
 
 **This phase covers `fetch-clients` only, with no Docker.** Unlike tier 3, nothing here starts a container or takes
 minutes — the whole run is a loopback HTTP server and one `deno run` subprocess — so tier 4 needs no opt-in guard in
-this phase and runs as part of plain `deno task test`, which is a feature: the everyday loop catches a broken driver.
-Phases 6 and 7 add the containerized targets (`okhttp3-clients`, `spring-reactive-web-clients`, `spring-controllers`,
-`angular-services`, `k6-clients`, `easy-network-stub`) behind a `GOAST_INTEGRATION` guard, the same way tier 3 is
-guarded behind `GOAST_COMPILE` — those targets, unlike this one, will need it.
+this phase and runs as part of plain `deno task test`, which is a feature — though not the feature "catches drift":
+`deno task test` is plain `deno test -A`, which resolves to **write** mode locally (see "Snapshot modes" above), so a
+plain everyday run rewrites and deletes wire artifacts rather than failing on them. What the everyday loop genuinely
+catches is a non-zero driver exit, a mismatch between the case ids a driver reported and the ids it was asked for, and a
+surplus-request count that doesn't match the unmatched-case count — real failures, just not the same thing as "the
+recorded deviations are still accurate." Catching drift in the deviation artifacts themselves needs
+`deno task test:integration:check`, the same way tier 2's drift needs `deno task test:output:check`. Phases 6 and 7 add
+the containerized targets (`okhttp3-clients`, `spring-reactive-web-clients`, `spring-controllers`, `angular-services`,
+`k6-clients`, `easy-network-stub`) behind a `GOAST_INTEGRATION` guard, the same way tier 3 is guarded behind
+`GOAST_COMPILE` — those targets, unlike this one, will need it.
 
 The commands:
 

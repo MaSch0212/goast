@@ -76,6 +76,12 @@ export const cases: ApiCase[] = [
   // `JSON.stringify(body)` with no `content-type`, so a `text/plain` body of `plain text body`
   // reaches the wire as the JSON string `"plain text body"` — quoted. Per this phase's design that
   // becomes a committed deviation artifact, not an `except` entry.
+  //
+  // "With no content-type" describes the *client*, not the wire: `fetch` still supplies its own
+  // default for a string body with no header set. The committed artifact
+  // (`test/wire/fetch-clients/addPetNote__text.txt`) therefore shows `actual text/plain;charset=UTF-8`,
+  // not an absent header — a reader comparing this comment to that file should expect the default,
+  // not silence.
   {
     id: 'addPetNote/text',
     operationId: 'addPetNote',

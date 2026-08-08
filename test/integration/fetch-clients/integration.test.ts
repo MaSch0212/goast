@@ -64,6 +64,13 @@ describe(`integration/${PROFILE}`, () => {
     expect(server.surplus.length, 'unattributed surplus request(s) — see comment above').toBe(unmatchedCases.length);
     const surplusQueue = [...server.surplus];
 
+    // Pairing `unmatchedCases` (walked below in `cases` table order) against `surplusQueue.shift()`
+    // (server arrival order) is only correct because the two orders coincide: `driver.ts:9-12` documents
+    // that the driver issues its calls in `casesFor('fetch-clients', 'client')` table order, so a request
+    // that goes unmatched arrives at the server in the same relative order its case appears in `cases`.
+    // Without that guarantee this loop could attribute one case's surplus request to a different case
+    // entirely — exactly the "absorbed into some other case's deviation text" failure the comment above
+    // rules out for the count, but not, on its own, for the pairing.
     for (const apiCase of cases) {
       const recorded = server.recorded.get(apiCase.id);
       const deviations = recorded === undefined
