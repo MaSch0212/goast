@@ -51,6 +51,19 @@ describe('startRefServer', () => {
     }
   });
 
+  it('attributes each recorded request to the correct case id within a shared queue', async () => {
+    const server = await startRefServer([petCase('getPet/first', 200), petCase('getPet/second', 200)]);
+    try {
+      await drainStatus(fetch(`${server.baseUrl}/pets/x`, { headers: { 'x-request': 'first' } }));
+      await drainStatus(fetch(`${server.baseUrl}/pets/x`, { headers: { 'x-request': 'second' } }));
+
+      expect(server.recorded.get('getPet/first')!.headers['x-request']).toBe('first');
+      expect(server.recorded.get('getPet/second')!.headers['x-request']).toBe('second');
+    } finally {
+      await server.close();
+    }
+  });
+
   it('routes by path template, so two endpoints do not share a queue', async () => {
     const other: ApiCase = { ...petCase('listPets/ok', 200), pathTemplate: '/pets', expectRequest: { path: '/pets' } };
     const server = await startRefServer([petCase('getPet/ok', 200), other]);
