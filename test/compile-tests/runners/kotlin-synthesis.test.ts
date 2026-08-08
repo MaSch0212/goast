@@ -2,7 +2,13 @@ import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
 import type { CompileUnit } from '@goast/test-harness';
-import { gradleProperties, resolveGradleWorkMode, scanTaskLines, synthesizeGradleBuild } from './kotlin.ts';
+import {
+  gradleProjectId,
+  gradleProperties,
+  resolveGradleWorkMode,
+  scanTaskLines,
+  synthesizeGradleBuild,
+} from './kotlin.ts';
 
 const unit = (profile: string, versionDir: 'v3' | 'v3.1', spec: string): CompileUnit => ({
   language: 'kotlin',
@@ -14,15 +20,45 @@ const unit = (profile: string, versionDir: 'v3' | 'v3.1', spec: string): Compile
 });
 
 describe('synthesizeGradleBuild', () => {
-  it('names subprojects numerically, so an @ in a profile or a dot in a version is never a project name', () => {
-    const { settings, projectIds } = synthesizeGradleBuild(
-      [unit('models@sb3', 'v3.1', 'webhooks')],
-      '/output',
-    );
+  it('keeps an @ in a profile and a dot in a version out of the project name', () => {
+    const target = unit('models@sb3', 'v3.1', 'webhooks');
+    const { settings, projectIds } = synthesizeGradleBuild([target], '/output');
 
-    expect(settings).toContain('include("u0001")');
+    expect(settings).toContain(`include("${gradleProjectId(target)}")`);
     expect(settings).not.toContain('@');
-    expect(projectIds.get('kotlin/models@sb3/v3.1/webhooks')).toBe('u0001');
+    expect(projectIds.get('kotlin/models@sb3/v3.1/webhooks')).toMatch(/^u[0-9a-f]{12}$/);
+  });
+
+  // The property the persistent work dir depends on. With the old index-derived names, inserting one
+  // spec renamed every later subproject, changed each one's srcDir, and forced a recompile of nearly
+  // the whole corpus — in precisely the case caching exists to make fast.
+  it('gives a unit the same project name however many units precede it', () => {
+    const target = unit('okhttp3-clients@sb4', 'v3', 'pets');
+    const others = Array.from({ length: 7 }, (_, i) => unit('models@sb3', 'v3', `earlier${i}`));
+
+    const alone = synthesizeGradleBuild([target], '/output').projectIds.get(target.id);
+    const preceded = synthesizeGradleBuild([...others, target], '/output').projectIds.get(target.id);
+
+    expect(preceded).toBe(alone);
+  });
+
+  it('gives two different units different project names', () => {
+    const units = [unit('models@sb3', 'v3', 'a'), unit('models@sb3', 'v3', 'b'), unit('models@sb4', 'v3', 'a')];
+    const { projectIds } = synthesizeGradleBuild(units, '/output');
+
+    expect(new Set(projectIds.values()).size).toBe(units.length);
+  });
+
+  // A host-derived name would differ per machine, so nothing could be shared and the build script would
+  // carry someone's checkout path. `treeDir` is absolute; the id is not.
+  it('derives the name from the relative unit id, not the absolute tree path', () => {
+    const here = { ...unit('models@sb3', 'v3', 'a'), treeDir: 'C:/checkout-a/test/output/kotlin/models@sb3/v3/a' };
+    const there = {
+      ...unit('models@sb3', 'v3', 'a'),
+      treeDir: '/home/someone/goast/test/output/kotlin/models@sb3/v3/a',
+    };
+
+    expect(gradleProjectId(here)).toBe(gradleProjectId(there));
   });
 
   // Without this, reuse across runs is unsound in exactly one way: a JDK bump changes what the
@@ -86,11 +122,12 @@ describe('synthesizeGradleBuild', () => {
     }
   });
 
-  it('numbers subprojects in unit order and pads so names sort lexicographically', () => {
+  it('returns a project id for every unit it was given', () => {
     const units = Array.from({ length: 11 }, (_, i) => unit('models@sb3', 'v3', `s${i}`));
-    const { projectIds } = synthesizeGradleBuild(units, '/output');
-    expect(projectIds.get('kotlin/models@sb3/v3/s0')).toBe('u0001');
-    expect(projectIds.get('kotlin/models@sb3/v3/s10')).toBe('u0011');
+    const { projectIds, settings } = synthesizeGradleBuild(units, '/output');
+
+    expect(projectIds.size).toBe(units.length);
+    for (const u of units) expect(settings).toContain(`include("${projectIds.get(u.id)}")`);
   });
 });
 

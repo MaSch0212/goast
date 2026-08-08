@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 
 import {
@@ -55,6 +56,32 @@ export function gradleProperties(mode: GradleWorkMode): string {
   }
 
   return lines.join('\n') + '\n';
+}
+
+/**
+ * The Gradle subproject name for one compile unit: `u` plus 12 hex characters of SHA-1.
+ *
+ * Derived from {@link CompileUnit.id} — `kotlin/<profile>/<versionDir>/<spec>` — and deliberately not
+ * from `treeDir`, which is an absolute *host* path: hashing that would give every machine different
+ * project names, so a cache directory would be worthless the moment it moved between machines, and the
+ * ids would leak someone's checkout location into the build script.
+ *
+ * Two properties matter, and they are why this is a hash rather than a counter:
+ *
+ *   * **Stable under insertion.** The names used to be `u0001`…`uNNNN` from the array index, so adding
+ *     one spec shifted every later unit onto a different subproject, handing each a different `srcDir`
+ *     and forcing a recompile of essentially the whole corpus — exactly the case the persistent work
+ *     dir exists to make fast. A unit's name now depends only on that unit.
+ *   * **Legal as a Gradle project name.** A profile carries `@` (`models@sb3`) and a version dir a dot
+ *     (`v3.1`), neither of which is safe here; hex is.
+ *
+ * Nothing reads these names back as data — diagnostics are attributed by file path, and
+ * {@link runKotlin} keeps a projectId -> unitId map purely so a failure can name the unit rather than
+ * the internal id. Truncating to 48 bits is safe at this corpus size, and
+ * {@link synthesizeGradleBuild} throws on a collision rather than letting two units share a subproject.
+ */
+export function gradleProjectId(unit: CompileUnit): string {
+  return `u${createHash('sha1').update(unit.id).digest('hex').slice(0, 12)}`;
 }
 
 /**
@@ -243,7 +270,7 @@ const BOM: Record<'sb3' | 'sb4', string> = {
  * it: `UP-TO-DATE`, `FROM-CACHE` and `SKIPPED` were previously fed into neither the `NO-SOURCE` nor the
  * `FAILED` set and so recorded as "ran and clean" — see {@link NOT_EXECUTED_SUFFIXES}.
  */
-const TASK_LINE = /^> Task :(u\d+):compileKotlin(.*)$/;
+const TASK_LINE = /^> Task :([^:\s]+):compileKotlin(.*)$/;
 
 /**
  * Suffixes meaning "Gradle reused a prior successful result for this task".
@@ -342,11 +369,12 @@ export function scanTaskLines(output: string): TaskStates {
 /**
  * Generates the settings and root build script for a one-subproject-per-unit Gradle build.
  *
- * Subprojects are `u0001`…`uNNNN` because a Gradle project name cannot safely carry the `@` in
- * `models@sb3` or the dot in `v3.1`. Nothing reads the names back: diagnostics are attributed by file
- * path, so the numbering stays an internal detail.
+ * Subprojects are named by {@link gradleProjectId} — a hash of the unit id, not its array position —
+ * so that adding or removing a spec leaves every other unit's subproject untouched and the persistent
+ * work dir stays warm. See that function for why the name is a hash and why it hashes the id rather
+ * than the tree path.
  *
- * Each subproject is configured from the root script by explicit path — `project(":u0001") { ... }` —
+ * Each subproject is configured from the root script by explicit path — `project(":u1f3c…") { ... }` —
  * rather than a single `subprojects { ... }` block, because different profile families need different
  * dependency sets. Verified directly in the Step 4 spike: configuring named subprojects this way from
  * the root script, with the Kotlin plugin applied via `apply(plugin = ...)` inside each block (the root
@@ -362,8 +390,22 @@ export function synthesizeGradleBuild(
   const includes: string[] = [];
   const blocks: string[] = [];
 
-  units.forEach((unit, index) => {
-    const projectId = `u${String(index + 1).padStart(4, '0')}`;
+  const unitIdByProjectId = new Map<string, string>();
+
+  units.forEach((unit) => {
+    const projectId = gradleProjectId(unit);
+    // Two units sharing a subproject would silently compile one tree twice and never read the other,
+    // reporting the unread one as clean. 48 bits over a corpus this size makes it vanishingly unlikely,
+    // but "unlikely" and "checked" are different things, and the failure would be invisible.
+    const collidesWith = unitIdByProjectId.get(projectId);
+    if (collidesWith !== undefined) {
+      throw new Error(
+        `Gradle project id ${projectId} is shared by "${collidesWith}" and "${unit.id}". Widen the ` +
+          'slice in gradleProjectId; do not deduplicate, both units need their own subproject.',
+      );
+    }
+    unitIdByProjectId.set(projectId, unit.id);
+
     projectIds.set(unit.id, projectId);
     includes.push(`include("${projectId}")`);
 
