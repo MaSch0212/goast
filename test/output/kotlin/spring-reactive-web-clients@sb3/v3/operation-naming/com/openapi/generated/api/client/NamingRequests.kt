@@ -16,7 +16,7 @@ object NamingRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.getItems(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.getItems(responseHandler: suspend (ClientResponse) -> T): T {
         return this.getItemsRequest().awaitExchange(responseHandler)
     }
 
@@ -37,7 +37,7 @@ object NamingRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.postItems(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.postItems(responseHandler: suspend (ClientResponse) -> T): T {
         return this.postItemsRequest().awaitExchange(responseHandler)
     }
 
@@ -58,7 +58,7 @@ object NamingRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.optionsItems(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.optionsItems(responseHandler: suspend (ClientResponse) -> T): T {
         return this.optionsItemsRequest().awaitExchange(responseHandler)
     }
 
@@ -79,7 +79,7 @@ object NamingRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.headItems(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.headItems(responseHandler: suspend (ClientResponse) -> T): T {
         return this.headItemsRequest().awaitExchange(responseHandler)
     }
 
@@ -100,7 +100,7 @@ object NamingRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.getItemsId(id: String, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.getItemsId(id: String, responseHandler: suspend (ClientResponse) -> T): T {
         return this.getItemsIdRequest(id).awaitExchange(responseHandler)
     }
 
@@ -121,7 +121,7 @@ object NamingRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.putItemsId(id: String, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.putItemsId(id: String, responseHandler: suspend (ClientResponse) -> T): T {
         return this.putItemsIdRequest(id).awaitExchange(responseHandler)
     }
 
@@ -142,7 +142,7 @@ object NamingRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.deleteItemsId(id: String, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.deleteItemsId(id: String, responseHandler: suspend (ClientResponse) -> T): T {
         return this.deleteItemsIdRequest(id).awaitExchange(responseHandler)
     }
 
@@ -163,7 +163,7 @@ object NamingRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.patchItemsId(id: String, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.patchItemsId(id: String, responseHandler: suspend (ClientResponse) -> T): T {
         return this.patchItemsIdRequest(id).awaitExchange(responseHandler)
     }
 
@@ -184,7 +184,7 @@ object NamingRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.getItemsIdSubItemsSubId(
+    suspend fun <T : Any> WebClient.getItemsIdSubItemsSubId(
         id: String,
         subId: String,
         responseHandler: suspend (ClientResponse) -> T
@@ -209,7 +209,7 @@ object NamingRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.get(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.get(responseHandler: suspend (ClientResponse) -> T): T {
         return this.getRequest().awaitExchange(responseHandler)
     }
 
@@ -230,7 +230,7 @@ object NamingRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.getABCDE(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.getABCDE(responseHandler: suspend (ClientResponse) -> T): T {
         return this.getAbcdeRequest().awaitExchange(responseHandler)
     }
 
@@ -251,7 +251,7 @@ object NamingRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.getWithSummary(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.getWithSummary(responseHandler: suspend (ClientResponse) -> T): T {
         return this.getWithSummaryRequest().awaitExchange(responseHandler)
     }
 

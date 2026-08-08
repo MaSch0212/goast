@@ -16,7 +16,7 @@ object Service1Requests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.inheritsSecurity(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.inheritsSecurity(responseHandler: suspend (ClientResponse) -> T): T {
         return this.inheritsSecurityRequest().awaitExchange(responseHandler)
     }
 
@@ -37,7 +37,7 @@ object Service1Requests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.overridesSecurity(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.overridesSecurity(responseHandler: suspend (ClientResponse) -> T): T {
         return this.overridesSecurityRequest().awaitExchange(responseHandler)
     }
 
@@ -58,7 +58,7 @@ object Service1Requests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.noSecurity(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.noSecurity(responseHandler: suspend (ClientResponse) -> T): T {
         return this.noSecurityRequest().awaitExchange(responseHandler)
     }
 
@@ -79,7 +79,7 @@ object Service1Requests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.multiSecurity(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.multiSecurity(responseHandler: suspend (ClientResponse) -> T): T {
         return this.multiSecurityRequest().awaitExchange(responseHandler)
     }
 
@@ -100,7 +100,7 @@ object Service1Requests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.andSecurity(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.andSecurity(responseHandler: suspend (ClientResponse) -> T): T {
         return this.andSecurityRequest().awaitExchange(responseHandler)
     }
 
@@ -121,7 +121,7 @@ object Service1Requests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.scopedSecurity(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.scopedSecurity(responseHandler: suspend (ClientResponse) -> T): T {
         return this.scopedSecurityRequest().awaitExchange(responseHandler)
     }
 

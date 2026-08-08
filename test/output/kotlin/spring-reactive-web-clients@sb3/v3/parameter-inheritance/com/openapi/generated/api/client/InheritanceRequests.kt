@@ -16,7 +16,7 @@ object InheritanceRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.inheritsParams(
+    suspend fun <T : Any> WebClient.inheritsParams(
         id: String,
         common: String? = null,
         responseHandler: suspend (ClientResponse) -> T
@@ -48,7 +48,7 @@ object InheritanceRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.inheritsAndAdds(
+    suspend fun <T : Any> WebClient.inheritsAndAdds(
         id: String,
         common: String? = null,
         extra: String? = null,
@@ -86,7 +86,7 @@ object InheritanceRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.overridesParam(
+    suspend fun <T : Any> WebClient.overridesParam(
         id: String,
         common: Int? = null,
         responseHandler: suspend (ClientResponse) -> T
@@ -114,7 +114,7 @@ object InheritanceRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.refParam(
+    suspend fun <T : Any> WebClient.refParam(
         id: String,
         page: Int? = 1,
         responseHandler: suspend (ClientResponse) -> T

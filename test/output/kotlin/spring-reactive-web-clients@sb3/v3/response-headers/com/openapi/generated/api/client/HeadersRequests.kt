@@ -19,7 +19,7 @@ object HeadersRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.singleHeader(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.singleHeader(responseHandler: suspend (ClientResponse) -> T): T {
         return this.singleHeaderRequest().awaitExchange(responseHandler)
     }
 
@@ -40,7 +40,7 @@ object HeadersRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.multipleHeaders(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.multipleHeaders(responseHandler: suspend (ClientResponse) -> T): T {
         return this.multipleHeadersRequest().awaitExchange(responseHandler)
     }
 
@@ -61,7 +61,7 @@ object HeadersRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.requiredHeader(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.requiredHeader(responseHandler: suspend (ClientResponse) -> T): T {
         return this.requiredHeaderRequest().awaitExchange(responseHandler)
     }
 
@@ -82,7 +82,7 @@ object HeadersRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.deprecatedHeader(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.deprecatedHeader(responseHandler: suspend (ClientResponse) -> T): T {
         return this.deprecatedHeaderRequest().awaitExchange(responseHandler)
     }
 
@@ -103,7 +103,7 @@ object HeadersRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.refHeader(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.refHeader(responseHandler: suspend (ClientResponse) -> T): T {
         return this.refHeaderRequest().awaitExchange(responseHandler)
     }
 
@@ -124,7 +124,7 @@ object HeadersRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.headersOnNoContent(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.headersOnNoContent(responseHandler: suspend (ClientResponse) -> T): T {
         return this.headersOnNoContentRequest().awaitExchange(responseHandler)
     }
 
@@ -145,7 +145,7 @@ object HeadersRequests {
             .awaitBody<Thing>()
     }
 
-    suspend fun <T> WebClient.headersAndBody(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.headersAndBody(responseHandler: suspend (ClientResponse) -> T): T {
         return this.headersAndBodyRequest().awaitExchange(responseHandler)
     }
 

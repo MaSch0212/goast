@@ -19,7 +19,7 @@ object Service1Requests {
             .awaitBody<Owner>()
     }
 
-    suspend fun <T> WebClient.getOwner(id: String, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.getOwner(id: String, responseHandler: suspend (ClientResponse) -> T): T {
         return this.getOwnerRequest(id).awaitExchange(responseHandler)
     }
 
@@ -42,7 +42,7 @@ object Service1Requests {
             .awaitBody<List<Pet>>()
     }
 
-    suspend fun <T> WebClient.listPets(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.listPets(responseHandler: suspend (ClientResponse) -> T): T {
         return this.listPetsRequest().awaitExchange(responseHandler)
     }
 
@@ -65,7 +65,7 @@ object Service1Requests {
             .awaitBody<Pet>()
     }
 
-    suspend fun <T> WebClient.createPet(pet: Pet, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.createPet(pet: Pet, responseHandler: suspend (ClientResponse) -> T): T {
         return this.createPetRequest(pet).awaitExchange(responseHandler)
     }
 

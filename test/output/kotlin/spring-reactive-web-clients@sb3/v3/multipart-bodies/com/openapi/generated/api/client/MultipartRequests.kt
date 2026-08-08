@@ -22,7 +22,7 @@ object MultipartRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.singleFile(file: ApiRequestFile, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.singleFile(file: ApiRequestFile, responseHandler: suspend (ClientResponse) -> T): T {
         return this.singleFileRequest(file).awaitExchange(responseHandler)
     }
 
@@ -50,7 +50,7 @@ object MultipartRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.multipleFiles(files: List<String>? = null, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.multipleFiles(files: List<String>? = null, responseHandler: suspend (ClientResponse) -> T): T {
         return this.multipleFilesRequest(files).awaitExchange(responseHandler)
     }
 
@@ -88,7 +88,7 @@ object MultipartRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.fileAndFields(
+    suspend fun <T : Any> WebClient.fileAndFields(
         file: ApiRequestFile = null,
         label: String? = null,
         quantity: Int? = null,
@@ -135,7 +135,7 @@ object MultipartRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.nestedObjectPart(metadata: NestedObjectPartRequest? = null, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.nestedObjectPart(metadata: NestedObjectPartRequest? = null, responseHandler: suspend (ClientResponse) -> T): T {
         return this.nestedObjectPartRequest(metadata).awaitExchange(responseHandler)
     }
 
@@ -163,7 +163,7 @@ object MultipartRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.refPart(payload: Payload? = null, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.refPart(payload: Payload? = null, responseHandler: suspend (ClientResponse) -> T): T {
         return this.refPartRequest(payload).awaitExchange(responseHandler)
     }
 
@@ -201,7 +201,7 @@ object MultipartRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.withEncoding(
+    suspend fun <T : Any> WebClient.withEncoding(
         file: ApiRequestFile = null,
         label: String? = null,
         quantity: Int? = null,
@@ -248,7 +248,7 @@ object MultipartRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.optionalFile(file: ApiRequestFile = null, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.optionalFile(file: ApiRequestFile = null, responseHandler: suspend (ClientResponse) -> T): T {
         return this.optionalFileRequest(file).awaitExchange(responseHandler)
     }
 

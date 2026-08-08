@@ -20,7 +20,7 @@ object ParamsRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.allLocations(
+    suspend fun <T : Any> WebClient.allLocations(
         pathParam: String,
         queryParam: String? = null,
         xHeaderParam: String? = null,
@@ -61,7 +61,7 @@ object ParamsRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.styleMatrix(
+    suspend fun <T : Any> WebClient.styleMatrix(
         formExploded: List<String>? = null,
         formUnexploded: List<String>? = null,
         spaceDelimited: List<String>? = null,
@@ -100,7 +100,7 @@ object ParamsRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.pathStyleSimple(values: List<String>, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.pathStyleSimple(values: List<String>, responseHandler: suspend (ClientResponse) -> T): T {
         return this.pathStyleSimpleRequest(values).awaitExchange(responseHandler)
     }
 
@@ -121,7 +121,7 @@ object ParamsRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.getEncoded(
+    suspend fun <T : Any> WebClient.getEncoded(
         value: String,
         raw: String? = null,
         responseHandler: suspend (ClientResponse) -> T

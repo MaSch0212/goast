@@ -18,7 +18,7 @@ object StylesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.formArray(tags: List<String>? = null, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.formArray(tags: List<String>? = null, responseHandler: suspend (ClientResponse) -> T): T {
         return this.formArrayRequest(tags).awaitExchange(responseHandler)
     }
 
@@ -42,7 +42,7 @@ object StylesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.formArrayNoExplode(tags: List<String>? = null, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.formArrayNoExplode(tags: List<String>? = null, responseHandler: suspend (ClientResponse) -> T): T {
         return this.formArrayNoExplodeRequest(tags).awaitExchange(responseHandler)
     }
 
@@ -66,7 +66,7 @@ object StylesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.formObject(coordinates: Schema5? = null, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.formObject(coordinates: Schema5? = null, responseHandler: suspend (ClientResponse) -> T): T {
         return this.formObjectRequest(coordinates).awaitExchange(responseHandler)
     }
 
@@ -90,7 +90,7 @@ object StylesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.spaceDelimited(tags: List<String>? = null, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.spaceDelimited(tags: List<String>? = null, responseHandler: suspend (ClientResponse) -> T): T {
         return this.spaceDelimitedRequest(tags).awaitExchange(responseHandler)
     }
 
@@ -114,7 +114,7 @@ object StylesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.pipeDelimited(tags: List<String>? = null, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.pipeDelimited(tags: List<String>? = null, responseHandler: suspend (ClientResponse) -> T): T {
         return this.pipeDelimitedRequest(tags).awaitExchange(responseHandler)
     }
 
@@ -138,7 +138,7 @@ object StylesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.deepObject(filter: Schema12? = null, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.deepObject(filter: Schema12? = null, responseHandler: suspend (ClientResponse) -> T): T {
         return this.deepObjectRequest(filter).awaitExchange(responseHandler)
     }
 
@@ -162,7 +162,7 @@ object StylesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.simplePath(values: List<String>, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.simplePath(values: List<String>, responseHandler: suspend (ClientResponse) -> T): T {
         return this.simplePathRequest(values).awaitExchange(responseHandler)
     }
 
@@ -183,7 +183,7 @@ object StylesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.labelPath(values: List<String>, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.labelPath(values: List<String>, responseHandler: suspend (ClientResponse) -> T): T {
         return this.labelPathRequest(values).awaitExchange(responseHandler)
     }
 
@@ -204,7 +204,7 @@ object StylesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.matrixPath(values: List<String>, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.matrixPath(values: List<String>, responseHandler: suspend (ClientResponse) -> T): T {
         return this.matrixPathRequest(values).awaitExchange(responseHandler)
     }
 
@@ -225,7 +225,7 @@ object StylesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.simpleHeader(xTags: List<String>? = null, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.simpleHeader(xTags: List<String>? = null, responseHandler: suspend (ClientResponse) -> T): T {
         return this.simpleHeaderRequest(xTags).awaitExchange(responseHandler)
     }
 

@@ -18,7 +18,7 @@ object BlobsRequests {
             .awaitBody<BlobRef>()
     }
 
-    suspend fun <T> WebClient.uploadBlob(string: String, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.uploadBlob(string: String, responseHandler: suspend (ClientResponse) -> T): T {
         return this.uploadBlobRequest(string).awaitExchange(responseHandler)
     }
 

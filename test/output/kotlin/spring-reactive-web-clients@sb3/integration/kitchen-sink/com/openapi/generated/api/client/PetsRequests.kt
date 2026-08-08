@@ -23,7 +23,7 @@ object PetsRequests {
             .awaitBody<Pet>()
     }
 
-    suspend fun <T> WebClient.getPet(id: String, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.getPet(id: String, responseHandler: suspend (ClientResponse) -> T): T {
         return this.getPetRequest(id).awaitExchange(responseHandler)
     }
 
@@ -46,7 +46,7 @@ object PetsRequests {
             .awaitBody<Pet>()
     }
 
-    suspend fun <T> WebClient.updatePet(
+    suspend fun <T : Any> WebClient.updatePet(
         id: String,
         petUpdate: PetUpdate,
         responseHandler: suspend (ClientResponse) -> T
@@ -75,7 +75,7 @@ object PetsRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.deletePet(id: String, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.deletePet(id: String, responseHandler: suspend (ClientResponse) -> T): T {
         return this.deletePetRequest(id).awaitExchange(responseHandler)
     }
 
@@ -96,7 +96,7 @@ object PetsRequests {
             .awaitBody<Pet>()
     }
 
-    suspend fun <T> WebClient.createPet(pet: Pet, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.createPet(pet: Pet, responseHandler: suspend (ClientResponse) -> T): T {
         return this.createPetRequest(pet).awaitExchange(responseHandler)
     }
 
@@ -125,7 +125,7 @@ object PetsRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.uploadPetPhoto(
+    suspend fun <T : Any> WebClient.uploadPetPhoto(
         id: String,
         file: ApiRequestFile,
         caption: String? = null,
@@ -163,7 +163,7 @@ object PetsRequests {
             .awaitBody<Pet>()
     }
 
-    suspend fun <T> WebClient.addPetNote(
+    suspend fun <T : Any> WebClient.addPetNote(
         id: String,
         string: String,
         responseHandler: suspend (ClientResponse) -> T

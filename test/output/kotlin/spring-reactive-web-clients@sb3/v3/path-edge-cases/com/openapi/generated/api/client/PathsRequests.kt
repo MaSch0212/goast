@@ -16,7 +16,7 @@ object PathsRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.overlapTemplated(id: String, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.overlapTemplated(id: String, responseHandler: suspend (ClientResponse) -> T): T {
         return this.overlapTemplatedRequest(id).awaitExchange(responseHandler)
     }
 
@@ -37,7 +37,7 @@ object PathsRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.overlapLiteral(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.overlapLiteral(responseHandler: suspend (ClientResponse) -> T): T {
         return this.overlapLiteralRequest().awaitExchange(responseHandler)
     }
 
@@ -58,7 +58,7 @@ object PathsRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.withDot(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.withDot(responseHandler: suspend (ClientResponse) -> T): T {
         return this.withDotRequest().awaitExchange(responseHandler)
     }
 
@@ -79,7 +79,7 @@ object PathsRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.withDash(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.withDash(responseHandler: suspend (ClientResponse) -> T): T {
         return this.withDashRequest().awaitExchange(responseHandler)
     }
 
@@ -100,7 +100,7 @@ object PathsRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.withUnderscore(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.withUnderscore(responseHandler: suspend (ClientResponse) -> T): T {
         return this.withUnderscoreRequest().awaitExchange(responseHandler)
     }
 
@@ -121,7 +121,7 @@ object PathsRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.withTilde(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.withTilde(responseHandler: suspend (ClientResponse) -> T): T {
         return this.withTildeRequest().awaitExchange(responseHandler)
     }
 
@@ -142,7 +142,7 @@ object PathsRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.withColon(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.withColon(responseHandler: suspend (ClientResponse) -> T): T {
         return this.withColonRequest().awaitExchange(responseHandler)
     }
 
@@ -163,7 +163,7 @@ object PathsRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.withAt(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.withAt(responseHandler: suspend (ClientResponse) -> T): T {
         return this.withAtRequest().awaitExchange(responseHandler)
     }
 
@@ -184,7 +184,7 @@ object PathsRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.trailingSlash(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.trailingSlash(responseHandler: suspend (ClientResponse) -> T): T {
         return this.trailingSlashRequest().awaitExchange(responseHandler)
     }
 
@@ -205,7 +205,7 @@ object PathsRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.paramOnlyPath(id: String, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.paramOnlyPath(id: String, responseHandler: suspend (ClientResponse) -> T): T {
         return this.paramOnlyPathRequest(id).awaitExchange(responseHandler)
     }
 
@@ -230,7 +230,7 @@ object PathsRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.threeParams(
+    suspend fun <T : Any> WebClient.threeParams(
         p1: String,
         p2: String,
         p3: String,
@@ -264,7 +264,7 @@ object PathsRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.caseVariety(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.caseVariety(responseHandler: suspend (ClientResponse) -> T): T {
         return this.caseVarietyRequest().awaitExchange(responseHandler)
     }
 
@@ -285,7 +285,7 @@ object PathsRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.veryDeepPath(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.veryDeepPath(responseHandler: suspend (ClientResponse) -> T): T {
         return this.veryDeepPathRequest().awaitExchange(responseHandler)
     }
 

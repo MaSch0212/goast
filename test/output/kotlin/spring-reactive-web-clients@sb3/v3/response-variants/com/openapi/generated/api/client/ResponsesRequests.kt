@@ -20,7 +20,7 @@ object ResponsesRequests {
             .awaitBody<Thing>()
     }
 
-    suspend fun <T> WebClient.twoSuccessCodes(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.twoSuccessCodes(responseHandler: suspend (ClientResponse) -> T): T {
         return this.twoSuccessCodesRequest().awaitExchange(responseHandler)
     }
 
@@ -43,7 +43,7 @@ object ResponsesRequests {
             .awaitBody<Thing>()
     }
 
-    suspend fun <T> WebClient.successAndDefault(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.successAndDefault(responseHandler: suspend (ClientResponse) -> T): T {
         return this.successAndDefaultRequest().awaitExchange(responseHandler)
     }
 
@@ -66,7 +66,7 @@ object ResponsesRequests {
             .awaitBody<Error>()
     }
 
-    suspend fun <T> WebClient.onlyDefault(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.onlyDefault(responseHandler: suspend (ClientResponse) -> T): T {
         return this.onlyDefaultRequest().awaitExchange(responseHandler)
     }
 
@@ -89,7 +89,7 @@ object ResponsesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.noContent(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.noContent(responseHandler: suspend (ClientResponse) -> T): T {
         return this.noContentRequest().awaitExchange(responseHandler)
     }
 
@@ -110,7 +110,7 @@ object ResponsesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.emptyBody200(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.emptyBody200(responseHandler: suspend (ClientResponse) -> T): T {
         return this.emptyBody200Request().awaitExchange(responseHandler)
     }
 
@@ -131,7 +131,7 @@ object ResponsesRequests {
             .awaitBody<Thing>()
     }
 
-    suspend fun <T> WebClient.rangeCodes(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.rangeCodes(responseHandler: suspend (ClientResponse) -> T): T {
         return this.rangeCodesRequest().awaitExchange(responseHandler)
     }
 
@@ -154,7 +154,7 @@ object ResponsesRequests {
             .awaitBody<Thing>()
     }
 
-    suspend fun <T> WebClient.mixedExactAndRange(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.mixedExactAndRange(responseHandler: suspend (ClientResponse) -> T): T {
         return this.mixedExactAndRangeRequest().awaitExchange(responseHandler)
     }
 
@@ -177,7 +177,7 @@ object ResponsesRequests {
             .awaitBody<Thing>()
     }
 
-    suspend fun <T> WebClient.errorCodes(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.errorCodes(responseHandler: suspend (ClientResponse) -> T): T {
         return this.errorCodesRequest().awaitExchange(responseHandler)
     }
 
@@ -200,7 +200,7 @@ object ResponsesRequests {
             .awaitBody<Thing>()
     }
 
-    suspend fun <T> WebClient.multiContentResponse(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.multiContentResponse(responseHandler: suspend (ClientResponse) -> T): T {
         return this.multiContentResponseRequest().awaitExchange(responseHandler)
     }
 
@@ -223,7 +223,7 @@ object ResponsesRequests {
             .awaitBody<String>()
     }
 
-    suspend fun <T> WebClient.primitiveResponse(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.primitiveResponse(responseHandler: suspend (ClientResponse) -> T): T {
         return this.primitiveResponseRequest().awaitExchange(responseHandler)
     }
 
@@ -246,7 +246,7 @@ object ResponsesRequests {
             .awaitBody<List<Thing>>()
     }
 
-    suspend fun <T> WebClient.arrayResponse(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.arrayResponse(responseHandler: suspend (ClientResponse) -> T): T {
         return this.arrayResponseRequest().awaitExchange(responseHandler)
     }
 
@@ -269,7 +269,7 @@ object ResponsesRequests {
             .awaitBody<Thing>()
     }
 
-    suspend fun <T> WebClient.refResponse(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.refResponse(responseHandler: suspend (ClientResponse) -> T): T {
         return this.refResponseRequest().awaitExchange(responseHandler)
     }
 

@@ -18,7 +18,7 @@ object WidgetsRequests {
             .awaitBody<Widget>()
     }
 
-    suspend fun <T> WebClient.getWidget(id: String, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.getWidget(id: String, responseHandler: suspend (ClientResponse) -> T): T {
         return this.getWidgetRequest(id).awaitExchange(responseHandler)
     }
 

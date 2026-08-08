@@ -161,10 +161,9 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
       doc: kt.doc(this.getEndpointDocDescription(ctx, { endpoint })),
       annotations: this.getEndpointDeprecatedAnnotations(ctx, { endpoint }),
       suspend: true,
-      // Spring 7's `WebClient.awaitExchange` is `<V : Any>`, so the `<T>` overloads need an `Any` bound to infer.
-      generics: [
-        kt.genericParameter('T', ctx.config.springBootVersion === 4 ? { constraint: kt.refs.any() } : undefined),
-      ],
+      // `WebClient.awaitExchange` is `<V : Any>` on both Spring lines, so the `<T>` overload needs the bound
+      // unconditionally. Defect 28 scoped it to Spring Boot 4, leaving every Boot 3 unit uncompilable.
+      generics: [kt.genericParameter('T', { constraint: kt.refs.any() })],
       receiverType: kt.refs.springReactive.webClient(),
       parameters: [
         ...parameters.map((parameter) =>

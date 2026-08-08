@@ -16,7 +16,7 @@ object TagWithSpaceRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.tagWithSpace(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.tagWithSpace(responseHandler: suspend (ClientResponse) -> T): T {
         return this.tagWithSpaceRequest().awaitExchange(responseHandler)
     }
 

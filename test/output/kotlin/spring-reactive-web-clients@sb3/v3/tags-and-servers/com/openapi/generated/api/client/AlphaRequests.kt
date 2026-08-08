@@ -16,7 +16,7 @@ object AlphaRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.oneTag(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.oneTag(responseHandler: suspend (ClientResponse) -> T): T {
         return this.oneTagRequest().awaitExchange(responseHandler)
     }
 
@@ -37,7 +37,7 @@ object AlphaRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.twoTags(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.twoTags(responseHandler: suspend (ClientResponse) -> T): T {
         return this.twoTagsRequest().awaitExchange(responseHandler)
     }
 
@@ -58,7 +58,7 @@ object AlphaRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.sharedTag(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.sharedTag(responseHandler: suspend (ClientResponse) -> T): T {
         return this.sharedTagRequest().awaitExchange(responseHandler)
     }
 

@@ -11,8 +11,8 @@ import { defaultKotlinSpringReactiveWebClientsGeneratorConfig } from './models.t
 
 const config = { ...defaultOpenApiGeneratorConfig, ...defaultKotlinSpringReactiveWebClientsGeneratorConfig };
 
-function createContext(): KotlinSpringReactiveWebClientGeneratorContext {
-  return { config } as unknown as KotlinSpringReactiveWebClientGeneratorContext;
+function createContext(springBootVersion: 3 | 4 = 3): KotlinSpringReactiveWebClientGeneratorContext {
+  return { config: { ...config, springBootVersion } } as unknown as KotlinSpringReactiveWebClientGeneratorContext;
 }
 
 function createEndpoint(deprecated: boolean, description?: string): ApiEndpoint {
@@ -32,8 +32,26 @@ function createEndpoint(deprecated: boolean, description?: string): ApiEndpoint 
 }
 
 class TestGenerator extends DefaultKotlinSpringReactiveWebClientGenerator {
-  public members(endpoint: ApiEndpoint): kt.Function<KotlinFileBuilder>[] {
-    return this.getEndpointMembers(createContext(), { endpoint, parameters: [] }) as kt.Function<KotlinFileBuilder>[];
+  public members(endpoint: ApiEndpoint, springBootVersion: 3 | 4 = 3): kt.Function<KotlinFileBuilder>[] {
+    return this.getEndpointMembers(createContext(springBootVersion), {
+      endpoint,
+      parameters: [],
+    }) as kt.Function<KotlinFileBuilder>[];
+  }
+
+  /** The rendered generic parameters of every handler overload, e.g. `['T : Any']`. */
+  public handlerGenerics(springBootVersion: 3 | 4): string[] {
+    return this.members(createEndpoint(false), springBootVersion)
+      .filter((fn) => fn.generics.length > 0)
+      .flatMap((fn) =>
+        fn.generics.map((g) =>
+          SourceBuilder.build(
+            (b) => (g as kt.GenericParameter<KotlinFileBuilder>).write(b as KotlinFileBuilder),
+            config,
+          )
+            .trim()
+        )
+      );
   }
 }
 
@@ -67,6 +85,25 @@ describe('DefaultKotlinSpringReactiveWebClientGenerator', () => {
       for (const member of members) {
         expect(annotationsOf(member)).toEqual([]);
       }
+    });
+  });
+
+  // Spring's `awaitExchange` is `<V : Any>` on BOTH Boot lines, so the `<T>` handler overload needs the
+  // bound on both. Defect 28 gave it to Boot 4 only, which is the line that did not need it most: `@sb3`
+  // produced 115 diagnostics across 16 units and `@sb4` compiled clean.
+  describe('awaitExchange Any bound', () => {
+    it('bounds T by Any on the Spring Boot 3 line', () => {
+      const generics = new TestGenerator().handlerGenerics(3);
+
+      expect(generics.length).toBeGreaterThan(0);
+      for (const generic of generics) expect(generic).toBe('T : Any');
+    });
+
+    it('bounds T by Any on the Spring Boot 4 line too', () => {
+      const generics = new TestGenerator().handlerGenerics(4);
+
+      expect(generics.length).toBeGreaterThan(0);
+      for (const generic of generics) expect(generic).toBe('T : Any');
     });
   });
 });

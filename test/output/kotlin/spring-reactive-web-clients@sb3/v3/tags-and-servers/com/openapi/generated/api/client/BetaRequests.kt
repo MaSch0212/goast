@@ -16,7 +16,7 @@ object BetaRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.twoTags(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.twoTags(responseHandler: suspend (ClientResponse) -> T): T {
         return this.twoTagsRequest().awaitExchange(responseHandler)
     }
 

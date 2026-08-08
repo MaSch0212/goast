@@ -24,7 +24,7 @@ object DeprecationRequests {
      * This operation is deprecated.
      */
     @Deprecated("")
-    suspend fun <T> WebClient.deprecatedOp(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.deprecatedOp(responseHandler: suspend (ClientResponse) -> T): T {
         return this.deprecatedOpRequest().awaitExchange(responseHandler)
     }
 
@@ -52,7 +52,7 @@ object DeprecationRequests {
     }
 
     @Deprecated("")
-    suspend fun <T> WebClient.deprecatedOpNoDesc(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.deprecatedOpNoDesc(responseHandler: suspend (ClientResponse) -> T): T {
         return this.deprecatedOpNoDescRequest().awaitExchange(responseHandler)
     }
 
@@ -79,7 +79,7 @@ object DeprecationRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.deprecatedParams(
+    suspend fun <T : Any> WebClient.deprecatedParams(
         withDesc: String? = null,
         noDesc: String? = null,
         plain: String? = null,

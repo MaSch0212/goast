@@ -18,7 +18,7 @@ object Service1Requests {
             .awaitBody<List<Thing>>()
     }
 
-    suspend fun <T> WebClient.listThings(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.listThings(responseHandler: suspend (ClientResponse) -> T): T {
         return this.listThingsRequest().awaitExchange(responseHandler)
     }
 

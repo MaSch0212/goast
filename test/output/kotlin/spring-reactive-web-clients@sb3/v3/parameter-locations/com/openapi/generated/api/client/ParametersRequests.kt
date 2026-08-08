@@ -17,7 +17,7 @@ object ParametersRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.twoPathParams(
+    suspend fun <T : Any> WebClient.twoPathParams(
         id: String,
         sub: Int,
         responseHandler: suspend (ClientResponse) -> T
@@ -52,7 +52,7 @@ object ParametersRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.queryParams(
+    suspend fun <T : Any> WebClient.queryParams(
         requiredString: String,
         optionalString: String? = null,
         intWithDefault: Int? = 10,
@@ -105,7 +105,7 @@ object ParametersRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.headerParams(
+    suspend fun <T : Any> WebClient.headerParams(
         xRequestId: String,
         xOptionalHeader: String? = null,
         responseHandler: suspend (ClientResponse) -> T
@@ -135,7 +135,7 @@ object ParametersRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.cookieParams(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.cookieParams(responseHandler: suspend (ClientResponse) -> T): T {
         return this.cookieParamsRequest().awaitExchange(responseHandler)
     }
 
@@ -160,7 +160,7 @@ object ParametersRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.mixedParams(
+    suspend fun <T : Any> WebClient.mixedParams(
         id: String,
         filter: String? = null,
         xTraceId: String? = null,
@@ -207,7 +207,7 @@ object ParametersRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.describedParams(
+    suspend fun <T : Any> WebClient.describedParams(
         withDescription: String? = null,
         withoutDescription: String? = null,
         withExample: String? = null,
@@ -260,7 +260,7 @@ object ParametersRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.allowEmptyValueParam(search: String? = null, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.allowEmptyValueParam(search: String? = null, responseHandler: suspend (ClientResponse) -> T): T {
         return this.allowEmptyValueParamRequest(search).awaitExchange(responseHandler)
     }
 
@@ -284,7 +284,7 @@ object ParametersRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.reservedCharParam(filter: String? = null, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.reservedCharParam(filter: String? = null, responseHandler: suspend (ClientResponse) -> T): T {
         return this.reservedCharParamRequest(filter).awaitExchange(responseHandler)
     }
 

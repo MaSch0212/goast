@@ -20,7 +20,7 @@ object BodiesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.jsonBody(payload: Payload, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.jsonBody(payload: Payload, responseHandler: suspend (ClientResponse) -> T): T {
         return this.jsonBodyRequest(payload).awaitExchange(responseHandler)
     }
 
@@ -44,7 +44,7 @@ object BodiesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.optionalJsonBody(payload: Payload? = null, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.optionalJsonBody(payload: Payload? = null, responseHandler: suspend (ClientResponse) -> T): T {
         return this.optionalJsonBodyRequest(payload).awaitExchange(responseHandler)
     }
 
@@ -68,7 +68,7 @@ object BodiesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.inlineJsonBody(inlineJsonBodyRequest: InlineJsonBodyRequest, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.inlineJsonBody(inlineJsonBodyRequest: InlineJsonBodyRequest, responseHandler: suspend (ClientResponse) -> T): T {
         return this.inlineJsonBodyRequest(inlineJsonBodyRequest).awaitExchange(responseHandler)
     }
 
@@ -92,7 +92,7 @@ object BodiesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.arrayJsonBody(listPayload: List<Payload>, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.arrayJsonBody(listPayload: List<Payload>, responseHandler: suspend (ClientResponse) -> T): T {
         return this.arrayJsonBodyRequest(listPayload).awaitExchange(responseHandler)
     }
 
@@ -116,7 +116,7 @@ object BodiesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.primitiveJsonBody(string: String, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.primitiveJsonBody(string: String, responseHandler: suspend (ClientResponse) -> T): T {
         return this.primitiveJsonBodyRequest(string).awaitExchange(responseHandler)
     }
 
@@ -140,7 +140,7 @@ object BodiesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.textBody(string: String, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.textBody(string: String, responseHandler: suspend (ClientResponse) -> T): T {
         return this.textBodyRequest(string).awaitExchange(responseHandler)
     }
 
@@ -164,7 +164,7 @@ object BodiesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.binaryBody(string: String, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.binaryBody(string: String, responseHandler: suspend (ClientResponse) -> T): T {
         return this.binaryBodyRequest(string).awaitExchange(responseHandler)
     }
 
@@ -188,7 +188,7 @@ object BodiesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.anyBody(body: Any, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.anyBody(body: Any, responseHandler: suspend (ClientResponse) -> T): T {
         return this.anyBodyRequest(body).awaitExchange(responseHandler)
     }
 
@@ -212,7 +212,7 @@ object BodiesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.multiContentBody(payload: Payload, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.multiContentBody(payload: Payload, responseHandler: suspend (ClientResponse) -> T): T {
         return this.multiContentBodyRequest(payload).awaitExchange(responseHandler)
     }
 
@@ -236,7 +236,7 @@ object BodiesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.formBody(formBodyRequest: FormBodyRequest, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.formBody(formBodyRequest: FormBodyRequest, responseHandler: suspend (ClientResponse) -> T): T {
         return this.formBodyRequest(formBodyRequest).awaitExchange(responseHandler)
     }
 
@@ -260,7 +260,7 @@ object BodiesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.describedBody(payload: Payload, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.describedBody(payload: Payload, responseHandler: suspend (ClientResponse) -> T): T {
         return this.describedBodyRequest(payload).awaitExchange(responseHandler)
     }
 
@@ -284,7 +284,7 @@ object BodiesRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.refBody(payload: Payload, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.refBody(payload: Payload, responseHandler: suspend (ClientResponse) -> T): T {
         return this.refBodyRequest(payload).awaitExchange(responseHandler)
     }
 

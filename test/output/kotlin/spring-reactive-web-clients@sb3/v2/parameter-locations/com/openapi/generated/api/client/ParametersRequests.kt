@@ -16,7 +16,7 @@ object ParametersRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.bodyParam(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.bodyParam(responseHandler: suspend (ClientResponse) -> T): T {
         return this.bodyParamRequest().awaitExchange(responseHandler)
     }
 
@@ -37,7 +37,7 @@ object ParametersRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.formDataParams(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.formDataParams(responseHandler: suspend (ClientResponse) -> T): T {
         return this.formDataParamsRequest().awaitExchange(responseHandler)
     }
 
@@ -58,7 +58,7 @@ object ParametersRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.fileUpload(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.fileUpload(responseHandler: suspend (ClientResponse) -> T): T {
         return this.fileUploadRequest().awaitExchange(responseHandler)
     }
 
@@ -79,7 +79,7 @@ object ParametersRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.queryParams(
+    suspend fun <T : Any> WebClient.queryParams(
         tags: Any? = null,
         ids: Any? = null,
         responseHandler: suspend (ClientResponse) -> T

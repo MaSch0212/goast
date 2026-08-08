@@ -19,7 +19,7 @@ object PetsRequests {
             .awaitBody<List<Pet>>()
     }
 
-    suspend fun <T> WebClient.listPets(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.listPets(responseHandler: suspend (ClientResponse) -> T): T {
         return this.listPetsRequest().awaitExchange(responseHandler)
     }
 
@@ -42,7 +42,7 @@ object PetsRequests {
             .awaitBody<Pet>()
     }
 
-    suspend fun <T> WebClient.createPet(pet: Pet, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.createPet(pet: Pet, responseHandler: suspend (ClientResponse) -> T): T {
         return this.createPetRequest(pet).awaitExchange(responseHandler)
     }
 
@@ -67,7 +67,7 @@ object PetsRequests {
             .awaitBody<Pet>()
     }
 
-    suspend fun <T> WebClient.getPet(id: String, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.getPet(id: String, responseHandler: suspend (ClientResponse) -> T): T {
         return this.getPetRequest(id).awaitExchange(responseHandler)
     }
 
@@ -90,7 +90,7 @@ object PetsRequests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.deletePet(id: String, responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.deletePet(id: String, responseHandler: suspend (ClientResponse) -> T): T {
         return this.deletePetRequest(id).awaitExchange(responseHandler)
     }
 
@@ -111,7 +111,7 @@ object PetsRequests {
             .awaitBody<Pet>()
     }
 
-    suspend fun <T> WebClient.searchPets(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.searchPets(responseHandler: suspend (ClientResponse) -> T): T {
         return this.searchPetsRequest().awaitExchange(responseHandler)
     }
 

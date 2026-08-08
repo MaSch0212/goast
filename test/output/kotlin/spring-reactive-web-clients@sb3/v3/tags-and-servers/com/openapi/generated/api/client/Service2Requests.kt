@@ -16,7 +16,7 @@ object Service2Requests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.untagged(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.untagged(responseHandler: suspend (ClientResponse) -> T): T {
         return this.untaggedRequest().awaitExchange(responseHandler)
     }
 
@@ -37,7 +37,7 @@ object Service2Requests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.pathServer(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.pathServer(responseHandler: suspend (ClientResponse) -> T): T {
         return this.pathServerRequest().awaitExchange(responseHandler)
     }
 
@@ -58,7 +58,7 @@ object Service2Requests {
             .awaitBodilessEntity()
     }
 
-    suspend fun <T> WebClient.opServer(responseHandler: suspend (ClientResponse) -> T): T {
+    suspend fun <T : Any> WebClient.opServer(responseHandler: suspend (ClientResponse) -> T): T {
         return this.opServerRequest().awaitExchange(responseHandler)
     }
 
