@@ -116,7 +116,8 @@ export function kotlinDependenciesFor(family: string, variant: 'sb3' | 'sb4'): s
   if (set === undefined) {
     throw new Error(
       `No dependency set for Kotlin profile family "${family}". Add one to KOTLIN_DEPENDENCIES in ` +
-        `test/harness/kotlin/dependencies.ts.`,
+        'test/harness/kotlin/dependencies.ts, and add its coordinates to the warmup project so ' +
+        'the offline build can resolve them.',
     );
   }
   return [...set.shared, ...(set[variant] ?? [])];
