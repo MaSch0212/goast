@@ -282,9 +282,16 @@ for JSON-like media types.
 `uploadBlob__ok.txt` and `uploadPetPhoto__ok.txt` — each a `body` deviation whose `actual` is the JSON-stringified,
 mis-typed request the reference server received. `addPetNote__text.txt`'s second stanza (its `body` deviation,
 `actual` reading `{"kind":"text","value":"\"plain text body\""}` — the value quoted twice) is this same mechanism;
-its first stanza (`header.content-type`, `expected text/plain` / `actual text/plain;charset=UTF-8`) is not part of
-this defect — that is `fetch`'s own default charset parameter for a string body, not something the generator
-controls, and the media type itself is correct.
+its first stanza (`header.content-type`, `expected text/plain` / `actual text/plain;charset=UTF-8`) is **not**
+counted as part of this defect, on a narrower ground than "the generator doesn't control it" — it does, by omission:
+had the generator set `content-type: text/plain` from the declared media type (the fix below), `fetch` would never
+reach its own default and the charset difference would not exist. The reason this stanza stays unregistered is that
+the *value* `fetch` defaults to is a correct media type with an extra parameter, not a wrong one — `text/plain` is
+what the case expects, `;charset=UTF-8` is additional information the case's `expectRequest` does not ask about at
+all, not a contradiction of it. That is a case-table strictness question, not a generator defect. One consequence
+worth flagging for whoever fixes this defect: because `addPetNote/text` conforms once the generator sets any
+`content-type`, fixing it deletes `addPetNote__text.txt` **in full**, charset stanza included — so a reviewer of that
+future deletion should not go looking for a second register entry the charset half never had.
 
 ### Defect 21 — Kotlin and TypeScript both emit an unnamed type declaration for a schema whose normalized name is empty (found by phase 2b task 5, not scheduled)
 
@@ -894,10 +901,13 @@ to survive as the single path segment `/encoded/{value}` expects; instead the li
 extra segment, so the request matches no route at all and lands in the reference server's surplus bucket (answered
 418) rather than producing a request/response content diff. Recorded as `getEncoded/ok`'s deviation: `expected one
 request matching this case's route` / `actual get /encoded/abc%20def/x matched no route (server answered 418)`. The
-query side of the same case (`raw: 'a&b=c'`, encoded by the URL itself as `raw=a%26b%3Dc`) never gets driven far
-enough to surface a second, independent deviation, since the request already fails to match a route on the path
-alone — the query-encoding half of this defect is inferred from reading `UrlBuilder.build()` directly, not from a
-second committed artifact.
+query side of the same case (`raw: 'a&b=c'`) never gets driven far enough to surface a second, independent deviation,
+since the request already fails to match a route on the path alone. Reading `UrlBuilder.build()` directly shows what
+that second deviation would be: `withQueryParam` stores the value unencoded and `build()` joins it in as literal
+text, so the wire would carry `raw=a&b=c` — a bare `&` and `=` inside what is meant to be one value, corrupting the
+query string's own delimiter structure — where a correct client (`URLSearchParams`, which is what the reference
+client in `test/harness/ref-client.ts` uses) would send the percent-encoded `raw=a%26b%3Dc`. This half of the defect
+is inferred from the source, not from a second committed artifact.
 
 Not fixed here — this phase records defects rather than fixing them. A fix needs `encodeURIComponent` on both the
 substituted path-parameter value in `build()`'s path replace and each query key/value pair, applied once each value

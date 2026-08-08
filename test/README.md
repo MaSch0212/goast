@@ -6,7 +6,7 @@ This file documents what exists today.
 
 ## Prerequisites
 
-Deno and Docker. The everyday loop — tiers 1 and 2 — needs only Deno; Docker is required for tier 3.
+Deno and Docker. The everyday loop — tiers 1, 2 and 4 — needs only Deno; Docker is required for tier 3.
 
 ## Tiers
 
