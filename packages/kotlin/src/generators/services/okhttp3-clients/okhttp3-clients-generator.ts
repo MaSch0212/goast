@@ -155,7 +155,7 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
         ? s`${kt.refs.jackson.jacksonMapperBuilder(springBootVersion)}()${s.indent`
             .findAndAddModules()
             .changeDefaultPropertyInclusion { it.withValueInclusion(${kt.refs.jackson.jsonInclude()}.Include.${jsonIncludeMember}).withContentInclusion(${kt.refs.jackson.jsonInclude()}.Include.${jsonIncludeMember}) }
-            .configure(${kt.refs.jackson.serializationFeature(springBootVersion)}.WRITE_DATES_AS_TIMESTAMPS, false)
+            .configure(${kt.refs.jackson.dateTimeFeature()}.WRITE_DATES_AS_TIMESTAMPS, false)
             .configure(${kt.refs.jackson.deserializationFeature(springBootVersion)}.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .build()`}`
         : s`${kt.refs.jackson.jacksonObjectMapper(springBootVersion)}()${s.indent`

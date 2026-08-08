@@ -7,5 +7,3 @@ com/openapi/generated/api/client/MultipartApiClient.kt:485:22 Null cannot be a v
 com/openapi/generated/api/client/MultipartApiClient.kt:523:35 Null cannot be a value of a non-null type 'File'.
 com/openapi/generated/api/client/MultipartApiClient.kt:555:47 Null cannot be a value of a non-null type 'File'.
 com/openapi/generated/api/client/MultipartApiClient.kt:563:56 Null cannot be a value of a non-null type 'File'.
-com/openapi/generated/api/client/infrastructure/Serializer.kt:14:45 Unresolved reference 'WRITE_DATES_AS_TIMESTAMPS'.
-com/openapi/generated/api/client/infrastructure/Serializer.kt:15:14 Unresolved reference 'configure'.

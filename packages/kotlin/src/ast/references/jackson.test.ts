@@ -42,6 +42,23 @@ describe('jackson', () => {
       }
     });
 
+    // Jackson 3 moved WRITE_DATES_AS_TIMESTAMPS off SerializationFeature onto DateTimeFeature, which exists
+    // only in Jackson 3 — so unlike its neighbours this reference takes no Spring Boot version. Defect 26 was
+    // the Boot 4 branch emitting the member against `tools.jackson.databind.SerializationFeature`, where it
+    // does not exist, breaking every unit of the profile.
+    describe('dateTimeFeature', () => {
+      it('resolves to the Jackson 3 config package', () => {
+        expect(jackson.dateTimeFeature().packageName).toBe('tools.jackson.databind.cfg');
+      });
+
+      // `refName` is a property of the FACTORY (reference.ts:135), not of the reference it creates — the
+      // created reference exposes `name` instead. The annotation block above uses `factory.refName` the
+      // same way.
+      it('is named DateTimeFeature', () => {
+        expect(jackson.dateTimeFeature.refName).toBe('DateTimeFeature');
+      });
+    });
+
     describe('annotations stay on com.fasterxml.jackson.annotation', () => {
       const annotationRefs = [
         jackson.jsonProperty,
