@@ -23,6 +23,13 @@ export type DriverUnit = {
   variant: 'sb3' | 'sb4';
   /** Path under the committed `test/output/` tree holding the generated client code for this unit. */
   treePath: string;
+  /**
+   * Directory under the mounted drivers root holding this unit's driver, one per family. Kept separate
+   * from every other family's directory: a shared drivers directory would put both `OkHttp3Driver.kt`
+   * and `ReactiveDriver.kt` in one project's source set, and each imports symbols that only exist in
+   * its own family's generated tree, so the other driver in that set would fail to resolve.
+   */
+  driverDir: string;
   /** File name of the hand-written driver that exercises this unit's generated API. */
   driver: string;
 };
@@ -42,6 +49,7 @@ export const DRIVER_UNITS: readonly DriverUnit[] = [
     family: 'okhttp3-clients',
     variant: 'sb3',
     treePath: 'kotlin/okhttp3-clients@sb3/integration/kitchen-sink',
+    driverDir: 'okhttp3',
     driver: 'OkHttp3Driver.kt',
   },
   {
@@ -50,6 +58,7 @@ export const DRIVER_UNITS: readonly DriverUnit[] = [
     family: 'okhttp3-clients',
     variant: 'sb4',
     treePath: 'kotlin/okhttp3-clients@sb4/integration/kitchen-sink',
+    driverDir: 'okhttp3',
     driver: 'OkHttp3Driver.kt',
   },
   {
@@ -58,6 +67,7 @@ export const DRIVER_UNITS: readonly DriverUnit[] = [
     family: 'spring-reactive-web-clients',
     variant: 'sb3',
     treePath: 'kotlin/spring-reactive-web-clients@sb3/integration/kitchen-sink',
+    driverDir: 'reactive',
     driver: 'ReactiveDriver.kt',
   },
   {
@@ -66,6 +76,7 @@ export const DRIVER_UNITS: readonly DriverUnit[] = [
     family: 'spring-reactive-web-clients',
     variant: 'sb4',
     treePath: 'kotlin/spring-reactive-web-clients@sb4/integration/kitchen-sink',
+    driverDir: 'reactive',
     driver: 'ReactiveDriver.kt',
   },
 ];
@@ -102,14 +113,22 @@ export function synthesizeDriverBuild(
   const settings = 'rootProject.name = "driver"\n';
 
   const treeDir = `${treeMount}/${unit.treePath}`;
-  const driverFile = `${driverMount}/${unit.driver}`;
+  const driverDir = `${driverMount}/${unit.driverDir}`;
+  const driverFile = `${driverDir}/${unit.driver}`;
   const dependencies = kotlinDependenciesFor(unit.family, unit.variant);
+
+  // Kotlin names a file's top-level-declarations class after the file itself: `OkHttp3Driver.kt`
+  // compiles to `OkHttp3DriverKt`. Derived from `unit.driver` rather than hardcoded so the two values
+  // cannot drift apart — a driver renamed in Task 6 without updating DRIVER_UNITS would otherwise still
+  // produce a build that compiles clean and then fails at `run` time with a class-not-found.
+  const mainClass = `${unit.driver.replace(/\.kt$/, '')}Kt`;
 
   const build = [
     // This project's `main` source set is exactly two roots: the committed output tree at `treeDir`
-    // below, and this unit's driver, ${driverFile}. `srcDirs` below takes the driver's *directory*, not
-    // the file itself (Gradle source roots are directories) — this comment names the actual file so a
-    // reader (or a failing build) can tell which driver a given run compiled.
+    // below, and this unit's driver directory, `driverDir` below — scoped to this family alone so the
+    // *other* family's driver (which imports symbols this tree does not have) is never compiled
+    // alongside it. `srcDirs` takes the driver's directory, not the file itself (Gradle source roots
+    // are directories); this comment names the actual file for a reader debugging a failed run.
     `// Driver under test: ${driverFile}`,
     '',
     'plugins {',
@@ -129,10 +148,10 @@ export function synthesizeDriverBuild(
     ...RUNTIME_COROUTINE_DEPENDENCIES.map((line) => `    ${line}`),
     '}',
     '',
-    'sourceSets["main"].kotlin.srcDirs("' + treeDir + '", "' + driverMount + '")',
+    'sourceSets["main"].kotlin.srcDirs("' + treeDir + '", "' + driverDir + '")',
     '',
     'application {',
-    '    mainClass.set("MainKt")',
+    `    mainClass.set("${mainClass}")`,
     '}',
   ].join('\n') + '\n';
 
