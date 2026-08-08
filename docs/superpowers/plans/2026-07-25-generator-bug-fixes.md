@@ -184,7 +184,7 @@ a path whose basename is **exactly** `.ts`, `.js`, or `.json` (i.e. an empty com
 `'module'` — basename equality with the extension, not a prefix match (a prefix match would also wrongly capture
 `.tsx`, `.tsconfig`, or `.jsonc`, which are not this bug).
 
-### Defect 19 — `spring-controllers` writes `responseCode = null` for `default` and range-coded responses, uncompilable (found by phase 2b task 7, confirmed by the tier-3 compile gate, not scheduled)
+### Defect 19 — `spring-controllers` writes `responseCode = null` for `default` and range-coded responses, uncompilable (found by phase 2b task 7, confirmed by the tier-3 compile gate, fixed by b3bba55)
 
 `getApiInterfaceEndpointMethodAnnnotations` (`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:211-212`) builds each `@ApiResponse`'s `responseCode` argument as
 `kt.string(response.statusCode?.toString())`. `response.statusCode` is only populated for an exact numeric code; a
@@ -226,6 +226,22 @@ range-coded or `default` response's `responseCode` should read as (Swagger/OpenA
 the literal string `"default"` for the default response and has no standard representation for a range code in this
 particular annotation field); that decision, plus verifying the fix actually compiles, belongs to whichever batch
 picks this up.
+
+**Fixed:** `b3bba55` adds `statusKey: string` to `ApiResponse` (`packages/core/src/transform/api-types.ts:116`) — the
+spec's own response key, populated for every response by `transformResponse`
+(`packages/core/src/transform/transform-endpoint.ts:205`) — and changes
+`getApiInterfaceEndpointMethodAnnnotations` to render `kt.string(response.statusKey)` in place of
+`kt.string(response.statusCode?.toString())` (`spring-controller-generator.ts:210-216`), so a `default` or
+range-coded response now emits its own literal key instead of `null`. This also closes the entry's secondary
+complaint: `statusKey` makes `default`, `2XX`, `4XX`, `5XX` and `'0'` distinguishable from each other in the emitted
+annotation, where before all five collapsed to the identical `responseCode = null`. Drove `Null cannot be a value of
+a non-null type 'String'` to zero: **32 occurrences across 8 units**, all fully deleted — the 4
+`v3/response-variants.txt` files this entry originally predicted (28 occurrences, exactly as predicted) plus 4
+`integration/kitchen-sink.txt` files the corpus grew to add afterward (4 occurrences, one per profile, from
+`WidgetsApi.kt` rather than `ResponsesApi.kt`). No other defect touches either file, so none of the 8 survive.
+`statusKey` is **required**, which is additive for a reader of `ApiResponse` but **breaking for any external code
+constructing one directly**; `@goast/core` is at `0.5.3` with no `CHANGELOG` in this repo, so this is worth a line
+in the next release's notes.
 
 ### Defect 20 — the TypeScript fetch client JSON-stringifies every request body and never sets a `content-type` header, regardless of the declared media type (found by phase 2b task 9, confirmed broader in scope by the tier-4 wire contract, not scheduled)
 
@@ -526,7 +542,7 @@ Fixing this entry — make the counter rename the declaration too, or refuse the
 the design question, and answering the design question would make this entry unreachable rather than correct. Not
 fixed here — this phase records defects rather than fixing them.
 
-### Defect 26 — `okhttp3-clients@sb4` emits a Jackson 2 `SerializationFeature` member against Jackson 3 (found by the tier-3 compile gate, not scheduled)
+### Defect 26 — `okhttp3-clients@sb4` emits a Jackson 2 `SerializationFeature` member against Jackson 3 (found by the tier-3 compile gate, fixed by f13fe6f)
 
 The static-serializer template branches on `springBootVersion` and gets the Jackson 3 migration almost entirely right,
 then splices in one member Jackson 3 removed. In
@@ -561,7 +577,22 @@ class of defect that gating both Spring Boot lines exists to find** — a single
 entirely. Not fixed here — this phase records defects rather than fixing them; a fix needs Jackson 3's replacement for
 the feature, a lookup this entry deliberately does not guess at.
 
-### Defect 27 — `okhttp3-clients` delegates to `ApiClient` with an argument order that only matches `serializer: 'parameter'` (found by the tier-3 compile gate, not scheduled)
+**Fixed:** `f13fe6f` adds a dedicated `dateTimeFeature` reference (`packages/kotlin/src/ast/references/jackson.ts:57`
+— Jackson 3 only, no `springBootVersion` parameter, since Jackson 2 has nothing to switch on) and uses it in the
+Spring Boot 4 static-serializer branch (`okhttp3-clients-generator.ts:158`) in place of
+`serializationFeature(springBootVersion).WRITE_DATES_AS_TIMESTAMPS`; the `@sb3` branch, which already targets
+Jackson 2 correctly, is untouched. Drove `Unresolved reference 'WRITE_DATES_AS_TIMESTAMPS'` and its knock-on
+`Unresolved reference 'configure'` to zero across **108 occurrences across 54 units** — every unit of the profile,
+which is 53 as originally counted plus the kitchen-sink unit the corpus later added (2 occurrences each, matching
+the original 106 across 53 exactly). 49 of the 54 are now fully deleted. The other 5 —
+`v3/extreme-names`, `v3/non-ascii-names`, `v3/name-collisions`, `v3/reserved-words` and `v3/multipart-bodies` —
+each lost the same 2 lines but survive on unrelated, already-registered diagnostics: defects 21, 22, 23 and 25
+(model naming and redeclaration) and defect 29 (multipart `File`/`ApiRequestFile` nullability). This is not a
+partial fix; it confirms defect 23's own note that `okhttp3-clients@sb4`'s reserved-words snapshot "carries two
+extra lines that belong to defect 26" — those two lines are now gone, and the snapshot's remaining content is
+defect 23's alone.
+
+### Defect 27 — `okhttp3-clients` delegates to `ApiClient` with an argument order that only matches `serializer: 'parameter'` (found by the tier-3 compile gate, fixed by 73b89a7)
 
 The generated `ApiClient` base has two possible parameter orders, chosen by `ctx.config.serializer` at
 `okhttp3-clients-generator.ts:129-131`:
@@ -598,7 +629,19 @@ records defects rather than fixing them. The fix is to derive `delegateArguments
 list above it already is, rather than to reorder the base: the `'parameter'` path is not exercised by the corpus, so
 nothing here shows it is broken, and reordering the base would be a change made blind.
 
-### Defect 28 — `spring-reactive-web-clients` puts `awaitExchange`'s `Any` bound on the wrong Spring Boot line (found by the tier-3 compile gate, not scheduled)
+**Fixed:** `73b89a7` extracts the decision into `getClientDelegateArguments(serializerAsParameter: boolean):
+string[]` (`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:65-67`) and calls it
+for the `super(…)` argument list (`:96`), so the delegate call now derives its order from the same flag — and
+therefore agrees with — the subclass's own constructor parameter order, instead of the constant
+`['basePath', 'objectMapper', 'client']` that matched only `serializer: 'parameter'`. Drove the
+`ObjectMapper`/`Call.Factory` argument-mismatch pair to zero across **92 occurrences across 34 units**: the 32
+units originally predicted (76 occurrences) plus 2 kitchen-sink units the corpus later added, one per Spring Boot
+line (16 occurrences, 8 each). At this commit `@sb3`'s 17 units reached zero total diagnostics immediately — 16
+fully deleted, `v3/multipart-bodies.txt` surviving on defect 29's unrelated lines alone — while `@sb4`'s 17 units
+still carried defect 26's Jackson diagnostic and did not reach zero until `f13fe6f` landed afterward; the final
+state after both fixes matches `@sb3`'s.
+
+### Defect 28 — `spring-reactive-web-clients` puts `awaitExchange`'s `Any` bound on the wrong Spring Boot line (found by the tier-3 compile gate, fixed by 01493d4)
 
 Each generated `…Requests.kt` emits a `suspend fun <T> WebClient.<operation>(responseHandler: suspend (ClientResponse)
 -> T): T` extension that forwards to Spring's `awaitExchange`.
@@ -630,6 +673,17 @@ Compare `test/output/kotlin/spring-reactive-web-clients@sb3/v3/json-input/com/op
 `spring-reactive-web-clients@sb3` unit that has operations. Like defect 26 this is visible only to a gate that
 compiles both Spring Boot lines, and unlike defect 26 it is the *older* line that breaks. Not fixed here — this phase
 records defects rather than fixing them.
+
+**Fixed:** `01493d4` drops the `ctx.config.springBootVersion === 4` guard and makes the `Any` bound on `<T>`
+unconditional — `generics: [kt.genericParameter('T', { constraint: kt.refs.any() })]`
+(`packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:166`)
+— so `@sb3` now emits `<T : Any>` too, matching `@sb4`. Whether Spring 7 also needs the bound independently of this
+change remains unsettled; making it unconditional is known to satisfy both lines as they stand. Drove the
+`SuspendFunction1<…, T>` / `SuspendFunction1<…, T & Any>` argument-mismatch pair to zero across **127 occurrences
+across 17 units** — the 16 units originally predicted (115 occurrences) plus the kitchen-sink unit the corpus later
+added (12 occurrences). 16 of the 17 are now fully deleted; `v3/multipart-bodies.txt` survives on defect 29's
+unrelated `File`/`ApiRequestFile` nullability lines alone, one of which shifted six columns
+(`:251:67` → `:251:73`) as the removed lines ahead of it changed the file's byte offsets — not a new occurrence.
 
 ### Defect 29 — a multipart file parameter is typed non-nullable regardless of `required`, then given a `null` default (found by the tier-3 compile gate, not scheduled)
 
@@ -1130,6 +1184,26 @@ Small, verified, and each needing either a decision or a home:
   `Deref<OpenApiDiscriminator>`, because nothing in `collectResponse` or its neighbours ever dereferences
   `schema.discriminator.$src`. Consistent with production code never reading that field off a discriminator; flagged
   as a documented asymmetry in the `Deref` type rather than a defect.
+- **`kt.string(undefined)` silently renders the bare token `null`.** `KtString.onWrite`
+  (`packages/kotlin/src/ast/nodes/string.ts:43-45`) branches on `this.value === null` and appends `null`
+  unconditionally, with no branch that omits the argument or throws. This is how defect 19 stayed invisible until a
+  compile gate existed: a generator passing an `undefined` through `kt.string` produces syntactically valid but
+  semantically wrong Kotlin. Defect 19 fixed its own caller; the footgun remains for every other caller. A fix needs
+  to decide whether a null-valued `KtString` should throw at construction or render an empty string, and auditing
+  existing callers is part of that decision.
+- **`ApiResponse.statusCode` remains lossy on purpose.** `Number(status) || undefined`
+  (`packages/core/src/transform/transform-endpoint.ts:206`) still maps `'0'` to `undefined` — this is **defect 38**,
+  which stays open. `statusKey`, added by defect 19's fix, is the non-lossy field; anything that needs to emit or
+  distinguish a response key must read it. Cross-reference defect 38.
+- **`transformResponse`'s object cache can give a `$ref`'d response the wrong `statusKey`.** The cache is keyed on
+  `openApiObjectId` (`packages/core/src/transform/transform-endpoint.ts:193-194`, with the `.set` at `:212`), so if
+  one `#/components/responses/X` is referenced from two different status keys, the first key wins for the shared
+  target — `endpoint.responses[1].$ref.statusKey` would read `'400'` for a response reached under `'default'`.
+  Pre-existing, not introduced by defect 19's fix: `statusCode` has always aliased identically, for the same reason.
+  It does **not** affect generated output, because the emitted `responseCode` reads the *wrapper*'s `statusKey`, and
+  wrappers are distinct spec nodes with their own correct keys — only the shared `$ref` target's own `statusKey`
+  is affected, and nothing reads it that way. The corpus does not exercise it: `v3/response-variants` has exactly
+  one `$ref`'d response under exactly one key. Register as an observation; do not fix.
 
 ### Explicitly out of scope
 
