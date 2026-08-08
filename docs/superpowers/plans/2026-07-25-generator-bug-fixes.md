@@ -969,9 +969,33 @@ query string's own delimiter structure — where a correct client (`URLSearchPar
 client in `test/harness/ref-client.ts` uses) would send the percent-encoded `raw=a%26b%3Dc`. This half of the defect
 is inferred from the source, not from a second committed artifact.
 
+**Tier 4, confirmed on a second generator, with the opposite outcome on its sibling — `spring-reactive-web-clients`
+only, not `okhttp3-clients`.** The two Kotlin client generators build a path substitution through entirely different
+library calls, and only one of them closes this gap. `okhttp3-clients` generates its own `encodeURIComponent` helper
+per client (`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:432-438`), built as
+`HttpUrl.Builder().scheme("http").host("localhost").addPathSegment(uriComponent).build().encodedPathSegments[0]` —
+`addPathSegment` treats its whole argument as one opaque segment and percent-encodes any `/` inside it, so
+`okhttp3-clients`' `getEncoded/ok` case produces no artifact in either `@sb3` or `@sb4`: this generator gets it right.
+`spring-reactive-web-clients` has no equivalent helper; its path substitution instead calls
+`UriComponentsBuilder.buildAndExpand(...)` then `.toUriString()`
+(`packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:402,416`),
+and Spring's own URI-template expansion does not percent-encode a `/` embedded inside a single path-variable value —
+the identical wire consequence this entry already records for `fetch-clients`, reached through a completely
+unrelated code path in a generator the original entry never covered.
+
+**Tier 4:** `test/wire/spring-reactive-web-clients@sb3/getEncoded__ok.txt` (byte-identical in `@sb4`) — `getEncoded`'s
+path value `abc def/x` splits into an extra path segment the reference server's route pattern cannot match: `request`
+`expected one request matching this case's route` / `actual get /encoded/abc%20def/x matched no route (server
+answered 418)`, the identical shape and cause `fetch-clients`' own `getEncoded__ok.txt` records. No artifact exists
+for `okhttp3-clients@sb3`/`@sb4`'s `getEncoded/ok` case at all — that absence is the positive evidence that
+`addPathSegment` (above) closes this gap for that generator alone.
+
 Not fixed here — this phase records defects rather than fixing them. A fix needs `encodeURIComponent` on both the
 substituted path-parameter value in `build()`'s path replace and each query key/value pair, applied once each value
-is stringified rather than left to the caller.
+is stringified rather than left to the caller. For `spring-reactive-web-clients`, the fix needs the path-variable map
+passed to `buildAndExpand` to have each value pre-encoded (or the builder configured to encode template values,
+rather than only the literal template), since `UriComponentsBuilder` does not do this on its own for a value
+containing a reserved character.
 
 ### Defect 42 — no `style`/`explode` support: every query or path array is comma-joined via `String(value)` regardless of the parameter's declared style (found by the tier-4 wire contract, not scheduled)
 
@@ -996,10 +1020,33 @@ which is coverage working as intended, not a gap.
 `query.spaceDelimited` expected `["a b"]` (space-joined), actual `["a,b"]` (comma-joined, the same wrong join in both
 cases since `UrlBuilder` has exactly one join strategy).
 
+**Tier 4, confirmed on two more generators — `okhttp3-clients` and `spring-reactive-web-clients`, both Spring Boot
+lines.** Both Kotlin client generators share the identical gap through an identically-named, identically-bodied
+method: `getParameterToString` returns the literal `.joinToString()` for any array-typed parameter, with no
+inspection of `parameter.style`/`parameter.explode` anywhere in the function —
+`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:413-416` and
+`packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:421-424`,
+the same three-branch `if`/`else if`/`else` in both files. Kotlin's default `joinToString()` separator is `", "`
+(comma-space), one character wider than `fetch-clients`' bare `Array.prototype.toString` comma join — wide enough
+that, unlike `fetch-clients`, none of the three `styleMatrix` styles nor `pathStyleSimple` happens to match by
+coincidence; all four deviate for every Kotlin unit, where `fetch-clients` only deviates on two of the four.
+
+**Tier 4:** `test/wire/okhttp3-clients@sb3/pathStyleSimple__ok.txt` (byte-identical in `@sb4` and in both
+`spring-reactive-web-clients` units) — `path` expected `/styles/a,b`, actual `/styles/a,%20b` (the comma-space
+separator, percent-encoded once it lands in the path). `styleMatrix__formExploded.txt`, `styleMatrix__formUnexploded.txt`
+and `styleMatrix__spaceDelimited.txt` in all four Kotlin units — `query.formExploded` expected `["a","b"]` (repeated
+keys) actual `["a, b"]`; `query.formUnexploded` expected `["a,b"]` actual `["a, b"]`; `query.spaceDelimited` expected
+`["a b"]` actual `["a, b"]` — the identical wrong join for all three declared styles, since `getParameterToString` has
+exactly one join strategy regardless of style. `formUnexploded` conforms for `fetch-clients` today by the same
+by-construction coincidence this entry's opening paragraph describes; Kotlin's wider default separator removes that
+coincidence, which is why this generator has no by-construction conformer at all among the four cases this spec
+exercises.
+
 Not fixed here — this phase records defects rather than fixing them. A fix needs `withQueryParam`/`withPathParam` to
 receive the parameter's `style`/`explode` and branch: repeated `append` calls for `explode: true`, a space or pipe
 join for `spaceDelimited`/`pipeDelimited`, and the current comma join kept only for the styles that actually call for
-it.
+it. For Kotlin, `getParameterToString` needs the equivalent branch in both generators, since they share the identical
+gap at an identically-named site.
 
 ### Defect 43 — cookie parameters are not implemented: a generated method takes no argument for a `cookie`-location parameter and never sets a `Cookie` header (found by the tier-4 wire contract, not scheduled)
 
@@ -1014,10 +1061,25 @@ any argument the generated type accepts.
 **Tier 4:** `test/wire/fetch-clients/allLocations__ok.txt` — `header.cookie` expected `session=abc123`, actual
 `<absent>`.
 
+**Tier 4, confirmed on two more generators — `okhttp3-clients` and `spring-reactive-web-clients`, both Spring Boot
+lines.** Both Kotlin client generators collect an operation's parameters through an identically-bodied
+`getAllParameters`, filtering to `parameter.target === 'query' || parameter.target === 'path' || parameter.target
+=== 'header'` with no `'cookie'` arm at all —
+`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:518-520` and
+`packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:487-489`
+— the same three-target filter, and the same omission, this entry already records for `fetch-clients`'s own
+parameter-collection pass.
+
+**Tier 4:** `test/wire/okhttp3-clients@sb3/allLocations__ok.txt` (byte-identical in `@sb4` and in both
+`spring-reactive-web-clients` units) — `header.cookie` expected `session=abc123`, actual `<absent>`, the identical
+deviation recorded above for `fetch-clients`.
+
 Not fixed here — this phase records defects rather than fixing them. A fix needs the fetch-client generator's
 parameter-collection pass (whichever function currently filters to `target === 'path' | 'query' | 'header'` — see
 defect 35's list of that filter's other call sites) to also collect `target === 'cookie'` parameters into the method
-signature, and the request-building code to join them into one `Cookie` header value.
+signature, and the request-building code to join them into one `Cookie` header value. For Kotlin, both
+`getAllParameters` sites need the equivalent addition, since they share the identical filter at an identically-named
+site.
 
 ### Defect 44 — a multi-media-type `requestBody` collapses to its first declared content entry, with no way for a caller to select another (found by the tier-4 wire contract, not scheduled)
 
@@ -1052,9 +1114,31 @@ with defect 20 because that same fix does resolve it. Read the two entries toget
 reviewer who sees defect 20's fix land and delete `updatePet__json.txt` while `updatePet__form.txt` survives should
 land here, not conclude the fix was incomplete on its own terms.
 
+**Tier 4, confirmed on two more generators — `okhttp3-clients` and `spring-reactive-web-clients`, both Spring Boot
+lines.** Both Kotlin client generators build `updatePet`'s single method from `endpoint.requestBody?.content[0]`
+alone, the identical collapse-to-first-entry this entry describes, at a different site in each generator.
+`okhttp3-clients` hardcodes the request's `Content-Type` header directly from `content[0].type`:
+`localVariableHeaders["Content-Type"] = "${endpoint.requestBody?.content[0].type}"`
+(`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:381-382`), so
+`updatePetRequestConfig` always sends `Content-Type: application/json` — `content[0]` for this operation — regardless
+of which of the two declared media types a caller means to send. `spring-reactive-web-clients` reads the same
+`content[0]` for both its `.contentType(...)` call and the schema it hands to `bodyValue(...)`
+(`packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:253-256,304`).
+Neither generator emits a second method, parameter, or branch for `updatePet`'s second declared media type
+(`application/x-www-form-urlencoded`), so — exactly as for `fetch-clients` — no caller of either generated client can
+send that alternative through any argument the generated signature accepts.
+
+**Tier 4:** `test/wire/okhttp3-clients@sb3/updatePet__form.txt` (byte-identical in `@sb4` and in both
+`spring-reactive-web-clients` units) — `body` expected `{"fields":{"age":["4"],"name":["Rex"]},"kind":"form"}`,
+actual `{"kind":"json","value":{"age":4,"name":"Rex"}}`: both Kotlin families serialize the table's form-shaped body
+as JSON, the same wrong-shape-and-label consequence `fetch-clients`' own `updatePet__form.txt` records for the
+distinct-but-related reason discussed above.
+
 Not fixed here — this phase records defects rather than fixing them. A fix needs the fetch-client generator to emit
 one overload (or a discriminated body parameter) per declared media type in `requestBody.content`, rather than
-building a single method's parameter type and serialization from `content[0]` alone.
+building a single method's parameter type and serialization from `content[0]` alone. For Kotlin, both generators need
+the equivalent second signature (or discriminated body parameter) for `updatePet`'s second media type, since both
+currently read `content[0]` exclusively at the sites cited above.
 
 ### Defect 45 — the Kotlin client success-response predicate is order-dependent, so an error schema can win as the success return type (found by the final whole-branch review of the tier-4 unblock plan, not scheduled)
 
@@ -1104,6 +1188,146 @@ wire exchange (tier 4) can tell the two apart, which is exactly the phase this d
 
 Pinned by `v3/response-variants` — `onlyDefault` (the wrong-type case) and `successAndDefault` (the safe-by-
 declaration-order case). Not fixed here — this phase records defects rather than fixing them.
+
+### Defect 46 — `okhttp3-clients`' request-body encoder throws for any media type it doesn't special-case, so a plain-text or octet-stream body never reaches the network (found by the tier-4 wire contract, not scheduled)
+
+`ApiClient.requestBody()` (`packages/kotlin/assets/client/okhttp3/ApiClient.kt:63-117`, copied verbatim into every
+generated `okhttp3-clients` client's `infrastructure/ApiClient.kt`) branches on the request's media type: a `File`
+body, `multipart/form-data`, `application/x-www-form-urlencoded`, and anything ending in `json` (or a `null` media
+type) each get a handled branch. Every other media type falls to the final `else` at line 116:
+
+```kotlin
+else -> throw UnsupportedOperationException("requestBody currently only supports JSON body and File body.")
+```
+
+This is reached for `text/plain` and `application/octet-stream` alike — the two media types the kitchen-sink case
+table exercises that are neither JSON nor a file. The call throws while building the request body, before OkHttp
+opens a connection, so the operation never reaches the reference server at all: not merely mis-serialized,
+unreachable.
+
+**Tier 4:** `test/wire/okhttp3-clients@sb3/addPetNote__text.txt` and `uploadBlob__ok.txt` (byte-identical in `@sb4`)
+— both record `request` / `expected one request matching this case's route` / `actual no request received at all
+(driver reported {"error":"java.lang.UnsupportedOperationException","message":"requestBody currently only supports
+JSON body and File body."})`. `spring-reactive-web-clients` has no equivalent artifact for `uploadBlob/ok` — that
+family always calls `bodyValue(...)` and lets WebFlux's own codec negotiation decide, with no comparable
+content-type dispatch to fall through (see defect 48 below for that family's own, different multipart-only gap).
+
+Not fixed here — this phase records defects rather than fixing them. A fix needs `requestBody()` to grow branches for
+the media types a generated client's own operations can declare — at minimum a plain-text and a raw-bytes
+`RequestBody`, mirroring the `File` branch's `.toMediaTypeOrNull()`/`.asRequestBody()` shape.
+
+### Defect 47 — `okhttp3-clients` JSON-quotes a non-file multipart part's value, corrupting a plain-string part's wire value (found by the tier-4 wire contract, not scheduled)
+
+The same `requestBody()` copied into every `okhttp3-clients` unit
+(`packages/kotlin/assets/client/okhttp3/ApiClient.kt:76-93`) builds each multipart part by checking whether
+`part.body is File`; the `else` branch, for every non-`File` part, calls `objectMapper.writeValueAsString(part.body)`
+(line 89) and sends the result as the part's body. For a part whose declared value is already a plain Kotlin
+`String` — `caption` in the kitchen-sink `uploadPetPhoto` operation — Jackson serializes a bare string by wrapping it
+in quotes, so the wire value becomes `"A good boy"` rather than the unquoted text `A good boy` a multipart form field
+is supposed to carry.
+
+**Tier 4:** `test/wire/okhttp3-clients@sb3/uploadPetPhoto__ok.txt` (byte-identical in `@sb4`) — `body` deviation:
+`expected` includes `{"name":"caption","value":"A good boy"}` inside the multipart `parts` array, `actual` reads
+`{"name":"caption","value":"\"A good boy\""}` — the file part in the same artifact matches exactly (name, filename,
+content type and bytes all agree), isolating the deviation to the non-file part's JSON-quoting alone.
+`spring-reactive-web-clients` has no equivalent artifact for this operation: its multipart call never reaches the
+network at all (defect 48 below), so this family's own non-file-part handling is never exercised by the corpus.
+
+Not fixed here — this phase records defects rather than fixing them. A fix needs the non-`File` branch to write a
+part's value as its own string content when the declared value is already a string, falling back to JSON
+serialization only for a part whose declared type is not a string.
+
+### Defect 48 — `spring-reactive-web-clients`' file-part wrapper hands WebFlux a raw `java.io.File`, which no default codec can write (found by the tier-4 wire contract, not scheduled)
+
+`ApiRequestFile.from(file: File)` (`packages/kotlin/assets/client/spring-reactive-web-clients/ApiRequestFile.kt:11-18`,
+copied verbatim into every generated `spring-reactive-web-clients` client) builds a multipart file part with
+`builder.part("file", file)` (line 15), passing the raw `java.io.File` object as the part's body.
+`MultipartBodyBuilder.part` accepts any `Object` and defers to whatever `HttpMessageWriter` WebFlux's codec
+configuration can find for it at request-encode time; the default (non-Boot-autoconfigured) codec set this repo's
+harness builds its `WebClient` from has no writer registered for a bare `java.io.File`, so the encoder throws
+`CodecException: No suitable writer found for part: file` before the request is ever sent. The sibling
+`from(filePart: FilePart)` overload two lines below (`:21-29`) does not have this problem — `FilePart` is a
+WebFlux-native multipart type its own codec stack already knows how to write — but nothing in the generated client
+ever constructs a `FilePart` from a caller-supplied `java.io.File`, so that overload is unreachable from the
+generated `uploadPetPhoto` signature, which offers `ApiRequestFile.from(File)` as its only option for a caller
+holding a plain file.
+
+**Tier 4:** `test/wire/spring-reactive-web-clients@sb3/uploadPetPhoto__ok.txt` (byte-identical in `@sb4`) — `request`
+deviation: `expected one request matching this case's route` / `actual no request received at all (driver reported
+{"error":"org.springframework.core.codec.CodecException","message":"No suitable writer found for part: file"})`.
+Every input to this operation hits the same throw, since it happens before any of the case's own values are
+inspected. `okhttp3-clients` has no equivalent artifact for this case: its own multipart handling (defect 47 above)
+at least reaches the network for the file part.
+
+Not fixed here — this phase records defects rather than fixing them. A fix needs either a resource/byte-buffer
+writer registered on the `WebClient`'s codec configuration (a caller-side fix outside the generated code's control)
+or the generated client itself to wrap the file in a WebFlux-native multipart type before handing it to the builder.
+This entry deliberately stops at recording the mechanism rather than guessing at unverified codec wiring.
+
+### Defect 49 — both Kotlin client generators throw a generic exception on any non-2xx response instead of returning a decoded body, so no per-status error schema is ever reachable (found by the tier-4 wire contract, not scheduled)
+
+Neither Kotlin client family gives an ordinary caller any way to inspect a declared error response's decoded body.
+`okhttp3-clients`' per-operation plain method (e.g. `getWidget`) delegates to `<op>WithHttpInfo` and switches on
+`localVarResponse.responseType`
+(`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:198-227`): the `ClientError`
+and `ServerError` arms (`:210-217`, `:219-226`) always throw `ClientException`/`ServerException`, constructed from
+only the response's status code and an undecoded message string, with the raw `ClientError`/`ServerError` response
+object attached — never running the response body through `objectMapper` against the operation's declared error
+schema. `spring-reactive-web-clients`' plain call form uses `.retrieve()`
+(`packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:133`)
+with no custom status handler, which is Spring `WebClient`'s own documented default: any 4xx/5xx response throws
+`WebClientResponseException`, again carrying only the raw response text, before the operation's declared response
+type is ever considered. In both families this is unconditional for every operation with a possible non-2xx
+response, not a per-case bug — the kitchen-sink case table exercises it through `getWidget`'s four error cases,
+which is what the four `getWidget` artifacts per unit record.
+
+**Tier 4:** `test/wire/okhttp3-clients@sb3/getWidget__badRequest.txt`, `getWidget__notFound.txt`,
+`getWidget__serverError.txt` and `getWidget__unexpectedError.txt` (byte-identical in `@sb4` and in both
+`spring-reactive-web-clients` units) — each records `result` / `expected {"code":<N>,"message":"<...>"}` (the
+table's declared decoded error body) / `actual {"status":<N>}` (all a driver limited to the generated signature's
+thrown exception can recover). Each family's own non-throwing sibling (`<op>WithHttpInfo` for okhttp3, a
+`responseHandler` overload for reactive) can read the raw response text directly, but no generated method decodes it
+against the operation's declared error schema either way — the driver was run through each family's plain, throwing
+call, the one an ordinary caller would reach for, which is exactly the shape this defect concerns.
+
+Not fixed here — this phase records defects rather than fixing them. A fix needs each generator's plain call form to
+decode a non-2xx response against whatever error schema the operation declares for that status (falling back to the
+current throw only when none is declared) — the same shape `getWidget`'s own `expectResult` already assumes a
+well-behaved client would offer.
+
+### Defect 50 — `spring-reactive-web-clients` declares a null-inclusion config option it never wires to anything, so an unset model field is written as an explicit JSON `null` instead of being omitted (found by the tier-4 wire contract, not scheduled)
+
+`okhttp3-clients` generates its own `Serializer.kt` per client, whose builder calls
+`changeDefaultPropertyInclusion`/`setSerializationInclusion` against `ctx.config.serializerJsonInclude` (default
+`'non-absent'`) to exclude absent/null values
+(`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-clients-generator.ts:154-166`).
+`spring-reactive-web-clients` declares the identical config option, with the identical default, in its own
+`models.ts` (`packages/kotlin/src/generators/services/spring-reactive-web-clients/models.ts:22,33`) — but grepping
+the whole `spring-reactive-web-clients` generator directory for `serializerJsonInclude`, `JsonInclude`, `ObjectMapper`
+or `Serializer` turns up exactly one hit, that same declaration in `models.ts`: the option is read nowhere. There is
+no `Serializer.kt`-equivalent file for this family at all — `packages/kotlin/assets/client/spring-reactive-web-clients/`
+holds only `ApiRequestFile.kt` — and its generated extension functions call `bodyValue(...)` directly on a
+caller-supplied `WebClient`
+(`packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:304-309`),
+so request serialization is whatever `ObjectMapper`/`Jackson2JsonEncoder` that `WebClient`'s own codec configuration
+resolves to. Under the harness's own reference `WebClient` (built with no Spring Boot autoconfiguration and no
+inclusion customization), that default is Jackson's own `Include.ALWAYS`, so every unset field on a
+partially-populated model is written as an explicit `null` rather than omitted — the exact opposite of what the
+unused config option's own default name promises.
+
+**Tier 4:** `test/wire/spring-reactive-web-clients@sb3/createPet__created.txt` (byte-identical in `@sb4`) — `body`
+deviation: `expected {"kind":"json","value":{"id":"new1","name":"Fido"}}`, `actual`
+`{"kind":"json","value":{"age":null,"birthDate":null,"createdAt":null,"friend":null,"id":"new1","name":"Fido",
+"nickname":null,"owner":null,"photo":null,"status":null,"toys":null}}` — every unset `Pet` field present as an
+explicit `null`. `okhttp3-clients` has no equivalent artifact for this case: its own `Serializer.kt` customization
+(above) closes the gap for that family.
+
+Not fixed here — this phase records defects rather than fixing them. The fix is a design choice as much as a code
+change: either give `spring-reactive-web-clients` its own codec customization that actually reads
+`serializerJsonInclude` (mirroring `okhttp3-clients`' `Serializer.kt`), or remove the unused config option and
+document that this family serializes with whatever `WebClient` the caller supplies. The latter is defensible on its
+own terms — this family's design is "bring your own client" rather than owning one, unlike `okhttp3-clients` — but
+leaving the option declared and silently inert, as it stands today, is not.
 
 ### Also registered, not scheduled
 

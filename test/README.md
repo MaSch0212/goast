@@ -6,16 +6,17 @@ This file documents what exists today.
 
 ## Prerequisites
 
-Deno and Docker. The everyday loop — tiers 1, 2 and 4 — needs only Deno; Docker is required for tier 3.
+Deno and Docker. The everyday loop — tiers 1, 2 and the `fetch-clients` leg of tier 4 — needs only Deno; Docker is
+required for tier 3 and for tier 4's Kotlin targets.
 
 ## Tiers
 
-| # | Tier        | Question                                              | Command                      | Status                 |
-| - | ----------- | ----------------------------------------------------- | ---------------------------- | ---------------------- |
-| 1 | Unit        | Does this function do what it says?                   | `deno task test`             | active                 |
-| 2 | Output      | Did the generated text change?                        | `deno task test:output`      | active                 |
-| 3 | Compile     | Is the generated code valid in its language?          | `deno task test:compile`     | active                 |
-| 4 | Integration | Does the generated code behave correctly on the wire? | `deno task test:integration` | phase 5: fetch-clients |
+| # | Tier        | Question                                              | Command                                  | Status                                                      |
+| - | ----------- | ----------------------------------------------------- | ---------------------------------------- | ----------------------------------------------------------- |
+| 1 | Unit        | Does this function do what it says?                   | `deno task test`                         | active                                                      |
+| 2 | Output      | Did the generated text change?                        | `deno task test:output`                  | active                                                      |
+| 3 | Compile     | Is the generated code valid in its language?          | `deno task test:compile`                 | active                                                      |
+| 4 | Integration | Does the generated code behave correctly on the wire? | `deno task test:integration` / `:kotlin` | fetch-clients; okhttp3-clients, spring-reactive-web-clients |
 
 ## Tier 1: unit tests
 
@@ -602,10 +603,11 @@ file. A case where the generated client's actual wire behaviour differs from the
 `test/wire/<profile>/<caseId-with-slashes-as-double-underscore>.txt`, holding one `field`/`expected`/`actual` block per
 difference. `deno task test:integration` regenerates in write mode; a file disappearing on a later run means a generator
 fix landed, and check mode refuses to pass with a stale file still committed — the same reviewable-deletion discipline
-as `verifyCompileDiagnostics`. Ten such artifacts are committed today, all traced to confirmed generator defects in
+as `verifyCompileDiagnostics`. 62 such artifacts are committed today — 10 under `fetch-clients`, 13 each under
+`okhttp3-clients@sb3`/`@sb4` and `spring-reactive-web-clients@sb3`/`@sb4` — all traced to confirmed generator defects in
 [`docs/superpowers/plans/2026-07-25-generator-bug-fixes.md`](../docs/superpowers/plans/2026-07-25-generator-bug-fixes.md)
-(defects 20, 41, 42, 43 and 44) — not fixed here, per this phase's rule that a generator fix changes generated output
-and belongs to its own phase.
+(defects 20, 41, 42, 43, 44, 46, 47, 48, 49 and 50) — not fixed here, per this phase's rule that a generator fix changes
+generated output and belongs to its own phase.
 
 **An absent artifact means "no declared field deviated," not "the request was wire-correct."** This is the single most
 misreadable thing about this tier, for three concrete, verified reasons:
@@ -624,8 +626,10 @@ misreadable thing about this tier, for three concrete, verified reasons:
 
 Relatedly, and stated the same way `test/integration/oracles.test.ts`'s class doc comment states it: a deviation
 artifact means **the generated client differs from the declared table** — this tier does not by itself adjudicate
-whether the table or the generator is the one that's wrong. Task 7's classification pass, recorded in that task's
-report, is what turned each of these ten into a confirmed generator defect rather than leaving that judgment implicit.
+whether the table or the generator is the one that's wrong. A separate classification pass, done once per target and
+recorded in that phase's task report, is what turned each of these 62 artifacts into a confirmed generator defect rather
+than leaving that judgment implicit: the original ten for `fetch-clients`, and the 52 across the four Kotlin units for
+phase 6.
 
 **The oracle-agreement test is load-bearing, not one test among many.** `test/integration/oracles.test.ts` proves the
 case table itself is representable on the wire and round-trips through a handwritten reference client and reference
@@ -635,28 +639,62 @@ as the standard a generated client is measured against.
 
 **`test/specs/integration/` is a corpus root like any other.** The kitchen-sink spec that backs the case table lives
 there and is picked up by `discoverSpecs()`, so it also gets ordinary tier-2 snapshots under `test/output/` and tier-3
-compile coverage under `test/compile/`, exactly like every other spec in the corpus. Tier 4 itself imports the generated
-client from the **committed** `test/output/typescript/fetch-clients/integration/kitchen-sink/` tree, not a
-freshly-generated one, so what the driver runs against is exactly what a reviewer already saw in a tier-2 diff.
+compile coverage under `test/compile/`, exactly like every other spec in the corpus. Tier 4 itself imports (or, for
+Kotlin, compiles together with a driver) the generated client from the **committed**
+`test/output/typescript/fetch-clients/integration/kitchen-sink/` tree and its four Kotlin siblings under
+`test/output/kotlin/<profile>/integration/kitchen-sink/`, never a freshly-generated one, so what a driver runs against
+is exactly what a reviewer already saw in a tier-2 diff.
 
-**This phase covers `fetch-clients` only, with no Docker.** Unlike tier 3, nothing here starts a container or takes
-minutes — the whole run is a loopback HTTP server and one `deno run` subprocess — so tier 4 needs no opt-in guard in
-this phase and runs as part of plain `deno task test`, which is a feature — though not the feature "catches drift":
-`deno task test` is plain `deno test -A`, which resolves to **write** mode locally (see "Snapshot modes" above), so a
-plain everyday run rewrites and deletes wire artifacts rather than failing on them. What the everyday loop genuinely
-catches is a non-zero driver exit, a mismatch between the case ids a driver reported and the ids it was asked for, and a
-surplus-request count that doesn't match the unmatched-case count — real failures, just not the same thing as "the
-recorded deviations are still accurate." Catching drift in the deviation artifacts themselves needs
-`deno task test:integration:check`, the same way tier 2's drift needs `deno task test:output:check`. Phases 6 and 7 add
-the containerized targets (`okhttp3-clients`, `spring-reactive-web-clients`, `spring-controllers`, `angular-services`,
-`k6-clients`, `easy-network-stub`) behind a `GOAST_INTEGRATION` guard, the same way tier 3 is guarded behind
-`GOAST_COMPILE` — those targets, unlike this one, will need it.
+**`fetch-clients` needs no Docker.** Unlike tier 3, nothing in this leg starts a container or takes minutes — the whole
+run is a loopback HTTP server and one `deno run` subprocess — so it needs no opt-in guard and runs as part of plain
+`deno task test`, which is a feature — though not the feature "catches drift": `deno task test` is plain `deno test -A`,
+which resolves to **write** mode locally (see "Snapshot modes" above), so a plain everyday run rewrites and deletes wire
+artifacts rather than failing on them. What the everyday loop genuinely catches is a non-zero driver exit, a mismatch
+between the case ids a driver reported and the ids it was asked for, and a surplus-request count that doesn't match the
+unmatched-case count — real failures, just not the same thing as "the recorded deviations are still accurate." Catching
+drift in the deviation artifacts themselves needs `deno task test:integration:check`, the same way tier 2's drift needs
+`deno task test:output:check`.
+
+**Phase 6 adds four Kotlin targets, gated behind Docker.** `okhttp3-clients@sb3`/`@sb4` and
+`spring-reactive-web-clients@sb3`/`@sb4` are driven the same way tier 3 compiles Kotlin — from inside the `kotlin`
+Docker image — behind the same `GOAST_INTEGRATION` guard tier 3 uses `GOAST_COMPILE` for, via
+`deno task test:integration:kotlin[:check]`. `test/integration/targets.ts`'s `WIRE_TARGETS` is the single source of
+truth for which `test/wire/<profile>/` directories are legitimate; `test/integration-tests/orphans.test.ts` sweeps every
+entry in it, not just `fetch-clients`.
+
+A few things about the Kotlin leg are easy to get wrong reading only the wire artifacts:
+
+- **The reference server binds `0.0.0.0`, only here.** `startRefServer(cases, { hostname: '0.0.0.0' })`
+  (`test/integration/kotlin-clients/integration.test.ts`) is a deliberate, owner-authorised relaxation of this repo's
+  usual "loopback only" rule, scoped to containerized runs: a driver running inside the `kotlin` image reaches the host
+  through `host.docker.internal`, which resolves to the container's bridge gateway address, not `127.0.0.1` — a
+  loopback-bound server would simply never receive the container's requests. The server's `baseUrl` deliberately stays
+  loopback; the container's own origin is built from the new `port` field instead.
+- **A synthesized single-project Gradle build, not the committed output tree's own build file.** `synthesizeDriverBuild`
+  (`test/integration/kotlin-clients/build.ts`) writes a `build.gradle.kts` that compiles the committed
+  `test/output/kotlin/<profile>/integration/kitchen-sink/` tree together with one handwritten driver per family
+  (`drivers/okhttp3/OkHttp3Driver.kt`, `drivers/reactive/ReactiveDriver.kt`), then `gradle run` executes it. The image's
+  `ENTRYPOINT` hardcodes `compileKotlin` for tier 3's purposes, so `runContainer` overrides it with `gradle … run` for
+  this leg.
+- **A driver hardcodes its calls, the same discipline as `fetch-clients`' driver, and prints one line per case.** Each
+  case is a real, typed call into the generated client — writing it in typed Kotlin at all _is_ the assertion that the
+  generated signature is usable — and the driver prints a `##GOAST-CASE##{…}` line per case, which the harness parses
+  back out of Gradle's own stdout/stderr.
+- **The image's warm dependency cache needed two more coordinates, at runtime, not compile time.**
+  `kotlinx-coroutines-core` (for `runBlocking`) and `kotlinx-coroutines-reactor` (for WebFlux's `await*` bridging a
+  Reactor `Mono`/`Flux`) are never imported by the generated code itself, only by the driver that calls it — see
+  `test/docker/kotlin/warmup/build.gradle.kts`.
+
+**Phase 7 still owes `spring-controllers`, `angular-services`, `k6-clients` and `easy-network-stub`,** each behind the
+same guard.
 
 The commands:
 
 ```bash
-deno task test:integration        # write mode: regenerates wire deviation artifacts
-deno task test:integration:check  # check mode: the CI-equivalent, fails on any drift
+deno task test:integration                # write mode: fetch-clients, no Docker
+deno task test:integration:check          # check mode: fetch-clients, no Docker
+deno task test:integration:kotlin         # write mode: the four Kotlin targets, needs Docker
+deno task test:integration:kotlin:check   # check mode: the four Kotlin targets, needs Docker
 ```
 
 ## Layout
@@ -667,9 +705,10 @@ test/
     snapshot/         # the snapshot engine (mode, tree, text-diff, normalize, verify-*, orphans)
     compile/          # the compile-gate engine (unit discovery, diagnostic parsers, verify)
     integration/      # the tier-4 wire engine (verify.ts: wireSnapshotFile, verifyWireDeviations)
+    kotlin/           # the Kotlin dependency table shared between tier 3 (compile) and tier 4 (drive)
     paths.ts          # repo root and spec directory paths
     declutter.ts      # strips noise from parsed ApiData before snapshotting
-    docker.ts         # docker CLI wrapper for tiers 3 and 4 (build, run, image tagging)
+    docker.ts         # docker CLI wrapper for tiers 3 and 4 (build, run, image tagging; entrypoint override)
     string.utils.ts   # dedent(n): strips template-literal indentation, deliberately EOL-agnostic (see Tier 1 above)
     ref-server.ts     # tier-4 reference server: an in-process HTTP server driven by the case table
     ref-client.ts     # tier-4 reference client: issues a case's expectRequest with raw fetch
@@ -682,7 +721,9 @@ test/
   compile/            # committed tier 3 diagnostics (see "Tier 3: compile gate" above)
   docker/             # image contexts for the tier 3 compilers (kotlin/, node/)
   cases/              # the tier-4 case table (cases.ts, casesFor, types.ts) — the shared source of truth
-  integration/        # tier-4 tests: the oracle-agreement proof, and one driver per target (fetch-clients/)
-  integration-tests/  # tier-4 orphan sweep (see "Tier 4: integration" above)
-  wire/               # committed tier-4 deviation artifacts, one profile subdirectory per target
+  integration/        # tier-4 tests: the oracle-agreement proof, targets.ts (WIRE_TARGETS), and one driver
+                      # per target — fetch-clients/ (no Docker) and kotlin-clients/ (build.ts synthesizes the
+                      # Gradle build, drivers/okhttp3/ and drivers/reactive/ hold the handwritten drivers)
+  integration-tests/  # tier-4 orphan sweep, over every WIRE_TARGETS entry (see "Tier 4: integration" above)
+  wire/               # committed tier-4 deviation artifacts, one profile subdirectory per WIRE_TARGETS entry
 ```
