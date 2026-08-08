@@ -6,3 +6,4 @@ export * from './snapshot/mod.ts';
 export * from './specs.ts';
 export * from './string.utils.ts';
 export * from './types.ts';
+export * from './wire.ts';
