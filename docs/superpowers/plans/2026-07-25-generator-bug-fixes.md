@@ -1750,7 +1750,7 @@ returning `'json'` exactly when the media-type string contains `json` (`:428-430
 derived independently, from the **success** response alone (`:261-262`, via `getEndpointSuccessResponseType` at
 `:362-373`). Two independent derivations, so a `'json'` error entry paired with a non-json `responseType` — the one
 pairing that would make the branch fire — is constructible in principle. It occurs nowhere. Measured across every
-`waitForResponse` call site in the committed `angular-services` output, all specs and both service profiles, **127**
+`waitForResponse` call site in the committed `angular-services` output, all specs in the one `angular-services` profile, **127**
 sites: exactly **2** carry a `'json'` entry in `errorResponseTypes`, and both belong to operations whose `responseType`
 is `'json'` — `test/output/typescript/angular-services/integration/kitchen-sink/services/widgets.service.ts:28` with its
 map at `:33-39`, and `test/output/typescript/angular-services/v3/response-variants/services/responses.service.ts:164`

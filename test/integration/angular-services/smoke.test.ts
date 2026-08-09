@@ -27,8 +27,11 @@ if (enabled) await requireDocker();
 if (enabled) {
   describe(`integration/${PROFILE} smoke`, () => {
     it('compiles the generated tree and makes one real call through it', async () => {
-      // Only the one case this driver drives: the reference server pops from a per-endpoint queue, and
-      // handing it all 19 would leave 18 unconsumed and say nothing.
+      // Only `getPet/ok` is *queued*, deliberately, even though the driver now issues all 19 calls: this is
+      // the infrastructure gate, and its job is to prove the compile-DI-network-decode chain works at all.
+      // The other 18 calls land in the reference server's surplus bucket and are ignored here, which is fine
+      // because nothing in this test reads `surplus` — `integration.test.ts` is what accounts for every case.
+      // Keeping the queue at one case is also what lets the payload assertion below stay exact.
       const cases = casesFor(PROFILE, 'client').filter((c) => c.id === 'getPet/ok');
       expect(cases, 'getPet/ok is missing from the case table').toHaveLength(1);
 

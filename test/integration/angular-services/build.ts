@@ -97,14 +97,30 @@ export function driverTsConfig(): string {
  *     it makes the out-dir self-contained instead of depending on a root-level symlink two files away, and
  *     `-sfn` makes it idempotent. Do not cite it as the reason resolution works.
  *
- * `tsc`'s exit code is deliberately ignored (`|| true`): the corpus is expected to type-check clean, but a
- * *type* error must not stop the run, because what this leg measures is runtime behaviour and a driver that
- * runs is more informative than a build that refused to. A real compile failure surfaces as a missing emitted
- * file and then as a Node module-not-found, with `tsc`'s own output already in the captured log.
+ * **`tsc`'s exit code is ignored, but a driver diagnostic is not.** The two are different failures and were
+ * conflated by an earlier revision of this function, which ended the compile with a bare `|| true`:
+ *
+ *   * A diagnostic in the **generated tree** must not stop the run. Tier 3 owns those — it records them as
+ *     committed snapshots per profile — and what this leg measures is runtime behaviour, so a tree that
+ *     type-checks imperfectly but runs is still informative.
+ *   * A diagnostic in the **handwritten driver** must stop the run, because this whole target's rationale is
+ *     that writing the call in typed TypeScript *is* the assertion that the generated signature is usable.
+ *     That assertion is worth nothing if a driver which does not type-check still runs, and the driver is in
+ *     no Deno module graph, so nothing else checks it. Measured before this guard existed: injecting
+ *     `pets.getPet({ id: 'abc', bogusNotAParam: 1 })` — a `TS2353` — left the entire leg green with the
+ *     artifacts unchanged.
+ *
+ * So `tsc`'s output is captured, echoed for the caller, and then grepped for the driver's own file. The grep
+ * matches `driver.ts(`, which catches the diagnostic whether `tsc` prints the path absolute or relative to its
+ * project directory; no file in the generated tree is named `driver.ts`.
  */
 export function buildCommand(): string {
   return [
-    `/opt/goast/node_modules/.bin/tsc -p ${OUT_DIR}/tsconfig.json || true`,
+    // Captured rather than streamed, so the guard below can read it; `cat` puts it back in the container's
+    // output either way, so a failure is diagnosable from the test's own error message.
+    `/opt/goast/node_modules/.bin/tsc -p ${OUT_DIR}/tsconfig.json > ${OUT_DIR}/tsc.log 2>&1 || true`,
+    `cat ${OUT_DIR}/tsc.log`,
+    `if grep -q 'driver\\.ts(' ${OUT_DIR}/tsc.log; then echo 'DRIVER TYPE ERRORS — see the tsc output above'; exit 1; fi`,
     `find ${OUT_DIR} -name '*.js' -exec sed -i -E "s#(from '[./][^']*)(')#\\1.js\\2#g; s#\\.js\\.js'#.js'#g" {} +`,
     `printf '{"type":"module"}' > ${OUT_DIR}/package.json`,
     `ln -sfn /opt/goast/node_modules ${OUT_DIR}/node_modules`,

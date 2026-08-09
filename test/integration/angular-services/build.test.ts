@@ -50,6 +50,21 @@ describe('angular-services build module', () => {
     expect(command).toContain(String.raw`s#\.js\.js'#.js'#g`);
   });
 
+  // The leg's whole rationale is that a typed call *is* the assertion the generated signature is usable, and
+  // the driver is in no Deno module graph, so this grep is the only thing enforcing it. Measured before the
+  // guard existed: a `TS2353` in a driver call left the entire leg green.
+  it('fails the build on a diagnostic in the driver while tolerating one in the generated tree', () => {
+    const command = buildCommand();
+
+    // Tolerated: `tsc`'s own exit code cannot fail the build, because tier 3 owns tree diagnostics.
+    expect(command).toContain('|| true');
+    // Enforced: a diagnostic naming the driver's file exits non-zero.
+    expect(command).toContain(String.raw`grep -q 'driver\.ts('`);
+    expect(command).toContain('exit 1');
+    // And the output has to reach the caller, or the failure is undiagnosable.
+    expect(command).toContain(`cat ${OUT_DIR}/tsc.log`);
+  });
+
   // The committed tree is mounted read-only, and the leg's whole claim is that it runs byte-identical
   // reviewed output — so the build must not so much as name it. An earlier revision of this test looked for
   // `'/tree -name'` and `sed…/tree`, both of which passed vacuously: `/tree` appears nowhere in the command,
