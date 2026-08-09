@@ -12,7 +12,7 @@ the one thing tier 4 is missing — a way to record a **target-level** failure t
 conformance claim — and then uses it. When the generator is fixed, the artifact disappears and the leg starts driving
 cases, exactly as a tier-3 diagnostics file does.
 
-**Tech Stack:** Deno (harness, test), Docker (`grafana/k6:0.54.0`, wrapped in a repo Dockerfile so the existing
+**Tech Stack:** Deno (harness, test), Docker (`grafana/k6:2.1.0`, wrapped in a repo Dockerfile so the existing
 content-hash image tagging applies).
 
 ## Global Constraints
@@ -73,16 +73,24 @@ independently by a reviewer:
 
    **The wording is version-dependent, and this is why Task 2 pins the image.** `grafana/k6:latest` is currently
    **v2.1.0**, and the failure was first measured there, wrapped as
-   `could not initialize '/scripts/probe.js': could not load JS test …`. On **0.54.0** — the version this plan pins, see
-   below — the same probe fails with the same specifier but a different envelope:
+   `could not initialize '/scripts/probe.js': could not load JS test …`. On **0.54.0** the same probe fails with the same specifier but a different envelope:
    `GoError: The moduleSpecifier \"../utils/request-builder\" couldn't be found on local disk. …`. Both carry a
    `time="…" level=error msg="…"` prefix whose timestamp changes every run. So the artifact text belongs to one pinned
    k6 version, and **Task 2 must re-measure against the pinned image rather than reusing either quote above.**
 
-   **Why pin 0.54.0 rather than the newest release:** tier 3 type-checks the generated k6 corpus against
-   `@types/k6@0.54.0` (`test/docker/node/package.json`). Running tier 4 on a k6 whose typings tier 3 does not use would
-   mean the two gates disagree about what the target runtime is, and a divergence between them would be ambiguous
-   rather than informative. If the typings are ever bumped, bump this pin with them.
+   **The pin is `2.1.0` — the newest release — by the owner's decision.** An earlier revision of this plan pinned
+   `0.54.0` on the grounds that tier 3 type-checks this corpus against `@types/k6@0.54.0`
+   (`test/docker/node/package.json`), so that the two gates would agree about what the target runtime is. The owner
+   ruled for the current version instead, which is the better default: a defect recorded against a three-year-old
+   runtime says much less about whether today's users are affected.
+
+   **The consequence is worth stating rather than burying.** Tier 3's typings are now far behind the runtime tier 4
+   executes, so the two gates no longer describe the same k6. That does not weaken either defect — both are module
+   *resolution* failures, reproduced on 0.54.0 and 2.1.0 alike — but it does mean a future type-level finding from
+   tier 3 could describe an API that no longer exists, and a future runtime finding here could describe one tier 3
+   cannot see. **Bumping `@types/k6` to match is the follow-up**, and it is deliberately not done in this plan: it
+   changes the `node` image's content hash and so re-runs tier 3's whole TypeScript leg, whose committed diagnostics
+   would have to be re-reviewed rather than assumed unchanged. That is its own change with its own review.
 2. **CDN dependency (defect 56).** In a scratch copy with `.js` extensions added, the same probe **succeeds** with
    network (`LOADED typeof PetsClient=function`) and fails with `--network none`:
    ```
@@ -100,7 +108,7 @@ into a Windows path — this cost real time during the spike.
 
 ## File Structure
 
-- `test/docker/k6/Dockerfile` (create) — `FROM grafana/k6:0.54.0`, so `buildImage`'s content-hash tagging applies
+- `test/docker/k6/Dockerfile` (create) — `FROM grafana/k6:2.1.0`, so `buildImage`'s content-hash tagging applies
   uniformly and no test hardcodes an upstream tag.
 - `test/harness/integration/target-state.ts` (create) — `TargetLoadFailure`, `targetFailureFile`,
   `verifyTargetLoadFailure`.
@@ -452,18 +460,23 @@ it loaded.
 `test/docker/k6/Dockerfile`:
 
 ```dockerfile
-FROM grafana/k6:0.54.0
+FROM grafana/k6:2.1.0
 
 # No layers of our own. This exists so the image goes through `buildImage`'s content-hash tagging like every
 # other tier-4 image, rather than a test hardcoding an upstream tag — pinning the base here means the tag
 # changes if the pin changes, and a stale image cannot be silently reused.
 ```
 
-Pin an explicit version rather than `latest`: the recorded load failure is k6's own error text, and `latest` would let
-an upstream release change a committed artifact with no repo change to explain it. **This is not hypothetical** — the
-error's envelope already differs between `0.54.0` and the current `latest` (v2.1.0); see the measurements section.
-`grafana/k6:0.54.0` is confirmed to exist and to reproduce the failure. `0.54.0` is chosen to match the
-`@types/k6@0.54.0` that tier 3 already checks this corpus against.
+**Pin the newest release explicitly — `2.1.0` — rather than the floating `latest` tag.** Those are different things and
+both halves matter. Newest, because a defect recorded against an old runtime says little about whether today's users
+are affected. Explicit, because the recorded load failure *is* k6's own error text, and a floating tag would let an
+upstream release rewrite a committed artifact with no repo change to explain it. That is not hypothetical: the
+envelope already differs between `0.54.0` (`GoError: The moduleSpecifier …`) and `2.1.0`
+(`could not initialize '…': could not load JS test '…': The moduleSpecifier …`).
+
+When this pin moves, expect three things to move with it: this Dockerfile, the committed artifact, and
+`format-load-failure.test.ts`'s captured `SAMPLE`. The unresolved specifier — the actual finding — is stable across
+versions; only the wrapping is not.
 
 Also note the image's entrypoint is `k6`, so `runContainer` passes `['run', '/scripts/probe.js']` with no
 `entrypoint` override — unlike the `node` and `kotlin` images, whose entrypoints belong to tier 3 and have to be

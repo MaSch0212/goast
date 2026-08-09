@@ -16,8 +16,14 @@ export function formatLoadFailure(output: string): string {
   const match = MSG_FIELD.exec(output);
   if (match === null) return '';
 
-  return match[1]
-    .replace(/\\n/g, '\n')
-    .replace(/\\"/g, '"')
-    .trim();
+  // Trailing newline, because every other committed tier-4 artifact ends with one (measured: `0a` is the last
+  // byte of `test/wire/fetch-clients/getEncoded__ok.txt` and of every `formatDeviations` output, which ends each
+  // block with `\n`). Without it git reports `\ No newline at end of file` on every future diff of this file, and
+  // one snapshot in the family would read differently from all the others for no reason a reader could infer.
+  return `${
+    match[1]
+      .replace(/\\n/g, '\n')
+      .replace(/\\"/g, '"')
+      .trim()
+  }\n`;
 }
