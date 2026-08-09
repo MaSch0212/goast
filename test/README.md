@@ -615,7 +615,7 @@ traced to confirmed generator defects in
 fix changes generated output and belongs to its own phase.
 
 **An absent artifact means "no declared field deviated," not "the request was wire-correct."** This is the single most
-misreadable thing about this tier, for four concrete, verified reasons:
+misreadable thing about this tier, for five concrete, verified reasons:
 
 - `diffRequest` compares only headers a case's `expectRequest` **declares**. 11 of the 19 cases declare no headers at
   all, so an empty artifact for those says nothing about header correctness beyond the fields the table happened to
@@ -636,13 +636,21 @@ misreadable thing about this tier, for four concrete, verified reasons:
   names only fields inside those projections, checked case by case. But if that family ever populated a field the server
   never sent, `okhttp3-clients` would produce a `result` artifact and `spring-reactive-web-clients` would produce none —
   which would read as the reactive client being _more_ correct rather than less observed.
+- **`diffResponse` has the mirror image of the same blind spot, on the server direction's response headers.** It
+  compares only headers the case's `response` **declares**, for the same reason `diffRequest` does — a real response
+  carries `date`, `content-length` and `transfer-encoding` that no case names. But 8 of the 19 cases declare no response
+  headers at all — `deletePet/noContent`, `uploadPetPhoto/ok`, `allLocations/ok`, all three `styleMatrix` cases,
+  `pathStyleSimple/ok` and `getEncoded/ok`, every one of them a bodyless response — so for those an empty artifact says
+  nothing about what headers the generated server actually sent. The other eleven all declare
+  `content-type: application/json`, and exactly one header in the whole table is a generator-controlled response header
+  rather than a content type: `getWidget/ok`'s `x-rate-limit: 42`.
 
 Relatedly, and stated the same way `test/integration/oracles.test.ts`'s class doc comment states it: a deviation
 artifact means **the generated client differs from the declared table** — this tier does not by itself adjudicate
 whether the table or the generator is the one that's wrong. A separate classification pass, done once per target and
 recorded in that phase's task report, is what turned each of these 88 artifacts into a confirmed generator defect rather
 than leaving that judgment implicit: the original ten for `fetch-clients`, the 52 across the four Kotlin client units
-for phase 6, and the 26 across the four `spring-controllers` units for phase 7.
+for phase 6a, and the 26 across the four `spring-controllers` units for phase 6b.
 
 **The oracle-agreement test is load-bearing, not one test among many.** `test/integration/oracles.test.ts` proves the
 case table itself is representable on the wire and round-trips through a handwritten reference client and reference
@@ -700,7 +708,7 @@ A few things about the Kotlin leg are easy to get wrong reading only the wire ar
 
 ### The server direction
 
-**Phase 7 adds the other direction: four `spring-controllers` units, behind the same Docker guard.** Everything above
+**Phase 6b adds the other direction: four `spring-controllers` units, behind the same Docker guard.** Everything above
 drives a generated _client_. This leg inverts the roles. The generated code is a Spring Boot application running in the
 `kotlin` image, and `test/harness/ref-client.ts` — the same handwritten reference client the oracle-agreement test uses
 — issues each case's `expectRequest` against it over real HTTP from the host. What is under test moves to the other side

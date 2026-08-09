@@ -1451,10 +1451,12 @@ are not jointly satisfiable by any reader that exists. Both instructions come fr
 that never consult each other. This is the server-side sibling of defect 44's `content[0]` collapse and shares that
 line, but the consequence is strictly worse: on the client side a caller merely *cannot select* the second media type,
 whereas here the generated server publishes the second media type in its own contract — in `consumes` — and then
-answers a request honouring that contract with a `415`. (`consumes` is the *only* place it appears: measured, the
-string `application/x-www-form-urlencoded` occurs exactly once in the whole generated tree, and the operation carries
-no `io.swagger.v3.oas.annotations.parameters.RequestBody` annotation at all — the sole `mediaType` in its Swagger
-annotations is on `@ApiResponses`.)
+answers a request honouring that contract with a `415`. (`consumes` is the *only* place it appears: measured across the
+`integration/kitchen-sink` tree, the string `application/x-www-form-urlencoded` occurs exactly once — in
+`@RequestMapping(consumes = …)` — and the operation carries no
+`io.swagger.v3.oas.annotations.parameters.RequestBody` annotation at all, the sole `mediaType` in its Swagger
+annotations being on `@ApiResponses`. The wider `spring-controllers@sb3` profile directory has further hits, all in
+the unrelated `v3/request-bodies` spec.)
 
 **Tier 4 (server):** `test/wire/spring-controllers@sb3/updatePet__form.txt` (byte-identical in `@sb4`, `@sb3-strict`
 and `@sb4-strict`) — `status` expected `200`, actual `415`; `body` expected
