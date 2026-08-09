@@ -44,7 +44,7 @@ Every entry was found by the phase-2b corpus and independently verified by a rev
 
 | # | Defect | Site | Pinned by |
 | - | ------ | ---- | --------- |
-| 6 | `anyOf` is rendered as an **intersection** of `Partial<>` instead of a union. `AnyOfPrimitives` becomes `(Partial<string>) & (Partial<number>)`, which collapses to `never`. Every `anyOf` in the corpus is semantically wrong. | `generators/models/model-generator.ts:363-366` | `v3/anyof-schemas` (all names) |
+| 6 | `anyOf` is rendered as an **intersection** of `Partial<>` instead of a union. `AnyOfPrimitives` becomes `(Partial<string>) & (Partial<number>)`, which collapses to `never`. Every `anyOf` in the corpus is semantically wrong. **This no longer holds, and the Site citation had rotted — found by phase 7a's citation audit.** `getCombinedType` (`packages/typescript/src/generators/models/model-generator.ts:391-401`) now emits a union for `anyOf` branches, its own comment saying why no `Partial<>` wrapper is needed, and the committed output agrees: `test/output/typescript/models/v3/anyof-schemas/models/any-of-primitives.ts` reads `export type AnyOfPrimitives = (string) \| (number);`. Fixed by `8c2424e`, an ancestor of the commit adding this note. The site this row used to cite, `packages/typescript/src/generators/models/model-generator.ts:363-366`, now holds the unrelated discriminator-mapping intersection. Annotated rather than removed, as rows 8 and 16 are. | `packages/typescript/src/generators/models/model-generator.ts:391-401` | `v3/anyof-schemas` (all names) |
 | 7 | **105 ×** `TS2456` circular-type-alias errors (the original count of 18 was one spec in one profile): composed schemas are emitted as bare `type` aliases, which TypeScript forbids from referencing themselves. Assess feasibility — emitting an `interface` for object-shaped composed schemas is the known fix. If it proves disproportionate, document and defer rather than silently skipping. **Compile gate:** `test/compile/typescript/models/v3/discriminator-variants.txt`, `…/v3/anyof-cycle.txt` and the same pair under the other four TypeScript profiles — `TS2456 Type alias 'X' circularly references itself.`, **105 occurrences across 10 units** (two units in each of the 5 profiles; 21 occurrences per profile, being 18 in `v3/discriminator-variants` plus 3 in `v3/anyof-cycle`, which the original count did not include). Largest TypeScript defect the gate found on both occurrences and units. | model emission | `v3/discriminator-variants` |
 
 ### Batch 3 — Kotlin generator
@@ -68,7 +68,7 @@ Every entry was found by the phase-2b corpus and independently verified by a rev
 
 | # | Defect | Site | Pinned by |
 | - | ------ | ---- | --------- |
-| 15 | `nullable` is honoured **only** when rendering an object property. A nullable schema used as a type alias, an array item, or an `anyOf`/`oneOf` branch silently loses its `| null`. In TypeScript, `nullable` appears at exactly one site: `model-generator.ts:238`. So `AnyOfWithNullable`, whose second branch is `{integer, nullable: true}`, renders `(string) \| (number)` with no `null` anywhere. | TypeScript `model-generator.ts:238`; the Kotlin equivalent needs locating | `v3/anyof-schemas` `AnyOfWithNullable`, `v3/nullable-schemas` (all), `v3.1/nullable-schemas` |
+| 15 | `nullable` is honoured **only** when rendering an object property. A nullable schema used as a type alias, an array item, or an `anyOf`/`oneOf` branch silently loses its `| null`. In TypeScript, `nullable` appears at exactly one site: `model-generator.ts:238`. So `AnyOfWithNullable`, whose second branch is `{integer, nullable: true}`, renders `(string) \| (number)` with no `null` anywhere. **That worked example no longer holds — found by phase 7a's citation audit.** `test/output/typescript/models/v3/anyof-schemas/models/any-of-with-nullable.ts` now reads `export type AnyOfWithNullable = (string) \| (number) \| (null);`, fixed by `0ec7875` (an ancestor of the commit adding this note); the property-level site is still `packages/typescript/src/generators/models/model-generator.ts:238`, so read this row's remaining scope as the sites that example no longer covers — an array `items`, a `$ref`'d composition member, the Kotlin half — and re-scope it before picking it up. | TypeScript `packages/typescript/src/generators/models/model-generator.ts:238`; the Kotlin equivalent needs locating | `v3/anyof-schemas` `AnyOfWithNullable`, `v3/nullable-schemas` (all), `v3.1/nullable-schemas` |
 
 Found by the batch-2 reviewer, and it is the same gap batch 1 ran into from the other side: batch 1's core fixes for 3.1
 nullability churned no generator output precisely because no generator reads declaration-level nullability. Fixing this
@@ -137,7 +137,8 @@ protected getImportKind(fromModule: string): TypeScriptImportKind {
 
 `node:path`'s `extname` returns `''` for a path whose basename is exactly `.ts` — the same reason `.bashrc` has no
 extension: a leading dot with nothing before it is a hidden file, not an extension. So this one file is misclassified
-as a bare `'module'` specifier instead of a `'file'`, and `resolveModulePath` (`import-collection.ts:203-215`) only
+as a bare `'module'` specifier instead of a `'file'`, and `resolveModulePath`
+(`packages/typescript/src/import-collection.ts:203-215`) only
 calls `getModulePathRelativeToFile` — the function that turns an absolute path into a relative import — for the
 `'file'` kind. For `'module'`, the schema's raw absolute *output-directory* path is written straight into the
 package's `models.ts` barrel instead of a relative import.
@@ -287,6 +288,33 @@ operations both delegate to a shared, content-type-aware request builder instead
 Whether that builder itself handles `multipart/form-data` correctly is not verified here — only that neither of those
 two profiles inlines the JSON-stringify mistake `fetch-clients` does.
 
+**Tier 4 (angular), the opposite outcome — and the open question the paragraph above left is now answered.**
+`angular-services` does not exhibit this defect at any media type, and the builder it delegates to is the reason. It
+both records the declared content type and acts on it. Every line cited here is in
+`packages/typescript/assets/client/angular/request-builder.ts`, which each generated tree carries verbatim as its own
+`utils/request-builder.ts`: `RequestBuilder.body(value, contentType = 'application/json')` stores its second argument as
+`_bodyContentType` (`:258-263`); the form-urlencoded branch percent-encodes the object into `key=value&…` pairs
+(`:264-279`);
+the multipart branch builds a real `FormData` and passes a `Blob` through untouched (`:280-319`); and `build()` sets
+`Content-Type` from that field on every request except a `FormData` one, which is excluded precisely so the runtime can
+supply its own `boundary` (`:364-366`). The generator hands it the declared media type at each call site —
+`rb.body(params.body, 'application/json')`, `'text/plain'`, `'multipart/form-data'` and `'application/octet-stream'`
+(`test/output/typescript/angular-services/integration/kitchen-sink/services/pets.service.ts:93,133,154,175` and
+`test/output/typescript/angular-services/integration/kitchen-sink/services/blobs.service.ts:24`).
+
+**Tier 4 (angular):** not one of the five artifacts this defect owns for `fetch-clients` has an `angular-services`
+counterpart — no `updatePet__json.txt`, `createPet__created.txt`, `uploadBlob__ok.txt`, `uploadPetPhoto__ok.txt` or
+`addPetNote__text.txt` exists under `test/wire/angular-services/`. Those absences are measured, not inferred: the run
+recorded all 19 requests with zero surplus, and the recorded requests carry the right labels — `content-type:
+text/plain` around an *unquoted* `plain text body`, and `multipart/form-data; boundary=…` with the `file` part keeping
+filename `photo.png` and type `image/png`. `uploadBlob/ok`'s conformance is narrower than the other four and should not
+be read as this media type being handled in full: an untyped `Blob` makes `body` take `''` as the content type
+(`request-builder.ts:258-263` again), so no `Content-Type` header is sent at all, and the case does not declare one — see
+`test/README.md`'s
+sixth blind-spot bullet. The wider point is a fix-site narrowing rather than a contrast: a working, content-type-aware
+body builder already exists in this repo's own TypeScript assets, so the fix below has a model to follow rather than a
+design to invent.
+
 This is a distinct defect from `multipart-bodies.yml`'s inert `style` key (a corpus quirk recorded in `test/README.md`,
 not a generator bug): the `encoding` block being ignored is specification-conformant and separate from the body itself
 being serialized wrong regardless of `encoding`. Not fixed here — this phase records defects rather than fixing them.
@@ -392,7 +420,8 @@ as type names in the corpus, not as property names). **20 files** across the 10 
 That message shape occurs 80 times in the committed snapshots overall; the other 60 are in `v3/reserved-words` and
 belong to **defect 23** below, not here. Counting the shape rather than the spec would overstate this entry fourfold.
 
-TypeScript has no equivalent defect at this site: `getProperties` (`typescript/.../model-generator.ts:231`) emits a
+TypeScript has no equivalent defect at this site: `getProperties`
+(`packages/typescript/src/generators/models/model-generator.ts:231`) emits a
 property using its raw, uncased name as a quoted string-literal key rather than routing it through `toCasing`, so an
 empty or non-ASCII property name still produces a valid quoted key — `''?: string;` and `'日本語'?: string;` in
 `test/output/typescript/models/v3/extreme-names/models/object-with-extreme-properties.ts` and its `non-ascii-names`
@@ -422,11 +451,13 @@ identifier the parser rejects.
 `toKotlinPropertyName` (`packages/kotlin/src/utils.ts:18-23`) returns a backticked name for any value failing
 `/^[a-zA-Z_$][a-zA-Z_$0-9]*$/`, and `KotlinFileGenerator.toPropertyName`
 (`packages/kotlin/src/generators/file-generator.ts:18-20`) already composes it with `toCasing` — precisely the
-composition `getClassParameter` open-codes at `:308`. First, **it has zero callers**: `grep -rn "toPropertyName"
+composition `getClassParameter` open-codes at
+`packages/kotlin/src/generators/models/model-generator.ts:308`. First, **it has zero callers**: `grep -rn "toPropertyName"
 packages/` matches only its own definition and the import that feeds it, so the model generator bypasses it entirely.
 Second, **routing through it unchanged would fix nothing here**, because it guards on identifier *charset* alone, and
 `class`, `val`, `is`, `in` and `this` all match that pattern and would pass through unquoted. There is no keyword list
-anywhere in `packages/kotlin`. A fix therefore needs both halves — route `:308` and `:338` through the helper *and*
+anywhere in `packages/kotlin`. A fix therefore needs both halves — route `model-generator.ts:308` and its interface-property
+sibling `model-generator.ts:338` through the helper *and*
 give the helper a hard-keyword denylist. Either alone leaves this defect standing.
 
 `test/output/kotlin/models@sb3/v3/reserved-words/com/openapi/generated/model/ObjectWithReservedProperties.kt` declares
@@ -1014,6 +1045,22 @@ reactive family the specific mechanism is that `toUriString()` on a `UriComponen
 the raw string, which `WebClient.uri(String)` then re-parses as a URI template — so the `&` inside `a&b=c` becomes a
 parameter separator on re-parse.
 
+**Tier 4 (angular), the opposite outcome on a third generator — `angular-services` encodes both sides.** The Angular
+asset builder encodes each parameter where it is serialized rather than leaving it to the caller.
+`PathParameter.serializeValue` runs a string value through `encodeURIComponent` and then un-escapes exactly three
+sequences — `%3D`, `%3B` and `%2C` (`packages/typescript/assets/client/angular/request-builder.ts:126-132`) — which are
+the delimiters `style: simple`/`label`/`matrix` build their own structure out of, so `%20` and `%2F` survive and a `/`
+inside one path value stays inside its segment. The query side is encoded by Angular itself: `build()` constructs
+`HttpParams` with the generated `ParameterCodec` (`:347-349`, the class at `:9-26`), whose `encodeValue` is
+`encodeURIComponent`, so a value containing `&` or `=` cannot split the query string.
+
+**Tier 4 (angular):** no `getEncoded__ok.txt` exists under `test/wire/angular-services/`. The recorded request is
+`get /encoded/abc%20def%2Fx?raw=a%26b%3Dc` — both halves of this defect closed on the same case that exhibits both for
+`fetch-clients` and for `spring-reactive-web-clients`. Read that absence as "the encoding gap this entry records is
+closed for this generator", not as "path encoding is unconditionally right here": the three-sequence un-escape at
+`packages/typescript/assets/client/angular/request-builder.ts:128-130` re-emits a literal `,`, `;` or `=` inside a single
+path value raw, which no case in the table exercises.
+
 Not fixed here — this phase records defects rather than fixing them. A fix needs `encodeURIComponent` on both the
 substituted path-parameter value in `build()`'s path replace and each query key/value pair, applied once each value
 is stringified rather than left to the caller. For `spring-reactive-web-clients`, the fix needs the path-variable map
@@ -1106,6 +1153,31 @@ which scopes the fault to the space-delimited style rather than to query binding
 space as `+`, and says so in its own comment (`test/harness/ref-client.ts:42-48`). Spring decodes `+` back to a space,
 so the bound single element is `"a b"` either way and the conclusion is unaffected — but the raw bytes are `+`.
 
+**Tier 4 (angular), the opposite outcome on a fourth family — `angular-services` implements `style` and `explode`
+end to end.** Two things have to be true and both are. The generator *carries* the declared style: the per-parameter
+options object it emits gets a `style` property whenever `p.style` is defined and an `explode` property whenever
+`p.explode` is (`packages/typescript/src/generators/services/angular-services/angular-service-generator.ts:296-301`),
+which is what produces
+`rb.query('spaceDelimited', params.spaceDelimited, { style: 'spaceDelimited', explode: false })` and its two `form`
+siblings in the generated output
+(`test/output/typescript/angular-services/integration/kitchen-sink/services/params.service.ts:77-88`, and `:109-112`
+for the `style: simple` path array). And the builder *acts* on it: `QueryParameter.append` makes one
+`HttpParams.append` call per element for `explode: true`
+(`packages/typescript/assets/client/angular/request-builder.ts:146-149`) and otherwise picks its separator from the
+style — `' '` for `spaceDelimited`, `'|'` for `pipeDelimited`, `','` otherwise (`:151-157`) — with further arms for
+`deepObject` and for exploded objects (`:158-187`); `PathParameter.append` implements `simple`, `label` and `matrix`,
+including the repeated-name form an exploded `matrix` array needs (`:92-122`).
+
+**Tier 4 (angular):** none of `styleMatrix__formExploded.txt`, `styleMatrix__formUnexploded.txt`,
+`styleMatrix__spaceDelimited.txt` or `pathStyleSimple__ok.txt` exists under `test/wire/angular-services/`. The recorded
+requests are `?formExploded=a&formExploded=b`, `?formUnexploded=a,b`, `?spaceDelimited=a b` (`a%20b` on the wire) and
+`get /styles/a,b` — all four declared styles served correctly. The contrast with this entry's opening paragraph is
+worth keeping straight: `fetch-clients` conforms on two of these four *by construction*, its single comma join
+happening to coincide with what those two styles ask for, and the four Kotlin units conform on none because their
+separator is one character wider. `angular-services` is the only client family here that reaches all four by branching
+on the style it was given, which places the fix for the other three squarely at their own join sites rather than
+anywhere upstream in the core model.
+
 Not fixed here — this phase records defects rather than fixing them. A fix needs `withQueryParam`/`withPathParam` to
 receive the parameter's `style`/`explode` and branch: repeated `append` calls for `explode: true`, a space or pipe
 join for `spaceDelimited`/`pipeDelimited`, and the current comma join kept only for the styles that actually call for
@@ -1163,6 +1235,35 @@ generated code has to *emit* the cookie and demonstrably does not — the `fetch
 above. Both `test/README.md`'s server-direction section and
 `test/integration/spring-controllers/delegates/lenient/ParamsDelegate.kt`'s doc comment say so at the point of use.
 
+**Tier 4 (angular), confirmed on a fifth family — and this is the worst form of the defect so far, because the
+generated type advertises the parameter it drops.** `angular-services` has two passes over an operation's parameters
+and they disagree with each other. The params-type pass iterates `endpoint.parameters` with **no filter at all**
+(`packages/typescript/src/generators/services/angular-services/angular-service-generator.ts:187-199`), so the cookie
+parameter does reach the generated signature: `AllLocationsParams` declares `session?: string`
+(`test/output/typescript/angular-services/integration/kitchen-sink/services/params.service.ts:14-19`). The method-body
+pass then filters to the same three targets every other generator in this entry filters to —
+`p.target === 'path' || p.target === 'query' || p.target === 'header'`
+(`packages/typescript/src/generators/services/angular-services/angular-service-generator.ts:293-294`) — so the body emits
+`rb.path`,
+`rb.query` and `rb.header` calls and nothing whatsoever for `params.session` (`params.service.ts:52-57`). There is
+nothing for it to emit into either: `RequestBuilder`'s only parameter setters are `path`, `query` and `header`
+(`packages/typescript/assets/client/angular/request-builder.ts:237-253`), and the asset has no cookie support anywhere.
+
+Where `fetch-clients` and the two Kotlin client families *drop* the parameter from the signature — leaving a caller no
+way to express it and no illusion that there is one — `angular-services` **accepts** it and silently discards it.
+`allLocations({ pathParam: 'loc1', session: 'abc123' })` type-checks, compiles under tier 3, and produces a request
+with no `Cookie` header. That is the same missing capability with a type-level lie on top, and it is the only form of
+this defect a consumer cannot discover by reading the generated signature.
+
+**Tier 4 (angular):** `test/wire/angular-services/allLocations__ok.txt` — `header.cookie` expected `session=abc123`,
+actual `<absent>`, **byte-identical** to `fetch-clients`' and to all four Kotlin units'. The artifact cannot express the
+difference described above and neither can the wire, because a dropped parameter and an accepted-then-discarded one put
+identical bytes on it; that difference lives only in this entry and in the generated source. The driver did pass
+`session: 'abc123'` (`test/integration/angular-services/driver/driver.ts`), so the artifact records an argument that was
+really supplied and really discarded rather than one that could not be supplied at all. The operation's other three
+parameters land correctly in the same recorded request — `get /locations/loc1?queryParam=q1` with `x-header-param: h1` —
+which scopes the fault to the cookie location rather than to parameter handling generally.
+
 Not fixed here — this phase records defects rather than fixing them. A fix needs the fetch-client generator's
 parameter-collection pass (whichever function currently filters to `target === 'path' | 'query' | 'header'` — see
 defect 35's list of that filter's other call sites) to also collect `target === 'cookie'` parameters into the method
@@ -1171,7 +1272,11 @@ signature, and the request-building code to join them into one `Cookie` header v
 site. `spring-controllers` needs the same addition at its own `getAllParameters`
 (`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:1031-1035`) plus a
 `@CookieValue` arm in the annotation pass — the server side of this defect needs a fix even though this tier cannot
-fail on it.
+fail on it. `angular-services` needs the addition in two places: a `'cookie'` arm on the method-body filter at
+`packages/typescript/src/generators/services/angular-services/angular-service-generator.ts:293-294`, and a `cookie()`
+setter on the `RequestBuilder` asset that joins every collected cookie into one `Cookie` header the way the three
+existing setters build their own targets. Whichever way it is fixed, the two passes must end up agreeing: a params type
+that keeps advertising a field the body pass cannot send is worse than one that never offered it.
 
 ### Defect 44 — a multi-media-type `requestBody` collapses to its first declared content entry, with no way for a caller to select another (found by the tier-4 wire contract, not scheduled)
 
@@ -1226,11 +1331,48 @@ actual `{"kind":"json","value":{"age":4,"name":"Rex"}}`: both Kotlin families se
 as JSON, the same wrong-shape-and-label consequence `fetch-clients`' own `updatePet__form.txt` records for the
 distinct-but-related reason discussed above.
 
+**Tier 4 (angular), confirmed on a fifth family — the same `content[0]` collapse, and the one family where the runtime
+already implements the media type its caller cannot select.** `angular-services` reads `content[0]` at both of the two
+sites that decide what a caller can send, exactly as this entry describes for the other four. The body property's type
+comes from `endpoint.requestBody.content[0].schema`
+(`packages/typescript/src/generators/services/angular-services/angular-service-generator.ts:201-210`, the `content[0]`
+at `:203`), and the content type the emitted `rb.body(...)` call carries comes from
+`ctx.config.defaultRequestContentType ?? endpoint?.requestBody?.content[0].type ?? 'application/json'` (`:358-359`,
+emitted at `:310`). So `PetsService.updatePet` is one method, `UpdatePetParams = { id: string; body: PetUpdate }`
+(`test/output/typescript/angular-services/integration/kitchen-sink/services/pets.service.ts:23-26`), whose body
+unconditionally runs `rb.body(params.body, 'application/json')` (`:93`) — no overload, no content-type field, no branch.
+
+Two things make this family's form of the collapse distinctive, and both narrow the fix rather than widen the defect.
+First, the collapse is *documented as intended*: `defaultRequestContentType`'s own doc comment reads "If not defined the
+first one defined in the OpenApi specification is used"
+(`packages/typescript/src/generators/services/angular-services/models.ts:72-76`, defaulting to `undefined` at `:160`).
+That option is the only existing escape hatch and it is generator-wide — `angular-service-generator.ts:359` applies it to
+every operation — so it
+can trade one media type for the other wholesale but cannot select per operation, let alone per call. Second, the
+runtime is already capable: `RequestBuilder.body`'s second argument is a plain content-type string, and its
+form-urlencoded branch percent-encodes the object into `name=Rex&age=4`
+(`packages/typescript/assets/client/angular/request-builder.ts:264-279`) — precisely the encoding `updatePet/form`
+expects. The missing piece here is one argument at one call site, not a serializer.
+
+**Tier 4 (angular):** `test/wire/angular-services/updatePet__form.txt` — `body` expected
+`{"fields":{"age":["4"],"name":["Rex"]},"kind":"form"}`, actual `{"kind":"json","value":{"age":4,"name":"Rex"}}`,
+byte-identical to the two Kotlin families' artifact quoted above and deliberately *not* identical to
+`fetch-clients`', whose `actual` is `{"kind":"text","value":"{\"name\":\"Rex\",\"age\":4}"}`. That difference is the
+useful part: the reference server can label angular's body `json` only because `RequestBuilder` really did send
+`Content-Type: application/json`, so this artifact isolates the `content[0]` collapse from defect 20's missing-header
+mechanism, which `fetch-clients`' artifact conflates with it. The driver issues the identical call for `updatePet/form`
+that it issues for `updatePet/json`, because the signature admits nothing else — the case table declares the same
+request and response for both cases for exactly that reason, so that the encoding is what is observed.
+
 Not fixed here — this phase records defects rather than fixing them. A fix needs the fetch-client generator to emit
 one overload (or a discriminated body parameter) per declared media type in `requestBody.content`, rather than
 building a single method's parameter type and serialization from `content[0]` alone. For Kotlin, both generators need
 the equivalent second signature (or discriminated body parameter) for `updatePet`'s second media type, since both
-currently read `content[0]` exclusively at the sites cited above.
+currently read `content[0]` exclusively at the sites cited above. `angular-services` is the cheapest of the five to fix
+and worth doing first for that reason: the second signature (or a `contentType` field on the params type) only has to
+reach the existing `rb.body(value, contentType)` argument, and the asset already encodes every media type this spec
+declares. Whatever shape it takes, `defaultRequestContentType` is not it — a generator-wide default cannot express an
+operation that genuinely declares two.
 
 ### Defect 45 — the Kotlin client success-response predicate is order-dependent, so an error schema can win as the success return type (found by the final whole-branch review of the tier-4 unblock plan, not scheduled)
 
@@ -1586,12 +1728,86 @@ property that makes the strict flavour worth having, so the factory list is the 
 `default`-response blind spot in this same generator at compile level — it wrote `responseCode = null`, uncompilable,
 and was fixed; this is the behavioural half of that same omission, surviving in the strict path.
 
+### Defect 54 — `angular-services` re-decodes an error body the framework has already decoded, so the branch is unreachable for every operation the corpus generates and an unguarded `JSON.parse` where it is reachable (found by the tier-4 wire contract, not scheduled)
+
+Every generated service method hands `waitForResponse` an `errorResponseTypes` map, and the asset's entire use of that
+map is one condition:
+
+```ts
+if (options.errorResponseTypes[error.status] === 'json' && typeof error.error === 'string') {
+```
+
+(`packages/typescript/assets/client/angular/angular-service.utils.ts:29` — the asset each generated tree carries verbatim
+in its own `utils/` directory), whose body rebuilds the `HttpErrorResponse` around `JSON.parse(error.error)`
+(`angular-service.utils.ts:30-37`). The first half is decided by generated code and the second by the HTTP backend, and
+for anything this generator emits today they cannot both be true.
+
+The map's values come from each error response's first declared content type —
+`parser: this.contentTypeToResponseType(x.contentOptions[0]?.type)`
+(`packages/typescript/src/generators/services/angular-services/angular-service-generator.ts:165`), with the helper
+returning `'json'` exactly when the media-type string contains `json` (`:428-430`). The request's own `responseType` is
+derived independently, from the **success** response alone (`:261-262`, via `getEndpointSuccessResponseType` at
+`:362-373`). Two independent derivations, so a `'json'` error entry paired with a non-json `responseType` — the one
+pairing that would make the branch fire — is constructible in principle. It occurs nowhere. Measured across every
+`waitForResponse` call site in the committed `angular-services` output, all specs and both service profiles, **127**
+sites: exactly **2** carry a `'json'` entry in `errorResponseTypes`, and both belong to operations whose `responseType`
+is `'json'` — `test/output/typescript/angular-services/integration/kitchen-sink/services/widgets.service.ts:28` with its
+map at `:33-39`, and `test/output/typescript/angular-services/v3/response-variants/services/responses.service.ts:164`
+with its map at `:169-175`. The other 125 carry `'text'`-only maps, where the first half of the condition is false for
+every status.
+
+And when `responseType` is `'json'`, the second half is false, because the backend has already decoded the body before
+the `HttpErrorResponse` exists. Verified in the pinned backend rather than assumed: `FetchBackend.parseBody`
+`JSON.parse`s for `responseType: 'json'`, and a parse *failure* is delivered as the thrown `SyntaxError` object itself
+rather than as text (`@angular/common@19.2.0`, `fesm2022/http.mjs`, the copy the `node` image installs from
+`test/docker/node/package.json`). So for every operation in the corpus the generated re-decode layer does nothing at
+all.
+
+**Where the branch can fire it is also unguarded — PLAUSIBLE, read from the pinned backend's source and not exercised
+by this leg.** `HttpXhrBackend` differs from `FetchBackend` on precisely the value this condition tests: for
+`responseType: 'json'` on a non-2xx whose body fails to parse, it restores the original string body, its own comment in
+the same file saying why ("If this was an error request to begin with, leave it as a string, it probably just isn't
+JSON"). A consumer on the XHR backend — which is what `provideHttpClient()` selects without `withFetch()` — would
+therefore reach `angular-service.utils.ts:31` with a string that has *already* failed to parse, and that `JSON.parse` sits
+inside a `.catch`
+callback with no `try`, so it throws and the returned `AbortablePromise` **rejects** with a `SyntaxError` instead of
+resolving to the `HttpErrorResponse` its own declared return-type union promises. This leg provides `FetchBackend` only
+(see `test/README.md`'s Angular section) and no case in the table declares an unparseable JSON error body, so this half
+is a reading of the backend source, not a measurement — hence PLAUSIBLE rather than confirmed, and worth measuring
+before anyone acts on it.
+
+**Both halves are generator defects rather than framework behaviour, and the second is the clearer of the two.** The two
+backends' string-versus-object difference is documented, intended behaviour on their own terms; generated code that
+tests for it is right to, and generated code that then calls `JSON.parse` on the value the framework handed over
+*because* it was not parseable is not. The dead half is a defect of a milder kind — an emitted layer that duplicates
+what both backends already do — but it is what hides the second, since nothing in the corpus ever exercises the branch
+that would fail.
+
+**Tier 4 (angular):** no artifact records this and none can. The mechanism sits on the response-decoding path, and this
+tier compares the request bytes and the decoded result, both of which come out right either way. The positive evidence
+that the branch is dead is `getWidget/unexpectedError`: the driver reports the decoded
+`{"message":"Unexpected error","code":503}` although `503` appears nowhere in `getWidget`'s map
+(`services/widgets.service.ts:33-39` lists `400`, `401`, `403`, `404` and `500`), so `waitForResponse` returned that
+`HttpErrorResponse` untouched (`angular-service.utils.ts:38`) and Angular's own backend must have done the decoding.
+The four *mapped* `getWidget` statuses decode identically, and all five cases conform with no artifact — which should be
+read as "the error path works", not as "the generated `errorResponseTypes` map works". The map contributed nothing to
+any of them.
+
+Not fixed here — this phase records defects rather than fixing them. A fix has to decide which layer owns the decision.
+Deleting the branch and letting the request's own `responseType` be the single place a body's parsing is chosen is the
+smaller change and loses nothing the corpus uses. Keeping it means making the pairing it exists for actually reachable —
+deriving `responseType` from the declared error content types as well as the success one — and wrapping the parse in a
+`try` that falls back to the raw body. What must not survive is the present state, in which the branch is
+simultaneously unreachable and unsafe.
+
 ### Also registered, not scheduled
 
 Small, verified, and each needing either a decision or a home:
 
-- **Kotlin `hasProperty` is not undefined-safe** at `packages/kotlin/src/generators/models/model-generator.ts:732-733`:
-  `'oneOf' in schema && schema.oneOf.some(...)`. `normalizeSchema` in the same file constructs `{...schema, oneOf:
+- **Kotlin `hasProperty` is not undefined-safe** at `packages/kotlin/src/generators/models/model-generator.ts:835-836`
+  (`hasProperty` itself begins at `:819`; this bullet cited `:732-733` before the citation audit of phase 7a caught the
+  drift — the code moved, the defect did not): `'oneOf' in schema && !schema.discriminator && schema.oneOf.some(...)`,
+  the discriminator guard having been added since. `normalizeSchema` in the same file constructs `{...schema, oneOf:
   undefined}`, so an own `oneOf` key holding `undefined` is a shape this codebase produces. Unreachable today because
   the only caller is filtered to discriminated schemas. `schema.oneOf?.some(...)` closes it. Fold into batch 5.
 - **Enums whose values share a string form emit dead constants.** `[2, '2', 2.0]` yields `_2`, `_2_2`, `_2_3`, all

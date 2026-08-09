@@ -7,16 +7,17 @@ This file documents what exists today.
 ## Prerequisites
 
 Deno and Docker. The everyday loop — tiers 1, 2 and the `fetch-clients` leg of tier 4 — needs only Deno; Docker is
-required for tier 3 and for tier 4's Kotlin targets.
+required for tier 3 and for every other tier-4 target (the four Kotlin ones, the four `spring-controllers` ones, and
+`angular-services`).
 
 ## Tiers
 
-| # | Tier        | Question                                              | Command                                                   | Status                                                                                                              |
-| - | ----------- | ----------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| 1 | Unit        | Does this function do what it says?                   | `deno task test`                                          | active                                                                                                              |
-| 2 | Output      | Did the generated text change?                        | `deno task test:output`                                   | active                                                                                                              |
-| 3 | Compile     | Is the generated code valid in its language?          | `deno task test:compile`                                  | active                                                                                                              |
-| 4 | Integration | Does the generated code behave correctly on the wire? | `deno task test:integration` / `:kotlin` / `:controllers` | client direction: fetch-clients, okhttp3-clients, spring-reactive-web-clients; server direction: spring-controllers |
+| # | Tier        | Question                                              | Command                                                                | Status                                                                                                                                |
+| - | ----------- | ----------------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 | Unit        | Does this function do what it says?                   | `deno task test`                                                       | active                                                                                                                                |
+| 2 | Output      | Did the generated text change?                        | `deno task test:output`                                                | active                                                                                                                                |
+| 3 | Compile     | Is the generated code valid in its language?          | `deno task test:compile`                                               | active                                                                                                                                |
+| 4 | Integration | Does the generated code behave correctly on the wire? | `deno task test:integration` / `:kotlin` / `:controllers` / `:angular` | client direction: fetch-clients, angular-services, okhttp3-clients, spring-reactive-web-clients; server direction: spring-controllers |
 
 ## Tier 1: unit tests
 
@@ -606,16 +607,17 @@ file. A case where the generated client's actual wire behaviour differs from the
 `test/wire/<profile>/<caseId-with-slashes-as-double-underscore>.txt`, holding one `field`/`expected`/`actual` block per
 difference. `deno task test:integration` regenerates in write mode; a file disappearing on a later run means a generator
 fix landed, and check mode refuses to pass with a stale file still committed — the same reviewable-deletion discipline
-as `verifyCompileDiagnostics`. 88 such artifacts are committed today — 62 from the client direction (10 under
-`fetch-clients`, 13 each under `okhttp3-clients@sb3`/`@sb4` and `spring-reactive-web-clients@sb3`/`@sb4`) and 26 from
-the server direction (6 each under `spring-controllers@sb3`/`@sb4`, 7 each under `@sb3-strict`/`@sb4-strict`) — all
-traced to confirmed generator defects in
+as `verifyCompileDiagnostics`. 90 such artifacts are committed today — 64 from the client direction (10 under
+`fetch-clients`, **2** under `angular-services`, 13 each under `okhttp3-clients@sb3`/`@sb4` and
+`spring-reactive-web-clients@sb3`/`@sb4`) and 26 from the server direction (6 each under
+`spring-controllers@sb3`/`@sb4`, 7 each under `@sb3-strict`/`@sb4-strict`) — all traced to confirmed generator defects
+in
 [`docs/superpowers/plans/2026-07-25-generator-bug-fixes.md`](../docs/superpowers/plans/2026-07-25-generator-bug-fixes.md)
 (defects 20, 41, 42, 43, 44, 46, 47, 48, 49, 50, 51, 52 and 53) — not fixed here, per this phase's rule that a generator
 fix changes generated output and belongs to its own phase.
 
 **An absent artifact means "no declared field deviated," not "the request was wire-correct."** This is the single most
-misreadable thing about this tier, for five concrete, verified reasons:
+misreadable thing about this tier, for six concrete, verified reasons:
 
 - `diffRequest` compares only headers a case's `expectRequest` **declares**. 11 of the 19 cases declare no headers at
   all, so an empty artifact for those says nothing about header correctness beyond the fields the table happened to
@@ -644,13 +646,22 @@ misreadable thing about this tier, for five concrete, verified reasons:
   nothing about what headers the generated server actually sent. The other eleven all declare
   `content-type: application/json`, and exactly one header in the whole table is a generator-controlled response header
   rather than a content type: `getWidget/ok`'s `x-rate-limit: 42`.
+- **`uploadBlob/ok` conforms while sending no `Content-Type` header at all,** for an operation whose request body the
+  spec declares as `application/octet-stream`. It conforms only because that case's `expectRequest` names no headers,
+  and the first bullet's rule then applies: `diffRequest` compares a header exclusively where the case declares it.
+  Every case's `Accept` header goes unchecked for the same reason. So a clean case on any client leg — the 17 clean
+  cases on the `angular-services` leg included — is a claim about the path, the query, the body and the returned result,
+  not about the full request. The fix is a case-table change (declare the header on the cases that should assert it),
+  not a harness change, and it is deliberately not made here: editing `test/cases/cases.ts` would also change the
+  committed `fetch-clients` artifacts, so it belongs in its own change with those diffs reviewed alongside it.
 
 Relatedly, and stated the same way `test/integration/oracles.test.ts`'s class doc comment states it: a deviation
 artifact means **the generated client differs from the declared table** — this tier does not by itself adjudicate
 whether the table or the generator is the one that's wrong. A separate classification pass, done once per target and
-recorded in that phase's task report, is what turned each of these 88 artifacts into a confirmed generator defect rather
+recorded in that phase's task report, is what turned each of these 90 artifacts into a confirmed generator defect rather
 than leaving that judgment implicit: the original ten for `fetch-clients`, the 52 across the four Kotlin client units
-for phase 6a, and the 26 across the four `spring-controllers` units for phase 6b.
+for phase 6a, the 26 across the four `spring-controllers` units for phase 6b, and the 2 for `angular-services` in phase
+7a.
 
 **The oracle-agreement test is load-bearing, not one test among many.** `test/integration/oracles.test.ts` proves the
 case table itself is representable on the wire and round-trips through a handwritten reference client and reference
@@ -805,7 +816,90 @@ its own, and they matter for the same reason — an absent artifact is a positiv
   the generated signature gave the delegate somewhere to receive. A parameter the generator drops is invisible here
   precisely _because_ it was dropped, which is the one failure mode a server-side oracle cannot catch on its own.
 
-**Phase 7 still owes `angular-services`, `k6-clients` and `easy-network-stub`,** each behind the same guard.
+### The Angular leg
+
+**Phase 7a adds `angular-services`, the first tier-4 target that has to be _compiled_ before it can be driven.**
+Structurally it is phase 6a's Kotlin client leg again — a handwritten driver with hardcoded calls runs in a container,
+reaches the in-process reference server on the host through `host.docker.internal`, and prints one `##GOAST-CASE##` line
+per case — but the runtime is tier 3's `node` image rather than the `kotlin` one, and what runs is JavaScript that `tsc`
+emitted from the committed tree. `test/integration/angular-services/build.ts` holds the tsconfig and the container-side
+shell pipeline, `driver/driver.ts` the 19 calls, and `integration.test.ts` the leg itself, behind the same
+`GOAST_INTEGRATION` guard as everything else here. **2 of the 19 cases deviate** — the smallest artifact count of any
+client target so far, against `fetch-clients`' 10.
+
+**The generated services are instantiated with `Injector.create`, not `TestBed`.** `ApiBaseService` initializes its
+fields with `inject(ApiConfiguration)` and `inject(HttpClient)`, so a service cannot be constructed with `new` — it
+needs a real injection context. It needs nothing else a platform provides, though, and one provider per service in a
+plain `Injector.create` is enough; `TestBed` would require `platform-browser-dynamic/testing` and therefore a DOM this
+leg has no use for.
+
+**`FetchBackend` stands in for `provideHttpClient(withFetch())`, which is what the spec named — so this is a deliberate
+deviation, recorded rather than glossed over.** `provideHttpClient(...)` returns `EnvironmentProviders`, which
+`Injector.create` does not accept, and taking it would mean reaching for an `EnvironmentInjector`, which without a
+platform drags in exactly the DOM dependency the paragraph above avoids. Providing `FetchBackend` directly as the
+`HttpHandler` selects **the same backend** `withFetch()` selects; the substitution drops only the interceptor chain.
+That is equivalent for everything this tier measures: interceptors are consumer code, no generated `angular-services`
+code emits or registers one, and nothing in the case table can observe one. It is not equivalent for everything, and the
+boundary is worth knowing — defect 54's one claim about `HttpXhrBackend`, the backend `provideHttpClient()` selects
+_without_ `withFetch()`, is unmeasurable on this leg for precisely this reason, and is registered as PLAUSIBLE rather
+than confirmed because of it.
+
+**`zone.js` and `@angular/compiler` are both required, and each surfaces as a crash rather than a warning when it is
+missing.** `FetchBackend` injects `NgZone`, and `new NgZone({})` throws unless a Zone has been loaded, so
+`import 'zone.js'` is the driver's first line. `@angular/compiler` is needed because `@angular/common` ships
+partially-compiled and nothing here runs the Angular linker: without it the first injectable resolution fails with
+`The injectable 'PlatformNavigation' needs to be compiled using the JIT compiler, but '@angular/compiler' is not available.`
+It is the only dependency this leg added to `test/docker/node/package.json` (at `19.2.0`, matching `@angular/core`), and
+adding it re-runs tier 3's containerized TypeScript group, because the image's content hash is part of that gate's tag.
+
+**The emitted JS gets `.js` extensions added, the committed tree is never touched, and that rewrite is correct output
+handling rather than a papered-over defect.** `tsc` copies a relative specifier through verbatim, so the generated
+tree's `'../utils/api-base-service'` survives into the emitted JavaScript and Node's ESM loader refuses to resolve it.
+`buildCommand()` therefore `sed`s `.js` onto every relative specifier under `OUT_DIR` — and only there, collapsing any
+`.js.js` so a re-run is idempotent — while the tree stays bind-mounted **read-only** at `/tree`, so what is compiled is
+byte-identical to what a reviewer saw in a tier-2 diff. Extensionless specifiers are the _right_ output for this target:
+every real Angular consumer bundles, and `moduleResolution: "bundler"` is what the generated code is written against.
+Contrast `k6-clients`, where the runtime _is_ the loader and no bundling step exists — there the same extensionless
+import stops the generated code from loading at all, which is a genuine generator defect and part of why that target is
+still undriven (see the closing note of
+[`docs/superpowers/plans/2026-08-09-tier-4-angular-services.md`](../docs/superpowers/plans/2026-08-09-tier-4-angular-services.md)).
+
+**The driver supplies the two auth headers itself, per call, because the generated client has no code path for them.**
+`createPet/created` declares `authorization: Bearer secret-token` and all five `getWidget` cases declare
+`x-api-key: secret-key`. `angular-services` emits no security-scheme code at all — the same finding phase 5 made for
+`fetch-clients` — and unlike that target there is no client-constructor `headers` option either: `ApiConfiguration`
+carries only `rootUrl`. What every generated method _does_ accept is an optional second `HttpContext` parameter,
+threaded straight into the `HttpRequest` by `RequestBuilder.build()`. So the driver defines an `HttpContextToken`
+holding a header record and installs a small `HttpHandler` (`ExtraHeadersHandler`) that wraps `FetchBackend`, reads the
+token off each request and sets those headers before delegating. With no interceptor chain to hook into, that handler
+_is_ the interceptor chain, registered by hand as the thing `HttpClient` calls. It is narrower than every other leg's
+approach — `fetch-clients` and both Kotlin drivers add the header to every request an instance ever makes — so here only
+the calls that declare a header carry one, and the auth-header blind spot listed above is correspondingly smaller on
+this leg.
+
+**Both artifacts, and what neither of them says.** `test/wire/angular-services/updatePet__form.txt` records a `form`
+body expected and a `json` body sent; `allLocations__ok.txt` records the absent `session` cookie. They are defect 44 and
+defect 43 in the register. Two things to know before reading them:
+
+- `allLocations__ok.txt` is **byte-identical** to `fetch-clients`', although the underlying defect is _worse_ here.
+  `AllLocationsParams` declares `session?: string` and the method body never reads it, so this generated type promises a
+  parameter its implementation silently discards, where `fetch-clients` at least drops the parameter from the signature
+  outright. The wire cannot carry that difference and neither can the artifact; only defect 43's entry states it.
+- The 8 cases where `fetch-clients` deviates and `angular-services` conforms all trace to three features Angular's
+  `RequestBuilder` has and the fetch client's `UrlBuilder`/body handling lacks — explicit request content types,
+  path/query percent-encoding, and OpenAPI `style`/`explode` serialization. Each is recorded as a
+  `**Tier 4 (angular):**` element on defects 20, 41 and 42, since "the same generator family gets this right in another
+  target" narrows those fix sites considerably. There is **no** case in the other direction: nothing on this leg
+  deviates where `fetch-clients` conforms.
+
+One finding here has no artifact and could not have one: the generated `errorResponseTypes` re-decode branch in
+`utils/angular-service.utils.ts` does nothing for any operation this generator emits, and is unguarded on the one path
+that would reach it. It is registered as defect 54. And `uploadBlob/ok` conforms while sending no `Content-Type` at all,
+because `RequestBuilder.body` takes the content type from a `Blob`'s own `type` and `new Blob(['hello'])` has none — the
+sixth blind-spot bullet above covers why the tier cannot see that, and whether an `application/octet-stream` operation
+_should_ send the header is a question this leg does not answer.
+
+**Phase 7 still owes `k6-clients` and `easy-network-stub`,** each behind the same guard.
 
 The commands:
 
@@ -816,6 +910,8 @@ deno task test:integration:kotlin              # write mode: the four Kotlin cli
 deno task test:integration:kotlin:check        # check mode: the four Kotlin client targets, needs Docker
 deno task test:integration:controllers         # write mode: the four spring-controllers units, needs Docker
 deno task test:integration:controllers:check   # check mode: the four spring-controllers units, needs Docker
+deno task test:integration:angular             # write mode: the angular-services target, needs Docker
+deno task test:integration:angular:check       # check mode: the angular-services target, needs Docker
 ```
 
 ## Layout
@@ -845,6 +941,9 @@ test/
   integration/        # tier-4 tests: the oracle-agreement proof, targets.ts (WIRE_TARGETS), and one driver
                       # per target — fetch-clients/ (no Docker) and kotlin-clients/ (build.ts synthesizes the
                       # Gradle build, drivers/okhttp3/ and drivers/reactive/ hold the handwritten drivers);
+                      # angular-services/ compiles the committed tree with the driver in the node image
+                      # (build.ts holds the tsconfig and build pipeline, driver/driver.ts the 19 calls,
+                      # smoke.test.ts the one-call risk gate);
                       # spring-controllers/ is the server direction (build.ts synthesizes the Gradle build,
                       # stabilize.ts normalizes Spring's error bodies, delegates/ holds the handwritten
                       # oracle: common/, lenient/, strict/, lenient-sb3/, lenient-sb4/)
