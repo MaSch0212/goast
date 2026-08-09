@@ -15,7 +15,11 @@ export type WireTargetState = 'load-failure';
 export type WireTarget = { profile: string; direction: Direction; state?: WireTargetState };
 
 /**
- * Every profile tier 4 records deviations for, and the direction each one drives.
+ * Every profile tier 4 records something for, and the direction each one drives.
+ *
+ * "Records something" rather than "records deviations": most entries record per-case deviations, but a target
+ * carrying `state: 'load-failure'` records no deviations at all, because its generated code cannot be loaded and
+ * so no case was ever driven. See {@link WireTargetState}.
  *
  * This is the single source of truth for "which `test/wire/<profile>/` directories are legitimate".
  * The orphan sweep builds its expected file set from every entry here, so adding a target without
@@ -25,7 +29,8 @@ export type WireTarget = { profile: string; direction: Direction; state?: WireTa
  *
  * `direction` is not cosmetic: it selects the `casesFor(profile, direction)` filter the corresponding
  * driver uses, and the sweep must filter identically or it claims filenames for cases the driver never
- * drives — letting a stale artifact survive forever with the sweep still green.
+ * drives — letting a stale artifact survive forever with the sweep still green. A load-failed target has no
+ * driver, so its `direction` describes only what it *would* be once it can run.
  *
  * Both directions are represented. The `'client'` entries are generated clients driven against the
  * reference server, compared with `diffRequest`/`diffResult`; the four `spring-controllers@*` entries
