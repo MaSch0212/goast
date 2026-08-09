@@ -1806,7 +1806,11 @@ simultaneously unreachable and unsafe.
 Every relative import in the generated `k6-clients` output omits the file extension — `clients/pets-client.js` opens with
 `import { RequestBuilder } from '../utils/request-builder';` and `clients.js` re-exports through
 `export { PetsClient } from './clients/pets-client';`. That is produced by `importModuleTransformer`, whose default is
-`'omit-extension'` (`packages/typescript/src/config.ts:82`) and which the k6 generator never overrides.
+`'omit-extension'` (`packages/typescript/src/config.ts:82`) and which the k6 generator never overrides:
+`defaultTypeScriptK6ClientsGeneratorConfig`
+(`packages/typescript/src/generators/services/k6-clients/models.ts:125-128`) spreads
+`defaultTypeScriptGeneratorConfig` and sets `language: 'javascript'` but never touches
+`importModuleTransformer` — which also establishes that the knob is reachable exactly where a fix would go.
 
 For every other TypeScript target that default is correct: a bundler resolves an extensionless specifier, and
 `angular-services` and `fetch-clients` are both consumed through one. **k6 is different in kind, because k6 *is* the
