@@ -243,7 +243,14 @@ if (enabled) {
               ];
           }
 
-          await verifyWireDeviations(wireSnapshotFile(wireRootDir, unit.id, apiCase.id), formatDeviations(deviations));
+          await verifyWireDeviations(
+            wireSnapshotFile(wireRootDir, unit.id, apiCase.id),
+            formatDeviations(deviations),
+            // Not the default `deno task test:integration`: that task does not set `GOAST_INTEGRATION`, so
+            // it cannot regenerate a single artifact in this directory. Naming a command that silently
+            // does nothing is worse than naming none.
+            { updateCommand: 'deno task test:integration:kotlin' },
+          );
         }
       });
     });

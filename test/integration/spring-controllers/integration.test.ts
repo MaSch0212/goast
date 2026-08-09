@@ -18,7 +18,7 @@ import {
   wireSnapshotFile,
 } from '@goast/test-harness';
 
-import { casesFor, type RecordedResponse } from '../../cases/cases.ts';
+import { casesFor } from '../../cases/cases.ts';
 import {
   DELEGATE_MOUNT,
   DELEGATES_DIR,
@@ -28,61 +28,17 @@ import {
   TREE_MOUNT,
   WORK_MOUNT,
 } from './build.ts';
+// In its own module rather than a local helper here, so it can be unit-tested: it is the one function in
+// this directory whose job is to make a difference stop being reported, and in a tier where an absent
+// artifact means "this case conforms" that makes it the most dangerous code present. See
+// `stabilize.test.ts`, which drives it with adversarial bodies and asserts its guard's premise against the
+// real case table rather than trusting a comment.
+import { stabilizeFrameworkErrorBody } from './stabilize.ts';
 
 /** Same gate as tier 4's other Docker legs. `deno task test:integration:controllers` sets this. */
 const enabled = (Deno.env.get('GOAST_INTEGRATION') ?? '') !== '';
 
 const CONTEXT_DIR = join(repoRootDir, 'test', 'docker', 'kotlin');
-
-/**
- * Every attribute Spring's default error body carries, and therefore the fingerprint that identifies one.
- *
- * `DefaultErrorAttributes` populates exactly these five for a WebFlux error response, and no schema in
- * the kitchen-sink corpus declares a property named `timestamp` or `requestId` — so requiring the whole
- * set to be present is what keeps {@link stabilizeFrameworkErrorBody} from ever touching a body the
- * generated code actually produced.
- */
-const FRAMEWORK_ERROR_ATTRIBUTES = ['timestamp', 'path', 'status', 'error', 'requestId'] as const;
-
-/** What replaces a framework error attribute whose value varies from run to run. */
-const NONDETERMINISTIC = '<nondeterministic>';
-
-/**
- * Normalizes the two run-to-run-varying fields of Spring's *own* error body, leaving everything else —
- * including the status, which is the actual deviation — exactly as it arrived.
- *
- * `GoastExceptionHandler` exists to keep framework error bodies out of the committed artifacts, and for
- * every failure a delegate can raise it succeeds. It cannot cover the one class of failure that never
- * reaches a delegate: WebFlux rejects `updatePet/form` with `415` during argument resolution, *before*
- * the generated controller's `try` block runs, so the generated `catch` never sees it and no handler of
- * ours is consulted. What comes back is `DefaultErrorAttributes`' own JSON, whose `timestamp` is the
- * wall clock and whose `requestId` is a per-connection identifier — measured churning across two runs of
- * `@sb3-strict` while the other six artifacts stayed byte-identical.
- *
- * This is deliberately a *value* substitution and not a key removal, and it is deliberately scoped by
- * {@link FRAMEWORK_ERROR_ATTRIBUTES} rather than applied to every response: the artifact must still show
- * that Spring answered with its own error shape rather than the delegate's, because "the request never
- * reached the delegate" is a materially different finding from "the delegate answered wrongly". Same
- * reasoning as `IGNORED_HEADERS` in `wire.ts` — drop what the runtime controls, never what the generator
- * controls.
- */
-function stabilizeFrameworkErrorBody(response: RecordedResponse): RecordedResponse {
-  const { body } = response;
-  if (body.kind !== 'json' || body.value === null || typeof body.value !== 'object' || Array.isArray(body.value)) {
-    return response;
-  }
-
-  const attributes = body.value as Record<string, unknown>;
-  if (!FRAMEWORK_ERROR_ATTRIBUTES.every((name) => name in attributes)) return response;
-
-  return {
-    ...response,
-    body: {
-      kind: 'json',
-      value: { ...attributes, timestamp: NONDETERMINISTIC, requestId: NONDETERMINISTIC },
-    },
-  };
-}
 
 // Checked once, before the first container, rather than inside each `it`: a missing daemon should fail
 // immediately, not after this file has already compiled a Gradle project.
@@ -180,6 +136,11 @@ if (enabled) {
           await verifyWireDeviations(
             wireSnapshotFile(wireRootDir, unit.id, apiCase.id),
             formatDeviations(deviations),
+            // The default this would otherwise print is `deno task test:integration`, which does not set
+            // `GOAST_INTEGRATION` and therefore cannot regenerate a single artifact in this directory. A
+            // check failure that tells you to run a command that silently does nothing is worse than one
+            // that says nothing at all.
+            { updateCommand: 'deno task test:integration:controllers' },
           );
         }
       });
