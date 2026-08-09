@@ -48,10 +48,23 @@ val sb4 by configurations.creating
 // sb3 unit compiled and only sb4 failed.
 //
 // `extendsFrom` rather than a second coordinate list: there is exactly one list to maintain below, and the
-// two usages of it cannot drift apart. The attributes are the ones the `java` plugin puts on
-// `compileClasspath`, so this resolves the same variants the real gate does. A `platform()` dependency
-// carries `Category=regular-platform` on the dependency itself, which takes precedence over the
-// `Category=library` set here, so the BOMs still resolve as platforms.
+// two usages of it cannot drift apart. A `platform()` dependency carries `Category=regular-platform` on the
+// dependency itself, which takes precedence over the `Category=library` set here, so the BOMs still resolve
+// as platforms.
+//
+// These attributes are NOT identical to what the real `compileClasspath` requests, and the difference is
+// stated here rather than glossed, because this file's own header says to verify rather than reason:
+//
+//   * the `java` plugin asks `compileClasspath` for `LibraryElements=classes`, not `jar`. A `jar` producer
+//     satisfies a `classes` request through Gradle's compatibility rule, so the same artifact is selected
+//     either way — but the request is not the same request.
+//   * `kotlin("jvm")` adds `org.jetbrains.kotlin.platform.type=jvm` to the real classpaths, which these
+//     configurations do not set. The Kotlin plugin's disambiguation rules are registered because the plugin
+//     is applied here too, so nothing currently selects differently for its absence.
+//
+// Both were measured to warm the same artifacts the real gate resolves — the proof is that tier 3 resolves
+// all eight real per-family `compileClasspath`s offline against this cache. Treat that empirical result, not
+// the attribute list, as the reason this works.
 val sb3Api by configurations.creating { extendsFrom(sb3) }
 val sb4Api by configurations.creating { extendsFrom(sb4) }
 
@@ -64,6 +77,13 @@ for (configuration in listOf(sb3Api, sb4Api)) {
             objects.named(LibraryElements::class.java, LibraryElements.JAR),
         )
         attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling::class.java, Bundling.EXTERNAL))
+        // 21 because the image is `FROM gradle:8.14-jdk21` (`../Dockerfile`). This is a hand-maintained
+        // duplicate of that JDK version and there is no way to derive it here — the warm task runs in the
+        // image being built, but a Gradle attribute has to be a literal. **Bump both together.** If the
+        // base image moves to a newer JDK and this stays at 21, the real `compileClasspath` requests the
+        // new version while this warms 21, and a library publishing per-JDK variants gets the wrong one
+        // cached: an offline failure naming an artifact that appears in no coordinate list, which is the
+        // hardest shape of this failure to diagnose.
         attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 21)
     }
 }

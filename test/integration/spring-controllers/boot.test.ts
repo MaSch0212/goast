@@ -26,8 +26,16 @@ if (enabled) {
   describe('integration/spring-controllers boot', () => {
     // One unit, not all four: this asserts the *infrastructure* — offline resolution, the `run` task, the
     // published port, readiness polling, and that the generated controllers are component-scanned and
-    // mapped. Nothing here is profile-specific, and `integration.test.ts` covers all four anyway.
-    const unit = SERVER_UNITS[0];
+    // mapped. `integration.test.ts` covers all four.
+    //
+    // And specifically the **sb4** unit, not `SERVER_UNITS[0]`. Which one this is matters, because the only
+    // offline-resolution regression this task actually found was sb4-only: Spring Boot 4.0.0's managed
+    // Log4j declares five annotation artifacts in its api variant and omits them from its runtime variant,
+    // and the attribute-less warm configurations resolved runtime variants only. Boot 3.5.6 manages an
+    // older Log4j that does not, so `@sb3` compiled clean throughout and would have gated nothing —
+    // deleting `sb4Api.resolve()` from the warmup would leave tier 3, phase 6a *and* this test green. A
+    // risk gate pointed at the case that never failed is not a gate.
+    const unit = SERVER_UNITS.find((u) => u.id === 'spring-controllers@sb4')!;
 
     it('boots the generated server and routes a request to it', async () => {
       const image = await buildImage('kotlin', CONTEXT_DIR);

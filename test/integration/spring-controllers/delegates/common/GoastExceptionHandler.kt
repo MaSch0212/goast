@@ -20,6 +20,13 @@ import org.springframework.stereotype.Component
  * lenient one (the generated `ApiExceptionHandler.kt` is byte-identical across all four profiles), which
  * is what makes one handler enough. That freedom is deliberately *not* used to work around the strict
  * flavour's missing factories: see `GoastUnexpressible`.
+ *
+ * **599 and 598 are deterministic; 597 is not, and that is on purpose.** The first two render only text
+ * this repo wrote, so they are safe to commit as deviation artifacts. The 597 branch interpolates a
+ * framework exception's own `message`, which can carry an identity hash, a buffer offset or a temp path —
+ * so a 597 appearing in a committed artifact may churn between runs. Keep it that way: a 597 means
+ * something happened that this phase did not model at all, and the message is the only clue about what.
+ * Treat a 597 in an artifact as a finding to investigate, not as a snapshot to accept.
  */
 @Component
 class GoastExceptionHandler : ApiExceptionHandler {
