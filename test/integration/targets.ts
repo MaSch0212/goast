@@ -26,6 +26,7 @@ export type WireTarget = { profile: string; direction: Direction };
  */
 export const WIRE_TARGETS: readonly WireTarget[] = [
   { profile: 'fetch-clients', direction: 'client' },
+  { profile: 'angular-services', direction: 'client' },
   { profile: 'okhttp3-clients@sb3', direction: 'client' },
   { profile: 'okhttp3-clients@sb4', direction: 'client' },
   { profile: 'spring-reactive-web-clients@sb3', direction: 'client' },
