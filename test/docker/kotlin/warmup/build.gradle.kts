@@ -33,6 +33,41 @@ repositories { mavenCentral() }
 val sb3 by configurations.creating
 val sb4 by configurations.creating
 
+// And each line is warmed a second time, under the *compile* usage.
+//
+// `sb3`/`sb4` above carry no attributes at all, so Gradle resolves every module through its `runtime`
+// variant. A real build's `compileClasspath` asks for `Usage=java-api` instead, and the two graphs are
+// genuinely different — not merely differently ordered. Measured, from the warm cache with
+// `spring-boot-starter-webflux` warmed only through the attribute-less configurations:
+// `spring-controllers@sb4`'s real `compileKotlin` failed offline on five artifacts
+// (`biz.aQute.bnd:biz.aQute.bnd.annotation:7.1.0`, `com.google.errorprone:error_prone_annotations:2.38.0`,
+// `org.osgi:org.osgi.annotation.bundle:2.0.0`, `org.osgi:org.osgi.annotation.versioning:1.1.2`,
+// `com.github.spotbugs:spotbugs-annotations:4.8.6`) that `log4j-api`/`log4j-to-slf4j:2.25.2` — Spring Boot
+// 4.0.0's managed Log4j, reached through `spring-boot-starter-logging` — declares in its api variant and
+// omits from its runtime variant. Spring Boot 3.5.6 manages an older Log4j that does not, which is why the
+// sb3 unit compiled and only sb4 failed.
+//
+// `extendsFrom` rather than a second coordinate list: there is exactly one list to maintain below, and the
+// two usages of it cannot drift apart. The attributes are the ones the `java` plugin puts on
+// `compileClasspath`, so this resolves the same variants the real gate does. A `platform()` dependency
+// carries `Category=regular-platform` on the dependency itself, which takes precedence over the
+// `Category=library` set here, so the BOMs still resolve as platforms.
+val sb3Api by configurations.creating { extendsFrom(sb3) }
+val sb4Api by configurations.creating { extendsFrom(sb4) }
+
+for (configuration in listOf(sb3Api, sb4Api)) {
+    configuration.attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage::class.java, Usage.JAVA_API))
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category::class.java, Category.LIBRARY))
+        attribute(
+            LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE,
+            objects.named(LibraryElements::class.java, LibraryElements.JAR),
+        )
+        attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling::class.java, Bundling.EXTERNAL))
+        attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 21)
+    }
+}
+
 // Every extra duplicated into both configurations rather than shared: nothing here declares a version
 // of its own (each is resolved through whichever BOM constrains it), so there is nothing for the two
 // configurations to disagree about, and duplication keeps the cache warm no matter which BOM line a
@@ -80,6 +115,13 @@ dependencies {
         // Neither BOM manages these, so both carry an explicit version.
         add(configurationName, "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
         add(configurationName, "org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
+        // Tier 4's server direction *runs* a generated `spring-controllers` tree as a real Spring Boot
+        // application, which needs the whole WebFlux runtime — `spring-boot`, `spring-boot-autoconfigure`,
+        // Netty, Reactor Netty — none of which any generated file imports, so tier 3 never resolves it and
+        // `kotlinDependenciesFor` deliberately does not list it. Managed by both BOMs, hence inside this
+        // loop rather than in a variant slot below. See `SERVER_RUNTIME_DEPENDENCIES` in
+        // `test/integration/spring-controllers/build.ts` for the consuming end.
+        add(configurationName, "org.springframework.boot:spring-boot-starter-webflux")
     }
     sb3(platform("org.springframework.boot:spring-boot-dependencies:3.5.6"))
     sb4(platform("org.springframework.boot:spring-boot-dependencies:4.0.0"))
@@ -128,6 +170,16 @@ dependencies {
     // against the coordinate set below and measured zero uncovered artifacts across all eight.
     sb3("com.fasterxml.jackson.module:jackson-module-kotlin")
     sb4("tools.jackson.module:jackson-module-kotlin")
+
+    // Runtime-only, for tier 4's reactive client units: `spring-reactive-web-clients` imports no Jackson
+    // databind class (so `kotlinDependenciesFor` rightly omits it), but WebFlux's default JSON codecs need
+    // one at run time, and Gradle does not pull `spring-web`'s *optional* Maven dependency on it. See
+    // `RUNTIME_JSON_CODEC_DEPENDENCIES` in `test/integration/kotlin-clients/build.ts`. Named explicitly
+    // rather than left to arrive transitively through the okhttp3 family's `jackson-module-kotlin`: that
+    // route works but couples this family's runtime to another family's compile-time needs, and phase 6a's
+    // final review flagged it as a gap that would surface only as an offline resolution failure.
+    sb3("com.fasterxml.jackson.core:jackson-databind")
+    sb4("tools.jackson.core:jackson-databind")
 }
 
 tasks.register("warm") {
@@ -148,5 +200,31 @@ tasks.register("warm") {
         configurations.getByName("kotlinBuildToolsApiClasspath").resolve()
         sb3.resolve()
         sb4.resolve()
+        // The `java-api` views of the same two lists. See the `sb3Api`/`sb4Api` declarations above for the
+        // five artifacts that are only reachable this way.
+        sb3Api.resolve()
+        sb4Api.resolve()
+        // No `runtimeClasspath.get().resolve()` alongside `compileClasspath` above, and that is a measured
+        // conclusion rather than an oversight. Tier 4's server direction runs `gradle run`, which resolves
+        // `runtimeClasspath`, so the question is real; but this project declares nothing in `runtimeOnly`
+        // and the only thing the plugin puts in `implementation` is `kotlin-stdlib`, whose api and runtime
+        // variants carry the same artifact and the same single dependency. The attribute-less `sb3`/`sb4`
+        // above already resolve every listed coordinate through its *runtime* variant, which is the half
+        // `sb3Api`/`sb4Api` do not cover. Verified end to end against this image: all four
+        // `spring-controllers` units compile and boot under `--offline run`.
     }
 }
+
+/*
+ * A note for whoever next hits an offline resolution failure here.
+ *
+ * The `sb3`/`sb4` + `sb3Api`/`sb4Api` pairing covers the two usages a real build asks for, but it is still
+ * one union-of-all-families configuration per usage, not the eight disjoint per-family graphs the real
+ * gates resolve — so the superset invariant documented above remains a superset relation that has to be
+ * *verified*, not assumed. The structural fix, if this file needs a third or fourth axis, is to stop
+ * hand-modelling configurations and make the warmup a multi-project build whose subprojects apply
+ * `kotlin("jvm")` and declare the real coordinate sets, so `compileClasspath`/`runtimeClasspath` resolution
+ * is the real thing by construction. That was deliberately not done here: this task's budget was one
+ * infrastructure risk gate, and rewriting a file whose current coordinate set is verified against all eight
+ * real graphs would have put that verification back to zero.
+ */
