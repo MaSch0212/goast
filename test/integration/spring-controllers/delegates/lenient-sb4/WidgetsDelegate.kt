@@ -20,6 +20,7 @@ class WidgetsDelegate : WidgetsApiDelegate {
     override suspend fun getWidget(id: String): ResponseEntity<Any> {
         val (status, body) = widgetCase(id)
         var builder = ResponseEntity.status(status).contentType(MediaType.APPLICATION_JSON)
+        // Declared as a response header on the 200 only, so it is sent on the 200 only.
         if (status == 200) builder = builder.header("X-Rate-Limit", "42")
         return builder.body<Any>(body)
     }
