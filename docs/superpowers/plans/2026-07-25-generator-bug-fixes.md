@@ -1826,10 +1826,18 @@ Copying the tree and adding `.js` to its relative specifiers made the same probe
 (`LOADED typeof PetsClient=function`), so the extension is the whole cause and nothing else about the module graph is
 wrong.
 
-**Tier 4:** none yet. This is not a per-case deviation — it stops the module loading, so all 19 cases would fail
-identically for one root cause, and phase 7b has to decide how to record a target-level load failure before it can
-record anything per case. Recording it as 19 absent artifacts would be the one unacceptable outcome, because an absent
-artifact means "this case conforms".
+**Tier 4:** committed as a target-level record rather than any per-case artifact — `test/integration/targets.ts` marks
+`k6-clients` `state: 'load-failure'`, and the leg commits exactly one file,
+`test/wire/k6-clients/__load-failure.txt`:
+
+```
+could not initialize '/scripts/probe.js': could not load JS test 'file:///scripts/probe.js': The moduleSpecifier "../utils/request-builder" couldn't be found on local disk. Make sure that you've specified the right path to the file. If you're running k6 using the Docker image make sure you have mounted the local directory (-v /local/path/:/inside/docker/path) containing your script and modules so that they're accessible by k6 from inside of the container, see https://grafana.com/docs/k6/latest/using-k6/modules/#use-modules-with-docker.
+```
+
+None of the 19 cases has a per-case artifact, and that absence carries none of tier 4's usual conformance claim: no
+case was driven, so none was found to conform. See `test/README.md`'s "The k6 leg" for the mechanism
+(`test/harness/integration/target-state.ts`'s `targetFailureFile`/`verifyTargetLoadFailure`) and the design decision it
+rests on.
 
 **Tier 3 cannot see this, and that is worth stating.** The compile gate type-checks with `moduleResolution: 'bundler'`
 (`test/docker/node/tsconfig.base.json`), under which an extensionless specifier is correct — so
@@ -1859,10 +1867,14 @@ air-gapped or egress-restricted environment cannot run the generated client at a
 it sits at module scope in the request builder every generated client imports, so it is paid even by a client that
 never sends a multipart body — which in the kitchen-sink corpus is every operation but one.
 
-**Tier 4:** none yet, for the same reason as defect 55 — and note the two compound. Even with the extensions fixed, a
-k6 leg that runs `--network none` still cannot load the module, so phase 7b has to decide about this one too: either
-the k6 container gets network access at test time (which no other tier-4 leg needs, and which makes the job dependent
-on a third party's uptime), or the leg records this as part of the same target-level load failure.
+**Tier 4:** this defect's failure is masked by defect 55's, not evidenced by it. Both land in the same
+`test/wire/k6-clients/__load-failure.txt` in the sense that this target commits no per-case artifacts at all — but the
+text committed there is entirely defect 55's error: k6 fails to resolve `pets-client.js`'s own extensionless import to
+`../utils/request-builder` before its module graph ever reaches `request-builder.js`'s import of the CDN polyfill.
+This defect therefore does not appear in the artifact and will not until defect 55 is fixed. Whoever fixes defect 55
+first should expect this leg to go from one failure to a *different* one — this defect's CDN import, not yet
+evidenced — rather than straight to green; the `k6-clients` entry in `test/integration/targets.ts` keeps
+`state: 'load-failure'` until both are fixed.
 
 Not fixed here. A fix has options worth weighing rather than one obvious answer: vendor the polyfill into the
 generated tree as another asset; use k6's own `k6/http`-native multipart support if it now covers the cases this

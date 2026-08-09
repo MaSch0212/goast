@@ -12,12 +12,12 @@ required for tier 3 and for every other tier-4 target (the four Kotlin ones, the
 
 ## Tiers
 
-| # | Tier        | Question                                              | Command                                                                | Status                                                                                                                                |
-| - | ----------- | ----------------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| 1 | Unit        | Does this function do what it says?                   | `deno task test`                                                       | active                                                                                                                                |
-| 2 | Output      | Did the generated text change?                        | `deno task test:output`                                                | active                                                                                                                                |
-| 3 | Compile     | Is the generated code valid in its language?          | `deno task test:compile`                                               | active                                                                                                                                |
-| 4 | Integration | Does the generated code behave correctly on the wire? | `deno task test:integration` / `:kotlin` / `:controllers` / `:angular` | client direction: fetch-clients, angular-services, okhttp3-clients, spring-reactive-web-clients; server direction: spring-controllers |
+| # | Tier        | Question                                              | Command                                                                        | Status                                                                                                                                                                                                                                            |
+| - | ----------- | ----------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 | Unit        | Does this function do what it says?                   | `deno task test`                                                               | active                                                                                                                                                                                                                                            |
+| 2 | Output      | Did the generated text change?                        | `deno task test:output`                                                        | active                                                                                                                                                                                                                                            |
+| 3 | Compile     | Is the generated code valid in its language?          | `deno task test:compile`                                                       | active                                                                                                                                                                                                                                            |
+| 4 | Integration | Does the generated code behave correctly on the wire? | `deno task test:integration` / `:kotlin` / `:controllers` / `:angular` / `:k6` | client direction: fetch-clients, angular-services, okhttp3-clients, spring-reactive-web-clients (`k6-clients` cannot be driven at all — see "The k6 leg" — and records a target-level load failure instead); server direction: spring-controllers |
 
 ## Tier 1: unit tests
 
@@ -616,6 +616,10 @@ in
 (defects 20, 41, 42, 43, 44, 46, 47, 48, 49, 50, 51, 52 and 53) — not fixed here, per this phase's rule that a generator
 fix changes generated output and belongs to its own phase.
 
+`k6-clients`'s `test/wire/k6-clients/__load-failure.txt` is not one of these 90 and is not counted among them: it is a
+target-level record, not a per-case deviation, and it holds a raw k6 error rather than a `field`/`expected`/`actual`
+block. See "The k6 leg" below.
+
 **An absent artifact means "no declared field deviated," not "the request was wire-correct."** This is the single most
 misreadable thing about this tier, for six concrete, verified reasons:
 
@@ -901,18 +905,55 @@ because `RequestBuilder.body` takes the content type from a `Blob`'s own `type` 
 sixth blind-spot bullet above covers why the tier cannot see that, and whether an `application/octet-stream` operation
 _should_ send the header is a question this leg does not answer.
 
-**Phase 7 still owes `k6-clients` and `easy-network-stub`,** each behind the same guard.
+### The k6 leg
 
-`k6-clients` is blocked before it can drive a single case, and both blockers are measured and registered rather than
-left to be rediscovered — defects 55 and 56. k6 cannot resolve the generated client's extensionless relative imports (k6
-_is_ the loader; there is no bundling step), and the request builder imports a polyfill from a third-party CDN at run
-time, so the generated client cannot load air-gapped either. Neither is a per-case deviation: both stop the module
-loading, which means that leg has a design question to answer first. **All 19 cases would be undriven, and 19 absent
-artifacts must not be written, because in this tier an absent artifact is a positive claim that the case conforms.** A
-target-level record of the load failure — with the per-case conformance claim explicitly suppressed — is the honest
-shape, and tier 3's per-unit diagnostics file is the precedent. Rewriting the imports so the cases _can_ be driven is
-the other option, and it needs arguing on the record rather than assuming, because it would mean the leg no longer runs
-byte-identical reviewed output.
+**Phase 7b adds `k6-clients`, and it is deliberately unlike every leg before it: it drives no cases at all.** Two
+independent, already-registered generator defects — 55 and 56 — stop the generated client from loading in k6 before a
+single request could be issued: k6 cannot resolve the generated module's extensionless relative imports (k6 _is_ the
+loader; there is no bundling step to resolve them for it), and the request builder every generated client imports also
+pulls a polyfill from a third-party CDN at run time. **Writing 19 absent per-case artifacts would have been the one
+unacceptable outcome** — an absent artifact is tier 4's way of saying "this case conforms," and none of the 19 was ever
+driven to find out.
+
+**What was built instead: a target-level load-failure record.** `test/harness/integration/target-state.ts` adds
+`targetFailureFile`/`verifyTargetLoadFailure`, the sibling of the per-case `verifyWireDeviations` with the same
+write/delete-when-fixed/refuse-in-check contract, but for a whole target instead of one case. `WireTarget` in
+`test/integration/targets.ts` gains an optional `state: 'load-failure'`, and the `k6-clients` entry carries it. A target
+in that state commits exactly one file, `test/wire/k6-clients/__load-failure.txt`, and **no** per-case artifacts —
+`expectedFilesFor` in `test/integration-tests/orphans.test.ts` enforces both halves of that, so a stray per-case file
+appearing under `k6-clients/` fails the sweep exactly as a genuine orphan would for any other target. The committed
+record reads:
+
+```
+could not initialize '/scripts/probe.js': could not load JS test 'file:///scripts/probe.js': The moduleSpecifier "../utils/request-builder" couldn't be found on local disk. Make sure that you've specified the right path to the file. If you're running k6 using the Docker image make sure you have mounted the local directory (-v /local/path/:/inside/docker/path) containing your script and modules so that they're accessible by k6 from inside of the container, see https://grafana.com/docs/k6/latest/using-k6/modules/#use-modules-with-docker.
+```
+
+That is entirely defect 55's error. Defect 56's failure is masked by it — k6 fails to resolve `pets-client.js`'s own
+extensionless import before its module graph ever reaches the request builder's CDN import — so defect 56 does not
+appear here and will not until defect 55 is fixed. Fixing 55 first should be expected to turn this file into a
+_different_ failure, not delete it.
+
+**Recording a load failure was chosen over patching the generated tree so the cases could run.** The plan
+(`docs/superpowers/plans/2026-08-09-tier-4-k6-clients.md`) weighed rewriting the committed tree's extensionless imports
+in a writable copy, which would let all 19 cases run and produce ordinary per-case artifacts — more coverage, on its
+face. It was rejected because every artifact that copy produced would describe a _patched_ client, and the patch is
+precisely the defect under measurement: this leg exists to prove what the generator actually emits behaves correctly,
+which requires running byte-identical reviewed output, the same property every other tier-4 leg has. Contrast
+`angular-services` (above), which _does_ add `.js` extensions — but to the JavaScript `tsc` **emits**, never to the
+committed tree, and that rewrite is what a bundler does for every real Angular consumer. Doing the equivalent here would
+mean editing the delivered artifact to work around a defect in the delivered artifact.
+
+**The k6 image is pinned to `2.1.0`, the current release, not `0.54.0` — a late, deliberate, owner's-call change with a
+real consequence.** `test/docker/node/package.json` type-checks this same corpus against `@types/k6@0.54.0`, and an
+earlier revision of this plan pinned the k6 image to match, so the two gates would agree about what runtime they were
+describing. The owner ruled for the current release instead: a defect recorded against a three-year-old runtime says
+much less about whether today's users are affected. Both defects are module-resolution failures, reproduced on `0.54.0`
+and `2.1.0` alike, so neither finding is weakened — but tier 3's `@types/k6` typings are now behind the runtime tier 4
+actually executes, and the two gates no longer describe the same k6. Bumping `@types/k6` to match is a real follow-up,
+deliberately not done here: it changes the `node` image's content hash, which re-runs tier 3's whole TypeScript compile
+group and puts its committed diagnostics up for re-review — its own change, not a side effect of this one.
+
+`easy-network-stub` is the one target phase 7 still owes, behind the same guard.
 
 The commands:
 
@@ -925,6 +966,8 @@ deno task test:integration:controllers         # write mode: the four spring-con
 deno task test:integration:controllers:check   # check mode: the four spring-controllers units, needs Docker
 deno task test:integration:angular             # write mode: the angular-services target, needs Docker
 deno task test:integration:angular:check       # check mode: the angular-services target, needs Docker
+deno task test:integration:k6                  # write mode: the k6-clients target, needs Docker
+deno task test:integration:k6:check            # check mode: the k6-clients target, needs Docker
 ```
 
 ## Layout
