@@ -1801,6 +1801,71 @@ deriving `responseType` from the declared error content types as well as the suc
 `try` that falls back to the raw body. What must not survive is the present state, in which the branch is
 simultaneously unreachable and unsafe.
 
+### Defect 55 — `k6-clients` emits extensionless relative imports, which k6 cannot resolve, so the generated client cannot be loaded by its own target runtime (found while scoping phase 7b, not scheduled)
+
+Every relative import in the generated `k6-clients` output omits the file extension — `clients/pets-client.js` opens with
+`import { RequestBuilder } from '../utils/request-builder';` and `clients.js` re-exports through
+`export { PetsClient } from './clients/pets-client';`. That is produced by `importModuleTransformer`, whose default is
+`'omit-extension'` (`packages/typescript/src/config.ts:82`) and which the k6 generator never overrides.
+
+For every other TypeScript target that default is correct: a bundler resolves an extensionless specifier, and
+`angular-services` and `fetch-clients` are both consumed through one. **k6 is different in kind, because k6 *is* the
+loader.** A k6 workflow has no bundling step — `k6 run script.js` resolves each import itself — and it does not add
+extensions. Measured against `grafana/k6:latest` with the committed tree mounted read-only:
+
+```
+level=error msg="could not initialize '/scripts/probe.js': could not load JS test 'file:///scripts/probe.js':
+The moduleSpecifier \"../utils/request-builder\" couldn't be found on local disk."
+```
+
+Copying the tree and adding `.js` to its relative specifiers made the same probe load
+(`LOADED typeof PetsClient=function`), so the extension is the whole cause and nothing else about the module graph is
+wrong.
+
+**Tier 4:** none yet. This is not a per-case deviation — it stops the module loading, so all 19 cases would fail
+identically for one root cause, and phase 7b has to decide how to record a target-level load failure before it can
+record anything per case. Recording it as 19 absent artifacts would be the one unacceptable outcome, because an absent
+artifact means "this case conforms".
+
+**Tier 3 cannot see this, and that is worth stating.** The compile gate type-checks with `moduleResolution: 'bundler'`
+(`test/docker/node/tsconfig.base.json`), under which an extensionless specifier is correct — so
+`test/compile/typescript/k6-clients/` carries nothing about it. A gate that only compiles cannot find a defect whose
+whole nature is that the runtime loader disagrees with the type-checker.
+
+Not fixed here — this phase records defects rather than fixing them. The fix is unusually small: `'js-extension'` is
+already an implemented `ImportModuleTransformer` mode (`packages/typescript/src/utils.ts:48-49`, `modulePath.replace(/\.[^/.]+$/, '.js')`),
+so the k6 generator needs to default to it instead of inheriting `'omit-extension'`. Doing so changes generated output
+and therefore belongs to a phase that can regenerate the tier-2 snapshots.
+
+### Defect 56 — `k6-clients`' request builder imports a third-party CDN at run time, so the generated client cannot run air-gapped (found while scoping phase 7b, not scheduled)
+
+`packages/typescript/assets/client/k6/request-builder.js:3` — and identically `request-builder.ts:4` — begins:
+
+```js
+import { FormData } from 'https://jslib.k6.io/formdata/0.0.2/index.js';
+```
+
+This is a committed asset copied verbatim into every generated `k6-clients` tree, so every generated client carries a
+hard run-time dependency on a third-party host at a pinned URL. Measured against `grafana/k6:latest`: with network
+access the module loads; with `--network none` it fails with
+`The moduleSpecifier "https://jslib.k6.io/formdata/0.0.2/index.js" couldn't be r…`.
+
+Two consequences, and the second is the one that makes this a defect rather than a preference. A consumer in an
+air-gapped or egress-restricted environment cannot run the generated client at all. And the import is unconditional:
+it sits at module scope in the request builder every generated client imports, so it is paid even by a client that
+never sends a multipart body — which in the kitchen-sink corpus is every operation but one.
+
+**Tier 4:** none yet, for the same reason as defect 55 — and note the two compound. Even with the extensions fixed, a
+k6 leg that runs `--network none` still cannot load the module, so phase 7b has to decide about this one too: either
+the k6 container gets network access at test time (which no other tier-4 leg needs, and which makes the job dependent
+on a third party's uptime), or the leg records this as part of the same target-level load failure.
+
+Not fixed here. A fix has options worth weighing rather than one obvious answer: vendor the polyfill into the
+generated tree as another asset; use k6's own `k6/http`-native multipart support if it now covers the cases this
+polyfill was added for; or keep the dependency and document it, which at least makes it a stated constraint of the
+target rather than a surprise. Whichever is chosen, the version is pinned at `0.0.2` in a repo that pins every other
+dependency in a manifest, and this one is pinned inside a string in an asset.
+
 ### Also registered, not scheduled
 
 Small, verified, and each needing either a decision or a home:

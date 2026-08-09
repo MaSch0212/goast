@@ -903,6 +903,17 @@ _should_ send the header is a question this leg does not answer.
 
 **Phase 7 still owes `k6-clients` and `easy-network-stub`,** each behind the same guard.
 
+`k6-clients` is blocked before it can drive a single case, and both blockers are measured and registered rather than
+left to be rediscovered — defects 55 and 56. k6 cannot resolve the generated client's extensionless relative imports (k6
+_is_ the loader; there is no bundling step), and the request builder imports a polyfill from a third-party CDN at run
+time, so the generated client cannot load air-gapped either. Neither is a per-case deviation: both stop the module
+loading, which means that leg has a design question to answer first. **All 19 cases would be undriven, and 19 absent
+artifacts must not be written, because in this tier an absent artifact is a positive claim that the case conforms.** A
+target-level record of the load failure — with the per-case conformance claim explicitly suppressed — is the honest
+shape, and tier 3's per-unit diagnostics file is the precedent. Rewriting the imports so the cases _can_ be driven is
+the other option, and it needs arguing on the record rather than assuming, because it would mean the leg no longer runs
+byte-identical reviewed output.
+
 The commands:
 
 ```bash
