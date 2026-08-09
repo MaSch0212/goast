@@ -45,6 +45,21 @@ export type RecordedRequest = {
   body: RecordedBody;
 };
 
+/**
+ * A response as the reference client actually received it, after parsing.
+ *
+ * Body reuses {@link RecordedBody} for the same structural reason `RecordedRequest` does: `wire.ts`'s
+ * `diffResponse` puts a body built from the case table's `response.body` beside this one and compares
+ * them with one `compare` call, which is only sound while every variant of one is a variant of the
+ * other.
+ */
+export type RecordedResponse = {
+  status: number;
+  /** Lower-cased names, allowlist-filtered. See `wire.ts`. */
+  headers: Record<string, string>;
+  body: RecordedBody;
+};
+
 /** One API call, and everything three consumers need to know about it. */
 export type ApiCase = {
   /** Stable id, e.g. `getPet/ok`. Doubles as the deviation artifact's file name. */

@@ -1,14 +1,17 @@
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
+import type { RecordedResponse } from '../cases/types.ts';
 import {
   diffRequest,
+  diffResponse,
   diffResult,
   formatDeviations,
   IGNORED_HEADERS,
   normalizeHeaders,
   parseQuery,
   readBody,
+  readResponse,
 } from './wire.ts';
 
 describe('IGNORED_HEADERS', () => {
@@ -149,6 +152,102 @@ describe('diffRequest', () => {
 
     expect(diffRequest({ path: '/pets/abc def' }, withBody)).toEqual([
       { field: 'body', expected: '{"kind":"none"}', actual: '{"kind":"text","value":"surprise"}' },
+    ]);
+  });
+});
+
+describe('readResponse', () => {
+  it('parses a json body and lower-cases headers', async () => {
+    const response = new Response(JSON.stringify({ id: 'abc' }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json', 'X-Rate-Limit': '42' },
+    });
+
+    expect(await readResponse(response)).toEqual({
+      status: 200,
+      headers: { 'content-type': 'application/json', 'x-rate-limit': '42' },
+      body: { kind: 'json', value: { id: 'abc' } },
+    });
+  });
+
+  it('reports a bodyless response as kind none', async () => {
+    expect((await readResponse(new Response(null, { status: 204 }))).body).toEqual({ kind: 'none' });
+  });
+
+  it('reports a text body as kind text', async () => {
+    const response = new Response('MISMATCH getPet.id expected <abc> but was <xyz>', {
+      status: 599,
+      headers: { 'content-type': 'text/plain' },
+    });
+
+    expect((await readResponse(response)).body).toEqual({
+      kind: 'text',
+      value: 'MISMATCH getPet.id expected <abc> but was <xyz>',
+    });
+  });
+});
+
+describe('diffResponse', () => {
+  const recorded = (over: Partial<RecordedResponse> = {}): RecordedResponse => ({
+    status: 200,
+    headers: { 'content-type': 'application/json' },
+    body: { kind: 'json', value: { id: 'abc' } },
+    ...over,
+  });
+
+  it('finds nothing when status, declared headers and body all match', () => {
+    const expected = { status: 200, headers: { 'content-type': 'application/json' }, body: { id: 'abc' } };
+    expect(diffResponse(expected, recorded())).toEqual([]);
+  });
+
+  it('reports a status deviation', () => {
+    const expected = { status: 200, body: { id: 'abc' } };
+    expect(diffResponse(expected, recorded({ status: 599 }))).toEqual([
+      { field: 'status', expected: '200', actual: '599' },
+    ]);
+  });
+
+  it('reports a declared header that is absent', () => {
+    const expected = { status: 200, headers: { 'x-rate-limit': '42' }, body: { id: 'abc' } };
+    expect(diffResponse(expected, recorded())).toEqual([
+      { field: 'header.x-rate-limit', expected: '42', actual: '<absent>' },
+    ]);
+  });
+
+  it('ignores an undeclared header the runtime added', () => {
+    const expected = { status: 200, body: { id: 'abc' } };
+    expect(diffResponse(expected, recorded({ headers: { date: 'Sat, 09 Aug 2026 00:00:00 GMT' } }))).toEqual([]);
+  });
+
+  // The whole point of comparing the body unconditionally: an extra property in the response is a
+  // deviation even though the case's `response` never mentions it. This is the shape the generated
+  // server is expected to produce for every `Pet`-bodied case (every unset optional field as an
+  // explicit `null`), so a conditional comparison would make this phase blind to its own main finding.
+  it('reports an extra property in the body', () => {
+    const expected = { status: 200, body: { id: 'abc' } };
+    const deviations = diffResponse(expected, recorded({ body: { kind: 'json', value: { id: 'abc', age: null } } }));
+    expect(deviations).toEqual([
+      {
+        field: 'body',
+        expected: '{"kind":"json","value":{"id":"abc"}}',
+        actual: '{"kind":"json","value":{"age":null,"id":"abc"}}',
+      },
+    ]);
+  });
+
+  it('reports a body on a response the case declares none for', () => {
+    const expected = { status: 204 };
+    const deviations = diffResponse(expected, recorded({ status: 204, body: { kind: 'json', value: {} } }));
+    expect(deviations).toEqual([
+      { field: 'body', expected: '{"kind":"none"}', actual: '{"kind":"json","value":{}}' },
+    ]);
+  });
+
+  it('reports a body that arrived as text where json was declared', () => {
+    const expected = { status: 200, body: { id: 'abc' } };
+    const deviations = diffResponse(expected, recorded({ body: { kind: 'text', value: 'nope' } }));
+    expect(deviations).toEqual([
+      { field: 'body', expected: '{"kind":"json","value":{"id":"abc"}}', actual: '{"kind":"text","value":"nope"}' },
     ]);
   });
 });

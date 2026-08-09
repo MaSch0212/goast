@@ -1,4 +1,4 @@
-import type { ApiCase, RecordedBody, RecordedRequest } from '../cases/types.ts';
+import type { ApiCase, RecordedBody, RecordedRequest, RecordedResponse } from '../cases/types.ts';
 
 /**
  * Headers the comparison drops.
@@ -32,22 +32,22 @@ export function parseQuery(url: URL): Record<string, string[]> {
   return result;
 }
 
-export async function readBody(request: Request): Promise<RecordedBody> {
-  const contentType = request.headers.get('content-type') ?? '';
-  if (request.body === null) return { kind: 'none' };
+export async function readBody(source: Request | Response): Promise<RecordedBody> {
+  const contentType = source.headers.get('content-type') ?? '';
+  if (source.body === null) return { kind: 'none' };
 
   if (contentType.includes('application/json')) {
-    const text = await request.text();
+    const text = await source.text();
     if (text === '') return { kind: 'none' };
     return { kind: 'json', value: JSON.parse(text) };
   }
   if (contentType.includes('application/x-www-form-urlencoded')) {
     const fields: Record<string, string[]> = {};
-    for (const [key, value] of new URLSearchParams(await request.text())) (fields[key] ??= []).push(value);
+    for (const [key, value] of new URLSearchParams(await source.text())) (fields[key] ??= []).push(value);
     return { kind: 'form', fields };
   }
   if (contentType.includes('multipart/form-data')) {
-    const form = await request.formData();
+    const form = await source.formData();
     const parts = [];
     for (const [name, value] of form) {
       parts.push(
@@ -58,9 +58,9 @@ export async function readBody(request: Request): Promise<RecordedBody> {
     }
     return { kind: 'multipart', parts };
   }
-  if (contentType.startsWith('text/')) return { kind: 'text', value: await request.text() };
+  if (contentType.startsWith('text/')) return { kind: 'text', value: await source.text() };
 
-  const bytes = new Uint8Array(await request.arrayBuffer());
+  const bytes = new Uint8Array(await source.arrayBuffer());
   if (bytes.length === 0) return { kind: 'none' };
   return { kind: 'binary', base64: bytesToBase64(bytes) };
 }
@@ -127,6 +127,52 @@ export function diffRequest(expected: ApiCase['expectRequest'], actual: Recorded
   }
 
   compare('body', expected.body ?? { kind: 'none' }, actual.body, deviations);
+
+  return deviations;
+}
+
+/** Parses one response into the shape {@link diffResponse} compares. */
+export async function readResponse(response: Response): Promise<RecordedResponse> {
+  return {
+    status: response.status,
+    headers: normalizeHeaders(response.headers),
+    body: await readBody(response),
+  };
+}
+
+/**
+ * Compares one recorded response against the case's declared `response`.
+ *
+ * The mirror of {@link diffRequest}, and it follows that function's rules deliberately: status and body
+ * are compared unconditionally, headers only where the case declares them. The asymmetry has the same
+ * justification in this direction — the runtime supplies `date`, `content-length` and
+ * `transfer-encoding` that no case names, but it never invents a status or a response body.
+ *
+ * The case table types `response.body` as `unknown` rather than as a `BodyExpectation`, because a
+ * declared response body is always JSON in this corpus (or absent). It is lifted into
+ * `{ kind: 'json' }` here so that one `compare` call can put it beside a `RecordedBody` — which also
+ * means a response that arrives as `text/plain` reports as a `kind` mismatch rather than as a silently
+ * unequal value, and that is exactly how a delegate's plain-text failure report becomes readable in the
+ * committed artifact.
+ */
+export function diffResponse(expected: ApiCase['response'], actual: RecordedResponse): Deviation[] {
+  const deviations: Deviation[] = [];
+
+  if (expected.status !== actual.status) {
+    deviations.push({ field: 'status', expected: String(expected.status), actual: String(actual.status) });
+  }
+
+  for (const [name, value] of Object.entries(expected.headers ?? {})) {
+    const lower = name.toLowerCase();
+    if (actual.headers[lower] !== value) {
+      deviations.push({ field: `header.${lower}`, expected: value, actual: actual.headers[lower] ?? '<absent>' });
+    }
+  }
+
+  const expectedBody: RecordedBody = expected.body === undefined
+    ? { kind: 'none' }
+    : { kind: 'json', value: expected.body };
+  compare('body', expectedBody, actual.body, deviations);
 
   return deviations;
 }
