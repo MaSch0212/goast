@@ -959,15 +959,29 @@ key/value structure. Both are exactly the characters OpenAPI's `getEncoded` kitc
 **Tier 4:** `test/wire/fetch-clients/getEncoded__ok.txt` — `getEncoded`'s path value `abc def/x` needed percent-encoding
 to survive as the single path segment `/encoded/{value}` expects; instead the literal `/` splits the URL into an
 extra segment, so the request matches no route at all and lands in the reference server's surplus bucket (answered
-418) rather than producing a request/response content diff. Recorded as `getEncoded/ok`'s deviation: `expected one
-request matching this case's route` / `actual get /encoded/abc%20def/x matched no route (server answered 418)`. The
-query side of the same case (`raw: 'a&b=c'`) never gets driven far enough to surface a second, independent deviation,
-since the request already fails to match a route on the path alone. Reading `UrlBuilder.build()` directly shows what
-that second deviation would be: `withQueryParam` stores the value unencoded and `build()` joins it in as literal
-text, so the wire would carry `raw=a&b=c` — a bare `&` and `=` inside what is meant to be one value, corrupting the
-query string's own delimiter structure — where a correct client (`URLSearchParams`, which is what the reference
-client in `test/harness/ref-client.ts` uses) would send the percent-encoded `raw=a%26b%3Dc`. This half of the defect
-is inferred from the source, not from a second committed artifact.
+418). Recorded as `getEncoded/ok`'s first deviation: `request` `expected one request matching this case's route` /
+`actual get /encoded/abc%20def/x matched no route (server answered 418)`.
+
+**Both halves of this defect are now measured, not inferred.** The same artifact carries the query half as well:
+
+```
+query.b
+  expected undefined
+  actual   ["c"]
+query.raw
+  expected ["a&b=c"]
+  actual   ["a"]
+```
+
+`withQueryParam` stores the value unencoded and `build()` joins it in as literal text, so the wire carries
+`raw=a&b=c` — a bare `&` and `=` inside what is meant to be one value — and the reference server parses that as *two*
+parameters, `raw=a` and `b=c`, where a correct client (`URLSearchParams`, which is what the reference client in
+`test/harness/ref-client.ts` uses) sends the percent-encoded `raw=a%26b%3Dc`. An earlier revision of this entry stated
+this half was "inferred from the source, not from a second committed artifact", which was true of the harness at the
+time and no longer is: the surplus-attribution branch of both integration tests reported only the offending request's
+method and path and discarded its query, headers and body, so a request that deviated in several ways at once recorded
+only one of them. That branch now runs the full `diffRequest` over the attributed request, which is what turned this
+paragraph from a reading of the generator into a quotation from the artifact.
 
 **Tier 4, confirmed on a second generator, with the opposite outcome on its sibling — `spring-reactive-web-clients`
 only, not `okhttp3-clients`.** The two Kotlin client generators build a path substitution through entirely different
@@ -989,6 +1003,15 @@ path value `abc def/x` splits into an extra path segment the reference server's 
 answered 418)`, the identical shape and cause `fetch-clients`' own `getEncoded__ok.txt` records. No artifact exists
 for `okhttp3-clients@sb3`/`@sb4`'s `getEncoded/ok` case at all — that absence is the positive evidence that
 `addPathSegment` (above) closes this gap for that generator alone.
+
+This artifact carries the same `query.raw`/`query.b` split quoted above, and is now **byte-identical** to
+`fetch-clients`' — which is a stronger result than either family's artifact alone. Two generators reaching this wire
+through completely unrelated library calls (`UrlBuilder`'s bare string replace and `String` concatenation on one side,
+`UriComponentsBuilder.buildAndExpand(...).toUriString()` on the other) produce the same corrupted query, because the
+shared root cause is the same in both: a value is stringified into a URL without ever being percent-encoded. For the
+reactive family the specific mechanism is that `toUriString()` on a `UriComponents` that was never `encode()`d emits
+the raw string, which `WebClient.uri(String)` then re-parses as a URI template — so the `&` inside `a&b=c` becomes a
+parameter separator on re-parse.
 
 Not fixed here — this phase records defects rather than fixing them. A fix needs `encodeURIComponent` on both the
 substituted path-parameter value in `build()`'s path replace and each query key/value pair, applied once each value

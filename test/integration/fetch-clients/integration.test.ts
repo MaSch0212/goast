@@ -2,6 +2,7 @@ import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
 import {
+  type Deviation,
   diffRequest,
   diffResult,
   formatDeviations,
@@ -42,14 +43,18 @@ describe(`integration/${PROFILE}`, () => {
       await server.close();
     }
 
+    const lines = output.split('\n').filter((l) => l.trim() !== '')
+      .map((line) => JSON.parse(line) as { caseId: string; result: unknown });
     const reported = new Map<string, unknown>();
-    for (const line of output.split('\n').filter((l) => l.trim() !== '')) {
-      const parsed = JSON.parse(line) as { caseId: string; result: unknown };
-      reported.set(parsed.caseId, parsed.result);
-    }
+    for (const { caseId, result } of lines) reported.set(caseId, result);
 
     // Drift protection: a forgotten case must fail loudly, not quietly shrink coverage.
     expect([...reported.keys()].sort()).toEqual(cases.map((c) => c.id).sort());
+
+    // A `Map` keeps only the last result for a repeated id, and the key-set check above compares
+    // *distinct* ids — so 20 lines covering 19 ids would pass it with one result silently discarded.
+    // Comparing the line count against the map size is what makes a duplicated id loud.
+    expect(lines.length, 'duplicate case id(s) in the driver output').toBe(reported.size);
 
     // Unlike the oracle round-trip (task 6), a *generated* client can send a request the reference
     // server's route pattern does not recognize at all — the untouched `UrlBuilder.build()` never
@@ -73,21 +78,41 @@ describe(`integration/${PROFILE}`, () => {
     // rules out for the count, but not, on its own, for the pairing.
     for (const apiCase of cases) {
       const recorded = server.recorded.get(apiCase.id);
-      const deviations = recorded === undefined
-        ? [{
-          field: 'request',
-          expected: "one request matching this case's route",
-          actual: (() => {
-            const unmatched = surplusQueue.shift();
-            return unmatched === undefined
-              ? 'no request received at all'
-              : `${unmatched.method} ${unmatched.path} matched no route (server answered 418)`;
-          })(),
-        }]
-        : [
+      let deviations: Deviation[];
+
+      if (recorded !== undefined) {
+        deviations = [
           ...diffRequest(apiCase.expectRequest, recorded),
           ...diffResult(apiCase.expectResult, reported.get(apiCase.id)),
         ];
+      } else {
+        const unmatched = surplusQueue.shift();
+        deviations = unmatched === undefined
+          ? [{
+            field: 'request',
+            expected: "one request matching this case's route",
+            actual: 'no request received at all',
+          }]
+          : [
+            {
+              field: 'request',
+              expected: "one request matching this case's route",
+              actual: `${unmatched.method} ${unmatched.path} matched no route (server answered 418)`,
+            },
+            // A route mismatch is *one* thing wrong with a request that can be wrong in several ways at
+            // once, so the rest of the request is compared here too rather than discarded. Measured, not
+            // hypothetical: `getEncoded/ok` fails to encode the `/` inside its path parameter (the route
+            // mismatch above) *and* emits `raw=a` + `b=c` where the case declares one `raw` value of
+            // `a&b=c` — and the second deviation went unrecorded for as long as this branch reported only
+            // the method and path. An absent deviation in a committed artifact reads as conformance, so
+            // dropping the other dimensions understated what the client got wrong.
+            //
+            // `diffRequest` re-reports `path`, which the line above already names. That redundancy is the
+            // cheap side of the trade: repeating one field in a diagnostic costs a reader nothing, whereas
+            // omitting a field costs them the truth.
+            ...diffRequest(apiCase.expectRequest, unmatched),
+          ];
+      }
 
       await verifyWireDeviations(wireSnapshotFile(wireRootDir, PROFILE, apiCase.id), formatDeviations(deviations));
     }

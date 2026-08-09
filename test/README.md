@@ -610,7 +610,7 @@ as `verifyCompileDiagnostics`. 62 such artifacts are committed today — 10 unde
 generated output and belongs to its own phase.
 
 **An absent artifact means "no declared field deviated," not "the request was wire-correct."** This is the single most
-misreadable thing about this tier, for three concrete, verified reasons:
+misreadable thing about this tier, for four concrete, verified reasons:
 
 - `diffRequest` compares only headers a case's `expectRequest` **declares**. 11 of the 19 cases declare no headers at
   all, so an empty artifact for those says nothing about header correctness beyond the fields the table happened to
@@ -623,6 +623,14 @@ misreadable thing about this tier, for three concrete, verified reasons:
   the header, the defect that is very much occurring on that request produces **no artifact at all** — it only becomes
   visible on cases that do declare a `content-type` (`addPetNote/text`) or that declare a body shape the missing header
   derails (`updatePet/json` and `updatePet/form`'s bodies still deviate, just not via a header diff).
+- **The two Kotlin drivers do not report results with equal fidelity.** `OkHttp3Driver` serializes the whole returned
+  model through the generated `Serializer.jacksonObjectMapper`, so every field the client decoded reaches `diffResult`.
+  `ReactiveDriver` has no JSON library on purpose (see its file comment) and hand-projects a fixed subset — `Pet` to
+  `{id, name, age}`, `Widget` to `{id, name, price}`, `BlobRef` to `{id}` — so eight of `Pet`'s eleven fields never
+  reach the diff for that family. Nothing is hidden today: every `expectResult` the reactive driver is compared against
+  names only fields inside those projections, checked case by case. But if that family ever populated a field the server
+  never sent, `okhttp3-clients` would produce a `result` artifact and `spring-reactive-web-clients` would produce none —
+  which would read as the reactive client being _more_ correct rather than less observed.
 
 Relatedly, and stated the same way `test/integration/oracles.test.ts`'s class doc comment states it: a deviation
 artifact means **the generated client differs from the declared table** — this tier does not by itself adjudicate

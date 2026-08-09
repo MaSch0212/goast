@@ -5,6 +5,7 @@ import { describe, it } from '@std/testing/bdd';
 
 import {
   buildImage,
+  type Deviation,
   diffRequest,
   diffResult,
   formatDeviations,
@@ -149,14 +150,28 @@ if (enabled) {
               .toBe(0);
             output = result.stdout + result.stderr;
           } finally {
-            await Deno.remove(workDir, { recursive: true });
+            // Best effort, and deliberately not allowed to throw. The container writes `build/` and
+            // `.gradle/` into this bind mount, and the `gradle` image declares no `USER`, so on Linux
+            // those trees are root-owned and a non-root Deno process cannot unlink inside them. A throw
+            // from this `finally` would replace whatever the run actually determined — including a
+            // legitimate pass — with an unrelated `PermissionDenied`. Tier 3 sidesteps this by removing
+            // its work dir only in `ephemeral` mode (`compile-tests/runners/kotlin.ts`).
+            await Deno.remove(workDir, { recursive: true }).catch((error: unknown) => {
+              console.warn(`could not remove ${workDir}: ${error instanceof Error ? error.message : error}`);
+            });
           }
         } finally {
           await server.close();
         }
 
+        const lines = parseCaseLines(output);
         const reported = new Map<string, unknown>();
-        for (const { caseId, result } of parseCaseLines(output)) reported.set(caseId, result);
+        for (const { caseId, result } of lines) reported.set(caseId, result);
+
+        // `parseCaseLines` returns a list; this `Map` keeps only the last result for a repeated id, and
+        // the key-set check below compares *distinct* ids — so 20 lines covering 19 ids would satisfy it
+        // with one result silently discarded. Comparing the two sizes is what makes a duplicated id loud.
+        expect(lines.length, `duplicate ${CASE_LINE_PREFIX} case id(s)`).toBe(reported.size);
 
         // Drift protection: a forgotten case must fail loudly, not quietly shrink coverage. A driver
         // that dies before printing its `CASE_LINE_PREFIX` line for some case (rather than catching the
@@ -189,25 +204,44 @@ if (enabled) {
 
         for (const apiCase of cases) {
           const recorded = server.recorded.get(apiCase.id);
-          const deviations = recorded === undefined
-            ? [{
-              field: 'request',
-              expected: "one request matching this case's route",
-              actual: (() => {
-                const surplus = attributedSurplus.get(apiCase.id);
-                if (surplus !== undefined) {
-                  return `${surplus.method} ${surplus.path} matched no route (server answered 418)`;
-                }
-                // No surplus request explains this gap either: the driver's own reported result (already
-                // proven to exist by the drift check above) is the only remaining evidence of what
-                // actually happened, so it is folded into the deviation text here.
-                return `no request received at all (driver reported ${JSON.stringify(reported.get(apiCase.id))})`;
-              })(),
-            }]
-            : [
+          let deviations: Deviation[];
+
+          if (recorded !== undefined) {
+            deviations = [
               ...diffRequest(apiCase.expectRequest, recorded),
               ...diffResult(apiCase.expectResult, reported.get(apiCase.id)),
             ];
+          } else {
+            const surplus = attributedSurplus.get(apiCase.id);
+            deviations = surplus === undefined
+              ? [{
+                field: 'request',
+                expected: "one request matching this case's route",
+                // No surplus request explains this gap either: the driver's own reported result (already
+                // proven to exist by the drift check above) is the only remaining evidence of what actually
+                // happened, so it is folded into the deviation text here.
+                actual: `no request received at all (driver reported ${JSON.stringify(reported.get(apiCase.id))})`,
+              }]
+              : [
+                {
+                  field: 'request',
+                  expected: "one request matching this case's route",
+                  actual: `${surplus.method} ${surplus.path} matched no route (server answered 418)`,
+                },
+                // A route mismatch is *one* thing wrong with a request that can be wrong in several ways at
+                // once, so the rest of the request is compared here too rather than discarded —
+                // `attributeSurplus` hands back the whole `RecordedRequest`, and reporting only its method
+                // and path threw the other dimensions away. Measured, not hypothetical: the reactive
+                // family's `getEncoded/ok` fails to encode the `/` inside its path parameter (the route
+                // mismatch above) *and* emits `raw=a` + `b=c` where the case declares one `raw` value of
+                // `a&b=c`, and that second deviation went unrecorded for as long as this branch reported
+                // only the two fields. An absent deviation in a committed artifact reads as conformance.
+                //
+                // `diffRequest` re-reports `path`, which the line above already names. Repeating one field
+                // in a diagnostic costs a reader nothing; omitting a field costs them the truth.
+                ...diffRequest(apiCase.expectRequest, surplus),
+              ];
+          }
 
           await verifyWireDeviations(wireSnapshotFile(wireRootDir, unit.id, apiCase.id), formatDeviations(deviations));
         }
