@@ -6,7 +6,7 @@ import { describe, it } from '@std/testing/bdd';
 import { findOrphanFiles, wireRootDir, wireSnapshotFile } from '@goast/test-harness';
 
 import { casesFor } from '../cases/cases.ts';
-import { WIRE_TARGETS } from '../integration/targets.ts';
+import { WIRE_TARGETS, type WireTarget } from '../integration/targets.ts';
 
 // `findOrphanFiles` compares against paths relative to `wireRootDir` with forward slashes (it walks
 // the tree with `relative(root, entry.path).replace(/\\/g, '/')`, the same way
@@ -24,14 +24,38 @@ import { WIRE_TARGETS } from '../integration/targets.ts';
 // *all* of `wireRootDir`, so an expected set built from a single target reports every other target's
 // artifacts as orphans. That is not hypothetical: the Kotlin targets' 36 artifacts landed one commit
 // before this registry existed and turned this sweep red.
+
+/**
+ * The files a target is allowed to have committed.
+ *
+ * A load-failed target has exactly one, and crucially **no** per-case files: it was never driven, so a per-case
+ * artifact could not have been produced honestly, and claiming those filenames here would let a stale one
+ * survive the sweep. Every other target claims one filename per case that survives `casesFor`'s filter, for the
+ * reason the file's original comment gives.
+ */
+function expectedFilesFor(target: WireTarget): string[] {
+  if (target.state === 'load-failure') return [`${target.profile}/__load-failure.txt`];
+
+  return casesFor(target.profile, target.direction).map((c) =>
+    relative(wireRootDir, wireSnapshotFile(wireRootDir, target.profile, c.id)).replace(/\\/g, '/')
+  );
+}
+
 describe('wire artifacts', () => {
   it('has no artifact without a matching case in any target', async () => {
-    const expected = WIRE_TARGETS.flatMap(({ profile, direction }) =>
-      casesFor(profile, direction).map((c) =>
-        relative(wireRootDir, wireSnapshotFile(wireRootDir, profile, c.id)).replace(/\\/g, '/')
-      )
-    );
+    const expected = WIRE_TARGETS.flatMap(expectedFilesFor);
 
     expect(await findOrphanFiles(wireRootDir, expected)).toEqual([]);
+  });
+
+  it('claims the load-failure file, and no per-case file, for a load-failed target', () => {
+    const failed = WIRE_TARGETS.filter((t) => t.state === 'load-failure');
+    expect(failed.length, 'this test is vacuous with no load-failed target').toBeGreaterThan(0);
+
+    for (const target of failed) {
+      const expected = expectedFilesFor(target);
+
+      expect(expected).toEqual([`${target.profile}/__load-failure.txt`]);
+    }
   });
 });

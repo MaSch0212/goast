@@ -1,7 +1,18 @@
 import type { Direction } from '../cases/types.ts';
 
+/**
+ * A target that cannot be driven at all, because the generated code does not load in its own runtime.
+ *
+ * Not a per-case concern and deliberately not expressible as `except` entries: the cases are fine, and the
+ * generated code is not. A target in this state commits one `__load-failure.txt` and **no** per-case artifacts,
+ * and the absence of those per-case files carries no conformance claim — which is the opposite of what an
+ * absent artifact means for every other target, and is why this is a declared state rather than something
+ * inferred from what happens to be on disk.
+ */
+export type WireTargetState = 'load-failure';
+
 /** One tier-4 target: a generated-code profile and the side of the contract it exercises. */
-export type WireTarget = { profile: string; direction: Direction };
+export type WireTarget = { profile: string; direction: Direction; state?: WireTargetState };
 
 /**
  * Every profile tier 4 records deviations for, and the direction each one drives.
@@ -35,4 +46,8 @@ export const WIRE_TARGETS: readonly WireTarget[] = [
   { profile: 'spring-controllers@sb4', direction: 'server' },
   { profile: 'spring-controllers@sb3-strict', direction: 'server' },
   { profile: 'spring-controllers@sb4-strict', direction: 'server' },
+  // Cannot be driven: k6 cannot resolve the generated client's extensionless relative imports, and the request
+  // builder imports a CDN polyfill at run time. Defects 55 and 56. `direction` is still `'client'` — that is
+  // what the target *is*, and it becomes meaningful the moment the load failure is fixed.
+  { profile: 'k6-clients', direction: 'client', state: 'load-failure' },
 ];
