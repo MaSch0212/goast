@@ -50,8 +50,21 @@ describe('angular-services build module', () => {
     expect(command).toContain(String.raw`s#\.js\.js'#.js'#g`);
   });
 
-  it('does not write anything into the mounted tree', () => {
-    expect(buildCommand()).not.toContain(`${TREE_MOUNT} -name`);
-    expect(buildCommand()).not.toMatch(new RegExp(`sed[^|;]*${TREE_MOUNT}`));
+  // The committed tree is mounted read-only, and the leg's whole claim is that it runs byte-identical
+  // reviewed output — so the build must not so much as name it. An earlier revision of this test looked for
+  // `'/tree -name'` and `sed…/tree`, both of which passed vacuously: `/tree` appears nowhere in the command,
+  // so those assertions would have held against an empty `buildCommand()` too.
+  it('never references the mounted tree, and every mutation targets the out dir', () => {
+    const command = buildCommand();
+
+    expect(command, 'the build command must not touch the read-only tree').not.toContain(TREE_MOUNT);
+
+    // Each of the three mutating steps, checked individually rather than trusting one grep of the whole
+    // string: a `sed -i` or a redirect that lost its `OUT_DIR` prefix is exactly the regression this guards.
+    for (const mutation of [/find (\S+) -name/, /printf [^>]*> ?(\S+)/, /ln -sfn \S+ (\S+)/]) {
+      const match = mutation.exec(command);
+      expect(match, `no step matched ${mutation}`).not.toBeNull();
+      expect(match?.[1], `${mutation} writes outside ${OUT_DIR}`).toContain(OUT_DIR);
+    }
   });
 });

@@ -90,9 +90,12 @@ export function driverTsConfig(): string {
  *     read-only, and rewriting it would mean the leg no longer runs byte-identical reviewed output.
  *   * **A module type.** Without `{"type":"module"}` Node reads the emitted `.js` as CommonJS and the first
  *     `import` is a syntax error.
- *   * **A reachable `node_modules`.** `/out` shares no ancestor with `/opt/goast`, and Node's resolver walks
- *     upward from the importing file, so the symlink is what makes `@angular/core` resolvable from `/out`.
- *     Same mechanism the image's Dockerfile already documents for `/tree`.
+ *   * **A reachable `node_modules`.** Node's resolver walks upward from the importing file through every
+ *     `node_modules` it finds. Stated honestly, this symlink is belt-and-braces rather than load-bearing:
+ *     the image's Dockerfile already symlinks `/node_modules` at the filesystem root, which a file under
+ *     `/out` reaches by walking up, so `@angular/core` would resolve without this line. It is kept because
+ *     it makes the out-dir self-contained instead of depending on a root-level symlink two files away, and
+ *     `-sfn` makes it idempotent. Do not cite it as the reason resolution works.
  *
  * `tsc`'s exit code is deliberately ignored (`|| true`): the corpus is expected to type-check clean, but a
  * *type* error must not stop the run, because what this leg measures is runtime behaviour and a driver that
