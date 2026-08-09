@@ -3,7 +3,17 @@ import { join } from 'node:path';
 import { expect } from '@std/expect';
 import { afterEach, beforeEach, describe, it } from '@std/testing/bdd';
 
-import { buildImage, dockerRunArgs, hashBuildContext, imageTag, requireDocker, runContainer } from './docker.ts';
+import {
+  buildImage,
+  dockerRunArgs,
+  hashBuildContext,
+  imageTag,
+  requireDocker,
+  runContainer,
+  startContainer,
+} from './docker.ts';
+import { waitForHttpReady } from './integration/health.ts';
+import { repoRootDir } from './paths.ts';
 
 /**
  * The container-starting tests at the bottom of this file are opt-in behind `GOAST_COMPILE`, the same
@@ -121,6 +131,28 @@ describe('dockerRunArgs', () => {
   it('omits the flag when no entrypoint is given', () => {
     expect(dockerRunArgs({ image: 'img' })).not.toContain('--entrypoint');
   });
+
+  it('publishes a container port on loopback with a daemon-chosen host port', () => {
+    const args = dockerRunArgs({ image: 'img', name: 'c', publish: [{ containerPort: 8080 }] });
+
+    expect(args).toEqual(['run', '--rm', '--name', 'c', '--publish', '127.0.0.1::8080', 'img']);
+  });
+
+  it('honours an explicit host ip', () => {
+    const args = dockerRunArgs({ image: 'img', name: 'c', publish: [{ containerPort: 8080, hostIp: '0.0.0.0' }] });
+
+    expect(args).toContain('0.0.0.0::8080');
+  });
+
+  it('publishes every requested port', () => {
+    const args = dockerRunArgs({
+      image: 'img',
+      name: 'c',
+      publish: [{ containerPort: 8080 }, { containerPort: 9090 }],
+    });
+
+    expect(args.filter((a) => a.includes('::'))).toEqual(['127.0.0.1::8080', '127.0.0.1::9090']);
+  });
 });
 
 describe('imageTag', () => {
@@ -237,5 +269,73 @@ if (enabled) {
 
     // A normal (non-timeout) non-zero exit reporting `timedOut === false` is already covered by the
     // `failing` case in the test above; not duplicated here.
+
+    it('starts a container, reports its published port, and stops it', async () => {
+      const image = await buildImage('kotlin', join(repoRootDir, 'test', 'docker', 'kotlin'));
+      // `jwebserver` ships with the JDK the `kotlin` image already has, so this needs no new image and no
+      // new dependency. It serves a directory over HTTP and stays up, which is exactly the shape
+      // `startContainer` exists for.
+      const container = await startContainer({
+        image,
+        entrypoint: 'jwebserver',
+        args: ['-b', '0.0.0.0', '-p', '8080', '-d', '/tmp'],
+        publish: [{ containerPort: 8080 }],
+      });
+
+      try {
+        const port = await container.hostPort(8080);
+        expect(port).toBeGreaterThan(0);
+
+        await waitForHttpReady(`http://127.0.0.1:${port}/`, {
+          timeoutMs: 60_000,
+          isAlive: () => container.running(),
+          describeDeath: () => container.output(),
+        });
+
+        const response = await fetch(`http://127.0.0.1:${port}/`);
+        await response.body?.cancel();
+        expect(response.status).toBe(200);
+      } finally {
+        await container.stop();
+      }
+
+      expect(container.running()).toBe(false);
+    });
+
+    // The failure this pins down is the one that costs the most time to debug when it is not pinned
+    // down: a container that starts, fails, and dies, where the only evidence of *why* is on its stdout.
+    //
+    // Note what this test establishes about the division of labour, which is not what it was originally
+    // written to assert. `hostPort` returns a port here rather than throwing, and that is correct: the
+    // daemon publishes the mapping when it *creates* the container, so the mapping genuinely exists
+    // during the moment before `jwebserver` gives up. Detecting the death is the readiness poll's job,
+    // not `hostPort`'s, and the two must not both try to own it.
+    it('surfaces what a container printed when it dies during startup', async () => {
+      const image = await buildImage('kotlin', join(repoRootDir, 'test', 'docker', 'kotlin'));
+      // `-d` names a directory that does not exist in the container, so `jwebserver` prints its own
+      // explanation and exits non-zero.
+      const container = await startContainer({
+        image,
+        entrypoint: 'jwebserver',
+        args: ['-b', '0.0.0.0', '-p', '8080', '-d', '/no/such/directory'],
+        publish: [{ containerPort: 8080 }],
+      });
+
+      try {
+        const port = await container.hostPort(8080);
+
+        // `Path does not exist`, not a timeout: the poll must notice the container died and report the
+        // container's own message rather than waiting out 30 seconds and blaming the clock.
+        await expect(
+          waitForHttpReady(`http://127.0.0.1:${port}/`, {
+            timeoutMs: 30_000,
+            isAlive: () => container.running(),
+            describeDeath: () => container.output(),
+          }),
+        ).rejects.toThrow('Path does not exist');
+      } finally {
+        await container.stop();
+      }
+    });
   });
 }
