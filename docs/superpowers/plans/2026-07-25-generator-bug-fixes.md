@@ -1079,15 +1079,20 @@ style matrix's parameters are therefore identical apart from the name:
 `test/output/kotlin/spring-controllers@sb3/integration/kitchen-sink/com/openapi/generated/api/ParamsApi.kt:58-59`
 (`@RequestParam(value = "formExploded", required = false)` / `formExploded: List<String>?`) and `:66-67` (the same two
 lines for `spaceDelimited`), although the spec declares `style: form, explode: true` for the first and
-`style: spaceDelimited, explode: false` for the third (`test/specs/integration/kitchen-sink.yml:251-254`).
+`style: spaceDelimited, explode: false` for the third (`test/specs/integration/kitchen-sink.yml:235-238` and
+`:251-254` respectively).
 
 **This is a generator defect and not a Spring default, and the distinction is worth stating precisely because the
 proximate cause is a Spring default.** Spring's default `List<String>` query binding splits a single query value on
 commas and on nothing else. That behaviour is documented, correct on its own terms, and not a bug. But Spring was
 never told the parameter's style: the generator had it in the parameter object, emitted nothing carrying it, and
-Spring's comma-only default is filling a vacuum the generator created. The generator had expressible options — bind
-the raw `String` and split it, register a `Converter`/`Formatter` for the parameter, or emit an `@InitBinder` — and
-took none of them. Where the client half of this entry mis-*serializes* a declared style, the server half silently
+Spring's comma-only default is filling a vacuum the generator created. The generator had expressible options and took
+none of them. The simplest needs no framework extension at all: bind the raw `String` and generate the split, since the
+generator controls the parameter's Kotlin type and the delegate signature alike. If a framework hook were wanted
+instead, the one that fits is `@InitBinder` with `registerCustomEditor(Class, field, editor)`, which is keyed by
+*parameter name* — a `Converter`/`Formatter` is the wrong tool here, because Spring's `ConversionService` is keyed by
+type, so registering one for `List<String>` would also change how this operation's comma-styled siblings
+(`formExploded`, `formUnexploded`) bind, breaking the two cases that currently conform. Where the client half of this entry mis-*serializes* a declared style, the server half silently
 *discards* it; in both halves the generator's own code is style-blind at the one site that would need to care.
 
 **Tier 4:** `test/wire/spring-controllers@sb3/styleMatrix__spaceDelimited.txt` (byte-identical in `@sb4`,
@@ -1445,8 +1450,11 @@ the endpoint consumes form-urlencoded, and it was told to bind the body as a `Pe
 are not jointly satisfiable by any reader that exists. Both instructions come from the generator, from two code paths
 that never consult each other. This is the server-side sibling of defect 44's `content[0]` collapse and shares that
 line, but the consequence is strictly worse: on the client side a caller merely *cannot select* the second media type,
-whereas here the generated server publishes the second media type in its own contract — in `consumes` and in its
-Swagger annotations — and then answers a request honouring that contract with a `415`.
+whereas here the generated server publishes the second media type in its own contract — in `consumes` — and then
+answers a request honouring that contract with a `415`. (`consumes` is the *only* place it appears: measured, the
+string `application/x-www-form-urlencoded` occurs exactly once in the whole generated tree, and the operation carries
+no `io.swagger.v3.oas.annotations.parameters.RequestBody` annotation at all — the sole `mediaType` in its Swagger
+annotations is on `@ApiResponses`.)
 
 **Tier 4 (server):** `test/wire/spring-controllers@sb3/updatePet__form.txt` (byte-identical in `@sb4`, `@sb3-strict`
 and `@sb4-strict`) — `status` expected `200`, actual `415`; `body` expected
@@ -1461,12 +1469,21 @@ isolates this fault to the missing reader rather than to routing or to model bin
 the lenient and strict units, which is correct: `strictResponseEntities` changes return types only, and this failure
 happens on the request side.
 
-Not fixed here — this phase records defects rather than fixing them. A fix has to make the two sites agree, in one of
-two directions. Either narrow `consumes` to the media types the generated binding can actually read — honest, and a
-strict improvement over publishing a `415` — or give form-urlencoded its own binding arm the way multipart already has
-one, binding a `MultiValueMap<String, String>` and generating the mapping into the data class, or emitting
-`@ModelAttribute` rather than `@RequestBody` for that media type. The second is the better contract; the first is the
-smaller change and would already stop the generated server from advertising something it cannot serve.
+Not fixed here — this phase records defects rather than fixing them. A fix has to make the two sites agree, and the
+shape of the fix is constrained by something worth spelling out: **one handler method cannot bind two media types into
+one parameter.** The body parameter has a single Kotlin type, chosen from `content[0]`, so no additional annotation arm
+on this method can help — an `@ModelAttribute` or a `MultiValueMap<String, String>` parameter would simply replace the
+JSON binding rather than sit beside it, and the `content[0]` selection means such an arm would never be reached for a
+multi-content operation anyway. So the two real directions are:
+
+- **Narrow `consumes`** to the media types the generated binding can actually read. Honest, small, and a strict
+  improvement over publishing a `415` — but it silently drops a declared media type from the API.
+- **Emit one handler method per declared media type**, each with its own `consumes` and its own body parameter type,
+  delegating to a shared delegate signature. More code, and it is the only direction that actually serves what the
+  spec declares.
+
+The second is the better contract; the first is the smaller change and would already stop the generated server from
+advertising something it cannot serve.
 
 ### Defect 52 — `spring-controllers` emits no null-inclusion annotation and owns no serializer, so every unset optional field on a generated model is written as an explicit JSON `null` (found by the tier-4 server direction, not scheduled)
 
@@ -1533,7 +1550,7 @@ through a `Set` and `.filter(notNullish)`-ed
 spec's `default` response is lost: a `default` — and likewise a range code such as `5XX` — has no numeric
 `statusCode`, `undefined` being exactly what that field holds, as this same generator's own comment records where it
 has to fall back to `response.statusKey` for the Swagger annotation
-(`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:211-213`). A `default`
+(`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:212-214`). A `default`
 response therefore contributes nothing to the factory set. The escape hatch is closed in the same class: the primary
 constructor is emitted `private` whenever the endpoint declares any response at all
 (`accessModifier: endpoint.responses.length > 0 ? 'private' : null`,
@@ -1544,10 +1561,10 @@ and a `default` (`test/specs/integration/kitchen-sink.yml:178-179`), and the gen
 `class GetWidgetResponseEntity<T> private constructor(` with factories `badRequest`, `unauthorized`, `forbidden`,
 `internalServerError`, `notImplemented`, `ok` and `notFound` — the four declared numeric codes plus the five default
 ones, and nothing else
-(`test/output/kotlin/spring-controllers@sb3-strict/integration/kitchen-sink/com/openapi/generated/api/WidgetsApi.kt:54-87`).
+(`test/output/kotlin/spring-controllers@sb3-strict/integration/kitchen-sink/com/openapi/generated/api/WidgetsApi.kt:54-93`).
 There is no factory for any status the `default` response is meant to cover, and no constructor a delegate can reach,
 so an implementer who has followed the spec has no expressible way to answer — say — a `503`. The lenient flavour has
-no such problem: its delegate returns a plain `ResponseEntity<Any?>` and can build any status. That asymmetry is what
+no such problem: its delegate returns a plain `ResponseEntity<Any?>` under @sb3 (`ResponseEntity<Any>` under @sb4 — the one line that differs between the two lenient trees) and can build any status. That asymmetry is what
 makes this a defect of the strict flavour specifically rather than of the generator's response modelling in general.
 
 **Tier 4 (server):** `test/wire/spring-controllers@sb3-strict/getWidget__unexpectedError.txt` (byte-identical in
