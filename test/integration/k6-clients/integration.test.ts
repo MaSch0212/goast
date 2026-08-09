@@ -50,6 +50,24 @@ if (enabled) await requireDocker();
 if (enabled) {
   describe(`integration/${PROFILE}`, () => {
     it('records whether k6 can load the generated client', async () => {
+      // The generated file `probe.js` imports must exist on the host before the container runs, and this is not
+      // a paranoid check — it closes a real hole. k6's "couldn't be found on local disk" error is byte-for-byte
+      // the same whether the specifier is unresolvable *within* a correctly mounted tree (defect 55, the
+      // finding) or the tree was not mounted at all. Measured: running the pinned image with an empty `/tree`
+      // produces the same envelope, `formatLoadFailure` returns it, the guard below passes, and write mode
+      // overwrites the committed record with what is really a mount bug dressed up as a generator defect.
+      //
+      // Asserting the file's presence rather than matching the error text is deliberate: the day defect 55 is
+      // fixed the error text changes completely, and a text assertion would have to be rewritten while this one
+      // keeps holding.
+      const entryModule = join(TREE_DIR, 'clients', 'pets-client.js');
+      await Deno.lstat(entryModule).catch(() => {
+        throw new Error(
+          `${entryModule} does not exist, so this leg cannot distinguish a generator defect from a missing ` +
+            `mount. Has the committed output tree moved?`,
+        );
+      });
+
       const image = await buildImage('k6', CONTEXT_DIR);
       // No `hostGateway`: this leg reaches nothing over the network, only the mounted tree on disk. No
       // `entrypoint` override either — unlike the `node` and `kotlin` images, this one's `ENTRYPOINT ["k6"]`

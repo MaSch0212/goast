@@ -34,9 +34,15 @@ export function formatLoadFailure(output: string): string {
   // One pass over the escape sequences rather than two sequential `replace`s. Sequential passes get `\\n`
   // wrong: the first turns the `\n` half into a real newline, leaving a stray backslash, so a Windows-style
   // path in a k6 message would come back mangled. One alternation consumes each escape exactly once.
-  return `${
-    match[1]
-      .replace(/\\(.)/g, (_whole, char: string) => (char === 'n' ? '\n' : char))
-      .trim()
-  }\n`;
+  const message = match[1]
+    .replace(/\\(.)/g, (_whole, char: string) => (char === 'n' ? '\n' : char))
+    .trim();
+
+  // An error line whose `msg` is empty or whitespace-only is not a usable finding, and returning `"\n"` for it
+  // would be worse than returning nothing: `""` is the sentinel the caller and `verifyTargetLoadFailure` both
+  // read as "not a recognizable k6 error", so a bare newline would slip past the caller's guard and get
+  // committed as an artifact that says nothing at all.
+  if (message === '') return '';
+
+  return `${message}\n`;
 }

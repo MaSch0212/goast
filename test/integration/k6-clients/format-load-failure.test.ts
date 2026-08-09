@@ -54,6 +54,13 @@ describe('formatLoadFailure', () => {
     expect(formatLoadFailure('nothing here')).toBe('');
   });
 
+  // Same sentinel reasoning: a bare `"\n"` is non-empty, so it would slip past the caller's "did we understand
+  // this output?" guard and get committed as an artifact that says nothing at all.
+  it('returns an empty string for an error line whose msg is empty or blank', () => {
+    expect(formatLoadFailure('level=error msg=""')).toBe('');
+    expect(formatLoadFailure('level=error msg="   "')).toBe('');
+  });
+
   // `SAMPLE_TIMESTAMP` rather than a literal. An earlier revision hardcoded a timestamp that no longer appeared
   // in `SAMPLE` after it was recaptured against a newer k6, which made `replace` a no-op — so this test compared
   // `formatLoadFailure(SAMPLE)` with itself and would have passed with the timestamp left in. The assertion

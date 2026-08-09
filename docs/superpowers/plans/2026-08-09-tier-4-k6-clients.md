@@ -81,8 +81,8 @@ independently by a reviewer:
    **The pin is `2.1.0` — the newest release — by the owner's decision.** An earlier revision of this plan pinned
    `0.54.0` on the grounds that tier 3 type-checks this corpus against `@types/k6@0.54.0`
    (`test/docker/node/package.json`), so that the two gates would agree about what the target runtime is. The owner
-   ruled for the current version instead, which is the better default: a defect recorded against a three-year-old
-   runtime says much less about whether today's users are affected.
+   ruled for the current version instead, which is the better default: a defect recorded against a runtime nearly
+   two years old says much less about whether today's users are affected.
 
    **The consequence is worth stating rather than burying.** Tier 3's typings are now far behind the runtime tier 4
    executes, so the two gates no longer describe the same k6. That does not weaken either defect — both are module

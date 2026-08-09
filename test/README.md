@@ -7,8 +7,8 @@ This file documents what exists today.
 ## Prerequisites
 
 Deno and Docker. The everyday loop — tiers 1, 2 and the `fetch-clients` leg of tier 4 — needs only Deno; Docker is
-required for tier 3 and for every other tier-4 target (the four Kotlin ones, the four `spring-controllers` ones, and
-`angular-services`).
+required for tier 3 and for every other tier-4 target (the four Kotlin ones, the four `spring-controllers` ones,
+`angular-services`, and `k6-clients`).
 
 ## Tiers
 
@@ -919,10 +919,18 @@ driven to find out.
 `targetFailureFile`/`verifyTargetLoadFailure`, the sibling of the per-case `verifyWireDeviations` with the same
 write/delete-when-fixed/refuse-in-check contract, but for a whole target instead of one case. `WireTarget` in
 `test/integration/targets.ts` gains an optional `state: 'load-failure'`, and the `k6-clients` entry carries it. A target
-in that state commits exactly one file, `test/wire/k6-clients/__load-failure.txt`, and **no** per-case artifacts —
-`expectedFilesFor` in `test/integration-tests/orphans.test.ts` enforces both halves of that, so a stray per-case file
-appearing under `k6-clients/` fails the sweep exactly as a genuine orphan would for any other target. The committed
-record reads:
+in that state commits exactly one file, `test/wire/k6-clients/__load-failure.txt`, and **no** per-case artifacts.
+
+**Which gate catches which half is worth being precise about, because the two are not symmetric.** A stray per-case file
+appearing under `k6-clients/` fails the Docker-free orphan sweep exactly as a genuine orphan would for any other target
+— `expectedFilesFor` in `test/integration-tests/orphans.test.ts` claims only the load-failure filename for such a
+target, so anything else there is unexpected. But the sweep cannot notice the load-failure file going **missing**:
+`findOrphanFiles` reports files it did not expect, never expected files that are absent. What catches a deleted record
+is the Docker-gated `deno task test:integration:k6:check`, which fails with `Snapshot file does not exist`. So the
+Docker-free gate alone would let an erased finding through, and `deno task test:all` — which includes the gated leg — is
+what closes it.
+
+The committed record reads:
 
 ```
 could not initialize '/scripts/probe.js': could not load JS test 'file:///scripts/probe.js': The moduleSpecifier "../utils/request-builder" couldn't be found on local disk. Make sure that you've specified the right path to the file. If you're running k6 using the Docker image make sure you have mounted the local directory (-v /local/path/:/inside/docker/path) containing your script and modules so that they're accessible by k6 from inside of the container, see https://grafana.com/docs/k6/latest/using-k6/modules/#use-modules-with-docker.
@@ -946,12 +954,13 @@ mean editing the delivered artifact to work around a defect in the delivered art
 **The k6 image is pinned to `2.1.0`, the current release, not `0.54.0` — a late, deliberate, owner's-call change with a
 real consequence.** `test/docker/node/package.json` type-checks this same corpus against `@types/k6@0.54.0`, and an
 earlier revision of this plan pinned the k6 image to match, so the two gates would agree about what runtime they were
-describing. The owner ruled for the current release instead: a defect recorded against a three-year-old runtime says
-much less about whether today's users are affected. Both defects are module-resolution failures, reproduced on `0.54.0`
-and `2.1.0` alike, so neither finding is weakened — but tier 3's `@types/k6` typings are now behind the runtime tier 4
-actually executes, and the two gates no longer describe the same k6. Bumping `@types/k6` to match is a real follow-up,
-deliberately not done here: it changes the `node` image's content hash, which re-runs tier 3's whole TypeScript compile
-group and puts its committed diagnostics up for re-review — its own change, not a side effect of this one.
+describing. The owner ruled for the current release instead: a defect recorded against a runtime nearly two years old
+says much less about whether today's users are affected. Both defects are module-resolution failures, reproduced on
+`0.54.0` and `2.1.0` alike, so neither finding is weakened — but tier 3's `@types/k6` typings are now behind the runtime
+tier 4 actually executes, and the two gates no longer describe the same k6. Bumping `@types/k6` to match is a real
+follow-up, deliberately not done here: it changes the `node` image's content hash, which re-runs tier 3's whole
+TypeScript compile group and puts its committed diagnostics up for re-review — its own change, not a side effect of this
+one.
 
 `easy-network-stub` is the one target phase 7 still owes, behind the same guard.
 
@@ -977,7 +986,8 @@ test/
   harness/            # the test harness, published locally as @goast/test-harness
     snapshot/         # the snapshot engine (mode, tree, text-diff, normalize, verify-*, orphans)
     compile/          # the compile-gate engine (unit discovery, diagnostic parsers, verify)
-    integration/      # the tier-4 wire engine (verify.ts: wireSnapshotFile, verifyWireDeviations)
+    integration/      # the tier-4 wire engine (verify.ts: wireSnapshotFile, verifyWireDeviations;
+                      # target-state.ts: targetFailureFile, verifyTargetLoadFailure; health.ts)
     kotlin/           # the Kotlin dependency table shared between tier 3 (compile) and tier 4 (drive)
     paths.ts          # repo root and spec directory paths
     declutter.ts      # strips noise from parsed ApiData before snapshotting
@@ -992,7 +1002,7 @@ test/
   output/             # committed tier 2 snapshots (see "Snapshot forms" above)
   compile-tests/      # tier 3: driver (compile.test.ts), paths.ts, per-language runners, orphans test
   compile/            # committed tier 3 diagnostics (see "Tier 3: compile gate" above)
-  docker/             # image contexts for the tier 3 compilers (kotlin/, node/)
+  docker/             # image contexts: kotlin/ and node/ (tier 3 compilers, reused by tier 4), k6/ (tier 4 only)
   cases/              # the tier-4 case table (cases.ts, casesFor, types.ts) — the shared source of truth
   integration/        # tier-4 tests: the oracle-agreement proof, targets.ts (WIRE_TARGETS), and one driver
                       # per target — fetch-clients/ (no Docker) and kotlin-clients/ (build.ts synthesizes the
@@ -1002,7 +1012,9 @@ test/
                       # smoke.test.ts the one-call risk gate);
                       # spring-controllers/ is the server direction (build.ts synthesizes the Gradle build,
                       # stabilize.ts normalizes Spring's error bodies, delegates/ holds the handwritten
-                      # oracle: common/, lenient/, strict/, lenient-sb3/, lenient-sb4/)
+                      # oracle: common/, lenient/, strict/, lenient-sb3/, lenient-sb4/);
+                      # k6-clients/ drives nothing — probe.js is one import, format-load-failure.ts
+                      # normalizes k6's error, and the target records a load failure instead of cases
   integration-tests/  # tier-4 orphan sweep, over every WIRE_TARGETS entry (see "Tier 4: integration" above)
   wire/               # committed tier-4 deviation artifacts, one profile subdirectory per WIRE_TARGETS entry
 ```
