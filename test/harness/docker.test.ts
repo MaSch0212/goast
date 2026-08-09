@@ -337,5 +337,57 @@ if (enabled) {
         await container.stop();
       }
     });
+
+    // Both tests below pin hangs that were reproduced against a live daemon, and neither is reachable
+    // through the two tests above: those always call `hostPort` first, which by succeeding proves the
+    // container already exists and so hides the whole early window.
+    //
+    // `withWatchdog` rather than relying on the test runner's own timeout: a hang reported as "the suite
+    // timed out" names no cause, whereas this names the call that failed to resolve.
+    const withWatchdog = async <T>(label: string, ms: number, work: Promise<T>): Promise<T> => {
+      let timer = 0;
+      const watchdog = new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new Error(`${label} did not resolve within ${ms}ms`)), ms);
+      });
+      try {
+        return await Promise.race([work, watchdog]);
+      } finally {
+        clearTimeout(timer);
+      }
+    };
+
+    it('stops a container that the daemon had not finished creating yet', async () => {
+      const image = await buildImage('kotlin', join(repoRootDir, 'test', 'docker', 'kotlin'));
+      const container = await startContainer({ image, entrypoint: 'sleep', args: ['60'] });
+
+      // No `hostPort`, no readiness poll: `stop()` lands inside the window where `docker kill` no-ops
+      // because the container does not exist yet. Without the `process.kill()` fallback this never
+      // resolved and left the container running for its full 60 seconds.
+      await withWatchdog('stop()', 20_000, container.stop());
+
+      const { stdout } = await new Deno.Command('docker', {
+        args: ['ps', '-a', '--filter', `name=${container.name}`, '--format', '{{.Names}}'],
+        stdout: 'piped',
+        stderr: 'null',
+      }).output();
+      expect(new TextDecoder().decode(stdout).trim(), 'a container was left behind').toBe('');
+    });
+
+    it('fails a port lookup within its timeout when no port was published', async () => {
+      const image = await buildImage('kotlin', join(repoRootDir, 'test', 'docker', 'kotlin'));
+      const container = await startContainer({ image, entrypoint: 'sleep', args: ['60'] });
+
+      try {
+        // The container is alive and will stay alive, so `exited` never resolves. An earlier version
+        // awaited it while building this error and hung indefinitely despite the 3s timeout.
+        await withWatchdog(
+          'hostPort()',
+          20_000,
+          expect(container.hostPort(8080, 3_000)).rejects.toThrow('Could not read the host port'),
+        );
+      } finally {
+        await withWatchdog('stop()', 20_000, container.stop());
+      }
+    });
   });
 }

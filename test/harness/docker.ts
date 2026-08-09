@@ -298,6 +298,48 @@ export async function startContainer(options: RunContainerOptions): Promise<Runn
     return code;
   });
 
+  /**
+   * Ends the run and resolves once it really has ended. Idempotent — the promise is memoized, so a
+   * second `stop()` awaits the first rather than killing twice.
+   *
+   * Three steps, and every one of them is load-bearing:
+   *
+   * `docker kill <name>` addresses the *daemon*, which is the only thing that can stop a container whose
+   * client has stopped responding. But it silently no-ops when the container does not exist **yet** —
+   * `spawn()` returns before the daemon has created it — and in that case the container comes up moments
+   * later and runs to completion.
+   *
+   * So `process.kill()` follows, on the `docker run` client. This is what guarantees `exited` resolves at
+   * all: without it, a `stop()` issued in that early window awaits a process that will keep running for
+   * the container's full lifetime. `runContainer`'s timeout path pairs the same two calls for the same
+   * reason; omitting the second one here was a real hang, reproduced twice against a live daemon.
+   *
+   * Then a second `docker kill`, because the first one's no-op window is exactly when the daemon may
+   * still have been creating the container: killing the client detaches from it but does not stop it, and
+   * without this the early-stop path leaks a running container. Cheap insurance — it no-ops when the
+   * first kill already worked.
+   */
+  let terminating: Promise<void> | undefined;
+  const kill = async (): Promise<void> => {
+    // `kill`, not `stop`: `stop` spends a 10-second SIGTERM grace period per container waiting for an
+    // orderly shutdown that nothing here observes.
+    await new Deno.Command('docker', { args: ['kill', name], stdout: 'null', stderr: 'null' })
+      .output().then(() => {}).catch(() => {});
+  };
+  const terminate = (): Promise<void> => {
+    terminating ??= (async () => {
+      await kill();
+      try {
+        process.kill('SIGKILL');
+      } catch {
+        // Already exited; nothing to kill.
+      }
+      await exited.catch(() => {});
+      await kill();
+    })();
+    return terminating;
+  };
+
   return {
     name,
     output: () => buffer,
@@ -343,23 +385,19 @@ export async function startContainer(options: RunContainerOptions): Promise<Runn
         await new Promise((resolve) => setTimeout(resolve, 100));
       }
 
-      await exited.catch(() => {});
-      await drained.catch(() => {});
+      // Nothing is awaited here on purpose. `alive === false` already implies the output streams closed
+      // (see `exited` above), so on the early-break path `buffer` is complete and there is nothing left
+      // to wait for. On the timeout path the container is still running, and `exited` will not resolve
+      // until somebody stops it — awaiting it here would convert a diagnosable timeout into a permanent
+      // hang, which is the exact failure this function exists to prevent. Stopping the container is the
+      // caller's job, in the `finally` that pairs with `startContainer`.
       throw new Error(
         `Could not read the host port ${name} mapped ${containerPort}/tcp to.\n${detail}\n\n` +
           `Container output:\n${buffer}`,
       );
     },
-    async stop(): Promise<void> {
-      if (alive) {
-        // `kill`, not `stop`: `stop` spends a 10-second SIGTERM grace period per container waiting for a
-        // shutdown nothing here observes. Errors are swallowed because the container may have exited
-        // between `alive` and this call.
-        await new Deno.Command('docker', { args: ['kill', name], stdout: 'null', stderr: 'null' })
-          .output().catch(() => {});
-      }
-      await exited;
-      await drained;
+    stop(): Promise<void> {
+      return terminate();
     },
   };
 }
