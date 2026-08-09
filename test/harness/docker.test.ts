@@ -356,21 +356,32 @@ if (enabled) {
       }
     };
 
-    it('stops a container that the daemon had not finished creating yet', async () => {
-      const image = await buildImage('kotlin', join(repoRootDir, 'test', 'docker', 'kotlin'));
-      const container = await startContainer({ image, entrypoint: 'sleep', args: ['60'] });
-
-      // No `hostPort`, no readiness poll: `stop()` lands inside the window where `docker kill` no-ops
-      // because the container does not exist yet. Without the `process.kill()` fallback this never
-      // resolved and left the container running for its full 60 seconds.
-      await withWatchdog('stop()', 20_000, container.stop());
-
+    const containerNames = async (name: string): Promise<string> => {
       const { stdout } = await new Deno.Command('docker', {
-        args: ['ps', '-a', '--filter', `name=${container.name}`, '--format', '{{.Names}}'],
+        args: ['ps', '--all', '--filter', `name=^${name}$`, '--format', '{{.Names}} {{.State}}'],
         stdout: 'piped',
         stderr: 'null',
       }).output();
-      expect(new TextDecoder().decode(stdout).trim(), 'a container was left behind').toBe('');
+      return new TextDecoder().decode(stdout).trim();
+    };
+
+    it('stops a container that the daemon had not finished creating yet', async () => {
+      const image = await buildImage('kotlin', join(repoRootDir, 'test', 'docker', 'kotlin'));
+
+      // Three cycles, not one. A single cycle passed even while this leaked: the check ran before the
+      // daemon had finished creating the container, so it saw nothing and called that clean. Repeating
+      // the cycle is what made the leak observable — 15 of 15 rounds left a container behind, every one
+      // of them in `Created` state, which `docker kill` refuses to touch.
+      for (let round = 0; round < 3; round++) {
+        const container = await startContainer({ image, entrypoint: 'sleep', args: ['60'] });
+
+        // No `hostPort`, no readiness poll: `stop()` lands inside the window where `docker kill` no-ops
+        // because the container does not exist yet. Without the `process.kill()` fallback this never
+        // resolved and left the container running for its full 60 seconds.
+        await withWatchdog(`stop() in round ${round}`, 20_000, container.stop());
+
+        expect(await containerNames(container.name), `round ${round} left a container behind`).toBe('');
+      }
     });
 
     it('fails a port lookup within its timeout when no port was published', async () => {

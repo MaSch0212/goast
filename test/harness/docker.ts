@@ -49,6 +49,14 @@ export type ContainerResult = { code: number; stdout: string; stderr: string; ti
 const DEFAULT_TIMEOUT_MS = 15 * 60 * 1000;
 
 /**
+ * How long {@link startContainer}'s `stop()` keeps trying to remove the container.
+ *
+ * Bounded rather than unbounded: a daemon that never finishes creating a container is a broken daemon,
+ * and blocking a test suite forever is a worse failure than leaking one container.
+ */
+const REAP_TIMEOUT_MS = 5_000;
+
+/**
  * Fails with one plain sentence when Docker is unusable.
  *
  * Tiers 3 and 4 need it; tiers 1 and 2 never touch it. Without this check the first symptom is a
@@ -277,7 +285,10 @@ export async function startContainer(options: RunContainerOptions): Promise<Runn
   const drain = async (stream: ReadableStream<Uint8Array>): Promise<void> => {
     for await (const chunk of stream) buffer += decoder.decode(chunk, { stream: true });
   };
-  const drained = Promise.all([drain(process.stdout), drain(process.stderr)]);
+  // `allSettled`, not `all`: `all` short-circuits the moment one stream rejects, so `drained` could
+  // resolve while the *other* stream was still appending to `buffer` — which would falsify the one
+  // guarantee anything downstream relies on here, that `drained` settling means `buffer` is complete.
+  const drained = Promise.allSettled([drain(process.stdout), drain(process.stderr)]);
 
   let alive = true;
   const exited = process.status.then(async ({ code }) => {
@@ -293,7 +304,11 @@ export async function startContainer(options: RunContainerOptions): Promise<Runn
     // matter most are the ones with the most to say — a Gradle build reporting a compile failure emits
     // kilobytes, and truncating *that* report is the difference between a diagnosable failure and a
     // shrug. Do not treat the passing test as evidence this line is unnecessary.
-    await drained.catch(() => {});
+    //
+    // `drained` is an `allSettled`, so it never rejects and needs no `.catch` — and, more to the point,
+    // it does not settle until *both* streams are done, which is what makes `alive === false` a sound
+    // proof that `buffer` is complete. `hostPort`'s error path depends on exactly that.
+    await drained;
     alive = false;
     return code;
   });
@@ -314,28 +329,68 @@ export async function startContainer(options: RunContainerOptions): Promise<Runn
    * the container's full lifetime. `runContainer`'s timeout path pairs the same two calls for the same
    * reason; omitting the second one here was a real hang, reproduced twice against a live daemon.
    *
-   * Then a second `docker kill`, because the first one's no-op window is exactly when the daemon may
-   * still have been creating the container: killing the client detaches from it but does not stop it, and
-   * without this the early-stop path leaks a running container. Cheap insurance — it no-ops when the
-   * first kill already worked.
+   * The order is wait-for-existence, then remove, then kill the client — and that order is the fix, not
+   * an accident. Two measured facts force it:
+   *
+   *   * The daemon can finish creating the container *after* the client was killed, so any cleanup that
+   *     runs before the container exists cleans up nothing, and the container then lingers. Back-to-back
+   *     start-then-immediately-stop cycles leaked one container per round this way.
+   *   * A container in `Created` state — never started — **cannot be killed at all**: `docker kill`
+   *     answers `is not running` and exits non-zero. Only `docker rm --force` removes it.
+   *
+   * Waiting until the container exists makes removal definitive, because one `docker run` creates exactly
+   * one container: there is no second create to race. `process.kill()` on the client then guarantees
+   * `exited` resolves — without it, a `stop()` issued in the early window awaits a process that keeps
+   * running for the container's full lifetime, which was a real hang reproduced against a live daemon.
    */
   let terminating: Promise<void> | undefined;
-  const kill = async (): Promise<void> => {
-    // `kill`, not `stop`: `stop` spends a 10-second SIGTERM grace period per container waiting for an
-    // orderly shutdown that nothing here observes.
-    await new Deno.Command('docker', { args: ['kill', name], stdout: 'null', stderr: 'null' })
+  /**
+   * `docker rm --force`: stops the container if it is running and removes it in any state.
+   *
+   * Neither `docker stop` nor `docker kill` is used anywhere here. `stop` spends a 10-second SIGTERM
+   * grace period per container on an orderly shutdown nothing observes, and `kill` cannot touch a
+   * container in `Created` state at all — it answers `is not running` and exits non-zero, which is
+   * exactly the state the early-stop window produces.
+   */
+  const remove = async (): Promise<void> => {
+    await new Deno.Command('docker', { args: ['rm', '--force', name], stdout: 'null', stderr: 'null' })
       .output().then(() => {}).catch(() => {});
+  };
+  /** Exact-name existence check. `--filter name=` is a regex, so it is anchored to avoid substring hits. */
+  const exists = async (): Promise<boolean> => {
+    const result = await new Deno.Command('docker', {
+      args: ['ps', '--all', '--filter', `name=^${name}$`, '--format', '{{.Names}}'],
+      stdout: 'piped',
+      stderr: 'null',
+    }).output().catch(() => undefined);
+    return result !== undefined && new TextDecoder().decode(result.stdout).trim() !== '';
   };
   const terminate = (): Promise<void> => {
     terminating ??= (async () => {
-      await kill();
+      // Wait for the container to exist before tearing anything down. This ordering is the entire fix:
+      // killing the client first leaves the daemon free to finish an in-flight create, and *no* bounded
+      // after-the-fact cleanup can reliably catch a container that appears later. Measured — a
+      // remove-then-verify-twice loop running after the kill still left 2 of 6 containers behind in
+      // `Created` state, and the test checking for them passed because they had not appeared yet.
+      //
+      // Once the container does exist, removal is definitive and nothing can undo it: one `docker run`
+      // creates exactly one container, so there is no second create to race. The wait is skipped when
+      // the run has already exited, because `--rm` has then already removed it.
+      const deadline = Date.now() + REAP_TIMEOUT_MS;
+      while (alive && Date.now() < deadline && !(await exists())) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+
+      await remove();
       try {
         process.kill('SIGKILL');
       } catch {
         // Already exited; nothing to kill.
       }
       await exited.catch(() => {});
-      await kill();
+      // Once more, for the case where the wait above timed out: if the container did appear after the
+      // deadline, this is the last chance to take it with us.
+      await remove();
     })();
     return terminating;
   };
