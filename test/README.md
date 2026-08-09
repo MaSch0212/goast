@@ -849,8 +849,10 @@ missing.** `FetchBackend` injects `NgZone`, and `new NgZone({})` throws unless a
 `import 'zone.js'` is the driver's first line. `@angular/compiler` is needed because `@angular/common` ships
 partially-compiled and nothing here runs the Angular linker: without it the first injectable resolution fails with
 `The injectable 'PlatformNavigation' needs to be compiled using the JIT compiler, but '@angular/compiler' is not available.`
-It is the only dependency this leg added to `test/docker/node/package.json` (at `19.2.0`, matching `@angular/core`), and
-adding it re-runs tier 3's containerized TypeScript group, because the image's content hash is part of that gate's tag.
+It is one of two dependencies this leg added to `test/docker/node/package.json` — `@angular/compiler` at `19.2.0`,
+matching `@angular/core`, and `@types/node`, which the driver's own tsconfig asks for and whose absence was previously
+producing a `TS2688` that the build's deliberate `|| true` on `tsc` swallowed. And adding it re-runs tier 3's
+containerized TypeScript group, because the image's content hash is part of that gate's tag.
 
 **The emitted JS gets `.js` extensions added, the committed tree is never touched, and that rewrite is correct output
 handling rather than a papered-over defect.** `tsc` copies a relative specifier through verbatim, so the generated
