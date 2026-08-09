@@ -12,7 +12,7 @@ the one thing tier 4 is missing — a way to record a **target-level** failure t
 conformance claim — and then uses it. When the generator is fixed, the artifact disappears and the leg starts driving
 cases, exactly as a tier-3 diagnostics file does.
 
-**Tech Stack:** Deno (harness, test), Docker (`grafana/k6:latest`, wrapped in a repo Dockerfile so the existing
+**Tech Stack:** Deno (harness, test), Docker (`grafana/k6:0.54.0`, wrapped in a repo Dockerfile so the existing
 content-hash image tagging applies).
 
 ## Global Constraints
@@ -71,13 +71,13 @@ independently by a reviewer:
    The moduleSpecifier "../utils/request-builder" couldn't be found on local disk.
    ```
 
-   **The wording is version-dependent, and this is why Task 3 pins the image.** `grafana/k6:latest` is currently
+   **The wording is version-dependent, and this is why Task 2 pins the image.** `grafana/k6:latest` is currently
    **v2.1.0**, and the failure was first measured there, wrapped as
    `could not initialize '/scripts/probe.js': could not load JS test …`. On **0.54.0** — the version this plan pins, see
    below — the same probe fails with the same specifier but a different envelope:
    `GoError: The moduleSpecifier \"../utils/request-builder\" couldn't be found on local disk. …`. Both carry a
    `time="…" level=error msg="…"` prefix whose timestamp changes every run. So the artifact text belongs to one pinned
-   k6 version, and **Task 3 must re-measure against the pinned image rather than reusing either quote above.**
+   k6 version, and **Task 2 must re-measure against the pinned image rather than reusing either quote above.**
 
    **Why pin 0.54.0 rather than the newest release:** tier 3 type-checks the generated k6 corpus against
    `@types/k6@0.54.0` (`test/docker/node/package.json`). Running tier 4 on a k6 whose typings tier 3 does not use would
@@ -92,7 +92,7 @@ independently by a reviewer:
 So the two defects are independent and compounding, and the first is what the leg will actually record: it fires first,
 and it fires regardless of network.
 
-**Also known:** `grafana/k6:latest`'s entrypoint is `k6`, so a container run passes `run /scripts/probe.js`. Under Git
+**Also known:** the image's entrypoint is `k6`, so a container run passes `run /scripts/probe.js`. Under Git
 Bash, prefix `docker` invocations with `MSYS_NO_PATHCONV=1` or a container path like `/scripts/probe.js` is rewritten
 into a Windows path — this cost real time during the spike.
 
@@ -100,7 +100,7 @@ into a Windows path — this cost real time during the spike.
 
 ## File Structure
 
-- `test/docker/k6/Dockerfile` (create) — `FROM grafana/k6:latest`, so `buildImage`'s content-hash tagging applies
+- `test/docker/k6/Dockerfile` (create) — `FROM grafana/k6:0.54.0`, so `buildImage`'s content-hash tagging applies
   uniformly and no test hardcodes an upstream tag.
 - `test/harness/integration/target-state.ts` (create) — `TargetLoadFailure`, `targetFailureFile`,
   `verifyTargetLoadFailure`.
@@ -412,26 +412,23 @@ function expectedFilesFor(target: WireTarget): string[] {
 
 with the existing test becoming `WIRE_TARGETS.flatMap(expectedFilesFor)`.
 
-- [ ] **Step 3: Run**
+- [ ] **Step 3: Run, and expect the sweep to be red until this task's later steps**
 
 ```bash
-deno test -A test/integration-tests && deno fmt --check && deno lint
+deno test -A test/integration-tests
 ```
 
-Expected at this point: the new test passes, and the sweep **fails**, because `test/wire/k6-clients/__load-failure.txt`
-does not exist yet — the registry now claims a file nothing has produced. That is correct and expected; Task 3
-produces it. Note the failure and move on rather than working around it.
+At this point the new test passes and the sweep **fails**, because `test/wire/k6-clients/__load-failure.txt` does not
+exist yet — the registry now claims a file nothing has produced.
 
-- [ ] **Step 4: Commit**
-
-```bash
-git add test/integration/targets.ts test/integration-tests/orphans.test.ts
-git commit -m "test: let the wire registry express a target that cannot be loaded"
-```
+**Do not commit here.** The registry change and the artifact that satisfies it are one commit, deliberately: phase 6a
+pushed a red branch by landing artifacts one commit before the registry that legitimised them, and splitting this pair
+would reproduce that mistake from the other direction. The remaining steps of this task produce the artifact; commit
+once, at the end, with the branch green.
 
 ---
 
-### Task 3: The k6 leg
+### Task 2 (continued): The k6 leg
 
 **Files:**
 
@@ -450,7 +447,7 @@ git commit -m "test: let the wire registry express a target that cannot be loade
 This leg is far simpler: no reference server, no driver results, no diffing. It runs one k6 script and records whether
 it loaded.
 
-- [ ] **Step 1: The Dockerfile**
+- [ ] **Step 4: The Dockerfile**
 
 `test/docker/k6/Dockerfile`:
 
@@ -472,7 +469,7 @@ Also note the image's entrypoint is `k6`, so `runContainer` passes `['run', '/sc
 `entrypoint` override — unlike the `node` and `kotlin` images, whose entrypoints belong to tier 3 and have to be
 replaced.
 
-- [ ] **Step 2: The probe**
+- [ ] **Step 5: The probe**
 
 `test/integration/k6-clients/probe.js`:
 
@@ -494,7 +491,7 @@ export default function () {
 }
 ```
 
-- [ ] **Step 3: The integration test**
+- [ ] **Step 6: The integration test**
 
 `test/integration/k6-clients/integration.test.ts`, following the gate and container conventions of the other legs:
 
@@ -530,7 +527,7 @@ run, so a naive capture would make the artifact churn — the same trap phase 6b
 `msg="…"` payload and drop the `time=`/`level=` prefix, and unit-test that function against a captured sample rather
 than only through the container.
 
-- [ ] **Step 4: Add the tasks to `deno.json`**
+- [ ] **Step 7: Add the tasks to `deno.json`**
 
 ```json
     "test:integration:k6": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=write deno test -A test/integration/k6-clients",
@@ -539,7 +536,7 @@ than only through the container.
 
 and extend `test:all` with ` && deno task test:integration:k6:check`.
 
-- [ ] **Step 5: Generate and read the artifact**
+- [ ] **Step 8: Generate and read the artifact**
 
 ```bash
 deno task test:integration:k6
@@ -556,16 +553,16 @@ deno task test:integration:check        # the orphan sweep, now satisfied
 Plant an orphan (`touch "test/wire/k6-clients/getPet__ok.txt"`), confirm `test:integration:check` **fails** naming it —
 this is the specific protection Task 2 added, that a load-failed target may not have per-case files — then remove it.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 9: Commit — registry and artifact together**
 
 ```bash
-git add test/docker/k6 test/integration/k6-clients test/wire/k6-clients deno.json
+git add test/docker/k6 test/integration/k6-clients test/wire/k6-clients test/integration/targets.ts test/integration-tests/orphans.test.ts deno.json
 git commit -m "test: record that the generated k6 client cannot be loaded by k6"
 ```
 
 ---
 
-### Task 4: Document the state and cross-link the defects
+### Task 3: Document the state and cross-link the defects
 
 **Files:**
 
