@@ -11,12 +11,12 @@ required for tier 3 and for tier 4's Kotlin targets.
 
 ## Tiers
 
-| # | Tier        | Question                                              | Command                                  | Status                                                      |
-| - | ----------- | ----------------------------------------------------- | ---------------------------------------- | ----------------------------------------------------------- |
-| 1 | Unit        | Does this function do what it says?                   | `deno task test`                         | active                                                      |
-| 2 | Output      | Did the generated text change?                        | `deno task test:output`                  | active                                                      |
-| 3 | Compile     | Is the generated code valid in its language?          | `deno task test:compile`                 | active                                                      |
-| 4 | Integration | Does the generated code behave correctly on the wire? | `deno task test:integration` / `:kotlin` | fetch-clients; okhttp3-clients, spring-reactive-web-clients |
+| # | Tier        | Question                                              | Command                                                   | Status                                                                                                              |
+| - | ----------- | ----------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| 1 | Unit        | Does this function do what it says?                   | `deno task test`                                          | active                                                                                                              |
+| 2 | Output      | Did the generated text change?                        | `deno task test:output`                                   | active                                                                                                              |
+| 3 | Compile     | Is the generated code valid in its language?          | `deno task test:compile`                                  | active                                                                                                              |
+| 4 | Integration | Does the generated code behave correctly on the wire? | `deno task test:integration` / `:kotlin` / `:controllers` | client direction: fetch-clients, okhttp3-clients, spring-reactive-web-clients; server direction: spring-controllers |
 
 ## Tier 1: unit tests
 
@@ -585,13 +585,16 @@ runtime behaviour, not a type error.
 
 **The case table is the single source of truth.** `test/cases/cases.ts` declares 19 cases, each one API call: the
 request it must produce (`expectRequest`), the canned response the reference server hands back (`response`), and what
-the generated client must return to its caller (`expectResult`). Three consumers read the same table so nothing can
-drift out from under a fourth: `test/integration/oracles.test.ts` (Task 6) proves the table itself round-trips through a
-handwritten reference client and the reference server with zero deviations — the contract proof every other tier-4
-result depends on, see below; `test/integration/fetch-clients/integration.test.ts` (this phase's one target) drives the
-_generated_ client against the same table; and `test/integration-tests/orphans.test.ts` sweeps the committed artifacts
-against it. `casesFor(profile, direction)` is the only path to a filtered table, so drift protection — comparing the ids
-a driver reported against the ids it was asked for — computes both sides the same way.
+the generated client must return to its caller (`expectResult`). Both directions read the same fields, from opposite
+sides: in the client direction `response` is what the reference server hands back and `expectResult` is what the
+generated client must return, while in the server direction `response` is what the handwritten delegate must produce and
+`expectResult` goes unused. Every consumer reads this one table, so none of them can drift out from under another:
+`test/integration/oracles.test.ts` proves the table itself round-trips through a handwritten reference client and the
+reference server with zero deviations — the contract proof every other tier-4 result depends on, see below;
+`test/integration/fetch-clients/`, `kotlin-clients/` and `spring-controllers/` each drive _generated_ code against it;
+and `test/integration-tests/orphans.test.ts` sweeps the committed artifacts against it. `casesFor(profile, direction)`
+is the only path to a filtered table, so drift protection — comparing the ids a driver reported against the ids it was
+asked for — computes both sides the same way.
 
 **Drivers hardcode their arguments instead of reading the table.** `test/integration/fetch-clients/driver.ts` writes
 `pets.getPet({ id: 'abc' })` literally, one call per case, rather than dispatching dynamically off `expectRequest`.
@@ -603,11 +606,13 @@ file. A case where the generated client's actual wire behaviour differs from the
 `test/wire/<profile>/<caseId-with-slashes-as-double-underscore>.txt`, holding one `field`/`expected`/`actual` block per
 difference. `deno task test:integration` regenerates in write mode; a file disappearing on a later run means a generator
 fix landed, and check mode refuses to pass with a stale file still committed — the same reviewable-deletion discipline
-as `verifyCompileDiagnostics`. 62 such artifacts are committed today — 10 under `fetch-clients`, 13 each under
-`okhttp3-clients@sb3`/`@sb4` and `spring-reactive-web-clients@sb3`/`@sb4` — all traced to confirmed generator defects in
+as `verifyCompileDiagnostics`. 88 such artifacts are committed today — 62 from the client direction (10 under
+`fetch-clients`, 13 each under `okhttp3-clients@sb3`/`@sb4` and `spring-reactive-web-clients@sb3`/`@sb4`) and 26 from
+the server direction (6 each under `spring-controllers@sb3`/`@sb4`, 7 each under `@sb3-strict`/`@sb4-strict`) — all
+traced to confirmed generator defects in
 [`docs/superpowers/plans/2026-07-25-generator-bug-fixes.md`](../docs/superpowers/plans/2026-07-25-generator-bug-fixes.md)
-(defects 20, 41, 42, 43, 44, 46, 47, 48, 49 and 50) — not fixed here, per this phase's rule that a generator fix changes
-generated output and belongs to its own phase.
+(defects 20, 41, 42, 43, 44, 46, 47, 48, 49, 50, 51, 52 and 53) — not fixed here, per this phase's rule that a generator
+fix changes generated output and belongs to its own phase.
 
 **An absent artifact means "no declared field deviated," not "the request was wire-correct."** This is the single most
 misreadable thing about this tier, for four concrete, verified reasons:
@@ -635,9 +640,9 @@ misreadable thing about this tier, for four concrete, verified reasons:
 Relatedly, and stated the same way `test/integration/oracles.test.ts`'s class doc comment states it: a deviation
 artifact means **the generated client differs from the declared table** — this tier does not by itself adjudicate
 whether the table or the generator is the one that's wrong. A separate classification pass, done once per target and
-recorded in that phase's task report, is what turned each of these 62 artifacts into a confirmed generator defect rather
-than leaving that judgment implicit: the original ten for `fetch-clients`, and the 52 across the four Kotlin units for
-phase 6.
+recorded in that phase's task report, is what turned each of these 88 artifacts into a confirmed generator defect rather
+than leaving that judgment implicit: the original ten for `fetch-clients`, the 52 across the four Kotlin client units
+for phase 6, and the 26 across the four `spring-controllers` units for phase 7.
 
 **The oracle-agreement test is load-bearing, not one test among many.** `test/integration/oracles.test.ts` proves the
 case table itself is representable on the wire and round-trips through a handwritten reference client and reference
@@ -693,16 +698,116 @@ A few things about the Kotlin leg are easy to get wrong reading only the wire ar
   Reactor `Mono`/`Flux`) are never imported by the generated code itself, only by the driver that calls it — see
   `test/docker/kotlin/warmup/build.gradle.kts`.
 
-**Phase 7 still owes `spring-controllers`, `angular-services`, `k6-clients` and `easy-network-stub`,** each behind the
-same guard.
+### The server direction
+
+**Phase 7 adds the other direction: four `spring-controllers` units, behind the same Docker guard.** Everything above
+drives a generated _client_. This leg inverts the roles. The generated code is a Spring Boot application running in the
+`kotlin` image, and `test/harness/ref-client.ts` — the same handwritten reference client the oracle-agreement test uses
+— issues each case's `expectRequest` against it over real HTTP from the host. What is under test moves to the other side
+of the wire with it: a client target is measured on the request it _builds_ and the value it _returns to its caller_, a
+server target on what Spring _bound_ out of a spec-conforming request and on the response the generated controller
+_emits_. The two directions share the case table and nothing else, which is why `casesFor(profile, direction)` takes a
+direction at all. All 19 cases run in both.
+
+**Handwritten delegates are the oracle, and they do two jobs.** The generated `*ApiDelegate` interfaces are implemented
+by hand under `test/integration/spring-controllers/delegates/`. Each method returns the response its case declares — so
+the wire diff can compare status, headers and body against the table — and asserts the parameters Spring handed it,
+through `expectParam` in `delegates/common/Expectations.kt`. The response half is what a client target has no way to
+exercise; the assertion half is the only way a mis-bound parameter becomes visible at all, since the sole channel a test
+on the host can observe is the HTTP response. A parameter bound wrongly has to be turned into a _distinguishable
+response_ or it is not observed.
+
+**Four units: both strictness flavours crossed with both Spring Boot lines.** `spring-controllers@sb3` and `@sb4` are
+generated with `strictResponseEntities: false`, `@sb3-strict` and `@sb4-strict` with it on. `SERVER_UNITS` in
+`test/integration/spring-controllers/build.ts` is the single source of truth and each entry names the delegate source
+directories its unit compiles.
+
+**The delegate sources are split into four directories, for a different reason each:**
+
+- `common` — all four units. The Spring Boot application class, the `expectParam`/`json`/`readPart` helpers and the
+  case-data tables, and `GoastExceptionHandler`. Nothing here depends on the flavour or the Boot line.
+- `lenient` and `strict` — two units each. These are genuinely different implementations rather than a copy with a
+  tweak: a lenient delegate returns `ResponseEntity.status(n).body(x)` and can express any status at all, while a strict
+  delegate must route every response through the generated per-operation response-entity class's factories. Keeping them
+  in separate directories rather than branching inside one file is what lets each read as a straight-line statement of
+  what that flavour can express — which matters, because what the strict flavour _cannot_ express is one of this leg's
+  findings.
+- `lenient-sb3` and `lenient-sb4` — one unit each, holding **one method** apiece. The generated lenient `getWidget`
+  returns `ResponseEntity<Any?>` under Spring Boot 3 and `ResponseEntity<Any>` under Spring Boot 4, and
+  `ResponseEntity<T>` is invariant in `T`, so no single override satisfies both. The two files are otherwise identical
+  and both take their case data from `CaseData.kt`, so what is duplicated is a type argument, not behaviour. The strict
+  flavour needs no equivalent split: its delegates return the generated response-entity type, which absorbs the
+  difference.
+
+**Three status codes report the delegate's own failures.** `GoastExceptionHandler` (in `delegates/common`) is wired into
+every generated controller through the `@Autowired(required = false) ApiExceptionHandler?` each one accepts, and maps a
+delegate-thrown exception to a `text/plain` response:
+
+| Status | Meaning                                                                                       | Deterministic? |
+| ------ | --------------------------------------------------------------------------------------------- | -------------- |
+| `599`  | `MISMATCH …` — an `expectParam` assertion failed: Spring bound a parameter to the wrong value | yes            |
+| `598`  | `UNEXPRESSIBLE …` — the delegate cannot construct the response the case declares at all       | yes            |
+| `597`  | `UNEXPECTED …` — something this phase did not model; interpolates the framework's own message | **no**         |
+
+**A `59x` means the request reached the delegate; a Spring `4xx`/`5xx` means it never got that far.** This is the most
+useful distinction in the whole leg. A `599` or `598` body is text this repo wrote, so the artifact names the exact
+parameter or the exact inexpressible response — and it simultaneously proves that routing, media-type negotiation and
+body binding all worked, because none of that code ran otherwise. A status carrying Spring's own error-attribute shape
+(`timestamp`, `path`, `status`, `error`, `requestId`) means the opposite: the failure happened _before_ the delegate.
+Argument resolution runs before the generated controller's `try`/`catch`, so no handler here can intercept it.
+`spring-controllers@sb3/updatePet__form.txt` is that case and is the reference example worth reading first.
+
+`597` is deliberately left non-deterministic — it interpolates a framework exception's `message`, which can carry an
+identity hash, a buffer offset or a temp path. Treat a `597` in a committed artifact as a finding to investigate rather
+than a snapshot to accept. None of the 26 committed artifacts is a `597` today.
+
+**Spring's own error bodies are stabilized, narrowly.** `stabilizeFrameworkErrorBody`
+(`test/integration/spring-controllers/stabilize.ts`) substitutes the _values_ of `timestamp` and `requestId` with
+`<nondeterministic>`, and only when the body is a JSON object carrying all five of Spring's error attributes — no
+kitchen-sink schema declares a property named `timestamp` or `requestId`, so it can never touch a body the generated
+code produced. It is a value substitution rather than a key removal on purpose: the artifact has to keep showing that
+Spring's error shape came back rather than the delegate's, because "the request never reached the delegate" is a
+materially different finding from "the delegate answered wrongly". Same rule as `IGNORED_HEADERS` in `wire.ts` —
+normalize what the runtime controls, never what the generator controls.
+
+**The container arrangement is the reverse of the client leg's.** There the reference server ran on the host bound to
+`0.0.0.0` and the driver reached it from inside the container; here the _application_ is in the container and the
+reference client runs on the host, so the container publishes `SERVER_PORT` and the host connects to
+`http://127.0.0.1:<hostPort>` — no `0.0.0.0` relaxation is needed in this direction. `synthesizeServerBuild`
+(`test/integration/spring-controllers/build.ts`) writes a single-project `build.gradle.kts` compiling the committed
+`test/output/kotlin/spring-controllers@*/integration/kitchen-sink/` tree together with the unit's delegate directories,
+and the image's `ENTRYPOINT` — pinned to tier 3's `compileKotlin` — is overridden with `gradle … run`, the application
+plugin's task, with `MAIN_CLASS` pointing at the harness's own `GoastApplication`. Readiness is polled on a
+`/__goast-readiness` endpoint before any case is issued, so a slow Boot start cannot be mistaken for a failing case.
+
+**What this direction structurally cannot observe.** The client direction's blind spots are listed above; this one has
+its own, and they matter for the same reason — an absent artifact is a positive claim here too.
+
+- **The `session` cookie parameter.** `spring-controllers` drops `cookie`-location parameters entirely: the generated
+  `allLocations` signature is `(pathParam, queryParam, xHeaderParam)`, three parameters for the four locations the spec
+  declares. There is nothing for the delegate to receive it into, nothing to assert, and an ignored cookie changes no
+  response — so `allLocations/ok` conforms and writes **no artifact** in any of the four units. That clean result is not
+  evidence the cookie location works. Defect 43 records it, and the client direction is where it is observable, because
+  there the generated code has to emit the cookie and does not.
+- **The auth headers.** `createPet/created` declares an `authorization` header and the five `getWidget` cases declare
+  `x-api-key`, because a client is expected to send them. A generated controller has no parameter for either — they are
+  security-scheme headers rather than declared operation parameters — so the delegate cannot assert them and their
+  presence or absence changes no response. Those cases are measured on their responses only, in this direction.
+- Both are the same shape of limitation, and it generalizes: this direction can only observe a request parameter that
+  the generated signature gave the delegate somewhere to receive. A parameter the generator drops is invisible here
+  precisely _because_ it was dropped, which is the one failure mode a server-side oracle cannot catch on its own.
+
+**Phase 7 still owes `angular-services`, `k6-clients` and `easy-network-stub`,** each behind the same guard.
 
 The commands:
 
 ```bash
-deno task test:integration                # write mode: fetch-clients, no Docker
-deno task test:integration:check          # check mode: fetch-clients, no Docker
-deno task test:integration:kotlin         # write mode: the four Kotlin targets, needs Docker
-deno task test:integration:kotlin:check   # check mode: the four Kotlin targets, needs Docker
+deno task test:integration                     # write mode: fetch-clients, no Docker
+deno task test:integration:check               # check mode: fetch-clients, no Docker
+deno task test:integration:kotlin              # write mode: the four Kotlin client targets, needs Docker
+deno task test:integration:kotlin:check        # check mode: the four Kotlin client targets, needs Docker
+deno task test:integration:controllers         # write mode: the four spring-controllers units, needs Docker
+deno task test:integration:controllers:check   # check mode: the four spring-controllers units, needs Docker
 ```
 
 ## Layout
@@ -731,7 +836,10 @@ test/
   cases/              # the tier-4 case table (cases.ts, casesFor, types.ts) — the shared source of truth
   integration/        # tier-4 tests: the oracle-agreement proof, targets.ts (WIRE_TARGETS), and one driver
                       # per target — fetch-clients/ (no Docker) and kotlin-clients/ (build.ts synthesizes the
-                      # Gradle build, drivers/okhttp3/ and drivers/reactive/ hold the handwritten drivers)
+                      # Gradle build, drivers/okhttp3/ and drivers/reactive/ hold the handwritten drivers);
+                      # spring-controllers/ is the server direction (build.ts synthesizes the Gradle build,
+                      # stabilize.ts normalizes Spring's error bodies, delegates/ holds the handwritten
+                      # oracle: common/, lenient/, strict/, lenient-sb3/, lenient-sb4/)
   integration-tests/  # tier-4 orphan sweep, over every WIRE_TARGETS entry (see "Tier 4: integration" above)
   wire/               # committed tier-4 deviation artifacts, one profile subdirectory per WIRE_TARGETS entry
 ```

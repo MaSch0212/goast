@@ -555,8 +555,9 @@ then splices in one member Jackson 3 removed. In
 
 `kt.refs.jackson.serializationFeature` (`packages/kotlin/src/ast/references/jackson.ts:42-45`) resolves correctly to
 `tools.jackson.databind.SerializationFeature` for Spring Boot 4. `WRITE_DATES_AS_TIMESTAMPS` is a bare literal, and
-Jackson 3 moved date handling off `SerializationFeature`. The sb3 branch at `:164` uses the same literal correctly
-against Jackson 2.
+Jackson 3 moved date handling off `SerializationFeature`. The sb3 branch at
+`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-clients-generator.ts:166` uses the same literal
+correctly against Jackson 2.
 
 **This is not a gate dependency gap.** Every other `tools.jackson` name in the same generated file resolves — the
 `ObjectMapper`, `SerializationFeature` and `DeserializationFeature` imports, `jacksonMapperBuilder()`,
@@ -604,7 +605,7 @@ ctx.config.serializer === 'parameter'
 ```
 
 Each generated subclass computes the same flag (`serializerAsParameter`, `okhttp3-client-generator.ts:71`) and uses it
-to order its *own* constructor parameters (`:69`, `:76`) — but its `super(…)` argument list is a constant:
+to order its *own* constructor parameters (`:81-83`, `:88-92`) — but its `super(…)` argument list is a constant:
 
 ```ts
 delegateArguments: ['basePath', 'objectMapper', 'client'],   // okhttp3-client-generator.ts:85
@@ -631,7 +632,7 @@ nothing here shows it is broken, and reordering the base would be a change made 
 
 **Fixed:** `73b89a7` extracts the decision into `getClientDelegateArguments(serializerAsParameter: boolean):
 string[]` (`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:66-68`) and calls it
-for the `super(…)` argument list (`:96`), so the delegate call now derives its order from the same flag — and
+for the `super(…)` argument list (`:97`), so the delegate call now derives its order from the same flag — and
 therefore agrees with — the subclass's own constructor parameter order, instead of the constant
 `['basePath', 'objectMapper', 'client']` that matched only `serializer: 'parameter'`. Drove the
 `ObjectMapper`/`Call.Factory` argument-mismatch pair to zero across **92 occurrences across 34 units**: the 32
@@ -1065,11 +1066,50 @@ by-construction coincidence this entry's opening paragraph describes; Kotlin's w
 coincidence, which is why this generator has no by-construction conformer at all among the four cases this spec
 exercises.
 
+**Tier 4 (server), confirmed on a third family — `spring-controllers`, both Spring Boot lines and both strictness
+flavours.** The server direction reaches the same missing capability from the other side: instead of building a query
+string the generated code has to *bind* one, and it emits nothing that could express a declared style there either.
+The query arm of `getApiInterfaceEndpointMethodParameter`
+(`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:391-405`) emits
+`@RequestParam` with exactly three possible arguments — `value`, `required`, and `defaultValue` when the schema has a
+default — and reads `parameter.style`/`parameter.explode` nowhere. Grepping the whole `spring-controllers` generator
+directory for `style` or `explode` returns only `spring-controller-generator.ts:1101-1102`, where both are *written*
+as `undefined` while synthesizing a parameter for the request body — never a read. The generated declarations for the
+style matrix's parameters are therefore identical apart from the name:
+`test/output/kotlin/spring-controllers@sb3/integration/kitchen-sink/com/openapi/generated/api/ParamsApi.kt:58-59`
+(`@RequestParam(value = "formExploded", required = false)` / `formExploded: List<String>?`) and `:66-67` (the same two
+lines for `spaceDelimited`), although the spec declares `style: form, explode: true` for the first and
+`style: spaceDelimited, explode: false` for the third (`test/specs/integration/kitchen-sink.yml:251-254`).
+
+**This is a generator defect and not a Spring default, and the distinction is worth stating precisely because the
+proximate cause is a Spring default.** Spring's default `List<String>` query binding splits a single query value on
+commas and on nothing else. That behaviour is documented, correct on its own terms, and not a bug. But Spring was
+never told the parameter's style: the generator had it in the parameter object, emitted nothing carrying it, and
+Spring's comma-only default is filling a vacuum the generator created. The generator had expressible options — bind
+the raw `String` and split it, register a `Converter`/`Formatter` for the parameter, or emit an `@InitBinder` — and
+took none of them. Where the client half of this entry mis-*serializes* a declared style, the server half silently
+*discards* it; in both halves the generator's own code is style-blind at the one site that would need to care.
+
+**Tier 4:** `test/wire/spring-controllers@sb3/styleMatrix__spaceDelimited.txt` (byte-identical in `@sb4`,
+`@sb3-strict` and `@sb4-strict`) — `status` expected `200`, actual `599`; `body` expected `{"kind":"none"}`, actual
+`{"kind":"text","value":"MISMATCH styleMatrix.spaceDelimited expected <[a, b]> but was <[a b]>"}`. The `599` is the
+handwritten delegate's own assertion reaching the wire (see `test/README.md`'s server-direction section), so the
+request *did* reach the delegate and it is the bound value that is wrong: one element `"a b"` where the declared style
+calls for two, `"a"` and `"b"`. The two `form`-styled siblings in the same operation conform and write no artifact,
+which scopes the fault to the space-delimited style rather than to query binding generally. **On the wire the value is
+`spaceDelimited=a+b`, not `a%20b`:** `issueCase` builds the query with `URLSearchParams.toString()`, which renders a
+space as `+`, and says so in its own comment (`test/harness/ref-client.ts:42-48`). Spring decodes `+` back to a space,
+so the bound single element is `"a b"` either way and the conclusion is unaffected — but the raw bytes are `+`.
+
 Not fixed here — this phase records defects rather than fixing them. A fix needs `withQueryParam`/`withPathParam` to
 receive the parameter's `style`/`explode` and branch: repeated `append` calls for `explode: true`, a space or pipe
 join for `spaceDelimited`/`pipeDelimited`, and the current comma join kept only for the styles that actually call for
 it. For Kotlin, `getParameterToString` needs the equivalent branch in both generators, since they share the identical
-gap at an identically-named site.
+gap at an identically-named site. For `spring-controllers` the fix is on the binding side rather than the building
+side: no `@RequestParam` argument can express `spaceDelimited` on its own, so the query arm at
+`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:391-405` has to emit
+something that carries the style — the plainest being a `String` parameter plus a generated split for the non-comma
+styles.
 
 ### Defect 43 — cookie parameters are not implemented: a generated method takes no argument for a `cookie`-location parameter and never sets a `Cookie` header (found by the tier-4 wire contract, not scheduled)
 
@@ -1097,12 +1137,36 @@ parameter-collection pass.
 `spring-reactive-web-clients` units) — `header.cookie` expected `session=abc123`, actual `<absent>`, the identical
 deviation recorded above for `fetch-clients`.
 
+**Tier 4 (server), confirmed on a third family by source inspection — `spring-controllers`, all four units — but
+structurally unobservable on the wire in that direction.** `spring-controllers` has its own `getAllParameters`
+(`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:1026`) whose filter is the
+identical three-target one this entry already records for the two client families:
+`parameter.target === 'query' || parameter.target === 'path' || parameter.target === 'header'` (`:1031-1035`), with no
+`'cookie'` arm. The per-parameter annotation pass matches — it has arms for `body` (`:387-389`), `query` (`:391-405`),
+`path` (`:407-413`), `header` (`:415-421`) and multipart (`:423-430`), and none for a cookie — and grepping the whole
+`spring-controllers` generator directory for `cookie` returns nothing at all. The generated signature is therefore
+`allLocations(pathParam, queryParam, xHeaderParam)`: three parameters for the four locations the spec declares, the
+missing one being `name: session, in: cookie` (`test/specs/integration/kitchen-sink.yml:222-223`).
+
+**No artifact records this, and that absence is a property of the direction rather than evidence of conformance.** A
+dropped cookie parameter on a *server* changes no response: the reference client does send `Cookie: session=abc123`,
+the generated controller has no parameter to bind it to, so the delegate has nothing to assert and the operation
+answers its declared `200` regardless. `test/wire/spring-controllers@*/allLocations__ok.txt` consequently does not
+exist in any of the four units, and reading that clean result as proof that the cookie location works would be reading
+the tier's blind spot as a finding. The client direction is where this defect is observable, because there the
+generated code has to *emit* the cookie and demonstrably does not — the `fetch-clients` and Kotlin-client artifacts
+above. Both `test/README.md`'s server-direction section and
+`test/integration/spring-controllers/delegates/lenient/ParamsDelegate.kt`'s doc comment say so at the point of use.
+
 Not fixed here — this phase records defects rather than fixing them. A fix needs the fetch-client generator's
 parameter-collection pass (whichever function currently filters to `target === 'path' | 'query' | 'header'` — see
 defect 35's list of that filter's other call sites) to also collect `target === 'cookie'` parameters into the method
 signature, and the request-building code to join them into one `Cookie` header value. For Kotlin, both
 `getAllParameters` sites need the equivalent addition, since they share the identical filter at an identically-named
-site.
+site. `spring-controllers` needs the same addition at its own `getAllParameters`
+(`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:1031-1035`) plus a
+`@CookieValue` arm in the annotation pass — the server side of this defect needs a fix even though this tier cannot
+fail on it.
 
 ### Defect 44 — a multi-media-type `requestBody` collapses to its first declared content entry, with no way for a caller to select another (found by the tier-4 wire contract, not scheduled)
 
@@ -1351,6 +1415,157 @@ change: either give `spring-reactive-web-clients` its own codec customization th
 document that this family serializes with whatever `WebClient` the caller supplies. The latter is defensible on its
 own terms — this family's design is "bring your own client" rather than owning one, unlike `okhttp3-clients` — but
 leaving the option declared and silently inert, as it stands today, is not.
+
+### Defect 51 — `spring-controllers` advertises every declared request-body media type in `consumes` while binding the body with a `@RequestBody` typed from the first entry alone, so a spec-conforming form-urlencoded request is rejected with Spring's own `415` (found by the tier-4 server direction, not scheduled)
+
+Two independent pieces of the generated `@RequestMapping` disagree about how many media types the operation can
+actually accept. The `consumes` argument is built from **every** entry in the request body's content map —
+`endpoint.requestBody?.content.map((x) => kt.string(x.type))`, unconditionally, whenever there is at least one
+(`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:294-303`). The body
+*parameter* is built from `endpoint.requestBody.content[0]` alone (`:1037-1039`), and the annotation it receives is
+`@RequestBody` for anything that is not multipart: the only carve-out in the whole annotation pass is
+`if (parameter.target === 'body' && !parameter.multipart)` (`:387-389`), with `@RequestPart` emitted for the multipart
+case instead (`:423-430`). So `multipart/form-data` gets a binding strategy of its own and
+`application/x-www-form-urlencoded` does not — it falls through to `@RequestBody` against the data class derived from
+the *first* content entry.
+
+For `updatePet`, whose spec declares both `application/json` and `application/x-www-form-urlencoded`, that yields
+`test/output/kotlin/spring-controllers@sb3/integration/kitchen-sink/com/openapi/generated/api/PetsApi.kt:54`
+(`consumes = ["application/json", "application/x-www-form-urlencoded"]`) paired with `:62-63` (`@RequestBody` /
+`petUpdate: PetUpdate`). The two together are what produce the failure. `consumes` matches, so Spring routes the
+request rather than rejecting it at the mapping stage; argument resolution then finds no reader, because WebFlux's
+`FormHttpMessageReader` decodes `application/x-www-form-urlencoded` into a `MultiValueMap<String, String>` and never
+into an arbitrary data class, and raises `UnsupportedMediaTypeStatusException`. The generated controller's own
+`try { … } catch (e: Throwable) { getExceptionHandler()?.handleApiException(e) }` cannot intercept it, because argument
+resolution runs *before* the method body is entered — so no handler the consumer supplies is consulted and Spring's
+default error body is what reaches the client.
+
+**This is a generator defect and not a Spring limitation.** Spring's behaviour is correct on its own terms: it was told
+the endpoint consumes form-urlencoded, and it was told to bind the body as a `PetUpdate`, and those two instructions
+are not jointly satisfiable by any reader that exists. Both instructions come from the generator, from two code paths
+that never consult each other. This is the server-side sibling of defect 44's `content[0]` collapse and shares that
+line, but the consequence is strictly worse: on the client side a caller merely *cannot select* the second media type,
+whereas here the generated server publishes the second media type in its own contract — in `consumes` and in its
+Swagger annotations — and then answers a request honouring that contract with a `415`.
+
+**Tier 4 (server):** `test/wire/spring-controllers@sb3/updatePet__form.txt` (byte-identical in `@sb4`, `@sb3-strict`
+and `@sb4-strict`) — `status` expected `200`, actual `415`; `body` expected
+`{"kind":"json","value":{"age":4,"id":"abc","name":"Rex"}}`, actual
+`{"kind":"json","value":{"error":"Unsupported Media Type","path":"/pets/abc","requestId":"<nondeterministic>","status":415,"timestamp":"<nondeterministic>"}}`
+— Spring's own `DefaultErrorAttributes` shape, with only the wall-clock and per-connection values substituted by
+`stabilizeFrameworkErrorBody` (`test/integration/spring-controllers/stabilize.ts`); the artifact deliberately
+keeps the rest, because "the framework answered, not the delegate" is a materially different finding from "the delegate
+answered wrongly". `updatePet/json` — the same operation over the same route with the other declared media type —
+conforms on status and on every declared header and deviates only in its body, via defect 52 below. That is what
+isolates this fault to the missing reader rather than to routing or to model binding. The artifact is identical across
+the lenient and strict units, which is correct: `strictResponseEntities` changes return types only, and this failure
+happens on the request side.
+
+Not fixed here — this phase records defects rather than fixing them. A fix has to make the two sites agree, in one of
+two directions. Either narrow `consumes` to the media types the generated binding can actually read — honest, and a
+strict improvement over publishing a `415` — or give form-urlencoded its own binding arm the way multipart already has
+one, binding a `MultiValueMap<String, String>` and generating the mapping into the data class, or emitting
+`@ModelAttribute` rather than `@RequestBody` for that media type. The second is the better contract; the first is the
+smaller change and would already stop the generated server from advertising something it cannot serve.
+
+### Defect 52 — `spring-controllers` emits no null-inclusion annotation and owns no serializer, so every unset optional field on a generated model is written as an explicit JSON `null` (found by the tier-4 server direction, not scheduled)
+
+This is defect 50's symptom in a family that arrives at it by a different route, and the difference matters because it
+changes where a fix can possibly go. `spring-reactive-web-clients` at least *declares* a `serializerJsonInclude` option
+and leaves it inert. `spring-controllers` does not declare one at all: grepping its whole generator directory
+(`packages/kotlin/src/generators/services/spring-controllers/`) for `serializerJsonInclude`, `JsonInclude`,
+`ObjectMapper` or `Serializer` returns **no hits**. There is no serialization configuration in this generator, which is
+coherent with what it generates — an API interface, a delegate interface and a controller class, never an application
+and never a serializer. The runtime `ObjectMapper` belongs to whatever Spring Boot application a consumer stands up
+around the generated code, and Spring Boot's autoconfigured default is Jackson's own `Include.ALWAYS`.
+
+That leaves the models as the only place inside generated code where inclusion could be expressed, and the shared
+Kotlin model generator emits `@JsonInclude` only behind a per-property vendor extension:
+`getJacksonJsonIncludeAnnotation` returns an annotation exactly when
+`ctx.config.addJacksonAnnotations && property.schema.custom['exclude-when-null'] === true`
+(`packages/kotlin/src/generators/models/model-generator.ts:495-506`), called from both the data-class parameter path
+(`:320`) and the interface property path (`:344`). `addJacksonAnnotations` defaults to `true`
+(`packages/kotlin/src/generators/models/models.ts:68`), so the gate actually closed is the second one: absent an
+`x-exclude-when-null: true` on the individual property there is no `@JsonInclude` emitted anywhere, at property level
+or at class level, and no generator config that changes it. The generated `Pet` is the ordinary case — a `data class`
+with two required properties and nine nullable ones defaulted to `null`
+(`test/output/kotlin/spring-controllers@sb3/integration/kitchen-sink/com/openapi/generated/model/Pet.kt:9-66`) and no
+`@JsonInclude` anywhere in the file.
+
+**Whose defect this is, precisely.** Not the consumer's `ObjectMapper`: a `spring-controllers` consumer supplies
+neither the annotation nor any reason to suspect one is missing, and telling every consumer to reconfigure Jackson
+globally would change the serialization of their own hand-written types too. Not Spring Boot's default either —
+`Include.ALWAYS` is Jackson's documented default and the right one for a framework that knows nothing about which
+fields began life as OpenAPI optionals. The generator is the only party that knows a property came from a non-required
+schema property, and it emits nothing that says so. Note that the model generator is shared across all three Kotlin
+families, so the gap is common to all of them: `okhttp3-clients` hides it by owning a `Serializer.kt` that sets the
+inclusion globally (defect 50's opening paragraph), `spring-reactive-web-clients` is exposed to it and has a dead
+option pointed at it (defect 50), and `spring-controllers` is exposed to it with neither an option nor a serializer to
+put one in.
+
+**Tier 4 (server):** 16 of this direction's 26 artifacts are this one class — `getPet__ok.txt`, `updatePet__json.txt`,
+`createPet__created.txt` and `addPetNote__text.txt`, in each of the four units, byte-identical across them.
+`test/wire/spring-controllers@sb3/getPet__ok.txt` is the whole file: `body` expected
+`{"kind":"json","value":{"id":"abc","name":"Rex"}}`, actual
+`{"kind":"json","value":{"age":null,"birthDate":null,"createdAt":null,"friend":null,"id":"abc","name":"Rex","nickname":null,"owner":null,"photo":null,"status":null,"toys":null}}`
+— nine explicit `null`s for the nine unset optionals, with status and every declared header conforming.
+`updatePet__json.txt` is the same shape with eight, `age` being set there. The mechanism is "unset optional property",
+not "any JSON body": the other model-bodied responses in the same units write no artifact, because their delegates
+populate every declared property — `Widget(id, name, price)`, `Error(message, code)` and `BlobRef(id)` have exactly
+three, two and one.
+
+Not fixed here — this phase records defects rather than fixing them. The fix belongs in the shared Kotlin model
+generator, and it is a decision before it is a change: emit `@JsonInclude(JsonInclude.Include.NON_NULL)` for any
+property the schema does not require (making `x-exclude-when-null` the redundant per-property override it already reads
+as), or emit it once at class level, or add a model-generator config with a sane default and actually wire it. What
+must not survive is three Kotlin families in which the same generated model serializes differently depending on which
+service generator happened to ship a serializer alongside it.
+
+### Defect 53 — `strictResponseEntities` generates no factory for the spec's `default` response and makes the primary constructor `private`, so an operation declaring `default` has a response its own delegate return type forbids it from returning (found by the tier-4 server direction, not scheduled)
+
+Under `strictResponseEntities` the generator replaces the delegate's `ResponseEntity<T>` return type with a
+per-operation nested class whose only construction points are companion-object factories — one per status code in a set
+built as `[...ctx.config.defaultStatusCodes, 501, ...endpoint.responses.map((x) => x.statusCode)]`, de-duplicated
+through a `Set` and `.filter(notNullish)`-ed
+(`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:520-529`), with
+`defaultStatusCodes` defaulting to `[400, 401, 403, 500, 501]`
+(`packages/kotlin/src/generators/services/spring-controllers/models.ts:44`). The `filter(notNullish)` is where the
+spec's `default` response is lost: a `default` — and likewise a range code such as `5XX` — has no numeric
+`statusCode`, `undefined` being exactly what that field holds, as this same generator's own comment records where it
+has to fall back to `response.statusKey` for the Swagger annotation
+(`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:211-213`). A `default`
+response therefore contributes nothing to the factory set. The escape hatch is closed in the same class: the primary
+constructor is emitted `private` whenever the endpoint declares any response at all
+(`accessModifier: endpoint.responses.length > 0 ? 'private' : null`,
+`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:510`).
+
+Each half is individually defensible and together they are a dead end. `getWidget` declares `200`, `400`, `404`, `500`
+and a `default` (`test/specs/integration/kitchen-sink.yml:178-179`), and the generated class is
+`class GetWidgetResponseEntity<T> private constructor(` with factories `badRequest`, `unauthorized`, `forbidden`,
+`internalServerError`, `notImplemented`, `ok` and `notFound` — the four declared numeric codes plus the five default
+ones, and nothing else
+(`test/output/kotlin/spring-controllers@sb3-strict/integration/kitchen-sink/com/openapi/generated/api/WidgetsApi.kt:54-87`).
+There is no factory for any status the `default` response is meant to cover, and no constructor a delegate can reach,
+so an implementer who has followed the spec has no expressible way to answer — say — a `503`. The lenient flavour has
+no such problem: its delegate returns a plain `ResponseEntity<Any?>` and can build any status. That asymmetry is what
+makes this a defect of the strict flavour specifically rather than of the generator's response modelling in general.
+
+**Tier 4 (server):** `test/wire/spring-controllers@sb3-strict/getWidget__unexpectedError.txt` (byte-identical in
+`@sb4-strict`), and **no such artifact under `@sb3`/`@sb4`** — the asymmetry is itself the finding. Three fields
+deviate: `status` expected `503`, actual `598`; `header.content-type` expected `application/json`, actual `text/plain`;
+`body` expected `{"kind":"json","value":{"code":503,"message":"Unexpected error"}}`, actual
+``{"kind":"text","value":"UNEXPRESSIBLE getWidget cannot answer 503: strictResponseEntities generates no factory for the spec's `default` response, and GetWidgetResponseEntity's constructor is private"}``.
+The `598` is the strict delegate declining to fake it: it could have returned `notImplemented()` and produced a
+one-field status deviation, and deliberately does not, because the honest cost of the gap is that no correct response
+is constructible at all. All three deviating fields trace to that one cause.
+
+Not fixed here — this phase records defects rather than fixing them. A fix needs the factory set to account for
+responses that have no numeric `statusCode`: a `default` response wants a factory taking the status as an argument (the
+natural name being the spec key itself, e.g. `default(status, body, headers)`), and a range code such as `5XX` wants
+the same restricted to its range. Relaxing the `private` constructor would also unblock it, but at the cost of the
+property that makes the strict flavour worth having, so the factory list is the right place. Defect 19 is the same
+`default`-response blind spot in this same generator at compile level — it wrote `responseCode = null`, uncompilable,
+and was fixed; this is the behavioural half of that same omission, surviving in the strict path.
 
 ### Also registered, not scheduled
 
