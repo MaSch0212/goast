@@ -514,9 +514,11 @@ deno task test:compile:check  # check mode: the CI-equivalent, fails on any drif
 A full check-mode pass measures 12m47s (14 passed, 816 steps) on a warm image cache, of which the Kotlin group is
 12m10s. The other three groups together are 19s. Budget above 15 minutes for any job timeout.
 
-**No CI job runs this tier yet.** Wiring it into `.github/workflows/` belongs to phase 8 of the testing-strategy spec.
-Until then the only thing enforcing a committed diagnostics file against reality is somebody running
-`deno task test:compile:check` by hand, so treat a green pull request as saying nothing about tier 3.
+**CI runs this tier now.** `.github/workflows/build.yml`'s `compile-ts` and `compile-kotlin` jobs run
+`test:compile:ts:check` and `test:compile:kotlin:check` respectively, gated behind `output-check` and `images` — see
+"CI" below for the job graph and why that ordering matters. A green pull request is no longer silent about tier 3;
+before this phase, the only thing enforcing a committed diagnostics file against reality was somebody running
+`deno task test:compile:check` by hand.
 
 **Tier 3 is opt-in via `GOAST_COMPILE`.** `deno.json`'s `test.include` covers all of `test/`, so without a guard
 `deno task test` (and every plain `deno test -A`) would discover `compile.test.ts` and start a container — breaking the
@@ -1066,6 +1068,139 @@ deno task test:integration:k6:check            # check mode: the k6-clients targ
 deno task test:integration:stubs               # write mode: the easy-network-stub target, needs Docker
 deno task test:integration:stubs:check         # check mode: the easy-network-stub target, needs Docker
 ```
+
+## CI
+
+`.github/workflows/build.yml` runs every tier above as its own job, so a failure names the tier that produced it rather
+than one aggregate "tests" job disappearing into a wall of output.
+
+### The job graph
+
+- **Four cheap gates need nothing and run first.** `lint` (`deno fmt --check`, `deno lint`), `unit` (tier 1, the
+  harness's own tests, and the `test/cases` corpus, which has no task of its own so it runs as a bare
+  `deno test -A test/cases`), `output-check` (tier 2, `test:output:check`), and `images` (one matrix leg per Docker
+  build context — `kotlin`, `node`, `k6` — warming the GHA layer cache the Docker-building jobs below reuse). None of
+  the four depends on the others.
+- **Ten jobs need `[output-check, images]`:** the tier-3 jobs `compile-ts`, `compile-kotlin` and `harness-docker`, and
+  the tier-4 jobs `it-fetch-clients`, `it-angular-services`, `it-k6-clients`, `it-easy-network-stub`,
+  `it-okhttp3-clients`, `it-spring-reactive-web` and `it-spring-controllers` (the last three are two-, two- and four-way
+  matrices split by `--filter`, not by task name — see "`--filter` and the vacuous-green trap" below). `images` is why
+  the nine of these that build a Docker image can reuse its warmed layer cache instead of rebuilding from scratch —
+  `it-fetch-clients` is the one job in this list that starts no container at all, needing `images` for consistency with
+  its siblings rather than for anything it does itself; `output-check` is the reason in the next section.
+- **`all-tests` needs all fourteen test jobs** — `lint`, `unit`, `output-check`, `images`, `compile-ts`,
+  `compile-kotlin`, `harness-docker`, and the seven `it-*` jobs — and runs with `if: always()` so it still executes (and
+  can still fail the gate below) when one of them fails outright.
+- **`build`** needs nothing: `deno publish --dry-run`, `deno task npm`, and an artifact upload of the resulting `npm/`
+  tree. It is the publish path's own gate, independent of every test tier.
+- **`publish`** needs `[all-tests, build]` and runs only when `github.ref == 'refs/heads/main'` — the point of this
+  rework is exactly that: publishing now waits on every tier, not on `build` alone.
+
+### Why `output-check` gates compile and integration
+
+Tier 3 compiles the committed `test/output/**` tree with `deno check`, `tsc`, or Gradle; tier 4 imports the committed
+`typescript/fetch-clients` output directly and compiles the committed Kotlin and Angular trees the same way tier 3 does
+(the kitchen-sink spec behind the case table is an ordinary corpus entry, so it gets the same committed `test/output/`
+tree as every other spec — see "Tier 4: integration" above). Neither tier generates anything fresh — both read exactly
+what a reviewer already saw in a tier-2 diff. If that committed tree has drifted from what the generator currently
+produces — precisely what `output-check` exists to catch — compiling or driving it produces a result about a tree nobody
+has reviewed: a pass says the stale tree happens to compile, not that the generator does, and a failure could be the
+staleness rather than a real regression. `output-check` running first, and both fan-outs needing it, is what keeps every
+downstream result actually about the generator, pass or fail.
+
+### Why `all-tests` fails on `skipped`, not just `failure` and `cancelled`
+
+The gate step's condition is:
+
+```
+contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
+```
+
+`all-tests` itself runs unconditionally (`if: always()`), so an upstream failure doesn't skip the aggregator — it
+reaches this check and fails it. `skipped` is the state a job in `needs:` ends up in when a job-level `if:` is
+mis-authored, or when its own `needs:` chain never ran because something upstream of _it_ failed. That is a different
+signal than "ran and failed," and treating it as anything other than failure would mean a broken `if:` silently turns a
+required gate into a no-op that reads as passing. `all-tests` cannot notice a test job that was never added to its
+`needs:` list at all — a job it does not depend on has no result for it to inspect — which is why the `needs:` list
+carries its own comment saying so.
+
+### Why concurrency cancels superseded runs on pull requests only
+
+```yaml
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+```
+
+`publish` pushes `@goast/core`, `@goast/kotlin` and `@goast/typescript` to both JSR and NPM and creates a git tag per
+package, one after another. A run on a branch — `main` above all — can be partway through that sequence when a newer
+push supersedes it; cancelling it mid-flight would leave the three packages at different published versions with no way
+to roll back. Restricting `cancel-in-progress` to `pull_request` events avoids that entirely: a pull request never runs
+`publish` (`if: github.ref == 'refs/heads/main'`), so there is nothing mid-flight there worth losing.
+
+### The Deno version pin, and why it can't move on its own
+
+`.github/actions/setup/action.yml` pins `deno-version: v2.9.5` — the one Deno every job in the workflow shares. That pin
+carries more weight than "keep the toolchain consistent": the diagnostic snapshots committed under `test/compile/` (see
+"Tier 3: compile gate" above) record the _compiler's own diagnostic text_, verbatim, and Deno rewords that text between
+releases: 2.9 renamed the module-parse abort's message from `The module's source code could not be parsed: …` to
+`SyntaxError: …`. A runner on any other Deno version than the one that generated those snapshots fails the compile gate
+for a reason that has nothing to do with the generated code under test — it's failing because the compiler talks
+differently, not because the generator regressed.
+
+The consequence: bumping this pin is never a one-line version-string edit. Bump it and regenerate `test/compile/`'s
+snapshots (`deno task test:compile`) against the new Deno in the same change, and review the resulting diagnostic churn
+the way any other tier-3 diff gets reviewed — a line that disappeared is a fixed generator defect, a line that merely
+reads differently is the compiler's wording moving under an unchanged defect, and the two must not be mistaken for each
+other. Bump the pin without regenerating and the very next CI run reports a wall of "new" tier-3 failures that are, in
+fact, nothing but last release's wording.
+
+### `--filter` and the vacuous-green trap
+
+`deno test --filter` exits 0 when it matches nothing. A filter with a typo, or one naming a `describe` that later got
+renamed, silently turns a test job into a no-op that still reports green — the same failure mode tier 4's "an absent
+artifact means this case conforms" inverts, applied to a whole job instead of one case. `it-okhttp3-clients`,
+`it-spring-reactive-web` and `it-spring-controllers` are all built this way, passing a `--filter` string straight from a
+build matrix leg rather than through a named `deno.json` task.
+
+`test/integration-tests/task-filters.test.ts` is the guard, and it covers both places a filter can live: `deno.json`'s
+tasks and `build.yml`'s matrix legs. It parses the workflow itself (not just `deno.json`) and asserts, for every
+`--filter` it finds in either, that the string is a substring of some `describe`/`it` name that actually exists in the
+repo — including each per-leg filter (`integration/okhttp3-clients@sb3`, `integration/spring-controllers@sb4-strict`,
+and so on), and including the case where one `include:` leg loses its `filter:` key while a sibling leg keeps it: GitHub
+expands the missing value to `''`, and `--filter ''` matches everything in the directory, so that leg would silently
+stop being the one-unit job its name promises while a naive "did any leg supply this key" check stayed green.
+
+What it does **not** cover: it only proves a filter matches a suite name _somewhere in the repo_, not that the suite
+lives in the directory the job actually hands to `deno test` — a filter could in principle match a same-named `describe`
+in the wrong file and this check would not notice. It also collects nested `describe`s as if they were top-level, even
+though `--filter` itself only ever sees top-level names. And a `--filter` built by string concatenation, or
+interpolating anything other than a bare `${{ matrix.<key> }}`, is reported as unresolvable rather than checked — the
+workflow contains none of those today, but a future one would need a different guard.
+
+### The dropped `npm:test-utils` task
+
+The testing-strategy spec's Migration section left one question open: "Whether the `npm:test-utils` dnt task is still
+required — it exists so dnt can type-check package-internal tests — is verified during implementation and the task is
+dropped if not." (`test/utils` became `test/harness` in the same migration, so this is `npm:test-harness` in the tree as
+it exists today.) It was dropped, for two independent reasons, either of which would have been enough on its own:
+
+- `scripts/build_npm.ts` passes `test: false` to `@deno/dnt`'s `build()` for every package it builds (a
+  `// TODO: Temporarily disabled... errors in GitHub Actions` comment beside the flag), so dnt builds no tests at all,
+  for any of the three published packages — regardless of whether `npm/@goast/test-harness` exists to satisfy their
+  `usedLocalPackages` entry. "Type-check package-internal tests" is the only purpose the spec's Migration section
+  credited to this task, and with test-building already switched off there is nothing left for it to serve.
+- `build_npm.ts`'s `removeTestRelatedDependencies` unconditionally deletes `@goast/test-harness` from every published
+  package's _final_ `package.json`, so the `file:npm/@goast/test-harness` entry `usedLocalPackages` adds for the
+  _transient_ build-time `package.json` never survives into what ships. It never resolved to anything real to begin
+  with, either: `npm/@goast/test-harness` has never been built successfully on this branch — `docker.ts` and
+  `ref-server.ts` carry `Deno.Command`/`Deno.serve` shims dnt cannot produce — so the dependency `npm install`d during
+  the build was always an empty placeholder directory.
+
+The root `npm` task is now `npm:core && npm:typescript && npm:kotlin` — `npm:test-harness` no longer runs on the publish
+path, so the `build` job's `deno task npm` step no longer depends on the harness package's own npm buildability. The
+task itself is still defined in `deno.json`, available to run standalone for anyone who wants to work on the harness's
+Deno-shim gaps later; it just no longer gates anything.
 
 ## Layout
 
