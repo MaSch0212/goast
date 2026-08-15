@@ -7,16 +7,26 @@
  * container, wait for readiness, probe a handful of load-bearing behaviours, and assert the container
  * is still alive afterward.
  *
- * The probes below are exactly the adapter's four load-bearing behaviours, each measured against the
+ * The probes below cover three of the adapter's four load-bearing behaviours, each measured against the
  * real image and the real committed tree:
- *   - A route the generated stubs register answers through the generated responder (method upper-cased,
- *     raw path matched suffix-anchored).
+ *   - A route the generated stubs register answers through the generated responder, with the raw request
+ *     path matched suffix-anchored (no prefix stripped, nothing decoded).
+ *   - The whole request body is buffered and handed to the stub as a UTF-8 string, round-tripped through
+ *     a route that echoes part of it back — proving the buffering path, not just the no-body path above.
  *   - A route param the default `([\w-_~.]+)` matcher cannot match (a percent-encoded space) makes the
- *     library destroy the socket without replying, which must surface to `fetch` as a transport failure,
- *     not as a response with some status code.
- *   - The container survives that destroyed socket: a `destroy()` that took the process down with it
- *     would make every later case in the real loop record a failure that says nothing about the
- *     generator.
+ *     library destroy the socket without replying. This must surface as a genuine transport failure
+ *     (a reset connection), not merely "some rejection" — and a route requested immediately afterward
+ *     must still answer normally, because a `destroy()` that quietly took the server down with it would
+ *     make every later case in the real loop record a failure that says nothing about the generator.
+ *
+ * The fourth behaviour — upper-casing the request method — is deliberately **not** exercised here, and
+ * that is not an oversight: Node's own HTTP parser rejects a non-uppercase method token with a `400`
+ * before a request ever reaches this adapter (measured: `curl -X get ...` never gets past Node's parser
+ * to this server at all), and `fetch` itself normalizes `GET`/`POST`/`PUT`/`DELETE`/`HEAD`/`OPTIONS` to
+ * uppercase before the request leaves the client. No client this gate can drive can make
+ * `request.method` arrive lowercase, so there is no way to make this probe set observe the adapter's own
+ * `.toUpperCase()` doing anything. It stays in `adapter.ts` as cheap defensive programming against a
+ * method casing this HTTP stack cannot actually produce, not because this gate proves it necessary.
  */
 import { join } from 'node:path';
 
@@ -63,12 +73,46 @@ if (enabled) {
         expect(ok.status).toBe(200);
         expect(await ok.json()).toEqual({ id: 'abc', name: 'Rex' });
 
-        // A route param the default `([\w-_~.]+)` matcher cannot match. The library destroys the socket
-        // without replying (measured), which must surface as a transport failure and not as a response.
-        await expect(fetch(`http://127.0.0.1:${port}/api/pets/abc%20def`)).rejects.toThrow();
+        // Whole-body buffering: `stubUpdatePet` echoes part of the request body back, which only works
+        // if the adapter actually collected every `'data'` chunk before handing the body to the stub as
+        // a UTF-8 string, rather than (for example) only forwarding the first chunk.
+        const updated = await fetch(`http://127.0.0.1:${port}/api/pets/abc`, {
+          method: 'PUT',
+          body: JSON.stringify({ name: 'Buddy', age: 5 }),
+        });
+        expect(updated.status).toBe(200);
+        expect(await updated.json()).toEqual({ id: 'abc', name: 'Buddy', age: 5 });
 
-        // The server must still be up: a `destroy()` that took the process down with it would make
-        // every later case in the real loop record a failure that says nothing about the generator.
+        // A route param the default `([\w-_~.]+)` matcher cannot match. The library destroys the socket
+        // without replying (measured), which must surface as a genuine transport failure — not merely
+        // "some rejection", which is exactly the assertion that would also swallow the adapter-level
+        // fault `adapter.ts`'s `.catch` guards against (a `reply` that throws also leaves the connection
+        // looking reset). Pinning the message to Deno's actual, measured wording for this failure mode
+        // is what makes this probe distinguish the two.
+        let destroyedError: unknown;
+        try {
+          await fetch(`http://127.0.0.1:${port}/api/pets/abc%20def`);
+          destroyedError = undefined;
+        } catch (error) {
+          destroyedError = error;
+        }
+        expect(destroyedError).toBeInstanceOf(TypeError);
+        expect((destroyedError as Error).message).toContain('connection closed before message completed');
+
+        // A good route must still answer *normally* right after that destroy, not just "the container
+        // process is still alive": a destroy that left the server wedged (accepting connections but
+        // never responding) would still pass a bare `container.running()` check.
+        const stillOk = await fetch(`http://127.0.0.1:${port}/api/pets/abc`);
+        // Read the body rather than only the status, and not merely to satisfy Deno's leak detector
+        // (which does fail the test on an unconsumed response body): a server wedged mid-response would
+        // hand back headers and then never finish, which a status-only assertion cannot tell from a
+        // complete answer.
+        expect(await stillOk.json()).toEqual({ id: 'abc', name: 'Rex' });
+        expect(stillOk.status).toBe(200);
+
+        // And the container itself, independent of the HTTP-level check above: a `destroy()` that took
+        // the whole process down with it would make every later case in the real loop record a failure
+        // that says nothing about the generator.
         expect(container.running(), container.output()).toBe(true);
       } finally {
         await container.stop();
