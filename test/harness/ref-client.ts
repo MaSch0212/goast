@@ -74,6 +74,34 @@ export function buildQueryString(query: Record<string, string[]> | undefined): s
 }
 
 /**
+ * Renders a failed `fetch` as a deterministic one-line description, for a server-direction leg to commit.
+ *
+ * Two problems this solves, both measured.
+ *
+ * `error.message` alone is `fetch failed` — Deno puts the text that says *what* failed one level down in
+ * `cause`. A leg recording only the message commits an artifact that distinguishes nothing: a server the
+ * code under test deliberately made destroy the socket, a server that was never listening, and a request
+ * that timed out all read identically. In a tier where an absent artifact means "this case conforms",
+ * that is the difference between recording a generator defect and recording the harness's own failure.
+ *
+ * The cause text is not committable as-is, though: it interpolates the request URL *and* the client's
+ * ephemeral source port —
+ * `error sending request from 127.0.0.1:62673 for http://127.0.0.1:62661/styles/a,b (127.0.0.1:62661)` —
+ * so an artifact carrying it verbatim would churn on every run. Every `:<digits>` is replaced, which is
+ * the only nondeterminism observed across repeated runs.
+ */
+export function describeTransportFailure(error: unknown): string {
+  const messages: string[] = [];
+  let current: unknown = error;
+  while (current instanceof Error) {
+    messages.push(current.message);
+    current = current.cause;
+  }
+  if (messages.length === 0) return String(error).replaceAll(/:\d+/g, ':<port>');
+  return messages.join(' <- ').replaceAll(/:\d+/g, ':<port>');
+}
+
+/**
  * Issues one case's declared request against `baseUrl`, exactly as written.
  *
  * The path is concatenated rather than passed through `URL`'s path handling, because

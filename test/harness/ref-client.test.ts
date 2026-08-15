@@ -2,7 +2,7 @@ import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
 import type { ApiCase } from '../cases/types.ts';
-import { buildQueryString, issueCase } from './ref-client.ts';
+import { buildQueryString, describeTransportFailure, issueCase } from './ref-client.ts';
 import { startRefServer } from './ref-server.ts';
 
 const base: ApiCase = {
@@ -155,5 +155,48 @@ describe('issueCase', () => {
     } finally {
       await server.close();
     }
+  });
+});
+
+describe('describeTransportFailure', () => {
+  // Deno's actual shape, captured against a container that destroyed the socket mid-request. The point
+  // of the helper is that `error.message` here is only `fetch failed`.
+  const denoShape = new TypeError('fetch failed', {
+    cause: new Error(
+      'error sending request from 127.0.0.1:62673 for http://127.0.0.1:62661/styles/a,b ' +
+        '(127.0.0.1:62661): client error (SendRequest): connection closed before message completed',
+    ),
+  });
+
+  it('keeps the cause text, which is the only part that says what failed', () => {
+    expect(describeTransportFailure(denoShape)).toContain('connection closed before message completed');
+  });
+
+  it('is stable across runs that differ only in ephemeral ports', () => {
+    const other = new TypeError('fetch failed', {
+      cause: new Error(
+        'error sending request from 127.0.0.1:51004 for http://127.0.0.1:50990/styles/a,b ' +
+          '(127.0.0.1:50990): client error (SendRequest): connection closed before message completed',
+      ),
+    });
+
+    // Not a tautology: the two inputs differ, and the assertion below proves it before comparing the
+    // outputs. An earlier helper elsewhere in this repo compared a value with itself for a year.
+    expect(other.cause).not.toEqual(denoShape.cause);
+    expect(describeTransportFailure(other)).toEqual(describeTransportFailure(denoShape));
+  });
+
+  it('tells a destroyed socket apart from a server that was never there', () => {
+    // Both are `TypeError: fetch failed`. Recording only the message would commit the same bytes for a
+    // generated-code finding and for a harness fault.
+    const refused = new TypeError('fetch failed', {
+      cause: new Error('error sending request for url (http://127.0.0.1:1/x): connection refused'),
+    });
+
+    expect(describeTransportFailure(refused)).not.toEqual(describeTransportFailure(denoShape));
+  });
+
+  it('handles a thrown value that is not an Error', () => {
+    expect(describeTransportFailure('boom')).toBe('boom');
   });
 });

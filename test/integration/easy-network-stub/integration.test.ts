@@ -35,6 +35,7 @@ import { describe, it } from '@std/testing/bdd';
 
 import {
   buildImage,
+  describeTransportFailure,
   diffResponse,
   formatDeviations,
   issueCase,
@@ -139,7 +140,7 @@ if (enabled) {
           } catch (error) {
             // See this file's header: an unmatched route destroys the socket here, so a transport failure
             // is a measurement, not a reason to abandon the run.
-            failures.set(apiCase.id, error instanceof Error ? error.message : String(error));
+            failures.set(apiCase.id, describeTransportFailure(error));
           }
         }
 
@@ -148,13 +149,31 @@ if (enabled) {
         // would be fiction. Load-bearing in this leg specifically: `destroy()` is a normal outcome here,
         // and a `destroy()` that took the process down with it would look identical per case.
         expect(container.running(), `the server exited during the run\n\n${container.output()}`).toBe(true);
+
+        // The adapter's own fault marker, asserted rather than trusted. `driver/adapter.ts` answers an
+        // internal fault with `599` and logs `##ADAPTER-FAULT##` — but its fully degraded path, where the
+        // `599` write *also* fails, ends in destroying the socket, which on the wire is byte-identical to
+        // the library's legitimate `destroy()` of an unmatched route. Two cases in this leg record exactly
+        // that legitimate destroy, so without this line a driver fault would be committed as a generator
+        // defect and nothing would say otherwise. The log is the one channel a wire-only observer cannot
+        // fake.
+        expect(container.output(), 'the adapter faulted during the run').not.toContain('##ADAPTER-FAULT##');
       } finally {
         await container.stop();
       }
 
-      // One line per generated stub, and exactly one failure — see this file's header for why this is
-      // asserted before a single artifact is written.
-      expect(registration.length, `the registration report is incomplete\n\n${registration.join('\n')}`).toBe(12);
+      // One line per operation the case table drives, and exactly one failure — see this file's header
+      // for why this is asserted before a single artifact is written.
+      //
+      // Derived from the case table rather than written as a literal count. The driver names each report
+      // line after the operation it registers, so comparing the two *sets* says what a number cannot: an
+      // operation the table drives but nobody registered has no route at all, and from the host that is
+      // indistinguishable from a route matcher that refused to match — a silent generator-defect artifact
+      // with no generator defect behind it.
+      expect(
+        registration.map((line) => line.slice(0, line.indexOf(':'))).sort(),
+        `the registration report does not cover every operation\n\n${registration.join('\n')}`,
+      ).toEqual([...new Set(cases.map((c) => c.operationId))].sort());
       expect(registration.filter((line) => line.includes('FAILED'))).toEqual(EXPECTED_REGISTRATION_FAILURES);
 
       // Drift protection, the analogue of the client direction's reported-ids check: every case must have
