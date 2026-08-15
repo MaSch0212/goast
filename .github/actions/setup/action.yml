@@ -1,0 +1,28 @@
+name: Setup
+description: Deno toolchain and frozen dependency install, shared by every job in the build workflow.
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Deno
+      uses: denoland/setup-deno@v2
+      with:
+        # The single source of truth for this repo's toolchain version, and it is load-bearing beyond the
+        # usual "pin your tools" reason.
+        #
+        # Tier 3 commits the *compiler's own diagnostic text* as snapshots under `test/compile/`. Deno
+        # rewords its diagnostics between releases — 2.9 renamed the module-parse abort from "The module's
+        # source code could not be parsed: …" to "SyntaxError: …" — so a runner on a different Deno than
+        # the one that generated those files fails the compile gate for a reason that has nothing to do
+        # with the generated code under test. Bump this and `deno task test:compile` in the same change,
+        # and review the snapshot churn as part of it.
+        #
+        # This replaced a v2.8.2 pin whose comment cited a 2.8.3 regression in `export =` default-import
+        # type resolution (`import fs from 'fs-extra'`). Verified gone before moving the pin: the three
+        # `packages/core/src/**` files carrying that import type-check clean, and `deno task npm` and
+        # `deno publish --dry-run` both succeed.
+        deno-version: v2.9.5
+
+    - name: Install dependencies
+      run: deno install --frozen
+      shell: bash
