@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
-import { parseDenoCheckDiagnostics } from './parse-deno-check.ts';
+import { isUnparseableModuleMessage, parseDenoCheckDiagnostics } from './parse-deno-check.ts';
 
 // `fileURLToPath` resolves a file URL to an OS-native absolute path (backslashes and a drive letter on
 // Windows, forward slashes on POSIX), so a fake URL needs a drive letter to be valid on every platform,
@@ -142,5 +142,28 @@ describe('parseDenoCheckDiagnostics', () => {
       column: 23,
       message: `TS2307 Import "<output>/models/.ts" not a dependency and not in import map from "${FIXTURE_URL}"`,
     }]);
+  });
+});
+
+describe('isUnparseableModuleMessage', () => {
+  // Deno 2.9 reworded the graph-load abort and moved its position onto the ordinary `at` line. The
+  // runner kept keying on the old prefix, silently stopped retrying, and one unit's committed
+  // diagnostics went from four to one with nothing failing. Both wordings are recognised so a future
+  // rewording is the only thing that can break this again — and it will show up as a shrinking snapshot.
+  it('recognises the pre-2.9 wording', () => {
+    expect(isUnparseableModuleMessage("The module's source code could not be parsed: Expected '{', got '='"))
+      .toBe(true);
+  });
+
+  it('recognises the 2.9+ wording', () => {
+    expect(isUnparseableModuleMessage("SyntaxError: Expected '{', got '='")).toBe(true);
+  });
+
+  it('does not mistake a type error for a graph-load abort', () => {
+    // Type errors reach here already prefixed with their code by `parseDenoCheckDiagnostics`. If this
+    // returned true for one, the runner would drop a perfectly parseable file from its root list and
+    // stop reporting everything that file was responsible for.
+    expect(isUnparseableModuleMessage('TS2307 Import "./x.ts" not a dependency')).toBe(false);
+    expect(isUnparseableModuleMessage("TS2322 Type 'Timeout' is not assignable to type 'number'.")).toBe(false);
   });
 });

@@ -1,7 +1,7 @@
 import { walk } from '@std/fs/walk';
 
 import { type CompileUnit, type Diagnostic, normalizeMessageUrls, relativizeDiagnostic } from '@goast/test-harness';
-import { parseDenoCheckDiagnostics, UNPARSEABLE_MODULE_PREFIX } from '../../harness/compile/parse-deno-check.ts';
+import { isUnparseableModuleMessage, parseDenoCheckDiagnostics } from '../../harness/compile/parse-deno-check.ts';
 
 /**
  * Per-unit ceiling on one `deno check` invocation, after which the unit is a harness failure.
@@ -136,7 +136,7 @@ async function checkUnit(unit: CompileUnit, files: readonly string[]): Promise<D
     }
 
     const diagnostics = parseDenoCheckDiagnostics(output);
-    const unparseable = diagnostics.filter((d) => d.message.startsWith(UNPARSEABLE_MODULE_PREFIX));
+    const unparseable = diagnostics.filter((d) => isUnparseableModuleMessage(d.message));
 
     if (unparseable.length === 0) {
       if (code !== 0 && diagnostics.length === 0) {

@@ -32,6 +32,30 @@ const SUMMARY_LINE = 'error: Type checking failed.';
 export const UNPARSEABLE_MODULE_PREFIX = "The module's source code could not be parsed";
 
 /**
+ * How Deno words the same graph-load failure since 2.9.
+ *
+ * The wording changed from {@link UNPARSEABLE_MODULE_PREFIX} to a bare `SyntaxError: <detail>`, and the
+ * position moved from inline to the ordinary following `at` line. Both shapes are recognised because the
+ * *consequence* is what matters and has not changed: `deno check` aborts the whole graph, so a unit with
+ * three unparseable files reports one diagnostic unless the runner drops the named file and retries.
+ *
+ * Not hypothetical — this is exactly what a Deno upgrade did to this gate. The runner kept keying on the
+ * old prefix, stopped recognising the abort, and `typescript/models/v3/non-ascii-names` silently went
+ * from four committed diagnostics to one. Nothing failed; the snapshot simply got smaller.
+ */
+export const SYNTAX_ERROR_PREFIX = 'SyntaxError: ';
+
+/**
+ * Whether a diagnostic message is a graph-load abort rather than one diagnostic among many.
+ *
+ * A bare `SyntaxError:` cannot be confused with a type error: `deno check` renders those as
+ * `TS<code> [ERROR]: …`, which {@link parseDenoCheckDiagnostics} prefixes with the code.
+ */
+export function isUnparseableModuleMessage(message: string): boolean {
+  return message.startsWith(UNPARSEABLE_MODULE_PREFIX) || message.startsWith(SYNTAX_ERROR_PREFIX);
+}
+
+/**
  * The graph-load error above, whose position is inline rather than on a following `at` line.
  *
  * Matched before {@link ERROR_LINE}, whose uncoded `error: <message>` alternative would otherwise
