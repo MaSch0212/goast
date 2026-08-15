@@ -33,6 +33,7 @@
     "jsr:@std/path@~0.225.2": "0.225.2",
     "jsr:@std/testing@^1.0.4": "1.0.4",
     "jsr:@std/text@^1.0.7": "1.0.8",
+    "jsr:@std/yaml@1": "1.1.2",
     "jsr:@ts-morph/bootstrap@0.24": "0.24.0",
     "jsr:@ts-morph/common@0.24": "0.24.0",
     "npm:@types/fs-extra@11": "11.0.4",
@@ -180,6 +181,9 @@
     },
     "@std/text@1.0.8": {
       "integrity": "40ba34caa095f393e78796e5eda37b8b4e2cc6cfd6f51f34658ad7487b1451e4"
+    },
+    "@std/yaml@1.1.2": {
+      "integrity": "de612653c036749ba2044165e316f52412b0f0698afffb7ee80b5331d6d2abae"
     },
     "@ts-morph/bootstrap@0.24.0": {
       "integrity": "a826a2ef7fa8a7c3f1042df2c034d20744d94da2ee32bf29275bcd4dffd3c060",
