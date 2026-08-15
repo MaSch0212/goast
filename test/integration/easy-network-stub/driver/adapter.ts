@@ -159,25 +159,36 @@ export function serveStub(stub: NodeEasyNetworkStub, port: number, readinessPath
         // wire observation as outcome 2's legitimate `destroy()`. `##ADAPTER-FAULT##` in the container's
         // own log is the one channel a wire-only observer cannot fake, so it — not the HTTP response
         // below, which is best-effort on top of it — is the true disambiguator.
-        const detail = error instanceof Error ? (error.stack ?? error.message) : String(error);
-        console.error('##ADAPTER-FAULT##', request.url ?? '/', detail);
-
-        if (response.headersSent || request.socket.destroyed) {
-          // Either a reply already went out (most likely a *second* `reply`/`destroy` call throwing
-          // while trying to act again on an already-finished response — the client already has whatever
-          // the first call sent) or the socket is already gone. Either way nothing more can be put on
-          // the wire; the log line above is the only record left to make.
-          return;
-        }
+        //
+        // The whole body is wrapped, including the `console.error` and the fallback `destroy()`. That is
+        // not defensive habit: this handler's own return value is discarded, so anything it throws is
+        // itself an unhandled rejection — the exact failure this `.catch` exists to prevent, displaced
+        // one layer outward. `console.error` can throw `EPIPE` if stdout is gone, which is precisely the
+        // kind of container-level trouble this path runs under. If everything fails there is nothing
+        // left to say, and staying alive matters more than reporting.
         try {
-          response.writeHead(599).end(`ADAPTER FAULT handling ${request.url ?? '/'}: ${detail}`);
+          const detail = error instanceof Error ? (error.stack ?? error.message) : String(error);
+          console.error('##ADAPTER-FAULT##', request.url ?? '/', detail);
+
+          if (response.headersSent || request.socket.destroyed) {
+            // Either a reply already went out (most likely a *second* `reply`/`destroy` call throwing
+            // while trying to act again on an already-finished response — the client already has whatever
+            // the first call sent) or the socket is already gone. Either way nothing more can be put on
+            // the wire; the log line above is the only record left to make.
+            return;
+          }
+          try {
+            response.writeHead(599).end(`ADAPTER FAULT handling ${request.url ?? '/'}: ${detail}`);
+          } catch {
+            // Headers were never sent, but writing them failed too (or the socket died between the checks
+            // above and here) — the connection cannot carry a response at all. Destroying it is the only
+            // thing left to do; the wire signature this leaves is the same as outcome 2's on its own, but
+            // the `##ADAPTER-FAULT##` line already told the container's own output apart from a genuine
+            // unmatched route, which never logs it.
+            if (!request.socket.destroyed) request.socket.destroy();
+          }
         } catch {
-          // Headers were never sent, but writing them failed too (or the socket died between the checks
-          // above and here) — the connection cannot carry a response at all. Destroying it is the only
-          // thing left to do; the wire signature this leaves is the same as outcome 2's on its own, but
-          // the `##ADAPTER-FAULT##` line already told the container's own output apart from a genuine
-          // unmatched route, which never logs it.
-          if (!request.socket.destroyed) request.socket.destroy();
+          // Deliberately empty. Reaching here means even reporting the fault failed.
         }
       });
     });

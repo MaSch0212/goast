@@ -41,6 +41,23 @@ import { buildCommand, DRIVER_DIR, DRIVER_MOUNT, READINESS_PATH, SERVER_PORT, TR
 const enabled = (Deno.env.get('GOAST_INTEGRATION') ?? '') !== '';
 const CONTEXT_DIR = join(repoRootDir, 'test', 'docker', 'node');
 
+/**
+ * Every message in an error's `cause` chain, joined.
+ *
+ * Deno's `fetch` reports a transport failure as `TypeError: fetch failed` and puts the text that says
+ * *what* failed one level down in `cause`, so asserting on `error.message` alone tests nothing about
+ * the failure mode.
+ */
+function flattenCauses(error: unknown): string {
+  const messages: string[] = [];
+  let current: unknown = error;
+  while (current instanceof Error) {
+    messages.push(`${current.name}: ${current.message}`);
+    current = current.cause;
+  }
+  return messages.join(' <- ');
+}
+
 if (enabled) await requireDocker();
 
 if (enabled) {
@@ -87,8 +104,14 @@ if (enabled) {
         // without replying (measured), which must surface as a genuine transport failure — not merely
         // "some rejection", which is exactly the assertion that would also swallow the adapter-level
         // fault `adapter.ts`'s `.catch` guards against (a `reply` that throws also leaves the connection
-        // looking reset). Pinning the message to Deno's actual, measured wording for this failure mode
-        // is what makes this probe distinguish the two.
+        // looking reset).
+        //
+        // The wording is asserted against the flattened `cause` chain, not `error.message`. Deno's
+        // `fetch` reports this as `TypeError: fetch failed` with the informative text one level down in
+        // `cause` — measured six consecutive times against this container, all six identical. An earlier
+        // revision asserted on `message` directly and passed once before failing on the next run, which
+        // is the worst possible behaviour for a gate: a probe that intermittently stops checking the
+        // thing it exists to check.
         let destroyedError: unknown;
         try {
           await fetch(`http://127.0.0.1:${port}/api/pets/abc%20def`);
@@ -97,7 +120,7 @@ if (enabled) {
           destroyedError = error;
         }
         expect(destroyedError).toBeInstanceOf(TypeError);
-        expect((destroyedError as Error).message).toContain('connection closed before message completed');
+        expect(flattenCauses(destroyedError)).toContain('connection closed before message completed');
 
         // A good route must still answer *normally* right after that destroy, not just "the container
         // process is still alive": a destroy that left the server wedged (accepting connections but
