@@ -5,6 +5,7 @@ import { describe, it } from '@std/testing/bdd';
 
 import {
   buildImage,
+  describeTransportFailure,
   diffResponse,
   formatDeviations,
   issueCase,
@@ -100,7 +101,16 @@ if (enabled) {
                 // A transport-level failure is a result, not a reason to abandon the run: it is exactly
                 // what a case whose request the server rejects at the connection level looks like, and
                 // it must reach the artifact rather than aborting the other 18 cases.
-                failures.set(apiCase.id, error instanceof Error ? error.message : String(error));
+                //
+                // `describeTransportFailure` rather than `error.message`, matching the sibling
+                // `easy-network-stub` leg: Deno reports every transport failure as `fetch failed` and puts
+                // the text that says *which* failure one level down in `cause`, so the message alone
+                // commits identical bytes for a server that refused the connection, one that closed it
+                // mid-response, and a request that timed out. No committed artifact here changes — no
+                // Spring unit has ever taken this branch (`grep -rl "no response at all" test/wire/`
+                // matches only the two `easy-network-stub` files) — so this is fidelity for the first run
+                // that does, not a rewrite of anything recorded.
+                failures.set(apiCase.id, describeTransportFailure(error));
               }
             }
 

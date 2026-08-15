@@ -1954,7 +1954,9 @@ parameter type carries a matcher *and* a parser.
 
 ### Defect 59 — `easy-network-stub` emits array query parameters with no regard to their declared style, and because they are generated optional a value the library's default matcher rejects binds to nothing instead of failing (found by the tier-4 server direction, not scheduled)
 
-`getStubRoute` appends one `{name?:type}` group per query parameter (`:226`), so `styleMatrix` — whose three array
+`getStubRoute` appends one `{name?:type}` group per query parameter
+(`packages/typescript/src/generators/services/easy-network-stub/easy-network-stub-generator.ts:226`), so `styleMatrix`
+— whose three array
 parameters are the spec's three `style`/`explode` encodings of the same `['a', 'b']` — generates
 `STYLE_MATRIX_PATH = 'styles?{formExploded?:string[]}&{formUnexploded?:string[]}&{spaceDelimited?:string[]}'`
 (`test/output/typescript/easy-network-stub/integration/kitchen-sink/stubs/params.stubs.ts:35`). The library fills an
@@ -1965,7 +1967,8 @@ three declared styles works, and it is the one that happens to match the library
 
 - **`style: form, explode: false`** sends `?formUnexploded=a,b`, a literal comma, which is a legal query sub-delimiter.
   The per-parameter regex `[?&]formUnexploded(?:=(?:…)?)?(?=$|&)` fails its lookahead after `a`. Because every
-  generated query parameter is emitted **optional** — `?` at `:226` whenever `param.required` is false — a
+  generated query parameter is emitted **optional** — `?` at `easy-network-stub-generator.ts:226` whenever
+  `param.required` is false — a
   non-matching parameter does not reject the route; it silently arrives as `undefined`, and the operation is invoked
   with no parameters at all. Silent binding-to-nothing is worse than a rejected route: the stub answers `200` for a
   request it never understood.
@@ -2043,7 +2046,9 @@ collection before relying on it.
 type argument of `getStubResponder<{…}>()` from two sources: the configured
 `defaultStatusCodeResponseTypes` — `401`, `403` and `500`, all `never`
 (`packages/typescript/src/generators/services/easy-network-stub/models.ts:78-82`) — and the endpoint's own responses,
-`endpoint.responses.filter((x) => x.statusCode)` at `:239-241`. That filter is where the `default` response is lost: a
+`endpoint.responses.filter((x) => x.statusCode)` at
+`packages/typescript/src/generators/services/easy-network-stub/easy-network-stub-generator.ts:239-241`. That filter is
+where the `default` response is lost: a
 `default` (and likewise a range code such as `5XX`) has no numeric `statusCode`, `undefined` being exactly what the
 field holds — `Number(status) || undefined`, `packages/core/src/transform/transform-endpoint.ts:206`, which is
 **defect 38**'s lossiness, with `statusKey` the non-lossy field a fix must read instead.
@@ -2116,6 +2121,38 @@ this profile, because the honest options differ: emit `string` (what the library
 emit the parsed model type only where the media type is JSON, and `string` otherwise; or register the decoding the
 generated stub would need to make the declared type true. What must not survive is a declared type no execution of the
 generated code can produce.
+
+### Defect 63 — `easy-network-stub` silently drops every header and cookie parameter, so a generated stub cannot name a parameter the request carried (found by the tier-4 server direction, not scheduled)
+
+`getStubRoute` is the only place in this generator that reads a parameter's location, and it has arms for two of the
+four: `if (param.target === 'path') … else if (param.target === 'query')`
+(`packages/typescript/src/generators/services/easy-network-stub/easy-network-stub-generator.ts:223-228`). There is no
+`else`, and `grep -n "param.target"` over that file returns exactly those two lines — so a `header` or `cookie`
+parameter is not emitted anywhere, not as a route segment, not as a callback argument, not as a remembered field.
+
+`allLocations` is the case that shows it. The spec declares four parameter locations; the generated route is
+`'locations/{pathParam:string}?{queryParam?:string}'`
+(`test/output/typescript/easy-network-stub/integration/kitchen-sink/stubs/params.stubs.ts:34`) — two. The declared
+`x-header-param` header and `session` cookie are absent from the generated API entirely.
+
+This is the same shape as **defect 60**, and the two should be read together. In both, the library *does* expose the
+capability one layer down — `RouteResponseCallback`'s request argument carries a `headers` bag, and cookies arrive
+inside it — and only the generated stub is unable to name it. Defect 60 is about the response direction, this one the
+request direction.
+
+**Tier 4 (stubs):** no artifact, and the reason is worth stating rather than leaving to be inferred, because in this
+tier an absent artifact otherwise reads as conformance. `allLocations/ok` passes. The driver asserts the header and the
+cookie from the raw `headers` bag the library supplies
+(`test/integration/easy-network-stub/driver/stubs.ts`, the `allLocations` registration), so the request genuinely
+carried what the case declares and the response genuinely matched — the case conforms *at the wire level*, which is
+all this tier measures. What it does not show is that a consumer of the generated stub could not have read either
+value. This entry is the only record of that.
+
+Not fixed here — this phase records defects rather than fixing them. A fix has a decision to make first: a header is
+not addressable in `easy-network-stub`'s route syntax at all, so unlike defect 59's array-style problem there is no
+route string that would express it. The plausible shapes are a generated accessor over the request's `headers` bag, or
+an explicit acknowledgement in the generated output that these locations are unsupported. What must not survive is the
+current silence, in which the generated signature and the spec disagree with nothing to say so.
 
 ### Also registered, not scheduled
 

@@ -592,10 +592,10 @@ generated client must return, while in the server direction `response` is what t
 `expectResult` goes unused. Every consumer reads this one table, so none of them can drift out from under another:
 `test/integration/oracles.test.ts` proves the table itself round-trips through a handwritten reference client and the
 reference server with zero deviations — the contract proof every other tier-4 result depends on, see below;
-`test/integration/fetch-clients/`, `kotlin-clients/` and `spring-controllers/` each drive _generated_ code against it;
-and `test/integration-tests/orphans.test.ts` sweeps the committed artifacts against it. `casesFor(profile, direction)`
-is the only path to a filtered table, so drift protection — comparing the ids a driver reported against the ids it was
-asked for — computes both sides the same way.
+`test/integration/fetch-clients/`, `angular-services/`, `kotlin-clients/`, `k6-clients/`, `spring-controllers/` and
+`easy-network-stub/` each drive _generated_ code against it; and `test/integration-tests/orphans.test.ts` sweeps the
+committed artifacts against it. `casesFor(profile, direction)` is the only path to a filtered table, so drift protection
+— comparing the ids a driver reported against the ids it was asked for — computes both sides the same way.
 
 **Drivers hardcode their arguments instead of reading the table.** `test/integration/fetch-clients/driver.ts` writes
 `pets.getPet({ id: 'abc' })` literally, one call per case, rather than dispatching dynamically off `expectRequest`.
@@ -1041,11 +1041,14 @@ one, and each is a place where an absent artifact would be misread:
   conformance, deliberately and consistently: `updatePet/form` hits the same gap and re-parses the form encoding, so
   recording one of the three as a deviation and two as conforming would make this directory's artifacts mean different
   things in different files. Defect 62 records the type-level finding that has no wire artifact for that reason.
-- **`allLocations/ok`'s header and cookie are asserted from the library's raw header bag, not from a generated
-  binding.** The generated route is `locations/{pathParam:string}?{queryParam?:string}` — no slot for the
-  `x-header-param` header or the `session` cookie — so what that case proves is that the values arrived, not that the
-  generated code bound them. The same limit the Spring leg states in its own closing bullets: this direction can only
-  observe a parameter the generated signature gave the oracle somewhere to receive.
+- **`allLocations/ok`'s header and cookie are asserted from the library's raw header bag, not from a generated binding —
+  and that is a generator defect, not a limit of this tier.** The generated route is
+  `locations/{pathParam:string}?{queryParam?:string}` — no slot for the `x-header-param` header or the `session` cookie
+  — because the generator reads a parameter's location in exactly one place and handles only `path` and `query`. The
+  library itself hands every callback a `headers` bag, so the capability is there and only the generated stub cannot
+  name it. The case conforms at the wire level, which is all this tier measures, so there is no artifact; **defect 63 is
+  the only record that a consumer of the generated stub could not have read either value.** Read it beside defect 60,
+  which is the same shape in the response direction.
 
 The commands:
 

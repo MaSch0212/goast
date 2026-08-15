@@ -150,6 +150,14 @@ export function serveStub(stub: NodeEasyNetworkStub, port: number, readinessPath
           destroy: () => request.socket.destroy(),
         });
         if (!response.writableEnded && !request.socket.destroyed) {
+          // The same `##ADAPTER-FAULT##` marker the `.catch` below logs, and for the same reason: this is
+          // the adapter's *other* self-fault path, and the case loop asserts on the marker, not on the
+          // response. Without this line the loop cannot see this fault at all — and the response it would
+          // commit is actively misleading, carrying `599` (the status `GoastMismatch` uses) with a body
+          // starting `UNEXPECTED` (the prefix `GoastDriverFault`'s 597 uses), so both signals point away
+          // from "the adapter is at fault". It also sets no content-type, so the harness records the body
+          // as base64 and a reader would have to decode it to find that out.
+          console.error('##ADAPTER-FAULT##', url, 'no stub replied and none destroyed the socket');
           response.writeHead(599).end(`UNEXPECTED no stub replied and none destroyed the socket: ${url}`);
         }
       })().catch((error: unknown) => {
