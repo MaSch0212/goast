@@ -408,7 +408,7 @@ jobs:
       - name: Run
         shell: bash
         env:
-          GOAST_INTEGRATION: "1"
+          GOAST_INTEGRATION: '1'
           GOAST_SNAPSHOT: check
           FILTER: ${{ matrix.filter }}
         run: deno test -A test/integration/kotlin-clients --filter "$FILTER" 2>&1 | tee driver.log
@@ -447,7 +447,7 @@ jobs:
       - name: Run
         shell: bash
         env:
-          GOAST_INTEGRATION: "1"
+          GOAST_INTEGRATION: '1'
           GOAST_SNAPSHOT: check
           FILTER: ${{ matrix.filter }}
         run: deno test -A test/integration/kotlin-clients --filter "$FILTER" 2>&1 | tee driver.log
@@ -503,7 +503,7 @@ jobs:
       - name: Run
         shell: bash
         env:
-          GOAST_INTEGRATION: "1"
+          GOAST_INTEGRATION: '1'
           GOAST_SNAPSHOT: check
           FILTER: ${{ matrix.filter }}
         run: deno test -A test/integration/spring-controllers --filter "$FILTER" 2>&1 | tee driver.log
@@ -612,7 +612,7 @@ jobs:
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 24
-          registry-url: "https://registry.npmjs.org"
+          registry-url: 'https://registry.npmjs.org'
           always-auth: false
 
       - name: Download NPM packages
