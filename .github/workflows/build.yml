@@ -1,23 +1,34 @@
 name: Build
 
-# Every push and every pull request, on every branch. The tier-4 jobs exist to catch a
-# client-serialization regression *before* it merges, which they cannot do if they only run on `main`.
-# The old `branches: [main]` filter is also why the broken `deno task npm` went unnoticed for a whole
-# phase: this work lives on `testing-next` and CI never looked at it.
+# Every pull request, plus pushes to the two long-lived branches.
 #
-# `branches: ['**']` matches every branch but no tag, which matters because the `publish` job pushes
-# three tags per release and an unfiltered `push:` would start a full run for each of them.
+# The tier-4 jobs exist to catch a client-serialization regression *before* it merges, which they cannot
+# do if they only run on `main` — and the old `branches: [main]` filter is why the broken `deno task npm`
+# went unnoticed for a whole phase: that work lives on `testing-next` and CI never looked at it. Both
+# reasons are served by `pull_request` plus the integration branches; neither requires `branches: ['**']`.
+#
+# `branches: ['**']` was the first attempt and it double-ran every PR: a same-repo PR branch fires `push`
+# and `pull_request` for the same commit, in different concurrency groups, so neither cancels the other
+# and the whole ~17-job graph — ten of them container jobs — runs twice for one commit's worth of signal.
+# Listing the branches instead is deterministic; deduplicating by concurrency is not, because whichever
+# run loses the race is *cancelled*, and a cancelled check-run posted against the PR's head SHA can block
+# a merge that branch protection gates on.
+#
+# The cost: a push to an ephemeral branch with no PR open gets no CI. Open the PR — draft is enough.
+#
+# Listing branches also excludes tags, which matters because the `publish` job pushes three tags per
+# release and an unfiltered `push:` would start a full run for each of them.
 on:
   push:
-    branches: ['**']
+    branches: [main, testing-next]
   pull_request:
 
-# Cancel superseded runs on pull requests only. A run on a branch — `main` above all — may be part-way
-# through publishing to JSR and NPM, and killing that mid-flight leaves the three packages at different
-# versions with no way to roll back.
+# Cancel superseded runs everywhere except `main`. A run on `main` may be part-way through publishing to
+# JSR and NPM, and killing that mid-flight leaves the three packages at different versions with no way to
+# roll back. Nothing else in the graph publishes anything, so a superseded run there is pure waste.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 permissions:
   contents: read
@@ -32,7 +43,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -50,7 +61,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -79,7 +90,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -101,7 +112,7 @@ jobs:
 
       - name: Upload the snapshot drift
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: snapshot-patch
           path: snapshot.patch
@@ -121,7 +132,7 @@ jobs:
         image: [kotlin, node, k6]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -158,7 +169,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -175,7 +186,7 @@ jobs:
 
       - name: Upload the compiler output
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: compile-ts-log
           path: compile-ts.log
@@ -190,7 +201,7 @@ jobs:
     timeout-minutes: 45
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -206,7 +217,7 @@ jobs:
 
       - name: Upload the compiler output
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: compile-kotlin-log
           path: compile-kotlin.log
@@ -221,7 +232,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -235,7 +246,7 @@ jobs:
 
       - name: Upload the container output
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: harness-docker-log
           path: harness-docker.log
@@ -248,7 +259,9 @@ jobs:
 
   it-fetch-clients:
     name: Integration (fetch clients)
-    needs: [output-check, images]
+    # No `images`, unlike its siblings: `test:integration:check` runs without `GOAST_INTEGRATION`, so
+    # nothing in this job starts a container and waiting on three image builds would only delay it.
+    needs: [output-check]
     runs-on: ubuntu-latest
     # This job also carries the whole non-container integration sweep — the per-leg `build.test.ts`
     # files, the oracles, and the `test/integration-tests/` guards — because `test:integration:check`
@@ -257,7 +270,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -268,7 +281,7 @@ jobs:
 
       - name: Upload the driver output
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: it-fetch-clients-log
           path: it-fetch-clients.log
@@ -282,7 +295,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -296,7 +309,7 @@ jobs:
 
       - name: Upload the driver output
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: it-angular-services-log
           path: it-angular-services.log
@@ -309,7 +322,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -323,7 +336,7 @@ jobs:
 
       - name: Upload the driver output
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: it-k6-clients-log
           path: it-k6-clients.log
@@ -336,7 +349,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -350,7 +363,7 @@ jobs:
 
       - name: Upload the driver output
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: it-easy-network-stub-log
           path: it-easy-network-stub.log
@@ -358,8 +371,14 @@ jobs:
 
   # The two Kotlin client families share one directory and one task, so they split by `--filter` rather
   # than by task name. Every filter string below is covered by `test/integration-tests/task-filters.test.ts`,
-  # which asserts it still names a suite that exists — without that, a renamed `describe` would leave
-  # these jobs running zero tests and exiting 0, green forever and gating nothing.
+  # which asserts it still names a suite *in the directory the job runs* — without that, a renamed
+  # `describe` would leave these jobs running zero tests and exiting 0, green forever and gating nothing.
+  # The same file asserts the converse: that no suite in these directories is left unselected by every
+  # job in the graph. That direction is the one that caught the boot suite falling out of the split.
+  #
+  # Each leg's filter travels through the step environment rather than being interpolated into the script
+  # text, the same way the `images` job passes its image name, so the value is data to the shell rather
+  # than source code. The guard test follows it back through `env:` to the matrix leg it came from.
 
   it-okhttp3-clients:
     name: Integration (okhttp3 clients, ${{ matrix.id }})
@@ -377,7 +396,7 @@ jobs:
             filter: integration/okhttp3-clients@sb4
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -390,11 +409,12 @@ jobs:
         env:
           GOAST_INTEGRATION: '1'
           GOAST_SNAPSHOT: check
-        run: deno test -A test/integration/kotlin-clients --filter "${{ matrix.filter }}" 2>&1 | tee driver.log
+          FILTER: ${{ matrix.filter }}
+        run: deno test -A test/integration/kotlin-clients --filter "$FILTER" 2>&1 | tee driver.log
 
       - name: Upload the driver output
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: it-okhttp3-clients-${{ matrix.id }}-log
           path: driver.log
@@ -415,7 +435,7 @@ jobs:
             filter: integration/spring-reactive-web-clients@sb4
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -428,11 +448,12 @@ jobs:
         env:
           GOAST_INTEGRATION: '1'
           GOAST_SNAPSHOT: check
-        run: deno test -A test/integration/kotlin-clients --filter "${{ matrix.filter }}" 2>&1 | tee driver.log
+          FILTER: ${{ matrix.filter }}
+        run: deno test -A test/integration/kotlin-clients --filter "$FILTER" 2>&1 | tee driver.log
 
       - name: Upload the driver output
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: it-spring-reactive-web-${{ matrix.id }}-log
           path: driver.log
@@ -449,23 +470,28 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # `--filter` is a substring match, so `…@sb3` also selects `…@sb3-strict` and the two non-strict
-        # legs each run their strict sibling a second time. That is deliberate over-coverage, not an
-        # oversight: no substring of `…@sb3` fails to be a substring of `…@sb3-strict`, so a four-way
-        # split by filter cannot be made disjoint. Correctness is unaffected — the strict units simply
-        # run twice.
+        # Two legs for four units, not four. `--filter` is a substring match, so `…@sb3` selects both
+        # `…@sb3` and `…@sb3-strict`; adding the strict units as legs of their own does not split the
+        # work, it runs each of them a second time — six container-backed unit runs to cover four units,
+        # on the most expensive tier in the graph. A disjoint split by filter is a two-way split, and the
+        # plan's fact 7 enumerating four filter strings does not make them four disjoint sets.
+        #
+        # `boot` is the third leg, and it is not a unit at all: `boot.test.ts` asserts the tier-4
+        # *infrastructure* — offline Gradle resolution, the `run` task, the published port, readiness
+        # polling, and that the generated controllers are component-scanned — under the suite name
+        # `integration/spring-controllers boot`. No `…@sbN` filter is a substring of that, so splitting
+        # this job by unit dropped it out of CI entirely while every leg stayed green. It is back as its
+        # own leg, and `task-filters.test.ts` now fails if any suite here goes unselected again.
         include:
           - id: sb3
             filter: integration/spring-controllers@sb3
           - id: sb4
             filter: integration/spring-controllers@sb4
-          - id: sb3-strict
-            filter: integration/spring-controllers@sb3-strict
-          - id: sb4-strict
-            filter: integration/spring-controllers@sb4-strict
+          - id: boot
+            filter: integration/spring-controllers boot
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -478,11 +504,12 @@ jobs:
         env:
           GOAST_INTEGRATION: '1'
           GOAST_SNAPSHOT: check
-        run: deno test -A test/integration/spring-controllers --filter "${{ matrix.filter }}" 2>&1 | tee driver.log
+          FILTER: ${{ matrix.filter }}
+        run: deno test -A test/integration/spring-controllers --filter "$FILTER" 2>&1 | tee driver.log
 
       - name: Upload the driver output
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: it-spring-controllers-${{ matrix.id }}-log
           path: driver.log
@@ -539,10 +566,10 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
 
@@ -556,7 +583,7 @@ jobs:
         run: deno task npm
 
       - name: Upload NPM packages
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: npm
           path: npm
@@ -573,7 +600,7 @@ jobs:
       id-token: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
 
@@ -581,14 +608,14 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
           always-auth: false
 
       - name: Download NPM packages
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: npm
           path: npm
@@ -599,12 +626,12 @@ jobs:
 
       - name: Publish @goast/core to NPM
         id: publish-core
-        uses: JS-DevTools/npm-publish@v4
+        uses: JS-DevTools/npm-publish@0fd2f4369c5d6bcfcde6091a7c527d810b9b5c3f # v4.1.5
         with:
           package: npm/@goast/core
 
       - name: Create Tag for @goast/core
-        uses: rickstaa/action-create-tag@v1
+        uses: rickstaa/action-create-tag@a1c7777fcb2fee4f19b0f283ba888afa11678b72 # v1.7.2
         with:
           tag: core/v${{ steps.publish-core.outputs.version }}
           tag_exists_error: false
@@ -615,12 +642,12 @@ jobs:
 
       - name: Publish @goast/kotlin to NPM
         id: publish-kotlin
-        uses: JS-DevTools/npm-publish@v4
+        uses: JS-DevTools/npm-publish@0fd2f4369c5d6bcfcde6091a7c527d810b9b5c3f # v4.1.5
         with:
           package: npm/@goast/kotlin
 
       - name: Create Tag for @goast/kotlin
-        uses: rickstaa/action-create-tag@v1
+        uses: rickstaa/action-create-tag@a1c7777fcb2fee4f19b0f283ba888afa11678b72 # v1.7.2
         with:
           tag: kotlin/v${{ steps.publish-kotlin.outputs.version }}
           tag_exists_error: false
@@ -631,12 +658,12 @@ jobs:
 
       - name: Publish @goast/typescript to NPM
         id: publish-typescript
-        uses: JS-DevTools/npm-publish@v4
+        uses: JS-DevTools/npm-publish@0fd2f4369c5d6bcfcde6091a7c527d810b9b5c3f # v4.1.5
         with:
           package: npm/@goast/typescript
 
       - name: Create Tag for @goast/typescript
-        uses: rickstaa/action-create-tag@v1
+        uses: rickstaa/action-create-tag@a1c7777fcb2fee4f19b0f283ba888afa11678b72 # v1.7.2
         with:
           tag: typescript/v${{ steps.publish-typescript.outputs.version }}
           tag_exists_error: false

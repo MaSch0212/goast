@@ -1,0 +1,28 @@
+# Keeps the SHA-pinned actions from rotting.
+#
+# Every `uses:` in this repository names a commit SHA rather than a floating tag, so a compromised
+# publisher cannot move a tag out from under a run — `denoland/setup-deno@v2` was not even a tag but a
+# branch, which anyone with write access to that repository could have moved at any time. The cost of
+# pinning is that a pin never updates itself, including for a security fix, which is what this file is
+# for: Dependabot bumps the SHA and rewrites the trailing version comment, and the bump arrives as a pull
+# request that runs the full graph before anyone merges it.
+#
+# One entry per directory that contains a workflow or a composite action. Dependabot's `github-actions`
+# ecosystem scans `.github/workflows` for the `/` entry only; a composite action's `action.yml` is found
+# only when its own directory is listed.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+
+  - package-ecosystem: github-actions
+    directory: /.github/actions/setup
+    schedule:
+      interval: monthly
+
+  - package-ecosystem: github-actions
+    directory: /.github/actions/docker
+    schedule:
+      interval: monthly

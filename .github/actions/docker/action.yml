@@ -14,13 +14,20 @@ description: A Buildx builder that can export layer cache, plus the credentials 
 #    URL. The runner exposes those to *actions* but strips them from `run:` steps, and `buildImage` is
 #    invoked from a `run:` step. Re-exporting them through `GITHUB_ENV` is what puts them back.
 #
+#    What that costs, stated plainly because `GITHUB_ENV` is not a scoped hand-off: from this step on,
+#    every `run:` step in the job — and every process it spawns, including the test code and the
+#    containers it starts — can read `ACTIONS_RUNTIME_TOKEN`. The token is scoped to this run and expires
+#    with it, and it is the only way to reach the cache backend from a `run:` step, so the trade is
+#    accepted rather than avoidable. It is a reason to keep this action off jobs that do not build an
+#    image (`it-fetch-clients` does not use it), not a reason to hide the exposure.
+#
 # Neither can be verified without an Actions runner; see the task-4 report.
 
 runs:
   using: composite
   steps:
     - name: Export the Actions cache credentials to `run:` steps
-      uses: actions/github-script@v7
+      uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
       with:
         # `ACTIONS_CACHE_SERVICE_V2` is the one that matters and the one whose absence broke the first
         # real run. BuildKit picks its cache protocol from that flag: with it, the v2 service at
@@ -46,4 +53,4 @@ runs:
           core.info(`forwarded: ${names.filter((n) => process.env[n]).join(', ')}`);
 
     - name: Set up Buildx
-      uses: docker/setup-buildx-action@v3
+      uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
