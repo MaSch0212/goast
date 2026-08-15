@@ -345,7 +345,11 @@ if (enabled) {
     // `withWatchdog` rather than relying on the test runner's own timeout: a hang reported as "the suite
     // timed out" names no cause, whereas this names the call that failed to resolve.
     const withWatchdog = async <T>(label: string, ms: number, work: Promise<T>): Promise<T> => {
-      let timer = 0;
+      // `ReturnType<typeof setTimeout>` rather than `number`: this file's module graph reaches
+      // `@types/node`, so `setTimeout` here is Node's overload returning a `Timeout` object, not the
+      // web one returning a number. Typing it `number` was a `TS2322` that stood since it was written —
+      // Deno's type-check cache kept reporting the suite green until a run that missed the cache.
+      let timer: ReturnType<typeof setTimeout> | undefined;
       const watchdog = new Promise<never>((_, reject) => {
         timer = setTimeout(() => reject(new Error(`${label} did not resolve within ${ms}ms`)), ms);
       });
