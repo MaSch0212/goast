@@ -54,9 +54,11 @@ import com.openapi.generated.model.Pet
 import com.openapi.generated.model.PetUpdate
 import com.openapi.generated.model.Widget
 import kotlinx.coroutines.runBlocking
+import org.springframework.http.client.reactive.JdkClientHttpConnector
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import java.io.File
+import java.net.http.HttpClient
 import java.nio.file.Files
 
 private const val PREFIX = "##GOAST-CASE##"
@@ -128,7 +130,26 @@ fun main(): Unit = runBlocking {
     // either scheme is a header set at construction time, applied to every request the instance makes.
     // Cases that do not declare the header are unaffected: `diffRequest` only compares headers a case
     // names.
+    // The transport version is pinned, and it has to be. No Reactor Netty is on this classpath, so
+    // `WebClient` falls back to `JdkClientHttpConnector`, whose `java.net.http.HttpClient` defaults to
+    // `HTTP_2` — and on a plaintext connection that means every request carries an h2c upgrade offer:
+    // `Connection: Upgrade, HTTP2-Settings` plus `Upgrade: h2c`. Measured against the reference server:
+    // Deno answers `400 Bad Request` to any request carrying both of those headers, before the handler
+    // runs; drop either one and the same request is answered `200`. RFC 7540 §3.2 says a server that does
+    // not support h2c must ignore the offer, so this is Deno being stricter than the RFC, but the
+    // reference server is the oracle and it speaks HTTP/1.1 — so the driver asks for HTTP/1.1.
+    //
+    // This is a transport choice, not a property of the generated code: every generated operation is an
+    // extension function on `WebClient` and has no say in the protocol version. Recording the 400s as
+    // deviations would have attributed a Deno upgrade to the generator, for all 19 cases, in both units.
+    //
+    // `JdkClientHttpConnector` and `java.net.http` are Spring and JDK classes already on the classpath.
+    // Adding Reactor Netty instead would need a dependency the image's baked Gradle cache does not carry,
+    // which `--offline` would fail on and a rebuild would put tier 3's Kotlin diagnostics up for review.
+    val httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build()
+
     val webClient = WebClient.builder()
+        .clientConnector(JdkClientHttpConnector(httpClient))
         .baseUrl(baseUrl)
         .defaultHeader("Authorization", "Bearer secret-token")
         .defaultHeader("x-api-key", "secret-key")
