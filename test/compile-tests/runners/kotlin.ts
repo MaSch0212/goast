@@ -521,8 +521,51 @@ export async function runKotlin(units: readonly CompileUnit[]): Promise<Map<stri
   } finally {
     // A persistent project dir is the whole point of `persistent` mode — deleting it here would make
     // every run a cold one while looking like it cached. `deno task test:compile:clean` removes it.
-    if (workMode === 'ephemeral') await Deno.remove(workDir, { recursive: true });
+    if (workMode === 'ephemeral') await removeEphemeralWorkDir(workDir, image);
   }
+}
+
+/**
+ * Removes an ephemeral Gradle work directory, and never throws.
+ *
+ * Two things this has to survive, both learned from the first run of this suite on a real Linux CI
+ * runner rather than from a Windows workstation.
+ *
+ * **Gradle writes as root.** The container's build output lands in the bind-mounted work directory owned
+ * by the container's user, and on Linux the host user cannot delete files it does not own — measured:
+ * `PermissionDenied: Permission denied (os error 13): remove '/tmp/goast-gradle-…'`. It does not
+ * reproduce under Docker Desktop, where the bind mount rewrites ownership to the host user, which is why
+ * this stood undetected. The fallback deletes the contents from inside a throwaway container, which runs
+ * as the only user that can, using the image this run already built so nothing has to be pulled.
+ *
+ * **Cleanup must never fail a run.** This is called from a `finally`, so anything thrown here replaces
+ * whatever the block produced — including a complete, passing result. That is exactly what happened:
+ * every one of the 523 Kotlin units compiled and was verified, and then the run failed on `rm`. A
+ * temporary directory that outlives the process is housekeeping; on CI the runner is discarded, and
+ * locally `deno task test:compile:clean` and the OS temp reaper deal with it. So the last resort is a
+ * warning, not a throw.
+ */
+async function removeEphemeralWorkDir(workDir: string, image: string): Promise<void> {
+  try {
+    await Deno.remove(workDir, { recursive: true });
+    return;
+  } catch { /* Fall through to the container-side removal below. */ }
+
+  // `-mindepth 1` so the mount point itself survives — deleting it would break the bind mount rather
+  // than empty it. Dotfiles included, which a `rm -rf /w/*` glob would miss.
+  await new Deno.Command('docker', {
+    args: ['run', '--rm', '-v', `${workDir}:/w`, '--entrypoint', 'find', image, '/w', '-mindepth', '1', '-delete'],
+    stdout: 'null',
+    stderr: 'null',
+  }).output().catch(() => undefined);
+
+  await Deno.remove(workDir, { recursive: true }).catch((error: unknown) => {
+    console.warn(
+      `could not remove the ephemeral Gradle work directory ${workDir}: ` +
+        `${error instanceof Error ? error.message : error}. Leaving it behind rather than failing a ` +
+        'run whose results are already computed.',
+    );
+  });
 }
 
 /** `<unit id> (<suffix>)` per entry, so a failure names the unit rather than the internal project id. */
