@@ -2,7 +2,7 @@ import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
 import type { ApiCase } from '../cases/types.ts';
-import { issueCase } from './ref-client.ts';
+import { buildQueryString, issueCase } from './ref-client.ts';
 import { startRefServer } from './ref-server.ts';
 
 const base: ApiCase = {
@@ -15,6 +15,50 @@ const base: ApiCase = {
   expectResult: { ok: true },
   directions: ['server'],
 };
+
+/**
+ * The encoder is unit-tested against raw bytes rather than only through `issueCase`, because the round
+ * trip cannot see it: the reference server decodes what arrives, and both `+` and `%20` decode back to a
+ * space, both `,` and `%2C` back to a comma. Every claim below is about what leaves the process, which is
+ * the only thing a generated *server* parsing the raw wire can react to.
+ */
+describe('buildQueryString', () => {
+  it('leaves a comma literal, because form/explode:false emits one as a sub-delimiter', () => {
+    expect(buildQueryString({ formUnexploded: ['a,b'] })).toBe('formUnexploded=a,b');
+  });
+
+  it('encodes a space as %20, not as the form-encoding +', () => {
+    // `style: spaceDelimited` specifies percent-encoding. `URLSearchParams`, which this replaced, wrote
+    // `spaceDelimited=a+b` — a byte sequence no URL decoder is obliged to read as a space.
+    expect(buildQueryString({ spaceDelimited: ['a b'] })).toBe('spaceDelimited=a%20b');
+  });
+
+  it('still encodes the characters that would otherwise restructure the query', () => {
+    // `getEncoded/ok`'s value. An `&` or `=` surviving literally would split one parameter into two.
+    expect(buildQueryString({ raw: ['a&b=c'] })).toBe('raw=a%26b%3Dc');
+  });
+
+  it('encodes the key the same way it encodes the value', () => {
+    expect(buildQueryString({ 'a&k=y': ['v'] })).toBe('a%26k%3Dy=v');
+  });
+
+  it('repeats the key once per value, in declaration order', () => {
+    expect(buildQueryString({ formExploded: ['a', 'b'], other: ['c'] }))
+      .toBe('formExploded=a&formExploded=b&other=c');
+  });
+
+  it('renders an absent or empty query as the empty string, so the caller can omit the ?', () => {
+    expect(buildQueryString(undefined)).toBe('');
+    expect(buildQueryString({})).toBe('');
+    expect(buildQueryString({ a: [] })).toBe('');
+  });
+
+  it('encodes a literal percent sign, so no substitution can be confused for one', () => {
+    // The `%2C` -> `,` substitution is a plain string replace; this pins its premise that a literal `%`
+    // in the input can never produce the substring it looks for.
+    expect(buildQueryString({ v: ['a%2Cb'] })).toBe('v=a%252Cb');
+  });
+});
 
 describe('issueCase', () => {
   it('sends the declared path, query, headers and JSON body verbatim', async () => {

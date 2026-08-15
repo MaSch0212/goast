@@ -31,8 +31,10 @@
     "test:integration:controllers:check": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=check deno test -A test/integration/spring-controllers",
     "test:integration:k6": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=write deno test -A test/integration/k6-clients",
     "test:integration:k6:check": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=check deno test -A test/integration/k6-clients",
+    "test:integration:stubs": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=write deno test -A test/integration/easy-network-stub",
+    "test:integration:stubs:check": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=check deno test -A test/integration/easy-network-stub",
     "test:check": "GOAST_SNAPSHOT=check deno test -A",
-    "test:all": "deno task test:check && deno task test:compile:check && deno task test:integration:check && deno task test:integration:kotlin:check && deno task test:integration:controllers:check && deno task test:integration:angular:check && deno task test:integration:k6:check",
+    "test:all": "deno task test:check && deno task test:compile:check && deno task test:integration:check && deno task test:integration:kotlin:check && deno task test:integration:controllers:check && deno task test:integration:angular:check && deno task test:integration:k6:check && deno task test:integration:stubs:check",
     "pg": "deno run -A playground.ts"
   },
   "imports": {

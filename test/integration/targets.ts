@@ -33,8 +33,9 @@ export type WireTarget = { profile: string; direction: Direction; state?: WireTa
  * driver, so its `direction` describes only what it *would* be once it can run.
  *
  * Both directions are represented. The `'client'` entries are generated clients driven against the
- * reference server, compared with `diffRequest`/`diffResult`; the four `spring-controllers@*` entries
- * are generated servers driven by the reference client (`issueCase`), compared with `diffResponse`.
+ * reference server, compared with `diffRequest`/`diffResult`; the `'server'` entries — the four
+ * `spring-controllers@*` variants and `easy-network-stub` — are generated servers driven by the reference
+ * client (`issueCase`), compared with `diffResponse`.
  *
  * No profile appears twice, and none can: `wireSnapshotFile` has no direction segment, so a profile ever
  * driven in *both* directions would need one before it could be registered for both — its two runs would
@@ -51,6 +52,7 @@ export const WIRE_TARGETS: readonly WireTarget[] = [
   { profile: 'spring-controllers@sb4', direction: 'server' },
   { profile: 'spring-controllers@sb3-strict', direction: 'server' },
   { profile: 'spring-controllers@sb4-strict', direction: 'server' },
+  { profile: 'easy-network-stub', direction: 'server' },
   // Cannot be driven: k6 cannot resolve the generated client's extensionless relative imports, and the request
   // builder imports a CDN polyfill at run time. Defects 55 and 56. `direction` is still `'client'` — that is
   // what the target *is*, and it becomes meaningful the moment the load failure is fixed.

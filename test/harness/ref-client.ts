@@ -30,22 +30,61 @@ function buildBody(body: BodyExpectation | undefined): { body: BodyInit | null; 
 }
 
 /**
+ * Percent-encodes one query key or value the way the OpenAPI query styles in the case table require.
+ *
+ * `encodeURIComponent` minus the comma. Two rules make that exactly right, and `URLSearchParams` — which
+ * this replaced — gets both wrong:
+ *
+ *   * **A comma stays literal.** `style: form, explode: false` emits a comma-joined value (`a,b`), and a
+ *     comma is a legal sub-delimiter in a query string, so it belongs on the wire as itself.
+ *     `URLSearchParams` renders it `%2C`.
+ *   * **A space is `%20`, never `+`.** `style: spaceDelimited` specifies percent-encoding; `+` is
+ *     *form* encoding, a different thing that only `application/x-www-form-urlencoded` readers undo.
+ *     `URLSearchParams` renders it `+`.
+ *
+ * Neither mattered while this oracle only drove generated *clients*: there `issueCase` is not the sender,
+ * and `diffRequest` compares a decoded multi-map (`parseQuery` decodes `+` and `%2C` right back). In the
+ * **server** direction `issueCase` *is* the sender and the code under test parses the raw wire, so the
+ * bytes are the measurement. Measured against `easy-network-stub`: it never percent-decodes a query value
+ * (`?spaceDelimited=a%20b` arrives as `['a%20b']`) and its query matcher's character class excludes both
+ * `,` and `+` — so under the old encoder two of that leg's artifacts would have been describing this
+ * function rather than the generated code.
+ *
+ * The `%2C` substitution cannot corrupt anything else: every `%` in `encodeURIComponent` output starts a
+ * complete two-hex-digit triple (a literal `%` in the input becomes `%25`), so the substring `%2C` can
+ * only ever be an encoded comma.
+ */
+export function encodeQueryComponent(value: string): string {
+  return encodeURIComponent(value).replaceAll('%2C', ',');
+}
+
+/**
+ * Renders a case's declared query multi-map as the query string to put on the wire.
+ *
+ * Repeated keys in declaration order, `&`-joined, both halves of each pair through
+ * {@link encodeQueryComponent}. Returns `''` for an absent or empty query, which the caller uses to decide
+ * whether to append a `?` at all — an empty `?` is a different request than none.
+ */
+export function buildQueryString(query: Record<string, string[]> | undefined): string {
+  const pairs: string[] = [];
+  for (const [key, values] of Object.entries(query ?? {})) {
+    for (const value of values) pairs.push(`${encodeQueryComponent(key)}=${encodeQueryComponent(value)}`);
+  }
+  return pairs.join('&');
+}
+
+/**
  * Issues one case's declared request against `baseUrl`, exactly as written.
  *
  * The path is concatenated rather than passed through `URL`'s path handling, because
  * `expectRequest.path` is already encoded and re-encoding it would silently repair the very defect a
- * generated client is being measured for.
+ * generated client is being measured for. The query gets the same treatment for the same reason, via
+ * {@link buildQueryString}.
  */
 export async function issueCase(baseUrl: string, apiCase: ApiCase): Promise<Response> {
   const { path, query, headers, body } = apiCase.expectRequest;
 
-  // `URLSearchParams.toString()` renders a space as `+`, where OpenAPI's `spaceDelimited` style
-  // specifies `%20`. Harmless here because `diffRequest` compares the query as a decoded multi-map
-  // (`parseQuery` decodes both `+` and `%20` back to a literal space), never as raw wire bytes — but it
-  // is a real spot where "the right bytes on the wire" is not what this oracle actually checks.
-  const search = new URLSearchParams();
-  for (const [key, values] of Object.entries(query ?? {})) for (const value of values) search.append(key, value);
-  const queryString = search.toString();
+  const queryString = buildQueryString(query);
 
   const built = buildBody(body);
   const requestHeaders = new Headers(headers ?? {});
