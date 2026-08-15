@@ -175,8 +175,15 @@ export async function buildImage(name: string, contextDir: string): Promise<stri
   }).output();
   if (inspect.code === 0) return tag;
 
+  // `ignore-error=true` on the export, and it is not defensive habit. A layer cache is an optimisation:
+  // when it fails, the correct outcome is a slower build, never a failed one. Without this flag BuildKit
+  // aborts the whole build if the cache backend refuses the export — measured on the first real CI run,
+  // where every image job failed *after* building its image successfully, purely because the GitHub cache
+  // service returned an error page. Cache *import* is already non-fatal in BuildKit, so only the export
+  // needs saying. The error still appears in the build log, so a permanently broken cache is visible
+  // rather than silent — it just no longer takes the run down with it.
   const cacheArgs = Deno.env.get('CI') !== undefined && Deno.env.get('CI') !== ''
-    ? ['--cache-from', 'type=gha', '--cache-to', 'type=gha,mode=max']
+    ? ['--cache-from', 'type=gha', '--cache-to', 'type=gha,mode=max,ignore-error=true']
     : ['--cache-from', `type=local,src=${join(Deno.env.get('TMPDIR') ?? '/tmp', 'goast-docker-cache')}`];
 
   const { code, stderr } = await new Deno.Command('docker', {
