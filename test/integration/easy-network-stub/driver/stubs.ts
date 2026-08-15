@@ -49,9 +49,12 @@ import type { ApiStubs } from '../tree/stubs';
  * comments. Comparing against the raw multi-map instead would invert the test: a stub that correctly
  * decoded the declared style into two items would be recorded as deviating.
  *
- * The "exactly one" check is not ceremony. It catches a parameter decoded into the wrong slot, and it
- * distinguishes "absent" from "present but wrong" in its own message — the difference between a parameter
- * the route matcher dropped and one it failed to decode.
+ * The "exactly one" check distinguishes "absent" from "present but wrong" in its own message — the
+ * difference between a parameter the route matcher dropped and one it failed to decode. It does *not*
+ * catch a value decoded into the wrong slot while exactly one parameter is present: this function only
+ * counts. (The Spring leg's `styleMatrixCase` carries the stronger claim in its comment; it has the same
+ * gap.) The library keys query matching by parameter name, so a cross-slot swap is not a shape it can
+ * produce — which is why counting is enough here rather than why counting proves more than it does.
  */
 function expectStyleMatrixCase(
   formExploded: string[] | undefined,
@@ -184,24 +187,31 @@ export function registerAll(api: ApiStubs): string[] {
             expectParam('uploadPetPhoto.id', 'abc', params.id);
             // The generated body type is `{ file: Blob; caption?: string }`, but the library only ever hands
             // a callback a `JSON.parse`d value or the raw string it failed to parse — it does not decode
-            // multipart. Checked before touching a field, because reading `.file` off a string yields
-            // `undefined` and reading through it would throw a `TypeError` the library answers `500 "unknown
-            // error in mocked response"` with: a generated-looking 500 in place of this driver's message.
+            // multipart, so what arrives here is the raw payload.
+            //
+            // That gap is real, and it is recorded — but as a *register* entry about a body type the
+            // generated code cannot receive, not as a wire deviation. Recording it as a deviation here
+            // would be inconsistent with the two sibling cases in this file that hit the same gap:
+            // `updatePet/form` re-parses the raw form encoding and `uploadBlob` compares the raw bytes,
+            // and both record conformance. Two absent artifacts claiming conformance for the exact defect
+            // class a third records would make this directory's artifacts mean different things in
+            // different files, which is worse than either choice made consistently.
+            //
+            // So the parts are checked in the raw payload instead. Each declared part is asserted by
+            // presence, never by showing the payload: its multipart boundary is random per request and
+            // interpolating it would make a committed artifact churn between runs.
             const arrived: unknown = body;
-            if (typeof arrived !== 'object' || arrived === null) {
+            if (typeof arrived !== 'string') {
               throw new GoastMismatch(
-                `uploadPetPhoto.body expected the generated { file, caption } object but a ${typeof arrived} ` +
-                  'arrived. Its value is deliberately not shown: it is the raw multipart payload, whose ' +
-                  'boundary is random per request and would make a committed artifact churn between runs.',
+                `uploadPetPhoto.body arrived as ${typeof arrived}, not the raw multipart string this ` +
+                  'library always hands over. Something about how the body is delivered has changed.',
               );
             }
-            expectParam('uploadPetPhoto.caption', 'A good boy', body.caption);
-            // The case also declares the file part's filename (`photo.png`) and content (`binarydata`).
-            // Neither is assertable through the generated type: a `Blob` carries no filename, and its bytes
-            // are only readable through an async call. The declared media type is all that is left, so that
-            // is what is checked — recorded here rather than worked around, the same way the Spring leg
-            // records `allLocations`' unbindable cookie.
-            expectParam('uploadPetPhoto.file.type', 'image/png', body.file.type);
+            for (const part of ['photo.png', 'image/png', 'binarydata', 'A good boy']) {
+              if (!arrived.includes(part)) {
+                throw new GoastMismatch(`uploadPetPhoto.body does not carry the declared part <${part}>`);
+              }
+            }
             return respond(200);
           })
         )

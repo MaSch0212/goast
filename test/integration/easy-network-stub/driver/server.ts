@@ -29,7 +29,9 @@ stub.start();
 // friends), which are otherwise dead code in this leg: nothing reads them, but a defect that made pushing
 // to them throw would take down every request to that operation, and only this flag can surface it.
 const api = new ApiStubs(stub, { rememberRequests: true });
-for (const line of registerAll(api)) console.log('##REGISTRATION##', line);
+// Newlines collapsed to a marker: a registration error whose message spans lines would otherwise put its
+// tail on lines carrying no `##REGISTRATION##` prefix, and the host parses this report by prefix.
+for (const line of registerAll(api)) console.log('##REGISTRATION##', line.replaceAll('\n', ' ⏎ '));
 
 const server = serveStub(stub, 8080, '/__goast-readiness');
 // Printed from `server`'s own `'listening'` event, not immediately after the call above: `listen()` is

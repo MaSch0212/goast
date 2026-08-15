@@ -84,7 +84,16 @@ export class GoastDriverFault extends Error {
   public readonly content: string;
 
   constructor(operation: string, cause: unknown) {
-    const detail = cause instanceof Error ? `${cause.name}: ${cause.message}` : String(cause);
+    // `String(cause)` is itself a throw site — it raises `TypeError` for an object with no `toString`,
+    // such as `Object.create(null)`. That exception would escape `guard`'s catch bare and land in the
+    // library's `500 "unknown error in mocked response"` path, which is precisely the outcome this class
+    // exists to prevent. Nothing the registrations throw reaches it today; the guard costs one line.
+    let detail: string;
+    try {
+      detail = cause instanceof Error ? `${cause.name}: ${cause.message}` : String(cause);
+    } catch {
+      detail = '<a thrown value that could not be rendered>';
+    }
     super(`UNEXPECTED ${operation}: ${detail}`);
     this.name = 'GoastDriverFault';
     this.content = this.message;
