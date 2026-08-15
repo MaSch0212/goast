@@ -87,8 +87,9 @@ were meant to live in the harness so `transform`/`collect` tests could reuse the
 the shape check but silently skips the proxy's `$ref`-fallthrough behaviour that most transform code actually depends
 on. Doing that would have required `test/harness` to import from `packages/core`, and `createDerefProxy` is deliberately
 not part of core's public API (absent from `packages/core/mod.ts`), so the harness would have had to reach it by a
-relative import outside its own directory. That was checked empirically, not assumed: running
-`deno task npm:test-harness` with such an import in place made `dnt` abort with:
+relative import outside its own directory. That was checked empirically, not assumed: running a dnt build of the harness
+(`deno run -A scripts/build_npm.ts test/harness`, back when `deno task npm:test-harness` still existed to wrap it) with
+such an import in place made `dnt` abort with:
 
 ```
 Error stripping prefix of .../packages/core/src/parse/deref-proxy.ts with base .../test/harness
@@ -97,8 +98,9 @@ Error stripping prefix of .../packages/core/src/parse/deref-proxy.ts with base .
 because `dnt` refuses to bundle a file outside the project root it was invoked with. So both fixture files are colocated
 inside `packages/core` instead, named with the `*.test-utils.ts` suffix specifically because Deno's test discovery does
 not treat that suffix as a test file and `deno task npm:core` does not ship it in the published package — both were
-verified, not assumed. If you find yourself wanting to "tidy up" by moving these into the harness, re-run that
-`npm:test-harness` check first; it will fail the same way it did before.
+verified, not assumed. If you find yourself wanting to "tidy up" by moving these into the harness, re-run that same
+`deno run -A scripts/build_npm.ts test/harness` check first; it will fail the same way it did before. (The task that
+used to wrap it is gone — see "The dropped `npm:test-utils` task" below for why.)
 
 `derefAt(path, value, ref?)` wraps `value` in a real `createDerefProxy` at the given `$src.path`; `derefSchemaAt` does
 the same but recurses into nested schema keys (`allOf`, `anyOf`, `oneOf`, `properties`, etc.) first, so a nested schema
@@ -1076,18 +1078,24 @@ than one aggregate "tests" job disappearing into a wall of output.
 
 ### The job graph
 
-- **Four cheap gates need nothing and run first.** `lint` (`deno fmt --check`, `deno lint`), `unit` (tier 1, the
-  harness's own tests, and the `test/cases` corpus, which has no task of its own so it runs as a bare
-  `deno test -A test/cases`), `output-check` (tier 2, `test:output:check`), and `images` (one matrix leg per Docker
-  build context — `kotlin`, `node`, `k6` — warming the GHA layer cache the Docker-building jobs below reuse). None of
-  the four depends on the others.
-- **Ten jobs need `[output-check, images]`:** the tier-3 jobs `compile-ts`, `compile-kotlin` and `harness-docker`, and
-  the tier-4 jobs `it-fetch-clients`, `it-angular-services`, `it-k6-clients`, `it-easy-network-stub`,
-  `it-okhttp3-clients`, `it-spring-reactive-web` and `it-spring-controllers` (the last three are two-, two- and four-way
-  matrices split by `--filter`, not by task name — see "`--filter` and the vacuous-green trap" below). `images` is why
-  the nine of these that build a Docker image can reuse its warmed layer cache instead of rebuilding from scratch —
-  `it-fetch-clients` is the one job in this list that starts no container at all, needing `images` for consistency with
-  its siblings rather than for anything it does itself; `output-check` is the reason in the next section.
+- **Four jobs need nothing and run first.** `lint` (`deno fmt --check`, `deno lint`), `unit` (tier 1, the harness's own
+  tests, and the `test/cases` corpus, which has no task of its own so it runs as a bare `deno test -A test/cases`),
+  `output-check` (tier 2, `test:output:check`), and `images` (one matrix leg per Docker build context — `kotlin`,
+  `node`, `k6` — warming the GHA layer cache the Docker-building jobs below reuse). None of the four depends on the
+  others. Three of them are genuinely cheap gates, sub-minute locally; `images` is not — a cold `kotlin` leg builds a
+  JDK image and warms a Gradle dependency cache inside it, which is why it carries a 30-minute budget while `lint`
+  carries ten. It sits in this group because it depends on nothing, not because it is fast.
+- **Nine jobs need `[output-check, images]`:** the tier-3 jobs `compile-ts`, `compile-kotlin` and `harness-docker`, and
+  the tier-4 jobs `it-angular-services`, `it-k6-clients`, `it-easy-network-stub`, `it-okhttp3-clients`,
+  `it-spring-reactive-web` and `it-spring-controllers` (the last three are two-, two- and three-way matrices split by
+  `--filter`, not by task name — see "`--filter` and the vacuous-green trap" below). Every one of them builds a Docker
+  image, which is what `images` buys them; `output-check` is the reason in the next section.
+- **`it-fetch-clients` needs `[output-check]` alone.** It runs `test:integration:check`, which sweeps `test/integration`
+  and `test/integration-tests` _without_ `GOAST_INTEGRATION`: the fetch driver is the one leg that needs no container,
+  and every gated suite in that sweep stays unregistered. Making it wait on three image builds it never uses would delay
+  the whole non-container integration sweep — the per-leg `build.test.ts` files, the oracles and the
+  `test/integration-tests/` guards, all of which live in this job because nothing else runs that tree unfiltered. It
+  also does not use the `docker` composite action, which keeps `ACTIONS_RUNTIME_TOKEN` out of the job's `run:` steps.
 - **`all-tests` needs all fourteen test jobs** — `lint`, `unit`, `output-check`, `images`, `compile-ts`,
   `compile-kotlin`, `harness-docker`, and the seven `it-*` jobs — and runs with `if: always()` so it still executes (and
   can still fail the gate below) when one of them fails outright.
@@ -1124,19 +1132,62 @@ required gate into a no-op that reads as passing. `all-tests` cannot notice a te
 `needs:` list at all — a job it does not depend on has no result for it to inspect — which is why the `needs:` list
 carries its own comment saying so.
 
-### Why concurrency cancels superseded runs on pull requests only
+### What triggers a run, and why not every branch
+
+```yaml
+on:
+  push:
+    branches: [main, testing-next]
+  pull_request:
+```
+
+Two things have to be true at once. The tier-4 jobs exist to catch a client-serialization regression _before_ it merges,
+which they cannot do if they only run on `main`; and the reason `deno task npm` stayed broken for a whole phase is that
+the old `branches: [main]` filter meant CI never looked at `testing-next`, where the work lives. Pull requests plus the
+two long-lived branches satisfy both.
+
+The first attempt at that was `branches: ['**']`, and it double-ran every pull request: a same-repo PR branch fires
+`push` and `pull_request` for the same commit, in different concurrency groups, so neither cancels the other and the
+whole graph — nine of whose jobs start containers — runs twice for one commit's worth of signal. Deduplicating those by
+concurrency group instead is possible but not free: the loser of that race is _cancelled_, and a cancelled check-run
+posted against a PR's head SHA can block a merge that branch protection gates on. Listing the branches has neither
+problem.
+
+The cost is real and worth stating: a push to an ephemeral branch with no pull request open gets no CI at all. Opening
+the PR is what turns it on, and a draft PR is enough.
+
+Listing branches also excludes tags, which matters because `publish` pushes three tags per release — an unfiltered
+`push:` would start a full run for each of them.
+
+### Why concurrency cancels superseded runs everywhere except `main`
 
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 ```
 
 `publish` pushes `@goast/core`, `@goast/kotlin` and `@goast/typescript` to both JSR and NPM and creates a git tag per
-package, one after another. A run on a branch — `main` above all — can be partway through that sequence when a newer
-push supersedes it; cancelling it mid-flight would leave the three packages at different published versions with no way
-to roll back. Restricting `cancel-in-progress` to `pull_request` events avoids that entirely: a pull request never runs
-`publish` (`if: github.ref == 'refs/heads/main'`), so there is nothing mid-flight there worth losing.
+package, one after another. A run on `main` can be partway through that sequence when a newer push supersedes it;
+cancelling it mid-flight would leave the three packages at different published versions with no way to roll back. That
+is the one case worth protecting, and `github.ref` is what identifies it — a pull request's `ref` is
+`refs/pull/<n>/merge` and never matches, so PRs cancel as they always did, and so now do pushes to `testing-next`, which
+publish nothing and have nothing mid-flight worth keeping.
+
+### Why every `uses:` names a SHA
+
+Every third-party action in the workflow and in both composite actions is pinned to a commit SHA with the release it
+belongs to in a trailing comment (`uses: actions/checkout@11d5960… # v4.4.0`). A floating tag is a mutable pointer in
+someone else's repository: whoever controls it can move it to a different commit, and every run that resolves it
+afterwards executes that commit with the job's token and, in the jobs using the `docker` action, `ACTIONS_RUNTIME_TOKEN`
+in the environment. `denoland/setup-deno@v2` was not even a tag — it is a _branch_ in that repository, which is weaker
+still.
+
+The price of pinning is that a pin never updates itself, including for a security fix, so `.github/dependabot.yml`
+exists to bump them. Its updates arrive as pull requests, which means the full job graph runs against a new action
+version before anyone merges it. There is one Dependabot entry per directory holding a workflow or a composite action —
+the `github-actions` ecosystem finds `.github/workflows` from the `/` entry, but a composite action's `action.yml` only
+when its own directory is listed.
 
 ### The Deno version pin, and why it can't move on its own
 
@@ -1164,19 +1215,48 @@ artifact means this case conforms" inverts, applied to a whole job instead of on
 build matrix leg rather than through a named `deno.json` task.
 
 `test/integration-tests/task-filters.test.ts` is the guard, and it covers both places a filter can live: `deno.json`'s
-tasks and `build.yml`'s matrix legs. It parses the workflow itself (not just `deno.json`) and asserts, for every
-`--filter` it finds in either, that the string is a substring of some `describe`/`it` name that actually exists in the
-repo — including each per-leg filter (`integration/okhttp3-clients@sb3`, `integration/spring-controllers@sb4-strict`,
-and so on), and including the case where one `include:` leg loses its `filter:` key while a sibling leg keeps it: GitHub
-expands the missing value to `''`, and `--filter ''` matches everything in the directory, so that leg would silently
-stop being the one-unit job its name promises while a naive "did any leg supply this key" check stayed green.
+tasks and `build.yml`'s matrix legs. It parses the workflow itself (not just `deno.json`) and reconstructs what each job
+actually runs — expanding `deno task` chains through `deno.json`, following a filter back through the step's `env:` to
+the matrix leg it came from, and collecting the `NAME=value` prefixes each task sets on the way. Then it asserts three
+things.
 
-What it does **not** cover: it only proves a filter matches a suite name _somewhere in the repo_, not that the suite
-lives in the directory the job actually hands to `deno test` — a filter could in principle match a same-named `describe`
-in the wrong file and this check would not notice. It also collects nested `describe`s as if they were top-level, even
-though `--filter` itself only ever sees top-level names. And a `--filter` built by string concatenation, or
-interpolating anything other than a bare `${{ matrix.<key> }}`, is reported as unresolvable rather than checked — the
-workflow contains none of those today, but a future one would need a different guard.
+**Forward: every filter selects something, in the directory its own command runs.** Including each per-leg filter
+(`integration/okhttp3-clients@sb3`, `integration/spring-controllers boot`, and so on), and including the case where one
+`include:` leg loses its `filter:` key while a sibling keeps it: GitHub expands the missing value to `''`, and
+`--filter ''` matches everything in the directory, so that leg would silently stop being the one-unit job its name
+promises while a naive "did any leg supply this key" check stayed green. The scoping matters as much as the matching —
+`test:compile:ts:check` filters on `typescript/` over `test/compile-tests`, and `test/output-tests/output.test.ts`
+registers `typescript/models`, `typescript/fetch-clients` and friends, so a check that searched the whole repo for a
+match was satisfied by suites that command cannot reach.
+
+**Inverse: every suite the walk can see is run by some job.** This is the direction that catches a job splitting a
+directory and leaving something behind, and it is the one that was missing. `integration/spring-controllers boot`
+asserts the tier-4 infrastructure — offline Gradle resolution, the `run` task, the published port, readiness polling,
+component scanning — and no `…@sbN` filter is a substring of that name, so splitting the controllers job into per-unit
+legs dropped it out of CI entirely while every leg stayed green and every forward check still passed. A filter that
+matches something says nothing about the suites nothing matches.
+
+**The gate a suite registers behind counts as part of "runs it".** Every container-backed suite is written as
+`const enabled = (Deno.env.get('GOAST_INTEGRATION') ?? '') !== ''` with its `describe` inside `if (enabled)`, so a job
+that runs the file without that variable does not skip the suite — the suite never exists. Without modelling that, the
+inverse check counts the unfiltered `it-fetch-clients` sweep as running every Docker leg in tier 4, and deleting the
+`boot` leg from `build.yml` leaves the guard green. That was measured, not assumed: it is the state the check was in
+before the gate was modelled, and each of the eight mutations the guard is meant to catch — a dropped matrix leg, a
+renamed `describe`, a typo'd task name, a filter reading an unset variable, a leg missing its key, a job losing its gate
+variable — was applied to the real files and confirmed to fail it.
+
+What it still does **not** cover: it collects nested `describe`s as if they were top-level, even though `--filter` only
+ever sees top-level names. A `--filter` built by string concatenation, or interpolating anything other than a bare
+`${{ matrix.<key> }}` or `$VAR`, is reported as unresolvable rather than checked. Suite names built from template
+literals need a resolver in `TEMPLATE_RESOLVERS`, and names it cannot expand sit outside both directions of the check (a
+dead resolver entry is itself a failure, so they cannot silently accumulate). And the gate detection is whole-file: a
+file mixing gated and ungated suites — `test/harness/docker.test.ts` is the one — has all of its suites treated as
+gated, which demands more coverage than strictly necessary rather than less.
+
+Two jobs deliberately overlap as a result, and neither is an accident: `test/harness/docker.test.ts`'s ungated tests run
+in both `unit` (via `test:harness`) and `harness-docker` (via `test:harness:docker`), and the `unit discovery` suite
+runs in both `compile-ts` and `compile-kotlin`, because each half of the split compile gate wants its own discovery
+check before it compiles anything.
 
 ### The dropped `npm:test-utils` task
 
@@ -1198,9 +1278,17 @@ it exists today.) It was dropped, for two independent reasons, either of which w
   the build was always an empty placeholder directory.
 
 The root `npm` task is now `npm:core && npm:typescript && npm:kotlin` — `npm:test-harness` no longer runs on the publish
-path, so the `build` job's `deno task npm` step no longer depends on the harness package's own npm buildability. The
-task itself is still defined in `deno.json`, available to run standalone for anyone who wants to work on the harness's
-Deno-shim gaps later; it just no longer gates anything.
+path, so the `build` job's `deno task npm` step no longer depends on the harness package's own npm buildability.
+
+The task itself is gone from `deno.json` as well, not merely unreferenced. It was the one task in the file that could
+not succeed — its dnt build is precisely what was failing — and leaving a known-broken task in place is a trap for
+whoever runs it next. If `@goast/test-harness` is ever meant to ship to npm, this is the task to restore:
+
+```
+"npm:test-harness": "deno run -A scripts/build_npm.ts test/harness"
+```
+
+and `docker.ts`'s `Deno.Command` and `ref-server.ts`'s `Deno.serve` are what have to be dealt with first.
 
 ## Layout
 
