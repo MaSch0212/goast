@@ -4,7 +4,7 @@
     "npm:core": "deno run -A scripts/build_npm.ts packages/core",
     "npm:kotlin": "deno run -A scripts/build_npm.ts packages/kotlin",
     "npm:typescript": "deno run -A scripts/build_npm.ts packages/typescript",
-    "npm": "deno task npm:test-harness && deno task npm:core && deno task npm:typescript && deno task npm:kotlin",
+    "npm": "deno task npm:core && deno task npm:typescript && deno task npm:kotlin",
     "npm:publish:core": "deno run -A scripts/publish_npm.ts @goast/core",
     "npm:publish:kotlin": "deno run -A scripts/publish_npm.ts @goast/kotlin",
     "npm:publish:typescript": "deno run -A scripts/publish_npm.ts @goast/typescript",
