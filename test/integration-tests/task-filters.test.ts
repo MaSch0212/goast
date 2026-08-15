@@ -3,6 +3,7 @@ import { dirname, relative, resolve } from 'node:path';
 import { expect } from '@std/expect';
 import { walk } from '@std/fs/walk';
 import { describe, it } from '@std/testing/bdd';
+import { parse as parseYaml } from 'yaml';
 
 import { repoRootDir } from '@goast/test-harness';
 
@@ -22,6 +23,12 @@ import { profiles } from '../output-tests/profiles.ts';
  * documented for `Deno.test` does not apply here — measured on 2.9.5: `--filter "/unit disc/"`
  * filters out all 11 tests in `test/compile-tests`). So a filter `F` matches a suite `S` exactly when
  * `S.includes(F)`, which is the relation asserted below.
+ *
+ * `deno.json` is not the only place a filter lives. `.github/workflows/build.yml` splits the two Kotlin
+ * client families and the four controller units into jobs by passing `--filter` to `deno test` directly,
+ * out of a build matrix. Those strings are in exactly the same danger as the ones in `deno.json` and are
+ * checked here the same way — a CI job running zero tests and exiting 0 is the failure this file exists
+ * to make impossible, and it does not matter which file spelled the filter.
  */
 
 /** A suite name a `--filter` could legitimately select, and where it was found. */
@@ -172,22 +179,155 @@ async function expandTemplate(
   return names;
 }
 
+/** The `--filter` argument of a shell command, quoted or bare. */
+const FILTER_ARG = /--filter\s+(?:"([^"]*)"|'([^']*)'|(\S+))/g;
+
+/** A `--filter` string and whatever carries it — a `deno.json` task or a workflow job. */
+type Filter = { task: string; filter: string };
+
 /** Every `--filter` in `deno.json`, paired with the task that carries it. */
-function filtersFromTasks(tasks: Record<string, string>): { task: string; filter: string }[] {
-  const found: { task: string; filter: string }[] = [];
+function filtersFromTasks(tasks: Record<string, string>): Filter[] {
+  const found: Filter[] = [];
   for (const [task, command] of Object.entries(tasks)) {
-    for (const match of command.matchAll(/--filter\s+(?:"([^"]*)"|'([^']*)'|(\S+))/g)) {
+    for (const match of command.matchAll(FILTER_ARG)) {
       found.push({ task, filter: match[1] ?? match[2] ?? match[3] });
     }
   }
   return found;
 }
 
+/** As much of `build.yml` as this file reads. Everything else in the workflow is ignored. */
+type Workflow = {
+  jobs?: Record<string, {
+    strategy?: { matrix?: Record<string, unknown> };
+    steps?: { run?: string }[];
+  }>;
+};
+
+/** A `${{ matrix.<key> }}` standing alone as the whole `--filter` argument. */
+const MATRIX_REFERENCE = /^\$\{\{\s*matrix\.([\w-]+)\s*\}\}$/;
+
+/**
+ * The values a build matrix gives one key, from both spellings, plus the legs that supply none.
+ *
+ * `matrix: { key: [a, b] }` is the plain form; `matrix: { include: [{ key: a }, …] }` is the one the
+ * workflow uses, because each leg needs a second field — a filesystem-safe id for its artifact name —
+ * travelling alongside the filter.
+ *
+ * Every `include` entry is required to carry the key, not just one of them. A leg that lost it does not
+ * merely go unchecked here: GitHub expands the missing value to the empty string, and `--filter ""` is
+ * a substring match that selects *every* test in the directory, so that leg silently stops being the
+ * one-unit job it is named after. Reporting it needs the per-entry check; a plain "did anything supply
+ * this key" test passes as long as one sibling still does.
+ */
+function matrixValues(matrix: Record<string, unknown>, key: string): { values: string[]; missing: number } {
+  const values: string[] = [];
+  let missing = 0;
+
+  const plain = matrix[key];
+  if (Array.isArray(plain)) values.push(...plain.map(String));
+
+  const include = matrix.include;
+  if (Array.isArray(include)) {
+    for (const entry of include) {
+      const value = (entry as Record<string, unknown>)?.[key];
+      if (typeof value === 'string') values.push(value);
+      else if (!Array.isArray(plain)) missing++;
+    }
+  }
+  return { values, missing };
+}
+
+/**
+ * Every `--filter` the workflow hands to `deno test`, expanded over its matrix.
+ *
+ * A filter that reads a matrix key with no values is reported through `problems` rather than silently
+ * contributing nothing: that shape — the key renamed on one side of the job only — is how workflow
+ * filter coverage would quietly disappear while this file still passed.
+ */
+function filtersFromWorkflow(workflow: Workflow): { filters: Filter[]; problems: string[] } {
+  const filters: Filter[] = [];
+  const problems: string[] = [];
+
+  for (const [job, definition] of Object.entries(workflow.jobs ?? {})) {
+    const matrix = definition.strategy?.matrix ?? {};
+    for (const step of definition.steps ?? []) {
+      if (typeof step?.run !== 'string') continue;
+      for (const match of step.run.matchAll(FILTER_ARG)) {
+        const argument = match[1] ?? match[2] ?? match[3];
+        const reference = MATRIX_REFERENCE.exec(argument);
+        if (reference === null) {
+          // A filter that interpolates anything else is not a literal this file can check, and
+          // pretending otherwise would assert against a string containing `${{ … }}`.
+          if (argument.includes('${{')) {
+            problems.push(`job \`${job}\` filters on \`${argument}\`, which this check cannot resolve`);
+            continue;
+          }
+          filters.push({ task: `${job} (build.yml)`, filter: argument });
+          continue;
+        }
+
+        const { values, missing } = matrixValues(matrix, reference[1]);
+        if (values.length === 0) {
+          problems.push(`job \`${job}\` filters on \`${argument}\`, but its matrix supplies no \`${reference[1]}\``);
+          continue;
+        }
+        if (missing > 0) {
+          problems.push(
+            `job \`${job}\` filters on \`${argument}\`, but ${missing} of its matrix legs define no \`${
+              reference[1]
+            }\``,
+          );
+        }
+        for (const value of values) filters.push({ task: `${job} (build.yml matrix)`, filter: value });
+      }
+    }
+  }
+  return { filters, problems };
+}
+
 const denoJson = JSON.parse(await Deno.readTextFile(resolve(repoRootDir, 'deno.json'))) as {
   tasks: Record<string, string>;
 };
 const filters = filtersFromTasks(denoJson.tasks);
+
+/**
+ * `build.yml`, or the reason it could not be read.
+ *
+ * Parsed rather than pattern-matched, and the parse failure is reported as a test failure rather than
+ * thrown at import: a workflow that does not parse is one GitHub refuses to run at all, and the shape
+ * that produces it is easy to write by accident — a `run:` value like `echo "results: ${{ … }}"` is a
+ * plain scalar containing `: `, which YAML reads as a nested mapping. This check caught exactly that.
+ */
+const workflowFile = resolve(repoRootDir, '.github', 'workflows', 'build.yml');
+let workflow: Workflow = {};
+let parseError: string | undefined;
+try {
+  workflow = parseYaml(await Deno.readTextFile(workflowFile)) as Workflow;
+} catch (error) {
+  parseError = error instanceof Error ? error.message : String(error);
+}
+
+const { filters: workflowFilters, problems: workflowProblems } = filtersFromWorkflow(workflow);
+
 const { suites, unresolved, files } = await collectSuiteNames();
+
+/** The assertion both describes below run, over whichever set of filters they own. */
+function expectEveryFilterMatchesASuite(subjects: Filter[]): void {
+  const names = suites.map((suite) => suite.name);
+  const hint = unresolved.length === 0
+    ? ''
+    : `\nUnresolved template suite names (not searched): ${
+      unresolved.map((u) => `${u.file}: \`${u.raw}\``).join(', ')
+    }`;
+
+  for (const { task, filter } of subjects) {
+    expect(
+      names.some((name) => name.includes(filter)),
+      `\`${task}\` filters on \`${filter}\`, which matches no suite name.${hint}`,
+    ).toBe(true);
+  }
+}
 
 describe('deno task --filter arguments', () => {
   // Three emptiness checks before the real one. Each of the three inputs — the task list, the walk,
@@ -208,19 +348,7 @@ describe('deno task --filter arguments', () => {
   });
 
   it('every filtered task matches at least one suite name', () => {
-    const names = suites.map((suite) => suite.name);
-    const hint = unresolved.length === 0
-      ? ''
-      : `\nUnresolved template suite names (not searched): ${
-        unresolved.map((u) => `${u.file}: \`${u.raw}\``).join(', ')
-      }`;
-
-    for (const { task, filter } of filters) {
-      expect(
-        names.some((name) => name.includes(filter)),
-        `task \`${task}\` filters on \`${filter}\`, which matches no suite name.${hint}`,
-      ).toBe(true);
-    }
+    expectEveryFilterMatchesASuite(filters);
   });
 
   // Without this, renaming a template `describe` would quietly retire its resolver: the names it used
@@ -228,5 +356,27 @@ describe('deno task --filter arguments', () => {
   // than it reads.
   it('every template resolver still names a template that exists', () => {
     expect([...Object.keys(TEMPLATE_RESOLVERS)].filter((key) => !usedResolvers.has(key))).toEqual([]);
+  });
+});
+
+describe('build.yml --filter arguments', () => {
+  it('parses the workflow', () => {
+    expect(parseError, `.github/workflows/build.yml is not valid YAML: ${parseError}`).toBe(undefined);
+  });
+
+  // Same emptiness reasoning as above, aimed at the workflow: the jobs that split the Kotlin client
+  // families and the four controller units exist only as `--filter` strings in a build matrix, and if
+  // this file stopped finding them it would pass over nothing while those jobs ran zero tests.
+  it('finds filtered jobs to check', () => {
+    expect(workflowFilters.length, 'no --filter found in build.yml — has the workflow changed shape?')
+      .toBeGreaterThan(0);
+  });
+
+  it('resolves every filter the workflow builds from its matrix', () => {
+    expect(workflowProblems).toEqual([]);
+  });
+
+  it('every filtered job matches at least one suite name', () => {
+    expectEveryFilterMatchesASuite(workflowFilters);
   });
 });
