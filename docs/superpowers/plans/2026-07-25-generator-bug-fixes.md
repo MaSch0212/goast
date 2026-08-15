@@ -1882,6 +1882,241 @@ polyfill was added for; or keep the dependency and document it, which at least m
 target rather than a surprise. Whichever is chosen, the version is pinned at `0.0.2` in a repo that pins every other
 dependency in a manifest, and this one is pinned inside a string in an asset.
 
+### Defect 57 — `easy-network-stub` emits an array route parameter, which the library rejects synchronously while registering, so the operation cannot be stubbed at all and one generated stub can take every other one down with it (found by the tier-4 server direction, not scheduled)
+
+`getStubRoute` (`packages/typescript/src/generators/services/easy-network-stub/easy-network-stub-generator.ts:208-231`)
+rewrites each path parameter into the library's `{name:type}` route syntax at `:224`, where `type` is the generated
+model component name with an array wrapper unwrapped from `(X)[]` to `X[]` at `:218-221`. For `pathStyleSimple`, whose
+`values` path parameter is an array of strings, that produces
+`private static readonly PATH_STYLE_SIMPLE_PATH = 'styles/{values:string[]}' as const`
+(`test/output/typescript/easy-network-stub/integration/kitchen-sink/stubs/params.stubs.ts:36`). `easy-network-stub`'s
+`buildRouteParamRegex` rejects that outright, throwing `Array parameters are not supported for route parameters.` —
+measured against `easy-network-stub@9.0.0`'s `dist/lib/easy-network-stub.js` in the `node` image.
+
+**Both halves belong in the record, and the second is the one that makes this a defect rather than a missing feature.**
+An array route parameter genuinely is a limit of this library: it has no array route parameter type and no
+`style: simple` splitting, so the operation cannot be expressed faithfully whatever the generator emits. But the
+generator's *response* to that limit is to emit code that **throws while registering**, and that is a generator choice.
+`easy-network-stub` exposes `addParameterType(name, matcher, type, parser)` for exactly this situation, and the
+generator calls it nowhere — verified: the identifier occurs nowhere under `packages/` or `test/`. Emitting a plain
+`{values:string}`, or registering a custom parameter type that splits on the comma, would cost one wrong case;
+throwing costs the whole stub API, because a single exception during setup prevents the server binding at all unless
+every registration is individually guarded. That whole-API blast radius is the finding here, not merely the absent
+feature.
+
+**Tier 4 (stubs):** `test/wire/easy-network-stub/pathStyleSimple__ok.txt` — `expected status 200`, `actual no response
+at all (fetch failed …)`, because the route never existed and the library's `failBecauseOfNotOrWrongMockedRoute`
+destroyed the socket. The container log carries `##ERRLOG## Route not mocked: [GET] /api/styles/a,b` and no
+`##ADAPTER-FAULT##`, so that is the library's own unmatched-route path rather than the leg's driver failing. The
+artifact is byte-shaped identically to defect 58's although the cause is entirely different, which is why this leg
+asserts the registration report separately and first: `test/integration/easy-network-stub/integration.test.ts` requires
+exactly one failed registration, `pathStyleSimple: FAILED Array parameters are not supported for route parameters.`,
+and `test/integration/easy-network-stub/driver/stubs.ts` guards each registration so that this throw costs one case
+instead of nineteen. That guard is a property of the test driver, not of the generated code — a consumer registering
+the generated stubs normally gets the whole-API failure.
+
+Not fixed here — this phase records defects rather than fixing them. A fix has to choose which of the two halves it
+answers: emit a non-array route parameter plus a registered parser so the value at least arrives, or refuse to emit the
+stub and say so (a generated comment, or a method that throws a *named* error when called rather than when registered).
+What must not survive is a registration that cannot be performed at all.
+
+### Defect 58 — every `easy-network-stub` route parameter is emitted as a bare `{name:string}` with no custom parameter type, so the library's default matcher makes a percent-encoded path value unroutable — and would hand it over undecoded even if it matched (found by the tier-4 server direction, not scheduled)
+
+The same `getStubRoute:224` substitution that produces defect 57's array parameter produces `{value:string}` for an
+ordinary string path parameter: `GET_ENCODED_PATH = 'encoded/{value:string}?{raw?:string}'`
+(`test/output/typescript/easy-network-stub/integration/kitchen-sink/stubs/params.stubs.ts:37`). `string` is the
+library's default route parameter type, whose matcher is `([\w-_~.]+)` — read out of `easy-network-stub@9.0.0` in the
+image — and which therefore matches neither `%` nor `/`. A path segment carrying a reserved character percent-encoded,
+which is the only conforming way to send one, matches nothing, and the library destroys the socket.
+
+**A second defect sits behind the first, and fixing only the matcher would not make the case conform.** The library
+hands a callback the raw matched text, and the generator registers no parser (`addParameterType` again, called
+nowhere), so `abc%20def%2Fx` would arrive undecoded and still be the wrong value. Two layers, one artifact.
+
+**Tier 4 (stubs):** `test/wire/easy-network-stub/getEncoded__ok.txt` — `expected status 200`, `actual no response at
+all (fetch failed …)` for `GET /api/encoded/abc%20def%2Fx?raw=a%26b%3Dc`. Two probes against a live container of the
+same image locate the fault precisely: `GET /api/encoded/abcdef?raw=a%26b%3Dc` **does** match and binds, answering
+`599 MISMATCH getEncoded.value expected <"abc def/x"> but was <"abcdef">` — so it is the percent-encoding in the path,
+not the query and not the route shape, that refuses the request. The second layer is established from the mechanism
+rather than from that probe (which threw on `value` before reaching `raw`): the library hands the callback the raw
+matched text and no parser is registered, so a matcher that accepted `%` would deliver `abc%20def%2Fx` and mismatch
+anyway. `test/integration/easy-network-stub/boot.test.ts` pins the same unroutability class with an
+`/api/pets/abc%20def` probe.
+
+This is the server-direction twin of **defect 41**, which is the same generator family failing to percent-*encode* a
+reserved character on the client side. Neither one implies the other's fix: 41 is about what a generated client puts on
+the wire, this is about what a generated stub can accept off it.
+
+Not fixed here — this phase records defects rather than fixing them. The fix is the one `easy-network-stub` documents:
+`addParameterType('string', <matcher accepting percent-encoding>, 'string', decodeURIComponent)` — or a per-parameter
+custom type — registered by the generated stub base before any route is stubbed. Both halves close together, since a
+parameter type carries a matcher *and* a parser.
+
+### Defect 59 — `easy-network-stub` emits array query parameters with no regard to their declared style, and because they are generated optional a value the library's default matcher rejects binds to nothing instead of failing (found by the tier-4 server direction, not scheduled)
+
+`getStubRoute` appends one `{name?:type}` group per query parameter (`:226`), so `styleMatrix` — whose three array
+parameters are the spec's three `style`/`explode` encodings of the same `['a', 'b']` — generates
+`STYLE_MATRIX_PATH = 'styles?{formExploded?:string[]}&{formUnexploded?:string[]}&{spaceDelimited?:string[]}'`
+(`test/output/typescript/easy-network-stub/integration/kitchen-sink/stubs/params.stubs.ts:35`). The library fills an
+array parameter from **repeated keys**, and splits a single occurrence on a **literal comma** — while its own default
+*query* matcher, `([\w%~!*().\-_]+)`, excludes the comma along with `+` and space and allows `%`. Those two behaviours
+of the same library contradict each other, and a generated `{name?:string[]}` inherits both. So exactly one of the
+three declared styles works, and it is the one that happens to match the library's repeated-key convention:
+
+- **`style: form, explode: false`** sends `?formUnexploded=a,b`, a literal comma, which is a legal query sub-delimiter.
+  The per-parameter regex `[?&]formUnexploded(?:=(?:…)?)?(?=$|&)` fails its lookahead after `a`. Because every
+  generated query parameter is emitted **optional** — `?` at `:226` whenever `param.required` is false — a
+  non-matching parameter does not reject the route; it silently arrives as `undefined`, and the operation is invoked
+  with no parameters at all. Silent binding-to-nothing is worse than a rejected route: the stub answers `200` for a
+  request it never understood.
+- **`style: spaceDelimited`** sends `?spaceDelimited=a%20b`. `%` *is* in the matcher's class, so this one binds — and
+  then exhibits two further defects at once: the value is never percent-decoded (no parser is registered, defect 58's
+  second layer again), and the only splitting the library does is on a comma, so even a decoded `a b` would arrive as
+  one item rather than the two the style declares. Neither of those two is fixed by fixing the other.
+- **`style: form, explode: true`** sends `?formExploded=a&formExploded=b` and conforms, because repeated keys are
+  exactly what the library implements.
+
+**Tier 4 (stubs):** two artifacts. `test/wire/easy-network-stub/styleMatrix__formUnexploded.txt` — `status expected
+200 / actual 599`, body `MISMATCH styleMatrix expected exactly one parameter to arrive but got
+formExploded=<undefined> formUnexploded=<undefined> spaceDelimited=<undefined>` — is the silent-drop half; two probes
+confirm the comma is the cause (`?formUnexploded=ab` binds with `was <["ab"]>`, `?formUnexploded=a%2Cb` binds with
+`was <["a%2Cb"]>`). `test/wire/easy-network-stub/styleMatrix__spaceDelimited.txt` — `status expected 200 / actual 599`,
+body `MISMATCH styleMatrix.spaceDelimited expected <["a","b"]> but was <["a%20b"]>` — is the undecoded-and-unsplit
+half, and should not be read as a single-cause finding.
+
+Both artifacts depend on the reference client putting the exact declared bytes on the wire, which is why
+`test/harness/ref-client.ts` builds its query string by hand (`buildQueryString`/`encodeQueryComponent`) rather than
+through `URLSearchParams`: the latter would have sent `a%2Cb` and `a+b`, and these two artifacts would have been
+recording the host's choice of encoder rather than the generated code's behaviour.
+
+This is the server-direction counterpart of **defect 42** (no `style`/`explode` support anywhere in the client
+direction). The two share a cause in spirit — the generator emits parameters without regard to their declared style —
+but not a fix site: 42 is about serializing an array into a request, this is about declaring a route that can receive
+one.
+
+Not fixed here — this phase records defects rather than fixing them. A fix needs the generated route to carry the
+declared style, which for this library means a custom parameter type per style (a matcher that accepts the delimiter,
+plus a parser that decodes and splits on it). It is also worth weighing what the `?` costs: an optional parameter that
+is *present but unmatched* is indistinguishable, in the generated stub, from an absent one, so the generated code
+silently answers a request it did not understand.
+
+### Defect 60 — `getStubResponder` returns `{statusCode, content}` and cannot set a response header, so no response header a spec declares is reachable through the generated stub API (found by the tier-4 server direction, not scheduled)
+
+Every generated stub answers through the responder that `getStubResponder<T>()` hands its callback, and that responder
+is one function: `const untypedResponder = (statusCode: number, content?: unknown) => ({ statusCode, content });`
+(`packages/typescript/assets/stubs/easy-network-stub/easy-network-stub.utils.ts:79`, returned by `getStubResponder` at
+`:85-87` — the asset each generated tree copies verbatim into its own `utils/` directory). Its two typed signatures
+(`:75-76`) take a status code and, unless the status maps to `never`, a content value. There is no third parameter and
+no other construction point: each generated method's `response` parameter is a `StrictRouteResponseCallback` whose
+first argument is that responder (e.g.
+`test/output/typescript/easy-network-stub/integration/kitchen-sink/stubs/widgets.stubs.ts:25-29`), and the method body
+answers with `throw await response(getWidgetResponder, request)` (`:37`).
+
+The capability exists one layer down and only the generated API cannot reach it: `easy-network-stub`'s own
+`ErrorResponse<T>` carries a `headers` field, which the library merges over its defaults — the tier-4 adapter writes
+`response.writeHead(stubResponse.statusCode, stubResponse.headers ?? {})`
+(`test/integration/easy-network-stub/driver/adapter.ts:148`). So a spec that declares a response header produces a stub
+that cannot send it, and a consumer who needs one has to abandon the typed responder and hand back a hand-built object
+literal — which the callback's loose return type `ErrorResponse<any> | Promise<ErrorResponse<any>>`
+(`easy-network-stub.utils.ts:68-71`) silently permits, and which defeats the point of `getStubResponder` in the same
+motion. That escape hatch is the same one defect 61 relies on.
+
+**Tier 4 (stubs): there is no artifact for this, and the absence is a driver decision rather than a conformance
+claim.** `getWidget/ok` is the only case in the table declaring a generator-controlled response header
+(`x-rate-limit: 42`, `test/cases/cases.ts:187` — the fifth blind-spot bullet in `test/README.md`'s tier-4 section
+explains why it is the only one), and it **conforms**, because
+`test/integration/easy-network-stub/driver/stubs.ts:238-241` takes the escape hatch above: it spreads
+`respond(200, …)`'s result and adds `headers: { 'X-Rate-Limit': '42' }`. Had the driver used the generated API alone,
+`getWidget__ok.txt` would exist and would record a missing response header. It does not exist, so this entry is the
+only place the gap is on record — do not read `getWidget/ok`'s clean result as evidence that response headers work.
+
+Not fixed here — this phase records defects rather than fixing them. The fix is a third responder parameter (or an
+options object) that lands in the returned `ErrorResponse`, typed from the response headers the spec declares, which is
+information the transformed model already carries. Cross-reference **defect 32**: `collectResponse` treats a response's
+entire `headers` map as one item, so whoever fixes this should check that the per-header information survives
+collection before relying on it.
+
+### Defect 61 — the `easy-network-stub` responder's status map is built by filtering out responses with no numeric status code, so the spec's `default` response is dropped and an operation relying on it has statuses its own generated API cannot name (found by the tier-4 server direction, not scheduled)
+
+`getEndpointStatusCodes`
+(`packages/typescript/src/generators/services/easy-network-stub/easy-network-stub-generator.ts:233-243`) builds the
+type argument of `getStubResponder<{…}>()` from two sources: the configured
+`defaultStatusCodeResponseTypes` — `401`, `403` and `500`, all `never`
+(`packages/typescript/src/generators/services/easy-network-stub/models.ts:78-82`) — and the endpoint's own responses,
+`endpoint.responses.filter((x) => x.statusCode)` at `:239-241`. That filter is where the `default` response is lost: a
+`default` (and likewise a range code such as `5XX`) has no numeric `statusCode`, `undefined` being exactly what the
+field holds — `Number(status) || undefined`, `packages/core/src/transform/transform-endpoint.ts:206`, which is
+**defect 38**'s lossiness, with `statusKey` the non-lossy field a fix must read instead.
+
+Measured on the committed tree: `getWidget` declares `200`, `400`, `404`, `500` and a `default`
+(`test/specs/integration/kitchen-sink.yml:178-179`), and the generated responder is
+`getStubResponder<{200: Widget; 400: Error; 401: never; 403: never; 404: Error; 500: Error}>()`
+(`test/output/typescript/easy-network-stub/integration/kitchen-sink/stubs/widgets.stubs.ts:7-14`) — the four declared
+numeric codes plus two of the three configured defaults, and nothing for the `default` response. The library itself
+would carry a `503` without complaint; it is the generated status map that cannot name it. Unlike **defect 53**, which
+is this same `default` blind spot in `spring-controllers`' strict flavour, there is no `private` constructor closing the
+escape hatch here — the callback may return any `ErrorResponse<any>` (`easy-network-stub.utils.ts:68-71`), so a
+consumer can hand back `{ statusCode: 503, content }` by hand. That makes the defect milder than 53 and no less real:
+`getStubResponder`'s entire purpose is to constrain a stub to the statuses its spec declares, and for a `default`
+response it constrains it to the wrong set.
+
+**Tier 4 (stubs):** `test/wire/easy-network-stub/getWidget__unexpectedError.txt` — `status expected 503 / actual 598`,
+body ``UNEXPRESSIBLE getWidget cannot answer 503: the generated responder's status map is {200, 400, 401, 403, 404,
+500}, and the spec can only serve 503 through its `default` response, for which no entry was generated``. The `598` is
+the driver declining to fake it through the untyped escape hatch, the same discipline defect 53's strict delegate
+follows: substituting an available status would have recorded a smaller, wrong deviation. Note that `401` and `403`
+*are* in the map although no case drives them and the spec does not declare them for this operation — they come from
+the configured defaults, so the map is simultaneously too wide and too narrow.
+
+Not fixed here — this phase records defects rather than fixing them. The fix is to key the responder's map on
+`statusKey` rather than `statusCode`, which gives `default` an entry a caller can name (`respond('default', 503, …)`,
+or a numeric-status overload) and does the same for range codes. Defect 19 was this same `default` blind spot at
+compile level in the Kotlin server generator and was fixed; defect 53 is its behavioural half there; this is the
+TypeScript stub generator's instance of the same omission.
+
+### Defect 62 — `easy-network-stub` types a binary or multipart request body as `Blob`, a value the library can never hand a callback, so the generated body type is unsatisfiable (found by the tier-4 server direction, not scheduled)
+
+The stub's body type comes from `endpoint.requestBody?.content[0].schema` through `getSchemaType`, twice — once for the
+remembered-requests field (`easy-network-stub-generator.ts:129-141`) and once for the stub method itself (`:143-174`,
+with `getSchemaType` at `:245-249`). For a binary body that yields `Blob`, and for a multipart body an inline object
+whose file part is a `Blob`:
+`this.stubWrapper.stub2<Blob>()` (`test/output/typescript/easy-network-stub/integration/kitchen-sink/stubs/blobs.stubs.ts:27`)
+and `this.stubWrapper.stub2<{ file: Blob; caption?: string }>()`
+(`test/output/typescript/easy-network-stub/integration/kitchen-sink/stubs/pets.stubs.ts:169-172`), each mirrored in the
+`StrictRouteResponseCallback` type of the corresponding method (`blobs.stubs.ts:22-26`, `pets.stubs.ts:161-168`).
+
+Neither type is inhabitable. `easy-network-stub`'s `Request.body` is a **string** — the tier-4 adapter hands the
+library `Buffer.concat(chunks).toString('utf8')`
+(`test/integration/easy-network-stub/driver/adapter.ts:135`), which type-checks against the library's own `Request`
+type — and the library hands a callback either the `JSON.parse` result of that string or the raw string when parsing
+fails. It decodes neither multipart nor binary. So a generated callback whose `body` is annotated `Blob` receives a
+`string` at run time, and consumer code that does the one obvious thing with the declared type — `body.arrayBuffer()`,
+`body.file.name` — type-checks and throws. The same `content[0]` read is **defect 44**'s multi-media-type collapse
+reaching this generator too: `updatePet` declares both JSON and form-urlencoded, the stub is typed `PetUpdate`, and the
+form flavour arrives as the raw `'name=Rex&age=4'`.
+
+**This is a type-level finding with no wire artifact, deliberately, and both halves of that need stating.** The tier
+compares request/response bytes and the response the stub produced; a declared TypeScript type is on neither, so no
+artifact could record it directly. And the two cases that *could* have been recorded as deviations instead record
+conformance: `uploadBlob/ok` and `uploadPetPhoto/ok` both pass, because
+`test/integration/easy-network-stub/driver/stubs.ts` re-derives from the raw payload — comparing the decoded bytes for
+the blob, asserting each declared part's presence for the multipart body. That was a deliberate consistency decision,
+documented in the driver at the `uploadPetPhoto` registration: `updatePet/form` hits the same gap and re-parses the raw
+form encoding, so recording one of the three as a deviation while two conform would make this directory's artifacts
+mean different things in different files. The cost is that all three clean results say nothing about whether the
+generated body type is reachable, and this entry is the only record that it is not.
+
+**Tier 4 (stubs):** no artifact, per the paragraph above. The positive evidence is in the driver rather than in
+`test/wire/`: `uploadPetPhoto`'s registration asserts that the body arrives as a `string` and raises a `599 MISMATCH`
+naming the change if it ever stops doing so, so the premise this defect rests on is pinned by a running test rather
+than by a comment.
+
+Not fixed here — this phase records defects rather than fixing them. A fix has to decide what a body type means for
+this profile, because the honest options differ: emit `string` (what the library actually produces) and lose the shape;
+emit the parsed model type only where the media type is JSON, and `string` otherwise; or register the decoding the
+generated stub would need to make the declared type true. What must not survive is a declared type no execution of the
+generated code can produce.
+
 ### Also registered, not scheduled
 
 Small, verified, and each needing either a decision or a home:

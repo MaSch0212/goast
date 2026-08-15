@@ -8,16 +8,16 @@ This file documents what exists today.
 
 Deno and Docker. The everyday loop — tiers 1, 2 and the `fetch-clients` leg of tier 4 — needs only Deno; Docker is
 required for tier 3 and for every other tier-4 target (the four Kotlin ones, the four `spring-controllers` ones,
-`angular-services`, and `k6-clients`).
+`angular-services`, `k6-clients`, and `easy-network-stub`).
 
 ## Tiers
 
-| # | Tier        | Question                                              | Command                                                                        | Status                                                                                                                                                                                                                                            |
-| - | ----------- | ----------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1 | Unit        | Does this function do what it says?                   | `deno task test`                                                               | active                                                                                                                                                                                                                                            |
-| 2 | Output      | Did the generated text change?                        | `deno task test:output`                                                        | active                                                                                                                                                                                                                                            |
-| 3 | Compile     | Is the generated code valid in its language?          | `deno task test:compile`                                                       | active                                                                                                                                                                                                                                            |
-| 4 | Integration | Does the generated code behave correctly on the wire? | `deno task test:integration` / `:kotlin` / `:controllers` / `:angular` / `:k6` | client direction: fetch-clients, angular-services, okhttp3-clients, spring-reactive-web-clients (`k6-clients` cannot be driven at all — see "The k6 leg" — and records a target-level load failure instead); server direction: spring-controllers |
+| # | Tier        | Question                                              | Command                                                                                   | Status                                                                                                                                                                                                                                                               |
+| - | ----------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 | Unit        | Does this function do what it says?                   | `deno task test`                                                                          | active                                                                                                                                                                                                                                                               |
+| 2 | Output      | Did the generated text change?                        | `deno task test:output`                                                                   | active                                                                                                                                                                                                                                                               |
+| 3 | Compile     | Is the generated code valid in its language?          | `deno task test:compile`                                                                  | active                                                                                                                                                                                                                                                               |
+| 4 | Integration | Does the generated code behave correctly on the wire? | `deno task test:integration` / `:kotlin` / `:controllers` / `:angular` / `:k6` / `:stubs` | client direction: fetch-clients, angular-services, okhttp3-clients, spring-reactive-web-clients (`k6-clients` cannot be driven at all — see "The k6 leg" — and records a target-level load failure instead); server direction: spring-controllers, easy-network-stub |
 
 ## Tier 1: unit tests
 
@@ -607,16 +607,16 @@ file. A case where the generated client's actual wire behaviour differs from the
 `test/wire/<profile>/<caseId-with-slashes-as-double-underscore>.txt`, holding one `field`/`expected`/`actual` block per
 difference. `deno task test:integration` regenerates in write mode; a file disappearing on a later run means a generator
 fix landed, and check mode refuses to pass with a stale file still committed — the same reviewable-deletion discipline
-as `verifyCompileDiagnostics`. 90 such artifacts are committed today — 64 from the client direction (10 under
+as `verifyCompileDiagnostics`. 95 such artifacts are committed today — 64 from the client direction (10 under
 `fetch-clients`, **2** under `angular-services`, 13 each under `okhttp3-clients@sb3`/`@sb4` and
-`spring-reactive-web-clients@sb3`/`@sb4`) and 26 from the server direction (6 each under
-`spring-controllers@sb3`/`@sb4`, 7 each under `@sb3-strict`/`@sb4-strict`) — all traced to confirmed generator defects
-in
+`spring-reactive-web-clients@sb3`/`@sb4`) and 31 from the server direction (6 each under
+`spring-controllers@sb3`/`@sb4`, 7 each under `@sb3-strict`/`@sb4-strict`, **5** under `easy-network-stub`) — all traced
+to confirmed generator defects in
 [`docs/superpowers/plans/2026-07-25-generator-bug-fixes.md`](../docs/superpowers/plans/2026-07-25-generator-bug-fixes.md)
-(defects 20, 41, 42, 43, 44, 46, 47, 48, 49, 50, 51, 52 and 53) — not fixed here, per this phase's rule that a generator
-fix changes generated output and belongs to its own phase.
+(defects 20, 41, 42, 43, 44, 46, 47, 48, 49, 50, 51, 52, 53, 57, 58, 59 and 61) — not fixed here, per this phase's rule
+that a generator fix changes generated output and belongs to its own phase.
 
-`k6-clients`'s `test/wire/k6-clients/__load-failure.txt` is not one of these 90 and is not counted among them: it is a
+`k6-clients`'s `test/wire/k6-clients/__load-failure.txt` is not one of these 95 and is not counted among them: it is a
 target-level record, not a per-case deviation, and it holds a raw k6 error rather than a `field`/`expected`/`actual`
 block. See "The k6 leg" below.
 
@@ -662,10 +662,10 @@ misreadable thing about this tier, for six concrete, verified reasons:
 Relatedly, and stated the same way `test/integration/oracles.test.ts`'s class doc comment states it: a deviation
 artifact means **the generated client differs from the declared table** — this tier does not by itself adjudicate
 whether the table or the generator is the one that's wrong. A separate classification pass, done once per target and
-recorded in that phase's task report, is what turned each of these 90 artifacts into a confirmed generator defect rather
+recorded in that phase's task report, is what turned each of these 95 artifacts into a confirmed generator defect rather
 than leaving that judgment implicit: the original ten for `fetch-clients`, the 52 across the four Kotlin client units
-for phase 6a, the 26 across the four `spring-controllers` units for phase 6b, and the 2 for `angular-services` in phase
-7a.
+for phase 6a, the 26 across the four `spring-controllers` units for phase 6b, the 2 for `angular-services` in phase 7a,
+and the 5 for `easy-network-stub`, phase 7's last target.
 
 **The oracle-agreement test is load-bearing, not one test among many.** `test/integration/oracles.test.ts` proves the
 case table itself is representable on the wire and round-trips through a handwritten reference client and reference
@@ -962,7 +962,90 @@ follow-up, deliberately not done here: it changes the `node` image's content has
 TypeScript compile group and puts its committed diagnostics up for re-review — its own change, not a side effect of this
 one.
 
-`easy-network-stub` is the one target phase 7 still owes, behind the same guard.
+### The `easy-network-stub` leg
+
+**`easy-network-stub` is phase 7's last target and tier 4's second server-direction one — and its "server" is a stub
+library.** The Spring leg's generated code is a controller that delegates to a hand-written implementation; here the
+generated stubs _are_ the API. A `stubGetPet(callback)` registration is the entire implementation of
+`GET /api/pets/{id}`: it declares the route, binds its parameters, and answers.
+`test/integration/easy-network-stub/driver/stubs.ts` is this leg's oracle and the analogue of `spring-controllers`'
+`delegates/` — one registration per generated stub method, each asserting what arrived against `test/cases/cases.ts` and
+returning what its case declares. The rest is the same shape as the Spring leg: `test/harness/ref-client.ts` issues each
+case's `expectRequest` from the host over real HTTP, `diffResponse` compares status, case-declared headers and body, and
+`{ profile: 'easy-network-stub', direction: 'server' }` in `WIRE_TARGETS` is what makes `casesFor` hand it the 19 server
+cases.
+
+**It needs no browser, no Playwright, no new Docker image and no new dependency — although `easy-network-stub` is a
+browser-testing library.** That is the surprising part of this leg and it is worth stating plainly, because the obvious
+reading is that a browser-interception library needs a browser. `EasyNetworkStub` is a concrete class whose
+`protected initInternal<T>(config)` ends with `return config.interceptor(this._urlMatch, handler)`, where
+`Interceptor<T> = (baseUrl, handler) => T`. An interceptor of `(_urlMatch, handler) => handler` therefore hands the
+request handler straight back, and a subclass that exposes it is the whole adapter — the same seam
+`playwright-easy-network-stub` and `cypress-easy-network-stub` use, pointed at `node:http` instead of a browser page.
+`driver/adapter.ts` is that bridge: 73 lines of code under a much longer comment about the three ways a request can end.
+The runtime is tier 3's `node` image, unchanged — `easy-network-stub@9.0.0` was **already** in
+`test/docker/node/package.json` because tier 3 type-checks this profile, so the image's content hash never moved and
+tier 3's committed diagnostics were never put up for re-review. Contrast the Angular leg, which added two dependencies
+and did re-run that gate for exactly that reason.
+
+**The registration report is asserted first, before a single artifact is written, and the ordering is the finding.**
+`driver/server.ts` prints one `##REGISTRATION##` line per stub — `"<operation>: ok"` or `"<operation>: FAILED …"` —
+because one registration is _expected_ to fail: `stubPathStyleSimple`'s generated route is `styles/{values:string[]}`
+and the library rejects an array route parameter synchronously, while registering. `registerAll` guards each
+registration individually for that reason; unguarded, that single throw takes the server down before it binds and all 19
+cases record a transport failure that says nothing about the generator. `integration.test.ts` asserts the report as an
+exact set (12 lines, exactly one `FAILED`) rather than "contains", so a second registration starting to fail cannot hide
+behind the one that is meant to.
+
+**An unmatched route destroys the socket, so a deviation here can read "no response at all".** The library answers a
+request no registered route matches with `failBecauseOfNotOrWrongMockedRoute`, which destroys the connection rather than
+replying — reproduced honestly by the adapter (`destroy` is wired straight to `request.socket.destroy()`) because that
+is what a browser interceptor does. Two of the five artifacts have that identical shape and completely different causes,
+which is precisely why the registration report is a separate assertion: one route was never registered, the other was
+registered and could not match.
+
+**Three status codes report the driver's own findings,** the same convention and the same meanings as the Spring leg's:
+`599 MISMATCH` (a value arrived that the case table does not declare), `598 UNEXPRESSIBLE` (the generated responder
+cannot express the response the case declares at all), `597 UNEXPECTED` (something this phase did not model —
+non-deterministic, and a finding to investigate rather than a snapshot to accept). Every one of these carries a
+`statusCode`, which is load-bearing: the library replies `500 "unknown error in mocked response"` to a thrown error
+without one, and that would be indistinguishable on the wire from a genuine generated `500`. None of the five committed
+artifacts is a `597`, and no `##ADAPTER-FAULT##` appears in the container log for any of them.
+
+**5 of the 19 cases deviate,** and each traces to a confirmed generator defect in the register:
+
+- `pathStyleSimple__ok.txt` — the array route parameter the library rejects at registration time, so the route never
+  exists. Defect 57.
+- `getEncoded__ok.txt` — `{value:string}` compiles to the library's default route matcher `([\w-_~.]+)`, which matches
+  neither `%` nor `/`, so a percent-encoded path segment is unroutable. Defect 58.
+- `styleMatrix__formUnexploded.txt` and `styleMatrix__spaceDelimited.txt` — generated array _query_ parameters the
+  library receives correctly only as repeated keys: the comma-joined value binds to nothing (silently, because the
+  generated parameter is optional) and the space-delimited one arrives percent-encoded and unsplit. Defect 59.
+- `getWidget__unexpectedError.txt` — the generated responder's status map omits the spec's `default` response, so the
+  `503` is unexpressible. Defect 61.
+
+**What this leg structurally cannot observe, and where a clean case is a driver's work rather than the generator's.**
+The blind spots listed for the client direction and for the Spring leg apply here too; three more are specific to this
+one, and each is a place where an absent artifact would be misread:
+
+- **`getWidget/ok` conforms only because the driver sets the response header itself.** `getStubResponder` returns
+  exactly `(statusCode, content?) => ({ statusCode, content })` and cannot set a response header at all, while the case
+  declares `x-rate-limit: 42` — the one generator-controlled response header in the whole table (see the fifth
+  blind-spot bullet above). The driver spreads the responder's result and adds `headers`, which the library's own
+  `ErrorResponse<T>` permits and the library merges over its defaults. So there is **no artifact** for the defect, and
+  its absence is a driver workaround rather than a conforming generator. Defect 60 records what the generated API cannot
+  do.
+- **`uploadBlob/ok` and `uploadPetPhoto/ok` conform against the raw payload.** The generated body types are `Blob` and
+  `{ file: Blob; caption?: string }`, and the library only ever hands a callback a `JSON.parse` result or the raw string
+  it failed to parse — it decodes neither multipart nor binary. The driver re-derives from the raw payload and records
+  conformance, deliberately and consistently: `updatePet/form` hits the same gap and re-parses the form encoding, so
+  recording one of the three as a deviation and two as conforming would make this directory's artifacts mean different
+  things in different files. Defect 62 records the type-level finding that has no wire artifact for that reason.
+- **`allLocations/ok`'s header and cookie are asserted from the library's raw header bag, not from a generated
+  binding.** The generated route is `locations/{pathParam:string}?{queryParam?:string}` — no slot for the
+  `x-header-param` header or the `session` cookie — so what that case proves is that the values arrived, not that the
+  generated code bound them. The same limit the Spring leg states in its own closing bullets: this direction can only
+  observe a parameter the generated signature gave the oracle somewhere to receive.
 
 The commands:
 
@@ -977,6 +1060,8 @@ deno task test:integration:angular             # write mode: the angular-service
 deno task test:integration:angular:check       # check mode: the angular-services target, needs Docker
 deno task test:integration:k6                  # write mode: the k6-clients target, needs Docker
 deno task test:integration:k6:check            # check mode: the k6-clients target, needs Docker
+deno task test:integration:stubs               # write mode: the easy-network-stub target, needs Docker
+deno task test:integration:stubs:check         # check mode: the easy-network-stub target, needs Docker
 ```
 
 ## Layout
@@ -1014,7 +1099,10 @@ test/
                       # stabilize.ts normalizes Spring's error bodies, delegates/ holds the handwritten
                       # oracle: common/, lenient/, strict/, lenient-sb3/, lenient-sb4/);
                       # k6-clients/ drives nothing — probe.js is one import, format-load-failure.ts
-                      # normalizes k6's error, and the target records a load failure instead of cases
+                      # normalizes k6's error, and the target records a load failure instead of cases;
+                      # easy-network-stub/ is the other server direction, where the generated stubs are
+                      # the API (build.ts compiles and then serves, driver/adapter.ts bridges the library
+                      # to node:http, driver/stubs.ts holds the registrations, boot.test.ts gates them)
   integration-tests/  # tier-4 orphan sweep, over every WIRE_TARGETS entry (see "Tier 4: integration" above)
   wire/               # committed tier-4 deviation artifacts, one profile subdirectory per WIRE_TARGETS entry
 ```
