@@ -24,7 +24,7 @@
     "test:compile:ts:check": "deno task test:compile:discovery && GOAST_COMPILE=1 GOAST_SNAPSHOT=check deno test -A test/compile-tests --filter \"typescript/\"",
     "test:compile:kotlin:check": "deno task test:compile:discovery && deno task test:compile:support && GOAST_COMPILE=1 GOAST_SNAPSHOT=check deno test -A test/compile-tests --filter \"kotlin (gradle)\"",
     "test:compile:cold": "GOAST_GRADLE_CACHE=0 GOAST_COMPILE=1 GOAST_SNAPSHOT=check deno test -A test/compile-tests test/harness/docker.test.ts",
-    "test:compile:clean": "rm -rf .goast-cache/gradle-work",
+    "test:compile:clean": "deno run -A scripts/clean_gradle_work.ts",
     "test:integration": "GOAST_SNAPSHOT=write deno test -A test/integration test/integration-tests",
     "test:integration:check": "GOAST_SNAPSHOT=check deno test -A test/integration test/integration-tests",
     "test:integration:kotlin": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=write deno test -A test/integration/kotlin-clients",
