@@ -16,6 +16,7 @@ import { KotlinSpringReactiveWebClientsGenerator } from '../src/generators/servi
 import type { SpringBootVersion } from '../src/config.ts';
 
 const specFile = join(openApiV3FilesDir, 'service-endpoints.yml');
+const uriParametersSpecFile = join(openApiV3FilesDir, 'service-endpoints-uri-parameters.yml');
 
 // deno-lint-ignore no-explicit-any
 const generators: { name: string; useType: (generator: OpenApiGenerator, config: any) => OpenApiGenerator }[] = [
@@ -74,3 +75,37 @@ for (const { name, useType } of generators) {
     }
   });
 }
+
+// Pins the emitted `uri(...)` shape of the reactive web clients for path-only, path+query and optional-query
+// endpoints. With `preserveUriTemplate` the URI template must reach `WebClient` verbatim, so Spring can record it as
+// `ClientRequestObservationContext.uriTemplate` and keep the `uri` tag of `http.client.requests` bounded.
+describe('spring reactive web client uri templates', () => {
+  afterEach(() => {
+    restore();
+  });
+
+  for (const preserveUriTemplate of [true, false]) {
+    test(preserveUriTemplate ? 'enabled' : 'disabled', async (t) => {
+      const result = new MultipartData();
+      stub(fs, 'ensureDirSync');
+      stub(fs, 'writeFileSync', (path: fs.PathOrFileDescriptor, data: string | NodeJS.ArrayBufferView) => {
+        result.push([path.toString(), data.toString()]);
+      });
+
+      const generatorOptions = {
+        outputDir: 'out',
+        newLine: '\n',
+      };
+      // deno-lint-ignore no-explicit-any
+      const config = { __test__: true, preserveUriTemplate } as any;
+      const state = await new OpenApiGenerator(generatorOptions)
+        .useType(KotlinModelsGenerator, config)
+        .useType(KotlinSpringReactiveWebClientsGenerator, config)
+        .parseAndGenerate(uriParametersSpecFile);
+      result.splice(0, 0, ['state', state]);
+
+      restore();
+      await verify(t, result);
+    });
+  }
+});
