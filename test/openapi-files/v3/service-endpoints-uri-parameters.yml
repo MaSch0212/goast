@@ -1,0 +1,145 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Service Endpoints With URI Parameters
+
+paths:
+  /resources:
+    get:
+      operationId: listResources
+      tags: [Resources]
+      parameters:
+        - name: permission
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/Permission'
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: tags
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: X-Tenant
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The permitted resources.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Resource'
+  /resources/{resourceType}:
+    get:
+      operationId: getPermittedResources
+      tags: [Resources]
+      parameters:
+        - name: resourceType
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: permission
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/Permission'
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The permitted resources.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Resource'
+  /resources/{resourceType}/{resourceId}/{permission}:
+    get:
+      operationId: checkResourcePermission
+      tags: [Resources]
+      parameters:
+        - name: resourceType
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: resourceId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: permission
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Permission'
+      responses:
+        '200':
+          description: Whether the permission is granted.
+          content:
+            application/json:
+              schema:
+                type: boolean
+    put:
+      operationId: grantResourcePermission
+      tags: [Resources]
+      parameters:
+        - name: resourceType
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: resourceId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: permission
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Permission'
+        - name: notify
+          in: query
+          required: false
+          schema:
+            type: boolean
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Resource'
+      responses:
+        '204':
+          description: Permission granted.
+
+components:
+  schemas:
+    Permission:
+      type: string
+      enum: [read, write, delete]
+    Resource:
+      type: object
+      required: [id, type]
+      properties:
+        id:
+          type: string
+        type:
+          type: string

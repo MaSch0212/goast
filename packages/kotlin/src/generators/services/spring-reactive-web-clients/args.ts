@@ -48,6 +48,15 @@ export type GetEndpointFunctionWithHandlerBody = {
   responseSchema: ApiSchema | undefined;
 };
 
+export type GetEndpointUriCall = {
+  endpoint: ApiEndpoint;
+  parameters: ApiParameterWithMultipartInfo[];
+};
+
+export type GetUriPathVariablesValue = { endpoint: ApiEndpoint };
+
+export type GetUriQueryParameterCalls = { endpoint: ApiEndpoint };
+
 export type GetEndpointUriFunctionName = { endpoint: ApiEndpoint };
 
 export type GetEndpointUriFunction = {

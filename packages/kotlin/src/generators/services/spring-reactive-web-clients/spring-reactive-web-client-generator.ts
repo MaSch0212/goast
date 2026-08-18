@@ -223,12 +223,7 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
     const callChain: KtValue<Builder>[] = [];
     callChain.push(
       s`return this.method(${kt.refs.spring.httpMethod()}.${endpoint.method.toUpperCase()})`,
-      kt.call('uri', [kt.call(
-        [this.getEndpointUriFunctionName(ctx, { endpoint })],
-        parameters.filter((p) => p.target === 'path' || p.target === 'query').map((p) =>
-          toCasing(p.name, ctx.config.parameterNameCasing)
-        ),
-      )]),
+      this.getEndpointUriCall(ctx, { endpoint, parameters }),
     );
 
     if (responseSchema) {
@@ -331,6 +326,84 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
     return result;
   }
 
+  /**
+   * Emits the `uri(...)` call of the request function. If `preserveUriTemplate` is enabled, the URI template is
+   * passed to `WebClient` verbatim, so Spring can record it (`ClientRequestObservationContext.uriTemplate`) and tag
+   * `http.client.requests` with the route instead of the expanded path.
+   */
+  protected getEndpointUriCall(ctx: Context, args: Args.GetEndpointUriCall): kt.Value<Builder> {
+    const { endpoint, parameters } = args;
+
+    if (!ctx.config.preserveUriTemplate) {
+      return kt.call('uri', [kt.call(
+        [this.getEndpointUriFunctionName(ctx, { endpoint })],
+        parameters.filter((p) => p.target === 'path' || p.target === 'query').map((p) =>
+          toCasing(p.name, ctx.config.parameterNameCasing)
+        ),
+      )]);
+    }
+
+    const uriTemplate = kt.string(this.getEndpointPath(ctx, { endpoint }));
+    const pathVariables = this.getUriPathVariablesValue(ctx, { endpoint });
+    const queryParameterCalls = this.getUriQueryParameterCalls(ctx, { endpoint });
+
+    // Without query parameters the template and its variables can be handed to `uri` directly.
+    if (!queryParameterCalls) {
+      return kt.call('uri', [uriTemplate, pathVariables]);
+    }
+
+    // Query parameters need a `UriBuilder`, which the `uri(String, Function<UriBuilder, URI>)` overload provides
+    // while still recording the template.
+    return kt.call('uri', [
+      uriTemplate,
+      kt.lambda(
+        ['uriBuilder'],
+        kt.call([
+          'uriBuilder',
+          kt.call('apply', [kt.lambda([], queryParameterCalls)]),
+          kt.call('build', [pathVariables]),
+        ]),
+      ),
+    ]);
+  }
+
+  protected getUriPathVariablesValue(ctx: Context, args: Args.GetUriPathVariablesValue): kt.Value<Builder> | null {
+    const { endpoint } = args;
+    const pathParameters = endpoint.parameters.filter((p) => p.target === 'path');
+    if (pathParameters.length === 0) return null;
+
+    return kt.call(
+      [kt.refs.mapOf.infer()],
+      pathParameters.map((p) =>
+        s`${kt.string(p.name)} to ${toCasing(p.name, ctx.config.parameterNameCasing)}${
+          this.getParameterToString(ctx, { endpoint, parameter: p })
+        }`
+      ),
+    );
+  }
+
+  protected getUriQueryParameterCalls(
+    ctx: Context,
+    args: Args.GetUriQueryParameterCalls,
+  ): AppendValueGroup<Builder> | null {
+    const { endpoint } = args;
+    const queryParameters = endpoint.parameters.filter((p) => p.target === 'query');
+    if (queryParameters.length === 0) return null;
+
+    return appendValueGroup(
+      queryParameters.map((p) => {
+        const parameterName = toCasing(p.name, ctx.config.parameterNameCasing);
+        const toString = this.getParameterToString(ctx, { endpoint, parameter: p });
+        return p.required && !p.schema?.nullable
+          ? kt.call('queryParam', [kt.string(p.name), parameterName + toString])
+          : kt.call([`${parameterName}?`, 'also'], [
+            kt.lambda([], kt.call('queryParam', [kt.string(p.name), 'it' + toString]), { singleline: true }),
+          ]);
+      }),
+      '\n',
+    );
+  }
+
   protected getEndpointUriFunctionName(ctx: Context, args: Args.GetEndpointUriFunctionName): string {
     const { endpoint } = args;
     return toCasing(`${this.getEndpointFunctionName(ctx, { endpoint })}_uri`, ctx.config.functionNameCasing);
@@ -362,40 +435,13 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
       s`${kt.refs.spring.uriComponentsBuilder()}.fromPath(${kt.string(this.getEndpointPath(ctx, { endpoint }))})`,
     );
 
-    if (endpoint.parameters.some((x) => x.target === 'query')) {
-      callChain.push(
-        kt.call('apply', [kt.lambda(
-          [],
-          appendValueGroup(
-            endpoint.parameters.filter((x) => x.target === 'query').map((p) => {
-              const parameterName = toCasing(p.name, ctx.config.parameterNameCasing);
-              const toString = this.getParameterToString(ctx, { endpoint, parameter: p });
-              return p.required && !p.schema?.nullable
-                ? kt.call('queryParam', [kt.string(p.name), parameterName + toString])
-                : kt.call([`${parameterName}?`, 'also'], [
-                  kt.lambda([], kt.call('queryParam', [kt.string(p.name), 'it' + toString]), { singleline: true }),
-                ]);
-            }),
-            '\n',
-          ),
-        )]),
-      );
+    const queryParameterCalls = this.getUriQueryParameterCalls(ctx, { endpoint });
+    if (queryParameterCalls) {
+      callChain.push(kt.call('apply', [kt.lambda([], queryParameterCalls)]));
     }
 
-    if (endpoint.parameters.some((x) => x.target === 'path')) {
-      callChain.push(kt.call('buildAndExpand', [
-        kt.call(
-          [kt.refs.mapOf.infer()],
-          endpoint.parameters.filter((p) => p.target === 'path').map((p) =>
-            s`${kt.string(p.name)} to ${toCasing(p.name, ctx.config.parameterNameCasing)}${
-              this.getParameterToString(ctx, { endpoint, parameter: p })
-            }`
-          ),
-        ),
-      ]));
-    } else {
-      callChain.push(kt.call('build', []));
-    }
+    const pathVariables = this.getUriPathVariablesValue(ctx, { endpoint });
+    callChain.push(pathVariables ? kt.call('buildAndExpand', [pathVariables]) : kt.call('build', []));
 
     callChain.push('toUriString');
     result.values.push(s`return ${kt.call(callChain, [])}`);
