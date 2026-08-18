@@ -2601,6 +2601,37 @@ git add packages/typescript test/output
 git commit -m "fix(k6): drop the dangling Deprecated label for parameters without a description"
 ```
 
+### Defect 64 — URI-variable encoding percent-encodes the `,` that delimits a `style: simple` array path parameter, so an array path value goes from one error to two (found by the tier-4 client direction while merging #79, not scheduled)
+
+`#79` made the reactive client hand `WebClient` the URI template and pass path values as URI variables, so Spring can
+record the route. Spring percent-encodes reserved characters in a variable value — which is correct for a value, and
+wrong for a delimiter.
+
+For a `style: simple` array path parameter the comma *is* the delimiter, not part of any element. Encoding it produces a
+path no conforming server can split back into an array:
+
+- before: `/styles/a,%20b` — the delimiter survives, only `joinToString()`'s default `", "` separator is wrong
+  (**defect 42**)
+- after: `/styles/a%2C%20b` — the separator is still wrong *and* the delimiter is now unreadable
+
+Recorded by `test/wire/spring-reactive-web-clients@sb3/pathStyleSimple__ok.txt` and its `@sb4` twin.
+
+This is not a regression to revert, and the same change is why
+`test/wire/spring-reactive-web-clients@{sb3,sb4}/getEncoded__ok.txt` **no longer exist**: a *scalar* path value
+containing `/` used to be inlined verbatim, splitting the path so the route did not match at all (the server answered
+418). Encoding it fixed that case outright. So variable encoding is right for scalars and wrong for arrays, and the
+two artifacts moving in opposite directions in the same run is the clearest statement of that split.
+
+The real fix is **defect 42** (no `style`/`explode` support): with it, an array path parameter would contribute its
+delimiter to the *template* — `styles/{a},{b}` for `explode: false` — leaving each element as its own variable, so
+encoding each element is then exactly what is wanted. Until then, no encoding policy applied to the joined string can be
+correct, because the joined string conflates data and delimiter.
+
+Worth noting that `#79`'s commit message anticipates this class of change but not this member of it: it documents `/`,
+`?`, `#` and `%` as the characters newly encoded inside a path value, and states that "values consisting of unreserved
+characters produce a byte-identical request". `,` is reserved, is not in that list, and is the one character an array
+path parameter cannot afford to lose.
+
 ## Notes for the executing agent
 
 - The corpus is the oracle. Every one of these defects is caught by a spec that is already committed, so after each fix

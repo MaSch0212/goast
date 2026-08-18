@@ -175,9 +175,9 @@ a `snapshot.patch` artifact. Applying it is an alternative to regenerating local
 git apply snapshot.patch
 ```
 
-**Measured cost.** `deno task test:output:check` runs the full 54-spec corpus across fifteen profiles in about 22
-seconds wall-clock (18 passed, 871 steps, 0 failed) on a warm Deno cache. The 54 specs and their generated trees
-together commit 8,275 files under `test/output/`, ten of them `.error.txt` (see "Error snapshots" under
+**Measured cost.** `deno task test:output:check` runs the full 56-spec corpus across fifteen profiles in about 22
+seconds wall-clock (18 passed, 903 steps, 0 failed) on a warm Deno cache. The 56 specs and their generated trees
+together commit 8,653 files under `test/output/`, ten of them `.error.txt` (see "Error snapshots" under
 [Corpus map](#corpus-map)) rather than a generated tree.
 
 ## Harness API
@@ -243,13 +243,14 @@ fails if it finds a base — a tree directory, a `.state.txt`, or an `.error.txt
 
 ## Corpus map
 
-`test/specs/` holds 54 entries — the count `discoverSpecs()` returns, not the file count, since a _directory_ under a
+`test/specs/` holds 56 entries — the count `discoverSpecs()` returns, not the file count, since a _directory_ under a
 version directory (`v3/external-refs/`, `v3/multi-file/`) is one entry regardless of how many files it contains. 14 of
-the 54 predate the corpus-expansion phase; the other 40 were added by
+the 56 predate the corpus-expansion phase and 40 were added by
 [`docs/superpowers/plans/2026-07-25-corpus-expansion.md`](../docs/superpowers/plans/2026-07-25-corpus-expansion.md) to
-push edge-case coverage past the original six-file corpus's small fraction of OpenAPI. Read this table before adding a
-spec — the cheapest thing to do when adding coverage is to create a new file rather than check whether one of these 54
-already isolates the concern.
+push edge-case coverage past the original six-file corpus's small fraction of OpenAPI; the remaining 2 arrived later,
+most recently `v3/service-endpoints-uri-parameters` with the reactive URI-template change (#79). Read this table before
+adding a spec — the cheapest thing to do when adding coverage is to create a new file rather than check whether one of
+these 56 already isolates the concern.
 
 ### Types and schemas
 
@@ -334,16 +335,17 @@ already isolates the concern.
 
 ### Document structure
 
-| Spec                       | Isolates                                                                                                                                                                 |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `v3/service-endpoints.yml` | a small single-tag service (list/create/get/delete/search across two schemas) — the baseline endpoint spec other specs' conventions are read against                     |
-| `v3/operation-naming.yml`  | the name a generator derives when `operationId` is missing — by method, path, path parameters, and (once) a `summary` instead                                            |
-| `v3/tags-and-servers.yml`  | tag combinations (none, one, two, shared, declared vs. undeclared) and `servers` at document, path-item, and operation level                                             |
-| `v3/security-schemes.yml`  | apiKey, http basic, http bearer, and oauth2 schemes; inherited, overridden, emptied, ANDed, and ORed `security` requirements — pins an absence, see "Reading the corpus" |
-| `v3/path-edge-cases.yml`   | punctuation in path segments, a templated segment overlapping a literal one, a trailing slash, a parameter-only path, deep nesting, casing variety                       |
-| `v3/multi-file/`           | three complete documents (`shared.yml`, `pets.yml`, `owners.yml`) parsed as one spec, cross-referencing each other in both directions                                    |
-| `v3.1/webhooks.yml`        | 3.1 `webhooks`, with no `paths` at all — pins an absence, see "Reading the corpus"                                                                                       |
-| `v3/json-input.json`       | a complete document written as JSON instead of YAML                                                                                                                      |
+| Spec                                      | Isolates                                                                                                                                                                 |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `v3/service-endpoints.yml`                | a small single-tag service (list/create/get/delete/search across two schemas) — the baseline endpoint spec other specs' conventions are read against                     |
+| `v3/service-endpoints-uri-parameters.yml` | path, query and header parameters across parameterless, path-only, path-plus-query and optional-query endpoints — pins the URI template a reactive client emits          |
+| `v3/operation-naming.yml`                 | the name a generator derives when `operationId` is missing — by method, path, path parameters, and (once) a `summary` instead                                            |
+| `v3/tags-and-servers.yml`                 | tag combinations (none, one, two, shared, declared vs. undeclared) and `servers` at document, path-item, and operation level                                             |
+| `v3/security-schemes.yml`                 | apiKey, http basic, http bearer, and oauth2 schemes; inherited, overridden, emptied, ANDed, and ORed `security` requirements — pins an absence, see "Reading the corpus" |
+| `v3/path-edge-cases.yml`                  | punctuation in path segments, a templated segment overlapping a literal one, a trailing slash, a parameter-only path, deep nesting, casing variety                       |
+| `v3/multi-file/`                          | three complete documents (`shared.yml`, `pets.yml`, `owners.yml`) parsed as one spec, cross-referencing each other in both directions                                    |
+| `v3.1/webhooks.yml`                       | 3.1 `webhooks`, with no `paths` at all — pins an absence, see "Reading the corpus"                                                                                       |
+| `v3/json-input.json`                      | a complete document written as JSON instead of YAML                                                                                                                      |
 
 ### Reading the corpus
 
@@ -611,14 +613,14 @@ file. A case where the generated client's actual wire behaviour differs from the
 `test/wire/<profile>/<caseId-with-slashes-as-double-underscore>.txt`, holding one `field`/`expected`/`actual` block per
 difference. `deno task test:integration` regenerates in write mode; a file disappearing on a later run means a generator
 fix landed, and check mode refuses to pass with a stale file still committed — the same reviewable-deletion discipline
-as `verifyCompileDiagnostics`. 95 such artifacts are committed today — 64 from the client direction (10 under
-`fetch-clients`, **2** under `angular-services`, 13 each under `okhttp3-clients@sb3`/`@sb4` and
+as `verifyCompileDiagnostics`. 93 such artifacts are committed today — 62 from the client direction (10 under
+`fetch-clients`, **2** under `angular-services`, 13 each under `okhttp3-clients@sb3`/`@sb4`, 12 each under
 `spring-reactive-web-clients@sb3`/`@sb4`) and 31 from the server direction (6 each under
 `spring-controllers@sb3`/`@sb4`, 7 each under `@sb3-strict`/`@sb4-strict`, **5** under `easy-network-stub`) — all traced
 to confirmed generator defects in
 [`docs/superpowers/plans/2026-07-25-generator-bug-fixes.md`](../docs/superpowers/plans/2026-07-25-generator-bug-fixes.md)
-(defects 20, 41, 42, 43, 44, 46, 47, 48, 49, 50, 51, 52, 53, 57, 58, 59 and 61) — not fixed here, per this phase's rule
-that a generator fix changes generated output and belongs to its own phase.
+(defects 20, 41, 42, 43, 44, 46, 47, 48, 49, 50, 51, 52, 53, 57, 58, 59, 61 and 64) — not fixed here, per this phase's
+rule that a generator fix changes generated output and belongs to its own phase.
 
 `k6-clients`'s `test/wire/k6-clients/__load-failure.txt` is not one of these 95 and is not counted among them: it is a
 target-level record, not a per-case deviation, and it holds a raw k6 error rather than a `field`/`expected`/`actual`
