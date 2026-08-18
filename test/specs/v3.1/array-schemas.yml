@@ -1,0 +1,57 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: Array Schemas
+
+paths:
+  /x:
+    x-ignore: true
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    TupleArray:
+      type: array
+      prefixItems:
+        - type: string
+        - type: integer
+        - type: boolean
+    TupleWithRest:
+      type: array
+      prefixItems:
+        - type: string
+        - type: integer
+      items:
+        type: boolean
+    ClosedTuple:
+      type: array
+      prefixItems:
+        - type: string
+        - type: integer
+      items: false
+    ContainsArray:
+      type: array
+      contains:
+        type: integer
+      minContains: 1
+      maxContains: 3
+    UnevaluatedItemsArray:
+      type: array
+      prefixItems:
+        - type: string
+        - type: integer
+      unevaluatedItems: false
+    ArrayOfString:
+      type: array
+      items:
+        type: string
+    UniqueArray:
+      type: array
+      items:
+        type: string
+      uniqueItems: true
+    ArrayNoItems:
+      type: array

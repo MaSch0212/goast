@@ -1,0 +1,19 @@
+{
+  typescript: {
+    clients: {
+      'service-1': {
+        __source__: 'tag:service-1',
+        client: {
+          component: 'Service1Client',
+          filePath: '<output>/clients/service-1-client.ts'
+        }
+      }
+    },
+    indexFiles: {
+      clientInterfaces: '<output>/clients.ts',
+      clients: '<output>/clients.ts',
+      models: '<output>/models.ts'
+    },
+    models: {}
+  }
+}

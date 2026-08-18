@@ -1,0 +1,101 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Nested Composition
+
+paths:
+  /x:
+    x-ignore: true
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    NestedBranchA:
+      type: object
+      properties:
+        a:
+          type: string
+    NestedBranchB:
+      type: object
+      properties:
+        b:
+          type: integer
+    AllOfContainingOneOf:
+      allOf:
+        - oneOf:
+            - $ref: '#/components/schemas/NestedBranchA'
+            - $ref: '#/components/schemas/NestedBranchB'
+        - type: object
+          properties:
+            extra:
+              type: string
+    OneOfContainingAllOf:
+      oneOf:
+        - allOf:
+            - $ref: '#/components/schemas/NestedBranchA'
+            - $ref: '#/components/schemas/NestedBranchB'
+        - type: string
+    AnyOfContainingAllOf:
+      anyOf:
+        - allOf:
+            - $ref: '#/components/schemas/NestedBranchA'
+            - $ref: '#/components/schemas/NestedBranchB'
+        - type: string
+    AllOfOfAllOf:
+      allOf:
+        - allOf:
+            - $ref: '#/components/schemas/NestedBranchA'
+            - $ref: '#/components/schemas/NestedBranchB'
+        - type: object
+          properties:
+            top:
+              type: string
+    OneOfOfOneOf:
+      oneOf:
+        - oneOf:
+            - $ref: '#/components/schemas/NestedBranchA'
+            - $ref: '#/components/schemas/NestedBranchB'
+        - type: string
+    ArrayOfOneOf:
+      type: array
+      items:
+        oneOf:
+          - type: object
+            properties:
+              kind:
+                type: string
+              text:
+                type: string
+          - type: object
+            properties:
+              kind:
+                type: string
+              number:
+                type: integer
+    MapOfOneOf:
+      type: object
+      additionalProperties:
+        oneOf:
+          - type: string
+          - type: integer
+    PropertyOfNestedComposition:
+      type: object
+      properties:
+        value:
+          allOf:
+            - oneOf:
+                - type: object
+                  properties:
+                    x:
+                      type: string
+                - type: object
+                  properties:
+                    y:
+                      type: integer
+            - type: object
+              properties:
+                extra:
+                  type: string

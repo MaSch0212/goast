@@ -1,0 +1,3 @@
+query.formUnexploded
+  expected ["a,b"]
+  actual   ["a, b"]

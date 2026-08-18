@@ -1,0 +1,267 @@
+{
+  typescript: {
+    indexFiles: {
+      models: '<output>/models.ts',
+      responseModels: '<output>/responses.ts',
+      services: '<output>/services.ts'
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfPrimitives',
+        additionalExports: [],
+        component: 'AnyOfPrimitives',
+        filePath: '<output>/models/any-of-primitives.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/any-of-primitives.ts',
+            name: 'AnyOfPrimitives',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/Beta',
+        additionalExports: [],
+        component: 'Beta',
+        filePath: '<output>/models/beta.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/beta.ts',
+            name: 'Beta',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfRefAndPrimitive',
+        additionalExports: [],
+        component: 'AnyOfRefAndPrimitive',
+        filePath: '<output>/models/any-of-ref-and-primitive.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/any-of-ref-and-primitive.ts',
+            name: 'AnyOfRefAndPrimitive',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/Alpha',
+        additionalExports: [],
+        component: 'Alpha',
+        filePath: '<output>/models/alpha.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/alpha.ts',
+            name: 'Alpha',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfRefAndPrimitive/anyOf/1',
+        component: 'string',
+        imports: []
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfWithNullable',
+        additionalExports: [],
+        component: 'AnyOfWithNullable',
+        filePath: '<output>/models/any-of-with-nullable.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/any-of-with-nullable.ts',
+            name: 'AnyOfWithNullable',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfWithNullable/anyOf/0',
+        component: 'string',
+        imports: []
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfWithNullable/anyOf/1',
+        component: 'number',
+        imports: []
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfSingle',
+        additionalExports: [],
+        component: 'AnyOfSingle',
+        filePath: '<output>/models/any-of-single.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/any-of-single.ts',
+            name: 'AnyOfSingle',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfSingle/anyOf/0',
+        component: 'string',
+        imports: []
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfArrays',
+        additionalExports: [],
+        component: 'AnyOfArrays',
+        filePath: '<output>/models/any-of-arrays.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/any-of-arrays.ts',
+            name: 'AnyOfArrays',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfPrimitives/anyOf/0',
+        component: 'string',
+        imports: []
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfArrays/anyOf/0',
+        component: '(string)[]',
+        imports: []
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfArrays/anyOf/0/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfArrays/anyOf/1',
+        component: '(number)[]',
+        imports: []
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfArrays/anyOf/1/items',
+        component: 'number',
+        imports: []
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/ObjectWithAnyOfProperty',
+        additionalExports: [],
+        component: 'ObjectWithAnyOfProperty',
+        filePath: '<output>/models/object-with-any-of-property.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/object-with-any-of-property.ts',
+            name: 'ObjectWithAnyOfProperty',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/ObjectWithAnyOfProperty/properties/value',
+        component: '(string) | (number)',
+        imports: []
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/ObjectWithAnyOfProperty/properties/value/anyOf/0',
+        component: 'string',
+        imports: []
+      },
+      'schema-27': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/ObjectWithAnyOfProperty/properties/value/anyOf/1',
+        component: 'number',
+        imports: []
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfPrimitives/anyOf/1',
+        component: 'number',
+        imports: []
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/Alpha',
+        additionalExports: [],
+        component: 'Alpha',
+        filePath: '<output>/models/alpha.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/alpha.ts',
+            name: 'Alpha',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/Alpha/properties/alphaValue',
+        component: 'string',
+        imports: []
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/Beta',
+        additionalExports: [],
+        component: 'Beta',
+        filePath: '<output>/models/beta.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/beta.ts',
+            name: 'Beta',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/Beta/properties/betaValue',
+        component: 'number',
+        imports: []
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfRefs',
+        additionalExports: [],
+        component: 'AnyOfRefs',
+        filePath: '<output>/models/any-of-refs.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/any-of-refs.ts',
+            name: 'AnyOfRefs',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/Alpha',
+        additionalExports: [],
+        component: 'Alpha',
+        filePath: '<output>/models/alpha.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/alpha.ts',
+            name: 'Alpha',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      }
+    },
+    services: {}
+  }
+}

@@ -1,0 +1,2 @@
+models.ts:1:23 TS2307 Import "<output>/models/.ts" not a dependency and not in import map from "models.ts"
+models/.ts:1:14 SyntaxError: Expected '{', got '='

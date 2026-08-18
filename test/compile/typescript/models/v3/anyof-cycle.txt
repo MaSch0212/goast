@@ -1,0 +1,3 @@
+models/any-of-discriminator-a.ts:3:13 TS2456 Type alias 'AnyOfDiscriminatorA' circularly references itself.
+models/any-of-discriminator-b.ts:3:13 TS2456 Type alias 'AnyOfDiscriminatorB' circularly references itself.
+models/any-of-discriminator.ts:6:13 TS2456 Type alias '_AnyOfDiscriminatorBase' circularly references itself.

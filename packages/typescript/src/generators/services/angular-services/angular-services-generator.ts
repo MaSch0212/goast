@@ -233,7 +233,7 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
 
   protected getRootUrl(ctx: Context): string {
     return modifyString<[]>(
-      (ctx.data.services[0].$src ?? ctx.data.services[0].endpoints[0]?.$src)?.document.servers?.[0]?.url ?? '/',
+      (ctx.data.services[0]?.$src ?? ctx.data.services[0]?.endpoints[0]?.$src)?.document?.servers?.[0]?.url ?? '/',
       ctx.config.rootUrl,
     );
   }

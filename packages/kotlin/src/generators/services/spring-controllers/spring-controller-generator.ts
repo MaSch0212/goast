@@ -209,7 +209,10 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
                   kt.call(kt.refs.swagger.apiResponse(), [
                     kt.argument.named(
                       'responseCode',
-                      kt.string(response.statusCode?.toString()),
+                      // The spec's own response key, not `statusCode`: that field is `undefined` for
+                      // `default` and every range code, and `kt.string(undefined)` renders the bare token
+                      // `null`, which is not assignable to this non-nullable annotation element.
+                      kt.string(response.statusKey),
                     ),
                     response.description
                       ? kt.argument.named(
@@ -338,6 +341,10 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
           )
           : null,
         kt.argument.named('required', parameter.required),
+        // Only emitted when set, matching how the model generator marks a deprecated property on `@Schema`.
+        // `@Operation` always states `deprecated`, but doing that for every parameter of every endpoint
+        // would add `deprecated = false` noise far beyond what the annotation is documenting.
+        parameter.deprecated ? kt.argument.named('deprecated', kt.toNode(true)) : null,
         parameter.target === 'header' ? kt.argument.named('hidden', kt.toNode(true)) : null,
       ]);
 

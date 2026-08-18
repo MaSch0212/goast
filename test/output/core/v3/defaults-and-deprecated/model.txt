@@ -1,0 +1,2179 @@
+{
+  documents: [
+    {
+      components: {
+        schemas: {
+          DefaultArray: { default: [], items: { type: 'string' }, type: 'array' },
+          DefaultBool: { default: true, type: 'boolean' },
+          DefaultEmptyString: { default: '', type: 'string' },
+          DefaultEnum: {
+            default: 'one',
+            enum: [ 'one', 'two', 'three' ],
+            type: 'string'
+          },
+          DefaultInt: { default: 42, type: 'integer' },
+          DefaultNumber: { default: 3.14, type: 'number' },
+          DefaultObject: { default: {}, type: 'object' },
+          DefaultString: { default: 'hello', type: 'string' },
+          DeprecatedSchema: { deprecated: true, type: 'string' },
+          ObjectWithDefaults: {
+            properties: {
+              a: { default: 'hello', type: 'string' },
+              b: { default: 42, type: 'integer' },
+              c: { default: true, type: 'boolean' }
+            },
+            type: 'object'
+          },
+          ObjectWithDeprecatedProperties: {
+            properties: {
+              noDesc: { deprecated: true, type: 'string' },
+              withDesc: {
+                deprecated: true,
+                description: 'This property is deprecated.',
+                type: 'string'
+              }
+            },
+            type: 'object'
+          }
+        }
+      },
+      info: { title: 'Defaults And Deprecated', version: '1.0.0' },
+      openapi: '3.0.0',
+      paths: {
+        '/deprecated-op': {
+          get: {
+            deprecated: true,
+            description: 'This operation is deprecated.',
+            operationId: 'deprecatedOp',
+            responses: { '200': { description: 'OK.' } },
+            tags: [ 'Deprecation' ]
+          }
+        },
+        '/deprecated-op-no-desc': {
+          get: {
+            deprecated: true,
+            operationId: 'deprecatedOpNoDesc',
+            responses: { '200': { description: 'OK.' } },
+            tags: [ 'Deprecation' ]
+          }
+        },
+        '/deprecated-params': {
+          get: {
+            operationId: 'deprecatedParams',
+            parameters: [
+              {
+                deprecated: true,
+                description: 'This parameter is deprecated.',
+                in: 'query',
+                name: 'withDesc',
+                schema: { type: 'string' }
+              },
+              {
+                deprecated: true,
+                in: 'query',
+                name: 'noDesc',
+                schema: { type: 'string' }
+              },
+              {
+                in: 'query',
+                name: 'plain',
+                schema: { type: 'string' }
+              }
+            ],
+            responses: { '200': { description: 'OK.' } },
+            tags: [ 'Deprecation' ]
+          }
+        }
+      }
+    }
+  ],
+  endpoints: [
+    <ref *1> {
+      '$ref': undefined,
+      '$src': {
+        component: '176 inspect chars',
+        document: '2393 inspect chars',
+        file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+        originalComponent: '176 inspect chars',
+        path: '/paths//deprecated-op/get',
+        pos: { col: 7, line: 9 }
+      },
+      custom: {},
+      deprecated: true,
+      description: 'This operation is deprecated.',
+      id: 'endpoint-1',
+      method: 'get',
+      name: 'deprecatedOp',
+      parameters: [],
+      path: '/deprecated-op',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              deprecated: true,
+              description: 'This operation is deprecated.',
+              operationId: 'deprecatedOp',
+              responses: { '200': { description: 'OK.' } },
+              tags: [ 'Deprecation' ]
+            }
+          },
+          document: {
+            components: {
+              schemas: {
+                DefaultArray: {
+                  default: [],
+                  items: { type: 'string' },
+                  type: 'array'
+                },
+                DefaultBool: { default: true, type: 'boolean' },
+                DefaultEmptyString: { default: '', type: 'string' },
+                DefaultEnum: {
+                  default: 'one',
+                  enum: [ 'one', 'two', 'three' ],
+                  type: 'string'
+                },
+                DefaultInt: { default: 42, type: 'integer' },
+                DefaultNumber: { default: 3.14, type: 'number' },
+                DefaultObject: { default: {}, type: 'object' },
+                DefaultString: { default: 'hello', type: 'string' },
+                DeprecatedSchema: { deprecated: true, type: 'string' },
+                ObjectWithDefaults: {
+                  properties: {
+                    a: { default: 'hello', type: 'string' },
+                    b: { default: 42, type: 'integer' },
+                    c: { default: true, type: 'boolean' }
+                  },
+                  type: 'object'
+                },
+                ObjectWithDeprecatedProperties: {
+                  properties: {
+                    noDesc: { deprecated: true, type: 'string' },
+                    withDesc: {
+                      deprecated: true,
+                      description: 'This property is deprecated.',
+                      type: 'string'
+                    }
+                  },
+                  type: 'object'
+                }
+              }
+            },
+            info: { title: 'Defaults And Deprecated', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/deprecated-op': {
+                get: {
+                  deprecated: true,
+                  description: 'This operation is deprecated.',
+                  operationId: 'deprecatedOp',
+                  responses: { '200': { description: 'OK.' } },
+                  tags: [ 'Deprecation' ]
+                }
+              },
+              '/deprecated-op-no-desc': {
+                get: {
+                  deprecated: true,
+                  operationId: 'deprecatedOpNoDesc',
+                  responses: { '200': { description: 'OK.' } },
+                  tags: [ 'Deprecation' ]
+                }
+              },
+              '/deprecated-params': {
+                get: {
+                  operationId: 'deprecatedParams',
+                  parameters: [
+                    {
+                      deprecated: true,
+                      description: 'This parameter is deprecated.',
+                      in: 'query',
+                      name: 'withDesc',
+                      schema: { type: 'string' }
+                    },
+                    {
+                      deprecated: true,
+                      in: 'query',
+                      name: 'noDesc',
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'plain',
+                      schema: { type: 'string' }
+                    }
+                  ],
+                  responses: { '200': { description: 'OK.' } },
+                  tags: [ 'Deprecation' ]
+                }
+              }
+            }
+          },
+          file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+          originalComponent: {
+            get: {
+              deprecated: true,
+              description: 'This operation is deprecated.',
+              operationId: 'deprecatedOp',
+              responses: { '200': { description: 'OK.' } },
+              tags: [ 'Deprecation' ]
+            }
+          },
+          path: '/paths//deprecated-op',
+          pos: { col: 5, line: 8 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: [Circular *1],
+        head: undefined,
+        id: 'path-1',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/deprecated-op',
+        post: undefined,
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: { description: 'OK.' },
+            document: {
+              components: {
+                schemas: {
+                  DefaultArray: {
+                    default: [],
+                    items: { type: 'string' },
+                    type: 'array'
+                  },
+                  DefaultBool: { default: true, type: 'boolean' },
+                  DefaultEmptyString: { default: '', type: 'string' },
+                  DefaultEnum: {
+                    default: 'one',
+                    enum: [ 'one', 'two', 'three' ],
+                    type: 'string'
+                  },
+                  DefaultInt: { default: 42, type: 'integer' },
+                  DefaultNumber: { default: 3.14, type: 'number' },
+                  DefaultObject: { default: {}, type: 'object' },
+                  DefaultString: { default: 'hello', type: 'string' },
+                  DeprecatedSchema: { deprecated: true, type: 'string' },
+                  ObjectWithDefaults: {
+                    properties: {
+                      a: { default: 'hello', type: 'string' },
+                      b: { default: 42, type: 'integer' },
+                      c: { default: true, type: 'boolean' }
+                    },
+                    type: 'object'
+                  },
+                  ObjectWithDeprecatedProperties: {
+                    properties: {
+                      noDesc: { deprecated: true, type: 'string' },
+                      withDesc: {
+                        deprecated: true,
+                        description: 'This property is deprecated.',
+                        type: 'string'
+                      }
+                    },
+                    type: 'object'
+                  }
+                }
+              },
+              info: { title: 'Defaults And Deprecated', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/deprecated-op': {
+                  get: {
+                    deprecated: true,
+                    description: 'This operation is deprecated.',
+                    operationId: 'deprecatedOp',
+                    responses: { '200': { description: 'OK.' } },
+                    tags: [ 'Deprecation' ]
+                  }
+                },
+                '/deprecated-op-no-desc': {
+                  get: {
+                    deprecated: true,
+                    operationId: 'deprecatedOpNoDesc',
+                    responses: { '200': { description: 'OK.' } },
+                    tags: [ 'Deprecation' ]
+                  }
+                },
+                '/deprecated-params': {
+                  get: {
+                    operationId: 'deprecatedParams',
+                    parameters: [
+                      {
+                        deprecated: true,
+                        description: 'This parameter is deprecated.',
+                        in: 'query',
+                        name: 'withDesc',
+                        schema: { type: 'string' }
+                      },
+                      {
+                        deprecated: true,
+                        in: 'query',
+                        name: 'noDesc',
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'plain',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    responses: { '200': { description: 'OK.' } },
+                    tags: [ 'Deprecation' ]
+                  }
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+            originalComponent: { description: 'OK.' },
+            path: '/paths//deprecated-op/get/responses/200',
+            pos: { col: 11, line: 15 }
+          },
+          contentOptions: [],
+          description: 'OK.',
+          headers: [],
+          id: 'response-1',
+          statusCode: 200,
+          statusKey: '200'
+        }
+      ],
+      summary: undefined,
+      tags: [ 'Deprecation' ]
+    },
+    <ref *2> {
+      '$ref': undefined,
+      '$src': {
+        component: '134 inspect chars',
+        document: '2393 inspect chars',
+        file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+        originalComponent: '134 inspect chars',
+        path: '/paths//deprecated-op-no-desc/get',
+        pos: { col: 7, line: 18 }
+      },
+      custom: {},
+      deprecated: true,
+      description: undefined,
+      id: 'endpoint-2',
+      method: 'get',
+      name: 'deprecatedOpNoDesc',
+      parameters: [],
+      path: '/deprecated-op-no-desc',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              deprecated: true,
+              operationId: 'deprecatedOpNoDesc',
+              responses: { '200': { description: 'OK.' } },
+              tags: [ 'Deprecation' ]
+            }
+          },
+          document: {
+            components: {
+              schemas: {
+                DefaultArray: {
+                  default: [],
+                  items: { type: 'string' },
+                  type: 'array'
+                },
+                DefaultBool: { default: true, type: 'boolean' },
+                DefaultEmptyString: { default: '', type: 'string' },
+                DefaultEnum: {
+                  default: 'one',
+                  enum: [ 'one', 'two', 'three' ],
+                  type: 'string'
+                },
+                DefaultInt: { default: 42, type: 'integer' },
+                DefaultNumber: { default: 3.14, type: 'number' },
+                DefaultObject: { default: {}, type: 'object' },
+                DefaultString: { default: 'hello', type: 'string' },
+                DeprecatedSchema: { deprecated: true, type: 'string' },
+                ObjectWithDefaults: {
+                  properties: {
+                    a: { default: 'hello', type: 'string' },
+                    b: { default: 42, type: 'integer' },
+                    c: { default: true, type: 'boolean' }
+                  },
+                  type: 'object'
+                },
+                ObjectWithDeprecatedProperties: {
+                  properties: {
+                    noDesc: { deprecated: true, type: 'string' },
+                    withDesc: {
+                      deprecated: true,
+                      description: 'This property is deprecated.',
+                      type: 'string'
+                    }
+                  },
+                  type: 'object'
+                }
+              }
+            },
+            info: { title: 'Defaults And Deprecated', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/deprecated-op': {
+                get: {
+                  deprecated: true,
+                  description: 'This operation is deprecated.',
+                  operationId: 'deprecatedOp',
+                  responses: { '200': { description: 'OK.' } },
+                  tags: [ 'Deprecation' ]
+                }
+              },
+              '/deprecated-op-no-desc': {
+                get: {
+                  deprecated: true,
+                  operationId: 'deprecatedOpNoDesc',
+                  responses: { '200': { description: 'OK.' } },
+                  tags: [ 'Deprecation' ]
+                }
+              },
+              '/deprecated-params': {
+                get: {
+                  operationId: 'deprecatedParams',
+                  parameters: [
+                    {
+                      deprecated: true,
+                      description: 'This parameter is deprecated.',
+                      in: 'query',
+                      name: 'withDesc',
+                      schema: { type: 'string' }
+                    },
+                    {
+                      deprecated: true,
+                      in: 'query',
+                      name: 'noDesc',
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'plain',
+                      schema: { type: 'string' }
+                    }
+                  ],
+                  responses: { '200': { description: 'OK.' } },
+                  tags: [ 'Deprecation' ]
+                }
+              }
+            }
+          },
+          file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+          originalComponent: {
+            get: {
+              deprecated: true,
+              operationId: 'deprecatedOpNoDesc',
+              responses: { '200': { description: 'OK.' } },
+              tags: [ 'Deprecation' ]
+            }
+          },
+          path: '/paths//deprecated-op-no-desc',
+          pos: { col: 5, line: 17 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: [Circular *2],
+        head: undefined,
+        id: 'path-2',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/deprecated-op-no-desc',
+        post: undefined,
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: { description: 'OK.' },
+            document: {
+              components: {
+                schemas: {
+                  DefaultArray: {
+                    default: [],
+                    items: { type: 'string' },
+                    type: 'array'
+                  },
+                  DefaultBool: { default: true, type: 'boolean' },
+                  DefaultEmptyString: { default: '', type: 'string' },
+                  DefaultEnum: {
+                    default: 'one',
+                    enum: [ 'one', 'two', 'three' ],
+                    type: 'string'
+                  },
+                  DefaultInt: { default: 42, type: 'integer' },
+                  DefaultNumber: { default: 3.14, type: 'number' },
+                  DefaultObject: { default: {}, type: 'object' },
+                  DefaultString: { default: 'hello', type: 'string' },
+                  DeprecatedSchema: { deprecated: true, type: 'string' },
+                  ObjectWithDefaults: {
+                    properties: {
+                      a: { default: 'hello', type: 'string' },
+                      b: { default: 42, type: 'integer' },
+                      c: { default: true, type: 'boolean' }
+                    },
+                    type: 'object'
+                  },
+                  ObjectWithDeprecatedProperties: {
+                    properties: {
+                      noDesc: { deprecated: true, type: 'string' },
+                      withDesc: {
+                        deprecated: true,
+                        description: 'This property is deprecated.',
+                        type: 'string'
+                      }
+                    },
+                    type: 'object'
+                  }
+                }
+              },
+              info: { title: 'Defaults And Deprecated', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/deprecated-op': {
+                  get: {
+                    deprecated: true,
+                    description: 'This operation is deprecated.',
+                    operationId: 'deprecatedOp',
+                    responses: { '200': { description: 'OK.' } },
+                    tags: [ 'Deprecation' ]
+                  }
+                },
+                '/deprecated-op-no-desc': {
+                  get: {
+                    deprecated: true,
+                    operationId: 'deprecatedOpNoDesc',
+                    responses: { '200': { description: 'OK.' } },
+                    tags: [ 'Deprecation' ]
+                  }
+                },
+                '/deprecated-params': {
+                  get: {
+                    operationId: 'deprecatedParams',
+                    parameters: [
+                      {
+                        deprecated: true,
+                        description: 'This parameter is deprecated.',
+                        in: 'query',
+                        name: 'withDesc',
+                        schema: { type: 'string' }
+                      },
+                      {
+                        deprecated: true,
+                        in: 'query',
+                        name: 'noDesc',
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'plain',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    responses: { '200': { description: 'OK.' } },
+                    tags: [ 'Deprecation' ]
+                  }
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+            originalComponent: { description: 'OK.' },
+            path: '/paths//deprecated-op-no-desc/get/responses/200',
+            pos: { col: 11, line: 23 }
+          },
+          contentOptions: [],
+          description: 'OK.',
+          headers: [],
+          id: 'response-2',
+          statusCode: 200,
+          statusKey: '200'
+        }
+      ],
+      summary: undefined,
+      tags: [ 'Deprecation' ]
+    },
+    <ref *3> {
+      '$ref': undefined,
+      '$src': {
+        component: '472 inspect chars',
+        document: '2393 inspect chars',
+        file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+        originalComponent: '472 inspect chars',
+        path: '/paths//deprecated-params/get',
+        pos: { col: 7, line: 26 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-3',
+      method: 'get',
+      name: 'deprecatedParams',
+      parameters: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              deprecated: true,
+              description: 'This parameter is deprecated.',
+              in: 'query',
+              name: 'withDesc',
+              schema: { type: 'string' }
+            },
+            document: {
+              components: {
+                schemas: {
+                  DefaultArray: {
+                    default: [],
+                    items: { type: 'string' },
+                    type: 'array'
+                  },
+                  DefaultBool: { default: true, type: 'boolean' },
+                  DefaultEmptyString: { default: '', type: 'string' },
+                  DefaultEnum: {
+                    default: 'one',
+                    enum: [ 'one', 'two', 'three' ],
+                    type: 'string'
+                  },
+                  DefaultInt: { default: 42, type: 'integer' },
+                  DefaultNumber: { default: 3.14, type: 'number' },
+                  DefaultObject: { default: {}, type: 'object' },
+                  DefaultString: { default: 'hello', type: 'string' },
+                  DeprecatedSchema: { deprecated: true, type: 'string' },
+                  ObjectWithDefaults: {
+                    properties: {
+                      a: { default: 'hello', type: 'string' },
+                      b: { default: 42, type: 'integer' },
+                      c: { default: true, type: 'boolean' }
+                    },
+                    type: 'object'
+                  },
+                  ObjectWithDeprecatedProperties: {
+                    properties: {
+                      noDesc: { deprecated: true, type: 'string' },
+                      withDesc: {
+                        deprecated: true,
+                        description: 'This property is deprecated.',
+                        type: 'string'
+                      }
+                    },
+                    type: 'object'
+                  }
+                }
+              },
+              info: { title: 'Defaults And Deprecated', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/deprecated-op': {
+                  get: {
+                    deprecated: true,
+                    description: 'This operation is deprecated.',
+                    operationId: 'deprecatedOp',
+                    responses: { '200': { description: 'OK.' } },
+                    tags: [ 'Deprecation' ]
+                  }
+                },
+                '/deprecated-op-no-desc': {
+                  get: {
+                    deprecated: true,
+                    operationId: 'deprecatedOpNoDesc',
+                    responses: { '200': { description: 'OK.' } },
+                    tags: [ 'Deprecation' ]
+                  }
+                },
+                '/deprecated-params': {
+                  get: {
+                    operationId: 'deprecatedParams',
+                    parameters: [
+                      {
+                        deprecated: true,
+                        description: 'This parameter is deprecated.',
+                        in: 'query',
+                        name: 'withDesc',
+                        schema: { type: 'string' }
+                      },
+                      {
+                        deprecated: true,
+                        in: 'query',
+                        name: 'noDesc',
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'plain',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    responses: { '200': { description: 'OK.' } },
+                    tags: [ 'Deprecation' ]
+                  }
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+            originalComponent: {
+              deprecated: true,
+              description: 'This parameter is deprecated.',
+              in: 'query',
+              name: 'withDesc',
+              schema: { type: 'string' }
+            },
+            path: '/paths//deprecated-params/get/parameters/0',
+            pos: { col: 11, line: 29 }
+          },
+          allowEmptyValue: undefined,
+          allowReserved: undefined,
+          deprecated: true,
+          description: 'This parameter is deprecated.',
+          explode: undefined,
+          id: 'parameter-1',
+          name: 'withDesc',
+          required: false,
+          schema: 'schema-1',
+          style: undefined,
+          target: 'query'
+        },
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              deprecated: true,
+              in: 'query',
+              name: 'noDesc',
+              schema: { type: 'string' }
+            },
+            document: {
+              components: {
+                schemas: {
+                  DefaultArray: {
+                    default: [],
+                    items: { type: 'string' },
+                    type: 'array'
+                  },
+                  DefaultBool: { default: true, type: 'boolean' },
+                  DefaultEmptyString: { default: '', type: 'string' },
+                  DefaultEnum: {
+                    default: 'one',
+                    enum: [ 'one', 'two', 'three' ],
+                    type: 'string'
+                  },
+                  DefaultInt: { default: 42, type: 'integer' },
+                  DefaultNumber: { default: 3.14, type: 'number' },
+                  DefaultObject: { default: {}, type: 'object' },
+                  DefaultString: { default: 'hello', type: 'string' },
+                  DeprecatedSchema: { deprecated: true, type: 'string' },
+                  ObjectWithDefaults: {
+                    properties: {
+                      a: { default: 'hello', type: 'string' },
+                      b: { default: 42, type: 'integer' },
+                      c: { default: true, type: 'boolean' }
+                    },
+                    type: 'object'
+                  },
+                  ObjectWithDeprecatedProperties: {
+                    properties: {
+                      noDesc: { deprecated: true, type: 'string' },
+                      withDesc: {
+                        deprecated: true,
+                        description: 'This property is deprecated.',
+                        type: 'string'
+                      }
+                    },
+                    type: 'object'
+                  }
+                }
+              },
+              info: { title: 'Defaults And Deprecated', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/deprecated-op': {
+                  get: {
+                    deprecated: true,
+                    description: 'This operation is deprecated.',
+                    operationId: 'deprecatedOp',
+                    responses: { '200': { description: 'OK.' } },
+                    tags: [ 'Deprecation' ]
+                  }
+                },
+                '/deprecated-op-no-desc': {
+                  get: {
+                    deprecated: true,
+                    operationId: 'deprecatedOpNoDesc',
+                    responses: { '200': { description: 'OK.' } },
+                    tags: [ 'Deprecation' ]
+                  }
+                },
+                '/deprecated-params': {
+                  get: {
+                    operationId: 'deprecatedParams',
+                    parameters: [
+                      {
+                        deprecated: true,
+                        description: 'This parameter is deprecated.',
+                        in: 'query',
+                        name: 'withDesc',
+                        schema: { type: 'string' }
+                      },
+                      {
+                        deprecated: true,
+                        in: 'query',
+                        name: 'noDesc',
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'plain',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    responses: { '200': { description: 'OK.' } },
+                    tags: [ 'Deprecation' ]
+                  }
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+            originalComponent: {
+              deprecated: true,
+              in: 'query',
+              name: 'noDesc',
+              schema: { type: 'string' }
+            },
+            path: '/paths//deprecated-params/get/parameters/1',
+            pos: { col: 11, line: 35 }
+          },
+          allowEmptyValue: undefined,
+          allowReserved: undefined,
+          deprecated: true,
+          description: undefined,
+          explode: undefined,
+          id: 'parameter-2',
+          name: 'noDesc',
+          required: false,
+          schema: 'schema-2',
+          style: undefined,
+          target: 'query'
+        },
+        {
+          '$ref': undefined,
+          '$src': {
+            component: { in: 'query', name: 'plain', schema: { type: 'string' } },
+            document: {
+              components: {
+                schemas: {
+                  DefaultArray: {
+                    default: [],
+                    items: { type: 'string' },
+                    type: 'array'
+                  },
+                  DefaultBool: { default: true, type: 'boolean' },
+                  DefaultEmptyString: { default: '', type: 'string' },
+                  DefaultEnum: {
+                    default: 'one',
+                    enum: [ 'one', 'two', 'three' ],
+                    type: 'string'
+                  },
+                  DefaultInt: { default: 42, type: 'integer' },
+                  DefaultNumber: { default: 3.14, type: 'number' },
+                  DefaultObject: { default: {}, type: 'object' },
+                  DefaultString: { default: 'hello', type: 'string' },
+                  DeprecatedSchema: { deprecated: true, type: 'string' },
+                  ObjectWithDefaults: {
+                    properties: {
+                      a: { default: 'hello', type: 'string' },
+                      b: { default: 42, type: 'integer' },
+                      c: { default: true, type: 'boolean' }
+                    },
+                    type: 'object'
+                  },
+                  ObjectWithDeprecatedProperties: {
+                    properties: {
+                      noDesc: { deprecated: true, type: 'string' },
+                      withDesc: {
+                        deprecated: true,
+                        description: 'This property is deprecated.',
+                        type: 'string'
+                      }
+                    },
+                    type: 'object'
+                  }
+                }
+              },
+              info: { title: 'Defaults And Deprecated', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/deprecated-op': {
+                  get: {
+                    deprecated: true,
+                    description: 'This operation is deprecated.',
+                    operationId: 'deprecatedOp',
+                    responses: { '200': { description: 'OK.' } },
+                    tags: [ 'Deprecation' ]
+                  }
+                },
+                '/deprecated-op-no-desc': {
+                  get: {
+                    deprecated: true,
+                    operationId: 'deprecatedOpNoDesc',
+                    responses: { '200': { description: 'OK.' } },
+                    tags: [ 'Deprecation' ]
+                  }
+                },
+                '/deprecated-params': {
+                  get: {
+                    operationId: 'deprecatedParams',
+                    parameters: [
+                      {
+                        deprecated: true,
+                        description: 'This parameter is deprecated.',
+                        in: 'query',
+                        name: 'withDesc',
+                        schema: { type: 'string' }
+                      },
+                      {
+                        deprecated: true,
+                        in: 'query',
+                        name: 'noDesc',
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'plain',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    responses: { '200': { description: 'OK.' } },
+                    tags: [ 'Deprecation' ]
+                  }
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+            originalComponent: { in: 'query', name: 'plain', schema: { type: 'string' } },
+            path: '/paths//deprecated-params/get/parameters/2',
+            pos: { col: 11, line: 40 }
+          },
+          allowEmptyValue: undefined,
+          allowReserved: undefined,
+          deprecated: false,
+          description: undefined,
+          explode: undefined,
+          id: 'parameter-3',
+          name: 'plain',
+          required: false,
+          schema: 'schema-3',
+          style: undefined,
+          target: 'query'
+        }
+      ],
+      path: '/deprecated-params',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              operationId: 'deprecatedParams',
+              parameters: [
+                {
+                  deprecated: true,
+                  description: 'This parameter is deprecated.',
+                  in: 'query',
+                  name: 'withDesc',
+                  schema: { type: 'string' }
+                },
+                {
+                  deprecated: true,
+                  in: 'query',
+                  name: 'noDesc',
+                  schema: { type: 'string' }
+                },
+                {
+                  in: 'query',
+                  name: 'plain',
+                  schema: { type: 'string' }
+                }
+              ],
+              responses: { '200': { description: 'OK.' } },
+              tags: [ 'Deprecation' ]
+            }
+          },
+          document: {
+            components: {
+              schemas: {
+                DefaultArray: {
+                  default: [],
+                  items: { type: 'string' },
+                  type: 'array'
+                },
+                DefaultBool: { default: true, type: 'boolean' },
+                DefaultEmptyString: { default: '', type: 'string' },
+                DefaultEnum: {
+                  default: 'one',
+                  enum: [ 'one', 'two', 'three' ],
+                  type: 'string'
+                },
+                DefaultInt: { default: 42, type: 'integer' },
+                DefaultNumber: { default: 3.14, type: 'number' },
+                DefaultObject: { default: {}, type: 'object' },
+                DefaultString: { default: 'hello', type: 'string' },
+                DeprecatedSchema: { deprecated: true, type: 'string' },
+                ObjectWithDefaults: {
+                  properties: {
+                    a: { default: 'hello', type: 'string' },
+                    b: { default: 42, type: 'integer' },
+                    c: { default: true, type: 'boolean' }
+                  },
+                  type: 'object'
+                },
+                ObjectWithDeprecatedProperties: {
+                  properties: {
+                    noDesc: { deprecated: true, type: 'string' },
+                    withDesc: {
+                      deprecated: true,
+                      description: 'This property is deprecated.',
+                      type: 'string'
+                    }
+                  },
+                  type: 'object'
+                }
+              }
+            },
+            info: { title: 'Defaults And Deprecated', version: '1.0.0' },
+            openapi: '3.0.0',
+            paths: {
+              '/deprecated-op': {
+                get: {
+                  deprecated: true,
+                  description: 'This operation is deprecated.',
+                  operationId: 'deprecatedOp',
+                  responses: { '200': { description: 'OK.' } },
+                  tags: [ 'Deprecation' ]
+                }
+              },
+              '/deprecated-op-no-desc': {
+                get: {
+                  deprecated: true,
+                  operationId: 'deprecatedOpNoDesc',
+                  responses: { '200': { description: 'OK.' } },
+                  tags: [ 'Deprecation' ]
+                }
+              },
+              '/deprecated-params': {
+                get: {
+                  operationId: 'deprecatedParams',
+                  parameters: [
+                    {
+                      deprecated: true,
+                      description: 'This parameter is deprecated.',
+                      in: 'query',
+                      name: 'withDesc',
+                      schema: { type: 'string' }
+                    },
+                    {
+                      deprecated: true,
+                      in: 'query',
+                      name: 'noDesc',
+                      schema: { type: 'string' }
+                    },
+                    {
+                      in: 'query',
+                      name: 'plain',
+                      schema: { type: 'string' }
+                    }
+                  ],
+                  responses: { '200': { description: 'OK.' } },
+                  tags: [ 'Deprecation' ]
+                }
+              }
+            }
+          },
+          file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+          originalComponent: {
+            get: {
+              operationId: 'deprecatedParams',
+              parameters: [
+                {
+                  deprecated: true,
+                  description: 'This parameter is deprecated.',
+                  in: 'query',
+                  name: 'withDesc',
+                  schema: { type: 'string' }
+                },
+                {
+                  deprecated: true,
+                  in: 'query',
+                  name: 'noDesc',
+                  schema: { type: 'string' }
+                },
+                {
+                  in: 'query',
+                  name: 'plain',
+                  schema: { type: 'string' }
+                }
+              ],
+              responses: { '200': { description: 'OK.' } },
+              tags: [ 'Deprecation' ]
+            }
+          },
+          path: '/paths//deprecated-params',
+          pos: { col: 5, line: 25 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: [Circular *3],
+        head: undefined,
+        id: 'path-3',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/deprecated-params',
+        post: undefined,
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: { description: 'OK.' },
+            document: {
+              components: {
+                schemas: {
+                  DefaultArray: {
+                    default: [],
+                    items: { type: 'string' },
+                    type: 'array'
+                  },
+                  DefaultBool: { default: true, type: 'boolean' },
+                  DefaultEmptyString: { default: '', type: 'string' },
+                  DefaultEnum: {
+                    default: 'one',
+                    enum: [ 'one', 'two', 'three' ],
+                    type: 'string'
+                  },
+                  DefaultInt: { default: 42, type: 'integer' },
+                  DefaultNumber: { default: 3.14, type: 'number' },
+                  DefaultObject: { default: {}, type: 'object' },
+                  DefaultString: { default: 'hello', type: 'string' },
+                  DeprecatedSchema: { deprecated: true, type: 'string' },
+                  ObjectWithDefaults: {
+                    properties: {
+                      a: { default: 'hello', type: 'string' },
+                      b: { default: 42, type: 'integer' },
+                      c: { default: true, type: 'boolean' }
+                    },
+                    type: 'object'
+                  },
+                  ObjectWithDeprecatedProperties: {
+                    properties: {
+                      noDesc: { deprecated: true, type: 'string' },
+                      withDesc: {
+                        deprecated: true,
+                        description: 'This property is deprecated.',
+                        type: 'string'
+                      }
+                    },
+                    type: 'object'
+                  }
+                }
+              },
+              info: { title: 'Defaults And Deprecated', version: '1.0.0' },
+              openapi: '3.0.0',
+              paths: {
+                '/deprecated-op': {
+                  get: {
+                    deprecated: true,
+                    description: 'This operation is deprecated.',
+                    operationId: 'deprecatedOp',
+                    responses: { '200': { description: 'OK.' } },
+                    tags: [ 'Deprecation' ]
+                  }
+                },
+                '/deprecated-op-no-desc': {
+                  get: {
+                    deprecated: true,
+                    operationId: 'deprecatedOpNoDesc',
+                    responses: { '200': { description: 'OK.' } },
+                    tags: [ 'Deprecation' ]
+                  }
+                },
+                '/deprecated-params': {
+                  get: {
+                    operationId: 'deprecatedParams',
+                    parameters: [
+                      {
+                        deprecated: true,
+                        description: 'This parameter is deprecated.',
+                        in: 'query',
+                        name: 'withDesc',
+                        schema: { type: 'string' }
+                      },
+                      {
+                        deprecated: true,
+                        in: 'query',
+                        name: 'noDesc',
+                        schema: { type: 'string' }
+                      },
+                      {
+                        in: 'query',
+                        name: 'plain',
+                        schema: { type: 'string' }
+                      }
+                    ],
+                    responses: { '200': { description: 'OK.' } },
+                    tags: [ 'Deprecation' ]
+                  }
+                }
+              }
+            },
+            file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+            originalComponent: { description: 'OK.' },
+            path: '/paths//deprecated-params/get/responses/200',
+            pos: { col: 11, line: 46 }
+          },
+          contentOptions: [],
+          description: 'OK.',
+          headers: [],
+          id: 'response-3',
+          statusCode: 200,
+          statusKey: '200'
+        }
+      ],
+      summary: undefined,
+      tags: [ 'Deprecation' ]
+    }
+  ],
+  schemas: [
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '18 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+        originalComponent: '18 inspect chars',
+        path: '/paths//deprecated-params/get/parameters/0/schema',
+        pos: { col: 13, line: 34 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-1',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'schema-1',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '18 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+        originalComponent: '18 inspect chars',
+        path: '/paths//deprecated-params/get/parameters/1/schema',
+        pos: { col: 13, line: 39 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-2',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'schema-2',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '18 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+        originalComponent: '18 inspect chars',
+        path: '/paths//deprecated-params/get/parameters/2/schema',
+        pos: { col: 13, line: 43 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-3',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'schema-3',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '36 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+        originalComponent: '36 inspect chars',
+        path: '/components/schemas/DefaultString',
+        pos: { col: 7, line: 51 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: 'hello',
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-4',
+      inheritedSchemas: [],
+      isNameGenerated: false,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'DefaultString',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '32 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+        originalComponent: '32 inspect chars',
+        path: '/components/schemas/DefaultInt',
+        pos: { col: 7, line: 54 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: 42,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-5',
+      inheritedSchemas: [],
+      isNameGenerated: false,
+      items: undefined,
+      kind: 'integer',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'DefaultInt',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'integer'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '34 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+        originalComponent: '34 inspect chars',
+        path: '/components/schemas/DefaultBool',
+        pos: { col: 7, line: 57 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: true,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-6',
+      inheritedSchemas: [],
+      isNameGenerated: false,
+      items: undefined,
+      kind: 'boolean',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'DefaultBool',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'boolean'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '33 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+        originalComponent: '33 inspect chars',
+        path: '/components/schemas/DefaultNumber',
+        pos: { col: 7, line: 60 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: 3.14,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-7',
+      inheritedSchemas: [],
+      isNameGenerated: false,
+      items: undefined,
+      kind: 'number',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'DefaultNumber',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'number'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '31 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+        originalComponent: '31 inspect chars',
+        path: '/components/schemas/DefaultEmptyString',
+        pos: { col: 7, line: 63 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: '',
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-8',
+      inheritedSchemas: [],
+      isNameGenerated: false,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'DefaultEmptyString',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '18 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+        originalComponent: '18 inspect chars',
+        path: '/components/schemas/DefaultArray/items',
+        pos: { col: 9, line: 68 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-10',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'schema-10',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '57 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+        originalComponent: '57 inspect chars',
+        path: '/components/schemas/DefaultArray',
+        pos: { col: 7, line: 66 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: [],
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-9',
+      inheritedSchemas: [],
+      isNameGenerated: false,
+      items: {
+        '$ref': undefined,
+        '$src': {
+          component: '18 inspect chars',
+          document: '9 inspect chars',
+          file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+          originalComponent: '18 inspect chars',
+          path: '/components/schemas/DefaultArray/items',
+          pos: { col: 9, line: 68 }
+        },
+        accessibility: 'all',
+        additionalProperties: undefined,
+        allOf: [],
+        anyOf: [],
+        const: undefined,
+        custom: {},
+        default: undefined,
+        deprecated: false,
+        description: undefined,
+        discriminator: undefined,
+        enum: undefined,
+        example: undefined,
+        format: undefined,
+        id: 'schema-10',
+        inheritedSchemas: [],
+        isNameGenerated: true,
+        items: undefined,
+        kind: 'string',
+        maxItems: undefined,
+        maxLength: undefined,
+        maximum: undefined,
+        minItems: undefined,
+        minLength: undefined,
+        minimum: undefined,
+        name: 'schema-10',
+        not: undefined,
+        nullable: false,
+        oneOf: [],
+        pattern: undefined,
+        properties: Map(0) {},
+        required: Set(0) {},
+        type: 'string'
+      },
+      kind: 'array',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'DefaultArray',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'array'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '31 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+        originalComponent: '31 inspect chars',
+        path: '/components/schemas/DefaultObject',
+        pos: { col: 7, line: 71 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: {},
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-11',
+      inheritedSchemas: [],
+      isNameGenerated: false,
+      items: undefined,
+      kind: 'object',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'DefaultObject',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'object'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '67 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+        originalComponent: '67 inspect chars',
+        path: '/components/schemas/DefaultEnum',
+        pos: { col: 7, line: 74 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: 'one',
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: [ 'one', 'two', 'three' ],
+      example: undefined,
+      format: undefined,
+      id: 'schema-12',
+      inheritedSchemas: [],
+      isNameGenerated: false,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'DefaultEnum',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '36 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+        originalComponent: '36 inspect chars',
+        path: '/components/schemas/DeprecatedSchema',
+        pos: { col: 7, line: 81 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: true,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-13',
+      inheritedSchemas: [],
+      isNameGenerated: false,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'DeprecatedSchema',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '36 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+        originalComponent: '36 inspect chars',
+        path: '/components/schemas/ObjectWithDefaults/properties/a',
+        pos: { col: 11, line: 87 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: 'hello',
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-15',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'ObjectWithDefaults_a',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '32 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+        originalComponent: '32 inspect chars',
+        path: '/components/schemas/ObjectWithDefaults/properties/b',
+        pos: { col: 11, line: 90 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: 42,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-16',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'integer',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'ObjectWithDefaults_b',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'integer'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '34 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+        originalComponent: '34 inspect chars',
+        path: '/components/schemas/ObjectWithDefaults/properties/c',
+        pos: { col: 11, line: 93 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: true,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-17',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'boolean',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'ObjectWithDefaults_c',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'boolean'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '169 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+        originalComponent: '169 inspect chars',
+        path: '/components/schemas/ObjectWithDefaults',
+        pos: { col: 7, line: 84 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-14',
+      inheritedSchemas: [],
+      isNameGenerated: false,
+      items: undefined,
+      kind: 'object',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'ObjectWithDefaults',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(3) {
+        'a' => { name: 'a', schema: 'schema-15' },
+        'b' => { name: 'b', schema: 'schema-16' },
+        'c' => { name: 'c', schema: 'schema-17' }
+      },
+      required: Set(0) {},
+      type: 'object'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '87 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+        originalComponent: '87 inspect chars',
+        path: '/components/schemas/ObjectWithDeprecatedProperties/properties/withDesc',
+        pos: { col: 11, line: 99 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: true,
+      description: 'This property is deprecated.',
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-19',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'ObjectWithDeprecatedProperties_withDesc',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '36 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+        originalComponent: '36 inspect chars',
+        path: '/components/schemas/ObjectWithDeprecatedProperties/properties/noDesc',
+        pos: { col: 11, line: 103 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: true,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-20',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'ObjectWithDeprecatedProperties_noDesc',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '209 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v3/defaults-and-deprecated.yml',
+        originalComponent: '209 inspect chars',
+        path: '/components/schemas/ObjectWithDeprecatedProperties',
+        pos: { col: 7, line: 96 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-18',
+      inheritedSchemas: [],
+      isNameGenerated: false,
+      items: undefined,
+      kind: 'object',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'ObjectWithDeprecatedProperties',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(2) {
+        'noDesc' => { name: 'noDesc', schema: 'schema-20' },
+        'withDesc' => { name: 'withDesc', schema: 'schema-19' }
+      },
+      required: Set(0) {},
+      type: 'object'
+    }
+  ],
+  services: [
+    {
+      '$ref': undefined,
+      description: undefined,
+      endpoints: [ 'endpoint-1', 'endpoint-2', 'endpoint-3' ],
+      id: 'service-1',
+      name: 'Deprecation'
+    }
+  ]
+}

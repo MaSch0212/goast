@@ -1,0 +1,56 @@
+name: Docker
+description: A Buildx builder that can export layer cache, plus the credentials the GHA cache backend needs.
+
+# `test/harness/docker.ts`'s `buildImage` builds with `--cache-from type=gha --cache-to type=gha,mode=max`
+# whenever `CI` is set. Two things on a stock runner stop that from working, and both fail loudly rather
+# than merely losing the cache, so every job that builds an image needs this action:
+#
+# 1. The runner's default Buildx builder uses the `docker` driver, which cannot export cache at all —
+#    `--cache-to` aborts the build outright. `setup-buildx-action` creates and selects a
+#    `docker-container` builder, which can. `buildImage` already passes `--load`, so the built image
+#    still lands in the local image store where its `docker image inspect` skip-check looks for it.
+#
+# 2. The GitHub Actions cache backend authenticates with `ACTIONS_RUNTIME_TOKEN` and the cache service
+#    URL. The runner exposes those to *actions* but strips them from `run:` steps, and `buildImage` is
+#    invoked from a `run:` step. Re-exporting them through `GITHUB_ENV` is what puts them back.
+#
+#    What that costs, stated plainly because `GITHUB_ENV` is not a scoped hand-off: from this step on,
+#    every `run:` step in the job — and every process it spawns, including the test code and the
+#    containers it starts — can read `ACTIONS_RUNTIME_TOKEN`. The token is scoped to this run and expires
+#    with it, and it is the only way to reach the cache backend from a `run:` step, so the trade is
+#    accepted rather than avoidable. It is a reason to keep this action off jobs that do not build an
+#    image (`it-fetch-clients` does not use it), not a reason to hide the exposure.
+#
+# Neither can be verified without an Actions runner; see the task-4 report.
+
+runs:
+  using: composite
+  steps:
+    - name: Export the Actions cache credentials to `run:` steps
+      uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+      with:
+        # `ACTIONS_CACHE_SERVICE_V2` is the one that matters and the one whose absence broke the first
+        # real run. BuildKit picks its cache protocol from that flag: with it, the v2 service at
+        # `ACTIONS_RESULTS_URL`; without it, the v1 service at `ACTIONS_CACHE_URL` — which GitHub has
+        # shut down. Forwarding the two URLs but not the flag is precisely the combination that sends a
+        # perfectly healthy runner to a dead endpoint, and the endpoint answers with an HTML error page,
+        # so the failure surfaces as `failed to parse error response 400: <h2>Our services aren't
+        # available right now</h2> … invalid character '<' looking for beginning of value`.
+        #
+        # `ACTIONS_CACHE_URL` is still forwarded: a runner old enough to lack the v2 flag needs it, and
+        # on a v2 runner the flag wins. Each is exported only if the runner actually set it.
+        script: |
+          const names = [
+            'ACTIONS_RUNTIME_TOKEN',
+            'ACTIONS_CACHE_SERVICE_V2',
+            'ACTIONS_RESULTS_URL',
+            'ACTIONS_CACHE_URL',
+          ];
+          for (const name of names) {
+            const value = process.env[name];
+            if (value) core.exportVariable(name, value);
+          }
+          core.info(`forwarded: ${names.filter((n) => process.env[n]).join(', ')}`);
+
+    - name: Set up Buildx
+      uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0

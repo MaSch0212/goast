@@ -1,0 +1,3 @@
+body
+  expected {"fields":{"age":["4"],"name":["Rex"]},"kind":"form"}
+  actual   {"kind":"text","value":"{\"name\":\"Rex\",\"age\":4}"}

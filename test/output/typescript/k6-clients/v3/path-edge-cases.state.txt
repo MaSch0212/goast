@@ -1,0 +1,97 @@
+{
+  typescript: {
+    indexFiles: {
+      k6Clients: '<output>/clients.js',
+      k6ResponseModels: '<output>/responses.ts',
+      models: '<output>/models.ts'
+    },
+    k6Clients: {
+      'service-1': {
+        __source__: 'tag:Paths',
+        component: 'PathsClient',
+        filePath: '<output>/clients/paths-client.js',
+        responseModels: {
+          'endpoint-1': {
+            component: 'OverlapTemplatedApiResponse',
+            filePath: '<output>/models/responses/paths-responses.ts'
+          },
+          'endpoint-10': {
+            component: 'ParamOnlyPathApiResponse',
+            filePath: '<output>/models/responses/paths-responses.ts'
+          },
+          'endpoint-11': {
+            component: 'ThreeParamsApiResponse',
+            filePath: '<output>/models/responses/paths-responses.ts'
+          },
+          'endpoint-12': {
+            component: 'CaseVarietyApiResponse',
+            filePath: '<output>/models/responses/paths-responses.ts'
+          },
+          'endpoint-13': {
+            component: 'VeryDeepPathApiResponse',
+            filePath: '<output>/models/responses/paths-responses.ts'
+          },
+          'endpoint-2': {
+            component: 'OverlapLiteralApiResponse',
+            filePath: '<output>/models/responses/paths-responses.ts'
+          },
+          'endpoint-3': {
+            component: 'WithDotApiResponse',
+            filePath: '<output>/models/responses/paths-responses.ts'
+          },
+          'endpoint-4': {
+            component: 'WithDashApiResponse',
+            filePath: '<output>/models/responses/paths-responses.ts'
+          },
+          'endpoint-5': {
+            component: 'WithUnderscoreApiResponse',
+            filePath: '<output>/models/responses/paths-responses.ts'
+          },
+          'endpoint-6': {
+            component: 'WithTildeApiResponse',
+            filePath: '<output>/models/responses/paths-responses.ts'
+          },
+          'endpoint-7': {
+            component: 'WithColonApiResponse',
+            filePath: '<output>/models/responses/paths-responses.ts'
+          },
+          'endpoint-8': {
+            component: 'WithAtApiResponse',
+            filePath: '<output>/models/responses/paths-responses.ts'
+          },
+          'endpoint-9': {
+            component: 'TrailingSlashApiResponse',
+            filePath: '<output>/models/responses/paths-responses.ts'
+          }
+        }
+      }
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/path-edge-cases.yml#/paths//overlap/{id}/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/path-edge-cases.yml#/paths//{id}/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/path-edge-cases.yml#/paths//a/{p1}/b/{p2}/c/{p3}/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/path-edge-cases.yml#/paths//a/{p1}/b/{p2}/c/{p3}/get/parameters/1/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/path-edge-cases.yml#/paths//a/{p1}/b/{p2}/c/{p3}/get/parameters/2/schema',
+        component: 'string',
+        imports: []
+      }
+    }
+  }
+}

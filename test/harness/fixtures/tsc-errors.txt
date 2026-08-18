@@ -1,0 +1,12 @@
+v3/non-ascii-names/models/.ts(1,14): error TS1005: '{' expected.
+v3/non-ascii-names/models/.ts(2,5): error TS2304: Cannot find name 'value'.
+v3/non-ascii-names/models/.ts(2,11): error TS1109: Expression expected.
+v3/non-ascii-names/models/.ts(2,13): error TS2693: 'string' only refers to a type, but is being used as a value here.
+v3/non-ascii-names/models/_1.ts(1,14): error TS1005: '{' expected.
+v3/non-ascii-names/models/_1.ts(2,5): error TS2304: Cannot find name 'value'.
+v3/non-ascii-names/models/_1.ts(2,11): error TS1109: Expression expected.
+v3/non-ascii-names/models/_1.ts(2,13): error TS2693: 'string' only refers to a type, but is being used as a value here.
+v3/non-ascii-names/models/_2.ts(1,14): error TS1005: '{' expected.
+v3/non-ascii-names/models/_2.ts(2,5): error TS2304: Cannot find name 'value'.
+v3/non-ascii-names/models/_2.ts(2,11): error TS1109: Expression expected.
+v3/non-ascii-names/models/_2.ts(2,13): error TS2693: 'string' only refers to a type, but is being used as a value here.

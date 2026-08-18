@@ -1,0 +1,204 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Request Bodies
+
+paths:
+  /json:
+    post:
+      operationId: jsonBody
+      tags: [Bodies]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payload'
+      responses:
+        '200':
+          description: The JSON body was accepted.
+  /json-optional:
+    post:
+      operationId: optionalJsonBody
+      tags: [Bodies]
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payload'
+      responses:
+        '200':
+          description: The optional JSON body was accepted.
+  /json-inline:
+    post:
+      operationId: inlineJsonBody
+      tags: [Bodies]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                count:
+                  type: integer
+      responses:
+        '200':
+          description: The inline JSON body was accepted.
+  /json-array:
+    post:
+      operationId: arrayJsonBody
+      tags: [Bodies]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Payload'
+      responses:
+        '200':
+          description: The array of payloads was accepted.
+  /json-primitive:
+    post:
+      operationId: primitiveJsonBody
+      tags: [Bodies]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: The primitive JSON body was accepted.
+  /text:
+    post:
+      operationId: textBody
+      tags: [Bodies]
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: The text body was accepted.
+  /binary:
+    post:
+      operationId: binaryBody
+      tags: [Bodies]
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: The binary body was accepted.
+  /any:
+    post:
+      operationId: anyBody
+      tags: [Bodies]
+      requestBody:
+        required: true
+        content:
+          '*/*':
+            schema: {}
+      responses:
+        '200':
+          description: The body of any content type was accepted.
+  /multi-content:
+    post:
+      operationId: multiContentBody
+      tags: [Bodies]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payload'
+          application/xml:
+            schema:
+              type: object
+              properties:
+                xmlValue:
+                  type: string
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: One of the three content types was accepted.
+  /form:
+    post:
+      operationId: formBody
+      tags: [Bodies]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                age:
+                  type: integer
+                subscribed:
+                  type: boolean
+      responses:
+        '200':
+          description: The form body was accepted.
+  /described-body:
+    post:
+      operationId: describedBody
+      tags: [Bodies]
+      requestBody:
+        description: A body with an explanation of its purpose.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payload'
+      responses:
+        '200':
+          description: The described body was accepted.
+  /ref-body:
+    post:
+      operationId: refBody
+      tags: [Bodies]
+      requestBody:
+        $ref: '#/components/requestBodies/SharedBody'
+      responses:
+        '200':
+          description: The shared request body was accepted.
+
+components:
+  schemas:
+    Payload:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        note:
+          type: string
+  requestBodies:
+    SharedBody:
+      description: A request body shared through components.requestBodies.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Payload'

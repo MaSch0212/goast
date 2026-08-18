@@ -124,6 +124,8 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
       let fileContent = (await getAssetFileContent(sourcePath))
         .replace(/@PACKAGE_NAME@/g, ctx.infrastructurePackageName);
       if (file === 'ApiClient.kt') {
+        // This order is positional and must agree with the delegate call's own argument order —
+        // `getClientDelegateArguments` in okhttp3-client-generator.ts is the other side of that agreement.
         fileContent = fileContent.replace(
           /@API_CLIENT_PARAMETERS@/,
           ctx.config.serializer === 'parameter'
@@ -155,7 +157,7 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
         ? s`${kt.refs.jackson.jacksonMapperBuilder(springBootVersion)}()${s.indent`
             .findAndAddModules()
             .changeDefaultPropertyInclusion { it.withValueInclusion(${kt.refs.jackson.jsonInclude()}.Include.${jsonIncludeMember}).withContentInclusion(${kt.refs.jackson.jsonInclude()}.Include.${jsonIncludeMember}) }
-            .configure(${kt.refs.jackson.serializationFeature(springBootVersion)}.WRITE_DATES_AS_TIMESTAMPS, false)
+            .configure(${kt.refs.jackson.dateTimeFeature()}.WRITE_DATES_AS_TIMESTAMPS, false)
             .configure(${kt.refs.jackson.deserializationFeature(springBootVersion)}.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .build()`}`
         : s`${kt.refs.jackson.jacksonObjectMapper(springBootVersion)}()${s.indent`

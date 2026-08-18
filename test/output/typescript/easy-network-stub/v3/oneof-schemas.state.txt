@@ -1,0 +1,158 @@
+{
+  typescript: {
+    indexFiles: { models: '<output>/models.ts', stubs: '<output>/stubs.ts' },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/oneof-schemas.yml#/components/schemas/EmptyOneOf',
+        additionalExports: [],
+        component: 'EmptyOneOf',
+        filePath: '<output>/models/empty-one-of.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/empty-one-of.ts',
+            name: 'EmptyOneOf',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/simple-schemas.yml#/components/schemas/MyString',
+        additionalExports: [],
+        component: 'MyString',
+        filePath: '<output>/models/my-string.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/my-string.ts',
+            name: 'MyString',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/simple-schemas.yml#/components/schemas/MyString',
+        additionalExports: [],
+        component: 'MyString',
+        filePath: '<output>/models/my-string.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/my-string.ts',
+            name: 'MyString',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/oneof-schemas.yml#/components/schemas/WithReferences/oneOf/3',
+        component: 'string',
+        imports: []
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/oneof-schemas.yml#/components/schemas/OneOfSimpleTypes',
+        additionalExports: [],
+        component: 'OneOfSimpleTypes',
+        filePath: '<output>/models/one-of-simple-types.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/one-of-simple-types.ts',
+            name: 'OneOfSimpleTypes',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/oneof-schemas.yml#/components/schemas/OneOfSimpleTypes/oneOf/0',
+        component: 'string',
+        imports: []
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/oneof-schemas.yml#/components/schemas/OneOfSimpleTypes/oneOf/1',
+        component: 'number',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/oneof-schemas.yml#/components/schemas/IgnoreType',
+        additionalExports: [],
+        component: 'IgnoreType',
+        filePath: '<output>/models/ignore-type.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/ignore-type.ts',
+            name: 'IgnoreType',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/oneof-schemas.yml#/components/schemas/WithReferences',
+        additionalExports: [],
+        component: 'WithReferences',
+        filePath: '<output>/models/with-references.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/with-references.ts',
+            name: 'WithReferences',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/oneof-schemas.yml#/components/schemas/EmptyOneOf',
+        additionalExports: [],
+        component: 'EmptyOneOf',
+        filePath: '<output>/models/empty-one-of.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/empty-one-of.ts',
+            name: 'EmptyOneOf',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/detailed-schemas.yml#/components/schemas/WithTitle',
+        additionalExports: [],
+        component: 'MyTitle',
+        filePath: '<output>/models/my-title.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/my-title.ts',
+            name: 'MyTitle',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/detailed-schemas.yml#/components/schemas/WithTitle',
+        additionalExports: [],
+        component: 'MyTitle',
+        filePath: '<output>/models/my-title.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/my-title.ts',
+            name: 'MyTitle',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      }
+    },
+    stubs: {}
+  }
+}

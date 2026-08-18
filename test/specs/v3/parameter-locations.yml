@@ -1,0 +1,162 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Parameter Locations
+
+paths:
+  /path/{id}/{sub}:
+    get:
+      operationId: twoPathParams
+      tags: [Parameters]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: sub
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Both path parameters echoed back.
+  /query:
+    get:
+      operationId: queryParams
+      tags: [Parameters]
+      parameters:
+        - name: requiredString
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: optionalString
+          in: query
+          schema:
+            type: string
+        - name: intWithDefault
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: flag
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: The four query parameters echoed back.
+  /header:
+    get:
+      operationId: headerParams
+      tags: [Parameters]
+      parameters:
+        - name: X-Request-Id
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: X-Optional-Header
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The two header parameters echoed back.
+  /cookie:
+    get:
+      operationId: cookieParams
+      tags: [Parameters]
+      parameters:
+        - name: session
+          in: cookie
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The cookie parameter echoed back.
+  /mixed/{id}:
+    get:
+      operationId: mixedParams
+      tags: [Parameters]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: filter
+          in: query
+          schema:
+            type: string
+        - name: X-Trace-Id
+          in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+      responses:
+        '200':
+          description: One parameter from each of the four locations echoed back.
+  /described:
+    get:
+      operationId: describedParams
+      tags: [Parameters]
+      parameters:
+        - name: withDescription
+          in: query
+          description: A parameter with a description.
+          schema:
+            type: string
+        - name: withoutDescription
+          in: query
+          schema:
+            type: string
+        - name: withExample
+          in: query
+          example: sample-value
+          schema:
+            type: string
+        - name: withRefSchema
+          in: query
+          schema:
+            $ref: '#/components/schemas/ParamSchema'
+      responses:
+        '200':
+          description: The four described query parameters echoed back.
+  /empty-value:
+    get:
+      operationId: allowEmptyValueParam
+      tags: [Parameters]
+      parameters:
+        - name: search
+          in: query
+          allowEmptyValue: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The empty-allowed query parameter echoed back.
+  /reserved:
+    get:
+      operationId: reservedCharParam
+      tags: [Parameters]
+      parameters:
+        - name: filter
+          in: query
+          allowReserved: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The reserved-character query parameter echoed back.
+
+components:
+  schemas:
+    ParamSchema:
+      type: string
+      enum: [one, two, three]

@@ -1,0 +1,9 @@
+com/openapi/generated/api/client/MultipartRequests.kt:75:32 Null cannot be a value of a non-null type 'ApiRequestFile'.
+com/openapi/generated/api/client/MultipartRequests.kt:92:32 Null cannot be a value of a non-null type 'ApiRequestFile'.
+com/openapi/generated/api/client/MultipartRequests.kt:113:32 Null cannot be a value of a non-null type 'ApiRequestFile'.
+com/openapi/generated/api/client/MultipartRequests.kt:188:32 Null cannot be a value of a non-null type 'ApiRequestFile'.
+com/openapi/generated/api/client/MultipartRequests.kt:205:32 Null cannot be a value of a non-null type 'ApiRequestFile'.
+com/openapi/generated/api/client/MultipartRequests.kt:226:32 Null cannot be a value of a non-null type 'ApiRequestFile'.
+com/openapi/generated/api/client/MultipartRequests.kt:244:63 Null cannot be a value of a non-null type 'ApiRequestFile'.
+com/openapi/generated/api/client/MultipartRequests.kt:251:73 Null cannot be a value of a non-null type 'ApiRequestFile'.
+com/openapi/generated/api/client/MultipartRequests.kt:261:62 Null cannot be a value of a non-null type 'ApiRequestFile'.

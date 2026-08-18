@@ -1,0 +1,208 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Discriminator Variants
+
+paths:
+  /x:
+    x-ignore: true
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    ImplicitBase:
+      type: object
+      discriminator:
+        propertyName: petType
+      oneOf:
+        - $ref: '#/components/schemas/ImplicitDog'
+        - $ref: '#/components/schemas/ImplicitCat'
+      properties:
+        petType:
+          type: string
+      required:
+        - petType
+    ImplicitDog:
+      allOf:
+        - $ref: '#/components/schemas/ImplicitBase'
+        - type: object
+          properties:
+            breed:
+              type: string
+    ImplicitCat:
+      allOf:
+        - $ref: '#/components/schemas/ImplicitBase'
+        - type: object
+          properties:
+            lives:
+              type: integer
+
+    PartialMapping:
+      type: object
+      discriminator:
+        propertyName: kind
+        mapping:
+          first: '#/components/schemas/PartialMappingFirst'
+          second: '#/components/schemas/PartialMappingSecond'
+      oneOf:
+        - $ref: '#/components/schemas/PartialMappingFirst'
+        - $ref: '#/components/schemas/PartialMappingSecond'
+        - $ref: '#/components/schemas/PartialMappingThird'
+      properties:
+        kind:
+          type: string
+      required:
+        - kind
+    PartialMappingFirst:
+      allOf:
+        - $ref: '#/components/schemas/PartialMapping'
+        - type: object
+          properties:
+            firstValue:
+              type: string
+    PartialMappingSecond:
+      allOf:
+        - $ref: '#/components/schemas/PartialMapping'
+        - type: object
+          properties:
+            secondValue:
+              type: string
+    PartialMappingThird:
+      allOf:
+        - $ref: '#/components/schemas/PartialMapping'
+        - type: object
+          properties:
+            thirdValue:
+              type: string
+
+    AllOfInheritanceDiscriminator:
+      type: object
+      discriminator:
+        propertyName: kind
+      properties:
+        kind:
+          type: string
+      required:
+        - kind
+    AllOfInheritanceDiscriminatorChildA:
+      allOf:
+        - $ref: '#/components/schemas/AllOfInheritanceDiscriminator'
+        - type: object
+          properties:
+            childAValue:
+              type: string
+    AllOfInheritanceDiscriminatorChildB:
+      allOf:
+        - $ref: '#/components/schemas/AllOfInheritanceDiscriminator'
+        - type: object
+          properties:
+            childBValue:
+              type: string
+
+    DiscriminatorPropertyNotRequired:
+      type: object
+      discriminator:
+        propertyName: kind
+      oneOf:
+        - $ref: '#/components/schemas/DiscriminatorPropertyNotRequiredA'
+        - $ref: '#/components/schemas/DiscriminatorPropertyNotRequiredB'
+      properties:
+        kind:
+          type: string
+    DiscriminatorPropertyNotRequiredA:
+      allOf:
+        - $ref: '#/components/schemas/DiscriminatorPropertyNotRequired'
+        - type: object
+          properties:
+            aValue:
+              type: string
+    DiscriminatorPropertyNotRequiredB:
+      allOf:
+        - $ref: '#/components/schemas/DiscriminatorPropertyNotRequired'
+        - type: object
+          properties:
+            bValue:
+              type: string
+
+    DiscriminatorWithEnum:
+      type: object
+      discriminator:
+        propertyName: kind
+        mapping:
+          alpha: '#/components/schemas/DiscriminatorWithEnumAlpha'
+          beta: '#/components/schemas/DiscriminatorWithEnumBeta'
+      oneOf:
+        - $ref: '#/components/schemas/DiscriminatorWithEnumAlpha'
+        - $ref: '#/components/schemas/DiscriminatorWithEnumBeta'
+      properties:
+        kind:
+          type: string
+          enum:
+            - alpha
+            - beta
+      required:
+        - kind
+    DiscriminatorWithEnumAlpha:
+      allOf:
+        - $ref: '#/components/schemas/DiscriminatorWithEnum'
+        - type: object
+          properties:
+            alphaValue:
+              type: string
+    DiscriminatorWithEnumBeta:
+      allOf:
+        - $ref: '#/components/schemas/DiscriminatorWithEnum'
+        - type: object
+          properties:
+            betaValue:
+              type: string
+
+    NestedDiscriminator:
+      type: object
+      discriminator:
+        propertyName: kind
+      oneOf:
+        - $ref: '#/components/schemas/NestedDiscriminatorLeaf'
+        - $ref: '#/components/schemas/NestedDiscriminatorGroup'
+      properties:
+        kind:
+          type: string
+      required:
+        - kind
+    NestedDiscriminatorLeaf:
+      allOf:
+        - $ref: '#/components/schemas/NestedDiscriminator'
+        - type: object
+          properties:
+            leafValue:
+              type: string
+    NestedDiscriminatorGroup:
+      allOf:
+        - $ref: '#/components/schemas/NestedDiscriminator'
+      discriminator:
+        propertyName: groupKind
+      oneOf:
+        - $ref: '#/components/schemas/NestedDiscriminatorGroupA'
+        - $ref: '#/components/schemas/NestedDiscriminatorGroupB'
+      properties:
+        groupKind:
+          type: string
+      required:
+        - groupKind
+    NestedDiscriminatorGroupA:
+      allOf:
+        - $ref: '#/components/schemas/NestedDiscriminatorGroup'
+        - type: object
+          properties:
+            groupAValue:
+              type: string
+    NestedDiscriminatorGroupB:
+      allOf:
+        - $ref: '#/components/schemas/NestedDiscriminatorGroup'
+        - type: object
+          properties:
+            groupBValue:
+              type: string

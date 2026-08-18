@@ -87,12 +87,26 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
     return toCasing(endpoint.name, ctx.config.functionNameCasing);
   }
 
+  /**
+   * The Kotlin `@Deprecated` annotation for a deprecated operation, or nothing for a supported one. Every
+   * function generated for the operation carries it, matching what the OkHttp3 client generator does for
+   * the same input — including the empty message, which is what `kotlin.Deprecated` requires as its first
+   * positional argument.
+   */
+  protected getEndpointDeprecatedAnnotations(
+    _ctx: Context,
+    args: Args.GetEndpointDeprecatedAnnotations,
+  ): kt.Annotation<Builder>[] {
+    return args.endpoint.deprecated ? [kt.annotation(kt.refs.deprecated(), [kt.argument(kt.string(''))])] : [];
+  }
+
   protected getEndpointFunction(ctx: Context, args: Args.GetEndpointFunction): kt.Function<Builder> {
     const { endpoint, parameters, responseSchema } = args;
     const functionName = this.getEndpointFunctionName(ctx, { endpoint });
 
     return kt.function(functionName, {
       doc: kt.doc(this.getEndpointDocDescription(ctx, { endpoint })),
+      annotations: this.getEndpointDeprecatedAnnotations(ctx, { endpoint }),
       suspend: true,
       receiverType: kt.refs.springReactive.webClient(),
       parameters: parameters.map((parameter) =>
@@ -145,11 +159,11 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
 
     return kt.function(functionName, {
       doc: kt.doc(this.getEndpointDocDescription(ctx, { endpoint })),
+      annotations: this.getEndpointDeprecatedAnnotations(ctx, { endpoint }),
       suspend: true,
-      // Spring 7's `WebClient.awaitExchange` is `<V : Any>`, so the `<T>` overloads need an `Any` bound to infer.
-      generics: [
-        kt.genericParameter('T', ctx.config.springBootVersion === 4 ? { constraint: kt.refs.any() } : undefined),
-      ],
+      // `WebClient.awaitExchange` is `<V : Any>` on both Spring lines, so the `<T>` overload needs the bound
+      // unconditionally. Defect 28 scoped it to Spring Boot 4, leaving every Boot 3 unit uncompilable.
+      generics: [kt.genericParameter('T', { constraint: kt.refs.any() })],
       receiverType: kt.refs.springReactive.webClient(),
       parameters: [
         ...parameters.map((parameter) =>
@@ -200,6 +214,7 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
 
     return kt.function(functionName, {
       doc: kt.doc(this.getEndpointDocDescription(ctx, { endpoint })),
+      annotations: this.getEndpointDeprecatedAnnotations(ctx, { endpoint }),
       receiverType: kt.refs.springReactive.webClient(),
       parameters: parameters.map((parameter) =>
         kt.parameter(
@@ -414,6 +429,7 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
     const functionName = this.getEndpointUriFunctionName(ctx, { endpoint });
 
     return kt.function(functionName, {
+      annotations: this.getEndpointDeprecatedAnnotations(ctx, { endpoint }),
       parameters: parameters.filter((p) => p.target === 'path' || p.target === 'query').map((parameter) =>
         kt.parameter(
           toCasing(parameter.name, ctx.config.parameterNameCasing),
@@ -479,7 +495,7 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
     return !parameter.required
       ? parameter.schema?.kind === 'string' && parameter.schema.enum && parameter.schema.default
         ? s`${this.getTypeUsage(ctx, { schema: parameter.schema, nullable: false })}.${
-          toCasing(String(parameter.schema.default), ctx.config.enumValueNameCasing)
+          this.toEnumValueName(ctx, parameter.schema.enum, parameter.schema.default)
         }`
         : kt.toNode(parameter.schema?.default)
       : null;

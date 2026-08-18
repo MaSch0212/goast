@@ -1,39 +1,581 @@
 name: Build
+
+# Every pull request, plus pushes to the two long-lived branches.
+#
+# The tier-4 jobs exist to catch a client-serialization regression *before* it merges, which they cannot
+# do if they only run on `main` — and the old `branches: [main]` filter is why the broken `deno task npm`
+# went unnoticed for a whole phase: that work lives on `testing-next` and CI never looked at it. Both
+# reasons are served by `pull_request` plus the integration branches; neither requires `branches: ['**']`.
+#
+# `branches: ['**']` was the first attempt and it double-ran every PR: a same-repo PR branch fires `push`
+# and `pull_request` for the same commit, in different concurrency groups, so neither cancels the other
+# and the whole ~17-job graph — ten of them container jobs — runs twice for one commit's worth of signal.
+# Listing the branches instead is deterministic; deduplicating by concurrency is not, because whichever
+# run loses the race is *cancelled*, and a cancelled check-run posted against the PR's head SHA can block
+# a merge that branch protection gates on.
+#
+# The cost: a push to an ephemeral branch with no PR open gets no CI. Open the PR — draft is enough.
+#
+# Listing branches also excludes tags, which matters because the `publish` job pushes three tags per
+# release and an unfiltered `push:` would start a full run for each of them.
 on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
+  workflow_dispatch:
+
+# Cancel superseded runs everywhere except `main`. A run on `main` may be part-way through publishing to
+# JSR and NPM, and killing that mid-flight leaves the three packages at different versions with no way to
+# roll back. Nothing else in the graph publishes anything, so a superseded run there is pure waste.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+permissions:
+  contents: read
 
 jobs:
-  build:
-    name: Build
+  # --- Cheap gates -------------------------------------------------------------------------------
+  # No `needs:`. They are the fastest signal in the workflow and nothing is served by making them wait.
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # Two whole-tree passes over a small repo; a minute locally. Ten leaves room for a cold runner.
+    timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Setup Deno
-        uses: denoland/setup-deno@v2
-        with:
-          # Pinned: Deno 2.8.3 regressed `export =` default-import type resolution
-          # (e.g. `import fs from 'fs-extra'`), breaking type-checking repo-wide.
-          deno-version: v2.8.2
+      - name: Setup
+        uses: ./.github/actions/setup
 
-      - name: Install dependencies
-        run: deno install --frozen
+      - name: Format
+        run: deno fmt --check
 
       - name: Lint
         run: deno lint
 
-      - name: Test
-        id: test
-        run: deno task test
+  unit:
+    name: Unit tests (tier 1)
+    runs-on: ubuntu-latest
+    # Tier 1 is ~215 tests / 2411 steps in well under a minute locally, and starts no container.
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Generator unit tests
+        run: deno task test:unit
+
+      # The harness is what every other tier's assertions are made of, so its own tests belong with the
+      # unit gate rather than nowhere. `GOAST_COMPILE` is unset here, which is what keeps
+      # `test/harness/docker.test.ts` from starting a container in this job — the `harness-docker` job
+      # below is where that half runs.
+      - name: Harness self-tests
+        run: deno task test:harness
+
+      # The shared case corpus every tier-4 driver is fed from. `deno task test` used to sweep the whole
+      # tree, so this file had no job of its own to lose; splitting the tiers apart is exactly what would
+      # have dropped it. Invoked directly rather than through a task because there is no task that names
+      # this directory and it carries no `--filter` to guard.
+      - name: Case corpus tests
+        run: deno test -A test/cases
+
+  output-check:
+    name: Output snapshots (tier 2)
+    runs-on: ubuntu-latest
+    # Sub-minute locally. The headroom is for the cold-runner case, not for the work.
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Check the committed output tree
+        run: deno task test:output:check
+
+      # `check` mode deliberately never writes, so a failed run leaves a clean working tree and a bare
+      # `git diff` would upload an empty patch. Re-running in write mode is what turns the failure into
+      # something reviewable; its own exit code is irrelevant, the check above already decided the job.
+      # `--intent-to-add` is what makes newly generated files show up in the diff at all.
+      - name: Materialise the snapshot drift
+        if: failure()
+        shell: bash
+        run: |
+          deno task test:output || true
+          git add --intent-to-add --all
+          git diff > snapshot.patch
+
+      - name: Upload the snapshot drift
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: snapshot-patch
+          path: snapshot.patch
+          if-no-files-found: warn
+
+  images:
+    name: Image (${{ matrix.image }})
+    runs-on: ubuntu-latest
+    # A cold Kotlin image is a JDK plus a warmed Gradle dependency cache. Thirty minutes is generous
+    # for that and irrelevant for the other two, which are minutes at most.
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        # The three build contexts under `test/docker/`. There is no Playwright image; the spec's
+        # "four" predates the decision not to add one.
+        image: [kotlin, node, k6]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Setup Docker
+        uses: ./.github/actions/docker
+
+      # `buildImage` already derives the content-hash tag, skips the build when that tag is present, and
+      # switches to `--cache-from type=gha --cache-to type=gha,mode=max` when `CI` is set. Hand-rolling
+      # a `docker buildx build` here would produce a *differently tagged* image, so every downstream job
+      # would miss the tag it looks for and rebuild from scratch — the exact opposite of the point of
+      # this job. The image itself does not survive to the next job; the layer cache does.
+      #
+      # The image name is passed through the environment rather than interpolated into the script text,
+      # so the value is data to the script instead of source code.
+      - name: Warm the layer cache
+        env:
+          IMAGE: ${{ matrix.image }}
+        run: |
+          deno eval "import { buildImage } from '@goast/test-harness';
+          const image = Deno.env.get('IMAGE');
+          console.log(await buildImage(image, 'test/docker/' + image));"
+
+  # --- Tier 3: compile gate ----------------------------------------------------------------------
+  # `output-check` gates these because they compile the committed output tree. Compiling a stale tree
+  # produces a result that says nothing about the generator, pass or fail.
+
+  compile-ts:
+    name: Compile TypeScript (tier 3)
+    needs: [output-check, images]
+    runs-on: ubuntu-latest
+    # The `tsc` half runs in a container per profile; `deno check` runs on the host. Under a minute
+    # locally with a warm image.
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Setup Docker
+        uses: ./.github/actions/docker
+
+      # This task is an `&&`-chain of several `deno test` invocations, not one — Deno 2.9.5's `--filter`
+      # is a plain substring match with no way to express "these units and also that one", so the units
+      # no single substring reaches get their own invocation. Expect several summary lines, not one.
+      - name: Run
+        shell: bash
+        run: deno task test:compile:ts:check 2>&1 | tee compile-ts.log
+
+      - name: Upload the compiler output
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: compile-ts-log
+          path: compile-ts.log
+          if-no-files-found: warn
+
+  compile-kotlin:
+    name: Compile Kotlin (tier 3)
+    needs: [output-check, images]
+    runs-on: ubuntu-latest
+    # ~2 minutes locally against a warm Gradle cache. A cold runner has to populate that cache inside
+    # the container before it compiles anything, which is where the rest of this budget goes.
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Setup Docker
+        uses: ./.github/actions/docker
+
+      # Also an `&&`-chain: the Kotlin units, plus the discovery test and the runner/orphan tests that
+      # no substring filter can select.
+      - name: Run
+        shell: bash
+        run: deno task test:compile:kotlin:check 2>&1 | tee compile-kotlin.log
+
+      - name: Upload the compiler output
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: compile-kotlin-log
+          path: compile-kotlin.log
+          if-no-files-found: warn
+
+  harness-docker:
+    name: Harness Docker tests
+    needs: [output-check, images]
+    runs-on: ubuntu-latest
+    # `test:compile:check` used to carry this file, which is why splitting the compile gate in two had
+    # to give it a home of its own rather than run it twice or drop it.
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Setup Docker
+        uses: ./.github/actions/docker
+
+      - name: Run
+        shell: bash
+        run: deno task test:harness:docker 2>&1 | tee harness-docker.log
+
+      - name: Upload the container output
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: harness-docker-log
+          path: harness-docker.log
+          if-no-files-found: warn
+
+  # --- Tier 4: integration -----------------------------------------------------------------------
+  # Every leg tees its own stdout and uploads it when the job fails. The harness runs its containers
+  # with `--rm` and folds the container's stdout into the test output, so this log *is* the container
+  # log; there is no surviving container to run `docker logs` against after the fact.
+
+  it-fetch-clients:
+    name: Integration (fetch clients)
+    # No `images`, unlike its siblings: `test:integration:check` runs without `GOAST_INTEGRATION`, so
+    # nothing in this job starts a container and waiting on three image builds would only delay it.
+    needs: [output-check]
+    runs-on: ubuntu-latest
+    # This job also carries the whole non-container integration sweep — the per-leg `build.test.ts`
+    # files, the oracles, and the `test/integration-tests/` guards — because `test:integration:check`
+    # runs the tree without `GOAST_INTEGRATION` and the fetch driver is the one leg that needs no
+    # container. Splitting the sweep out would give it no job of its own to live in.
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Run
+        shell: bash
+        run: deno task test:integration:check 2>&1 | tee it-fetch-clients.log
+
+      - name: Upload the driver output
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: it-fetch-clients-log
+          path: it-fetch-clients.log
+          if-no-files-found: warn
+
+  it-angular-services:
+    name: Integration (Angular services)
+    needs: [output-check, images]
+    runs-on: ubuntu-latest
+    # ~1 minute locally; the container installs nothing beyond what the `node` image already carries.
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Setup Docker
+        uses: ./.github/actions/docker
+
+      - name: Run
+        shell: bash
+        run: deno task test:integration:angular:check 2>&1 | tee it-angular-services.log
+
+      - name: Upload the driver output
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: it-angular-services-log
+          path: it-angular-services.log
+          if-no-files-found: warn
+
+  it-k6-clients:
+    name: Integration (k6 clients)
+    needs: [output-check, images]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Setup Docker
+        uses: ./.github/actions/docker
+
+      - name: Run
+        shell: bash
+        run: deno task test:integration:k6:check 2>&1 | tee it-k6-clients.log
+
+      - name: Upload the driver output
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: it-k6-clients-log
+          path: it-k6-clients.log
+          if-no-files-found: warn
+
+  it-easy-network-stub:
+    name: Integration (easy-network-stub)
+    needs: [output-check, images]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Setup Docker
+        uses: ./.github/actions/docker
+
+      - name: Run
+        shell: bash
+        run: deno task test:integration:stubs:check 2>&1 | tee it-easy-network-stub.log
+
+      - name: Upload the driver output
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: it-easy-network-stub-log
+          path: it-easy-network-stub.log
+          if-no-files-found: warn
+
+  # The two Kotlin client families share one directory and one task, so they split by `--filter` rather
+  # than by task name. Every filter string below is covered by `test/integration-tests/task-filters.test.ts`,
+  # which asserts it still names a suite *in the directory the job runs* — without that, a renamed
+  # `describe` would leave these jobs running zero tests and exiting 0, green forever and gating nothing.
+  # The same file asserts the converse: that no suite in these directories is left unselected by every
+  # job in the graph. That direction is the one that caught the boot suite falling out of the split.
+  #
+  # Each leg's filter travels through the step environment rather than being interpolated into the script
+  # text, the same way the `images` job passes its image name, so the value is data to the shell rather
+  # than source code. The guard test follows it back through `env:` to the matrix leg it came from.
+
+  it-okhttp3-clients:
+    name: Integration (okhttp3 clients, ${{ matrix.id }})
+    needs: [output-check, images]
+    runs-on: ubuntu-latest
+    # ~2 minutes locally for both units together, against a warm Gradle cache inside the image.
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: sb3
+            filter: integration/okhttp3-clients@sb3
+          - id: sb4
+            filter: integration/okhttp3-clients@sb4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Setup Docker
+        uses: ./.github/actions/docker
+
+      - name: Run
+        shell: bash
+        env:
+          GOAST_INTEGRATION: '1'
+          GOAST_SNAPSHOT: check
+          FILTER: ${{ matrix.filter }}
+        run: deno test -A test/integration/kotlin-clients --filter "$FILTER" 2>&1 | tee driver.log
+
+      - name: Upload the driver output
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: it-okhttp3-clients-${{ matrix.id }}-log
+          path: driver.log
+          if-no-files-found: warn
+
+  it-spring-reactive-web:
+    name: Integration (spring-reactive-web clients, ${{ matrix.id }})
+    needs: [output-check, images]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: sb3
+            filter: integration/spring-reactive-web-clients@sb3
+          - id: sb4
+            filter: integration/spring-reactive-web-clients@sb4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Setup Docker
+        uses: ./.github/actions/docker
+
+      - name: Run
+        shell: bash
+        env:
+          GOAST_INTEGRATION: '1'
+          GOAST_SNAPSHOT: check
+          FILTER: ${{ matrix.filter }}
+        run: deno test -A test/integration/kotlin-clients --filter "$FILTER" 2>&1 | tee driver.log
+
+      - name: Upload the driver output
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: it-spring-reactive-web-${{ matrix.id }}-log
+          path: driver.log
+          if-no-files-found: warn
+
+  it-spring-controllers:
+    name: Integration (spring controllers, ${{ matrix.id }})
+    needs: [output-check, images]
+    runs-on: ubuntu-latest
+    # ~3 minutes locally for all four units against a warm Gradle cache. Each unit here boots a real
+    # Spring application inside the container before the first case is driven, and a cold runner pays
+    # for the Gradle dependency resolution too.
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        # Two legs for four units, not four. `--filter` is a substring match, so `…@sb3` selects both
+        # `…@sb3` and `…@sb3-strict`; adding the strict units as legs of their own does not split the
+        # work, it runs each of them a second time — six container-backed unit runs to cover four units,
+        # on the most expensive tier in the graph. A disjoint split by filter is a two-way split, and the
+        # plan's fact 7 enumerating four filter strings does not make them four disjoint sets.
+        #
+        # `boot` is the third leg, and it is not a unit at all: `boot.test.ts` asserts the tier-4
+        # *infrastructure* — offline Gradle resolution, the `run` task, the published port, readiness
+        # polling, and that the generated controllers are component-scanned — under the suite name
+        # `integration/spring-controllers boot`. No `…@sbN` filter is a substring of that, so splitting
+        # this job by unit dropped it out of CI entirely while every leg stayed green. It is back as its
+        # own leg, and `task-filters.test.ts` now fails if any suite here goes unselected again.
+        include:
+          - id: sb3
+            filter: integration/spring-controllers@sb3
+          - id: sb4
+            filter: integration/spring-controllers@sb4
+          - id: boot
+            filter: integration/spring-controllers boot
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Setup Docker
+        uses: ./.github/actions/docker
+
+      - name: Run
+        shell: bash
+        env:
+          GOAST_INTEGRATION: '1'
+          GOAST_SNAPSHOT: check
+          FILTER: ${{ matrix.filter }}
+        run: deno test -A test/integration/spring-controllers --filter "$FILTER" 2>&1 | tee driver.log
+
+      - name: Upload the driver output
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: it-spring-controllers-${{ matrix.id }}-log
+          path: driver.log
+          if-no-files-found: warn
+
+  # --- Gates -------------------------------------------------------------------------------------
+
+  all-tests:
+    name: All tests
+    # Every tier. Adding a test job without adding it here is the one mistake this aggregator cannot
+    # catch, because a job it does not depend on has no result to inspect.
+    needs:
+      - lint
+      - unit
+      - output-check
+      - images
+      - compile-ts
+      - compile-kotlin
+      - harness-docker
+      - it-fetch-clients
+      - it-angular-services
+      - it-k6-clients
+      - it-easy-network-stub
+      - it-okhttp3-clients
+      - it-spring-reactive-web
+      - it-spring-controllers
+    # `always()` so this job runs even when an upstream job failed — without it the aggregator would be
+    # skipped, and a skipped aggregator is exactly the state the check below refuses to treat as pass.
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # `skipped` counts as failure alongside `failure` and `cancelled`, deliberately. A job-level `if`
+      # someone mis-authors — or a `needs:` whose upstream failed — turns a gate into a skip, and a skip
+      # that reads as success is a publish gate that silently stopped gating.
+      - name: Fail unless every tier succeeded
+        if: >-
+          contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+          || contains(needs.*.result, 'skipped')
+        run: |
+          echo "Upstream results: ${{ join(needs.*.result, ', ') }}"
+          echo "Every tier must report success; failure, cancelled and skipped all fail this gate."
+          exit 1
+
+      - name: Report
+        run: |
+          echo "Upstream results: ${{ join(needs.*.result, ', ') }}"
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    # dnt builds three packages and type-checks each under a Node shim. No `needs:`; it is the publish
+    # path's own gate and is independent of the test tiers.
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+
+      - name: Setup
+        uses: ./.github/actions/setup
 
       - name: JSR dry-run publish
         run: deno publish --dry-run --allow-dirty
@@ -41,23 +583,16 @@ jobs:
       - name: Build NPM packages
         run: deno task npm
 
-      - name: Upload failed verify outputs
-        if: always() && (steps.test.outcome == 'failure')
-        uses: actions/upload-artifact@v4
-        with:
-          name: verify-outputs
-          path: packages/**/.verify/**/*
-          if-no-files-found: ignore
-
       - name: Upload NPM packages
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: npm
           path: npm
 
   publish:
     name: Publish
-    needs: build
+    # The whole point of this rework: publishing waits on every tier, not on the build alone.
+    needs: [all-tests, build]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: github.ref == 'refs/heads/main'
@@ -66,26 +601,22 @@ jobs:
       id-token: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
 
-      - name: Setup Deno
-        uses: denoland/setup-deno@v2
-        with:
-          # Pinned: Deno 2.8.3 regressed `export =` default-import type resolution
-          # (e.g. `import fs from 'fs-extra'`), breaking type-checking repo-wide.
-          deno-version: v2.8.2
+      - name: Setup
+        uses: ./.github/actions/setup
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 24
-          registry-url: "https://registry.npmjs.org"
+          registry-url: 'https://registry.npmjs.org'
           always-auth: false
 
       - name: Download NPM packages
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: npm
           path: npm
@@ -96,12 +627,12 @@ jobs:
 
       - name: Publish @goast/core to NPM
         id: publish-core
-        uses: JS-DevTools/npm-publish@v4
+        uses: JS-DevTools/npm-publish@0fd2f4369c5d6bcfcde6091a7c527d810b9b5c3f # v4.1.5
         with:
           package: npm/@goast/core
 
       - name: Create Tag for @goast/core
-        uses: rickstaa/action-create-tag@v1
+        uses: rickstaa/action-create-tag@a1c7777fcb2fee4f19b0f283ba888afa11678b72 # v1.7.2
         with:
           tag: core/v${{ steps.publish-core.outputs.version }}
           tag_exists_error: false
@@ -112,12 +643,12 @@ jobs:
 
       - name: Publish @goast/kotlin to NPM
         id: publish-kotlin
-        uses: JS-DevTools/npm-publish@v4
+        uses: JS-DevTools/npm-publish@0fd2f4369c5d6bcfcde6091a7c527d810b9b5c3f # v4.1.5
         with:
           package: npm/@goast/kotlin
 
       - name: Create Tag for @goast/kotlin
-        uses: rickstaa/action-create-tag@v1
+        uses: rickstaa/action-create-tag@a1c7777fcb2fee4f19b0f283ba888afa11678b72 # v1.7.2
         with:
           tag: kotlin/v${{ steps.publish-kotlin.outputs.version }}
           tag_exists_error: false
@@ -128,12 +659,12 @@ jobs:
 
       - name: Publish @goast/typescript to NPM
         id: publish-typescript
-        uses: JS-DevTools/npm-publish@v4
+        uses: JS-DevTools/npm-publish@0fd2f4369c5d6bcfcde6091a7c527d810b9b5c3f # v4.1.5
         with:
           package: npm/@goast/typescript
 
       - name: Create Tag for @goast/typescript
-        uses: rickstaa/action-create-tag@v1
+        uses: rickstaa/action-create-tag@a1c7777fcb2fee4f19b0f283ba888afa11678b72 # v1.7.2
         with:
           tag: typescript/v${{ steps.publish-typescript.outputs.version }}
           tag_exists_error: false

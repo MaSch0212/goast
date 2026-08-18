@@ -1,0 +1,3 @@
+query.spaceDelimited
+  expected ["a b"]
+  actual   ["a,b"]

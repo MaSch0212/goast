@@ -1,0 +1,37 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Owners
+
+paths:
+  /owners/{id}:
+    get:
+      operationId: getOwner
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The requested owner.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Owner'
+
+components:
+  schemas:
+    Owner:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        contact:
+          $ref: 'shared.yml#/components/schemas/Contact'
+        pet:
+          $ref: 'pets.yml#/components/schemas/Pet'

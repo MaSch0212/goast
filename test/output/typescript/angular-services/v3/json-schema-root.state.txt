@@ -1,0 +1,57 @@
+{
+  typescript: {
+    indexFiles: {
+      models: '<output>/models.ts',
+      responseModels: '<output>/responses.ts',
+      services: '<output>/services.ts'
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/json-schema-root.json#/',
+        additionalExports: [],
+        component: 'RootSchema',
+        filePath: '<output>/models/root-schema.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/root-schema.ts',
+            name: 'RootSchema',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/json-schema-root.json#/properties/name',
+        component: 'string',
+        imports: []
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/json-schema-root.json#/properties/address',
+        component: '{\n  street?: string;\n  city?: string;\n}',
+        imports: []
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/json-schema-root.json#/properties/address/properties/street',
+        component: 'string',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/json-schema-root.json#/properties/address/properties/city',
+        component: 'string',
+        imports: []
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/json-schema-root.json#/properties/tags',
+        component: '(string)[]',
+        imports: []
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/json-schema-root.json#/properties/tags/items',
+        component: 'string',
+        imports: []
+      }
+    },
+    services: {}
+  }
+}

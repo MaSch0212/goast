@@ -1,0 +1,3 @@
+header.cookie
+  expected session=abc123
+  actual   <absent>

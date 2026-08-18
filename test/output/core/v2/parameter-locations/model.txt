@@ -1,0 +1,2556 @@
+{
+  documents: [
+    {
+      definitions: {
+        Payload: {
+          properties: { name: { type: 'string' }, value: { type: 'integer' } },
+          type: 'object'
+        }
+      },
+      info: { title: 'Parameter Locations', version: '1.0.0' },
+      paths: {
+        '/body': {
+          post: {
+            operationId: 'bodyParam',
+            parameters: [
+              {
+                in: 'body',
+                name: 'payload',
+                required: true,
+                schema: { '$ref': '#/definitions/Payload' }
+              }
+            ],
+            responses: {
+              '200': { description: 'The body parameter echoed back.' }
+            },
+            tags: [ 'Parameters' ]
+          }
+        },
+        '/form': {
+          post: {
+            consumes: [ 'application/x-www-form-urlencoded' ],
+            operationId: 'formDataParams',
+            parameters: [
+              { in: 'formData', name: 'title', type: 'string' },
+              { in: 'formData', name: 'count', type: 'integer' },
+              { in: 'formData', name: 'active', type: 'boolean' }
+            ],
+            responses: {
+              '200': {
+                description: 'The three form-data parameters echoed back.'
+              }
+            },
+            tags: [ 'Parameters' ]
+          }
+        },
+        '/query': {
+          get: {
+            operationId: 'queryParams',
+            parameters: [
+              {
+                collectionFormat: 'multi',
+                in: 'query',
+                items: { type: 'string' },
+                name: 'tags',
+                type: 'array'
+              },
+              {
+                collectionFormat: 'csv',
+                in: 'query',
+                items: { type: 'string' },
+                name: 'ids',
+                type: 'array'
+              }
+            ],
+            responses: {
+              '200': {
+                description: 'The two array-valued query parameters echoed back.'
+              }
+            },
+            tags: [ 'Parameters' ]
+          }
+        },
+        '/upload': {
+          post: {
+            consumes: [ 'multipart/form-data' ],
+            operationId: 'fileUpload',
+            parameters: [
+              { in: 'formData', name: 'file', type: 'file' },
+              { in: 'formData', name: 'description', type: 'string' }
+            ],
+            responses: {
+              '200': {
+                description: 'The uploaded file and its description echoed back.'
+              }
+            },
+            tags: [ 'Parameters' ]
+          }
+        }
+      },
+      swagger: '2.0'
+    }
+  ],
+  endpoints: [
+    <ref *1> {
+      '$ref': undefined,
+      '$src': {
+        component: '278 inspect chars',
+        document: '2241 inspect chars',
+        file: '<root>/test/specs/v2/parameter-locations.yml',
+        originalComponent: '278 inspect chars',
+        path: '/paths//body/post',
+        pos: { col: 7, line: 9 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-1',
+      method: 'post',
+      name: 'bodyParam',
+      parameters: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              in: 'body',
+              name: 'payload',
+              required: true,
+              schema: { '$ref': '#/definitions/Payload' }
+            },
+            document: {
+              definitions: {
+                Payload: {
+                  properties: {
+                    name: { type: 'string' },
+                    value: { type: 'integer' }
+                  },
+                  type: 'object'
+                }
+              },
+              info: { title: 'Parameter Locations', version: '1.0.0' },
+              paths: {
+                '/body': {
+                  post: {
+                    operationId: 'bodyParam',
+                    parameters: [
+                      {
+                        in: 'body',
+                        name: 'payload',
+                        required: true,
+                        schema: { '$ref': '#/definitions/Payload' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The body parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/form': {
+                  post: {
+                    consumes: [ 'application/x-www-form-urlencoded' ],
+                    operationId: 'formDataParams',
+                    parameters: [
+                      { in: 'formData', name: 'title', type: 'string' },
+                      {
+                        in: 'formData',
+                        name: 'count',
+                        type: 'integer'
+                      },
+                      {
+                        in: 'formData',
+                        name: 'active',
+                        type: 'boolean'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The three form-data parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/query': {
+                  get: {
+                    operationId: 'queryParams',
+                    parameters: [
+                      {
+                        collectionFormat: 'multi',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'tags',
+                        type: 'array'
+                      },
+                      {
+                        collectionFormat: 'csv',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'ids',
+                        type: 'array'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The two array-valued query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/upload': {
+                  post: {
+                    consumes: [ 'multipart/form-data' ],
+                    operationId: 'fileUpload',
+                    parameters: [
+                      { in: 'formData', name: 'file', type: 'file' },
+                      {
+                        in: 'formData',
+                        name: 'description',
+                        type: 'string'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The uploaded file and its description echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                }
+              },
+              swagger: '2.0'
+            },
+            file: '<root>/test/specs/v2/parameter-locations.yml',
+            originalComponent: {
+              in: 'body',
+              name: 'payload',
+              required: true,
+              schema: { '$ref': '#/definitions/Payload' }
+            },
+            path: '/paths//body/post/parameters/0',
+            pos: { col: 11, line: 12 }
+          },
+          allowEmptyValue: undefined,
+          allowReserved: undefined,
+          deprecated: false,
+          description: undefined,
+          explode: undefined,
+          id: 'parameter-1',
+          name: 'payload',
+          required: true,
+          schema: 'schema-1',
+          style: undefined,
+          target: 'body'
+        }
+      ],
+      path: '/body',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            post: {
+              operationId: 'bodyParam',
+              parameters: [
+                {
+                  in: 'body',
+                  name: 'payload',
+                  required: true,
+                  schema: { '$ref': '#/definitions/Payload' }
+                }
+              ],
+              responses: {
+                '200': { description: 'The body parameter echoed back.' }
+              },
+              tags: [ 'Parameters' ]
+            }
+          },
+          document: {
+            definitions: {
+              Payload: {
+                properties: {
+                  name: { type: 'string' },
+                  value: { type: 'integer' }
+                },
+                type: 'object'
+              }
+            },
+            info: { title: 'Parameter Locations', version: '1.0.0' },
+            paths: {
+              '/body': {
+                post: {
+                  operationId: 'bodyParam',
+                  parameters: [
+                    {
+                      in: 'body',
+                      name: 'payload',
+                      required: true,
+                      schema: { '$ref': '#/definitions/Payload' }
+                    }
+                  ],
+                  responses: {
+                    '200': { description: 'The body parameter echoed back.' }
+                  },
+                  tags: [ 'Parameters' ]
+                }
+              },
+              '/form': {
+                post: {
+                  consumes: [ 'application/x-www-form-urlencoded' ],
+                  operationId: 'formDataParams',
+                  parameters: [
+                    { in: 'formData', name: 'title', type: 'string' },
+                    { in: 'formData', name: 'count', type: 'integer' },
+                    { in: 'formData', name: 'active', type: 'boolean' }
+                  ],
+                  responses: {
+                    '200': {
+                      description: 'The three form-data parameters echoed back.'
+                    }
+                  },
+                  tags: [ 'Parameters' ]
+                }
+              },
+              '/query': {
+                get: {
+                  operationId: 'queryParams',
+                  parameters: [
+                    {
+                      collectionFormat: 'multi',
+                      in: 'query',
+                      items: { type: 'string' },
+                      name: 'tags',
+                      type: 'array'
+                    },
+                    {
+                      collectionFormat: 'csv',
+                      in: 'query',
+                      items: { type: 'string' },
+                      name: 'ids',
+                      type: 'array'
+                    }
+                  ],
+                  responses: {
+                    '200': {
+                      description: 'The two array-valued query parameters echoed back.'
+                    }
+                  },
+                  tags: [ 'Parameters' ]
+                }
+              },
+              '/upload': {
+                post: {
+                  consumes: [ 'multipart/form-data' ],
+                  operationId: 'fileUpload',
+                  parameters: [
+                    { in: 'formData', name: 'file', type: 'file' },
+                    {
+                      in: 'formData',
+                      name: 'description',
+                      type: 'string'
+                    }
+                  ],
+                  responses: {
+                    '200': {
+                      description: 'The uploaded file and its description echoed back.'
+                    }
+                  },
+                  tags: [ 'Parameters' ]
+                }
+              }
+            },
+            swagger: '2.0'
+          },
+          file: '<root>/test/specs/v2/parameter-locations.yml',
+          originalComponent: {
+            post: {
+              operationId: 'bodyParam',
+              parameters: [
+                {
+                  in: 'body',
+                  name: 'payload',
+                  required: true,
+                  schema: { '$ref': '#/definitions/Payload' }
+                }
+              ],
+              responses: {
+                '200': { description: 'The body parameter echoed back.' }
+              },
+              tags: [ 'Parameters' ]
+            }
+          },
+          path: '/paths//body',
+          pos: { col: 5, line: 8 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: undefined,
+        head: undefined,
+        id: 'path-1',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/body',
+        post: [Circular *1],
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: { description: 'The body parameter echoed back.' },
+            document: {
+              definitions: {
+                Payload: {
+                  properties: {
+                    name: { type: 'string' },
+                    value: { type: 'integer' }
+                  },
+                  type: 'object'
+                }
+              },
+              info: { title: 'Parameter Locations', version: '1.0.0' },
+              paths: {
+                '/body': {
+                  post: {
+                    operationId: 'bodyParam',
+                    parameters: [
+                      {
+                        in: 'body',
+                        name: 'payload',
+                        required: true,
+                        schema: { '$ref': '#/definitions/Payload' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The body parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/form': {
+                  post: {
+                    consumes: [ 'application/x-www-form-urlencoded' ],
+                    operationId: 'formDataParams',
+                    parameters: [
+                      { in: 'formData', name: 'title', type: 'string' },
+                      {
+                        in: 'formData',
+                        name: 'count',
+                        type: 'integer'
+                      },
+                      {
+                        in: 'formData',
+                        name: 'active',
+                        type: 'boolean'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The three form-data parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/query': {
+                  get: {
+                    operationId: 'queryParams',
+                    parameters: [
+                      {
+                        collectionFormat: 'multi',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'tags',
+                        type: 'array'
+                      },
+                      {
+                        collectionFormat: 'csv',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'ids',
+                        type: 'array'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The two array-valued query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/upload': {
+                  post: {
+                    consumes: [ 'multipart/form-data' ],
+                    operationId: 'fileUpload',
+                    parameters: [
+                      { in: 'formData', name: 'file', type: 'file' },
+                      {
+                        in: 'formData',
+                        name: 'description',
+                        type: 'string'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The uploaded file and its description echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                }
+              },
+              swagger: '2.0'
+            },
+            file: '<root>/test/specs/v2/parameter-locations.yml',
+            originalComponent: { description: 'The body parameter echoed back.' },
+            path: '/paths//body/post/responses/200',
+            pos: { col: 11, line: 19 }
+          },
+          contentOptions: [],
+          description: 'The body parameter echoed back.',
+          headers: [],
+          id: 'response-1',
+          statusCode: 200,
+          statusKey: '200'
+        }
+      ],
+      summary: undefined,
+      tags: [ 'Parameters' ]
+    },
+    <ref *2> {
+      '$ref': undefined,
+      '$src': {
+        component: '396 inspect chars',
+        document: '2241 inspect chars',
+        file: '<root>/test/specs/v2/parameter-locations.yml',
+        originalComponent: '396 inspect chars',
+        path: '/paths//form/post',
+        pos: { col: 7, line: 22 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-2',
+      method: 'post',
+      name: 'formDataParams',
+      parameters: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: { in: 'formData', name: 'title', type: 'string' },
+            document: {
+              definitions: {
+                Payload: {
+                  properties: {
+                    name: { type: 'string' },
+                    value: { type: 'integer' }
+                  },
+                  type: 'object'
+                }
+              },
+              info: { title: 'Parameter Locations', version: '1.0.0' },
+              paths: {
+                '/body': {
+                  post: {
+                    operationId: 'bodyParam',
+                    parameters: [
+                      {
+                        in: 'body',
+                        name: 'payload',
+                        required: true,
+                        schema: { '$ref': '#/definitions/Payload' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The body parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/form': {
+                  post: {
+                    consumes: [ 'application/x-www-form-urlencoded' ],
+                    operationId: 'formDataParams',
+                    parameters: [
+                      { in: 'formData', name: 'title', type: 'string' },
+                      {
+                        in: 'formData',
+                        name: 'count',
+                        type: 'integer'
+                      },
+                      {
+                        in: 'formData',
+                        name: 'active',
+                        type: 'boolean'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The three form-data parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/query': {
+                  get: {
+                    operationId: 'queryParams',
+                    parameters: [
+                      {
+                        collectionFormat: 'multi',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'tags',
+                        type: 'array'
+                      },
+                      {
+                        collectionFormat: 'csv',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'ids',
+                        type: 'array'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The two array-valued query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/upload': {
+                  post: {
+                    consumes: [ 'multipart/form-data' ],
+                    operationId: 'fileUpload',
+                    parameters: [
+                      { in: 'formData', name: 'file', type: 'file' },
+                      {
+                        in: 'formData',
+                        name: 'description',
+                        type: 'string'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The uploaded file and its description echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                }
+              },
+              swagger: '2.0'
+            },
+            file: '<root>/test/specs/v2/parameter-locations.yml',
+            originalComponent: { in: 'formData', name: 'title', type: 'string' },
+            path: '/paths//form/post/parameters/0',
+            pos: { col: 11, line: 26 }
+          },
+          allowEmptyValue: undefined,
+          allowReserved: undefined,
+          deprecated: false,
+          description: undefined,
+          explode: undefined,
+          id: 'parameter-2',
+          name: 'title',
+          required: false,
+          schema: undefined,
+          style: undefined,
+          target: 'formData'
+        },
+        {
+          '$ref': undefined,
+          '$src': {
+            component: { in: 'formData', name: 'count', type: 'integer' },
+            document: {
+              definitions: {
+                Payload: {
+                  properties: {
+                    name: { type: 'string' },
+                    value: { type: 'integer' }
+                  },
+                  type: 'object'
+                }
+              },
+              info: { title: 'Parameter Locations', version: '1.0.0' },
+              paths: {
+                '/body': {
+                  post: {
+                    operationId: 'bodyParam',
+                    parameters: [
+                      {
+                        in: 'body',
+                        name: 'payload',
+                        required: true,
+                        schema: { '$ref': '#/definitions/Payload' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The body parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/form': {
+                  post: {
+                    consumes: [ 'application/x-www-form-urlencoded' ],
+                    operationId: 'formDataParams',
+                    parameters: [
+                      { in: 'formData', name: 'title', type: 'string' },
+                      {
+                        in: 'formData',
+                        name: 'count',
+                        type: 'integer'
+                      },
+                      {
+                        in: 'formData',
+                        name: 'active',
+                        type: 'boolean'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The three form-data parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/query': {
+                  get: {
+                    operationId: 'queryParams',
+                    parameters: [
+                      {
+                        collectionFormat: 'multi',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'tags',
+                        type: 'array'
+                      },
+                      {
+                        collectionFormat: 'csv',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'ids',
+                        type: 'array'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The two array-valued query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/upload': {
+                  post: {
+                    consumes: [ 'multipart/form-data' ],
+                    operationId: 'fileUpload',
+                    parameters: [
+                      { in: 'formData', name: 'file', type: 'file' },
+                      {
+                        in: 'formData',
+                        name: 'description',
+                        type: 'string'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The uploaded file and its description echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                }
+              },
+              swagger: '2.0'
+            },
+            file: '<root>/test/specs/v2/parameter-locations.yml',
+            originalComponent: { in: 'formData', name: 'count', type: 'integer' },
+            path: '/paths//form/post/parameters/1',
+            pos: { col: 11, line: 29 }
+          },
+          allowEmptyValue: undefined,
+          allowReserved: undefined,
+          deprecated: false,
+          description: undefined,
+          explode: undefined,
+          id: 'parameter-3',
+          name: 'count',
+          required: false,
+          schema: undefined,
+          style: undefined,
+          target: 'formData'
+        },
+        {
+          '$ref': undefined,
+          '$src': {
+            component: { in: 'formData', name: 'active', type: 'boolean' },
+            document: {
+              definitions: {
+                Payload: {
+                  properties: {
+                    name: { type: 'string' },
+                    value: { type: 'integer' }
+                  },
+                  type: 'object'
+                }
+              },
+              info: { title: 'Parameter Locations', version: '1.0.0' },
+              paths: {
+                '/body': {
+                  post: {
+                    operationId: 'bodyParam',
+                    parameters: [
+                      {
+                        in: 'body',
+                        name: 'payload',
+                        required: true,
+                        schema: { '$ref': '#/definitions/Payload' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The body parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/form': {
+                  post: {
+                    consumes: [ 'application/x-www-form-urlencoded' ],
+                    operationId: 'formDataParams',
+                    parameters: [
+                      { in: 'formData', name: 'title', type: 'string' },
+                      {
+                        in: 'formData',
+                        name: 'count',
+                        type: 'integer'
+                      },
+                      {
+                        in: 'formData',
+                        name: 'active',
+                        type: 'boolean'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The three form-data parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/query': {
+                  get: {
+                    operationId: 'queryParams',
+                    parameters: [
+                      {
+                        collectionFormat: 'multi',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'tags',
+                        type: 'array'
+                      },
+                      {
+                        collectionFormat: 'csv',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'ids',
+                        type: 'array'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The two array-valued query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/upload': {
+                  post: {
+                    consumes: [ 'multipart/form-data' ],
+                    operationId: 'fileUpload',
+                    parameters: [
+                      { in: 'formData', name: 'file', type: 'file' },
+                      {
+                        in: 'formData',
+                        name: 'description',
+                        type: 'string'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The uploaded file and its description echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                }
+              },
+              swagger: '2.0'
+            },
+            file: '<root>/test/specs/v2/parameter-locations.yml',
+            originalComponent: { in: 'formData', name: 'active', type: 'boolean' },
+            path: '/paths//form/post/parameters/2',
+            pos: { col: 11, line: 32 }
+          },
+          allowEmptyValue: undefined,
+          allowReserved: undefined,
+          deprecated: false,
+          description: undefined,
+          explode: undefined,
+          id: 'parameter-4',
+          name: 'active',
+          required: false,
+          schema: undefined,
+          style: undefined,
+          target: 'formData'
+        }
+      ],
+      path: '/form',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            post: {
+              consumes: [ 'application/x-www-form-urlencoded' ],
+              operationId: 'formDataParams',
+              parameters: [
+                { in: 'formData', name: 'title', type: 'string' },
+                { in: 'formData', name: 'count', type: 'integer' },
+                { in: 'formData', name: 'active', type: 'boolean' }
+              ],
+              responses: {
+                '200': {
+                  description: 'The three form-data parameters echoed back.'
+                }
+              },
+              tags: [ 'Parameters' ]
+            }
+          },
+          document: {
+            definitions: {
+              Payload: {
+                properties: {
+                  name: { type: 'string' },
+                  value: { type: 'integer' }
+                },
+                type: 'object'
+              }
+            },
+            info: { title: 'Parameter Locations', version: '1.0.0' },
+            paths: {
+              '/body': {
+                post: {
+                  operationId: 'bodyParam',
+                  parameters: [
+                    {
+                      in: 'body',
+                      name: 'payload',
+                      required: true,
+                      schema: { '$ref': '#/definitions/Payload' }
+                    }
+                  ],
+                  responses: {
+                    '200': { description: 'The body parameter echoed back.' }
+                  },
+                  tags: [ 'Parameters' ]
+                }
+              },
+              '/form': {
+                post: {
+                  consumes: [ 'application/x-www-form-urlencoded' ],
+                  operationId: 'formDataParams',
+                  parameters: [
+                    { in: 'formData', name: 'title', type: 'string' },
+                    { in: 'formData', name: 'count', type: 'integer' },
+                    { in: 'formData', name: 'active', type: 'boolean' }
+                  ],
+                  responses: {
+                    '200': {
+                      description: 'The three form-data parameters echoed back.'
+                    }
+                  },
+                  tags: [ 'Parameters' ]
+                }
+              },
+              '/query': {
+                get: {
+                  operationId: 'queryParams',
+                  parameters: [
+                    {
+                      collectionFormat: 'multi',
+                      in: 'query',
+                      items: { type: 'string' },
+                      name: 'tags',
+                      type: 'array'
+                    },
+                    {
+                      collectionFormat: 'csv',
+                      in: 'query',
+                      items: { type: 'string' },
+                      name: 'ids',
+                      type: 'array'
+                    }
+                  ],
+                  responses: {
+                    '200': {
+                      description: 'The two array-valued query parameters echoed back.'
+                    }
+                  },
+                  tags: [ 'Parameters' ]
+                }
+              },
+              '/upload': {
+                post: {
+                  consumes: [ 'multipart/form-data' ],
+                  operationId: 'fileUpload',
+                  parameters: [
+                    { in: 'formData', name: 'file', type: 'file' },
+                    {
+                      in: 'formData',
+                      name: 'description',
+                      type: 'string'
+                    }
+                  ],
+                  responses: {
+                    '200': {
+                      description: 'The uploaded file and its description echoed back.'
+                    }
+                  },
+                  tags: [ 'Parameters' ]
+                }
+              }
+            },
+            swagger: '2.0'
+          },
+          file: '<root>/test/specs/v2/parameter-locations.yml',
+          originalComponent: {
+            post: {
+              consumes: [ 'application/x-www-form-urlencoded' ],
+              operationId: 'formDataParams',
+              parameters: [
+                { in: 'formData', name: 'title', type: 'string' },
+                { in: 'formData', name: 'count', type: 'integer' },
+                { in: 'formData', name: 'active', type: 'boolean' }
+              ],
+              responses: {
+                '200': {
+                  description: 'The three form-data parameters echoed back.'
+                }
+              },
+              tags: [ 'Parameters' ]
+            }
+          },
+          path: '/paths//form',
+          pos: { col: 5, line: 21 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: undefined,
+        head: undefined,
+        id: 'path-2',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/form',
+        post: [Circular *2],
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              description: 'The three form-data parameters echoed back.'
+            },
+            document: {
+              definitions: {
+                Payload: {
+                  properties: {
+                    name: { type: 'string' },
+                    value: { type: 'integer' }
+                  },
+                  type: 'object'
+                }
+              },
+              info: { title: 'Parameter Locations', version: '1.0.0' },
+              paths: {
+                '/body': {
+                  post: {
+                    operationId: 'bodyParam',
+                    parameters: [
+                      {
+                        in: 'body',
+                        name: 'payload',
+                        required: true,
+                        schema: { '$ref': '#/definitions/Payload' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The body parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/form': {
+                  post: {
+                    consumes: [ 'application/x-www-form-urlencoded' ],
+                    operationId: 'formDataParams',
+                    parameters: [
+                      { in: 'formData', name: 'title', type: 'string' },
+                      {
+                        in: 'formData',
+                        name: 'count',
+                        type: 'integer'
+                      },
+                      {
+                        in: 'formData',
+                        name: 'active',
+                        type: 'boolean'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The three form-data parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/query': {
+                  get: {
+                    operationId: 'queryParams',
+                    parameters: [
+                      {
+                        collectionFormat: 'multi',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'tags',
+                        type: 'array'
+                      },
+                      {
+                        collectionFormat: 'csv',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'ids',
+                        type: 'array'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The two array-valued query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/upload': {
+                  post: {
+                    consumes: [ 'multipart/form-data' ],
+                    operationId: 'fileUpload',
+                    parameters: [
+                      { in: 'formData', name: 'file', type: 'file' },
+                      {
+                        in: 'formData',
+                        name: 'description',
+                        type: 'string'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The uploaded file and its description echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                }
+              },
+              swagger: '2.0'
+            },
+            file: '<root>/test/specs/v2/parameter-locations.yml',
+            originalComponent: {
+              description: 'The three form-data parameters echoed back.'
+            },
+            path: '/paths//form/post/responses/200',
+            pos: { col: 11, line: 37 }
+          },
+          contentOptions: [],
+          description: 'The three form-data parameters echoed back.',
+          headers: [],
+          id: 'response-2',
+          statusCode: 200,
+          statusKey: '200'
+        }
+      ],
+      summary: undefined,
+      tags: [ 'Parameters' ]
+    },
+    <ref *3> {
+      '$ref': undefined,
+      '$src': {
+        component: '340 inspect chars',
+        document: '2241 inspect chars',
+        file: '<root>/test/specs/v2/parameter-locations.yml',
+        originalComponent: '340 inspect chars',
+        path: '/paths//upload/post',
+        pos: { col: 7, line: 40 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-3',
+      method: 'post',
+      name: 'fileUpload',
+      parameters: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: { in: 'formData', name: 'file', type: 'file' },
+            document: {
+              definitions: {
+                Payload: {
+                  properties: {
+                    name: { type: 'string' },
+                    value: { type: 'integer' }
+                  },
+                  type: 'object'
+                }
+              },
+              info: { title: 'Parameter Locations', version: '1.0.0' },
+              paths: {
+                '/body': {
+                  post: {
+                    operationId: 'bodyParam',
+                    parameters: [
+                      {
+                        in: 'body',
+                        name: 'payload',
+                        required: true,
+                        schema: { '$ref': '#/definitions/Payload' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The body parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/form': {
+                  post: {
+                    consumes: [ 'application/x-www-form-urlencoded' ],
+                    operationId: 'formDataParams',
+                    parameters: [
+                      { in: 'formData', name: 'title', type: 'string' },
+                      {
+                        in: 'formData',
+                        name: 'count',
+                        type: 'integer'
+                      },
+                      {
+                        in: 'formData',
+                        name: 'active',
+                        type: 'boolean'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The three form-data parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/query': {
+                  get: {
+                    operationId: 'queryParams',
+                    parameters: [
+                      {
+                        collectionFormat: 'multi',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'tags',
+                        type: 'array'
+                      },
+                      {
+                        collectionFormat: 'csv',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'ids',
+                        type: 'array'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The two array-valued query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/upload': {
+                  post: {
+                    consumes: [ 'multipart/form-data' ],
+                    operationId: 'fileUpload',
+                    parameters: [
+                      { in: 'formData', name: 'file', type: 'file' },
+                      {
+                        in: 'formData',
+                        name: 'description',
+                        type: 'string'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The uploaded file and its description echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                }
+              },
+              swagger: '2.0'
+            },
+            file: '<root>/test/specs/v2/parameter-locations.yml',
+            originalComponent: { in: 'formData', name: 'file', type: 'file' },
+            path: '/paths//upload/post/parameters/0',
+            pos: { col: 11, line: 44 }
+          },
+          allowEmptyValue: undefined,
+          allowReserved: undefined,
+          deprecated: false,
+          description: undefined,
+          explode: undefined,
+          id: 'parameter-5',
+          name: 'file',
+          required: false,
+          schema: undefined,
+          style: undefined,
+          target: 'formData'
+        },
+        {
+          '$ref': undefined,
+          '$src': {
+            component: { in: 'formData', name: 'description', type: 'string' },
+            document: {
+              definitions: {
+                Payload: {
+                  properties: {
+                    name: { type: 'string' },
+                    value: { type: 'integer' }
+                  },
+                  type: 'object'
+                }
+              },
+              info: { title: 'Parameter Locations', version: '1.0.0' },
+              paths: {
+                '/body': {
+                  post: {
+                    operationId: 'bodyParam',
+                    parameters: [
+                      {
+                        in: 'body',
+                        name: 'payload',
+                        required: true,
+                        schema: { '$ref': '#/definitions/Payload' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The body parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/form': {
+                  post: {
+                    consumes: [ 'application/x-www-form-urlencoded' ],
+                    operationId: 'formDataParams',
+                    parameters: [
+                      { in: 'formData', name: 'title', type: 'string' },
+                      {
+                        in: 'formData',
+                        name: 'count',
+                        type: 'integer'
+                      },
+                      {
+                        in: 'formData',
+                        name: 'active',
+                        type: 'boolean'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The three form-data parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/query': {
+                  get: {
+                    operationId: 'queryParams',
+                    parameters: [
+                      {
+                        collectionFormat: 'multi',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'tags',
+                        type: 'array'
+                      },
+                      {
+                        collectionFormat: 'csv',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'ids',
+                        type: 'array'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The two array-valued query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/upload': {
+                  post: {
+                    consumes: [ 'multipart/form-data' ],
+                    operationId: 'fileUpload',
+                    parameters: [
+                      { in: 'formData', name: 'file', type: 'file' },
+                      {
+                        in: 'formData',
+                        name: 'description',
+                        type: 'string'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The uploaded file and its description echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                }
+              },
+              swagger: '2.0'
+            },
+            file: '<root>/test/specs/v2/parameter-locations.yml',
+            originalComponent: { in: 'formData', name: 'description', type: 'string' },
+            path: '/paths//upload/post/parameters/1',
+            pos: { col: 11, line: 47 }
+          },
+          allowEmptyValue: undefined,
+          allowReserved: undefined,
+          deprecated: false,
+          description: undefined,
+          explode: undefined,
+          id: 'parameter-6',
+          name: 'description',
+          required: false,
+          schema: undefined,
+          style: undefined,
+          target: 'formData'
+        }
+      ],
+      path: '/upload',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            post: {
+              consumes: [ 'multipart/form-data' ],
+              operationId: 'fileUpload',
+              parameters: [
+                { in: 'formData', name: 'file', type: 'file' },
+                { in: 'formData', name: 'description', type: 'string' }
+              ],
+              responses: {
+                '200': {
+                  description: 'The uploaded file and its description echoed back.'
+                }
+              },
+              tags: [ 'Parameters' ]
+            }
+          },
+          document: {
+            definitions: {
+              Payload: {
+                properties: {
+                  name: { type: 'string' },
+                  value: { type: 'integer' }
+                },
+                type: 'object'
+              }
+            },
+            info: { title: 'Parameter Locations', version: '1.0.0' },
+            paths: {
+              '/body': {
+                post: {
+                  operationId: 'bodyParam',
+                  parameters: [
+                    {
+                      in: 'body',
+                      name: 'payload',
+                      required: true,
+                      schema: { '$ref': '#/definitions/Payload' }
+                    }
+                  ],
+                  responses: {
+                    '200': { description: 'The body parameter echoed back.' }
+                  },
+                  tags: [ 'Parameters' ]
+                }
+              },
+              '/form': {
+                post: {
+                  consumes: [ 'application/x-www-form-urlencoded' ],
+                  operationId: 'formDataParams',
+                  parameters: [
+                    { in: 'formData', name: 'title', type: 'string' },
+                    { in: 'formData', name: 'count', type: 'integer' },
+                    { in: 'formData', name: 'active', type: 'boolean' }
+                  ],
+                  responses: {
+                    '200': {
+                      description: 'The three form-data parameters echoed back.'
+                    }
+                  },
+                  tags: [ 'Parameters' ]
+                }
+              },
+              '/query': {
+                get: {
+                  operationId: 'queryParams',
+                  parameters: [
+                    {
+                      collectionFormat: 'multi',
+                      in: 'query',
+                      items: { type: 'string' },
+                      name: 'tags',
+                      type: 'array'
+                    },
+                    {
+                      collectionFormat: 'csv',
+                      in: 'query',
+                      items: { type: 'string' },
+                      name: 'ids',
+                      type: 'array'
+                    }
+                  ],
+                  responses: {
+                    '200': {
+                      description: 'The two array-valued query parameters echoed back.'
+                    }
+                  },
+                  tags: [ 'Parameters' ]
+                }
+              },
+              '/upload': {
+                post: {
+                  consumes: [ 'multipart/form-data' ],
+                  operationId: 'fileUpload',
+                  parameters: [
+                    { in: 'formData', name: 'file', type: 'file' },
+                    {
+                      in: 'formData',
+                      name: 'description',
+                      type: 'string'
+                    }
+                  ],
+                  responses: {
+                    '200': {
+                      description: 'The uploaded file and its description echoed back.'
+                    }
+                  },
+                  tags: [ 'Parameters' ]
+                }
+              }
+            },
+            swagger: '2.0'
+          },
+          file: '<root>/test/specs/v2/parameter-locations.yml',
+          originalComponent: {
+            post: {
+              consumes: [ 'multipart/form-data' ],
+              operationId: 'fileUpload',
+              parameters: [
+                { in: 'formData', name: 'file', type: 'file' },
+                { in: 'formData', name: 'description', type: 'string' }
+              ],
+              responses: {
+                '200': {
+                  description: 'The uploaded file and its description echoed back.'
+                }
+              },
+              tags: [ 'Parameters' ]
+            }
+          },
+          path: '/paths//upload',
+          pos: { col: 5, line: 39 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: undefined,
+        head: undefined,
+        id: 'path-3',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/upload',
+        post: [Circular *3],
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              description: 'The uploaded file and its description echoed back.'
+            },
+            document: {
+              definitions: {
+                Payload: {
+                  properties: {
+                    name: { type: 'string' },
+                    value: { type: 'integer' }
+                  },
+                  type: 'object'
+                }
+              },
+              info: { title: 'Parameter Locations', version: '1.0.0' },
+              paths: {
+                '/body': {
+                  post: {
+                    operationId: 'bodyParam',
+                    parameters: [
+                      {
+                        in: 'body',
+                        name: 'payload',
+                        required: true,
+                        schema: { '$ref': '#/definitions/Payload' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The body parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/form': {
+                  post: {
+                    consumes: [ 'application/x-www-form-urlencoded' ],
+                    operationId: 'formDataParams',
+                    parameters: [
+                      { in: 'formData', name: 'title', type: 'string' },
+                      {
+                        in: 'formData',
+                        name: 'count',
+                        type: 'integer'
+                      },
+                      {
+                        in: 'formData',
+                        name: 'active',
+                        type: 'boolean'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The three form-data parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/query': {
+                  get: {
+                    operationId: 'queryParams',
+                    parameters: [
+                      {
+                        collectionFormat: 'multi',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'tags',
+                        type: 'array'
+                      },
+                      {
+                        collectionFormat: 'csv',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'ids',
+                        type: 'array'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The two array-valued query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/upload': {
+                  post: {
+                    consumes: [ 'multipart/form-data' ],
+                    operationId: 'fileUpload',
+                    parameters: [
+                      { in: 'formData', name: 'file', type: 'file' },
+                      {
+                        in: 'formData',
+                        name: 'description',
+                        type: 'string'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The uploaded file and its description echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                }
+              },
+              swagger: '2.0'
+            },
+            file: '<root>/test/specs/v2/parameter-locations.yml',
+            originalComponent: {
+              description: 'The uploaded file and its description echoed back.'
+            },
+            path: '/paths//upload/post/responses/200',
+            pos: { col: 11, line: 52 }
+          },
+          contentOptions: [],
+          description: 'The uploaded file and its description echoed back.',
+          headers: [],
+          id: 'response-3',
+          statusCode: 200,
+          statusKey: '200'
+        }
+      ],
+      summary: undefined,
+      tags: [ 'Parameters' ]
+    },
+    <ref *4> {
+      '$ref': undefined,
+      '$src': {
+        component: '462 inspect chars',
+        document: '2241 inspect chars',
+        file: '<root>/test/specs/v2/parameter-locations.yml',
+        originalComponent: '462 inspect chars',
+        path: '/paths//query/get',
+        pos: { col: 7, line: 55 }
+      },
+      custom: {},
+      deprecated: false,
+      description: undefined,
+      id: 'endpoint-4',
+      method: 'get',
+      name: 'queryParams',
+      parameters: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              collectionFormat: 'multi',
+              in: 'query',
+              items: { type: 'string' },
+              name: 'tags',
+              type: 'array'
+            },
+            document: {
+              definitions: {
+                Payload: {
+                  properties: {
+                    name: { type: 'string' },
+                    value: { type: 'integer' }
+                  },
+                  type: 'object'
+                }
+              },
+              info: { title: 'Parameter Locations', version: '1.0.0' },
+              paths: {
+                '/body': {
+                  post: {
+                    operationId: 'bodyParam',
+                    parameters: [
+                      {
+                        in: 'body',
+                        name: 'payload',
+                        required: true,
+                        schema: { '$ref': '#/definitions/Payload' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The body parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/form': {
+                  post: {
+                    consumes: [ 'application/x-www-form-urlencoded' ],
+                    operationId: 'formDataParams',
+                    parameters: [
+                      { in: 'formData', name: 'title', type: 'string' },
+                      {
+                        in: 'formData',
+                        name: 'count',
+                        type: 'integer'
+                      },
+                      {
+                        in: 'formData',
+                        name: 'active',
+                        type: 'boolean'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The three form-data parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/query': {
+                  get: {
+                    operationId: 'queryParams',
+                    parameters: [
+                      {
+                        collectionFormat: 'multi',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'tags',
+                        type: 'array'
+                      },
+                      {
+                        collectionFormat: 'csv',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'ids',
+                        type: 'array'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The two array-valued query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/upload': {
+                  post: {
+                    consumes: [ 'multipart/form-data' ],
+                    operationId: 'fileUpload',
+                    parameters: [
+                      { in: 'formData', name: 'file', type: 'file' },
+                      {
+                        in: 'formData',
+                        name: 'description',
+                        type: 'string'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The uploaded file and its description echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                }
+              },
+              swagger: '2.0'
+            },
+            file: '<root>/test/specs/v2/parameter-locations.yml',
+            originalComponent: {
+              collectionFormat: 'multi',
+              in: 'query',
+              items: { type: 'string' },
+              name: 'tags',
+              type: 'array'
+            },
+            path: '/paths//query/get/parameters/0',
+            pos: { col: 11, line: 58 }
+          },
+          allowEmptyValue: undefined,
+          allowReserved: undefined,
+          deprecated: false,
+          description: undefined,
+          explode: undefined,
+          id: 'parameter-7',
+          name: 'tags',
+          required: false,
+          schema: undefined,
+          style: undefined,
+          target: 'query'
+        },
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              collectionFormat: 'csv',
+              in: 'query',
+              items: { type: 'string' },
+              name: 'ids',
+              type: 'array'
+            },
+            document: {
+              definitions: {
+                Payload: {
+                  properties: {
+                    name: { type: 'string' },
+                    value: { type: 'integer' }
+                  },
+                  type: 'object'
+                }
+              },
+              info: { title: 'Parameter Locations', version: '1.0.0' },
+              paths: {
+                '/body': {
+                  post: {
+                    operationId: 'bodyParam',
+                    parameters: [
+                      {
+                        in: 'body',
+                        name: 'payload',
+                        required: true,
+                        schema: { '$ref': '#/definitions/Payload' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The body parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/form': {
+                  post: {
+                    consumes: [ 'application/x-www-form-urlencoded' ],
+                    operationId: 'formDataParams',
+                    parameters: [
+                      { in: 'formData', name: 'title', type: 'string' },
+                      {
+                        in: 'formData',
+                        name: 'count',
+                        type: 'integer'
+                      },
+                      {
+                        in: 'formData',
+                        name: 'active',
+                        type: 'boolean'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The three form-data parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/query': {
+                  get: {
+                    operationId: 'queryParams',
+                    parameters: [
+                      {
+                        collectionFormat: 'multi',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'tags',
+                        type: 'array'
+                      },
+                      {
+                        collectionFormat: 'csv',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'ids',
+                        type: 'array'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The two array-valued query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/upload': {
+                  post: {
+                    consumes: [ 'multipart/form-data' ],
+                    operationId: 'fileUpload',
+                    parameters: [
+                      { in: 'formData', name: 'file', type: 'file' },
+                      {
+                        in: 'formData',
+                        name: 'description',
+                        type: 'string'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The uploaded file and its description echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                }
+              },
+              swagger: '2.0'
+            },
+            file: '<root>/test/specs/v2/parameter-locations.yml',
+            originalComponent: {
+              collectionFormat: 'csv',
+              in: 'query',
+              items: { type: 'string' },
+              name: 'ids',
+              type: 'array'
+            },
+            path: '/paths//query/get/parameters/1',
+            pos: { col: 11, line: 64 }
+          },
+          allowEmptyValue: undefined,
+          allowReserved: undefined,
+          deprecated: false,
+          description: undefined,
+          explode: undefined,
+          id: 'parameter-8',
+          name: 'ids',
+          required: false,
+          schema: undefined,
+          style: undefined,
+          target: 'query'
+        }
+      ],
+      path: '/query',
+      pathInfo: {
+        '$ref': undefined,
+        '$src': {
+          component: {
+            get: {
+              operationId: 'queryParams',
+              parameters: [
+                {
+                  collectionFormat: 'multi',
+                  in: 'query',
+                  items: { type: 'string' },
+                  name: 'tags',
+                  type: 'array'
+                },
+                {
+                  collectionFormat: 'csv',
+                  in: 'query',
+                  items: { type: 'string' },
+                  name: 'ids',
+                  type: 'array'
+                }
+              ],
+              responses: {
+                '200': {
+                  description: 'The two array-valued query parameters echoed back.'
+                }
+              },
+              tags: [ 'Parameters' ]
+            }
+          },
+          document: {
+            definitions: {
+              Payload: {
+                properties: {
+                  name: { type: 'string' },
+                  value: { type: 'integer' }
+                },
+                type: 'object'
+              }
+            },
+            info: { title: 'Parameter Locations', version: '1.0.0' },
+            paths: {
+              '/body': {
+                post: {
+                  operationId: 'bodyParam',
+                  parameters: [
+                    {
+                      in: 'body',
+                      name: 'payload',
+                      required: true,
+                      schema: { '$ref': '#/definitions/Payload' }
+                    }
+                  ],
+                  responses: {
+                    '200': { description: 'The body parameter echoed back.' }
+                  },
+                  tags: [ 'Parameters' ]
+                }
+              },
+              '/form': {
+                post: {
+                  consumes: [ 'application/x-www-form-urlencoded' ],
+                  operationId: 'formDataParams',
+                  parameters: [
+                    { in: 'formData', name: 'title', type: 'string' },
+                    { in: 'formData', name: 'count', type: 'integer' },
+                    { in: 'formData', name: 'active', type: 'boolean' }
+                  ],
+                  responses: {
+                    '200': {
+                      description: 'The three form-data parameters echoed back.'
+                    }
+                  },
+                  tags: [ 'Parameters' ]
+                }
+              },
+              '/query': {
+                get: {
+                  operationId: 'queryParams',
+                  parameters: [
+                    {
+                      collectionFormat: 'multi',
+                      in: 'query',
+                      items: { type: 'string' },
+                      name: 'tags',
+                      type: 'array'
+                    },
+                    {
+                      collectionFormat: 'csv',
+                      in: 'query',
+                      items: { type: 'string' },
+                      name: 'ids',
+                      type: 'array'
+                    }
+                  ],
+                  responses: {
+                    '200': {
+                      description: 'The two array-valued query parameters echoed back.'
+                    }
+                  },
+                  tags: [ 'Parameters' ]
+                }
+              },
+              '/upload': {
+                post: {
+                  consumes: [ 'multipart/form-data' ],
+                  operationId: 'fileUpload',
+                  parameters: [
+                    { in: 'formData', name: 'file', type: 'file' },
+                    {
+                      in: 'formData',
+                      name: 'description',
+                      type: 'string'
+                    }
+                  ],
+                  responses: {
+                    '200': {
+                      description: 'The uploaded file and its description echoed back.'
+                    }
+                  },
+                  tags: [ 'Parameters' ]
+                }
+              }
+            },
+            swagger: '2.0'
+          },
+          file: '<root>/test/specs/v2/parameter-locations.yml',
+          originalComponent: {
+            get: {
+              operationId: 'queryParams',
+              parameters: [
+                {
+                  collectionFormat: 'multi',
+                  in: 'query',
+                  items: { type: 'string' },
+                  name: 'tags',
+                  type: 'array'
+                },
+                {
+                  collectionFormat: 'csv',
+                  in: 'query',
+                  items: { type: 'string' },
+                  name: 'ids',
+                  type: 'array'
+                }
+              ],
+              responses: {
+                '200': {
+                  description: 'The two array-valued query parameters echoed back.'
+                }
+              },
+              tags: [ 'Parameters' ]
+            }
+          },
+          path: '/paths//query',
+          pos: { col: 5, line: 54 }
+        },
+        delete: undefined,
+        description: undefined,
+        get: [Circular *4],
+        head: undefined,
+        id: 'path-4',
+        options: undefined,
+        parameters: [],
+        patch: undefined,
+        path: '/query',
+        post: undefined,
+        put: undefined,
+        summary: undefined,
+        trace: undefined
+      },
+      requestBody: undefined,
+      responses: [
+        {
+          '$ref': undefined,
+          '$src': {
+            component: {
+              description: 'The two array-valued query parameters echoed back.'
+            },
+            document: {
+              definitions: {
+                Payload: {
+                  properties: {
+                    name: { type: 'string' },
+                    value: { type: 'integer' }
+                  },
+                  type: 'object'
+                }
+              },
+              info: { title: 'Parameter Locations', version: '1.0.0' },
+              paths: {
+                '/body': {
+                  post: {
+                    operationId: 'bodyParam',
+                    parameters: [
+                      {
+                        in: 'body',
+                        name: 'payload',
+                        required: true,
+                        schema: { '$ref': '#/definitions/Payload' }
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The body parameter echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/form': {
+                  post: {
+                    consumes: [ 'application/x-www-form-urlencoded' ],
+                    operationId: 'formDataParams',
+                    parameters: [
+                      { in: 'formData', name: 'title', type: 'string' },
+                      {
+                        in: 'formData',
+                        name: 'count',
+                        type: 'integer'
+                      },
+                      {
+                        in: 'formData',
+                        name: 'active',
+                        type: 'boolean'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The three form-data parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/query': {
+                  get: {
+                    operationId: 'queryParams',
+                    parameters: [
+                      {
+                        collectionFormat: 'multi',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'tags',
+                        type: 'array'
+                      },
+                      {
+                        collectionFormat: 'csv',
+                        in: 'query',
+                        items: { type: 'string' },
+                        name: 'ids',
+                        type: 'array'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The two array-valued query parameters echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                },
+                '/upload': {
+                  post: {
+                    consumes: [ 'multipart/form-data' ],
+                    operationId: 'fileUpload',
+                    parameters: [
+                      { in: 'formData', name: 'file', type: 'file' },
+                      {
+                        in: 'formData',
+                        name: 'description',
+                        type: 'string'
+                      }
+                    ],
+                    responses: {
+                      '200': {
+                        description: 'The uploaded file and its description echoed back.'
+                      }
+                    },
+                    tags: [ 'Parameters' ]
+                  }
+                }
+              },
+              swagger: '2.0'
+            },
+            file: '<root>/test/specs/v2/parameter-locations.yml',
+            originalComponent: {
+              description: 'The two array-valued query parameters echoed back.'
+            },
+            path: '/paths//query/get/responses/200',
+            pos: { col: 11, line: 72 }
+          },
+          contentOptions: [],
+          description: 'The two array-valued query parameters echoed back.',
+          headers: [],
+          id: 'response-4',
+          statusCode: 200,
+          statusKey: '200'
+        }
+      ],
+      summary: undefined,
+      tags: [ 'Parameters' ]
+    }
+  ],
+  schemas: [
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '18 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v2/parameter-locations.yml',
+        originalComponent: '18 inspect chars',
+        path: '/definitions/Payload/properties/name',
+        pos: { col: 9, line: 79 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-3',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'string',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Payload_name',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'string'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '19 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v2/parameter-locations.yml',
+        originalComponent: '19 inspect chars',
+        path: '/definitions/Payload/properties/value',
+        pos: { col: 9, line: 81 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-4',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'integer',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Payload_value',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(0) {},
+      required: Set(0) {},
+      type: 'integer'
+    },
+    {
+      '$ref': undefined,
+      '$src': {
+        component: '92 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v2/parameter-locations.yml',
+        originalComponent: '92 inspect chars',
+        path: '/definitions/Payload',
+        pos: { col: 5, line: 76 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-2',
+      inheritedSchemas: [],
+      isNameGenerated: false,
+      items: undefined,
+      kind: 'object',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'Payload',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(2) {
+        'name' => { name: 'name', schema: 'schema-3' },
+        'value' => { name: 'value', schema: 'schema-4' }
+      },
+      required: Set(0) {},
+      type: 'object'
+    },
+    {
+      '$ref': 'schema-2',
+      '$src': {
+        component: '35 inspect chars',
+        document: '9 inspect chars',
+        file: '<root>/test/specs/v2/parameter-locations.yml',
+        originalComponent: '35 inspect chars',
+        path: '/paths//body/post/parameters/0/schema',
+        pos: { col: 13, line: 16 }
+      },
+      accessibility: 'all',
+      additionalProperties: undefined,
+      allOf: [],
+      anyOf: [],
+      const: undefined,
+      custom: {},
+      default: undefined,
+      deprecated: false,
+      description: undefined,
+      discriminator: undefined,
+      enum: undefined,
+      example: undefined,
+      format: undefined,
+      id: 'schema-1',
+      inheritedSchemas: [],
+      isNameGenerated: true,
+      items: undefined,
+      kind: 'object',
+      maxItems: undefined,
+      maxLength: undefined,
+      maximum: undefined,
+      minItems: undefined,
+      minLength: undefined,
+      minimum: undefined,
+      name: 'schema-1',
+      not: undefined,
+      nullable: false,
+      oneOf: [],
+      pattern: undefined,
+      properties: Map(2) {
+        'name' => { name: 'name', schema: 'schema-3' },
+        'value' => { name: 'value', schema: 'schema-4' }
+      },
+      required: Set(0) {},
+      type: 'object'
+    }
+  ],
+  services: [
+    {
+      '$ref': undefined,
+      description: undefined,
+      endpoints: [ 'endpoint-1', 'endpoint-2', 'endpoint-3', 'endpoint-4' ],
+      id: 'service-1',
+      name: 'Parameters'
+    }
+  ]
+}

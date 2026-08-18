@@ -3,13 +3,16 @@ import type { Deref } from '../parse/types.ts';
 import { createOverwriteProxy } from '../utils/object.utils.ts';
 import type { ApiSchema, ApiSchemaExtensions, ApiSchemaKind } from './api-types.ts';
 import {
+  asTypeArray,
   determineSchemaAccessibility,
   determineSchemaKind,
   determineSchemaName,
   getCustomFields,
   getOpenApiObjectIdentifier,
+  hasNullType,
   transformAdditionalProperties,
   transformSchemaProperties,
+  withoutNullType,
 } from './helpers.ts';
 import type { IncompleteApiSchema, OpenApiTransformerContext } from './types.ts';
 
@@ -26,24 +29,32 @@ export function transformSchema<T extends Deref<OpenApiSchema>>(ctx: OpenApiTran
   if (existing) return existing;
 
   let kind = determineSchemaKind(ctx, schema);
-  let nullable = kind === 'null';
+  // Read nullability from the `type` keyword as declared, before the normalisation below rewrites it. This has
+  // to happen independently of `kind`, because a type array with two or more non-null types deliberately keeps
+  // its `combined`/`object` kind and is never normalised — but it is still nullable if it lists `null`.
+  let nullable = hasNullType(schema.type);
   if (kind === 'multi-type') {
-    const types = schema.type as string[];
-    let isSingleType = types.length === 1;
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (types.includes('null') || types.includes(null!)) {
-      nullable = true;
-      isSingleType = types.length === 2;
+    let remainingTypes = withoutNullType(schema.type as string[]);
+
+    if (remainingTypes.length === 0) {
+      // A type array that contains nothing but `null` constrains nullability only. If the schema also has a
+      // `$ref`, the actual type is the referenced one; otherwise the schema really is just the null type.
+      remainingTypes = withoutNullType(asTypeArray(schema.$ref?.type));
     }
 
-    if (isSingleType) {
-      const newType = types.filter((t) => t !== 'null' && t !== null)[0];
-      schema = createOverwriteProxy(schema);
-      schema.type = newType;
-      kind = determineSchemaKind(ctx, schema);
+    if (remainingTypes.length > 1) {
+      // Still a genuine multi-type schema; only the `null` member is absorbed into `nullable`.
+      schema.type = remainingTypes;
     } else {
-      schema.type = types.filter((t) => t !== 'null' && t !== null);
+      schema = createOverwriteProxy(schema);
+      // Re-asking `determineSchemaKind` rather than assuming the narrowed type's kind is what lets a sibling
+      // `allOf`/`anyOf` still be honoured — including for an all-`null` type array, which stays `combined`.
+      schema.type = remainingTypes.length === 1 ? remainingTypes[0] : 'null';
+      kind = determineSchemaKind(ctx, schema);
     }
+  }
+  if (kind === 'null') {
+    nullable = true;
   }
 
   const id = ctx.idGenerator.generateId('schema');
@@ -97,6 +108,10 @@ export function transformSchema<T extends Deref<OpenApiSchema>>(ctx: OpenApiTran
 }
 
 function allExtensionsTransformer(schema: Deref<OpenApiSchema>, context: OpenApiTransformerContext) {
+  // A schema with `prefixItems` is a tuple. Tuples are not modelled, but the `items` schema of a tuple only
+  // describes the elements *after* the prefix, so it must not be reported as the element schema of the array:
+  // that would actively mistype the array instead of leaving its elements unspecified.
+  const isTuple = (schema.prefixItems?.length ?? 0) > 0;
   return {
     oneOf: schema.oneOf?.map((s) => transformSchema(context, s)) ?? [],
     format: schema.format,
@@ -109,7 +124,7 @@ function allExtensionsTransformer(schema: Deref<OpenApiSchema>, context: OpenApi
     additionalProperties: transformAdditionalProperties(context, schema, transformSchema),
     allOf: schema.allOf?.map((s) => transformSchema(context, s)) ?? [],
     anyOf: schema.anyOf?.map((s) => transformSchema(context, s)) ?? [],
-    items: schema.items ? transformSchema(context, schema.items) : undefined,
+    items: !isTuple && schema.items ? transformSchema(context, schema.items) : undefined,
     minItems: schema.minItems,
     maxItems: schema.maxItems,
   };

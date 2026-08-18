@@ -10,6 +10,8 @@ export type GetEndpointMembers = { endpoint: ApiEndpoint; parameters: ApiParamet
 
 export type GetEndpointFunctionName = { endpoint: ApiEndpoint };
 
+export type GetEndpointDeprecatedAnnotations = { endpoint: ApiEndpoint };
+
 export type GetEndpointFunction = {
   endpoint: ApiEndpoint;
   parameters: ApiParameterWithMultipartInfo[];

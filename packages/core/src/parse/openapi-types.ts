@@ -748,6 +748,10 @@ export type OpenApiSchema = OpenApiObject<'schema'> & {
    */
   items?: OpenApiSchema;
   /**
+   * Schemas for the leading, positionally significant items of an array (tuple). (Only used in OpenAPI v3.1)
+   */
+  prefixItems?: OpenApiSchema[];
+  /**
    * Required properties for an object schema.
    */
   required?: string[];

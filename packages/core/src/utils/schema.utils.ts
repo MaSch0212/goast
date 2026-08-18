@@ -39,40 +39,129 @@ export function resolveAnyOfAndAllOf(
   };
 }
 
+/**
+ * The sub-schemas already collected, split by the `optional` they were collected with, so that a branch
+ * composing back to one of its own ancestors terminates instead of overflowing the stack.
+ *
+ * Collecting the same (sub-schema, `optional`) pair twice cannot contribute anything new: the property map
+ * is first-wins, `required` is a set, and a pair's descendants are always traversed with an `optional`
+ * derived only from that pair's own, so the second pass visits exactly the same schemas and reaches exactly
+ * the same conclusions. Skipping it is therefore equivalent, not merely cheaper.
+ */
+type CollectedSubSchemas = { required: Set<ApiSchema>; optional: Set<ApiSchema> };
+
 function collectSubSchemaProperties(
   subSchemas: ApiSchema[],
   properties: Map<string, ApiSchemaProperty>,
   required: Set<string>,
   optional: boolean,
+  collected: CollectedSubSchemas = { required: new Set(), optional: new Set() },
 ) {
+  const seen = optional ? collected.optional : collected.required;
   for (const subSchema of subSchemas) {
+    if (seen.has(subSchema)) continue;
+    seen.add(subSchema);
+
     if (subSchema.kind === 'object') {
       for (const prop of subSchema.properties.values()) {
-        if (!properties.has(prop.name)) {
+        const existing = properties.get(prop.name);
+        if (!existing) {
           properties.set(prop.name, prop);
-        }
-      }
-      if (!optional) {
-        for (const prop of subSchema.required) {
-          required.add(prop);
+        } else if (hasConflictingType(existing.schema, prop.schema)) {
+          // Two branches declare the same property with types that cannot both hold. Picking one and
+          // discarding the other would make the merged schema assert something the source contradicts, so
+          // widen to a schema that admits both instead.
+          properties.set(prop.name, { name: prop.name, schema: widenSchemas(existing.schema, prop.schema) });
         }
       }
     }
 
+    // A branch does not have to contribute properties to contribute requiredness: `allOf: [{ required: [x] }]`
+    // only tightens a property inherited from a sibling branch and has no type or properties of its own.
+    if (!optional) {
+      for (const prop of subSchema.required) {
+        required.add(prop);
+      }
+    }
+
     if (subSchema.kind === 'object' || subSchema.kind === 'combined') {
-      collectSubSchemaProperties(subSchema.allOf, properties, required, optional);
-      collectSubSchemaProperties(subSchema.anyOf, properties, required, true);
+      collectSubSchemaProperties(subSchema.allOf, properties, required, optional, collected);
+      collectSubSchemaProperties(subSchema.anyOf, properties, required, true, collected);
+    } else {
+      // Exactly one branch of a composed `oneOf` applies to any given instance, so its properties are
+      // collected but none of its requiredness is — the same treatment an `anyOf` branch gets.
+      const oneOf = composedOneOf(subSchema);
+      if (oneOf) collectSubSchemaProperties(oneOf, properties, required, true, collected);
     }
   }
+}
+
+/**
+ * The branches of a `oneOf` sub-schema that describe the same instance as the schema composing it, or
+ * `undefined` if it has none.
+ *
+ * An undiscriminated `oneOf` inside a composition constrains the very instance being composed:
+ * `allOf: [{ oneOf: [A, B] }, C]` is "A or B, *and* C", so whichever branch applies contributes its
+ * properties to the whole. A `oneOf` that declares a `discriminator` is not a composition but a list of
+ * subtypes, and `allOf: [Base]` against such a schema means "is a Base" — the sibling subtypes' properties
+ * belong to those siblings, not to the schema inheriting from the base.
+ */
+function composedOneOf(schema: ApiSchema): ApiSchema[] | undefined {
+  return schema.kind === 'oneOf' && !schema.discriminator ? schema.oneOf : undefined;
+}
+
+/**
+ * Whether two declarations of one property name state types that cannot both hold. A branch that says
+ * nothing about the type (`unknown`) constrains nothing and so never conflicts, and two declarations of the
+ * same kind are treated as a refinement of one another rather than a conflict, so the first still wins.
+ */
+function hasConflictingType(a: ApiSchema, b: ApiSchema): boolean {
+  return a.kind !== b.kind && a.kind !== 'unknown' && b.kind !== 'unknown';
+}
+
+/** The branches a schema contributes to a widened `oneOf`, flattened so widening stays a single level. */
+function conflictBranches(schema: ApiSchema): ApiSchema[] {
+  return schema.kind === 'oneOf' ? schema.oneOf : [schema];
+}
+
+/** A `oneOf` admitting either side of a conflicting merge, so neither side is silently discarded. */
+function widenSchemas(a: ApiSchema, b: ApiSchema): ApiSchema<'oneOf'> {
+  const oneOf: ApiSchema[] = [];
+  for (const branch of [...conflictBranches(a), ...conflictBranches(b)]) {
+    if (!oneOf.some((x) => x.id === branch.id)) oneOf.push(branch);
+  }
+
+  // Derived from the branch ids rather than generated, so the same conflict always yields the same schema.
+  const id = `conflict-${oneOf.map((x) => x.id).join('+')}`;
+  return {
+    ...a,
+    $ref: undefined,
+    id,
+    name: id,
+    isNameGenerated: true,
+    kind: 'oneOf',
+    enum: undefined,
+    const: undefined,
+    default: undefined,
+    discriminator: undefined,
+    inheritedSchemas: [],
+    nullable: a.nullable || b.nullable,
+    oneOf,
+  };
 }
 
 function combineAdditionalProperties(
   subSchemas: ApiSchema[],
   current: ObjectLikeApiSchema['additionalProperties'],
+  /** Guards the same composition cycle `collectSubSchemaProperties` guards; see `CollectedSubSchemas`. */
+  visited: Set<ApiSchema> = new Set(),
 ): ObjectLikeApiSchema['additionalProperties'] {
   if (current === true) return true;
 
   for (const subSchema of subSchemas) {
+    if (visited.has(subSchema)) continue;
+    visited.add(subSchema);
+
     if (subSchema.kind === 'object' && subSchema.additionalProperties) {
       if (subSchema.additionalProperties === true) return true;
       if (!current) {
@@ -109,8 +198,11 @@ function combineAdditionalProperties(
     }
 
     if (subSchema.kind === 'object' || subSchema.kind === 'combined') {
-      current = combineAdditionalProperties(subSchema.allOf, current);
-      current = combineAdditionalProperties(subSchema.anyOf, current);
+      current = combineAdditionalProperties(subSchema.allOf, current, visited);
+      current = combineAdditionalProperties(subSchema.anyOf, current, visited);
+    } else {
+      const oneOf = composedOneOf(subSchema);
+      if (oneOf) current = combineAdditionalProperties(oneOf, current, visited);
     }
 
     if (current === true) return true;

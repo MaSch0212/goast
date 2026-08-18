@@ -1,0 +1,222 @@
+{
+  typescript: {
+    indexFiles: {
+      models: '<output>/models.ts',
+      responseModels: '<output>/responses.ts',
+      services: '<output>/services.ts'
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/PatternPropertiesObject',
+        additionalExports: [],
+        component: 'PatternPropertiesObject',
+        filePath: '<output>/models/pattern-properties-object.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/pattern-properties-object.ts',
+            name: 'PatternPropertiesObject',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/DependentSchemasObject/properties/creditCard',
+        component: 'string',
+        imports: []
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/DependentSchemasObject/properties/billingAddress',
+        component: 'string',
+        imports: []
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/DependentRequiredObject',
+        additionalExports: [],
+        component: 'DependentRequiredObject',
+        filePath: '<output>/models/dependent-required-object.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/dependent-required-object.ts',
+            name: 'DependentRequiredObject',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/DependentRequiredObject/properties/creditCard',
+        component: 'string',
+        imports: []
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/DependentRequiredObject/properties/billingAddress',
+        component: 'string',
+        imports: []
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/PropertyNamesObject',
+        additionalExports: [],
+        component: 'PropertyNamesObject',
+        filePath: '<output>/models/property-names-object.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/property-names-object.ts',
+            name: 'PropertyNamesObject',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/OpenObject',
+        additionalExports: [],
+        component: 'OpenObject',
+        filePath: '<output>/models/open-object.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/open-object.ts',
+            name: 'OpenObject',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/ClosedObject',
+        additionalExports: [],
+        component: 'ClosedObject',
+        filePath: '<output>/models/closed-object.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/closed-object.ts',
+            name: 'ClosedObject',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/MapOfRef',
+        additionalExports: [],
+        component: 'MapOfRef',
+        filePath: '<output>/models/map-of-ref.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/map-of-ref.ts',
+            name: 'MapOfRef',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3.1/simple-schemas.yml#/components/schemas/MyString',
+        additionalExports: [],
+        component: 'MyString',
+        filePath: '<output>/models/my-string.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/my-string.ts',
+            name: 'MyString',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/PatternPropertiesObject/patternProperties/^str_',
+        component: 'string',
+        imports: []
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3.1/simple-schemas.yml#/components/schemas/MyString',
+        additionalExports: [],
+        component: 'MyString',
+        filePath: '<output>/models/my-string.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/my-string.ts',
+            name: 'MyString',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/PatternPropertiesObject/patternProperties/count',
+        component: 'number',
+        imports: []
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/PatternAndAdditional',
+        additionalExports: [],
+        component: 'PatternAndAdditional',
+        filePath: '<output>/models/pattern-and-additional.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/pattern-and-additional.ts',
+            name: 'PatternAndAdditional',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/PatternAndAdditional/patternProperties/^str_',
+        component: 'string',
+        imports: []
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/UnevaluatedPropertiesObject',
+        additionalExports: [],
+        component: 'UnevaluatedPropertiesObject',
+        filePath: '<output>/models/unevaluated-properties-object.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/unevaluated-properties-object.ts',
+            name: 'UnevaluatedPropertiesObject',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/UnevaluatedPropertiesObject/allOf/0',
+        component: '{\n  a?: string;\n}',
+        imports: []
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/UnevaluatedPropertiesObject/allOf/0/properties/a',
+        component: 'string',
+        imports: []
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/DependentSchemasObject',
+        additionalExports: [],
+        component: 'DependentSchemasObject',
+        filePath: '<output>/models/dependent-schemas-object.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/dependent-schemas-object.ts',
+            name: 'DependentSchemasObject',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      }
+    },
+    services: {}
+  }
+}

@@ -47,6 +47,17 @@ export const deserializationFeature = <TBuilder extends SourceBuilder>(
   springBootVersion: SpringBootVersion = 3,
 ): KtReference<TBuilder> =>
   ktReference<TBuilder>('DeserializationFeature', jacksonPackage('databind', springBootVersion));
+/**
+ * `tools.jackson.databind.cfg.DateTimeFeature` — Jackson 3 only.
+ *
+ * Jackson 3 moved `WRITE_DATES_AS_TIMESTAMPS` off `SerializationFeature` onto this type. Unlike its
+ * neighbours it takes no `springBootVersion`, because Jackson 2 has no equivalent type: on the Spring Boot 3
+ * line the constant still lives on `SerializationFeature`.
+ */
+export const dateTimeFeature: KtReferenceFactory = ktReference.factory(
+  'DateTimeFeature',
+  'tools.jackson.databind.cfg',
+);
 
 // com.fasterxml.jackson.module.kotlin (Jackson 2) / tools.jackson.module.kotlin (Jackson 3, Spring Boot 4)
 export const jacksonObjectMapper = <TBuilder extends SourceBuilder>(

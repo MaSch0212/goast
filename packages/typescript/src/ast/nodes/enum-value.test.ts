@@ -1,8 +1,7 @@
-import { EOL } from 'node:os';
-
-import { expect } from '@std/expect/expect';
+import { expect } from '@std/expect';
 import { beforeEach, describe, it } from '@std/testing/bdd';
 
+import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from '../../config.ts';
 import { TypeScriptFileBuilder } from '../../file-builder.ts';
 import { tsDoc } from './doc.ts';
 import { tsEnumValue } from './enum-value.ts';
@@ -10,7 +9,11 @@ import { tsEnumValue } from './enum-value.ts';
 let builder: TypeScriptFileBuilder;
 
 beforeEach(() => {
-  builder = new TypeScriptFileBuilder();
+  // A fixed newLine keeps the expectations below host-independent.
+  builder = new TypeScriptFileBuilder(
+    undefined,
+    { ...defaultTypeScriptGeneratorConfig, newLine: '\n' } as TypeScriptGeneratorConfig,
+  );
 });
 
 describe('tsEnumValue', () => {
@@ -26,12 +29,12 @@ describe('tsEnumValue', () => {
 
   it('should write documentation if it exists', () => {
     builder.append(tsEnumValue('x', { doc: tsDoc({ description: 'description' }) }));
-    expect(builder.toString(false)).toBe(`/**${EOL} * description${EOL} */${EOL}x`);
+    expect(builder.toString(false)).toBe('/**\n * description\n */\nx');
   });
 
   it('should write all the parts of the enum value', () => {
     builder.append(tsEnumValue('x', { value: '42', doc: tsDoc({ description: 'description' }) }));
-    expect(builder.toString(false)).toBe(`/**${EOL} * description${EOL} */${EOL}x = 42`);
+    expect(builder.toString(false)).toBe('/**\n * description\n */\nx = 42');
   });
 
   it('should write injections', () => {
@@ -52,14 +55,14 @@ describe('tsEnumValue', () => {
       }),
     );
     expect(builder.toString(false)).toBe(
-      `║b║║bd║${EOL}/**${EOL} * description${EOL} */${EOL}║ad║║bn║x║an║ = ║bv║42║av║║a║`,
+      '║b║║bd║\n/**\n * description\n */\n║ad║║bn║x║an║ = ║bv║42║av║║a║',
     );
   });
 
   describe('write', () => {
     it('should write multiple enum values', () => {
       tsEnumValue.write(builder, [tsEnumValue('x', { value: '42' }), tsEnumValue('y', { value: '43' })]);
-      expect(builder.toString(false)).toBe(`x = 42,${EOL}y = 43`);
+      expect(builder.toString(false)).toBe('x = 42,\ny = 43');
     });
   });
 });

@@ -1,0 +1,215 @@
+{
+  typescript: {
+    indexFiles: {
+      k6Clients: '<output>/clients.js',
+      k6ResponseModels: '<output>/responses.ts',
+      models: '<output>/models.ts'
+    },
+    k6Clients: {
+      'service-1': {
+        __source__: 'tag:Multipart',
+        component: 'MultipartClient',
+        filePath: '<output>/clients/multipart-client.js',
+        responseModels: {
+          'endpoint-1': {
+            component: 'SingleFileApiResponse',
+            filePath: '<output>/models/responses/multipart-responses.ts'
+          },
+          'endpoint-2': {
+            component: 'MultipleFilesApiResponse',
+            filePath: '<output>/models/responses/multipart-responses.ts'
+          },
+          'endpoint-3': {
+            component: 'FileAndFieldsApiResponse',
+            filePath: '<output>/models/responses/multipart-responses.ts'
+          },
+          'endpoint-4': {
+            component: 'NestedObjectPartApiResponse',
+            filePath: '<output>/models/responses/multipart-responses.ts'
+          },
+          'endpoint-5': {
+            component: 'RefPartApiResponse',
+            filePath: '<output>/models/responses/multipart-responses.ts'
+          },
+          'endpoint-6': {
+            component: 'WithEncodingApiResponse',
+            filePath: '<output>/models/responses/multipart-responses.ts'
+          },
+          'endpoint-7': {
+            component: 'OptionalFileApiResponse',
+            filePath: '<output>/models/responses/multipart-responses.ts'
+          }
+        }
+      }
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//file/post/requestBody/content/multipart/form-data/schema',
+        component: '{\n  file: Blob;\n}',
+        imports: []
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//mixed/post/requestBody/content/multipart/form-data/schema/properties/active',
+        component: 'boolean',
+        imports: []
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//nested/post/requestBody/content/multipart/form-data/schema',
+        component: '{\n  metadata?: {\n    author?: string;\n    version?: number;\n  };\n}',
+        imports: []
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//nested/post/requestBody/content/multipart/form-data/schema/properties/metadata',
+        component: '{\n  author?: string;\n  version?: number;\n}',
+        imports: []
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//nested/post/requestBody/content/multipart/form-data/schema/properties/metadata/properties/author',
+        component: 'string',
+        imports: []
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//nested/post/requestBody/content/multipart/form-data/schema/properties/metadata/properties/version',
+        component: 'number',
+        imports: []
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//ref-part/post/requestBody/content/multipart/form-data/schema',
+        component: '{\n  payload?: Payload;\n}',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/payload.ts',
+            name: 'Payload',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/components/schemas/Payload',
+        additionalExports: [],
+        component: 'Payload',
+        filePath: '<output>/models/payload.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/payload.ts',
+            name: 'Payload',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/components/schemas/Payload',
+        additionalExports: [],
+        component: 'Payload',
+        filePath: '<output>/models/payload.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/payload.ts',
+            name: 'Payload',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/components/schemas/Payload/properties/id',
+        component: 'string',
+        imports: []
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/components/schemas/Payload/properties/name',
+        component: 'string',
+        imports: []
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//file/post/requestBody/content/multipart/form-data/schema/properties/file',
+        component: 'Blob',
+        imports: []
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//encoded/post/requestBody/content/multipart/form-data/schema',
+        component: '{\n' +
+          '  file?: Blob;\n' +
+          '  label?: string;\n' +
+          '  quantity?: number;\n' +
+          '  active?: boolean;\n' +
+          '}',
+        imports: []
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//encoded/post/requestBody/content/multipart/form-data/schema/properties/file',
+        component: 'Blob',
+        imports: []
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//encoded/post/requestBody/content/multipart/form-data/schema/properties/label',
+        component: 'string',
+        imports: []
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//encoded/post/requestBody/content/multipart/form-data/schema/properties/quantity',
+        component: 'number',
+        imports: []
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//encoded/post/requestBody/content/multipart/form-data/schema/properties/active',
+        component: 'boolean',
+        imports: []
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//optional-file/post/requestBody/content/multipart/form-data/schema',
+        component: '{\n  file?: Blob;\n}',
+        imports: []
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//optional-file/post/requestBody/content/multipart/form-data/schema/properties/file',
+        component: 'Blob',
+        imports: []
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//files/post/requestBody/content/multipart/form-data/schema',
+        component: '{\n  files?: (Blob)[];\n}',
+        imports: []
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//files/post/requestBody/content/multipart/form-data/schema/properties/files',
+        component: '(Blob)[]',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//files/post/requestBody/content/multipart/form-data/schema/properties/files/items',
+        component: 'Blob',
+        imports: []
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//mixed/post/requestBody/content/multipart/form-data/schema',
+        component: '{\n' +
+          '  file?: Blob;\n' +
+          '  label?: string;\n' +
+          '  quantity?: number;\n' +
+          '  active?: boolean;\n' +
+          '}',
+        imports: []
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//mixed/post/requestBody/content/multipart/form-data/schema/properties/file',
+        component: 'Blob',
+        imports: []
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//mixed/post/requestBody/content/multipart/form-data/schema/properties/label',
+        component: 'string',
+        imports: []
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//mixed/post/requestBody/content/multipart/form-data/schema/properties/quantity',
+        component: 'number',
+        imports: []
+      }
+    }
+  }
+}

@@ -135,10 +135,12 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     const { schema } = args;
 
     const name = this.getDeclarationTypeName(ctx, { schema });
+    // One set of names for both generation sites below, so the constant and its `when` branch agree.
+    const valueNames = this.toEnumValueNames(ctx, schema.enum);
     return kt.enum(
       name,
-      schema.enum?.map((x) =>
-        kt.enumValue(toCasing(String(x), ctx.config.enumValueNameCasing), {
+      schema.enum?.map((x, i) =>
+        kt.enumValue(valueNames[i], {
           annotations: [kt.annotation(kt.refs.jackson.jsonProperty(), [kt.argument(kt.string(String(x)))])],
           arguments: [kt.argument(kt.string(String(x)))],
         })
@@ -159,9 +161,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
               singleExpression: true,
               body: !schema.enum?.length ? 'null' : s`\nwhen(value) {${s.indent`${
                 appendValueGroup([
-                  schema.enum.map((x) =>
-                    s`\n${kt.string(String(x))} -> ${toCasing(String(x), ctx.config.enumValueNameCasing)}`
-                  ),
+                  schema.enum.map((x, i) => s`\n${kt.string(String(x))} -> ${valueNames[i]}`),
                 ])
               }
                 else -> null`}
@@ -287,7 +287,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
           return String(schema.default);
         case 'string':
           return schema.enum && schema.enum.length > 0
-            ? kt.call([this.getType(ctx, { schema }), toCasing(String(schema.default), ctx.config.enumValueNameCasing)])
+            ? kt.call([this.getType(ctx, { schema }), this.toEnumValueName(ctx, schema.enum, schema.default)])
             : kt.string(String(schema.default));
         case 'array':
           return kt.call(
@@ -619,12 +619,25 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       return false;
     }
 
+    // A discriminated schema is the supertype its subtypes implement and the carrier of the
+    // `@JsonTypeInfo`/`@JsonSubTypes` pair, so it always needs a declaration of its own. The two rules below
+    // simplify a schema that nothing refers to as a type; degrading a polymorphic base to `Any` or to a `Map`
+    // instead drops the supertype from every subtype and the polymorphism with it. This matters for a base
+    // whose `discriminator.propertyName` is declared on the mapping targets rather than on the base, which is
+    // legal and leaves the base with no properties of its own.
+    const isDiscriminatedBase = schema.kind === 'object' && schema.discriminator !== undefined;
+
     // Schemas representable by a simple Map type do not need its own type declaration
-    if (schema.kind === 'object' && schema.properties.size === 0 && schema.additionalProperties) {
+    if (
+      !isDiscriminatedBase && schema.kind === 'object' && schema.properties.size === 0 && schema.additionalProperties
+    ) {
       return false;
     }
 
-    if (schema.kind === 'object' && ctx.config.emptyObjectTypeBehavior === 'use-any' && schema.properties.size === 0) {
+    if (
+      !isDiscriminatedBase && schema.kind === 'object' &&
+      ctx.config.emptyObjectTypeBehavior === 'use-any' && schema.properties.size === 0
+    ) {
       return false;
     }
 
@@ -695,6 +708,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
   protected normalizeSchema(ctx: Context, args: Args.NormalizeSchema): ApiSchema {
     let { schema } = args;
 
+    schema = this.normalizeDiscriminatedBases(ctx, { schema });
     if (schema.kind === 'oneOf') {
       schema = ctx.config.oneOfBehavior === 'treat-as-any-of'
         // deno-lint-ignore no-explicit-any
@@ -713,13 +727,113 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     return schema;
   }
 
+  /**
+   * Rewrites every discriminated `oneOf` base reachable from the schema through a composition into the
+   * `object` it describes, so that the merge in `normalizeSchema` treats it as one.
+   *
+   * A schema that declares a `oneOf` is of kind `oneOf` even when it also declares `type: object` and
+   * properties of its own — `determineSchemaKind` looks at `oneOf` first. For a *discriminated* `oneOf` that
+   * loses the very information the Kotlin declarations need, because the branches of such a `oneOf` are the
+   * schema's subtypes rather than parts of it (the same distinction `resolveAnyOfAndAllOf` draws for a `oneOf`
+   * nested inside a composition):
+   *
+   * - the base is an object in its own right, described by its own `properties`, `required` and any
+   *   `allOf`/`anyOf` it composes — so its interface must declare those and nothing else, not the union of
+   *   what its subtypes declare;
+   * - a subtype's `allOf: [Base]` is a composition with that object — so the subtype must inherit the base's
+   *   own properties, including the discriminator, while inheriting nothing from its siblings.
+   *
+   * Both follow from turning the base into an `object` before the merge runs: the merge already collects the
+   * properties of an `object` branch and already declines to collect the branches of a discriminated `oneOf`.
+   * This is why `AllOfInheritanceDiscriminator` in test/specs/v3/discriminator-variants.yml has always been
+   * correct — with no `oneOf` keyword it is of kind `object` already — while every `oneOf`-holder base in the
+   * same document was not.
+   */
+  protected normalizeDiscriminatedBases(_ctx: Context, args: Args.NormalizeDiscriminatedBases): ApiSchema {
+    // `normalizeSchema` runs once per property type via `shouldGenerateTypeDeclaration`, and almost no schema
+    // has a discriminated base anywhere below it. Answering that first costs one traversal and one set, and
+    // lets the overwhelmingly common case return the schema itself rather than a copy per composing schema.
+    //
+    // The question is asked once for the whole call rather than again per branch: a per-branch answer would
+    // have to be memoised to stay linear, and memoising it is unsound, because a walk truncated by the cycle
+    // guard can record `false` for a branch that reaches a base only by going back through an ancestor.
+    if (!containsDiscriminatedBase(args.schema, new Set())) return args.schema;
+
+    const rewritten = new Map<ApiSchema, ApiSchema>();
+    return rewrite(args.schema);
+
+    function rewrite(schema: ApiSchema): ApiSchema {
+      const existing = rewritten.get(schema);
+      if (existing) return existing;
+
+      const isBase = isDiscriminatedBase(schema);
+      const allOf = branches(schema, 'allOf');
+      const anyOf = branches(schema, 'anyOf');
+      // The branches of a discriminated `oneOf` are dropped rather than descended into: they are the schema's
+      // subtypes, and a subtype is generated from its own file where it is the root of this walk.
+      const oneOf = isBase ? [] : branches(schema, 'oneOf');
+      if (!isBase && allOf.length === 0 && anyOf.length === 0 && oneOf.length === 0) {
+        return schema;
+      }
+
+      // Registered before descending, so a branch composing back to one of its own ancestors terminates.
+      // deno-lint-ignore no-explicit-any
+      const copy: any = { ...schema };
+      rewritten.set(schema, copy);
+      if (isBase) {
+        copy.kind = 'object';
+        copy.type = 'object';
+      }
+      copy.allOf = allOf.map(rewrite);
+      copy.anyOf = anyOf.map(rewrite);
+      copy.oneOf = oneOf.map(rewrite);
+      return copy as ApiSchema;
+    }
+
+    /** Whether the schema or anything it composes is a base this walk would rewrite. */
+    function containsDiscriminatedBase(schema: ApiSchema, visited: Set<ApiSchema>): boolean {
+      if (visited.has(schema)) return false;
+      visited.add(schema);
+      if (isDiscriminatedBase(schema)) return true;
+
+      const contains = (x: ApiSchema) => containsDiscriminatedBase(x, visited);
+      return branches(schema, 'allOf').some(contains) ||
+        branches(schema, 'anyOf').some(contains) ||
+        branches(schema, 'oneOf').some(contains);
+    }
+
+    function isDiscriminatedBase(schema: ApiSchema): boolean {
+      return schema.kind === 'oneOf' && schema.discriminator !== undefined;
+    }
+
+    /**
+     * The branches a schema composes under one keyword. `normalizeSchema` leaves an explicit
+     * `oneOf: undefined` behind when it rewrites a `oneOf` holder, so a keyword can be present with no value.
+     */
+    function branches(schema: ApiSchema, keyword: 'allOf' | 'anyOf' | 'oneOf'): ApiSchema[] {
+      const values = schema as unknown as Record<string, ApiSchema[] | undefined>;
+      return values[keyword] ?? [];
+    }
+  }
+
   protected hasProperty(ctx: Context, args: Args.HasProperty): boolean {
-    const { schema, propertyName } = args;
+    // A composition branch may compose back to one of its own ancestors (see test/specs/v3/anyof-cycle.yml).
+    // Without this guard such a cycle recurses until the stack overflows. Re-visiting a schema can never
+    // change the answer, so returning `false` for one is safe: another path either already found the
+    // property or does not contain it at all.
+    const { schema, propertyName, visited = new Set<ApiSchema>() } = args;
+    if (visited.has(schema)) return false;
+    visited.add(schema);
 
     return (
       ('properties' in schema && schema.properties.has(propertyName)) ||
-      ('anyOf' in schema && schema.anyOf.some((schema) => this.hasProperty(ctx, { schema, propertyName }))) ||
-      ('allOf' in schema && schema.allOf.some((schema) => this.hasProperty(ctx, { schema, propertyName })))
+      ('anyOf' in schema && schema.anyOf.some((schema) => this.hasProperty(ctx, { schema, propertyName, visited }))) ||
+      ('allOf' in schema && schema.allOf.some((schema) => this.hasProperty(ctx, { schema, propertyName, visited }))) ||
+      // Only an undiscriminated `oneOf` composes into the schema that references it, matching which `oneOf`
+      // branches `resolveAnyOfAndAllOf` merges. A discriminated one lists subtypes, whose properties are not
+      // the referencing schema's, so an inherited property never comes from there.
+      ('oneOf' in schema && !schema.discriminator &&
+        schema.oneOf.some((schema) => this.hasProperty(ctx, { schema, propertyName, visited })))
     );
   }
 }

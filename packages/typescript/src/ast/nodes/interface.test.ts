@@ -1,10 +1,9 @@
-import { EOL } from 'node:os';
-
-import { expect } from '@std/expect/expect';
+import { expect } from '@std/expect';
 import { beforeEach, describe, it } from '@std/testing/bdd';
 
-import { normalizeEOL } from '@goast/test-utils';
+import { dedent } from '@goast/test-harness';
 
+import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from '../../config.ts';
 import { TypeScriptFileBuilder } from '../../file-builder.ts';
 import { tsDecorator } from './decorator.ts';
 import { tsDoc } from './doc.ts';
@@ -17,48 +16,52 @@ import { tsReference } from './reference.ts';
 let builder: TypeScriptFileBuilder;
 
 beforeEach(() => {
-  builder = new TypeScriptFileBuilder();
+  // A fixed newLine keeps the expectations below host-independent.
+  builder = new TypeScriptFileBuilder(
+    undefined,
+    { ...defaultTypeScriptGeneratorConfig, newLine: '\n' } as TypeScriptGeneratorConfig,
+  );
 });
 
 describe('tsInterface', () => {
   it('should write the name of the interface', () => {
     builder.append(tsInterface('X'));
-    expect(builder.toString(false)).toBe(`interface X {}${EOL}`);
+    expect(builder.toString(false)).toBe('interface X {}\n');
   });
 
   it('should write the generics if they exist', () => {
     builder.append(tsInterface('X', { generics: [tsGenericParameter('T'), tsGenericParameter('U')] }));
-    expect(builder.toString(false)).toBe(`interface X<T, U> {}${EOL}`);
+    expect(builder.toString(false)).toBe('interface X<T, U> {}\n');
   });
 
   it('should write the extends if it exists', () => {
     builder.append(tsInterface('X', { extends: [tsReference('Y'), tsReference('Z')] }));
-    expect(builder.toString(false)).toBe(`interface X extends Y, Z {}${EOL}`);
+    expect(builder.toString(false)).toBe('interface X extends Y, Z {}\n');
   });
 
   it('should write the properties if they exist', () => {
     builder.append(tsInterface('X', { members: [tsProperty('x'), tsProperty('y')] }));
-    expect(builder.toString(false)).toBe(`interface X {${EOL}  x;${EOL}  y;${EOL}}${EOL}`);
+    expect(builder.toString(false)).toBe('interface X {\n  x;\n  y;\n}\n');
   });
 
   it('should write the methods if they exist', () => {
     builder.append(tsInterface('X', { members: [tsMethod('x'), tsMethod('y')] }));
-    expect(builder.toString(false)).toBe(`interface X {${EOL}  x();${EOL}  y();${EOL}}${EOL}`);
+    expect(builder.toString(false)).toBe('interface X {\n  x();\n  y();\n}\n');
   });
 
   it('should write export keyword if configured', () => {
     builder.append(tsInterface('X', { export: true }));
-    expect(builder.toString(false)).toBe(`export interface X {}${EOL}`);
+    expect(builder.toString(false)).toBe('export interface X {}\n');
   });
 
   it('should write the doc if it exists', () => {
     builder.append(tsInterface('X', { doc: tsDoc({ description: 'description' }) }));
-    expect(builder.toString(false)).toBe(`/**${EOL} * description${EOL} */${EOL}interface X {}${EOL}`);
+    expect(builder.toString(false)).toBe('/**\n * description\n */\ninterface X {}\n');
   });
 
   it('should write the decorators if they exist', () => {
     builder.append(tsInterface('X', { decorators: [tsDecorator('decorator')] }));
-    expect(builder.toString(false)).toBe(`@decorator${EOL}interface X {}${EOL}`);
+    expect(builder.toString(false)).toBe('@decorator\ninterface X {}\n');
   });
 
   it('should write all the parts of the interface', () => {
@@ -73,7 +76,7 @@ describe('tsInterface', () => {
       }),
     );
     expect(builder.toString(false)).toBe(
-      normalizeEOL(8)(
+      dedent(8)(
         `/**
          * description
          */
@@ -121,7 +124,7 @@ describe('tsInterface', () => {
       }),
     );
     expect(builder.toString(false)).toBe(
-      normalizeEOL(8)(
+      dedent(8)(
         `║b║║bd║
         /**
          * description

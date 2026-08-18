@@ -1,8 +1,7 @@
-import { EOL } from 'node:os';
-
-import { expect } from '@std/expect/expect';
+import { expect } from '@std/expect';
 import { beforeEach, describe, it } from '@std/testing/bdd';
 
+import { defaultKotlinGeneratorConfig, type KotlinGeneratorConfig } from '../../config.ts';
 import { KotlinFileBuilder } from '../../file-builder.ts';
 import { ktAnnotation } from './annotation.ts';
 
@@ -10,7 +9,11 @@ describe('ktAnnotation', () => {
   let builder: KotlinFileBuilder;
 
   beforeEach(() => {
-    builder = new KotlinFileBuilder();
+    // A fixed newLine keeps the expectations below host-independent.
+    builder = new KotlinFileBuilder(
+      undefined,
+      { ...defaultKotlinGeneratorConfig, newLine: '\n' } as KotlinGeneratorConfig,
+    );
   });
 
   describe('single', () => {
@@ -57,7 +60,7 @@ describe('ktAnnotation', () => {
   describe('multiple', () => {
     it('should write annotations across multiple lines', () => {
       ktAnnotation.write(builder, [ktAnnotation('Test'), ktAnnotation('Test')], { multiline: true });
-      expect(builder.toString(false)).toBe(`@Test${EOL}@Test${EOL}`);
+      expect(builder.toString(false)).toBe('@Test\n@Test\n');
     });
 
     it('should write annotations on the same line', () => {

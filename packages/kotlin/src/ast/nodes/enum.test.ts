@@ -1,10 +1,9 @@
-import { EOL } from 'node:os';
-
-import { expect } from '@std/expect/expect';
+import { expect } from '@std/expect';
 import { beforeEach, describe, it } from '@std/testing/bdd';
 
-import { normalizeEOL } from '@goast/test-utils';
+import { dedent } from '@goast/test-harness';
 
+import { defaultKotlinGeneratorConfig, type KotlinGeneratorConfig } from '../../config.ts';
 import { KotlinFileBuilder } from '../../file-builder.ts';
 import { ktAnnotation } from './annotation.ts';
 import { ktConstructor } from './constructor.ts';
@@ -18,34 +17,38 @@ describe('ktEnum', () => {
   let builder: KotlinFileBuilder;
 
   beforeEach(() => {
-    builder = new KotlinFileBuilder();
+    // A fixed newLine keeps the expectations below host-independent.
+    builder = new KotlinFileBuilder(
+      undefined,
+      { ...defaultKotlinGeneratorConfig, newLine: '\n' } as KotlinGeneratorConfig,
+    );
   });
 
   it('should write enum', () => {
     builder.append(ktEnum('Foo'));
-    expect(builder.toString(false)).toBe(`enum class Foo${EOL}`);
+    expect(builder.toString(false)).toBe('enum class Foo\n');
   });
 
   it('should write enum with values', () => {
     builder.append(ktEnum('Foo', [ktEnumValue('BAR'), ktEnumValue('BAZ')]));
-    expect(builder.toString(false)).toBe(`enum class Foo {${EOL}    BAR, BAZ${EOL}}${EOL}`);
+    expect(builder.toString(false)).toBe('enum class Foo {\n    BAR, BAZ\n}\n');
   });
 
   it('should write documenation', () => {
     builder.append(ktEnum('Foo', [ktEnumValue('BAR')], { doc: ktDoc('This is a foo') }));
     expect(builder.toString(false)).toBe(
-      `/**${EOL} * This is a foo${EOL} */${EOL}enum class Foo {${EOL}    BAR${EOL}}${EOL}`,
+      '/**\n * This is a foo\n */\nenum class Foo {\n    BAR\n}\n',
     );
   });
 
   it('should write annotations', () => {
     builder.append(ktEnum('Foo', [ktEnumValue('BAR')], { annotations: [ktAnnotation('Deprecated')] }));
-    expect(builder.toString(false)).toBe(`@Deprecated${EOL}enum class Foo {${EOL}    BAR${EOL}}${EOL}`);
+    expect(builder.toString(false)).toBe('@Deprecated\nenum class Foo {\n    BAR\n}\n');
   });
 
   it('should write access modifiers', () => {
     builder.append(ktEnum('Foo', [ktEnumValue('BAR')], { accessModifier: 'private' }));
-    expect(builder.toString(false)).toBe(`private enum class Foo {${EOL}    BAR${EOL}}${EOL}`);
+    expect(builder.toString(false)).toBe('private enum class Foo {\n    BAR\n}\n');
   });
 
   it('should write primary constructor', () => {
@@ -54,7 +57,7 @@ describe('ktEnum', () => {
         primaryConstructor: ktConstructor([ktParameter('x', 'Int'), ktParameter('y', 'Int')]),
       }),
     );
-    expect(builder.toString(false)).toBe(`enum class Foo(x: Int, y: Int) {${EOL}    BAR(0, 1)${EOL}}${EOL}`);
+    expect(builder.toString(false)).toBe('enum class Foo(x: Int, y: Int) {\n    BAR(0, 1)\n}\n');
   });
 
   it('should write members', () => {
@@ -62,19 +65,19 @@ describe('ktEnum', () => {
       ktEnum('Foo', [ktEnumValue('BAR'), ktEnumValue('BAZ')], { members: ['// Comment 1', '// Comment 2'] }),
     );
     expect(builder.toString(false)).toBe(
-      `enum class Foo {${EOL}    BAR, BAZ;${EOL}${EOL}    // Comment 1${EOL}    // Comment 2${EOL}}${EOL}`,
+      'enum class Foo {\n    BAR, BAZ;\n\n    // Comment 1\n    // Comment 2\n}\n',
     );
   });
 
   it('should write implemented interfaces', () => {
     builder.append(ktEnum('Foo', [ktEnumValue('BAR')], { implements: ['Bar', 'Baz'] }));
-    expect(builder.toString(false)).toBe(`enum class Foo : Bar, Baz {${EOL}    BAR${EOL}}${EOL}`);
+    expect(builder.toString(false)).toBe('enum class Foo : Bar, Baz {\n    BAR\n}\n');
   });
 
   it('should write companion object', () => {
     builder.append(ktEnum('Foo', [ktEnumValue('BAR')], { companionObject: ktObject() }));
     expect(builder.toString(false)).toBe(
-      `enum class Foo {${EOL}    BAR;${EOL}${EOL}    companion object {}${EOL}}${EOL}`,
+      'enum class Foo {\n    BAR;\n\n    companion object {}\n}\n',
     );
   });
 
@@ -91,7 +94,7 @@ describe('ktEnum', () => {
       }),
     );
     expect(builder.toString(false)).toBe(
-      normalizeEOL(8)(
+      dedent(8)(
         `/**
          * This is a foo
          */
@@ -144,7 +147,7 @@ describe('ktEnum', () => {
       }),
     );
     expect(builder.toString(false)).toBe(
-      normalizeEOL(8)(
+      dedent(8)(
         `║b║║bd║
         /**
          * This is a foo

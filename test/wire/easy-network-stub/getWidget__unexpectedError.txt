@@ -1,0 +1,6 @@
+status
+  expected 503
+  actual   598
+body
+  expected {"kind":"json","value":{"code":503,"message":"Unexpected error"}}
+  actual   {"kind":"json","value":"UNEXPRESSIBLE getWidget cannot answer 503: the generated responder's status map is {200, 400, 401, 403, 404, 500}, and the spec can only serve 503 through its `default` response, for which no entry was generated"}

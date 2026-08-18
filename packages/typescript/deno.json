@@ -13,7 +13,7 @@
     ]
   },
   "goastNpmOptions": {
-    "usedLocalPackages": ["@goast/test-utils", "@goast/core"],
+    "usedLocalPackages": ["@goast/core"],
     "assetsManagerFilePath": "src/assets.ts"
   }
 }

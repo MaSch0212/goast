@@ -1,0 +1,3 @@
+body
+  expected {"kind":"multipart","parts":[{"contentType":"image/png","filename":"photo.png","name":"file","value":"binarydata"},{"name":"caption","value":"A good boy"}]}
+  actual   {"kind":"text","value":"{\"file\":{},\"caption\":\"A good boy\"}"}

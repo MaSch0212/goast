@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM"],
+    "strict": true,
+    "noEmit": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "typeRoots": ["/opt/goast/node_modules/@types"],
+    "types": ["k6"],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  }
+}

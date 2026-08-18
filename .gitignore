@@ -23,11 +23,15 @@ node_modules
 # misc
 /coverage
 
+# Local build caches. `.goast-cache/gradle-work` is the persistent Gradle project directory the Kotlin
+# compile gate reuses between runs (see test/compile-tests/runners/kotlin.ts). It holds absolute
+# container paths and Gradle's own state, so it is machine-local by nature and never committed.
+/.goast-cache
+
 # System Files
 .DS_Store
 Thumbs.db
 
 .openapi
 /out
-**/.verify/**/*.actual.txt
 playground.ts

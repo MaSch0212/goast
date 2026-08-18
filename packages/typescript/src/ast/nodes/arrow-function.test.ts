@@ -1,15 +1,18 @@
-import { EOL } from 'node:os';
-
 import { expect } from '@std/expect';
 import { beforeEach, describe, it } from '@std/testing/bdd';
 
+import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from '../../config.ts';
 import { TypeScriptFileBuilder } from '../../file-builder.ts';
 import { tsArrowFunction } from './arrow-function.ts';
 
 let builder: TypeScriptFileBuilder;
 
 beforeEach(() => {
-  builder = new TypeScriptFileBuilder();
+  // A fixed newLine keeps the expectations below host-independent.
+  builder = new TypeScriptFileBuilder(
+    undefined,
+    { ...defaultTypeScriptGeneratorConfig, newLine: '\n' } as TypeScriptGeneratorConfig,
+  );
 });
 
 describe('tsArrowFunction', () => {
@@ -30,7 +33,7 @@ describe('tsArrowFunction', () => {
 
   it('should write the body', () => {
     builder.append(tsArrowFunction({ body: 'return 42;' }));
-    expect(builder.toString(false)).toBe('() => {' + EOL + '  return 42;' + EOL + '}');
+    expect(builder.toString(false)).toBe('() => {\n  return 42;\n}');
   });
 
   it('should write the generics if they exist', () => {
@@ -47,7 +50,7 @@ describe('tsArrowFunction', () => {
         body: 'return 42;',
       }),
     );
-    expect(builder.toString(false)).toBe('<T, U>(x, y): number => {' + EOL + '  return 42;' + EOL + '}');
+    expect(builder.toString(false)).toBe('<T, U>(x, y): number => {\n  return 42;\n}');
   });
 
   it('should render injections', () => {
@@ -72,7 +75,7 @@ describe('tsArrowFunction', () => {
       }),
     );
     expect(builder.toString(false)).toBe(
-      '║b║║bg║<T, U>║ag║║bp║(x, y)║ap║: ║brt║number║art║ => ║bb║{' + EOL + '  return 42;' + EOL + '}║ab║║a║',
+      '║b║║bg║<T, U>║ag║║bp║(x, y)║ap║: ║brt║number║art║ => ║bb║{\n  return 42;\n}║ab║║a║',
     );
   });
 });

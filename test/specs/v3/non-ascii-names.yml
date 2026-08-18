@@ -1,0 +1,64 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Non Ascii Names
+
+paths:
+  /x:
+    x-ignore: true
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    Größe:
+      type: object
+      properties:
+        value:
+          type: number
+    Überprüfung:
+      type: object
+      properties:
+        value:
+          type: boolean
+    Ångström:
+      type: object
+      properties:
+        value:
+          type: number
+    日本語:
+      type: object
+      properties:
+        value:
+          type: string
+    Ελληνικά:
+      type: object
+      properties:
+        value:
+          type: string
+    Кириллица:
+      type: object
+      properties:
+        value:
+          type: string
+    café: # combining acute accent (U+0301), not precomposed U+00E9
+      type: object
+      properties:
+        value:
+          type: string
+    emoji🎉Name:
+      type: object
+      properties:
+        value:
+          type: string
+    ObjectWithNonAsciiProperties:
+      type: object
+      properties:
+        größe:
+          type: number
+        日本語:
+          type: string
+        naïve:
+          type: boolean

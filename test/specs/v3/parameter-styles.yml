@@ -1,0 +1,175 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Parameter Styles
+
+paths:
+  /query-form-array:
+    get:
+      operationId: formArray
+      tags: [Styles]
+      parameters:
+        - name: tags
+          in: query
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: The form-style, exploded array parameter echoed back.
+  /query-form-array-no-explode:
+    get:
+      operationId: formArrayNoExplode
+      tags: [Styles]
+      parameters:
+        - name: tags
+          in: query
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: The form-style, non-exploded array parameter echoed back.
+  /query-form-object:
+    get:
+      operationId: formObject
+      tags: [Styles]
+      parameters:
+        - name: coordinates
+          in: query
+          style: form
+          explode: true
+          schema:
+            type: object
+            properties:
+              label:
+                type: string
+              count:
+                type: integer
+      responses:
+        '200':
+          description: The form-style, exploded object parameter echoed back.
+  /query-space-delimited:
+    get:
+      operationId: spaceDelimited
+      tags: [Styles]
+      parameters:
+        - name: tags
+          in: query
+          style: spaceDelimited
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: The space-delimited array parameter echoed back.
+  /query-pipe-delimited:
+    get:
+      operationId: pipeDelimited
+      tags: [Styles]
+      parameters:
+        - name: tags
+          in: query
+          style: pipeDelimited
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: The pipe-delimited array parameter echoed back.
+  /query-deep-object:
+    get:
+      operationId: deepObject
+      tags: [Styles]
+      parameters:
+        - name: filter
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            properties:
+              label:
+                type: string
+              count:
+                type: integer
+      responses:
+        '200':
+          description: The deep-object parameter echoed back.
+  /simple-path/{values}:
+    get:
+      operationId: simplePath
+      tags: [Styles]
+      parameters:
+        - name: values
+          in: path
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: The simple-style path parameter echoed back.
+  /label-path/{values}:
+    get:
+      operationId: labelPath
+      tags: [Styles]
+      parameters:
+        - name: values
+          in: path
+          required: true
+          style: label
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: The label-style path parameter echoed back.
+  /matrix-path/{values}:
+    get:
+      operationId: matrixPath
+      tags: [Styles]
+      parameters:
+        - name: values
+          in: path
+          required: true
+          style: matrix
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: The matrix-style path parameter echoed back.
+  /simple-header:
+    get:
+      operationId: simpleHeader
+      tags: [Styles]
+      parameters:
+        - name: X-Tags
+          in: header
+          style: simple
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: The simple-style header parameter echoed back.

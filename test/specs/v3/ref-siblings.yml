@@ -1,0 +1,42 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Ref Siblings
+
+paths:
+  /x:
+    x-ignore: true
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    Target:
+      type: string
+      description: The original target description.
+    RefWithDescription:
+      $ref: '#/components/schemas/Target'
+      description: An overriding description on the ref itself.
+    RefWithTitle:
+      $ref: '#/components/schemas/Target'
+      title: RefWithTitle
+    RefWithNullable:
+      $ref: '#/components/schemas/Target'
+      nullable: true
+    RefWithDefault:
+      $ref: '#/components/schemas/Target'
+      default: fallback
+    RefWithExample:
+      $ref: '#/components/schemas/Target'
+      example: an example value
+    ObjectWithRefSiblingProperties:
+      type: object
+      properties:
+        first:
+          $ref: '#/components/schemas/Target'
+          description: The first property's own description.
+        second:
+          $ref: '#/components/schemas/Target'
+          description: The second property's own description.

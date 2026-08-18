@@ -1,0 +1,29 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: External Refs
+
+paths:
+  /x:
+    x-ignore: true
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    UsesShared:
+      type: object
+      properties:
+        thing:
+          $ref: 'shared/types.yml#/components/schemas/SharedThing'
+        status:
+          $ref: 'shared/types.yml#/components/schemas/SharedEnum'
+    RefsSharedInArray:
+      type: object
+      properties:
+        things:
+          type: array
+          items:
+            $ref: 'shared/types.yml#/components/schemas/SharedThing'

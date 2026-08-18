@@ -1,10 +1,9 @@
-import { EOL } from 'node:os';
-
 import { expect } from '@std/expect';
 import { beforeEach, describe, it } from '@std/testing/bdd';
 
-import { normalizeEOL } from '@goast/test-utils';
+import { dedent } from '@goast/test-harness';
 
+import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from '../../config.ts';
 import { TypeScriptFileBuilder } from '../../file-builder.ts';
 import { tsClass } from './class.ts';
 import { tsConstructor } from './constructor.ts';
@@ -18,28 +17,32 @@ import { tsReference } from './reference.ts';
 let builder: TypeScriptFileBuilder;
 
 beforeEach(() => {
-  builder = new TypeScriptFileBuilder();
+  // A fixed newLine keeps the expectations below host-independent.
+  builder = new TypeScriptFileBuilder(
+    undefined,
+    { ...defaultTypeScriptGeneratorConfig, newLine: '\n' } as TypeScriptGeneratorConfig,
+  );
 });
 
 describe('tsClass', () => {
   it('should write the name of the class', () => {
     builder.append(tsClass('X'));
-    expect(builder.toString(false)).toBe('class X {}' + EOL);
+    expect(builder.toString(false)).toBe('class X {}\n');
   });
 
   it('should write documenation if it exists', () => {
     builder.append(tsClass('X', { doc: tsDoc({ description: 'description' }) }));
-    expect(builder.toString(false)).toBe('/**' + EOL + ' * description' + EOL + ' */' + EOL + 'class X {}' + EOL);
+    expect(builder.toString(false)).toBe('/**\n * description\n */\nclass X {}\n');
   });
 
   it('should write decorators if they exist', () => {
     builder.append(tsClass('X', { decorators: [tsDecorator('decorator')] }));
-    expect(builder.toString(false)).toBe('@decorator' + EOL + 'class X {}' + EOL);
+    expect(builder.toString(false)).toBe('@decorator\nclass X {}\n');
   });
 
   it('should write the generics if they exist', () => {
     builder.append(tsClass('X', { generics: ['T', 'U'] }));
-    expect(builder.toString(false)).toBe('class X<T, U> {}' + EOL);
+    expect(builder.toString(false)).toBe('class X<T, U> {}\n');
   });
 
   it('should write the descriptions of the generics if they exist', () => {
@@ -49,43 +52,43 @@ describe('tsClass', () => {
       }),
     );
     expect(builder.toString(false)).toBe(
-      '/**' + EOL + ' * @template T description' + EOL + ' */' + EOL + 'class X<T, U> {}' + EOL,
+      '/**\n * @template T description\n */\nclass X<T, U> {}\n',
     );
   });
 
   it('should write the extends if it exists', () => {
     builder.append(tsClass('X', { extends: 'Y' }));
-    expect(builder.toString(false)).toBe('class X extends Y {}' + EOL);
+    expect(builder.toString(false)).toBe('class X extends Y {}\n');
   });
 
   it('should write the implements if it exists', () => {
     builder.append(tsClass('X', { implements: ['Y', 'Z'] }));
-    expect(builder.toString(false)).toBe('class X implements Y, Z {}' + EOL);
+    expect(builder.toString(false)).toBe('class X implements Y, Z {}\n');
   });
 
   it('should write the properties if they exist', () => {
     builder.append(tsClass('X', { members: [tsProperty('x'), tsProperty('y')] }));
-    expect(builder.toString(false)).toBe('class X {' + EOL + '  x;' + EOL + '  y;' + EOL + '}' + EOL);
+    expect(builder.toString(false)).toBe('class X {\n  x;\n  y;\n}\n');
   });
 
   it('should write the methods if they exist', () => {
     builder.append(tsClass('X', { members: [tsMethod('x'), tsMethod('y')] }));
-    expect(builder.toString(false)).toBe('class X {' + EOL + '  x();' + EOL + '  y();' + EOL + '}' + EOL);
+    expect(builder.toString(false)).toBe('class X {\n  x();\n  y();\n}\n');
   });
 
   it('should write the constructor if it exists', () => {
     builder.append(tsClass('X', { members: [tsConstructor()] }));
-    expect(builder.toString(false)).toBe('class X {' + EOL + '  constructor() {}' + EOL + '}' + EOL);
+    expect(builder.toString(false)).toBe('class X {\n  constructor() {}\n}\n');
   });
 
   it('should write export keyword if configured', () => {
     builder.append(tsClass('X', { export: true }));
-    expect(builder.toString(false)).toBe('export class X {}' + EOL);
+    expect(builder.toString(false)).toBe('export class X {}\n');
   });
 
   it('should write the abstract keyword if configured', () => {
     builder.append(tsClass('X', { abstract: true }));
-    expect(builder.toString(false)).toBe('abstract class X {}' + EOL);
+    expect(builder.toString(false)).toBe('abstract class X {}\n');
   });
 
   it('should write all the parts of the class', () => {
@@ -102,7 +105,7 @@ describe('tsClass', () => {
       }),
     );
     expect(builder.toString(false)).toBe(
-      normalizeEOL(8)(
+      dedent(8)(
         `/**
          * description
          *
@@ -159,7 +162,7 @@ describe('tsClass', () => {
       }),
     );
     expect(builder.toString(false)).toBe(
-      normalizeEOL(8)(
+      dedent(8)(
         `║b║║bd║
         /**
          * description

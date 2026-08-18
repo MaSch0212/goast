@@ -1,0 +1,125 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Path Edge Cases
+
+paths:
+  /overlap/{id}:
+    get:
+      operationId: overlapTemplated
+      tags: [Paths]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A templated overlap segment.
+  /overlap/fixed:
+    get:
+      operationId: overlapLiteral
+      tags: [Paths]
+      responses:
+        '200':
+          description: A literal overlap segment.
+  /with.dot:
+    get:
+      operationId: withDot
+      tags: [Paths]
+      responses:
+        '200':
+          description: A path segment containing a dot.
+  /with-dash:
+    get:
+      operationId: withDash
+      tags: [Paths]
+      responses:
+        '200':
+          description: A path segment containing a dash.
+  /with_underscore:
+    get:
+      operationId: withUnderscore
+      tags: [Paths]
+      responses:
+        '200':
+          description: A path segment containing an underscore.
+  /with~tilde:
+    get:
+      operationId: withTilde
+      tags: [Paths]
+      responses:
+        '200':
+          description: A path segment containing a tilde.
+  /with:colon:
+    get:
+      operationId: withColon
+      tags: [Paths]
+      responses:
+        '200':
+          description: A path segment containing a colon.
+  /with@at:
+    get:
+      operationId: withAt
+      tags: [Paths]
+      responses:
+        '200':
+          description: A path segment containing an at sign.
+  /trailing/:
+    get:
+      operationId: trailingSlash
+      tags: [Paths]
+      responses:
+        '200':
+          description: A path with a trailing slash.
+  /{id}:
+    get:
+      operationId: paramOnlyPath
+      tags: [Paths]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A path that is a parameter in its entirety.
+  /a/{p1}/b/{p2}/c/{p3}:
+    get:
+      operationId: threeParams
+      tags: [Paths]
+      parameters:
+        - name: p1
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: p2
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: p3
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Three parameters interleaved with literals.
+  /UPPER/Mixed/lower:
+    get:
+      operationId: caseVariety
+      tags: [Paths]
+      responses:
+        '200':
+          description: A path with casing variety in its segments.
+  /very/deep/nested/path/with/many/segments/here:
+    get:
+      operationId: veryDeepPath
+      tags: [Paths]
+      responses:
+        '200':
+          description: A very deep path.

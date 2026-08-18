@@ -1,0 +1,9 @@
+status
+  expected 503
+  actual   598
+header.content-type
+  expected application/json
+  actual   text/plain
+body
+  expected {"kind":"json","value":{"code":503,"message":"Unexpected error"}}
+  actual   {"kind":"text","value":"UNEXPRESSIBLE getWidget cannot answer 503: strictResponseEntities generates no factory for the spec's `default` response, and GetWidgetResponseEntity's constructor is private"}

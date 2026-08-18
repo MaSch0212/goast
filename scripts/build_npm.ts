@@ -87,11 +87,9 @@ await build({
     copyIfExists(resolve(projectDir, 'assets'), resolve(distDir, 'assets'));
 
     // Test files
-    fs.copySync(resolve(rootDir, 'test', 'openapi-files'), resolve(distDir, '..', 'test', 'openapi-files'), {
+    fs.copySync(resolve(rootDir, 'test', 'specs'), resolve(distDir, '..', 'test', 'specs'), {
       overwrite: true,
     });
-    copyIfExists(resolve(projectDir, 'tests', '.verify'), resolve(distDir, 'script', 'tests', '.verify'));
-    copyIfExists(resolve(projectDir, 'tests', '.verify'), resolve(distDir, 'esm', 'tests', '.verify'));
 
     // Adjust asset relative path
     if (denoJson.goastNpmOptions?.assetsManagerFilePath) {
@@ -143,7 +141,7 @@ function moveTypeDependenciesToDevDependencies(packageJson: PackageJson) {
 }
 
 function removeTestRelatedDependencies(packageJson: PackageJson) {
-  const dependenciesToRemove = ['@deno/shim-deno-test', '@goast/test-utils', 'picocolors'];
+  const dependenciesToRemove = ['@deno/shim-deno-test', '@goast/test-harness', 'picocolors'];
 
   for (const depCollection of [packageJson.dependencies, packageJson.devDependencies, packageJson.peerDependencies]) {
     if (!depCollection) continue;

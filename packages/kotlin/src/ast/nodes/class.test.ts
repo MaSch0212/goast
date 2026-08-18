@@ -1,10 +1,9 @@
-import { EOL } from 'node:os';
-
 import { appendValueGroup } from '@goast/core';
-import { normalizeEOL } from '@goast/test-utils';
+import { dedent } from '@goast/test-harness';
 
-import { expect } from '@std/expect/expect';
+import { expect } from '@std/expect';
 import { beforeEach, describe, it } from '@std/testing/bdd';
+import { defaultKotlinGeneratorConfig, type KotlinGeneratorConfig } from '../../config.ts';
 import { KotlinFileBuilder } from '../../file-builder.ts';
 import { ktAnnotation } from './annotation.ts';
 import { ktClass } from './class.ts';
@@ -21,22 +20,26 @@ describe('ktClass', () => {
   let builder: KotlinFileBuilder;
 
   beforeEach(() => {
-    builder = new KotlinFileBuilder();
+    // A fixed newLine keeps the expectations below host-independent.
+    builder = new KotlinFileBuilder(
+      undefined,
+      { ...defaultKotlinGeneratorConfig, newLine: '\n' } as KotlinGeneratorConfig,
+    );
   });
 
   it('should write class', () => {
     builder.append(ktClass('Foo'));
-    expect(builder.toString(false)).toBe(`class Foo${EOL}`);
+    expect(builder.toString(false)).toBe('class Foo\n');
   });
 
   it('should write generics', () => {
     builder.append(ktClass('Foo', { generics: [ktGenericParameter('T'), ktGenericParameter('U')] }));
-    expect(builder.toString(false)).toBe(`class Foo<T, U>${EOL}`);
+    expect(builder.toString(false)).toBe('class Foo<T, U>\n');
   });
 
   it('should write primary constructor without body', () => {
     builder.append(ktClass('Foo', { primaryConstructor: ktConstructor([ktParameter.class('x', 'Int')], null) }));
-    expect(builder.toString(false)).toBe(`class Foo(x: Int)${EOL}`);
+    expect(builder.toString(false)).toBe('class Foo(x: Int)\n');
   });
 
   it('should write primary constructor with body', () => {
@@ -44,7 +47,7 @@ describe('ktClass', () => {
       ktClass('Foo', { primaryConstructor: ktConstructor([ktParameter.class('x', 'Int')], 'println(x)') }),
     );
     expect(builder.toString(false)).toBe(
-      `class Foo(x: Int) {${EOL}    init {${EOL}        println(x)${EOL}    }${EOL}}${EOL}`,
+      'class Foo(x: Int) {\n    init {\n        println(x)\n    }\n}\n',
     );
   });
 
@@ -64,7 +67,7 @@ describe('ktClass', () => {
       }),
     );
     expect(builder.toString(false)).toBe(
-      normalizeEOL(8)(
+      dedent(8)(
         `class Foo {
             constructor(x: Int) {
                 println(x)
@@ -94,12 +97,12 @@ describe('ktClass', () => {
 
   it('should write annotations', () => {
     builder.append(ktClass('Foo', { annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')] }));
-    expect(builder.toString(false)).toBe(`@Inject${EOL}@Optional${EOL}class Foo${EOL}`);
+    expect(builder.toString(false)).toBe('@Inject\n@Optional\nclass Foo\n');
   });
 
   it('should write documentation', () => {
     builder.append(ktClass('Foo', { doc: ktDoc('This is a class') }));
-    expect(builder.toString(false)).toBe(`/**${EOL} * This is a class${EOL} */${EOL}class Foo${EOL}`);
+    expect(builder.toString(false)).toBe('/**\n * This is a class\n */\nclass Foo\n');
   });
 
   it('should write primary constructor parameter description', () => {
@@ -108,7 +111,7 @@ describe('ktClass', () => {
         primaryConstructor: ktConstructor([ktParameter.class('x', 'Int', { description: 'The number' })]),
       }),
     );
-    expect(builder.toString(false)).toBe(`/**${EOL} * @param x The number${EOL} */${EOL}class Foo(x: Int)${EOL}`);
+    expect(builder.toString(false)).toBe('/**\n * @param x The number\n */\nclass Foo(x: Int)\n');
   });
 
   it('should write primary constructor parameter property description', () => {
@@ -120,7 +123,7 @@ describe('ktClass', () => {
       }),
     );
     expect(builder.toString(false)).toBe(
-      `/**${EOL} * @property x The number${EOL} */${EOL}class Foo(val x: Int)${EOL}`,
+      '/**\n * @property x The number\n */\nclass Foo(val x: Int)\n',
     );
   });
 
@@ -130,27 +133,27 @@ describe('ktClass', () => {
         primaryConstructor: ktConstructor([ktParameter.class('x', 'Int', { propertyDescription: 'The number' })]),
       }),
     );
-    expect(builder.toString(false)).toBe(`class Foo(x: Int)${EOL}`);
+    expect(builder.toString(false)).toBe('class Foo(x: Int)\n');
   });
 
   it('should write generic parameter description', () => {
     builder.append(ktClass('Foo', { generics: [ktGenericParameter('T', { description: 'The type' })] }));
-    expect(builder.toString(false)).toBe(`/**${EOL} * @param T The type${EOL} */${EOL}class Foo<T>${EOL}`);
+    expect(builder.toString(false)).toBe('/**\n * @param T The type\n */\nclass Foo<T>\n');
   });
 
   it('should write modifiers', () => {
     builder.append(ktClass('Foo', { accessModifier: 'private', open: true, abstract: true }));
-    expect(builder.toString(false)).toBe(`private open abstract class Foo${EOL}`);
+    expect(builder.toString(false)).toBe('private open abstract class Foo\n');
   });
 
   it('should write class kind', () => {
     builder.append(ktClass('Foo', { classKind: 'annotation' }));
-    expect(builder.toString(false)).toBe(`annotation class Foo${EOL}`);
+    expect(builder.toString(false)).toBe('annotation class Foo\n');
   });
 
   it('should write base class', () => {
     builder.append(ktClass('Foo', { extends: 'Bar' }));
-    expect(builder.toString(false)).toBe(`class Foo : Bar${EOL}`);
+    expect(builder.toString(false)).toBe('class Foo : Bar\n');
   });
 
   it('should write base class constructor arguments', () => {
@@ -160,17 +163,17 @@ describe('ktClass', () => {
         primaryConstructor: ktConstructor([], null, { delegateTarget: 'super', delegateArguments: ['1337', '4711'] }),
       }),
     );
-    expect(builder.toString(false)).toBe(`class Foo : Bar(1337, 4711)${EOL}`);
+    expect(builder.toString(false)).toBe('class Foo : Bar(1337, 4711)\n');
   });
 
   it('should write implemented interfaces', () => {
     builder.append(ktClass('Foo', { implements: ['Bar', 'Baz'] }));
-    expect(builder.toString(false)).toBe(`class Foo : Bar, Baz${EOL}`);
+    expect(builder.toString(false)).toBe('class Foo : Bar, Baz\n');
   });
 
   it('should write companion object', () => {
     builder.append(ktClass('Foo', { companionObject: ktObject() }));
-    expect(builder.toString(false)).toBe(`class Foo {${EOL}    companion object {}${EOL}}${EOL}`);
+    expect(builder.toString(false)).toBe('class Foo {\n    companion object {}\n}\n');
   });
 
   it('should write all parts of the class', () => {
@@ -194,7 +197,7 @@ describe('ktClass', () => {
       }),
     );
     expect(builder.toString(false)).toBe(
-      normalizeEOL(8)(
+      dedent(8)(
         `/**
          * This is a class
          */
@@ -253,7 +256,7 @@ describe('ktClass', () => {
       }),
     );
     expect(builder.toString(false)).toBe(
-      normalizeEOL(8)(
+      dedent(8)(
         `║b║║bd║
         /**
          * This is a class

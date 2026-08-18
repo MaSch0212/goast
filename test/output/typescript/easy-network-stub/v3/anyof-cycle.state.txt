@@ -1,0 +1,138 @@
+{
+  typescript: {
+    indexFiles: { models: '<output>/models.ts', stubs: '<output>/stubs.ts' },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminator',
+        additionalExports: [ { name: '_AnyOfDiscriminatorBase', type: 'type-export' } ],
+        component: 'AnyOfDiscriminator',
+        filePath: '<output>/models/any-of-discriminator.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/any-of-discriminator.ts',
+            name: 'AnyOfDiscriminator',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorB/allOf/1/properties/bValue',
+        component: 'string',
+        imports: []
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorA/allOf/1',
+        component: '{\n  aValue?: string;\n}',
+        imports: []
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorA/allOf/1/properties/aValue',
+        component: 'string',
+        imports: []
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminator/properties/kind',
+        component: 'string',
+        imports: []
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorA',
+        additionalExports: [],
+        component: 'AnyOfDiscriminatorA',
+        filePath: '<output>/models/any-of-discriminator-a.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/any-of-discriminator-a.ts',
+            name: 'AnyOfDiscriminatorA',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorA',
+        additionalExports: [],
+        component: 'AnyOfDiscriminatorA',
+        filePath: '<output>/models/any-of-discriminator-a.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/any-of-discriminator-a.ts',
+            name: 'AnyOfDiscriminatorA',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminator',
+        additionalExports: [ { name: '_AnyOfDiscriminatorBase', type: 'type-export' } ],
+        component: 'AnyOfDiscriminator',
+        filePath: '<output>/models/any-of-discriminator.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/any-of-discriminator.ts',
+            name: 'AnyOfDiscriminator',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorB',
+        additionalExports: [],
+        component: 'AnyOfDiscriminatorB',
+        filePath: '<output>/models/any-of-discriminator-b.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/any-of-discriminator-b.ts',
+            name: 'AnyOfDiscriminatorB',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorB',
+        additionalExports: [],
+        component: 'AnyOfDiscriminatorB',
+        filePath: '<output>/models/any-of-discriminator-b.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/any-of-discriminator-b.ts',
+            name: 'AnyOfDiscriminatorB',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminator',
+        additionalExports: [ { name: '_AnyOfDiscriminatorBase', type: 'type-export' } ],
+        component: 'AnyOfDiscriminator',
+        filePath: '<output>/models/any-of-discriminator.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/any-of-discriminator.ts',
+            name: 'AnyOfDiscriminator',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorB/allOf/1',
+        component: '{\n  bValue?: string;\n}',
+        imports: []
+      }
+    },
+    stubs: {}
+  }
+}

@@ -1,0 +1,102 @@
+{
+  typescript: {
+    clients: {},
+    indexFiles: {
+      clientInterfaces: '<output>/clients.ts',
+      clients: '<output>/clients.ts',
+      models: '<output>/models.ts'
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v2/simple-schemas.yml#/definitions/MyString',
+        additionalExports: [],
+        component: 'MyString',
+        filePath: '<output>/models/my-string.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/my-string.ts',
+            name: 'MyString',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v2/simple-schemas.yml#/definitions/MyInteger',
+        additionalExports: [],
+        component: 'MyInteger',
+        filePath: '<output>/models/my-integer.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/my-integer.ts',
+            name: 'MyInteger',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v2/simple-schemas.yml#/definitions/MyNumber',
+        additionalExports: [],
+        component: 'MyNumber',
+        filePath: '<output>/models/my-number.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/my-number.ts',
+            name: 'MyNumber',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v2/simple-schemas.yml#/definitions/MyBoolean',
+        additionalExports: [],
+        component: 'MyBoolean',
+        filePath: '<output>/models/my-boolean.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/my-boolean.ts',
+            name: 'MyBoolean',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v2/simple-schemas.yml#/definitions/MyArray',
+        additionalExports: [],
+        component: 'MyArray',
+        filePath: '<output>/models/my-array.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/my-array.ts',
+            name: 'MyArray',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v2/simple-schemas.yml#/definitions/MyObject',
+        additionalExports: [],
+        component: 'MyObject',
+        filePath: '<output>/models/my-object.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/my-object.ts',
+            name: 'MyObject',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      }
+    }
+  }
+}

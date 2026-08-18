@@ -1,0 +1,73 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Tags And Servers
+
+servers:
+  - url: https://api.example.com/v1
+    description: The production server.
+  - url: 'https://{environment}.example.com/v1'
+    variables:
+      environment:
+        default: staging
+        enum:
+          - staging
+          - production
+
+tags:
+  - name: Alpha
+    description: The Alpha tag.
+
+paths:
+  /untagged:
+    get:
+      operationId: untagged
+      responses:
+        '200':
+          description: An untagged operation.
+  /one-tag:
+    get:
+      operationId: oneTag
+      tags: [Alpha]
+      responses:
+        '200':
+          description: An operation with one tag.
+  /two-tags:
+    get:
+      operationId: twoTags
+      tags: [Alpha, Beta]
+      responses:
+        '200':
+          description: An operation with two tags.
+  /shared-tag:
+    get:
+      operationId: sharedTag
+      tags: [Alpha]
+      responses:
+        '200':
+          description: An operation sharing a tag with another.
+  /path-server:
+    servers:
+      - url: https://path.example.com/v1
+        description: A path-item-level server override.
+    get:
+      operationId: pathServer
+      responses:
+        '200':
+          description: An operation under a path-item-level server override.
+  /op-server:
+    get:
+      operationId: opServer
+      servers:
+        - url: https://op.example.com/v1
+          description: An operation-level server override.
+      responses:
+        '200':
+          description: An operation with its own server override.
+  /tag-with-space:
+    get:
+      operationId: tagWithSpace
+      tags: ['Tag With Space']
+      responses:
+        '200':
+          description: An operation tagged with a name containing a space.

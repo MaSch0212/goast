@@ -1,0 +1,98 @@
+{
+  typescript: {
+    indexFiles: {
+      k6Clients: '<output>/clients.js',
+      k6ResponseModels: '<output>/responses.ts',
+      models: '<output>/models.ts'
+    },
+    k6Clients: {
+      'service-1': {
+        __source__: 'tag:Naming',
+        component: 'NamingClient',
+        filePath: '<output>/clients/naming-client.js',
+        responseModels: {
+          'endpoint-1': {
+            component: 'GetItemsApiResponse',
+            filePath: '<output>/models/responses/naming-responses.ts'
+          },
+          'endpoint-10': {
+            component: 'GetApiResponse',
+            filePath: '<output>/models/responses/naming-responses.ts'
+          },
+          'endpoint-11': {
+            component: 'GetAbcdeApiResponse',
+            filePath: '<output>/models/responses/naming-responses.ts'
+          },
+          'endpoint-12': {
+            component: 'GetWithSummaryApiResponse',
+            filePath: '<output>/models/responses/naming-responses.ts'
+          },
+          'endpoint-2': {
+            component: 'PostItemsApiResponse',
+            filePath: '<output>/models/responses/naming-responses.ts'
+          },
+          'endpoint-3': {
+            component: 'OptionsItemsApiResponse',
+            filePath: '<output>/models/responses/naming-responses.ts'
+          },
+          'endpoint-4': {
+            component: 'HeadItemsApiResponse',
+            filePath: '<output>/models/responses/naming-responses.ts'
+          },
+          'endpoint-5': {
+            component: 'GetItemsIdApiResponse',
+            filePath: '<output>/models/responses/naming-responses.ts'
+          },
+          'endpoint-6': {
+            component: 'PutItemsIdApiResponse',
+            filePath: '<output>/models/responses/naming-responses.ts'
+          },
+          'endpoint-7': {
+            component: 'DeleteItemsIdApiResponse',
+            filePath: '<output>/models/responses/naming-responses.ts'
+          },
+          'endpoint-8': {
+            component: 'PatchItemsIdApiResponse',
+            filePath: '<output>/models/responses/naming-responses.ts'
+          },
+          'endpoint-9': {
+            component: 'GetItemsIdSubItemsSubIdApiResponse',
+            filePath: '<output>/models/responses/naming-responses.ts'
+          }
+        }
+      }
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/put/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/delete/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/patch/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/sub-items/{subId}/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/sub-items/{subId}/get/parameters/1/schema',
+        component: 'string',
+        imports: []
+      }
+    }
+  }
+}

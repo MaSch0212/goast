@@ -1,0 +1,2 @@
+stubs/naming.stubs.ts:195:7 TS2345 Argument of type '"OPTIONS"' is not assignable to parameter of type 'HttpMethod'.
+stubs/naming.stubs.ts:213:7 TS2345 Argument of type '"HEAD"' is not assignable to parameter of type 'HttpMethod'.
