@@ -4,15 +4,20 @@ import { describe, it } from '@std/testing/bdd';
 import { type ApiEndpoint, defaultOpenApiGeneratorConfig, SourceBuilder } from '@goast/core';
 
 import type { kt } from '../../../ast/index.ts';
-import type { KotlinFileBuilder } from '../../../file-builder.ts';
+import { KotlinFileBuilder } from '../../../file-builder.ts';
 import { DefaultKotlinSpringReactiveWebClientGenerator } from './spring-reactive-web-client-generator.ts';
 import type { KotlinSpringReactiveWebClientGeneratorContext } from './models.ts';
 import { defaultKotlinSpringReactiveWebClientsGeneratorConfig } from './models.ts';
 
 const config = { ...defaultOpenApiGeneratorConfig, ...defaultKotlinSpringReactiveWebClientsGeneratorConfig };
 
-function createContext(springBootVersion: 3 | 4 = 3): KotlinSpringReactiveWebClientGeneratorContext {
-  return { config: { ...config, springBootVersion } } as unknown as KotlinSpringReactiveWebClientGeneratorContext;
+function createContext(
+  springBootVersion: 3 | 4 = 3,
+  overrides: Partial<typeof config> = {},
+): KotlinSpringReactiveWebClientGeneratorContext {
+  return {
+    config: { ...config, springBootVersion, ...overrides },
+  } as unknown as KotlinSpringReactiveWebClientGeneratorContext;
 }
 
 function createEndpoint(deprecated: boolean, description?: string): ApiEndpoint {
@@ -24,6 +29,31 @@ function createEndpoint(deprecated: boolean, description?: string): ApiEndpoint 
     description,
     summary: undefined,
     parameters: [],
+    responses: [],
+    requestBody: undefined,
+    tags: [],
+    custom: {},
+  } as unknown as ApiEndpoint;
+}
+
+/**
+ * An endpoint with the given path and one parameter per entry in `targets`, so the three `uri` shapes
+ * (no parameters, path only, path plus query) can each be exercised.
+ */
+function createUriEndpoint(path: string, targets: ('path' | 'query')[]): ApiEndpoint {
+  return {
+    name: 'listThings',
+    path,
+    method: 'get',
+    deprecated: false,
+    description: undefined,
+    summary: undefined,
+    parameters: targets.map((target) => ({
+      name: target === 'path' ? 'id' : 'limit',
+      target,
+      required: true,
+      schema: { kind: 'string' },
+    })),
     responses: [],
     requestBody: undefined,
     tags: [],
@@ -52,6 +82,14 @@ class TestGenerator extends DefaultKotlinSpringReactiveWebClientGenerator {
             .trim()
         )
       );
+  }
+
+  /** The rendered `uri(...)` call of a request function, e.g. `uri("things/{id}", mapOf("id" to id.toString()))`. */
+  public uriCall(endpoint: ApiEndpoint, preserveUriTemplate: boolean): string {
+    const ctx = createContext(3, { preserveUriTemplate });
+    const builder = new KotlinFileBuilder(undefined, ctx.config);
+    builder.append(this.getEndpointUriCall(ctx, { endpoint, parameters: endpoint.parameters }));
+    return builder.toString(false);
   }
 }
 
@@ -104,6 +142,34 @@ describe('DefaultKotlinSpringReactiveWebClientGenerator', () => {
 
       expect(generics.length).toBeGreaterThan(0);
       for (const generic of generics) expect(generic).toBe('T : Any');
+    });
+  });
+
+  // #79 made the generated client hand `WebClient` the URI template rather than an already expanded path, so
+  // Spring records it and the `uri` tag of `http.client.requests` stays bounded by endpoint count. Its
+  // `preserveUriTemplate: false` escape hatch was pinned by the snapshot tier this branch removes; the four
+  // cases below pin it here instead, so a later change cannot silently revert to expanded URIs.
+  describe('preserveUriTemplate', () => {
+    it('passes a parameterless path as the template', () => {
+      expect(new TestGenerator().uriCall(createUriEndpoint('things', []), true)).toBe('uri("things")');
+    });
+
+    it('passes path parameters as URI variables, so the template survives', () => {
+      expect(new TestGenerator().uriCall(createUriEndpoint('things/{id}', ['path']), true))
+        .toBe('uri("things/{id}", mapOf("id" to id.toString()))');
+    });
+
+    it('builds query parameters through a UriBuilder, keeping them out of the template', () => {
+      const call = new TestGenerator().uriCall(createUriEndpoint('things/{id}', ['path', 'query']), true);
+
+      expect(call).toContain('uri("things/{id}")');
+      expect(call).toContain('queryParam("limit"');
+      expect(call).toContain('.build(mapOf("id" to id.toString()))');
+    });
+
+    it('delegates to the <endpoint>Uri helper when disabled, expanding the path itself', () => {
+      expect(new TestGenerator().uriCall(createUriEndpoint('things/{id}', ['path', 'query']), false))
+        .toBe('uri(listThingsUri(id, limit))');
     });
   });
 });

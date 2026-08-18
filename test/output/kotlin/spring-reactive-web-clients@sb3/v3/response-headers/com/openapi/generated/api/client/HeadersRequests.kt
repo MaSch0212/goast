@@ -30,7 +30,7 @@ object HeadersRequests {
     }
 
     fun WebClient.singleHeaderRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(singleHeaderUri())
+        return this.method(HttpMethod.GET).uri("one")
     }
 
     suspend fun WebClient.multipleHeaders(): Unit {
@@ -51,7 +51,7 @@ object HeadersRequests {
     }
 
     fun WebClient.multipleHeadersRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(multipleHeadersUri())
+        return this.method(HttpMethod.GET).uri("many")
     }
 
     suspend fun WebClient.requiredHeader(): Unit {
@@ -72,7 +72,7 @@ object HeadersRequests {
     }
 
     fun WebClient.requiredHeaderRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(requiredHeaderUri())
+        return this.method(HttpMethod.GET).uri("required")
     }
 
     suspend fun WebClient.deprecatedHeader(): Unit {
@@ -93,7 +93,7 @@ object HeadersRequests {
     }
 
     fun WebClient.deprecatedHeaderRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(deprecatedHeaderUri())
+        return this.method(HttpMethod.GET).uri("deprecated")
     }
 
     suspend fun WebClient.refHeader(): Unit {
@@ -114,7 +114,7 @@ object HeadersRequests {
     }
 
     fun WebClient.refHeaderRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(refHeaderUri())
+        return this.method(HttpMethod.GET).uri("ref")
     }
 
     suspend fun WebClient.headersOnNoContent(): Unit {
@@ -135,7 +135,7 @@ object HeadersRequests {
     }
 
     fun WebClient.headersOnNoContentRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(headersOnNoContentUri())
+        return this.method(HttpMethod.GET).uri("no-content-headers")
     }
 
     suspend fun WebClient.headersAndBody(): Thing {
@@ -157,7 +157,7 @@ object HeadersRequests {
 
     fun WebClient.headersAndBodyRequest(): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET)
-            .uri(headersAndBodyUri())
+            .uri("both")
             .accept(MediaType.APPLICATION_JSON)
     }
 }

@@ -32,7 +32,7 @@ object ParametersRequests {
     }
 
     fun WebClient.twoPathParamsRequest(id: String, sub: Int): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(twoPathParamsUri(id, sub))
+        return this.method(HttpMethod.GET).uri("path/{id}/{sub}", mapOf("id" to id.toString(), "sub" to sub.toString()))
     }
 
     suspend fun WebClient.queryParams(
@@ -90,12 +90,16 @@ object ParametersRequests {
         intWithDefault: Int? = 10,
         flag: Boolean? = null
     ): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(queryParamsUri(
-                requiredString,
-                optionalString,
-                intWithDefault,
-                flag
-            ))
+        return this.method(HttpMethod.GET).uri("query") { uriBuilder ->
+            uriBuilder
+                .apply {
+                    queryParam("requiredString", requiredString.toString())
+                    optionalString?.also { queryParam("optionalString", it.toString()) }
+                    intWithDefault?.also { queryParam("intWithDefault", it.toString()) }
+                    flag?.also { queryParam("flag", it.toString()) }
+                }
+                .build()
+        }
     }
 
     suspend fun WebClient.headerParams(xRequestId: String, xOptionalHeader: String? = null): Unit {
@@ -121,7 +125,7 @@ object ParametersRequests {
 
     fun WebClient.headerParamsRequest(xRequestId: String, xOptionalHeader: String? = null): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET)
-            .uri(headerParamsUri())
+            .uri("header")
             .headers { headers ->
                 headers.add("X-Request-Id", xRequestId.toString())
                 xOptionalHeader?.also { headers.add("X-Optional-Header", it.toString()) }
@@ -146,7 +150,7 @@ object ParametersRequests {
     }
 
     fun WebClient.cookieParamsRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(cookieParamsUri())
+        return this.method(HttpMethod.GET).uri("cookie")
     }
 
     suspend fun WebClient.mixedParams(
@@ -184,7 +188,13 @@ object ParametersRequests {
         xTraceId: String? = null
     ): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET)
-            .uri(mixedParamsUri(id, filter))
+            .uri("mixed/{id}") { uriBuilder ->
+                uriBuilder
+                    .apply {
+                        filter?.also { queryParam("filter", it.toString()) }
+                    }
+                    .build(mapOf("id" to id.toString()))
+            }
             .headers { headers ->
                 xTraceId?.also { headers.add("X-Trace-Id", it.toString()) }
             }
@@ -245,12 +255,16 @@ object ParametersRequests {
         withExample: String? = null,
         withRefSchema: ParamSchema? = null
     ): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(describedParamsUri(
-                withDescription,
-                withoutDescription,
-                withExample,
-                withRefSchema
-            ))
+        return this.method(HttpMethod.GET).uri("described") { uriBuilder ->
+            uriBuilder
+                .apply {
+                    withDescription?.also { queryParam("withDescription", it.toString()) }
+                    withoutDescription?.also { queryParam("withoutDescription", it.toString()) }
+                    withExample?.also { queryParam("withExample", it.toString()) }
+                    withRefSchema?.also { queryParam("withRefSchema", it.value) }
+                }
+                .build()
+        }
     }
 
     suspend fun WebClient.allowEmptyValueParam(search: String? = null): Unit {
@@ -274,7 +288,13 @@ object ParametersRequests {
     }
 
     fun WebClient.allowEmptyValueParamRequest(search: String? = null): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(allowEmptyValueParamUri(search))
+        return this.method(HttpMethod.GET).uri("empty-value") { uriBuilder ->
+            uriBuilder
+                .apply {
+                    search?.also { queryParam("search", it.toString()) }
+                }
+                .build()
+        }
     }
 
     suspend fun WebClient.reservedCharParam(filter: String? = null): Unit {
@@ -298,6 +318,12 @@ object ParametersRequests {
     }
 
     fun WebClient.reservedCharParamRequest(filter: String? = null): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(reservedCharParamUri(filter))
+        return this.method(HttpMethod.GET).uri("reserved") { uriBuilder ->
+            uriBuilder
+                .apply {
+                    filter?.also { queryParam("filter", it.toString()) }
+                }
+                .build()
+        }
     }
 }

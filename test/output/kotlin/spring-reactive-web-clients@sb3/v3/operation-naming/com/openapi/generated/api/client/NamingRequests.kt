@@ -27,7 +27,7 @@ object NamingRequests {
     }
 
     fun WebClient.getItemsRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(getItemsUri())
+        return this.method(HttpMethod.GET).uri("items")
     }
 
     suspend fun WebClient.postItems(): Unit {
@@ -48,7 +48,7 @@ object NamingRequests {
     }
 
     fun WebClient.postItemsRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.POST).uri(postItemsUri())
+        return this.method(HttpMethod.POST).uri("items")
     }
 
     suspend fun WebClient.optionsItems(): Unit {
@@ -69,7 +69,7 @@ object NamingRequests {
     }
 
     fun WebClient.optionsItemsRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.OPTIONS).uri(optionsItemsUri())
+        return this.method(HttpMethod.OPTIONS).uri("items")
     }
 
     suspend fun WebClient.headItems(): Unit {
@@ -90,7 +90,7 @@ object NamingRequests {
     }
 
     fun WebClient.headItemsRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.HEAD).uri(headItemsUri())
+        return this.method(HttpMethod.HEAD).uri("items")
     }
 
     suspend fun WebClient.getItemsId(id: String): Unit {
@@ -111,7 +111,7 @@ object NamingRequests {
     }
 
     fun WebClient.getItemsIdRequest(id: String): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(getItemsIdUri(id))
+        return this.method(HttpMethod.GET).uri("items/{id}", mapOf("id" to id.toString()))
     }
 
     suspend fun WebClient.putItemsId(id: String): Unit {
@@ -132,7 +132,7 @@ object NamingRequests {
     }
 
     fun WebClient.putItemsIdRequest(id: String): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.PUT).uri(putItemsIdUri(id))
+        return this.method(HttpMethod.PUT).uri("items/{id}", mapOf("id" to id.toString()))
     }
 
     suspend fun WebClient.deleteItemsId(id: String): Unit {
@@ -153,7 +153,7 @@ object NamingRequests {
     }
 
     fun WebClient.deleteItemsIdRequest(id: String): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.DELETE).uri(deleteItemsIdUri(id))
+        return this.method(HttpMethod.DELETE).uri("items/{id}", mapOf("id" to id.toString()))
     }
 
     suspend fun WebClient.patchItemsId(id: String): Unit {
@@ -174,7 +174,7 @@ object NamingRequests {
     }
 
     fun WebClient.patchItemsIdRequest(id: String): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.PATCH).uri(patchItemsIdUri(id))
+        return this.method(HttpMethod.PATCH).uri("items/{id}", mapOf("id" to id.toString()))
     }
 
     suspend fun WebClient.getItemsIdSubItemsSubId(id: String, subId: String): Unit {
@@ -199,7 +199,7 @@ object NamingRequests {
     }
 
     fun WebClient.getItemsIdSubItemsSubIdRequest(id: String, subId: String): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(getItemsIdSubItemsSubIdUri(id, subId))
+        return this.method(HttpMethod.GET).uri("items/{id}/sub-items/{subId}", mapOf("id" to id.toString(), "subId" to subId.toString()))
     }
 
     suspend fun WebClient.get(): Unit {
@@ -220,7 +220,7 @@ object NamingRequests {
     }
 
     fun WebClient.getRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(getUri())
+        return this.method(HttpMethod.GET).uri("")
     }
 
     suspend fun WebClient.getABCDE(): Unit {
@@ -241,7 +241,7 @@ object NamingRequests {
     }
 
     fun WebClient.getAbcdeRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(getAbcdeUri())
+        return this.method(HttpMethod.GET).uri("a/b/c/d/e")
     }
 
     suspend fun WebClient.getWithSummary(): Unit {
@@ -262,6 +262,6 @@ object NamingRequests {
     }
 
     fun WebClient.getWithSummaryRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(getWithSummaryUri())
+        return this.method(HttpMethod.GET).uri("with-summary")
     }
 }

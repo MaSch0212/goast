@@ -27,7 +27,7 @@ object Service1Requests {
     }
 
     fun WebClient.inheritsSecurityRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(inheritsSecurityUri())
+        return this.method(HttpMethod.GET).uri("inherits-security")
     }
 
     suspend fun WebClient.overridesSecurity(): Unit {
@@ -48,7 +48,7 @@ object Service1Requests {
     }
 
     fun WebClient.overridesSecurityRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(overridesSecurityUri())
+        return this.method(HttpMethod.GET).uri("overrides-security")
     }
 
     suspend fun WebClient.noSecurity(): Unit {
@@ -69,7 +69,7 @@ object Service1Requests {
     }
 
     fun WebClient.noSecurityRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(noSecurityUri())
+        return this.method(HttpMethod.GET).uri("no-security")
     }
 
     suspend fun WebClient.multiSecurity(): Unit {
@@ -90,7 +90,7 @@ object Service1Requests {
     }
 
     fun WebClient.multiSecurityRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(multiSecurityUri())
+        return this.method(HttpMethod.GET).uri("multi-security")
     }
 
     suspend fun WebClient.andSecurity(): Unit {
@@ -111,7 +111,7 @@ object Service1Requests {
     }
 
     fun WebClient.andSecurityRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(andSecurityUri())
+        return this.method(HttpMethod.GET).uri("and-security")
     }
 
     suspend fun WebClient.scopedSecurity(): Unit {
@@ -132,6 +132,6 @@ object Service1Requests {
     }
 
     fun WebClient.scopedSecurityRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(scopedSecurityUri())
+        return this.method(HttpMethod.GET).uri("scoped")
     }
 }

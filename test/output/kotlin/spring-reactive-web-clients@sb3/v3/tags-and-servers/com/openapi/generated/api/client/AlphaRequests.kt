@@ -27,7 +27,7 @@ object AlphaRequests {
     }
 
     fun WebClient.oneTagRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(oneTagUri())
+        return this.method(HttpMethod.GET).uri("one-tag")
     }
 
     suspend fun WebClient.twoTags(): Unit {
@@ -48,7 +48,7 @@ object AlphaRequests {
     }
 
     fun WebClient.twoTagsRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(twoTagsUri())
+        return this.method(HttpMethod.GET).uri("two-tags")
     }
 
     suspend fun WebClient.sharedTag(): Unit {
@@ -69,6 +69,6 @@ object AlphaRequests {
     }
 
     fun WebClient.sharedTagRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(sharedTagUri())
+        return this.method(HttpMethod.GET).uri("shared-tag")
     }
 }

@@ -34,7 +34,13 @@ object InheritanceRequests {
     }
 
     fun WebClient.inheritsParamsRequest(id: String, common: String? = null): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(inheritsParamsUri(id, common))
+        return this.method(HttpMethod.GET).uri("inherited/{id}") { uriBuilder ->
+            uriBuilder
+                .apply {
+                    common?.also { queryParam("common", it.toString()) }
+                }
+                .build(mapOf("id" to id.toString()))
+        }
     }
 
     suspend fun WebClient.inheritsAndAdds(
@@ -76,7 +82,14 @@ object InheritanceRequests {
         common: String? = null,
         extra: String? = null
     ): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.POST).uri(inheritsAndAddsUri(id, common, extra))
+        return this.method(HttpMethod.POST).uri("inherited/{id}") { uriBuilder ->
+            uriBuilder
+                .apply {
+                    common?.also { queryParam("common", it.toString()) }
+                    extra?.also { queryParam("extra", it.toString()) }
+                }
+                .build(mapOf("id" to id.toString()))
+        }
     }
 
     suspend fun WebClient.overridesParam(id: String, common: Int? = null): Unit {
@@ -104,7 +117,13 @@ object InheritanceRequests {
     }
 
     fun WebClient.overridesParamRequest(id: String, common: Int? = null): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(overridesParamUri(id, common))
+        return this.method(HttpMethod.GET).uri("overridden/{id}") { uriBuilder ->
+            uriBuilder
+                .apply {
+                    common?.also { queryParam("common", it.toString()) }
+                }
+                .build(mapOf("id" to id.toString()))
+        }
     }
 
     suspend fun WebClient.refParam(id: String, page: Int? = 1): Unit {
@@ -132,6 +151,12 @@ object InheritanceRequests {
     }
 
     fun WebClient.refParamRequest(id: String, page: Int? = 1): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(refParamUri(id, page))
+        return this.method(HttpMethod.GET).uri("ref-param/{id}") { uriBuilder ->
+            uriBuilder
+                .apply {
+                    page?.also { queryParam("page", it.toString()) }
+                }
+                .build(mapOf("id" to id.toString()))
+        }
     }
 }

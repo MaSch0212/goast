@@ -27,7 +27,7 @@ object Service2Requests {
     }
 
     fun WebClient.untaggedRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(untaggedUri())
+        return this.method(HttpMethod.GET).uri("untagged")
     }
 
     suspend fun WebClient.pathServer(): Unit {
@@ -48,7 +48,7 @@ object Service2Requests {
     }
 
     fun WebClient.pathServerRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(pathServerUri())
+        return this.method(HttpMethod.GET).uri("path-server")
     }
 
     suspend fun WebClient.opServer(): Unit {
@@ -69,6 +69,6 @@ object Service2Requests {
     }
 
     fun WebClient.opServerRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(opServerUri())
+        return this.method(HttpMethod.GET).uri("op-server")
     }
 }

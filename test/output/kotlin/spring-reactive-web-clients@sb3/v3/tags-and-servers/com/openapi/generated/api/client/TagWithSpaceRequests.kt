@@ -27,6 +27,6 @@ object TagWithSpaceRequests {
     }
 
     fun WebClient.tagWithSpaceRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(tagWithSpaceUri())
+        return this.method(HttpMethod.GET).uri("tag-with-space")
     }
 }

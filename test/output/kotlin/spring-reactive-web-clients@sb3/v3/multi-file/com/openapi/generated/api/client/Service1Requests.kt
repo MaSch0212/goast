@@ -31,7 +31,7 @@ object Service1Requests {
 
     fun WebClient.getOwnerRequest(id: String): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET)
-            .uri(getOwnerUri(id))
+            .uri("owners/{id}", mapOf("id" to id.toString()))
             .accept(MediaType.APPLICATION_JSON)
     }
 
@@ -54,7 +54,7 @@ object Service1Requests {
 
     fun WebClient.listPetsRequest(): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET)
-            .uri(listPetsUri())
+            .uri("pets")
             .accept(MediaType.APPLICATION_JSON)
     }
 
@@ -77,7 +77,7 @@ object Service1Requests {
 
     fun WebClient.createPetRequest(pet: Pet): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(createPetUri())
+            .uri("pets")
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.parseMediaType("application/json"))
             .bodyValue(pet)

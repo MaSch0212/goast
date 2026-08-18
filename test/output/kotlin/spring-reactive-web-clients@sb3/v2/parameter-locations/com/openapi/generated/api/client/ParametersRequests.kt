@@ -27,7 +27,7 @@ object ParametersRequests {
     }
 
     fun WebClient.bodyParamRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.POST).uri(bodyParamUri())
+        return this.method(HttpMethod.POST).uri("body")
     }
 
     suspend fun WebClient.formDataParams(): Unit {
@@ -48,7 +48,7 @@ object ParametersRequests {
     }
 
     fun WebClient.formDataParamsRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.POST).uri(formDataParamsUri())
+        return this.method(HttpMethod.POST).uri("form")
     }
 
     suspend fun WebClient.fileUpload(): Unit {
@@ -69,7 +69,7 @@ object ParametersRequests {
     }
 
     fun WebClient.fileUploadRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.POST).uri(fileUploadUri())
+        return this.method(HttpMethod.POST).uri("upload")
     }
 
     suspend fun WebClient.queryParams(tags: Any? = null, ids: Any? = null): Unit {
@@ -98,6 +98,13 @@ object ParametersRequests {
     }
 
     fun WebClient.queryParamsRequest(tags: Any? = null, ids: Any? = null): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(queryParamsUri(tags, ids))
+        return this.method(HttpMethod.GET).uri("query") { uriBuilder ->
+            uriBuilder
+                .apply {
+                    tags?.also { queryParam("tags", it.toString()) }
+                    ids?.also { queryParam("ids", it.toString()) }
+                }
+                .build()
+        }
     }
 }

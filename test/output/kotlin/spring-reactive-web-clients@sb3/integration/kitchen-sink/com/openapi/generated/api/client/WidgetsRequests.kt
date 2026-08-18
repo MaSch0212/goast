@@ -30,7 +30,7 @@ object WidgetsRequests {
 
     fun WebClient.getWidgetRequest(id: String): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET)
-            .uri(getWidgetUri(id))
+            .uri("widgets/{id}", mapOf("id" to id.toString()))
             .accept(MediaType.APPLICATION_JSON)
     }
 }

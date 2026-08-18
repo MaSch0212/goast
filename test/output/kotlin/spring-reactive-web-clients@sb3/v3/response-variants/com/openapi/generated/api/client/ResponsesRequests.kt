@@ -32,7 +32,7 @@ object ResponsesRequests {
 
     fun WebClient.twoSuccessCodesRequest(): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET)
-            .uri(twoSuccessCodesUri())
+            .uri("two-success")
             .accept(MediaType.APPLICATION_JSON)
     }
 
@@ -55,7 +55,7 @@ object ResponsesRequests {
 
     fun WebClient.successAndDefaultRequest(): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET)
-            .uri(successAndDefaultUri())
+            .uri("default")
             .accept(MediaType.APPLICATION_JSON)
     }
 
@@ -78,7 +78,7 @@ object ResponsesRequests {
 
     fun WebClient.onlyDefaultRequest(): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET)
-            .uri(onlyDefaultUri())
+            .uri("only-default")
             .accept(MediaType.APPLICATION_JSON)
     }
 
@@ -100,7 +100,7 @@ object ResponsesRequests {
     }
 
     fun WebClient.noContentRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(noContentUri())
+        return this.method(HttpMethod.GET).uri("no-content")
     }
 
     suspend fun WebClient.emptyBody200(): Unit {
@@ -121,7 +121,7 @@ object ResponsesRequests {
     }
 
     fun WebClient.emptyBody200Request(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(emptyBody200Uri())
+        return this.method(HttpMethod.GET).uri("empty-200")
     }
 
     suspend fun WebClient.rangeCodes(): Thing {
@@ -143,7 +143,7 @@ object ResponsesRequests {
 
     fun WebClient.rangeCodesRequest(): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET)
-            .uri(rangeCodesUri())
+            .uri("ranges")
             .accept(MediaType.APPLICATION_JSON)
     }
 
@@ -166,7 +166,7 @@ object ResponsesRequests {
 
     fun WebClient.mixedExactAndRangeRequest(): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET)
-            .uri(mixedExactAndRangeUri())
+            .uri("mixed-codes")
             .accept(MediaType.APPLICATION_JSON)
     }
 
@@ -189,7 +189,7 @@ object ResponsesRequests {
 
     fun WebClient.errorCodesRequest(): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET)
-            .uri(errorCodesUri())
+            .uri("errors")
             .accept(MediaType.APPLICATION_JSON)
     }
 
@@ -212,7 +212,7 @@ object ResponsesRequests {
 
     fun WebClient.multiContentResponseRequest(): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET)
-            .uri(multiContentResponseUri())
+            .uri("multi-content")
             .accept(MediaType.APPLICATION_JSON)
     }
 
@@ -235,7 +235,7 @@ object ResponsesRequests {
 
     fun WebClient.primitiveResponseRequest(): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET)
-            .uri(primitiveResponseUri())
+            .uri("primitive")
             .accept(MediaType.APPLICATION_JSON)
     }
 
@@ -258,7 +258,7 @@ object ResponsesRequests {
 
     fun WebClient.arrayResponseRequest(): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET)
-            .uri(arrayResponseUri())
+            .uri("array")
             .accept(MediaType.APPLICATION_JSON)
     }
 
@@ -281,7 +281,7 @@ object ResponsesRequests {
 
     fun WebClient.refResponseRequest(): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET)
-            .uri(refResponseUri())
+            .uri("ref-response")
             .accept(MediaType.APPLICATION_JSON)
     }
 }

@@ -40,7 +40,7 @@ object DeprecationRequests {
      */
     @Deprecated("")
     fun WebClient.deprecatedOpRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(deprecatedOpUri())
+        return this.method(HttpMethod.GET).uri("deprecated-op")
     }
 
     @Deprecated("")
@@ -65,7 +65,7 @@ object DeprecationRequests {
 
     @Deprecated("")
     fun WebClient.deprecatedOpNoDescRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(deprecatedOpNoDescUri())
+        return this.method(HttpMethod.GET).uri("deprecated-op-no-desc")
     }
 
     suspend fun WebClient.deprecatedParams(
@@ -108,6 +108,14 @@ object DeprecationRequests {
         noDesc: String? = null,
         plain: String? = null
     ): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(deprecatedParamsUri(withDesc, noDesc, plain))
+        return this.method(HttpMethod.GET).uri("deprecated-params") { uriBuilder ->
+            uriBuilder
+                .apply {
+                    withDesc?.also { queryParam("withDesc", it.toString()) }
+                    noDesc?.also { queryParam("noDesc", it.toString()) }
+                    plain?.also { queryParam("plain", it.toString()) }
+                }
+                .build()
+        }
     }
 }

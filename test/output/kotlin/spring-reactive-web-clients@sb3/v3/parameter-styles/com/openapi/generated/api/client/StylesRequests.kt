@@ -32,7 +32,13 @@ object StylesRequests {
     }
 
     fun WebClient.formArrayRequest(tags: List<String>? = null): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(formArrayUri(tags))
+        return this.method(HttpMethod.GET).uri("query-form-array") { uriBuilder ->
+            uriBuilder
+                .apply {
+                    tags?.also { queryParam("tags", it.joinToString()) }
+                }
+                .build()
+        }
     }
 
     suspend fun WebClient.formArrayNoExplode(tags: List<String>? = null): Unit {
@@ -56,7 +62,13 @@ object StylesRequests {
     }
 
     fun WebClient.formArrayNoExplodeRequest(tags: List<String>? = null): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(formArrayNoExplodeUri(tags))
+        return this.method(HttpMethod.GET).uri("query-form-array-no-explode") { uriBuilder ->
+            uriBuilder
+                .apply {
+                    tags?.also { queryParam("tags", it.joinToString()) }
+                }
+                .build()
+        }
     }
 
     suspend fun WebClient.formObject(coordinates: Schema5? = null): Unit {
@@ -80,7 +92,13 @@ object StylesRequests {
     }
 
     fun WebClient.formObjectRequest(coordinates: Schema5? = null): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(formObjectUri(coordinates))
+        return this.method(HttpMethod.GET).uri("query-form-object") { uriBuilder ->
+            uriBuilder
+                .apply {
+                    coordinates?.also { queryParam("coordinates", it.toString()) }
+                }
+                .build()
+        }
     }
 
     suspend fun WebClient.spaceDelimited(tags: List<String>? = null): Unit {
@@ -104,7 +122,13 @@ object StylesRequests {
     }
 
     fun WebClient.spaceDelimitedRequest(tags: List<String>? = null): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(spaceDelimitedUri(tags))
+        return this.method(HttpMethod.GET).uri("query-space-delimited") { uriBuilder ->
+            uriBuilder
+                .apply {
+                    tags?.also { queryParam("tags", it.joinToString()) }
+                }
+                .build()
+        }
     }
 
     suspend fun WebClient.pipeDelimited(tags: List<String>? = null): Unit {
@@ -128,7 +152,13 @@ object StylesRequests {
     }
 
     fun WebClient.pipeDelimitedRequest(tags: List<String>? = null): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(pipeDelimitedUri(tags))
+        return this.method(HttpMethod.GET).uri("query-pipe-delimited") { uriBuilder ->
+            uriBuilder
+                .apply {
+                    tags?.also { queryParam("tags", it.joinToString()) }
+                }
+                .build()
+        }
     }
 
     suspend fun WebClient.deepObject(filter: Schema12? = null): Unit {
@@ -152,7 +182,13 @@ object StylesRequests {
     }
 
     fun WebClient.deepObjectRequest(filter: Schema12? = null): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(deepObjectUri(filter))
+        return this.method(HttpMethod.GET).uri("query-deep-object") { uriBuilder ->
+            uriBuilder
+                .apply {
+                    filter?.also { queryParam("filter", it.toString()) }
+                }
+                .build()
+        }
     }
 
     suspend fun WebClient.simplePath(values: List<String>): Unit {
@@ -173,7 +209,7 @@ object StylesRequests {
     }
 
     fun WebClient.simplePathRequest(values: List<String>): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(simplePathUri(values))
+        return this.method(HttpMethod.GET).uri("simple-path/{values}", mapOf("values" to values.joinToString()))
     }
 
     suspend fun WebClient.labelPath(values: List<String>): Unit {
@@ -194,7 +230,7 @@ object StylesRequests {
     }
 
     fun WebClient.labelPathRequest(values: List<String>): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(labelPathUri(values))
+        return this.method(HttpMethod.GET).uri("label-path/{values}", mapOf("values" to values.joinToString()))
     }
 
     suspend fun WebClient.matrixPath(values: List<String>): Unit {
@@ -215,7 +251,7 @@ object StylesRequests {
     }
 
     fun WebClient.matrixPathRequest(values: List<String>): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(matrixPathUri(values))
+        return this.method(HttpMethod.GET).uri("matrix-path/{values}", mapOf("values" to values.joinToString()))
     }
 
     suspend fun WebClient.simpleHeader(xTags: List<String>? = null): Unit {
@@ -237,7 +273,7 @@ object StylesRequests {
 
     fun WebClient.simpleHeaderRequest(xTags: List<String>? = null): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET)
-            .uri(simpleHeaderUri())
+            .uri("simple-header")
             .headers { headers ->
                 xTags?.also { headers.add("X-Tags", it.joinToString()) }
             }

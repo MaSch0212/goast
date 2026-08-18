@@ -44,7 +44,13 @@ object ParamsRequests {
         xHeaderParam: String? = null
     ): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET)
-            .uri(allLocationsUri(pathParam, queryParam))
+            .uri("locations/{pathParam}") { uriBuilder ->
+                uriBuilder
+                    .apply {
+                        queryParam?.also { queryParam("queryParam", it.toString()) }
+                    }
+                    .build(mapOf("pathParam" to pathParam.toString()))
+            }
             .headers { headers ->
                 xHeaderParam?.also { headers.add("X-Header-Param", it.toString()) }
             }
@@ -90,7 +96,15 @@ object ParamsRequests {
         formUnexploded: List<String>? = null,
         spaceDelimited: List<String>? = null
     ): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(styleMatrixUri(formExploded, formUnexploded, spaceDelimited))
+        return this.method(HttpMethod.GET).uri("styles") { uriBuilder ->
+            uriBuilder
+                .apply {
+                    formExploded?.also { queryParam("formExploded", it.joinToString()) }
+                    formUnexploded?.also { queryParam("formUnexploded", it.joinToString()) }
+                    spaceDelimited?.also { queryParam("spaceDelimited", it.joinToString()) }
+                }
+                .build()
+        }
     }
 
     suspend fun WebClient.pathStyleSimple(values: List<String>): Unit {
@@ -111,7 +125,7 @@ object ParamsRequests {
     }
 
     fun WebClient.pathStyleSimpleRequest(values: List<String>): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(pathStyleSimpleUri(values))
+        return this.method(HttpMethod.GET).uri("styles/{values}", mapOf("values" to values.joinToString()))
     }
 
     suspend fun WebClient.getEncoded(value: String, raw: String? = null): Unit {
@@ -139,6 +153,12 @@ object ParamsRequests {
     }
 
     fun WebClient.getEncodedRequest(value: String, raw: String? = null): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(getEncodedUri(value, raw))
+        return this.method(HttpMethod.GET).uri("encoded/{value}") { uriBuilder ->
+            uriBuilder
+                .apply {
+                    raw?.also { queryParam("raw", it.toString()) }
+                }
+                .build(mapOf("value" to value.toString()))
+        }
     }
 }

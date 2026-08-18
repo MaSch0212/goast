@@ -27,7 +27,7 @@ object PathsRequests {
     }
 
     fun WebClient.overlapTemplatedRequest(id: String): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(overlapTemplatedUri(id))
+        return this.method(HttpMethod.GET).uri("overlap/{id}", mapOf("id" to id.toString()))
     }
 
     suspend fun WebClient.overlapLiteral(): Unit {
@@ -48,7 +48,7 @@ object PathsRequests {
     }
 
     fun WebClient.overlapLiteralRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(overlapLiteralUri())
+        return this.method(HttpMethod.GET).uri("overlap/fixed")
     }
 
     suspend fun WebClient.withDot(): Unit {
@@ -69,7 +69,7 @@ object PathsRequests {
     }
 
     fun WebClient.withDotRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(withDotUri())
+        return this.method(HttpMethod.GET).uri("with.dot")
     }
 
     suspend fun WebClient.withDash(): Unit {
@@ -90,7 +90,7 @@ object PathsRequests {
     }
 
     fun WebClient.withDashRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(withDashUri())
+        return this.method(HttpMethod.GET).uri("with-dash")
     }
 
     suspend fun WebClient.withUnderscore(): Unit {
@@ -111,7 +111,7 @@ object PathsRequests {
     }
 
     fun WebClient.withUnderscoreRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(withUnderscoreUri())
+        return this.method(HttpMethod.GET).uri("with_underscore")
     }
 
     suspend fun WebClient.withTilde(): Unit {
@@ -132,7 +132,7 @@ object PathsRequests {
     }
 
     fun WebClient.withTildeRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(withTildeUri())
+        return this.method(HttpMethod.GET).uri("with~tilde")
     }
 
     suspend fun WebClient.withColon(): Unit {
@@ -153,7 +153,7 @@ object PathsRequests {
     }
 
     fun WebClient.withColonRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(withColonUri())
+        return this.method(HttpMethod.GET).uri("with:colon")
     }
 
     suspend fun WebClient.withAt(): Unit {
@@ -174,7 +174,7 @@ object PathsRequests {
     }
 
     fun WebClient.withAtRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(withAtUri())
+        return this.method(HttpMethod.GET).uri("with@at")
     }
 
     suspend fun WebClient.trailingSlash(): Unit {
@@ -195,7 +195,7 @@ object PathsRequests {
     }
 
     fun WebClient.trailingSlashRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(trailingSlashUri())
+        return this.method(HttpMethod.GET).uri("trailing/")
     }
 
     suspend fun WebClient.paramOnlyPath(id: String): Unit {
@@ -216,7 +216,7 @@ object PathsRequests {
     }
 
     fun WebClient.paramOnlyPathRequest(id: String): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(paramOnlyPathUri(id))
+        return this.method(HttpMethod.GET).uri("{id}", mapOf("id" to id.toString()))
     }
 
     suspend fun WebClient.threeParams(
@@ -254,7 +254,7 @@ object PathsRequests {
         p2: String,
         p3: String
     ): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(threeParamsUri(p1, p2, p3))
+        return this.method(HttpMethod.GET).uri("a/{p1}/b/{p2}/c/{p3}", mapOf("p1" to p1.toString(), "p2" to p2.toString(), "p3" to p3.toString()))
     }
 
     suspend fun WebClient.caseVariety(): Unit {
@@ -275,7 +275,7 @@ object PathsRequests {
     }
 
     fun WebClient.caseVarietyRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(caseVarietyUri())
+        return this.method(HttpMethod.GET).uri("UPPER/Mixed/lower")
     }
 
     suspend fun WebClient.veryDeepPath(): Unit {
@@ -296,6 +296,6 @@ object PathsRequests {
     }
 
     fun WebClient.veryDeepPathRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(veryDeepPathUri())
+        return this.method(HttpMethod.GET).uri("very/deep/nested/path/with/many/segments/here")
     }
 }

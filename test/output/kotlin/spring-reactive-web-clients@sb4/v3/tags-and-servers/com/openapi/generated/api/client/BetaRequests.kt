@@ -27,6 +27,6 @@ object BetaRequests {
     }
 
     fun WebClient.twoTagsRequest(): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri(twoTagsUri())
+        return this.method(HttpMethod.GET).uri("two-tags")
     }
 }

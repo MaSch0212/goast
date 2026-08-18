@@ -31,7 +31,7 @@ object PetsRequests {
 
     fun WebClient.listPetsRequest(): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET)
-            .uri(listPetsUri())
+            .uri("pets")
             .accept(MediaType.APPLICATION_JSON)
     }
 
@@ -54,7 +54,7 @@ object PetsRequests {
 
     fun WebClient.createPetRequest(pet: Pet): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(createPetUri())
+            .uri("pets")
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.parseMediaType("application/json"))
             .bodyValue(pet)
@@ -79,7 +79,7 @@ object PetsRequests {
 
     fun WebClient.getPetRequest(id: String): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET)
-            .uri(getPetUri(id))
+            .uri("pets/{id}", mapOf("id" to id.toString()))
             .accept(MediaType.APPLICATION_JSON)
     }
 
@@ -101,7 +101,7 @@ object PetsRequests {
     }
 
     fun WebClient.deletePetRequest(id: String): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.DELETE).uri(deletePetUri(id))
+        return this.method(HttpMethod.DELETE).uri("pets/{id}", mapOf("id" to id.toString()))
     }
 
     suspend fun WebClient.searchPets(): Pet {
@@ -123,7 +123,7 @@ object PetsRequests {
 
     fun WebClient.searchPetsRequest(): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET)
-            .uri(searchPetsUri())
+            .uri("pets/search")
             .accept(MediaType.APPLICATION_JSON)
     }
 }

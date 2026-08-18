@@ -30,7 +30,7 @@ object BlobsRequests {
 
     fun WebClient.uploadBlobRequest(string: String): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(uploadBlobUri())
+            .uri("blobs")
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.parseMediaType("application/octet-stream"))
             .bodyValue(string)

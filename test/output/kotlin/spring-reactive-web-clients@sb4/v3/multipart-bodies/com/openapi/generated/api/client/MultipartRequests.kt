@@ -34,7 +34,7 @@ object MultipartRequests {
 
     fun WebClient.singleFileRequest(file: ApiRequestFile): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(singleFileUri())
+            .uri("file")
             .contentType(MediaType.parseMediaType("multipart/form-data"))
             .body(BodyInserters.fromMultipartData(MultipartBodyBuilder()
                         .apply {
@@ -62,7 +62,7 @@ object MultipartRequests {
 
     fun WebClient.multipleFilesRequest(files: List<String>? = null): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(multipleFilesUri())
+            .uri("files")
             .contentType(MediaType.parseMediaType("multipart/form-data"))
             .body(BodyInserters.fromMultipartData(MultipartBodyBuilder()
                         .apply {
@@ -116,7 +116,7 @@ object MultipartRequests {
         active: Boolean? = null
     ): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(fileAndFieldsUri())
+            .uri("mixed")
             .contentType(MediaType.parseMediaType("multipart/form-data"))
             .body(BodyInserters.fromMultipartData(MultipartBodyBuilder()
                         .apply {
@@ -147,7 +147,7 @@ object MultipartRequests {
 
     fun WebClient.nestedObjectPartRequest(metadata: NestedObjectPartRequest? = null): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(nestedObjectPartUri())
+            .uri("nested")
             .contentType(MediaType.parseMediaType("multipart/form-data"))
             .body(BodyInserters.fromMultipartData(MultipartBodyBuilder()
                         .apply {
@@ -175,7 +175,7 @@ object MultipartRequests {
 
     fun WebClient.refPartRequest(payload: Payload? = null): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(refPartUri())
+            .uri("ref-part")
             .contentType(MediaType.parseMediaType("multipart/form-data"))
             .body(BodyInserters.fromMultipartData(MultipartBodyBuilder()
                         .apply {
@@ -229,7 +229,7 @@ object MultipartRequests {
         active: Boolean? = null
     ): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(withEncodingUri())
+            .uri("encoded")
             .contentType(MediaType.parseMediaType("multipart/form-data"))
             .body(BodyInserters.fromMultipartData(MultipartBodyBuilder()
                         .apply {
@@ -260,7 +260,7 @@ object MultipartRequests {
 
     fun WebClient.optionalFileRequest(file: ApiRequestFile = null): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(optionalFileUri())
+            .uri("optional-file")
             .contentType(MediaType.parseMediaType("multipart/form-data"))
             .body(BodyInserters.fromMultipartData(MultipartBodyBuilder()
                         .apply {

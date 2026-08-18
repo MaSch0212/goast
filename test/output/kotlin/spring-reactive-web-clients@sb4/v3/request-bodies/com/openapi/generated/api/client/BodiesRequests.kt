@@ -32,7 +32,7 @@ object BodiesRequests {
 
     fun WebClient.jsonBodyRequest(payload: Payload): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(jsonBodyUri())
+            .uri("json")
             .contentType(MediaType.parseMediaType("application/json"))
             .bodyValue(payload)
     }
@@ -56,7 +56,7 @@ object BodiesRequests {
 
     fun WebClient.optionalJsonBodyRequest(payload: Payload? = null): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(optionalJsonBodyUri())
+            .uri("json-optional")
             .contentType(MediaType.parseMediaType("application/json"))
             .apply { payload?.also { payload -> bodyValue(payload) } }
     }
@@ -80,7 +80,7 @@ object BodiesRequests {
 
     fun WebClient.inlineJsonBodyRequest(inlineJsonBodyRequest: InlineJsonBodyRequest): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(inlineJsonBodyUri())
+            .uri("json-inline")
             .contentType(MediaType.parseMediaType("application/json"))
             .bodyValue(inlineJsonBodyRequest)
     }
@@ -104,7 +104,7 @@ object BodiesRequests {
 
     fun WebClient.arrayJsonBodyRequest(listPayload: List<Payload>): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(arrayJsonBodyUri())
+            .uri("json-array")
             .contentType(MediaType.parseMediaType("application/json"))
             .bodyValue(listPayload)
     }
@@ -128,7 +128,7 @@ object BodiesRequests {
 
     fun WebClient.primitiveJsonBodyRequest(string: String): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(primitiveJsonBodyUri())
+            .uri("json-primitive")
             .contentType(MediaType.parseMediaType("application/json"))
             .bodyValue(string)
     }
@@ -152,7 +152,7 @@ object BodiesRequests {
 
     fun WebClient.textBodyRequest(string: String): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(textBodyUri())
+            .uri("text")
             .contentType(MediaType.parseMediaType("text/plain"))
             .bodyValue(string)
     }
@@ -176,7 +176,7 @@ object BodiesRequests {
 
     fun WebClient.binaryBodyRequest(string: String): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(binaryBodyUri())
+            .uri("binary")
             .contentType(MediaType.parseMediaType("application/octet-stream"))
             .bodyValue(string)
     }
@@ -200,7 +200,7 @@ object BodiesRequests {
 
     fun WebClient.anyBodyRequest(body: Any): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(anyBodyUri())
+            .uri("any")
             .contentType(MediaType.parseMediaType("*/*"))
             .bodyValue(body)
     }
@@ -224,7 +224,7 @@ object BodiesRequests {
 
     fun WebClient.multiContentBodyRequest(payload: Payload): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(multiContentBodyUri())
+            .uri("multi-content")
             .contentType(MediaType.parseMediaType("application/json"))
             .bodyValue(payload)
     }
@@ -248,7 +248,7 @@ object BodiesRequests {
 
     fun WebClient.formBodyRequest(formBodyRequest: FormBodyRequest): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(formBodyUri())
+            .uri("form")
             .contentType(MediaType.parseMediaType("application/x-www-form-urlencoded"))
             .bodyValue(formBodyRequest)
     }
@@ -272,7 +272,7 @@ object BodiesRequests {
 
     fun WebClient.describedBodyRequest(payload: Payload): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(describedBodyUri())
+            .uri("described-body")
             .contentType(MediaType.parseMediaType("application/json"))
             .bodyValue(payload)
     }
@@ -296,7 +296,7 @@ object BodiesRequests {
 
     fun WebClient.refBodyRequest(payload: Payload): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(refBodyUri())
+            .uri("ref-body")
             .contentType(MediaType.parseMediaType("application/json"))
             .bodyValue(payload)
     }

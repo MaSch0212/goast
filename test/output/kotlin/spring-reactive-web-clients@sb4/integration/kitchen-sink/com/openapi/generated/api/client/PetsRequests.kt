@@ -35,7 +35,7 @@ object PetsRequests {
 
     fun WebClient.getPetRequest(id: String): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET)
-            .uri(getPetUri(id))
+            .uri("pets/{id}", mapOf("id" to id.toString()))
             .accept(MediaType.APPLICATION_JSON)
     }
 
@@ -62,7 +62,7 @@ object PetsRequests {
 
     fun WebClient.updatePetRequest(id: String, petUpdate: PetUpdate): RequestHeadersSpec<*> {
         return this.method(HttpMethod.PUT)
-            .uri(updatePetUri(id))
+            .uri("pets/{id}", mapOf("id" to id.toString()))
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.parseMediaType("application/json"))
             .bodyValue(petUpdate)
@@ -86,7 +86,7 @@ object PetsRequests {
     }
 
     fun WebClient.deletePetRequest(id: String): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.DELETE).uri(deletePetUri(id))
+        return this.method(HttpMethod.DELETE).uri("pets/{id}", mapOf("id" to id.toString()))
     }
 
     suspend fun WebClient.createPet(pet: Pet): Pet {
@@ -108,7 +108,7 @@ object PetsRequests {
 
     fun WebClient.createPetRequest(pet: Pet): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(createPetUri())
+            .uri("pets")
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.parseMediaType("application/json"))
             .bodyValue(pet)
@@ -146,7 +146,7 @@ object PetsRequests {
         caption: String? = null
     ): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(uploadPetPhotoUri(id))
+            .uri("pets/{id}/photo", mapOf("id" to id.toString()))
             .contentType(MediaType.parseMediaType("multipart/form-data"))
             .body(BodyInserters.fromMultipartData(MultipartBodyBuilder()
                         .apply {
@@ -179,7 +179,7 @@ object PetsRequests {
 
     fun WebClient.addPetNoteRequest(id: String, string: String): RequestHeadersSpec<*> {
         return this.method(HttpMethod.POST)
-            .uri(addPetNoteUri(id))
+            .uri("pets/{id}/note", mapOf("id" to id.toString()))
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.parseMediaType("text/plain"))
             .bodyValue(string)

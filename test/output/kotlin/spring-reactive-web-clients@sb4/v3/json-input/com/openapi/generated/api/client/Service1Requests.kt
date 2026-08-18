@@ -30,7 +30,7 @@ object Service1Requests {
 
     fun WebClient.listThingsRequest(): RequestHeadersSpec<*> {
         return this.method(HttpMethod.GET)
-            .uri(listThingsUri())
+            .uri("things")
             .accept(MediaType.APPLICATION_JSON)
     }
 }
