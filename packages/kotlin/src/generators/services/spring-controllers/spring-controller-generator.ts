@@ -19,7 +19,7 @@ import { kt } from '../../../ast/index.ts';
 import type { KotlinImport } from '../../../common-results.ts';
 import { KotlinFileBuilder } from '../../../file-builder.ts';
 import type { ApiParameterWithMultipartInfo } from '../../../types.ts';
-import { getSourceDocLine, modifyString } from '../../../utils.ts';
+import { getArrayItemStringEnumSchema, getSourceDocLine, getStringEnumSchema, modifyString } from '../../../utils.ts';
 import { KotlinFileGenerator } from '../../file-generator.ts';
 import type { DefaultKotlinSpringControllerGeneratorArgs as Args } from './index.ts';
 import type { KotlinServiceGeneratorContext, KotlinServiceGeneratorOutput } from './models.ts';
@@ -308,12 +308,17 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     endpoint: ApiEndpoint,
     parameter: ApiParameterWithMultipartInfo,
   ): kt.Parameter<Builder> {
-    const isEnumSchema = parameter.schema?.kind === 'string' &&
-      parameter.schema.enum?.length &&
-      this.getSchemaType(ctx, { schema: parameter.schema }) &&
-      !parameter.multipart;
+    const enumItemSchema = parameter.multipart ? undefined : getArrayItemStringEnumSchema(parameter.schema);
+    const enumSchema = parameter.multipart ? undefined : getStringEnumSchema(parameter.schema);
+    const enumValueSchema = enumSchema ?? enumItemSchema;
     const actualType = this.getSchemaType(ctx, { schema: parameter.schema });
-    const schemaType = isEnumSchema ? kt.refs.string({ nullable: actualType?.nullable }) : actualType;
+    const isEnumSchema = !!enumValueSchema && !!actualType &&
+      !!this.getSchemaType(ctx, { schema: enumValueSchema });
+    const schemaType = !isEnumSchema
+      ? actualType
+      : enumItemSchema
+      ? kt.refs.list([kt.refs.string()], { nullable: actualType?.nullable })
+      : kt.refs.string({ nullable: actualType?.nullable });
     const result = kt.parameter(
       toCasing(parameter.name, ctx.config.parameterNameCasing),
       this.getParameterType(ctx, {
@@ -355,7 +360,7 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
           kt.argument.named(
             'allowableValues',
             kt.collectionLiteral(
-              parameter.schema?.enum?.map((x) => kt.string(x?.toString())),
+              enumValueSchema?.enum?.map((x) => kt.string(x?.toString())),
             ),
           ),
         );
@@ -434,23 +439,24 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
 
     parameters.forEach((x) => {
       const paramName = toCasing(x.name, ctx.config.parameterNameCasing);
-      if (
-        x.schema?.kind === 'string' &&
-        x.schema.enum?.length &&
-        !x.multipart
-      ) {
-        const type = this.getSchemaType(ctx, { schema: x.schema });
-        if (type) {
-          body.values.push(
-            s`val ${paramName} = ${paramName}${
-              type.nullable || (!x.required && !x.schema.default) ? '?' : ''
-            }.let { ${type}.fromValue(it) ?: return ${kt.refs.spring.responseEntity.infer()}.status(${kt.refs.spring.httpStatus()}.BAD_REQUEST).body(${
-              kt.string(
-                `Invalid value for parameter ${x.name}`,
-              )
-            }) }`,
-          );
-        }
+      if (x.multipart) return;
+
+      const enumItemSchema = getArrayItemStringEnumSchema(x.schema);
+      const enumValueSchema = getStringEnumSchema(x.schema) ?? enumItemSchema;
+      if (!enumValueSchema) return;
+
+      const schemaType = this.getSchemaType(ctx, { schema: x.schema });
+      const enumType = this.getSchemaType(ctx, { schema: enumValueSchema });
+      if (schemaType && enumType) {
+        body.values.push(
+          s`val ${paramName} = ${paramName}${schemaType.nullable || (!x.required && !x.schema?.default) ? '?' : ''}.${
+            enumItemSchema ? 'map' : 'let'
+          } { ${enumType}.fromValue(it) ?: return ${kt.refs.spring.responseEntity.infer()}.status(${kt.refs.spring.httpStatus()}.BAD_REQUEST).body(${
+            kt.string(
+              `Invalid value for parameter ${x.name}`,
+            )
+          }) }`,
+        );
       }
     });
 
