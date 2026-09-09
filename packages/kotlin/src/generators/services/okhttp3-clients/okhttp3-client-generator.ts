@@ -403,7 +403,7 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
     if (parameter.schema?.kind === 'array') {
       const itemEnumSchema = getArrayItemStringEnumSchema(parameter.schema);
       const itemEnumType = itemEnumSchema && this.getSchemaType(ctx, { schema: itemEnumSchema });
-      return itemEnumType ? s`.joinToString(transform = ${itemEnumType}::value)` : '.joinToString()';
+      return itemEnumType ? s`.joinToString(",", transform = ${itemEnumType}::value)` : '.joinToString(",")';
     } else if (
       getStringEnumSchema(parameter.schema) && this.getSchemaType(ctx, { schema: parameter.schema })
     ) {
