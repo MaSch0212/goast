@@ -22,7 +22,7 @@ import {
 
 import { kt } from '../../ast/index.ts';
 import { KotlinFileBuilder } from '../../file-builder.ts';
-import { getSourceDocLine } from '../../utils.ts';
+import { getSourceDocLine, getStringEnumSchema } from '../../utils.ts';
 import { KotlinFileGenerator } from '../file-generator.ts';
 import type { DefaultKotlinModelGeneratorArgs as Args } from './index.ts';
 import type { KotlinModelGeneratorContext, KotlinModelGeneratorOutput } from './models.ts';
@@ -289,11 +289,22 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
           return schema.enum && schema.enum.length > 0
             ? kt.call([this.getType(ctx, { schema }), toCasing(String(schema.default), ctx.config.enumValueNameCasing)])
             : kt.string(String(schema.default));
-        case 'array':
+        case 'array': {
+          const itemEnumSchema = getStringEnumSchema(schema.items);
           return kt.call(
             kt.refs.listOf.infer(),
-            Array.isArray(schema.default) ? schema.default.map((x) => kt.toNode(x)) : [],
+            Array.isArray(schema.default)
+              ? schema.default.map((x) =>
+                itemEnumSchema
+                  ? kt.call([
+                    this.getType(ctx, { schema: itemEnumSchema }),
+                    toCasing(String(x), ctx.config.enumValueNameCasing),
+                  ])
+                  : kt.toNode(x)
+              )
+              : [],
           );
+        }
         default:
           return 'null';
       }

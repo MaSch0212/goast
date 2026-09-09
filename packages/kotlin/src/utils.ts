@@ -1,4 +1,4 @@
-import type { ApiComponent, Nullable } from '@goast/core';
+import type { ApiComponent, ApiSchema, Nullable } from '@goast/core';
 import path from 'node:path';
 import process from 'node:process';
 
@@ -44,4 +44,12 @@ export function getSourceDocLine<T>(component: ApiComponent<T>): string {
   const file = path.relative(process.cwd(), component.$src.file).replace(/\\/g, '/');
   const { line, col } = component.$src.pos;
   return `Source: ${file}:${line}:${col} (${component.$src.path})`;
+}
+
+export function getStringEnumSchema(schema: Nullable<ApiSchema>): ApiSchema<'string'> | undefined {
+  return schema?.kind === 'string' && schema.enum?.length ? schema : undefined;
+}
+
+export function getArrayItemStringEnumSchema(schema: Nullable<ApiSchema>): ApiSchema<'string'> | undefined {
+  return schema?.kind === 'array' ? getStringEnumSchema(schema.items) : undefined;
 }
