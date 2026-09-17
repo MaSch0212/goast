@@ -383,7 +383,14 @@ export class DefaultKotlinSpringControllerGenerator extends KotlinFileGenerator<
     }
 
     if (parameter.target === 'body' && !parameter.multipart) {
-      result.annotations.push(kt.annotation(kt.refs.spring.requestBody()));
+      // A bare @RequestBody is required as far as Spring is concerned, so an optional body has to say so in the
+      // annotation too - the nullable parameter type alone still answers 400 when the body is missing.
+      result.annotations.push(
+        kt.annotation(
+          kt.refs.spring.requestBody(),
+          parameter.required ? [] : [kt.argument.named('required', parameter.required)],
+        ),
+      );
     }
 
     if (parameter.target === 'query') {
