@@ -18,7 +18,7 @@ import { kt } from '../../../ast/index.ts';
 import type { KtValue } from '../../../ast/nodes/types.ts';
 import { KotlinFileBuilder } from '../../../file-builder.ts';
 import type { ApiParameterWithMultipartInfo } from '../../../types.ts';
-import { getSourceDocLine, modifyString } from '../../../utils.ts';
+import { getArrayItemStringEnumSchema, getSourceDocLine, getStringEnumSchema, modifyString } from '../../../utils.ts';
 import { KotlinFileGenerator } from '../../file-generator.ts';
 import type { DefaultKotlinSpringReactiveWebClientGeneratorArgs as Args } from './index.ts';
 import type {
@@ -323,9 +323,9 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
                 const parameterName = toCasing(p.name, ctx.config.parameterNameCasing);
                 const toString = this.getParameterToString(ctx, { endpoint, parameter: p });
                 return p.required && !p.schema?.nullable
-                  ? kt.call(['headers', 'add'], [kt.string(p.name), parameterName + toString])
+                  ? kt.call(['headers', 'add'], [kt.string(p.name), s<Builder>`${parameterName}${toString}`])
                   : kt.call([`${parameterName}?`, 'also'], [
-                    kt.lambda([], kt.call(['headers', 'add'], [kt.string(p.name), 'it' + toString]), {
+                    kt.lambda([], kt.call(['headers', 'add'], [kt.string(p.name), s<Builder>`it${toString}`]), {
                       singleline: true,
                     }),
                   ]);
@@ -410,9 +410,11 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
         const parameterName = toCasing(p.name, ctx.config.parameterNameCasing);
         const toString = this.getParameterToString(ctx, { endpoint, parameter: p });
         return p.required && !p.schema?.nullable
-          ? kt.call('queryParam', [kt.string(p.name), parameterName + toString])
+          ? kt.call('queryParam', [kt.string(p.name), s<Builder>`${parameterName}${toString}`])
           : kt.call([`${parameterName}?`, 'also'], [
-            kt.lambda([], kt.call('queryParam', [kt.string(p.name), 'it' + toString]), { singleline: true }),
+            kt.lambda([], kt.call('queryParam', [kt.string(p.name), s<Builder>`it${toString}`]), {
+              singleline: true,
+            }),
           ]);
       }),
       '\n',
@@ -467,10 +469,11 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
   protected getParameterToString(ctx: Context, args: Args.GetParameterToString): kt.Value<Builder> {
     const { parameter } = args;
     if (parameter.schema?.kind === 'array') {
-      return '.joinToString()';
+      const itemEnumSchema = getArrayItemStringEnumSchema(parameter.schema);
+      const itemEnumType = itemEnumSchema && this.getSchemaType(ctx, { schema: itemEnumSchema });
+      return itemEnumType ? s`.joinToString(",", transform = ${itemEnumType}::value)` : '.joinToString(",")';
     } else if (
-      parameter.schema?.kind === 'string' && parameter.schema.enum?.length &&
-      this.getSchemaType(ctx, { schema: parameter.schema })
+      getStringEnumSchema(parameter.schema) && this.getSchemaType(ctx, { schema: parameter.schema })
     ) {
       return '.value';
     } else {
@@ -490,15 +493,28 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
   }
 
   protected getParameterDefaultValue(ctx: Context, args: Args.GetParameterDefaultValue): kt.Value<Builder> | null {
-    const { parameter } = args;
+    const { schema } = args.parameter;
 
-    return !parameter.required
-      ? parameter.schema?.kind === 'string' && parameter.schema.enum && parameter.schema.default
-        ? s`${this.getTypeUsage(ctx, { schema: parameter.schema, nullable: false })}.${
-          this.toEnumValueName(ctx, parameter.schema.enum, parameter.schema.default)
-        }`
-        : kt.toNode(parameter.schema?.default)
-      : null;
+    if (args.parameter.required) {
+      return null;
+    }
+
+    if (getStringEnumSchema(schema) && schema?.default) {
+      return s`${this.getTypeUsage(ctx, { schema, nullable: false })}.${
+        this.toEnumValueName(ctx, schema.enum, schema.default)
+      }`;
+    }
+
+    const itemEnumSchema = getArrayItemStringEnumSchema(schema);
+    if (itemEnumSchema && Array.isArray(schema?.default)) {
+      const itemType = this.getTypeUsage(ctx, { schema: itemEnumSchema, nullable: false });
+      return kt.call(
+        kt.refs.listOf.infer(),
+        schema.default.map((x) => s<Builder>`${itemType}.${this.toEnumValueName(ctx, itemEnumSchema.enum, x)}`),
+      );
+    }
+
+    return kt.toNode(schema?.default);
   }
 
   protected getTypeUsage(ctx: Context, args: Args.GetTypeUsage<Builder>): kt.Type<Builder> {
