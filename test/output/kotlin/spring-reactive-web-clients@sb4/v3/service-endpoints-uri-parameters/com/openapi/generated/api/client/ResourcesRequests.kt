@@ -54,7 +54,7 @@ object ResourcesRequests {
             .apply {
                 queryParam("permission", permission.value)
                 limit?.also { queryParam("limit", it.toString()) }
-                tags?.also { queryParam("tags", it.joinToString()) }
+                tags?.also { queryParam("tags", it.joinToString(",")) }
             }
             .build()
             .toUriString()
@@ -72,7 +72,7 @@ object ResourcesRequests {
                     .apply {
                         queryParam("permission", permission.value)
                         limit?.also { queryParam("limit", it.toString()) }
-                        tags?.also { queryParam("tags", it.joinToString()) }
+                        tags?.also { queryParam("tags", it.joinToString(",")) }
                     }
                     .build()
             }

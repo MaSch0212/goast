@@ -184,13 +184,13 @@ class ParamsApiClient(
         val localVariableQuery: MultiValueMap = mutableMapOf<String, List<String>>()
             .apply {
                 if (formExploded != null) {
-                    put("formExploded", listOf(formExploded.joinToString()))
+                    put("formExploded", listOf(formExploded.joinToString(",")))
                 }
                 if (formUnexploded != null) {
-                    put("formUnexploded", listOf(formUnexploded.joinToString()))
+                    put("formUnexploded", listOf(formUnexploded.joinToString(",")))
                 }
                 if (spaceDelimited != null) {
-                    put("spaceDelimited", listOf(spaceDelimited.joinToString()))
+                    put("spaceDelimited", listOf(spaceDelimited.joinToString(",")))
                 }
             }
         val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
@@ -262,7 +262,7 @@ class ParamsApiClient(
         val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
         return RequestConfig(
             method = RequestMethod.GET,
-            path = "/styles/${encodeURIComponent(values.joinToString())}",
+            path = "/styles/${encodeURIComponent(values.joinToString(","))}",
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = false

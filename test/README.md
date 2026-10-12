@@ -175,9 +175,9 @@ a `snapshot.patch` artifact. Applying it is an alternative to regenerating local
 git apply snapshot.patch
 ```
 
-**Measured cost.** `deno task test:output:check` runs the full 56-spec corpus across fifteen profiles in about 22
-seconds wall-clock (18 passed, 903 steps, 0 failed) on a warm Deno cache. The 56 specs and their generated trees
-together commit 8,653 files under `test/output/`, ten of them `.error.txt` (see "Error snapshots" under
+**Measured cost.** `deno task test:output:check` runs the full 57-spec corpus across fifteen profiles in about 22
+seconds wall-clock (18 passed, 919 steps, 0 failed) on a warm Deno cache. The 57 specs and their generated trees
+together commit 8,779 files under `test/output/`, ten of them `.error.txt` (see "Error snapshots" under
 [Corpus map](#corpus-map)) rather than a generated tree.
 
 ## Harness API
@@ -243,14 +243,14 @@ fails if it finds a base — a tree directory, a `.state.txt`, or an `.error.txt
 
 ## Corpus map
 
-`test/specs/` holds 56 entries — the count `discoverSpecs()` returns, not the file count, since a _directory_ under a
+`test/specs/` holds 57 entries — the count `discoverSpecs()` returns, not the file count, since a _directory_ under a
 version directory (`v3/external-refs/`, `v3/multi-file/`) is one entry regardless of how many files it contains. 14 of
-the 56 predate the corpus-expansion phase and 40 were added by
+the 57 predate the corpus-expansion phase and 40 were added by
 [`docs/superpowers/plans/2026-07-25-corpus-expansion.md`](../docs/superpowers/plans/2026-07-25-corpus-expansion.md) to
-push edge-case coverage past the original six-file corpus's small fraction of OpenAPI; the remaining 2 arrived later,
-most recently `v3/service-endpoints-uri-parameters` with the reactive URI-template change (#79). Read this table before
-adding a spec — the cheapest thing to do when adding coverage is to create a new file rather than check whether one of
-these 56 already isolates the concern.
+push edge-case coverage past the original six-file corpus's small fraction of OpenAPI; the remaining 3 arrived later,
+most recently `v3/service-endpoints-enum-parameters` with enum array parameters (#80) and optional request bodies (#81).
+Read this table before adding a spec — the cheapest thing to do when adding coverage is to create a new file rather than
+check whether one of these 57 already isolates the concern.
 
 ### Types and schemas
 
@@ -317,12 +317,13 @@ these 56 already isolates the concern.
 
 ### Parameters
 
-| Spec                           | Isolates                                                                                                                                                   |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `v3/parameter-locations.yml`   | path, query, header, and cookie parameters, `allowEmptyValue`, `allowReserved`, a `$ref`'d parameter schema                                                |
-| `v3/parameter-styles.yml`      | the `style` × `explode` matrix — `form`, `spaceDelimited`, `pipeDelimited`, `deepObject`, `simple`, `label`, `matrix`                                      |
-| `v3/parameter-inheritance.yml` | path-item-level `parameters` inherited and overridden by an operation, plus a `$ref`'d path-item parameter                                                 |
-| `v2/parameter-locations.yml`   | Swagger 2.0's `body` and `formData` parameter locations (which pin an absence, see "Reading the corpus"), plus query `collectionFormat`, which does render |
+| Spec                                       | Isolates                                                                                                                                                                                |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `v3/parameter-locations.yml`               | path, query, header, and cookie parameters, `allowEmptyValue`, `allowReserved`, a `$ref`'d parameter schema                                                                             |
+| `v3/parameter-styles.yml`                  | the `style` × `explode` matrix — `form`, `spaceDelimited`, `pipeDelimited`, `deepObject`, `simple`, `label`, `matrix`                                                                   |
+| `v3/parameter-inheritance.yml`             | path-item-level `parameters` inherited and overridden by an operation, plus a `$ref`'d path-item parameter                                                                              |
+| `v3/service-endpoints-enum-parameters.yml` | arrays of `$ref`'d enums as query and header parameters, with and without an enum-array default, beside a single enum and a plain string array; an optional vs. a required request body |
+| `v2/parameter-locations.yml`               | Swagger 2.0's `body` and `formData` parameter locations (which pin an absence, see "Reading the corpus"), plus query `collectionFormat`, which does render                              |
 
 ### Bodies and responses
 

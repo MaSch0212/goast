@@ -60,7 +60,7 @@ interface BodiesApi {
     suspend fun optionalJsonBody(
         @Parameter(required = false)
         @Valid
-        @RequestBody
+        @RequestBody(required = false)
         payload: Payload?
     ): ResponseEntity<*> {
         try {

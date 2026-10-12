@@ -1,0 +1,302 @@
+{
+  typescript: {
+    indexFiles: {
+      models: '<output>/models.ts',
+      responseModels: '<output>/responses.ts',
+      services: '<output>/services.ts'
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/paths//tickets/get/parameters/0/schema',
+        component: '(Status)[]',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/status.ts',
+            name: 'Status',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/paths//tickets/get/parameters/4/schema',
+        component: '(Status)[]',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/status.ts',
+            name: 'Status',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Status',
+        additionalExports: [ { name: 'STATUS_VALUES', type: 'export' } ],
+        component: 'Status',
+        filePath: '<output>/models/status.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/status.ts',
+            name: 'Status',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/paths//tickets/get/responses/200/content/application/json/schema',
+        component: '(Ticket)[]',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/ticket.ts',
+            name: 'Ticket',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket',
+        additionalExports: [],
+        component: 'Ticket',
+        filePath: '<output>/models/ticket.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/ticket.ts',
+            name: 'Ticket',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket',
+        additionalExports: [],
+        component: 'Ticket',
+        filePath: '<output>/models/ticket.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/ticket.ts',
+            name: 'Ticket',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket/properties/id',
+        component: 'string',
+        imports: []
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket/properties/statuses',
+        component: '(Status)[]',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/status.ts',
+            name: 'Status',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Status',
+        additionalExports: [ { name: 'STATUS_VALUES', type: 'export' } ],
+        component: 'Status',
+        filePath: '<output>/models/status.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/status.ts',
+            name: 'Status',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket/properties/tags',
+        component: '(string)[]',
+        imports: []
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket/properties/tags/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Status',
+        additionalExports: [ { name: 'STATUS_VALUES', type: 'export' } ],
+        component: 'Status',
+        filePath: '<output>/models/status.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/status.ts',
+            name: 'Status',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket',
+        additionalExports: [],
+        component: 'Ticket',
+        filePath: '<output>/models/ticket.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/ticket.ts',
+            name: 'Ticket',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket',
+        additionalExports: [],
+        component: 'Ticket',
+        filePath: '<output>/models/ticket.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/ticket.ts',
+            name: 'Ticket',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/paths//tickets/{id}/put/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket',
+        additionalExports: [],
+        component: 'Ticket',
+        filePath: '<output>/models/ticket.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/ticket.ts',
+            name: 'Ticket',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Status',
+        additionalExports: [ { name: 'STATUS_VALUES', type: 'export' } ],
+        component: 'Status',
+        filePath: '<output>/models/status.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/status.ts',
+            name: 'Status',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/paths//tickets/get/parameters/1/schema',
+        component: '(Priority)[]',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/priority.ts',
+            name: 'Priority',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Priority',
+        additionalExports: [ { name: 'PRIORITY_VALUES', type: 'export' } ],
+        component: 'Priority',
+        filePath: '<output>/models/priority.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/priority.ts',
+            name: 'Priority',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Priority',
+        additionalExports: [ { name: 'PRIORITY_VALUES', type: 'export' } ],
+        component: 'Priority',
+        filePath: '<output>/models/priority.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/priority.ts',
+            name: 'Priority',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Priority',
+        additionalExports: [ { name: 'PRIORITY_VALUES', type: 'export' } ],
+        component: 'Priority',
+        filePath: '<output>/models/priority.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/priority.ts',
+            name: 'Priority',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/paths//tickets/get/parameters/3/schema',
+        component: '(string)[]',
+        imports: []
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/paths//tickets/get/parameters/3/schema/items',
+        component: 'string',
+        imports: []
+      }
+    },
+    services: {
+      'service-1': {
+        __source__: 'tag:Tickets',
+        component: 'TicketsService',
+        filePath: '<output>/services/tickets.service.ts',
+        responseModels: {
+          'endpoint-1': {
+            component: 'ListTicketsApiResponse',
+            filePath: '<output>/models/responses/tickets-responses.model.ts'
+          },
+          'endpoint-2': {
+            component: 'CreateTicketApiResponse',
+            filePath: '<output>/models/responses/tickets-responses.model.ts'
+          },
+          'endpoint-3': {
+            component: 'UpdateTicketApiResponse',
+            filePath: '<output>/models/responses/tickets-responses.model.ts'
+          }
+        }
+      }
+    }
+  }
+}

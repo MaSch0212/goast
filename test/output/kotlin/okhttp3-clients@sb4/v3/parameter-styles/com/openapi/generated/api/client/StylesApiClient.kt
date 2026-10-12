@@ -88,7 +88,7 @@ class StylesApiClient(
         val localVariableQuery: MultiValueMap = mutableMapOf<String, List<String>>()
             .apply {
                 if (tags != null) {
-                    put("tags", listOf(tags.joinToString()))
+                    put("tags", listOf(tags.joinToString(",")))
                 }
             }
         val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
@@ -159,7 +159,7 @@ class StylesApiClient(
         val localVariableQuery: MultiValueMap = mutableMapOf<String, List<String>>()
             .apply {
                 if (tags != null) {
-                    put("tags", listOf(tags.joinToString()))
+                    put("tags", listOf(tags.joinToString(",")))
                 }
             }
         val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
@@ -301,7 +301,7 @@ class StylesApiClient(
         val localVariableQuery: MultiValueMap = mutableMapOf<String, List<String>>()
             .apply {
                 if (tags != null) {
-                    put("tags", listOf(tags.joinToString()))
+                    put("tags", listOf(tags.joinToString(",")))
                 }
             }
         val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
@@ -372,7 +372,7 @@ class StylesApiClient(
         val localVariableQuery: MultiValueMap = mutableMapOf<String, List<String>>()
             .apply {
                 if (tags != null) {
-                    put("tags", listOf(tags.joinToString()))
+                    put("tags", listOf(tags.joinToString(",")))
                 }
             }
         val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
@@ -515,7 +515,7 @@ class StylesApiClient(
         val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
         return RequestConfig(
             method = RequestMethod.GET,
-            path = "/simple-path/${encodeURIComponent(values.joinToString())}",
+            path = "/simple-path/${encodeURIComponent(values.joinToString(","))}",
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = false
@@ -581,7 +581,7 @@ class StylesApiClient(
         val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
         return RequestConfig(
             method = RequestMethod.GET,
-            path = "/label-path/${encodeURIComponent(values.joinToString())}",
+            path = "/label-path/${encodeURIComponent(values.joinToString(","))}",
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = false
@@ -647,7 +647,7 @@ class StylesApiClient(
         val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
         return RequestConfig(
             method = RequestMethod.GET,
-            path = "/matrix-path/${encodeURIComponent(values.joinToString())}",
+            path = "/matrix-path/${encodeURIComponent(values.joinToString(","))}",
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = false
@@ -712,7 +712,7 @@ class StylesApiClient(
         val localVariableQuery: MultiValueMap = mutableMapOf<String, List<String>>()
         val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
         if (xTags != null) {
-            localVariableHeaders["X-Tags"] = xTags.joinToString()
+            localVariableHeaders["X-Tags"] = xTags.joinToString(",")
         }
         return RequestConfig(
             method = RequestMethod.GET,

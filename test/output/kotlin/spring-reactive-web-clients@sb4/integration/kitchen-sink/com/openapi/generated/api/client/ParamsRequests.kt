@@ -83,9 +83,9 @@ object ParamsRequests {
     ): String {
         return UriComponentsBuilder.fromPath("styles")
             .apply {
-                formExploded?.also { queryParam("formExploded", it.joinToString()) }
-                formUnexploded?.also { queryParam("formUnexploded", it.joinToString()) }
-                spaceDelimited?.also { queryParam("spaceDelimited", it.joinToString()) }
+                formExploded?.also { queryParam("formExploded", it.joinToString(",")) }
+                formUnexploded?.also { queryParam("formUnexploded", it.joinToString(",")) }
+                spaceDelimited?.also { queryParam("spaceDelimited", it.joinToString(",")) }
             }
             .build()
             .toUriString()
@@ -99,9 +99,9 @@ object ParamsRequests {
         return this.method(HttpMethod.GET).uri("styles") { uriBuilder ->
             uriBuilder
                 .apply {
-                    formExploded?.also { queryParam("formExploded", it.joinToString()) }
-                    formUnexploded?.also { queryParam("formUnexploded", it.joinToString()) }
-                    spaceDelimited?.also { queryParam("spaceDelimited", it.joinToString()) }
+                    formExploded?.also { queryParam("formExploded", it.joinToString(",")) }
+                    formUnexploded?.also { queryParam("formUnexploded", it.joinToString(",")) }
+                    spaceDelimited?.also { queryParam("spaceDelimited", it.joinToString(",")) }
                 }
                 .build()
         }
@@ -120,12 +120,12 @@ object ParamsRequests {
 
     fun pathStyleSimpleUri(values: List<String>): String {
         return UriComponentsBuilder.fromPath("styles/{values}")
-            .buildAndExpand(mapOf("values" to values.joinToString()))
+            .buildAndExpand(mapOf("values" to values.joinToString(",")))
             .toUriString()
     }
 
     fun WebClient.pathStyleSimpleRequest(values: List<String>): RequestHeadersSpec<*> {
-        return this.method(HttpMethod.GET).uri("styles/{values}", mapOf("values" to values.joinToString()))
+        return this.method(HttpMethod.GET).uri("styles/{values}", mapOf("values" to values.joinToString(",")))
     }
 
     suspend fun WebClient.getEncoded(value: String, raw: String? = null): Unit {

@@ -118,7 +118,7 @@ class ResourcesApiClient(
                     put("limit", listOf(limit.toString()))
                 }
                 if (tags != null) {
-                    put("tags", listOf(tags.joinToString()))
+                    put("tags", listOf(tags.joinToString(",")))
                 }
             }
         val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
