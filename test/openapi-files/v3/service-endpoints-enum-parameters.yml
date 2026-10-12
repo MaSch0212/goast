@@ -1,0 +1,115 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Service Endpoints With Enum Parameters
+
+paths:
+  /tickets:
+    get:
+      operationId: listTickets
+      tags: [Tickets]
+      parameters:
+        - name: statuses
+          in: query
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Status'
+        - name: priorities
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Priority'
+            default: [low, high]
+        - name: priority
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/Priority'
+        - name: ids
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: X-Statuses
+          in: header
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Status'
+      responses:
+        '200':
+          description: The matching tickets.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ticket'
+    post:
+      operationId: createTicket
+      tags: [Tickets]
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+      responses:
+        '201':
+          description: The created ticket.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+  /tickets/{id}:
+    put:
+      operationId: updateTicket
+      tags: [Tickets]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+      responses:
+        '204':
+          description: Ticket updated.
+
+components:
+  schemas:
+    Status:
+      type: string
+      enum: [open, in-progress, closed]
+    Priority:
+      type: string
+      enum: [low, medium, high]
+      default: medium
+    Ticket:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+        statuses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Status'
+          default: [open]
+        tags:
+          type: array
+          items:
+            type: string
+          default: [new]

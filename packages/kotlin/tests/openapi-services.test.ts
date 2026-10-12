@@ -17,6 +17,7 @@ import type { SpringBootVersion } from '../src/config.ts';
 
 const specFile = join(openApiV3FilesDir, 'service-endpoints.yml');
 const uriParametersSpecFile = join(openApiV3FilesDir, 'service-endpoints-uri-parameters.yml');
+const enumParametersSpecFile = join(openApiV3FilesDir, 'service-endpoints-enum-parameters.yml');
 
 // deno-lint-ignore no-explicit-any
 const generators: { name: string; useType: (generator: OpenApiGenerator, config: any) => OpenApiGenerator }[] = [
@@ -75,6 +76,36 @@ for (const { name, useType } of generators) {
     }
   });
 }
+
+// Pins enum array parameters (wire values, comma separator, enum defaults, controller conversion) and an optional
+// request body (`@RequestBody(required = false)` in controllers) across all generators.
+describe('enum parameters and optional request body', () => {
+  afterEach(() => {
+    restore();
+  });
+
+  for (const { name, useType } of generators) {
+    test(name, async (t) => {
+      const result = new MultipartData();
+      stub(fs, 'ensureDirSync');
+      stub(fs, 'writeFileSync', (path: fs.PathOrFileDescriptor, data: string | NodeJS.ArrayBufferView) => {
+        result.push([path.toString(), data.toString()]);
+      });
+
+      const generatorOptions = {
+        outputDir: 'out',
+        newLine: '\n',
+      };
+      // deno-lint-ignore no-explicit-any
+      const config = { __test__: true } as any;
+      const state = await useType(new OpenApiGenerator(generatorOptions), config).parseAndGenerate(enumParametersSpecFile);
+      result.splice(0, 0, ['state', state]);
+
+      restore();
+      await verify(t, result);
+    });
+  }
+});
 
 // Pins the emitted `uri(...)` shape of the reactive web clients for path-only, path+query and optional-query
 // endpoints. With `preserveUriTemplate` the URI template must reach `WebClient` verbatim, so Spring can record it as

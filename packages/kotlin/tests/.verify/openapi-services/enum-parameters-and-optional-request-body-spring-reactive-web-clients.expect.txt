@@ -1,0 +1,641 @@
+┌──────────────────────────────────────┐
+│ state                                │
+├──────────────────────────────────────┤
+{
+  kotlin: {
+    clients: {
+      'service-1': {
+        __source__: 'tag:Tickets',
+        packageName: 'com.openapi.generated.api.client',
+        typeName: 'TicketsRequests'
+      }
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints-enum-parameters.yml#/paths//tickets/get/parameters/0/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Status',
+              nullable: false,
+              packageName: 'com.openapi.generated.model',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints-enum-parameters.yml#/paths//tickets/get/parameters/4/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Status',
+              nullable: false,
+              packageName: 'com.openapi.generated.model',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints-enum-parameters.yml#/components/schemas/Status',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Status',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints-enum-parameters.yml#/paths//tickets/get/responses/200/content/application/json/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Ticket',
+              nullable: false,
+              packageName: 'com.openapi.generated.model',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Ticket',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Ticket',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket/properties/id',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket/properties/statuses',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Status',
+              nullable: false,
+              packageName: 'com.openapi.generated.model',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints-enum-parameters.yml#/components/schemas/Status',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Status',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket/properties/tags',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'String',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket/properties/tags/items',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints-enum-parameters.yml#/components/schemas/Status',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Status',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Ticket',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Ticket',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints-enum-parameters.yml#/paths//tickets/{id}/put/parameters/0/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Ticket',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints-enum-parameters.yml#/components/schemas/Status',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Status',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints-enum-parameters.yml#/paths//tickets/get/parameters/1/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Priority',
+              nullable: false,
+              packageName: 'com.openapi.generated.model',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints-enum-parameters.yml#/components/schemas/Priority',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Priority',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints-enum-parameters.yml#/components/schemas/Priority',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Priority',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints-enum-parameters.yml#/components/schemas/Priority',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Priority',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints-enum-parameters.yml#/paths//tickets/get/parameters/3/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'String',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/openapi-files/v3/service-endpoints-enum-parameters.yml#/paths//tickets/get/parameters/3/schema/items',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      }
+    }
+  }
+}
+└──────────────────────────────────────┘
+
+┌───────────────────────────────────────────┐
+│ out/com/openapi/generated/model/Status.kt │
+├───────────────────────────────────────────┤
+package com.openapi.generated.model
+
+import com.fasterxml.jackson.annotation.JsonProperty
+
+enum class Status(val value: String) {
+    @JsonProperty("open")
+    OPEN("open"),
+
+    @JsonProperty("in-progress")
+    IN_PROGRESS("in-progress"),
+
+    @JsonProperty("closed")
+    CLOSED("closed");
+
+    companion object {
+        fun fromValue(value: String): Status? =
+            when(value) {
+                "open" -> OPEN
+                "in-progress" -> IN_PROGRESS
+                "closed" -> CLOSED
+                else -> null
+            }
+    }
+}
+
+└───────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────┐
+│ out/com/openapi/generated/model/Priority.kt │
+├─────────────────────────────────────────────┤
+package com.openapi.generated.model
+
+import com.fasterxml.jackson.annotation.JsonProperty
+
+enum class Priority(val value: String) {
+    @JsonProperty("low")
+    LOW("low"),
+
+    @JsonProperty("medium")
+    MEDIUM("medium"),
+
+    @JsonProperty("high")
+    HIGH("high");
+
+    companion object {
+        fun fromValue(value: String): Priority? =
+            when(value) {
+                "low" -> LOW
+                "medium" -> MEDIUM
+                "high" -> HIGH
+                else -> null
+            }
+    }
+}
+
+└─────────────────────────────────────────────┘
+
+┌───────────────────────────────────────────┐
+│ out/com/openapi/generated/model/Ticket.kt │
+├───────────────────────────────────────────┤
+package com.openapi.generated.model
+
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.swagger.v3.oas.annotations.media.Schema
+
+data class Ticket(
+    @Schema(required = true)
+    @param:JsonProperty("id", required = true)
+    @get:JsonProperty("id", required = true)
+    val id: String,
+
+    @Schema
+    @param:JsonProperty("statuses")
+    @get:JsonProperty("statuses")
+    val statuses: List<Status>? = listOf(Status.OPEN),
+
+    @Schema
+    @param:JsonProperty("tags")
+    @get:JsonProperty("tags")
+    val tags: List<String>? = listOf("new")
+)
+
+└───────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ out/com/openapi/generated/api/client/TicketsRequests.kt │
+├─────────────────────────────────────────────────────────┤
+package com.openapi.generated.api.client
+
+import com.openapi.generated.model.Priority
+import com.openapi.generated.model.Status
+import com.openapi.generated.model.Ticket
+import org.springframework.http.HttpMethod
+import org.springframework.http.MediaType
+import org.springframework.web.reactive.function.client.awaitBodilessEntity
+import org.springframework.web.reactive.function.client.awaitBody
+import org.springframework.web.reactive.function.client.awaitExchange
+import org.springframework.web.reactive.function.client.ClientResponse
+import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClient.RequestHeadersSpec
+import org.springframework.web.util.UriComponentsBuilder
+
+object TicketsRequests {
+    suspend fun WebClient.listTickets(
+        statuses: List<Status>,
+        priorities: List<Priority>? = listOf(Priority.LOW, Priority.HIGH),
+        priority: Priority? = Priority.MEDIUM,
+        ids: List<String>? = null,
+        xStatuses: List<Status>? = null
+    ): List<Ticket> {
+        return this
+            .listTicketsRequest(
+                statuses,
+                priorities,
+                priority,
+                ids,
+                xStatuses
+            )
+            .retrieve()
+            .awaitBody<List<Ticket>>()
+    }
+
+    suspend fun <T> WebClient.listTickets(
+        statuses: List<Status>,
+        priorities: List<Priority>? = listOf(Priority.LOW, Priority.HIGH),
+        priority: Priority? = Priority.MEDIUM,
+        ids: List<String>? = null,
+        xStatuses: List<Status>? = null,
+        responseHandler: suspend (ClientResponse) -> T
+    ): T {
+        return this.listTicketsRequest(
+            statuses,
+            priorities,
+            priority,
+            ids,
+            xStatuses
+        ).awaitExchange(responseHandler)
+    }
+
+    fun listTicketsUri(
+        statuses: List<Status>,
+        priorities: List<Priority>? = listOf(Priority.LOW, Priority.HIGH),
+        priority: Priority? = Priority.MEDIUM,
+        ids: List<String>? = null
+    ): String {
+        return UriComponentsBuilder.fromPath("tickets")
+            .apply {
+                queryParam("statuses", statuses.joinToString(",", transform = Status::value))
+                priorities?.also { queryParam("priorities", it.joinToString(",", transform = Priority::value)) }
+                priority?.also { queryParam("priority", it.value) }
+                ids?.also { queryParam("ids", it.joinToString(",")) }
+            }
+            .build()
+            .toUriString()
+    }
+
+    fun WebClient.listTicketsRequest(
+        statuses: List<Status>,
+        priorities: List<Priority>? = listOf(Priority.LOW, Priority.HIGH),
+        priority: Priority? = Priority.MEDIUM,
+        ids: List<String>? = null,
+        xStatuses: List<Status>? = null
+    ): RequestHeadersSpec<*> {
+        return this.method(HttpMethod.GET)
+            .uri("tickets") { uriBuilder ->
+                uriBuilder
+                    .apply {
+                        queryParam("statuses", statuses.joinToString(",", transform = Status::value))
+                        priorities?.also { queryParam("priorities", it.joinToString(",", transform = Priority::value)) }
+                        priority?.also { queryParam("priority", it.value) }
+                        ids?.also { queryParam("ids", it.joinToString(",")) }
+                    }
+                    .build()
+            }
+            .accept(MediaType.APPLICATION_JSON)
+            .headers { headers ->
+                xStatuses?.also { headers.add("X-Statuses", it.joinToString(",", transform = Status::value)) }
+            }
+    }
+
+    suspend fun WebClient.createTicket(ticket: Ticket? = null): Ticket {
+        return this
+            .createTicketRequest(ticket)
+            .retrieve()
+            .awaitBody<Ticket>()
+    }
+
+    suspend fun <T> WebClient.createTicket(ticket: Ticket? = null, responseHandler: suspend (ClientResponse) -> T): T {
+        return this.createTicketRequest(ticket).awaitExchange(responseHandler)
+    }
+
+    fun createTicketUri(): String {
+        return UriComponentsBuilder.fromPath("tickets")
+            .build()
+            .toUriString()
+    }
+
+    fun WebClient.createTicketRequest(ticket: Ticket? = null): RequestHeadersSpec<*> {
+        return this.method(HttpMethod.POST)
+            .uri("tickets")
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.parseMediaType("application/json"))
+            .apply { ticket?.also { ticket -> bodyValue(ticket) } }
+    }
+
+    suspend fun WebClient.updateTicket(id: String, ticket: Ticket): Unit {
+        this
+            .updateTicketRequest(id, ticket)
+            .retrieve()
+            .awaitBodilessEntity()
+    }
+
+    suspend fun <T> WebClient.updateTicket(
+        id: String,
+        ticket: Ticket,
+        responseHandler: suspend (ClientResponse) -> T
+    ): T {
+        return this.updateTicketRequest(id, ticket).awaitExchange(responseHandler)
+    }
+
+    fun updateTicketUri(id: String): String {
+        return UriComponentsBuilder.fromPath("tickets/{id}")
+            .buildAndExpand(mapOf("id" to id.toString()))
+            .toUriString()
+    }
+
+    fun WebClient.updateTicketRequest(id: String, ticket: Ticket): RequestHeadersSpec<*> {
+        return this.method(HttpMethod.PUT)
+            .uri("tickets/{id}", mapOf("id" to id.toString()))
+            .contentType(MediaType.parseMediaType("application/json"))
+            .bodyValue(ticket)
+    }
+}
+
+└─────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ <root>/out/com/openapi/generated/api/client/infrastructure/ApiRequestFile.kt │
+├──────────────────────────────────────────────────────────────────────────────┤
+package com.openapi.generated.api.client.infrastructure
+
+import org.springframework.core.io.buffer.DataBuffer
+import org.springframework.http.MediaType
+import org.springframework.http.client.MultipartBodyBuilder
+import org.springframework.http.codec.multipart.FilePart
+import java.io.File
+
+interface ApiRequestFile {
+    companion object {
+        fun from(file: File): ApiRequestFile =
+            object : ApiRequestFile {
+                override fun addToBuilder(builder: MultipartBodyBuilder) {
+                    builder
+                        .part("file", file)
+                        .filename(file.name)
+                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                }
+            }
+
+        fun from(filePart: FilePart): ApiRequestFile =
+            object : ApiRequestFile {
+                override fun addToBuilder(builder: MultipartBodyBuilder) {
+                    builder
+                        .asyncPart("file", filePart.content(), DataBuffer::class.java)
+                        .filename(filePart.filename())
+                        .contentType(filePart.headers().contentType ?: MediaType.APPLICATION_OCTET_STREAM)
+                }
+            }
+    }
+
+    fun addToBuilder(builder: MultipartBodyBuilder)
+}
+
+└──────────────────────────────────────────────────────────────────────────────┘
