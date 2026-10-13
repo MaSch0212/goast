@@ -3,8 +3,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "dist",
-    "declaration": true,
-    "sourceMap": true
+    "declaration": true
   },
   "include": ["mod.ts", "src"],
   "exclude": ["**/*.test.ts", "**/*.test-utils.ts"]

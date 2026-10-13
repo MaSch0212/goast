@@ -564,7 +564,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    # `tsc` builds three packages and `pnpm pack` turns each into the tarball that gets published. No
+    # `tsc` builds three packages and `pnpm pack:npm` turns each into the tarball that gets published. No
     # `needs:`; it is the publish path's own gate and is independent of the test tiers.
     timeout-minutes: 30
     steps:
@@ -580,7 +580,7 @@ jobs:
       # `pnpm pack` applies each package's `publishConfig` and rewrites `workspace:^` to real versions, so
       # the tarballs in `npm/` are exactly what the publish job uploads, byte for byte.
       - name: Pack NPM packages
-        run: pnpm pack
+        run: pnpm pack:npm
 
       - name: Upload NPM packages
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

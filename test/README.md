@@ -1097,7 +1097,7 @@ than one aggregate "tests" job disappearing into a wall of output.
 - **`all-tests` needs all fourteen test jobs** — `lint`, `unit`, `output-check`, `images`, `compile-ts`,
   `compile-kotlin`, `harness-docker`, and the seven `it-*` jobs — and runs with `if: always()` so it still executes (and
   can still fail the gate below) when one of them fails outright.
-- **`build`** needs nothing: `pnpm build`, `pnpm pack`, and an artifact upload of the resulting `npm/` tarballs. It is the publish path's own gate, independent of every test tier.
+- **`build`** needs nothing: `pnpm build`, `pnpm pack:npm`, and an artifact upload of the resulting `npm/` tarballs. It is the publish path's own gate, independent of every test tier.
 - **`publish`** needs `[all-tests, build]` and runs only when `github.ref == 'refs/heads/main'` — the point of this
   rework is exactly that: publishing now waits on every tier, not on `build` alone.
 
@@ -1259,7 +1259,7 @@ check before it compiles anything.
 
 `test/harness` is a `private` workspace package (`test/harness/package.json`, listed in `pnpm-workspace.yaml`). Test
 code imports it as `@goast/test-harness` straight from its TypeScript source, so it has no build step. `pnpm build` and
-`pnpm pack` select `./packages/*` only, so the harness is never built, packed or published. `@goast/kotlin` and
+`pnpm pack:npm` select `./packages/*` only, so the harness is never built, packed or published. `@goast/kotlin` and
 `@goast/typescript` list it under `devDependencies` only, which never reach a consumer.
 
 ## Layout

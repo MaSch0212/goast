@@ -7,7 +7,7 @@
     "build:core": "pnpm --filter @goast/core build",
     "build:kotlin": "pnpm --filter @goast/kotlin build",
     "build:typescript": "pnpm --filter @goast/typescript build",
-    "pack": "pnpm --filter \"./packages/*\" exec pnpm pack --pack-destination ../../npm",
+    "pack:npm": "pnpm --filter \"./packages/*\" exec pnpm pack --pack-destination ../../npm",
     "typecheck": "tsc -p tsconfig.json && tsc -p test/integration/fetch-clients/tsconfig.json",
     "lint": "oxlint",
     "fmt": "oxfmt",
