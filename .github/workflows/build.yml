@@ -113,7 +113,7 @@ jobs:
 
       - name: Upload the snapshot drift
         if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: snapshot-patch
           path: snapshot.patch
@@ -187,7 +187,7 @@ jobs:
 
       - name: Upload the compiler output
         if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: compile-ts-log
           path: compile-ts.log
@@ -218,7 +218,7 @@ jobs:
 
       - name: Upload the compiler output
         if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: compile-kotlin-log
           path: compile-kotlin.log
@@ -247,7 +247,7 @@ jobs:
 
       - name: Upload the container output
         if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: harness-docker-log
           path: harness-docker.log
@@ -282,7 +282,7 @@ jobs:
 
       - name: Upload the driver output
         if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: it-fetch-clients-log
           path: it-fetch-clients.log
@@ -310,7 +310,7 @@ jobs:
 
       - name: Upload the driver output
         if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: it-angular-services-log
           path: it-angular-services.log
@@ -337,7 +337,7 @@ jobs:
 
       - name: Upload the driver output
         if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: it-k6-clients-log
           path: it-k6-clients.log
@@ -364,7 +364,7 @@ jobs:
 
       - name: Upload the driver output
         if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: it-easy-network-stub-log
           path: it-easy-network-stub.log
@@ -415,7 +415,7 @@ jobs:
 
       - name: Upload the driver output
         if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: it-okhttp3-clients-${{ matrix.id }}-log
           path: driver.log
@@ -454,7 +454,7 @@ jobs:
 
       - name: Upload the driver output
         if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: it-spring-reactive-web-${{ matrix.id }}-log
           path: driver.log
@@ -510,7 +510,7 @@ jobs:
 
       - name: Upload the driver output
         if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: it-spring-controllers-${{ matrix.id }}-log
           path: driver.log
@@ -584,7 +584,7 @@ jobs:
         run: deno task npm
 
       - name: Upload NPM packages
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: npm
           path: npm
