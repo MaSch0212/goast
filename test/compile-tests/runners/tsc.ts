@@ -55,10 +55,7 @@ const ROOT_MARKER = /^##GOAST-ROOT## (.+)$/;
  * (which also has two non-dot casualties of the same defect, `_1.ts`/`_2.ts`) goes from 8 diagnostics to
  * the correct 12.
  */
-export async function runTsc(
-  profile: string,
-  units: readonly CompileUnit[],
-): Promise<Map<string, Diagnostic[]>> {
+export async function runTsc(profile: string, units: readonly CompileUnit[]): Promise<Map<string, Diagnostic[]>> {
   const results = new Map<string, Diagnostic[]>(units.map((unit) => [unit.id, []]));
   if (units.length === 0) return results;
 
@@ -100,7 +97,8 @@ export async function runTsc(
     if (timedOut) {
       throw new Error(
         `tsc timed out for profile ${profile}. Its output cannot be trusted as a complete result.\n\n` +
-          stdout + stderr,
+          stdout +
+          stderr,
       );
     }
 
@@ -139,13 +137,14 @@ export async function runTsc(
       // diagnostic's file exactly like the host `tsc` runner does: an absolute, container-rooted
       // path to relativize against a unit's own tree.
       .map((diagnostic) =>
-        diagnostic.file === '' ? diagnostic : { ...diagnostic, file: `${TREE_MOUNT}/${diagnostic.file}` }
+        diagnostic.file === '' ? diagnostic : { ...diagnostic, file: `${TREE_MOUNT}/${diagnostic.file}` },
       );
 
     if (code !== 0 && diagnostics.length === 0) {
       throw new Error(
         `tsc exited ${code} for profile ${profile} but no diagnostics were parsed. ` +
-          'The output format has probably changed; the gate would be vacuously green.\n\n' + output,
+          'The output format has probably changed; the gate would be vacuously green.\n\n' +
+          output,
       );
     }
 

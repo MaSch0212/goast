@@ -66,25 +66,37 @@ describe('dockerRunArgs', () => {
   });
 
   it('renders a read-only mount with the readonly flag', () => {
-    expect(dockerRunArgs({ image: 'img', mounts: [{ source: '/a', target: '/b', readOnly: true }] }))
-      .toEqual(['run', '--rm', '--mount', 'type=bind,source=/a,target=/b,readonly', 'img']);
+    expect(dockerRunArgs({ image: 'img', mounts: [{ source: '/a', target: '/b', readOnly: true }] })).toEqual([
+      'run',
+      '--rm',
+      '--mount',
+      'type=bind,source=/a,target=/b,readonly',
+      'img',
+    ]);
   });
 
   it('renders a writable mount without it', () => {
-    expect(dockerRunArgs({ image: 'img', mounts: [{ source: '/a', target: '/b' }] }))
-      .toEqual(['run', '--rm', '--mount', 'type=bind,source=/a,target=/b', 'img']);
+    expect(dockerRunArgs({ image: 'img', mounts: [{ source: '/a', target: '/b' }] })).toEqual([
+      'run',
+      '--rm',
+      '--mount',
+      'type=bind,source=/a,target=/b',
+      'img',
+    ]);
   });
 
   it('renders a named volume, env, workdir, host gateway, and trailing command args in a stable order', () => {
-    expect(dockerRunArgs({
-      image: 'img',
-      args: ['gradle', 'compileKotlin'],
-      name: 'goast-test-abc123',
-      volumes: [{ name: 'goast-gradle', target: '/home/gradle/.gradle' }],
-      env: { GRADLE_OPTS: '-Xmx2g' },
-      workdir: '/work',
-      hostGateway: true,
-    })).toEqual([
+    expect(
+      dockerRunArgs({
+        image: 'img',
+        args: ['gradle', 'compileKotlin'],
+        name: 'goast-test-abc123',
+        volumes: [{ name: 'goast-gradle', target: '/home/gradle/.gradle' }],
+        env: { GRADLE_OPTS: '-Xmx2g' },
+        workdir: '/work',
+        hostGateway: true,
+      }),
+    ).toEqual([
       'run',
       '--rm',
       '--name',
@@ -104,18 +116,25 @@ describe('dockerRunArgs', () => {
   });
 
   it('converts a Windows path to a form the daemon accepts', () => {
-    expect(dockerRunArgs({ image: 'img', mounts: [{ source: 'E:\\repo\\test', target: '/t' }] }))
-      .toEqual(['run', '--rm', '--mount', 'type=bind,source=E:/repo/test,target=/t', 'img']);
+    expect(dockerRunArgs({ image: 'img', mounts: [{ source: 'E:\\repo\\test', target: '/t' }] })).toEqual([
+      'run',
+      '--rm',
+      '--mount',
+      'type=bind,source=E:/repo/test,target=/t',
+      'img',
+    ]);
   });
 
   it('rejects a mount whose source contains a comma, since it would corrupt the --mount spec', () => {
-    expect(() => dockerRunArgs({ image: 'img', mounts: [{ source: '/a,b', target: '/t' }] }))
-      .toThrow('must not contain a comma');
+    expect(() => dockerRunArgs({ image: 'img', mounts: [{ source: '/a,b', target: '/t' }] })).toThrow(
+      'must not contain a comma',
+    );
   });
 
   it('rejects a mount whose target contains a comma, since it would corrupt the --mount spec', () => {
-    expect(() => dockerRunArgs({ image: 'img', mounts: [{ source: '/a', target: '/t,b' }] }))
-      .toThrow('must not contain a comma');
+    expect(() => dockerRunArgs({ image: 'img', mounts: [{ source: '/a', target: '/t,b' }] })).toThrow(
+      'must not contain a comma',
+    );
   });
 
   it('overrides the image entrypoint when one is given', () => {

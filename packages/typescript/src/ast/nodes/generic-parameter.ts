@@ -65,7 +65,7 @@ const createGenericParameter = <TBuilder extends SourceBuilder>(
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
 ): TsGenericParameter<TBuilder> => new TsGenericParameter<TBuilder>({ ...options, name });
 
-export const tsGenericParameter: typeof createGenericParameter & { write: typeof writeTsGenericParameters } = Object
-  .assign(createGenericParameter, {
+export const tsGenericParameter: typeof createGenericParameter & { write: typeof writeTsGenericParameters } =
+  Object.assign(createGenericParameter, {
     write: writeTsGenericParameters,
   });

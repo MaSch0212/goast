@@ -29,10 +29,7 @@ const TOKEN_CHAR = String.raw`[a-zA-Z0-9_.-]`;
 
 function buildPathPattern(root: string): RegExp {
   const rootPattern = escapeRegExp(root).replace(/\\\\/g, SEPARATOR);
-  return new RegExp(
-    `(?<!${TOKEN_CHAR})${rootPattern}(?:${SEPARATOR}${PATH_CHAR}*)?(?!${TOKEN_CHAR})`,
-    'g',
-  );
+  return new RegExp(`(?<!${TOKEN_CHAR})${rootPattern}(?:${SEPARATOR}${PATH_CHAR}*)?(?!${TOKEN_CHAR})`, 'g');
 }
 
 const patternCache = new Map<string, RegExp>();

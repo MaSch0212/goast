@@ -77,8 +77,8 @@ const MINIMUM_UNITS = 700;
 const specs = enabled ? await discoverSpecs() : [];
 const units = enabled ? await discoverCompileUnits(profiles, specs) : [];
 
-const hostTsUnits = units.filter((u) =>
-  u.language === 'typescript' && (HOST_TS_PROFILES as readonly string[]).includes(u.profile)
+const hostTsUnits = units.filter(
+  (u) => u.language === 'typescript' && (HOST_TS_PROFILES as readonly string[]).includes(u.profile),
 );
 const containerTsUnitsByProfile = new Map(
   CONTAINER_TS_PROFILES.map((profile) => [
@@ -86,8 +86,8 @@ const containerTsUnitsByProfile = new Map(
     units.filter((u) => u.language === 'typescript' && u.profile === profile),
   ]),
 );
-const kotlinUnits = units.filter((u) =>
-  u.language === 'kotlin' && (KOTLIN_PROFILES as readonly string[]).includes(u.profile)
+const kotlinUnits = units.filter(
+  (u) => u.language === 'kotlin' && (KOTLIN_PROFILES as readonly string[]).includes(u.profile),
 );
 
 /**
@@ -134,8 +134,9 @@ if (enabled) {
       const counts = new Map<string, number>();
       for (const unit of units) counts.set(unit.profile, (counts.get(unit.profile) ?? 0) + 1);
 
-      const empty = [...HOST_TS_PROFILES, ...CONTAINER_TS_PROFILES, ...KOTLIN_PROFILES]
-        .filter((profile) => (counts.get(profile) ?? 0) === 0);
+      const empty = [...HOST_TS_PROFILES, ...CONTAINER_TS_PROFILES, ...KOTLIN_PROFILES].filter(
+        (profile) => (counts.get(profile) ?? 0) === 0,
+      );
       expect(empty).toEqual([]);
     });
   });

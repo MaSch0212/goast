@@ -100,20 +100,18 @@ export async function verifyProfile(
     }
 
     const failures: string[] = [];
-    for (
-      const verify of [
-        () => verifyGeneratedTree(snapshot.treeDir, outputDir, { mode }),
-        // Normalized on the *value*, before serialization: `util.inspect` chooses its line breaks
-        // from the rendered width of what it is handed, so rewriting the finished text would leave
-        // the layout encoding the length of this machine's temp path.
-        () =>
-          verifyText(
-            snapshot.stateFile,
-            serializeNormalized(run.value, (text) => replaceOutputDir(text, outputDir)) + '\n',
-            { mode },
-          ),
-      ]
-    ) {
+    for (const verify of [
+      () => verifyGeneratedTree(snapshot.treeDir, outputDir, { mode }),
+      // Normalized on the *value*, before serialization: `util.inspect` chooses its line breaks
+      // from the rendered width of what it is handed, so rewriting the finished text would leave
+      // the layout encoding the length of this machine's temp path.
+      () =>
+        verifyText(
+          snapshot.stateFile,
+          serializeNormalized(run.value, (text) => replaceOutputDir(text, outputDir)) + '\n',
+          { mode },
+        ),
+    ]) {
       try {
         await verify();
       } catch (error) {

@@ -35,14 +35,16 @@ describe('discoverCompileUnits', () => {
       root,
     );
 
-    expect(units).toEqual([{
-      language: 'kotlin',
-      profile: 'models@sb3',
-      versionDir: 'v3',
-      spec: 'simple',
-      treeDir: join(root, 'kotlin', 'models@sb3', 'v3', 'simple'),
-      id: 'kotlin/models@sb3/v3/simple',
-    }]);
+    expect(units).toEqual([
+      {
+        language: 'kotlin',
+        profile: 'models@sb3',
+        versionDir: 'v3',
+        spec: 'simple',
+        treeDir: join(root, 'kotlin', 'models@sb3', 'v3', 'simple'),
+        id: 'kotlin/models@sb3/v3/simple',
+      },
+    ]);
   });
 
   it('skips a spec whose tree does not exist, so an errored generation is not a phantom unit', async () => {

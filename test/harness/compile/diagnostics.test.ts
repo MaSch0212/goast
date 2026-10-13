@@ -16,8 +16,7 @@ const d = (file: string, line: number | null, column: number | null, message: st
 
 describe('formatDiagnostics', () => {
   it('renders one diagnostic per line as file:line:col message', () => {
-    expect(formatDiagnostics([d('models/pet.ts', 3, 7, 'Type error')]))
-      .toBe('models/pet.ts:3:7 Type error\n');
+    expect(formatDiagnostics([d('models/pet.ts', 3, 7, 'Type error')])).toBe('models/pet.ts:3:7 Type error\n');
   });
 
   it('sorts by file, then line, then column, then message', () => {
@@ -29,34 +28,33 @@ describe('formatDiagnostics', () => {
       d('a.ts', 1, 1, 'aaa'),
     ]);
 
-    expect(text).toBe(
-      'a.ts:1:1 aaa\na.ts:1:1 zzz\na.ts:1:2 later column\na.ts:2:1 later line\nb.ts:1:1 second file\n',
-    );
+    expect(text).toBe('a.ts:1:1 aaa\na.ts:1:1 zzz\na.ts:1:2 later column\na.ts:2:1 later line\nb.ts:1:1 second file\n');
   });
 
   it('dedupes identical diagnostics, which a parallel build can report twice', () => {
-    expect(formatDiagnostics([d('a.ts', 1, 1, 'same'), d('a.ts', 1, 1, 'same')]))
-      .toBe('a.ts:1:1 same\n');
+    expect(formatDiagnostics([d('a.ts', 1, 1, 'same'), d('a.ts', 1, 1, 'same')])).toBe('a.ts:1:1 same\n');
   });
 
   it('omits position when the compiler gave none, and renders a missing file as <no file>', () => {
-    expect(formatDiagnostics([d('a.kt', null, null, 'no position'), d('', null, null, 'no file')]))
-      .toBe('<no file> no file\na.kt no position\n');
+    expect(formatDiagnostics([d('a.kt', null, null, 'no position'), d('', null, null, 'no file')])).toBe(
+      '<no file> no file\na.kt no position\n',
+    );
   });
 
   it('orders file-less diagnostics numerically too, not by string', () => {
-    expect(formatDiagnostics([d('', 10, 1, 'ten'), d('', 9, 1, 'nine')]))
-      .toBe('<no file>:9:1 nine\n<no file>:10:1 ten\n');
+    expect(formatDiagnostics([d('', 10, 1, 'ten'), d('', 9, 1, 'nine')])).toBe(
+      '<no file>:9:1 nine\n<no file>:10:1 ten\n',
+    );
   });
 
   it('sorts a position-less diagnostic before a positioned one in the same file', () => {
-    expect(formatDiagnostics([d('a.kt', 5, 1, 'positioned'), d('a.kt', null, null, 'bare')]))
-      .toBe('a.kt bare\na.kt:5:1 positioned\n');
+    expect(formatDiagnostics([d('a.kt', 5, 1, 'positioned'), d('a.kt', null, null, 'bare')])).toBe(
+      'a.kt bare\na.kt:5:1 positioned\n',
+    );
   });
 
   it('collapses a multi-line message onto one line so a diagnostic is always one snapshot line', () => {
-    expect(formatDiagnostics([d('a.kt', 1, 1, 'first\n  second\n\n  third')]))
-      .toBe('a.kt:1:1 first second third\n');
+    expect(formatDiagnostics([d('a.kt', 1, 1, 'first\n  second\n\n  third')])).toBe('a.kt:1:1 first second third\n');
   });
 
   it('returns the empty string for no diagnostics', () => {
@@ -74,8 +72,7 @@ describe('normalizeMessageUrls', () => {
 
   it('rewrites a Windows-drive URL inside the unit tree to its unit-relative form', () => {
     const treeDir = String.raw`C:\repo\test\output\typescript\models\v3\unit`;
-    const message =
-      `Import "<output>/models/.ts" not a dependency and not in import map from "file:///C:/repo/test/output/typescript/models/v3/unit/models.ts"`;
+    const message = `Import "<output>/models/.ts" not a dependency and not in import map from "file:///C:/repo/test/output/typescript/models/v3/unit/models.ts"`;
 
     expect(normalizeMessageUrls(message, treeDir)).toBe(
       `Import "<output>/models/.ts" not a dependency and not in import map from "models.ts"`,
@@ -84,8 +81,7 @@ describe('normalizeMessageUrls', () => {
 
   it('rewrites a POSIX URL inside the unit tree to the identical unit-relative form', () => {
     const treeDir = '/repo/test/output/typescript/models/v3/unit';
-    const message =
-      `Import "<output>/models/.ts" not a dependency and not in import map from "file:///repo/test/output/typescript/models/v3/unit/models.ts"`;
+    const message = `Import "<output>/models/.ts" not a dependency and not in import map from "file:///repo/test/output/typescript/models/v3/unit/models.ts"`;
 
     expect(normalizeMessageUrls(message, treeDir)).toBe(
       `Import "<output>/models/.ts" not a dependency and not in import map from "models.ts"`,

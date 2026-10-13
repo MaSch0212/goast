@@ -42,8 +42,7 @@ describe('buildQueryString', () => {
   });
 
   it('repeats the key once per value, in declaration order', () => {
-    expect(buildQueryString({ formExploded: ['a', 'b'], other: ['c'] }))
-      .toBe('formExploded=a&formExploded=b&other=c');
+    expect(buildQueryString({ formExploded: ['a', 'b'], other: ['c'] })).toBe('formExploded=a&formExploded=b&other=c');
   });
 
   it('renders an absent or empty query as the empty string, so the caller can omit the ?', () => {

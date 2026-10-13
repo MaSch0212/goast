@@ -63,7 +63,8 @@ export class KotlinFileBuilder<TAdditionalAppends = never> extends SourceBuilder
     this.append(`@${name}`).addImport(name, packageName);
 
     if (allArgs.length > 0) {
-      const multiline = allArgs.some((x) => typeof x[1] !== 'string') ||
+      const multiline =
+        allArgs.some((x) => typeof x[1] !== 'string') ||
         allArgs.reduce((c, [key, value]) => c + (key ? key.length + 3 : 0) + (value?.length ?? 0), 0) > 80;
       this.parenthesize('()', (builder) =>
         builder
@@ -76,7 +77,8 @@ export class KotlinFileBuilder<TAdditionalAppends = never> extends SourceBuilder
                 .append((builder) => (typeof value === 'string' ? builder.append(value) : value(builder))),
             { separator: multiline ? ',\n' : ', ' },
           )
-          .appendLineIf(multiline));
+          .appendLineIf(multiline),
+      );
     }
 
     this.appendLine();

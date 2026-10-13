@@ -31,8 +31,10 @@ export interface TypeScriptAngularServiceGenerator<TOutput extends Output = Outp
   generate(ctx: Context): MaybePromise<TOutput>;
 }
 
-export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGenerator<Context, Output>
-  implements TypeScriptAngularServiceGenerator {
+export class DefaultTypeScriptAngularServiceGenerator
+  extends TypeScriptFileGenerator<Context, Output>
+  implements TypeScriptAngularServiceGenerator
+{
   public generate(ctx: Context): MaybePromise<Output> {
     const responseModels = this.generateResponseModels(ctx);
 
@@ -111,15 +113,15 @@ export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGene
             }),
             !ctx.config.strictResponseTypes
               ? ts.intersectionType([
-                ts.refs.angular.httpResponse([this.getAnyType(ctx)]),
-                ts.objectType({
-                  members: [
-                    ts.property('status', {
-                      type: ts.refs.exclude([ctx.refs.httpStatusCode(), ts.reference(statusCodesTypeName)]),
-                    }),
-                  ],
-                }),
-              ])
+                  ts.refs.angular.httpResponse([this.getAnyType(ctx)]),
+                  ts.objectType({
+                    members: [
+                      ts.property('status', {
+                        type: ts.refs.exclude([ctx.refs.httpStatusCode(), ts.reference(statusCodesTypeName)]),
+                      }),
+                    ],
+                  }),
+                ])
               : null,
           ]),
           ts.objectType({ members: [ts.property('status', { type: 'TStatus' })] }),
@@ -152,9 +154,10 @@ export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGene
         key,
         {
           parser: value?.parser ?? 'text',
-          type: typeof value?.type === 'function'
-            ? this.getSchemaType(ctx, value.type(ctx.data.schemas))
-            : value ?? this.getAnyType(ctx),
+          type:
+            typeof value?.type === 'function'
+              ? this.getSchemaType(ctx, value.type(ctx.data.schemas))
+              : (value ?? this.getAnyType(ctx)),
         },
       ]),
       ...endpoint.responses
@@ -240,7 +243,7 @@ export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGene
             static: true,
             readonly: true,
             value: ts.string(e.path),
-          })
+          }),
         ),
         ...ctx.service.endpoints.map((e) => this.getEndpointMethod(ctx, e)),
       ],
@@ -265,9 +268,9 @@ export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGene
       parameters: [
         hasParams
           ? ts.parameter('params', {
-            optional: paramsOptional,
-            type: ts.reference(this.getEndpointParamsTypeName(ctx, endpoint)),
-          })
+              optional: paramsOptional,
+              type: ts.reference(this.getEndpointParamsTypeName(ctx, endpoint)),
+            })
           : null,
         ts.parameter('context', { optional: true, type: ts.refs.angular.httpContext() }),
       ],
@@ -278,42 +281,38 @@ export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGene
       returnType,
       body: appendValueGroup(
         [
-          s`const rb = new ${ctx.refs.requestBuilder()}(this.rootUrl, ${
-            this.getServiceClassName(
-              ctx,
-            )
-          }.${this.getEndpointPathPropertyName(ctx, endpoint)}, '${endpoint.method}');`,
+          s`const rb = new ${ctx.refs.requestBuilder()}(this.rootUrl, ${this.getServiceClassName(
+            ctx,
+          )}.${this.getEndpointPathPropertyName(ctx, endpoint)}, '${endpoint.method}');`,
           hasParams
             ? (b) =>
-              b.appendIf(paramsOptional, 'if (params) ').parenthesizeIf(
-                paramsOptional,
-                '{}',
-                appendValueGroup(
-                  [
-                    ...endpoint.parameters
-                      .filter((p) => p.target === 'path' || p.target === 'query' || p.target === 'header')
-                      .map((p) => {
-                        const options = ts.object({
-                          members: [
-                            p.style !== undefined ? ts.property('style', { value: ts.string(p.style) }) : null,
-                            p.explode !== undefined ? ts.property('explode', { value: ts.toNode(p.explode) }) : null,
-                          ],
-                        });
-                        return s<Builder>`rb.${p.target}(${ts.string(p.name)}, params.${
-                          toCasing(
+                b.appendIf(paramsOptional, 'if (params) ').parenthesizeIf(
+                  paramsOptional,
+                  '{}',
+                  appendValueGroup(
+                    [
+                      ...endpoint.parameters
+                        .filter((p) => p.target === 'path' || p.target === 'query' || p.target === 'header')
+                        .map((p) => {
+                          const options = ts.object({
+                            members: [
+                              p.style !== undefined ? ts.property('style', { value: ts.string(p.style) }) : null,
+                              p.explode !== undefined ? ts.property('explode', { value: ts.toNode(p.explode) }) : null,
+                            ],
+                          });
+                          return s<Builder>`rb.${p.target}(${ts.string(p.name)}, params.${toCasing(
                             p.name,
                             ctx.config.propertyNameCasing,
-                          )
-                        }, ${options});`;
-                      }),
-                    endpoint.requestBody
-                      ? s`rb.body(params.body, ${ts.string(this.getEndpointRequestContentType(ctx, endpoint))});`
-                      : null,
-                  ],
-                  '\n',
-                ),
-                { multiline: true },
-              )
+                          )}, ${options});`;
+                        }),
+                      endpoint.requestBody
+                        ? s`rb.body(params.body, ${ts.string(this.getEndpointRequestContentType(ctx, endpoint))});`
+                        : null,
+                    ],
+                    '\n',
+                  ),
+                  { multiline: true },
+                )
             : null,
           '',
           s`return ${ctx.refs.waitForResponse([responseModelType])}(${s.indent`
@@ -323,15 +322,13 @@ export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGene
                 context,`}
               })),
               {${s.indent`
-                errorResponseTypes: ${
-            ts.object({
-              members: Object.entries(this.getEndpointStatusCodes(ctx, endpoint))
-                .filter(([key]) => !key.startsWith('2'))
-                .map(([key, value]) => {
-                  return ts.property(key, { value: ts.string(value.parser) });
-                }),
-            })
-          }`}
+                errorResponseTypes: ${ts.object({
+                  members: Object.entries(this.getEndpointStatusCodes(ctx, endpoint))
+                    .filter(([key]) => !key.startsWith('2'))
+                    .map(([key, value]) => {
+                      return ts.property(key, { value: ts.string(value.parser) });
+                    }),
+                })}`}
               }`}
             )`,
         ],
@@ -365,15 +362,15 @@ export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGene
 
     return (
       response.contentOptions.find((x) => x.type === ctx.config.defaultSuccessResponseContentType)?.type ??
-        response.contentOptions[0]?.type ??
-        '*/*'
+      response.contentOptions[0]?.type ??
+      '*/*'
     );
   }
 
   protected getEndpointSuccessResponse(_ctx: Context, endpoint: ApiEndpoint): ApiResponse | undefined {
     return (
       endpoint.responses.find((x) => x.statusCode && x.statusCode >= 200 && x.statusCode < 300) ??
-        endpoint.responses.find((x) => x.statusCode === undefined)
+      endpoint.responses.find((x) => x.statusCode === undefined)
     );
   }
 

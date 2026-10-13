@@ -2,10 +2,6 @@
   "name": "goast-workspace",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@11.21.0",
-  "engines": {
-    "node": ">=24"
-  },
   "scripts": {
     "build": "pnpm --filter \"./packages/*\" build",
     "build:core": "pnpm --filter @goast/core build",
@@ -64,5 +60,9 @@
     "typescript": "^7.0.2",
     "vitest": "^5.0.4",
     "yaml": "^2.5.1"
-  }
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@11.21.0"
 }

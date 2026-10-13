@@ -398,7 +398,7 @@ describe('transformSchemaProperties', () => {
     const transformedSchema1 = { type: 'string' } as ApiSchema;
     const transformedSchema2 = { type: 'integer' } as ApiSchema;
     const transformSchema = vi.fn<(ctx: OpenApiTransformerContext, schema: ApiSchema) => ApiSchema>((_, subSchema) =>
-      subSchema === schema.properties.prop1 ? transformedSchema1 : transformedSchema2
+      subSchema === schema.properties.prop1 ? transformedSchema1 : transformedSchema2,
     );
     const result = transformSchemaProperties(context, schema, transformSchema);
     expect(Array.from(result.entries())).toEqual([

@@ -11,6 +11,7 @@
     "test/output/**",
     "test/compile/**",
     "test/wire/**",
-    "pnpm-lock.yaml"
+    "pnpm-lock.yaml",
+    "**/assets/**"
   ]
 }

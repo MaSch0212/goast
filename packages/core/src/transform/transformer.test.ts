@@ -36,19 +36,17 @@ describe('transformOpenApi', () => {
     input.documents.push(doc({ tags: [derefAt('/documents/0/tags/0', { name: 'pets' })] }));
     input.documents.push(doc({ tags: [derefAt('/documents/1/tags/0', { name: 'store' })] }));
 
-    expect(transformOpenApi(input).services.map((s) => s.name).sort()).toEqual(['pets', 'store']);
+    expect(
+      transformOpenApi(input)
+        .services.map((s) => s.name)
+        .sort(),
+    ).toEqual(['pets', 'store']);
   });
 
   it('transforms every collected schema, flattened into ApiData', () => {
     const input = empty();
-    input.schemas.set(
-      'test.yml#/components/schemas/Foo',
-      derefSchemaAt('/components/schemas/Foo', { type: 'object' }),
-    );
-    input.schemas.set(
-      'test.yml#/components/schemas/Bar',
-      derefSchemaAt('/components/schemas/Bar', { type: 'string' }),
-    );
+    input.schemas.set('test.yml#/components/schemas/Foo', derefSchemaAt('/components/schemas/Foo', { type: 'object' }));
+    input.schemas.set('test.yml#/components/schemas/Bar', derefSchemaAt('/components/schemas/Bar', { type: 'string' }));
 
     const schemas = transformOpenApi(input).schemas;
     expect(schemas).toHaveLength(2);

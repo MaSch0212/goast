@@ -1,9 +1,7 @@
 import * as util from 'node:util';
 
 /** The outcome of a captured run, with whatever the function printed. */
-export type CaptureResult<T> =
-  | { ok: true; value: T; output: string }
-  | { ok: false; error: unknown; output: string };
+export type CaptureResult<T> = { ok: true; value: T; output: string } | { ok: false; error: unknown; output: string };
 
 /**
  * Runs `fn` with `console` output collected rather than printed, and reports the outcome instead of

@@ -23,7 +23,8 @@ type OpenApiGenerationProviders = {
   config: AnyConfig | undefined;
 }[];
 
-type VInput<TActual, TExpected> = TExpected extends TActual ? TActual
+type VInput<TActual, TExpected> = TExpected extends TActual
+  ? TActual
   : { __error: 'The current output of the generator does not satisfy the input of this generator.' };
 
 class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
@@ -151,9 +152,8 @@ function mergeDeep<T extends Record<string, unknown>, U extends Record<string, u
   return mergeDeep(target, ...sources);
 }
 
-export type DefaultGenerationProviderConfig<T extends AnyConfig> =
-  & Omit<T, keyof OpenApiGeneratorConfig>
-  & Partial<Pick<T, keyof OpenApiGeneratorConfig>>;
+export type DefaultGenerationProviderConfig<T extends AnyConfig> = Omit<T, keyof OpenApiGeneratorConfig> &
+  Partial<Pick<T, keyof OpenApiGeneratorConfig>>;
 
 export abstract class OpenApiGenerationProviderBase<
   TInput extends OpenApiGeneratorInput,

@@ -88,29 +88,26 @@ const createReference = <TBuilder extends SourceBuilder>(
   options?: Prettify<Omit<Options<TBuilder>, 'name' | 'moduleNameOrfilePath'>>,
 ): TsReference<TBuilder> => new TsReference<TBuilder>({ ...options, name, moduleNameOrfilePath });
 
-export type TsReferenceFactory =
-  & (<TBuilder extends SourceBuilder>(options?: FactoryOptions<TBuilder>) => TsReference<TBuilder>)
-  & {
-    refName: string;
-    moduleNameOrfilePath: Nullable<string>;
-  };
+export type TsReferenceFactory = (<TBuilder extends SourceBuilder>(
+  options?: FactoryOptions<TBuilder>,
+) => TsReference<TBuilder>) & {
+  refName: string;
+  moduleNameOrfilePath: Nullable<string>;
+};
 export type TsModuleReferenceFactory = TsReferenceFactory & {
   moduleNameOrfilePath: string;
 };
 
-export type TsGenericReferenceFactory<TGenericCount extends number | number[]> =
-  & (<TBuilder extends SourceBuilder>(
-    generics: TupleWithCount<TsType<TBuilder>, TGenericCount>,
-    options?: FactoryOptions<TBuilder>,
-  ) => TsReference<TBuilder>)
-  & {
-    refName: string;
-    moduleNameOrfilePath: Nullable<string>;
-    infer: <TBuilder extends SourceBuilder>() => TsReference<TBuilder>;
-  };
+export type TsGenericReferenceFactory<TGenericCount extends number | number[]> = (<TBuilder extends SourceBuilder>(
+  generics: TupleWithCount<TsType<TBuilder>, TGenericCount>,
+  options?: FactoryOptions<TBuilder>,
+) => TsReference<TBuilder>) & {
+  refName: string;
+  moduleNameOrfilePath: Nullable<string>;
+  infer: <TBuilder extends SourceBuilder>() => TsReference<TBuilder>;
+};
 export type TsGenericModuleReferenceFactory<TGenericCount extends number | number[]> =
-  & TsGenericReferenceFactory<TGenericCount>
-  & {
+  TsGenericReferenceFactory<TGenericCount> & {
     moduleNameOrfilePath: string;
   };
 

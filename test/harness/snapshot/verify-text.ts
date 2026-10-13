@@ -43,12 +43,7 @@ export async function verifyText(snapshotFile: string, text: string, options: Ve
   console.info(`snapshot updated ${snapshotFile}`);
 }
 
-function formatTextMismatch(
-  snapshotFile: string,
-  expected: string,
-  actual: string,
-  updateCommand: string,
-): string {
+function formatTextMismatch(snapshotFile: string, expected: string, actual: string, updateCommand: string): string {
   const lines = [`Snapshot mismatch: ${snapshotFile}`, ''];
   const difference = firstTextDifference(encoder.encode(expected), encoder.encode(actual));
 

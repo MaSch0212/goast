@@ -11,7 +11,7 @@ it('has no orphaned compile snapshots', async () => {
   const specs = await discoverSpecs();
   const units = await discoverCompileUnits(profiles, specs);
   const expected = units.map((unit) =>
-    relative(compileRootDir, compileSnapshotFile(compileRootDir, unit)).replace(/\\/g, '/')
+    relative(compileRootDir, compileSnapshotFile(compileRootDir, unit)).replace(/\\/g, '/'),
   );
 
   const orphans = await findOrphanFiles(compileRootDir, expected);

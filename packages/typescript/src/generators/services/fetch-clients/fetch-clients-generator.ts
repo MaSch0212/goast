@@ -47,8 +47,8 @@ export class TypeScriptFetchClientsGenerator extends OpenApiServicesGenerationPr
 
   constructor(clientGeneratorFactory?: Factory<TypeScriptFetchClientGenerator, []>) {
     super();
-    this._clientGeneratorFactory = clientGeneratorFactory ??
-      Factory.fromValue(new DefaultTypeScriptFetchClientGenerator());
+    this._clientGeneratorFactory =
+      clientGeneratorFactory ?? Factory.fromValue(new DefaultTypeScriptFetchClientGenerator());
   }
 
   protected override initResult(): Output {
@@ -138,7 +138,8 @@ export class TypeScriptFetchClientsGenerator extends OpenApiServicesGenerationPr
     return appendValueGroup(
       (iIndexPath && iIndexPath === cIndexPath
         ? Object.values(ctx.output.typescript.clients).flatMap((c) => [c.client, c.clientInterface])
-        : Object.values(ctx.output.typescript.clients).map((c) => c.client))
+        : Object.values(ctx.output.typescript.clients).map((c) => c.client)
+      )
         .filter(notNullish)
         .map((x) => ts.export(x.component, x.filePath)),
     );

@@ -13,8 +13,13 @@ type Output = { items: Record<string, SchemaOutput> };
 type SchemaOutput = { name: string; __source__?: string };
 type Context = OpenApiSchemasGenerationProviderContext<Input, Output, AnyConfig, SchemaOutput>;
 
-class TestSchemasGenerator
-  extends OpenApiSchemasGenerationProviderBase<Input, Output, AnyConfig, SchemaOutput, Context> {
+class TestSchemasGenerator extends OpenApiSchemasGenerationProviderBase<
+  Input,
+  Output,
+  AnyConfig,
+  SchemaOutput,
+  Context
+> {
   public generatedSchemas: ApiSchema[] = [];
   public additionalFilesCalled = false;
 

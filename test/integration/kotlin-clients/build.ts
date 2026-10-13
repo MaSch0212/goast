@@ -156,40 +156,43 @@ export function synthesizeDriverBuild(
   // produce a build that compiles clean and then fails at `run` time with a class-not-found.
   const mainClass = `${unit.driver.replace(/\.kt$/, '')}Kt`;
 
-  const build = [
-    // This project's `main` source set is exactly two roots: the committed output tree at `treeDir`
-    // below, and this unit's driver directory, `driverDir` below — scoped to this family alone so the
-    // *other* family's driver (which imports symbols this tree does not have) is never compiled
-    // alongside it. `srcDirs` takes the driver's directory, not the file itself (Gradle source roots
-    // are directories); this comment names the actual file for a reader debugging a failed run.
-    `// Driver under test: ${driverFile}`,
-    '',
-    'plugins {',
-    '    kotlin("jvm") version "2.2.0"',
-    '    application',
-    '}',
-    '',
-    // Never resolved — the image runs Gradle `--offline`, so nothing is ever fetched from here — but
-    // Gradle requires at least one repository to be declared before dependency resolution is configured
-    // at all. Omitting this produces a "no repositories defined" failure that reads exactly like a
-    // missing dependency, which is not the failure this build should ever produce.
-    'repositories { mavenCentral() }',
-    '',
-    'dependencies {',
-    `    add("implementation", platform("${KOTLIN_BOM[unit.variant]}"))`,
-    ...dependencies.map((line) => `    ${line}`),
-    ...RUNTIME_COROUTINE_DEPENDENCIES.map((line) => `    ${line}`),
-    // Only `spring-reactive-web-clients` needs this closed explicitly — see
-    // RUNTIME_JSON_CODEC_DEPENDENCIES's doc comment for why okhttp3 already has it transitively.
-    ...(unit.family === 'spring-reactive-web-clients' ? [`    ${RUNTIME_JSON_CODEC_DEPENDENCIES[unit.variant]}`] : []),
-    '}',
-    '',
-    'sourceSets["main"].kotlin.srcDirs("' + treeDir + '", "' + driverDir + '")',
-    '',
-    'application {',
-    `    mainClass.set("${mainClass}")`,
-    '}',
-  ].join('\n') + '\n';
+  const build =
+    [
+      // This project's `main` source set is exactly two roots: the committed output tree at `treeDir`
+      // below, and this unit's driver directory, `driverDir` below — scoped to this family alone so the
+      // *other* family's driver (which imports symbols this tree does not have) is never compiled
+      // alongside it. `srcDirs` takes the driver's directory, not the file itself (Gradle source roots
+      // are directories); this comment names the actual file for a reader debugging a failed run.
+      `// Driver under test: ${driverFile}`,
+      '',
+      'plugins {',
+      '    kotlin("jvm") version "2.2.0"',
+      '    application',
+      '}',
+      '',
+      // Never resolved — the image runs Gradle `--offline`, so nothing is ever fetched from here — but
+      // Gradle requires at least one repository to be declared before dependency resolution is configured
+      // at all. Omitting this produces a "no repositories defined" failure that reads exactly like a
+      // missing dependency, which is not the failure this build should ever produce.
+      'repositories { mavenCentral() }',
+      '',
+      'dependencies {',
+      `    add("implementation", platform("${KOTLIN_BOM[unit.variant]}"))`,
+      ...dependencies.map((line) => `    ${line}`),
+      ...RUNTIME_COROUTINE_DEPENDENCIES.map((line) => `    ${line}`),
+      // Only `spring-reactive-web-clients` needs this closed explicitly — see
+      // RUNTIME_JSON_CODEC_DEPENDENCIES's doc comment for why okhttp3 already has it transitively.
+      ...(unit.family === 'spring-reactive-web-clients'
+        ? [`    ${RUNTIME_JSON_CODEC_DEPENDENCIES[unit.variant]}`]
+        : []),
+      '}',
+      '',
+      'sourceSets["main"].kotlin.srcDirs("' + treeDir + '", "' + driverDir + '")',
+      '',
+      'application {',
+      `    mainClass.set("${mainClass}")`,
+      '}',
+    ].join('\n') + '\n';
 
   return { settings, build };
 }

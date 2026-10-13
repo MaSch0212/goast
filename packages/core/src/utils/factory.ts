@@ -2,17 +2,17 @@ import type { Constructor } from './type.utils.ts';
 
 type FactoryProvider<T, TArgs extends unknown[]> =
   | {
-    kind: 'ctor';
-    factory: Constructor<T, TArgs>;
-  }
+      kind: 'ctor';
+      factory: Constructor<T, TArgs>;
+    }
   | {
-    kind: 'fn';
-    factory: (...args: TArgs) => T;
-  }
+      kind: 'fn';
+      factory: (...args: TArgs) => T;
+    }
   | {
-    kind: 'value';
-    factory: T;
-  };
+      kind: 'value';
+      factory: T;
+    };
 
 export class Factory<T, TArgs extends unknown[]> {
   private readonly _provider: FactoryProvider<T, TArgs>;

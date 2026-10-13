@@ -32,9 +32,7 @@ describe('verifyCompileDiagnostics', () => {
   });
 
   it('check mode fails when a failing unit has no committed snapshot', async () => {
-    await expect(verifyCompileDiagnostics(file, one, { mode: 'check' })).rejects.toThrow(
-      'does not exist',
-    );
+    await expect(verifyCompileDiagnostics(file, one, { mode: 'check' })).rejects.toThrow('does not exist');
   });
 
   it('write mode deletes a stale snapshot when the unit now compiles', async () => {
@@ -45,9 +43,7 @@ describe('verifyCompileDiagnostics', () => {
 
   it('check mode fails when the unit now compiles but a snapshot is still committed', async () => {
     await verifyCompileDiagnostics(file, one, { mode: 'write' });
-    await expect(verifyCompileDiagnostics(file, [], { mode: 'check' })).rejects.toThrow(
-      'no longer fails to compile',
-    );
+    await expect(verifyCompileDiagnostics(file, [], { mode: 'check' })).rejects.toThrow('no longer fails to compile');
   });
 
   it('passes in both modes for a clean unit with no snapshot', async () => {
@@ -61,7 +57,7 @@ describe('verifyCompileDiagnostics', () => {
   // message, so a wrong command here is worse than no command.
   describe('names the tier 3 task in every check-mode failure', () => {
     async function messageFor(promise: Promise<void>): Promise<string> {
-      const error = await promise.catch((e: Error) => e) as Error;
+      const error = (await promise.catch((e: Error) => e)) as Error;
       expect(error).toBeInstanceOf(Error);
       return error.message;
     }

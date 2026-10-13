@@ -13,8 +13,13 @@ type Output = { items: Record<string, EndpointOutput> };
 type EndpointOutput = { name: string; __source__?: string };
 type Context = OpenApiEndpointsGenerationProviderContext<Input, Output, AnyConfig, EndpointOutput>;
 
-class TestEndpointsGenerator
-  extends OpenApiEndpointsGenerationProviderBase<Input, Output, AnyConfig, EndpointOutput, Context> {
+class TestEndpointsGenerator extends OpenApiEndpointsGenerationProviderBase<
+  Input,
+  Output,
+  AnyConfig,
+  EndpointOutput,
+  Context
+> {
   public generatedEndpoints: ApiEndpoint[] = [];
   public additionalFilesCalled = false;
 

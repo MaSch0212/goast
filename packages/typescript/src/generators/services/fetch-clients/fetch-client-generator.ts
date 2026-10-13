@@ -28,8 +28,10 @@ export interface TypeScriptFetchClientGenerator<TOutput extends Output = Output>
   generate(ctx: Context): MaybePromise<TOutput>;
 }
 
-export class DefaultTypeScriptFetchClientGenerator extends TypeScriptFileGenerator<Context, Output>
-  implements TypeScriptFetchClientGenerator {
+export class DefaultTypeScriptFetchClientGenerator
+  extends TypeScriptFileGenerator<Context, Output>
+  implements TypeScriptFetchClientGenerator
+{
   public generate(ctx: Context): MaybePromise<Output> {
     const result: Output = {};
 
@@ -44,9 +46,10 @@ export class DefaultTypeScriptFetchClientGenerator extends TypeScriptFileGenerat
         generator: (b) => {
           ctx.service.endpoints.forEach((endpoint) => {
             console.log(
-              `  ${getSourceDisplayName(ctx.data, endpoint)} [${
-                toCasing(endpoint.name, ctx.config.functionNameCasing)
-              }]`,
+              `  ${getSourceDisplayName(ctx.data, endpoint)} [${toCasing(
+                endpoint.name,
+                ctx.config.functionNameCasing,
+              )}]`,
             );
           });
           b.append(this.getInterfaceFileContent(ctx));
@@ -94,8 +97,8 @@ export class DefaultTypeScriptFetchClientGenerator extends TypeScriptFileGenerat
   }
 
   protected getInterfaceEndpointMethod(ctx: Context, endpoint: ApiEndpoint): ts.Method<Builder> {
-    const params = endpoint.parameters.filter((x) =>
-      x.target === 'path' || x.target === 'query' || x.target === 'header'
+    const params = endpoint.parameters.filter(
+      (x) => x.target === 'path' || x.target === 'query' || x.target === 'header',
     );
     const bodySchema = endpoint.requestBody?.content[0]?.schema;
     const responseSchema = this.getResponseSchema(ctx, endpoint);
@@ -107,23 +110,23 @@ export class DefaultTypeScriptFetchClientGenerator extends TypeScriptFileGenerat
       parameters: [
         params.length > 0
           ? ts.parameter('params', {
-            description: 'Parameters for the endpoint.',
-            type: ts.objectType({
-              members: params.map((x) =>
-                ts.property(toCasing(x.name, ctx.config.propertyNameCasing), {
-                  doc: ts.doc({ tags: [x.deprecated ? ts.docTag('deprecated') : null] }),
-                  type: this.getSchemaType(ctx, x.schema),
-                  optional: !x.required,
-                })
-              ),
-            }),
-          })
+              description: 'Parameters for the endpoint.',
+              type: ts.objectType({
+                members: params.map((x) =>
+                  ts.property(toCasing(x.name, ctx.config.propertyNameCasing), {
+                    doc: ts.doc({ tags: [x.deprecated ? ts.docTag('deprecated') : null] }),
+                    type: this.getSchemaType(ctx, x.schema),
+                    optional: !x.required,
+                  }),
+                ),
+              }),
+            })
           : null,
         bodySchema &&
-        ts.parameter('body', {
-          description: 'Body for the endpoint.',
-          type: this.getSchemaType(ctx, bodySchema),
-        }),
+          ts.parameter('body', {
+            description: 'Body for the endpoint.',
+            type: this.getSchemaType(ctx, bodySchema),
+          }),
       ],
       returnType: ts.refs.promise([ctx.refs.typedResponse([this.getSchemaType(ctx, responseSchema, ts.refs.void_())])]),
     });
@@ -136,9 +139,9 @@ export class DefaultTypeScriptFetchClientGenerator extends TypeScriptFileGenerat
   }
 
   protected getDefaultOptionsConstant(ctx: Context): ts.Variable<Builder> {
-    const baseUrl = ctx.service.endpoints.map((x) => x.$src?.document.servers?.find((x) => x.url)?.url).find((x) =>
-      !!x
-    );
+    const baseUrl = ctx.service.endpoints
+      .map((x) => x.$src?.document.servers?.find((x) => x.url)?.url)
+      .find((x) => !!x);
     return ts.variable(this.getDefaultOptionsConstantName(ctx), {
       export: true,
       readonly: true,
@@ -193,40 +196,43 @@ export class DefaultTypeScriptFetchClientGenerator extends TypeScriptFileGenerat
       [
         s`const url = new ${ctx.refs.urlBuilder()}(this.options.baseUrl)${s.indent`
           .withPath(${ts.string(endpoint.path)})${(b) =>
-          b.forEach(endpoint.parameters, (b, p) => {
-            switch (p.target) {
-              case 'path':
-                b.append(
-                  s<Builder>`\n.withPathParam(${ts.string(p.name)}, params.${
-                    toCasing(p.name, ctx.config.paramNameCasing)
-                  })`,
-                );
-                break;
-              case 'query':
-                b.append(
-                  s<Builder>`\n.withQueryParam(${ts.string(p.name)}, params.${
-                    toCasing(p.name, ctx.config.paramNameCasing)
-                  })`,
-                );
-                break;
-            }
-          })}
+            b.forEach(endpoint.parameters, (b, p) => {
+              switch (p.target) {
+                case 'path':
+                  b.append(
+                    s<Builder>`\n.withPathParam(${ts.string(p.name)}, params.${toCasing(
+                      p.name,
+                      ctx.config.paramNameCasing,
+                    )})`,
+                  );
+                  break;
+                case 'query':
+                  b.append(
+                    s<Builder>`\n.withQueryParam(${ts.string(p.name)}, params.${toCasing(
+                      p.name,
+                      ctx.config.paramNameCasing,
+                    )})`,
+                  );
+                  break;
+              }
+            })}
           .build();`}`,
         'const headers = { ...this.options.headers };',
-        ...endpoint.parameters.filter((x) => x.target === 'header').map((p) =>
-          s<Builder>`if (params && params.${toCasing(p.name, ctx.config.paramNameCasing)} !== undefined) {${s.indent`
+        ...endpoint.parameters
+          .filter((x) => x.target === 'header')
+          .map(
+            (p) =>
+              s<Builder>`if (params && params.${toCasing(p.name, ctx.config.paramNameCasing)} !== undefined) {${s.indent`
             headers[${ts.string(p.name)}] = String(params.${toCasing(p.name, ctx.config.paramNameCasing)});`}
-          }`
-        ),
-        s`const response = (this.options.fetch ?? fetch)(url, ${
-          ts.object({
-            members: [
-              ts.property('method', { value: ts.string(toCasing(endpoint.method, 'all-upper')) }),
-              ts.property('headers', { value: 'headers' }),
-              endpoint.requestBody?.content[0]?.schema ? ts.property('body', { value: 'JSON.stringify(body)' }) : null,
-            ],
-          })
-        });`,
+          }`,
+          ),
+        s`const response = (this.options.fetch ?? fetch)(url, ${ts.object({
+          members: [
+            ts.property('method', { value: ts.string(toCasing(endpoint.method, 'all-upper')) }),
+            ts.property('headers', { value: 'headers' }),
+            endpoint.requestBody?.content[0]?.schema ? ts.property('body', { value: 'JSON.stringify(body)' }) : null,
+          ],
+        })});`,
         s`Object.defineProperty(response, 'isVoidResponse', { value: ${
           this.getResponseSchema(ctx, endpoint) ? 'false' : 'true'
         } });`,
@@ -298,7 +304,8 @@ export class DefaultTypeScriptFetchClientGenerator extends TypeScriptFileGenerat
   }
 
   private getResponseSchema(_ctx: Context, endpoint: ApiEndpoint) {
-    const successResponse = endpoint.responses.find((x) => x.statusCode === 200) ??
+    const successResponse =
+      endpoint.responses.find((x) => x.statusCode === 200) ??
       endpoint.responses.find((x) => x.statusCode && x.statusCode > 200 && x.statusCode < 300);
     return successResponse?.contentOptions?.find((x) => x.schema !== undefined)?.schema;
   }

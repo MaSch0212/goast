@@ -54,10 +54,7 @@ export const deserializationFeature = <TBuilder extends SourceBuilder>(
  * neighbours it takes no `springBootVersion`, because Jackson 2 has no equivalent type: on the Spring Boot 3
  * line the constant still lives on `SerializationFeature`.
  */
-export const dateTimeFeature: KtReferenceFactory = ktReference.factory(
-  'DateTimeFeature',
-  'tools.jackson.databind.cfg',
-);
+export const dateTimeFeature: KtReferenceFactory = ktReference.factory('DateTimeFeature', 'tools.jackson.databind.cfg');
 
 // com.fasterxml.jackson.module.kotlin (Jackson 2) / tools.jackson.module.kotlin (Jackson 3, Spring Boot 4)
 export const jacksonObjectMapper = <TBuilder extends SourceBuilder>(

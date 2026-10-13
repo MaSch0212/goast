@@ -21,10 +21,7 @@ describe('transformDocument', () => {
     transformDocument(
       context,
       doc({
-        tags: [
-          derefAt('/tags/0', { name: 'pets', description: 'Pet things' }),
-          derefAt('/tags/1', { name: 'store' }),
-        ],
+        tags: [derefAt('/tags/0', { name: 'pets', description: 'Pet things' }), derefAt('/tags/1', { name: 'store' })],
       }),
     );
 

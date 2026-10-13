@@ -20,7 +20,11 @@ export type CommandOutput = { code: number; stdout: string; stderr: string };
  * Resolves with any exit code, non-zero included. Rejects only when the process could not be spawned
  * (e.g. `ENOENT` for a missing executable).
  */
-export function runCommand(command: string, args: readonly string[], options: RunCommandOptions = {}): Promise<CommandOutput> {
+export function runCommand(
+  command: string,
+  args: readonly string[],
+  options: RunCommandOptions = {},
+): Promise<CommandOutput> {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, { stdio: ['ignore', options.stdout ?? 'pipe', options.stderr ?? 'pipe'] });
     const stdout: Buffer[] = [];

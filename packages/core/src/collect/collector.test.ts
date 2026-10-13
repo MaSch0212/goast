@@ -79,10 +79,9 @@ describe('collectOpenApi', () => {
               Body: derefAt('/components/requestBodies/Body', {
                 content: {
                   'application/json': derefAt('/components/requestBodies/Body/content/application~1json', {
-                    schema: derefSchemaAt(
-                      '/components/requestBodies/Body/content/application~1json/schema',
-                      { type: 'object' },
-                    ),
+                    schema: derefSchemaAt('/components/requestBodies/Body/content/application~1json/schema', {
+                      type: 'object',
+                    }),
                   }),
                 },
               }),
@@ -283,9 +282,7 @@ describe('collectOpenApi', () => {
       const a = derefSchemaAt('/components/schemas/A', { type: 'object', properties: {} });
       (a.properties as Record<string, unknown>).bar = second;
 
-      const data = collectOpenApi([
-        doc({ components: { schemas: { Foo: first, A: a } } }),
-      ]);
+      const data = collectOpenApi([doc({ components: { schemas: { Foo: first, A: a } } })]);
 
       expect(data.schemas.size).toBe(2);
       expect(data.schemas.get('test.yml#/components/schemas/Foo')).toBe(first);
@@ -397,10 +394,9 @@ describe('collectOpenApi', () => {
                 requestBody: derefAt('/paths/~1a/get/requestBody', {
                   content: {
                     'application/json': derefAt('/paths/~1a/get/requestBody/content/application~1json', {
-                      schema: derefSchemaAt(
-                        '/paths/~1a/get/requestBody/content/application~1json/schema',
-                        { type: 'object' },
-                      ),
+                      schema: derefSchemaAt('/paths/~1a/get/requestBody/content/application~1json/schema', {
+                        type: 'object',
+                      }),
                     }),
                   },
                 }),
@@ -408,10 +404,9 @@ describe('collectOpenApi', () => {
                   '200': derefAt('/paths/~1a/get/responses/200', {
                     content: {
                       'application/json': derefAt('/paths/~1a/get/responses/200/content/application~1json', {
-                        schema: derefSchemaAt(
-                          '/paths/~1a/get/responses/200/content/application~1json/schema',
-                          { type: 'object' },
-                        ),
+                        schema: derefSchemaAt('/paths/~1a/get/responses/200/content/application~1json/schema', {
+                          type: 'object',
+                        }),
                       }),
                     },
                   }),
@@ -489,10 +484,9 @@ describe('collectOpenApi', () => {
                   '200': derefAt('/paths/~1a/get/responses/200', {
                     headers: {
                       'X-Rate': derefAt('/paths/~1a/get/responses/200/headers/X-Rate', {
-                        schema: derefSchemaAt(
-                          '/paths/~1a/get/responses/200/headers/X-Rate/schema',
-                          { type: 'integer' },
-                        ),
+                        schema: derefSchemaAt('/paths/~1a/get/responses/200/headers/X-Rate/schema', {
+                          type: 'integer',
+                        }),
                       }),
                     },
                   }),
@@ -527,7 +521,7 @@ describe('collectOpenApi', () => {
               }),
             },
           }),
-        ])
+        ]),
       ).toThrow(TypeError);
     });
   });

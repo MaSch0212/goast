@@ -29,7 +29,7 @@ function generator(files: Record<string, string>): (outputDir: string) => Promis
 
 async function readAsText(dir: string): Promise<Record<string, string>> {
   const decoder = new TextDecoder();
-  return Object.fromEntries([...await readFileTree(dir)].map(([path, bytes]) => [path, decoder.decode(bytes)]));
+  return Object.fromEntries([...(await readFileTree(dir))].map(([path, bytes]) => [path, decoder.decode(bytes)]));
 }
 
 describe('verifyFileTree', () => {
@@ -95,10 +95,14 @@ describe('verifyFileTree', () => {
         const tempDirs: string[] = [];
 
         await expect(
-          verifyFileTree(join(dir, 'snapshot'), (outputDir) => {
-            tempDirs.push(outputDir);
-            throw new Error('generator exploded');
-          }, { mode: 'write' }),
+          verifyFileTree(
+            join(dir, 'snapshot'),
+            (outputDir) => {
+              tempDirs.push(outputDir);
+              throw new Error('generator exploded');
+            },
+            { mode: 'write' },
+          ),
         ).rejects.toThrow('generator exploded');
 
         expect(tempDirs).toHaveLength(1);
@@ -111,11 +115,15 @@ describe('verifyFileTree', () => {
         const tempDirs: string[] = [];
 
         await expect(
-          verifyFileTree(join(dir, 'snapshot'), async (outputDir) => {
-            tempDirs.push(outputDir);
-            await Promise.resolve();
-            throw new Error('generator async rejected');
-          }, { mode: 'write' }),
+          verifyFileTree(
+            join(dir, 'snapshot'),
+            async (outputDir) => {
+              tempDirs.push(outputDir);
+              await Promise.resolve();
+              throw new Error('generator async rejected');
+            },
+            { mode: 'write' },
+          ),
         ).rejects.toThrow('generator async rejected');
 
         expect(tempDirs).toHaveLength(1);
@@ -139,9 +147,9 @@ describe('verifyFileTree', () => {
         const snapshotDir = join(dir, 'snapshot');
         await verifyFileTree(snapshotDir, generator({ 'change.ts': 'old', 'gone.ts': 'G' }), { mode: 'write' });
 
-        const error = await verifyFileTree(snapshotDir, generator({ 'change.ts': 'new', 'fresh.ts': 'F' }), {
+        const error = (await verifyFileTree(snapshotDir, generator({ 'change.ts': 'new', 'fresh.ts': 'F' }), {
           mode: 'check',
-        }).catch((e: Error) => e) as Error;
+        }).catch((e: Error) => e)) as Error;
 
         expect(error.message).toContain('Snapshot mismatch:');
         expect(error.message).toContain('+ fresh.ts');
@@ -187,10 +195,14 @@ describe('verifyFileTree', () => {
       await withTempDir(async (dir) => {
         const snapshotDir = join(dir, 'snapshot');
 
-        await verifyFileTree(snapshotDir, async (outputDir) => {
-          const target = join(outputDir, 'models.ts');
-          await writeFile(target, `export type {  } from '${outputDir}\\models\\.ts';\n`);
-        }, { mode: 'write' });
+        await verifyFileTree(
+          snapshotDir,
+          async (outputDir) => {
+            const target = join(outputDir, 'models.ts');
+            await writeFile(target, `export type {  } from '${outputDir}\\models\\.ts';\n`);
+          },
+          { mode: 'write' },
+        );
 
         expect(await readAsText(snapshotDir)).toEqual({
           'models.ts': "export type {  } from '<output>/models/.ts';\n",

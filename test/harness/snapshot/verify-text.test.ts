@@ -62,7 +62,7 @@ describe('verifyText', () => {
       const file = join(dir, 'state.txt');
       await verifyText(file, 'a\nold\nc\n', { mode: 'write' });
 
-      const error = await verifyText(file, 'a\nnew\nc\n', { mode: 'check' }).catch((e: Error) => e) as Error;
+      const error = (await verifyText(file, 'a\nnew\nc\n', { mode: 'check' }).catch((e: Error) => e)) as Error;
 
       expect(error.message).toContain('Snapshot mismatch:');
       expect(error.message).toContain('at line 2');
@@ -73,8 +73,9 @@ describe('verifyText', () => {
 
   it('should report a missing snapshot file distinctly in check mode', async () => {
     await withTempDir(async (dir) => {
-      const error = await verifyText(join(dir, 'state.txt'), 'text\n', { mode: 'check' })
-        .catch((e: Error) => e) as Error;
+      const error = (await verifyText(join(dir, 'state.txt'), 'text\n', { mode: 'check' }).catch(
+        (e: Error) => e,
+      )) as Error;
 
       expect(error.message).toContain('Snapshot file does not exist');
     });
@@ -86,11 +87,11 @@ describe('verifyText', () => {
     it('names `pnpm test:output` by default, in both check-mode messages', async () => {
       await withTempDir(async (dir) => {
         const file = join(dir, 'state.txt');
-        const missing = await verifyText(file, 'a\n', { mode: 'check' }).catch((e: Error) => e) as Error;
+        const missing = (await verifyText(file, 'a\n', { mode: 'check' }).catch((e: Error) => e)) as Error;
         expect(missing.message).toContain('Run `pnpm test:output` to create it');
 
         await verifyText(file, 'a\n', { mode: 'write' });
-        const mismatch = await verifyText(file, 'b\n', { mode: 'check' }).catch((e: Error) => e) as Error;
+        const mismatch = (await verifyText(file, 'b\n', { mode: 'check' }).catch((e: Error) => e)) as Error;
         expect(mismatch.message).toContain('Run `pnpm test:output` to update the snapshot');
       });
     });
@@ -100,12 +101,12 @@ describe('verifyText', () => {
         const file = join(dir, 'state.txt');
         const options = { mode: 'check', updateCommand: 'pnpm test:compile' } as const;
 
-        const missing = await verifyText(file, 'a\n', options).catch((e: Error) => e) as Error;
+        const missing = (await verifyText(file, 'a\n', options).catch((e: Error) => e)) as Error;
         expect(missing.message).toContain('Run `pnpm test:compile` to create it');
         expect(missing.message).not.toContain('test:output');
 
         await verifyText(file, 'a\n', { mode: 'write' });
-        const mismatch = await verifyText(file, 'b\n', options).catch((e: Error) => e) as Error;
+        const mismatch = (await verifyText(file, 'b\n', options).catch((e: Error) => e)) as Error;
         expect(mismatch.message).toContain('Run `pnpm test:compile` to update the snapshot');
         expect(mismatch.message).not.toContain('test:output');
       });

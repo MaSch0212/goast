@@ -108,8 +108,9 @@ describe('serializeNormalized', () => {
   it('is width-independent for a real temp directory too', async () => {
     const outputDir = await mkdtemp(join(tmpdir(), 'goast-serialize-'));
     try {
-      expect(serializeNormalized(stateFor(outputDir), replaceOutputDir(outputDir)))
-        .toBe(serializeNormalized(stateFor('/t/x'), replaceOutputDir('/t/x')));
+      expect(serializeNormalized(stateFor(outputDir), replaceOutputDir(outputDir))).toBe(
+        serializeNormalized(stateFor('/t/x'), replaceOutputDir('/t/x')),
+      );
     } finally {
       await rm(outputDir, { recursive: true });
     }

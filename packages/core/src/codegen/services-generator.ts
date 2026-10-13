@@ -55,10 +55,8 @@ export abstract class OpenApiServicesGenerationProviderBase<
 
     const result = await this.generateService(ctx, service);
 
-    addSourceIfTest(
-      ctx.config,
-      result,
-      () => service.$src ? `${service.$src.file}#${service.$src.path}` : `tag:${service.name}`,
+    addSourceIfTest(ctx.config, result, () =>
+      service.$src ? `${service.$src.file}#${service.$src.path}` : `tag:${service.name}`,
     );
     this.addServiceResult(ctx, service, result);
     return result;

@@ -21,11 +21,12 @@ export function formatDiagnostics(diagnostics: readonly Diagnostic[]): string {
 
 function renderDiagnostic(diagnostic: Diagnostic): string {
   const file = diagnostic.file === '' ? '<no file>' : diagnostic.file;
-  const position = diagnostic.line === null
-    ? ''
-    : diagnostic.column === null
-    ? `:${diagnostic.line}`
-    : `:${diagnostic.line}:${diagnostic.column}`;
+  const position =
+    diagnostic.line === null
+      ? ''
+      : diagnostic.column === null
+        ? `:${diagnostic.line}`
+        : `:${diagnostic.line}:${diagnostic.column}`;
   return `${file}${position} ${collapse(diagnostic.message)}`;
 }
 

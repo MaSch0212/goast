@@ -102,8 +102,12 @@ describe('DefaultKotlinSpringControllerGenerator', () => {
     });
 
     it('keeps range codes distinct from each other and from default', () => {
-      expect(new TestGenerator().responseCodes(createEndpointWithResponses(['2XX', '4XX', '5XX', 'default'])))
-        .toEqual(['"2XX"', '"4XX"', '"5XX"', '"default"']);
+      expect(new TestGenerator().responseCodes(createEndpointWithResponses(['2XX', '4XX', '5XX', 'default']))).toEqual([
+        '"2XX"',
+        '"4XX"',
+        '"5XX"',
+        '"default"',
+      ]);
     });
 
     it('never emits a bare null', () => {

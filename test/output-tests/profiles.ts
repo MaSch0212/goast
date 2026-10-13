@@ -53,7 +53,8 @@ export const profiles: Profile[] = [
         language: 'kotlin',
         versions: 'all',
         configure: (g) =>
-          g.useType(KotlinModelsGenerator, config)
+          g
+            .useType(KotlinModelsGenerator, config)
             .useType(KotlinSpringControllersGenerator, { ...config, strictResponseEntities: true }),
       },
       {

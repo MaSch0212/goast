@@ -60,7 +60,10 @@ describe('discoverSpecs', () => {
       await writeFile(join(root, 'v3', 'pets.yml'), 'openapi: 3.0.0\n');
       await writeFile(join(root, 'v3', 'pets.json'), '{}');
 
-      const error = await discoverSpecs(root).then(() => undefined, (e: Error) => e);
+      const error = await discoverSpecs(root).then(
+        () => undefined,
+        (e: Error) => e,
+      );
 
       expect(error).toBeInstanceOf(Error);
       expect(error!.message).toContain('v3/pets');

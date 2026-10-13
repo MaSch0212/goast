@@ -36,7 +36,7 @@ function expectedFilesFor(target: WireTarget): string[] {
   if (target.state === 'load-failure') return [`${target.profile}/__load-failure.txt`];
 
   return casesFor(target.profile, target.direction).map((c) =>
-    relative(wireRootDir, wireSnapshotFile(wireRootDir, target.profile, c.id)).replace(/\\/g, '/')
+    relative(wireRootDir, wireSnapshotFile(wireRootDir, target.profile, c.id)).replace(/\\/g, '/'),
   );
 }
 

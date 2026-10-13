@@ -23,14 +23,12 @@ describe('ktReference', () => {
 
   it('should add import to builder', () => {
     builder.append(ktReference('MyClass', 'my-package'));
-    expect(builder.imports.imports).toEqual(
-      [
-        {
-          typeName: 'MyClass',
-          packageName: 'my-package',
-        },
-      ] as KotlinImport[],
-    );
+    expect(builder.imports.imports).toEqual([
+      {
+        typeName: 'MyClass',
+        packageName: 'my-package',
+      },
+    ] as KotlinImport[]);
   });
 
   it('should render nullable', () => {

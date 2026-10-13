@@ -30,10 +30,7 @@ function templateToPattern(template: string): RegExp {
  * stray retry lands in {@link RefServer.surplus} and is reported, instead of shifting every subsequent
  * case's response by one and turning a single defect into a wall of failures.
  */
-export function startRefServer(
-  cases: readonly ApiCase[],
-  options: { hostname?: string } = {},
-): Promise<RefServer> {
+export function startRefServer(cases: readonly ApiCase[], options: { hostname?: string } = {}): Promise<RefServer> {
   const queues = new Map<string, ApiCase[]>();
   for (const apiCase of cases) {
     const key = `${apiCase.method} ${apiCase.pathTemplate}`;

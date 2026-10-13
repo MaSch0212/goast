@@ -12,7 +12,8 @@ import { formatLoadFailure } from './format-load-failure.ts';
 // `../utils/request-builder`, the defect being recorded — is the part that is stable across both.
 const SAMPLE_TIMESTAMP = '2026-08-09T18:03:50Z';
 
-const SAMPLE = `time="${SAMPLE_TIMESTAMP}" level=error ` +
+const SAMPLE =
+  `time="${SAMPLE_TIMESTAMP}" level=error ` +
   "msg=\"could not initialize '/scripts/probe.js': could not load JS test 'file:///scripts/probe.js': " +
   'The moduleSpecifier \\"../utils/request-builder\\" couldn\'t be found on local disk. Make sure that ' +
   "you've specified the right path to the file. If you're running k6 using the Docker image make sure you " +

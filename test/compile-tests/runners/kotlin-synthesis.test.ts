@@ -94,18 +94,18 @@ describe('synthesizeGradleBuild', () => {
   });
 
   it('reads the Spring Boot line from the config variant, including the strict suffixes', () => {
-    const { build } = synthesizeGradleBuild([
-      unit('spring-controllers@sb4-strict', 'v3', 'a'),
-      unit('spring-controllers@sb3-strict', 'v3', 'b'),
-    ], '/output');
+    const { build } = synthesizeGradleBuild(
+      [unit('spring-controllers@sb4-strict', 'v3', 'a'), unit('spring-controllers@sb3-strict', 'v3', 'b')],
+      '/output',
+    );
 
     expect(build).toContain('spring-boot-dependencies:4.0.0');
     expect(build).toContain('spring-boot-dependencies:3.5.6');
   });
 
   it('gives a family whose two variants differ their own dependency lines, not one merged set', () => {
-    const [sb3, sb4] = (['sb3', 'sb4'] as const).map((variant) =>
-      synthesizeGradleBuild([unit(`okhttp3-clients@${variant}`, 'v3', 'a')], '/output').build
+    const [sb3, sb4] = (['sb3', 'sb4'] as const).map(
+      (variant) => synthesizeGradleBuild([unit(`okhttp3-clients@${variant}`, 'v3', 'a')], '/output').build,
     );
 
     // `okhttp3-clients@sb4` is generated against Jackson 3 and `@sb3` against Jackson 2. Before Task 6
@@ -160,13 +160,18 @@ describe('scanTaskLines', () => {
   // added to `printed`, and then classified as neither NO-SOURCE nor FAILED — recorded as "ran and
   // clean" by falling through every branch. Each now lands in a bucket named for what it means.
   it('separates reuse of a successful result from a task that was never run', () => {
-    const states = scanTaskLines([
-      '> Task :u0001:compileKotlin UP-TO-DATE',
-      '> Task :u0002:compileKotlin FROM-CACHE',
-      '> Task :u0003:compileKotlin SKIPPED',
-    ].join('\n'));
+    const states = scanTaskLines(
+      [
+        '> Task :u0001:compileKotlin UP-TO-DATE',
+        '> Task :u0002:compileKotlin FROM-CACHE',
+        '> Task :u0003:compileKotlin SKIPPED',
+      ].join('\n'),
+    );
 
-    expect([...states.reused]).toEqual([['u0001', 'UP-TO-DATE'], ['u0002', 'FROM-CACHE']]);
+    expect([...states.reused]).toEqual([
+      ['u0001', 'UP-TO-DATE'],
+      ['u0002', 'FROM-CACHE'],
+    ]);
     expect([...states.notExecuted]).toEqual([['u0003', 'SKIPPED']]);
     expect([...states.noSource]).toEqual([]);
     expect([...states.failed]).toEqual([]);
@@ -185,13 +190,15 @@ describe('scanTaskLines', () => {
   // Real Gradle output: a task that prints diagnostics before failing emits a bare header *and* a
   // FAILED line, and the log is full of lines that are not task headers at all.
   it('tolerates a project printing both a bare header and a FAILED line, and ignores other output', () => {
-    const states = scanTaskLines([
-      '> Task :u0004:compileKotlin',
-      'e: file:///output/kotlin/models@sb3/v3/a/A.kt:1:1 Name expected',
-      '> Task :u0004:compileKotlin FAILED',
-      '> Task :u0004:compileJava SKIPPED',
-      'FAILURE: Build completed with 1 failure.',
-    ].join('\n'));
+    const states = scanTaskLines(
+      [
+        '> Task :u0004:compileKotlin',
+        'e: file:///output/kotlin/models@sb3/v3/a/A.kt:1:1 Name expected',
+        '> Task :u0004:compileKotlin FAILED',
+        '> Task :u0004:compileJava SKIPPED',
+        'FAILURE: Build completed with 1 failure.',
+      ].join('\n'),
+    );
 
     expect([...states.printed]).toEqual(['u0004']);
     expect([...states.failed]).toEqual(['u0004']);
@@ -200,8 +207,7 @@ describe('scanTaskLines', () => {
   });
 
   it('ignores a trailing carriage return, so a CRLF log classifies the same', () => {
-    expect([...scanTaskLines('> Task :u0001:compileKotlin UP-TO-DATE\r\n').reused])
-      .toEqual([['u0001', 'UP-TO-DATE']]);
+    expect([...scanTaskLines('> Task :u0001:compileKotlin UP-TO-DATE\r\n').reused]).toEqual([['u0001', 'UP-TO-DATE']]);
   });
 });
 
@@ -230,7 +236,10 @@ describe('gradleProperties', () => {
 });
 
 describe('resolveGradleWorkMode', () => {
-  const env = (values: Record<string, string>) => (key: string): string | undefined => values[key];
+  const env =
+    (values: Record<string, string>) =>
+    (key: string): string | undefined =>
+      values[key];
 
   it('defaults to persistent locally, where iteration speed is the point', () => {
     expect(resolveGradleWorkMode(env({}))).toBe('persistent');

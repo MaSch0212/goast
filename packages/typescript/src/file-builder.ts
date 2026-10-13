@@ -28,8 +28,9 @@ export function isTypeScriptAppendValue<TBuilder extends TypeScriptFileBuilder =
   return isAppendValue(value) || value instanceof TsNode;
 }
 
-export class TypeScriptFileBuilder<TAdditionalAppends = never>
-  extends SourceBuilder<TypeScriptAppends<TAdditionalAppends>> {
+export class TypeScriptFileBuilder<TAdditionalAppends = never> extends SourceBuilder<
+  TypeScriptAppends<TAdditionalAppends>
+> {
   public readonly filePath: string | undefined;
   public readonly imports: ImportExportCollection;
 

@@ -39,10 +39,14 @@ describe('verifyProfile write mode', () => {
     await withTempDir(async (base) => {
       const paths = profileSnapshotPaths(base, 'spec');
 
-      await verifyProfile(paths, async (outputDir) => {
-        await writeFile(join(outputDir, 'Model.kt'), 'class Model\n');
-        return { generated: 1 };
-      }, { mode: 'write' });
+      await verifyProfile(
+        paths,
+        async (outputDir) => {
+          await writeFile(join(outputDir, 'Model.kt'), 'class Model\n');
+          return { generated: 1 };
+        },
+        { mode: 'write' },
+      );
 
       expect(await readFile(join(paths.treeDir, 'Model.kt'), 'utf8')).toBe('class Model\n');
       expect(await readFile(paths.stateFile, 'utf8')).toContain('generated: 1');
@@ -54,9 +58,13 @@ describe('verifyProfile write mode', () => {
     await withTempDir(async (base) => {
       const paths = profileSnapshotPaths(base, 'spec');
 
-      await verifyProfile(paths, () => {
-        throw new Error('File already exists: Model.kt');
-      }, { mode: 'write' });
+      await verifyProfile(
+        paths,
+        () => {
+          throw new Error('File already exists: Model.kt');
+        },
+        { mode: 'write' },
+      );
 
       expect(await readFile(paths.errorFile, 'utf8')).toBe('Error: File already exists: Model.kt\n');
       expect(await exists(paths.treeDir)).toBe(false);
@@ -68,9 +76,13 @@ describe('verifyProfile write mode', () => {
     await withTempDir(async (base) => {
       const paths = profileSnapshotPaths(base, 'spec');
 
-      await verifyProfile(paths, (outputDir) => {
-        throw new Error(`File already exists: ${join(outputDir, 'a', 'Model.kt')}`);
-      }, { mode: 'write' });
+      await verifyProfile(
+        paths,
+        (outputDir) => {
+          throw new Error(`File already exists: ${join(outputDir, 'a', 'Model.kt')}`);
+        },
+        { mode: 'write' },
+      );
 
       expect(await readFile(paths.errorFile, 'utf8')).toBe('Error: File already exists: <output>/a/Model.kt\n');
     });
@@ -80,10 +92,14 @@ describe('verifyProfile write mode', () => {
     await withTempDir(async (base) => {
       const paths = profileSnapshotPaths(base, 'spec');
 
-      await verifyProfile(paths, (outputDir) => {
-        const forwardSlash = outputDir.replace(/\\/g, '/');
-        throw new Error(`File already exists: ${forwardSlash}/a/Model.kt`);
-      }, { mode: 'write' });
+      await verifyProfile(
+        paths,
+        (outputDir) => {
+          const forwardSlash = outputDir.replace(/\\/g, '/');
+          throw new Error(`File already exists: ${forwardSlash}/a/Model.kt`);
+        },
+        { mode: 'write' },
+      );
 
       expect(await readFile(paths.errorFile, 'utf8')).toBe('Error: File already exists: <output>/a/Model.kt\n');
     });
@@ -94,10 +110,14 @@ describe('verifyProfile write mode', () => {
       const paths = profileSnapshotPaths(base, 'spec');
       await writeFile(paths.errorFile, 'Error: old failure\n');
 
-      await verifyProfile(paths, async (outputDir) => {
-        await writeFile(join(outputDir, 'Model.kt'), 'class Model\n');
-        return {};
-      }, { mode: 'write' });
+      await verifyProfile(
+        paths,
+        async (outputDir) => {
+          await writeFile(join(outputDir, 'Model.kt'), 'class Model\n');
+          return {};
+        },
+        { mode: 'write' },
+      );
 
       expect(await exists(paths.errorFile)).toBe(false);
       expect(await exists(join(paths.treeDir, 'Model.kt'))).toBe(true);
@@ -111,9 +131,13 @@ describe('verifyProfile write mode', () => {
       await writeFile(join(paths.treeDir, 'Model.kt'), 'class Model\n');
       await writeFile(paths.stateFile, '{}\n');
 
-      await verifyProfile(paths, () => {
-        throw new Error('boom');
-      }, { mode: 'write' });
+      await verifyProfile(
+        paths,
+        () => {
+          throw new Error('boom');
+        },
+        { mode: 'write' },
+      );
 
       expect(await exists(paths.treeDir)).toBe(false);
       expect(await exists(paths.stateFile)).toBe(false);
@@ -137,18 +161,22 @@ describe('verifyProfile write mode', () => {
       const paths = profileSnapshotPaths(base, 'spec');
       let capturedOutputDir = '';
 
-      await verifyProfile(paths, (outputDir) => {
-        capturedOutputDir = outputDir;
-        return {
-          // A native path, e.g. what `resolve(outputDir, 'models.ts')` produces. `serializeValue`
-          // (`util.inspect` under the hood) doubles every backslash when rendering it inside a
-          // quoted string literal, so this is what actually reaches the snapshot text as the
-          // doubled-backslash spelling — the exact case that regressed to `<output>//models.ts`.
-          native: join(outputDir, 'models.ts'),
-          // A generator that renders its own paths with forward slashes regardless of platform.
-          forwardSlash: `${outputDir.replace(/\\/g, '/')}/models.ts`,
-        };
-      }, { mode: 'write' });
+      await verifyProfile(
+        paths,
+        (outputDir) => {
+          capturedOutputDir = outputDir;
+          return {
+            // A native path, e.g. what `resolve(outputDir, 'models.ts')` produces. `serializeValue`
+            // (`util.inspect` under the hood) doubles every backslash when rendering it inside a
+            // quoted string literal, so this is what actually reaches the snapshot text as the
+            // doubled-backslash spelling — the exact case that regressed to `<output>//models.ts`.
+            native: join(outputDir, 'models.ts'),
+            // A generator that renders its own paths with forward slashes regardless of platform.
+            forwardSlash: `${outputDir.replace(/\\/g, '/')}/models.ts`,
+          };
+        },
+        { mode: 'write' },
+      );
 
       const state = await readFile(paths.stateFile, 'utf8');
       expect(capturedOutputDir).not.toBe('');
@@ -193,15 +221,23 @@ describe('verifyProfile check mode', () => {
   it('reports the tree mismatch and the state mismatch together', async () => {
     await withTempDir(async (base) => {
       const paths = profileSnapshotPaths(base, 'spec');
-      await verifyProfile(paths, async (outputDir) => {
-        await writeFile(join(outputDir, 'Model.kt'), 'class Model\n');
-        return { generated: 1 };
-      }, { mode: 'write' });
+      await verifyProfile(
+        paths,
+        async (outputDir) => {
+          await writeFile(join(outputDir, 'Model.kt'), 'class Model\n');
+          return { generated: 1 };
+        },
+        { mode: 'write' },
+      );
 
-      const error = (await verifyProfile(paths, async (outputDir) => {
-        await writeFile(join(outputDir, 'Model.kt'), 'class Renamed\n');
-        return { generated: 2 };
-      }, { mode: 'check' }).catch((e) => e as Error)) as Error;
+      const error = (await verifyProfile(
+        paths,
+        async (outputDir) => {
+          await writeFile(join(outputDir, 'Model.kt'), 'class Renamed\n');
+          return { generated: 2 };
+        },
+        { mode: 'check' },
+      ).catch((e) => e as Error)) as Error;
 
       expect(error.message).toContain('Model.kt');
       expect(error.message).toContain('.state.txt');
@@ -223,13 +259,21 @@ describe('verifyProfile check mode', () => {
   it('fails when the committed failure differs from the current one', async () => {
     await withTempDir(async (base) => {
       const paths = profileSnapshotPaths(base, 'spec');
-      await verifyProfile(paths, () => {
-        throw new Error('boom');
-      }, { mode: 'write' });
+      await verifyProfile(
+        paths,
+        () => {
+          throw new Error('boom');
+        },
+        { mode: 'write' },
+      );
 
-      const error = (await verifyProfile(paths, () => {
-        throw new Error('a different boom');
-      }, { mode: 'check' }).catch((e) => e as Error)) as Error;
+      const error = (await verifyProfile(
+        paths,
+        () => {
+          throw new Error('a different boom');
+        },
+        { mode: 'check' },
+      ).catch((e) => e as Error)) as Error;
 
       expect(error.message).toContain('a different boom');
     });
@@ -242,9 +286,13 @@ describe('verifyProfile check mode', () => {
       await writeFile(join(paths.treeDir, 'Model.kt'), 'class Model\n');
       await writeFile(paths.errorFile, 'Error: boom\n');
 
-      const error = (await verifyProfile(paths, () => {
-        throw new Error('boom');
-      }, { mode: 'check' }).catch((e) => e as Error)) as Error;
+      const error = (await verifyProfile(
+        paths,
+        () => {
+          throw new Error('boom');
+        },
+        { mode: 'check' },
+      ).catch((e) => e as Error)) as Error;
 
       expect(error.message).toContain('still committed');
     });
@@ -254,9 +302,13 @@ describe('verifyProfile check mode', () => {
     await withTempDir(async (base) => {
       const paths = profileSnapshotPaths(base, 'spec');
 
-      const error = (await verifyProfile(paths, () => {
-        throw new Error('boom');
-      }, { mode: 'check' }).catch((e) => e as Error)) as Error;
+      const error = (await verifyProfile(
+        paths,
+        () => {
+          throw new Error('boom');
+        },
+        { mode: 'check' },
+      ).catch((e) => e as Error)) as Error;
 
       expect(error.message).toContain('boom');
     });
@@ -267,10 +319,14 @@ describe('verifyProfile check mode', () => {
       const paths = profileSnapshotPaths(base, 'spec');
       await writeFile(paths.errorFile, 'Error: old failure\n');
 
-      const error = (await verifyProfile(paths, async (outputDir) => {
-        await writeFile(join(outputDir, 'Model.kt'), 'class Model\n');
-        return {};
-      }, { mode: 'check' }).catch((e) => e as Error)) as Error;
+      const error = (await verifyProfile(
+        paths,
+        async (outputDir) => {
+          await writeFile(join(outputDir, 'Model.kt'), 'class Model\n');
+          return {};
+        },
+        { mode: 'check' },
+      ).catch((e) => e as Error)) as Error;
 
       expect(error.message).toContain('no longer fails');
     });
@@ -280,10 +336,14 @@ describe('verifyProfile check mode', () => {
     await withTempDir(async (base) => {
       const paths = profileSnapshotPaths(base, 'spec');
 
-      const error = (await verifyProfile(paths, () => {
-        console.log('Generating Model to somewhere');
-        throw new Error('boom');
-      }, { mode: 'check' }).catch((e) => e as Error)) as Error;
+      const error = (await verifyProfile(
+        paths,
+        () => {
+          console.log('Generating Model to somewhere');
+          throw new Error('boom');
+        },
+        { mode: 'check' },
+      ).catch((e) => e as Error)) as Error;
 
       expect(error.message).toContain('Generating Model to somewhere');
     });

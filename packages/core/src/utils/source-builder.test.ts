@@ -205,7 +205,7 @@ describe('SourceBuilder', () => {
         b.appendWithLinePrefix('// ', (b) => {
           b.appendLine('foo');
           b.appendLine('bar');
-        })
+        }),
       );
       expect(builder.toString()).toBe('  // foo\n  // bar\n');
     });
@@ -214,7 +214,7 @@ describe('SourceBuilder', () => {
       const builder = new SourceBuilder({ newLine: '\n' }).indent((b) =>
         b.appendWithLinePrefix('// ', (b) => {
           b.indent((b) => b.appendLine('foo'));
-        })
+        }),
       );
       expect(builder.toString()).toBe('  //   foo\n');
     });

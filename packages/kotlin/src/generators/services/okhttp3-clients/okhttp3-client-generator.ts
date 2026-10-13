@@ -31,8 +31,10 @@ export interface KotlinOkHttp3Generator<TOutput extends Output = Output> {
   generate(ctx: Context): MaybePromise<TOutput>;
 }
 
-export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, Output>
-  implements KotlinOkHttp3Generator {
+export class DefaultKotlinOkHttp3Generator
+  extends KotlinFileGenerator<Context, Output>
+  implements KotlinOkHttp3Generator
+{
   public generate(ctx: KotlinOkHttp3ClientGeneratorContext): MaybePromise<Output> {
     const typeName = this.getApiClientName(ctx, {});
     const packageName = this.getPackageName(ctx, {});
@@ -88,8 +90,8 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
           serializerAsParameter
             ? null
             : kt.parameter('objectMapper', kt.refs.jackson.objectMapper(ctx.config.springBootVersion), {
-              default: kt.call([ctx.refs.serializer(), 'jacksonObjectMapper']),
-            }),
+                default: kt.call([ctx.refs.serializer(), 'jacksonObjectMapper']),
+              }),
         ],
         null,
         {
@@ -100,7 +102,7 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
       companionObject: this.getClientCompanionObject(ctx, {}),
       members: [
         ...ctx.service.endpoints.flatMap((endpoint) =>
-          this.getEndpointClientMembers(ctx, { endpoint, parameters: this.getAllParameters(ctx, { endpoint }) })
+          this.getEndpointClientMembers(ctx, { endpoint, parameters: this.getAllParameters(ctx, { endpoint }) }),
         ),
         ...this.getAdditionalClientMembers(ctx, {}),
       ],
@@ -188,23 +190,19 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
 
     return appendValueGroup(
       [
-        s`val localVarResponse = ${
-          kt.call(
-            [toCasing(endpoint.name + '_WithHttpInfo', ctx.config.functionNameCasing)],
-            parameters.map((x) => toCasing(x.name, ctx.config.parameterNameCasing)),
-          )
-        }`,
+        s`val localVarResponse = ${kt.call(
+          [toCasing(endpoint.name + '_WithHttpInfo', ctx.config.functionNameCasing)],
+          parameters.map((x) => toCasing(x.name, ctx.config.parameterNameCasing)),
+        )}`,
         '',
         s`return when (localVarResponse.responseType) {${s.indent`
             ${ctx.refs.responseType()}.Success -> ${
-          responseSchema === undefined
-            ? kt.refs.unit()
-            : s`(localVarResponse as ${ctx.refs.success(['*'])}).data as ${
-              this.getTypeUsage(ctx, {
-                schema: responseSchema,
-              })
-            }`
-        }
+              responseSchema === undefined
+                ? kt.refs.unit()
+                : s`(localVarResponse as ${ctx.refs.success(['*'])}).data as ${this.getTypeUsage(ctx, {
+                    schema: responseSchema,
+                  })}`
+            }
             ${ctx.refs.responseType()}.Informational -> throw ${kt.refs.java.unsupportedOperationException()}("Client does not support Informational responses.")
             ${ctx.refs.responseType()}.Redirection -> throw ${kt.refs.java.unsupportedOperationException()}("Client does not support Redirection responses.")
             ${ctx.refs.responseType()}.ClientError -> {${s.indent`
@@ -256,7 +254,7 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
             description: p.description,
             default: this.getParameterDefaultValue(ctx, { endpoint, parameter: p }),
           },
-        )
+        ),
       ),
       returnType: ctx.refs.apiResponse([
         this.getTypeUsage(ctx, { schema: responseSchema, fallback: kt.refs.unit({ nullable: true }), nullable: true }),
@@ -273,25 +271,21 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
 
     return appendValueGroup(
       [
-        s`val localVariableConfig = ${
-          kt.call(
-            [toCasing(endpoint.name, 'camel') + 'RequestConfig'],
-            parameters.map((x) => toCasing(x.name, ctx.config.parameterNameCasing)),
-          )
-        }`,
-        s`return ${
-          kt.call(
-            [
-              kt.reference('request', null, {
-                generics: [
-                  this.getRequestBodyType(ctx, { endpoint }),
-                  this.getTypeUsage(ctx, { schema: responseSchema, fallback: kt.refs.unit() }),
-                ],
-              }),
-            ],
-            ['localVariableConfig'],
-          )
-        }`,
+        s`val localVariableConfig = ${kt.call(
+          [toCasing(endpoint.name, 'camel') + 'RequestConfig'],
+          parameters.map((x) => toCasing(x.name, ctx.config.parameterNameCasing)),
+        )}`,
+        s`return ${kt.call(
+          [
+            kt.reference('request', null, {
+              generics: [
+                this.getRequestBodyType(ctx, { endpoint }),
+                this.getTypeUsage(ctx, { schema: responseSchema, fallback: kt.refs.unit() }),
+              ],
+            }),
+          ],
+          ['localVariableConfig'],
+        )}`,
       ],
       '\n',
     );
@@ -316,7 +310,7 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
             description: p.description,
             default: this.getParameterDefaultValue(ctx, { endpoint, parameter: p }),
           },
-        )
+        ),
       ),
       returnType: ctx.refs.requestConfig([this.getRequestBodyType(ctx, { endpoint })]),
       body: this.getEndpointClientRequestConfigMethodBody(ctx, { endpoint, parameters }),
@@ -341,9 +335,10 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
             return s`"${param.multipart?.name ?? ''}" to ${ctx.refs.partConfig.infer()}(body = ${paramName})`;
           });
         result.values.push(
-          s`val localVariableBody = ${
-            kt.call(kt.refs.mapOf([kt.refs.string(), ctx.refs.partConfig(['*'])]), partConfigs)
-          }`,
+          s`val localVariableBody = ${kt.call(
+            kt.refs.mapOf([kt.refs.string(), ctx.refs.partConfig(['*'])]),
+            partConfigs,
+          )}`,
         );
       } else {
         const bodyParamName = toCasing(this.getRequestBodyParamName(ctx, { endpoint }), ctx.config.parameterNameCasing);
@@ -352,27 +347,27 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
     }
 
     result.values.push(
-      s`val localVariableQuery: ${ctx.refs.multiValueMap()} = ${
-        kt.call(
-          [kt.refs.mutableMapOf([kt.refs.string(), kt.refs.list([kt.refs.string()])])],
-          [],
-        )
-      }${
-        queryParameters.length === 0 ? '' : s.indent`
+      s`val localVariableQuery: ${ctx.refs.multiValueMap()} = ${kt.call(
+        [kt.refs.mutableMapOf([kt.refs.string(), kt.refs.list([kt.refs.string()])])],
+        [],
+      )}${
+        queryParameters.length === 0
+          ? ''
+          : s.indent`
             .apply {${s.indent`
-              ${
-          appendValueGroup(
-            queryParameters.map((param) => {
-              const paramName = toCasing(param.name, ctx.config.parameterNameCasing);
-              const toString = this.getParameterToString(ctx, { endpoint, parameter: param });
-              const put = s<Builder>`put(${kt.string(param.name)}, listOf(${paramName}${toString}))`;
-              return param.required ? put : s<Builder>`if (${paramName} != null) {${s.indent`
+              ${appendValueGroup(
+                queryParameters.map((param) => {
+                  const paramName = toCasing(param.name, ctx.config.parameterNameCasing);
+                  const toString = this.getParameterToString(ctx, { endpoint, parameter: param });
+                  const put = s<Builder>`put(${kt.string(param.name)}, listOf(${paramName}${toString}))`;
+                  return param.required
+                    ? put
+                    : s<Builder>`if (${paramName} != null) {${s.indent`
                         ${put}`}
                       }`;
-            }),
-            '\n',
-          )
-        }`}
+                }),
+                '\n',
+              )}`}
             }`
       }`,
     );
@@ -392,19 +387,17 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
     }
 
     result.values.push(
-      s`return ${
-        kt.call(
-          [ctx.refs.requestConfig.infer()],
-          [
-            kt.argument.named('method', kt.call([ctx.refs.requestMethod(), endpoint.method.toUpperCase()])),
-            kt.argument.named('path', kt.string(this.getPathWithInterpolation(ctx, { endpoint }), { template: true })),
-            kt.argument.named('query', 'localVariableQuery'),
-            kt.argument.named('headers', 'localVariableHeaders'),
-            kt.argument.named('requiresAuthentication', 'false'),
-            endpoint.requestBody ? kt.argument.named('body', 'localVariableBody') : null,
-          ],
-        )
-      }`,
+      s`return ${kt.call(
+        [ctx.refs.requestConfig.infer()],
+        [
+          kt.argument.named('method', kt.call([ctx.refs.requestMethod(), endpoint.method.toUpperCase()])),
+          kt.argument.named('path', kt.string(this.getPathWithInterpolation(ctx, { endpoint }), { template: true })),
+          kt.argument.named('query', 'localVariableQuery'),
+          kt.argument.named('headers', 'localVariableHeaders'),
+          kt.argument.named('requiresAuthentication', 'false'),
+          endpoint.requestBody ? kt.argument.named('body', 'localVariableBody') : null,
+        ],
+      )}`,
     );
 
     return result;
@@ -416,9 +409,7 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
       const itemEnumSchema = getArrayItemStringEnumSchema(parameter.schema);
       const itemEnumType = itemEnumSchema && this.getSchemaType(ctx, { schema: itemEnumSchema });
       return itemEnumType ? s`.joinToString(",", transform = ${itemEnumType}::value)` : '.joinToString(",")';
-    } else if (
-      getStringEnumSchema(parameter.schema) && this.getSchemaType(ctx, { schema: parameter.schema })
-    ) {
+    } else if (getStringEnumSchema(parameter.schema) && this.getSchemaType(ctx, { schema: parameter.schema })) {
       return '.value';
     } else {
       return '.toString()';
@@ -435,8 +426,7 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
         parameters: [kt.parameter('uriComponent', kt.refs.string())],
         returnType: kt.refs.string(),
         singleExpression: true,
-        body:
-          s`${kt.refs.okhttp3.httpUrl()}.Builder().scheme("http").host("localhost").addPathSegment(uriComponent).build().encodedPathSegments[0]`,
+        body: s`${kt.refs.okhttp3.httpUrl()}.Builder().scheme("http").host("localhost").addPathSegment(uriComponent).build().encodedPathSegments[0]`,
       }),
     ];
   }
@@ -468,9 +458,11 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
     }
 
     if (getStringEnumSchema(schema) && schema?.default) {
-      return s`${this.getTypeUsage(ctx, { schema, nullable: false })}.${
-        this.toEnumValueName(ctx, schema.enum, schema.default)
-      }`;
+      return s`${this.getTypeUsage(ctx, { schema, nullable: false })}.${this.toEnumValueName(
+        ctx,
+        schema.enum,
+        schema.default,
+      )}`;
     }
 
     const itemEnumSchema = getArrayItemStringEnumSchema(schema);
@@ -494,9 +486,8 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
   }
 
   protected getPackageName(ctx: Context, _args: Args.GetPackageName): string {
-    const packageSuffix = typeof ctx.config.packageSuffix === 'string'
-      ? ctx.config.packageSuffix
-      : ctx.config.packageSuffix(ctx.service);
+    const packageSuffix =
+      typeof ctx.config.packageSuffix === 'string' ? ctx.config.packageSuffix : ctx.config.packageSuffix(ctx.service);
     return ctx.config.packageName + packageSuffix;
   }
 
@@ -508,9 +499,10 @@ export class DefaultKotlinOkHttp3Generator extends KotlinFileGenerator<Context, 
       .forEach((parameter) => {
         path = path.replace(
           `{${parameter.name}}`,
-          `\${encodeURIComponent(${toCasing(parameter.name, 'camel')}${
-            this.getParameterToString(ctx, { endpoint, parameter })
-          })}`,
+          `\${encodeURIComponent(${toCasing(parameter.name, 'camel')}${this.getParameterToString(ctx, {
+            endpoint,
+            parameter,
+          })})}`,
         );
       });
     return path;

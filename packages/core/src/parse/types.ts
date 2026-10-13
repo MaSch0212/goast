@@ -12,12 +12,11 @@ export type DerefSource<T> = {
 type _DerefDiscriminator = Omit<OpenApiDiscriminator, 'mapping'> & {
   mapping?: Record<string, Deref<OpenApiSchema>>;
 };
-type _Deref<T extends object> = T extends OpenApiDiscriminator ? _DerefDiscriminator
-  :
-    & {
+type _Deref<T extends object> = T extends OpenApiDiscriminator
+  ? _DerefDiscriminator
+  : {
       [K in keyof T as K extends keyof OpenApiReference ? never : K]: Deref<T[K]>;
-    }
-    & {
+    } & {
       $src: DerefSource<T>;
       $ref?: Deref<T>;
     };

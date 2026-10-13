@@ -4,9 +4,12 @@ import { KOTLIN_BOM, KOTLIN_DEPENDENCIES, kotlinDependenciesFor } from './depend
 
 describe('KOTLIN_DEPENDENCIES', () => {
   it('covers every Kotlin profile family the corpus generates', () => {
-    expect(Object.keys(KOTLIN_DEPENDENCIES).sort()).toEqual(
-      ['models', 'okhttp3-clients', 'spring-controllers', 'spring-reactive-web-clients'],
-    );
+    expect(Object.keys(KOTLIN_DEPENDENCIES).sort()).toEqual([
+      'models',
+      'okhttp3-clients',
+      'spring-controllers',
+      'spring-reactive-web-clients',
+    ]);
   });
 });
 

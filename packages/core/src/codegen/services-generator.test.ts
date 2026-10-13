@@ -13,8 +13,13 @@ type Output = { items: Record<string, ServiceOutput> };
 type ServiceOutput = { name: string; __source__?: string };
 type Context = OpenApiServicesGenerationProviderContext<Input, Output, AnyConfig, ServiceOutput>;
 
-class TestServicesGenerator
-  extends OpenApiServicesGenerationProviderBase<Input, Output, AnyConfig, ServiceOutput, Context> {
+class TestServicesGenerator extends OpenApiServicesGenerationProviderBase<
+  Input,
+  Output,
+  AnyConfig,
+  ServiceOutput,
+  Context
+> {
   public generatedServices: ApiService[] = [];
   public additionalFilesCalled = false;
 

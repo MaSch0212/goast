@@ -25,8 +25,10 @@ export interface TypeScriptEasyNetworkStubGenerator<TOutput extends Output = Out
   generate(ctx: Context): MaybePromise<TOutput>;
 }
 
-export class DefaultTypeScriptEasyNetworkStubGenerator extends TypeScriptFileGenerator<Context, Output>
-  implements TypeScriptEasyNetworkStubGenerator {
+export class DefaultTypeScriptEasyNetworkStubGenerator
+  extends TypeScriptFileGenerator<Context, Output>
+  implements TypeScriptEasyNetworkStubGenerator
+{
   public generate(ctx: Context): MaybePromise<Output> {
     const filePath = this.getStubFilePath(ctx);
     const name = this.getStubClassName(ctx);
@@ -65,7 +67,7 @@ export class DefaultTypeScriptEasyNetworkStubGenerator extends TypeScriptFileGen
         ctx.refs.getStubResponder([
           ts.objectType({
             members: Object.entries(this.getEndpointStatusCodes(ctx, endpoint)).map(([statusCode, type]) =>
-              ts.property<Builder>(statusCode, { type })
+              ts.property<Builder>(statusCode, { type }),
             ),
           }),
         ]),
@@ -85,7 +87,7 @@ export class DefaultTypeScriptEasyNetworkStubGenerator extends TypeScriptFileGen
             readonly: true,
             accessModifier: 'private',
             value: s`${ts.string(this.getStubRoute(ctx, endpoint))} as const`,
-          })
+          }),
         ),
         '\n',
         ...ctx.service.endpoints.map((endpoint) =>
@@ -94,7 +96,7 @@ export class DefaultTypeScriptEasyNetworkStubGenerator extends TypeScriptFileGen
             accessModifier: 'private',
             type: this.getEndpointRequestsType(ctx, endpoint),
             value: ts.tuple([]),
-          })
+          }),
         ),
         '\n',
         ...ctx.service.endpoints.map((endpoint) =>
@@ -105,7 +107,7 @@ export class DefaultTypeScriptEasyNetworkStubGenerator extends TypeScriptFileGen
             get: ts.property.getter({
               body: appendValueGroup([`return this.${this.getEndpointRequestsFieldName(ctx, endpoint)};`], '\n'),
             }),
-          })
+          }),
         ),
         ...ctx.service.endpoints.map((endpoint) => this.getEndpointStubMethod(ctx, endpoint)),
         ts.method('reset', {
@@ -114,8 +116,8 @@ export class DefaultTypeScriptEasyNetworkStubGenerator extends TypeScriptFileGen
           returnType: ts.refs.void_(),
           body: appendValueGroup(
             [
-              ...ctx.service.endpoints.map((endpoint) =>
-                `this.${this.getEndpointRequestsFieldName(ctx, endpoint)}.length = 0;`
+              ...ctx.service.endpoints.map(
+                (endpoint) => `this.${this.getEndpointRequestsFieldName(ctx, endpoint)}.length = 0;`,
               ),
               'super.reset();',
             ],
@@ -209,11 +211,10 @@ export class DefaultTypeScriptEasyNetworkStubGenerator extends TypeScriptFileGen
     let path = endpoint.path;
     let isFirstQueryParam = true;
     for (const param of endpoint.parameters) {
-      let type = ((param.schema && ctx.input.typescript.models[param.schema.id]?.component) ?? ts.refs.unknown.name)
-        .replace(
-          /^readonly /,
-          '',
-        );
+      let type = (
+        (param.schema && ctx.input.typescript.models[param.schema.id]?.component) ??
+        ts.refs.unknown.name
+      ).replace(/^readonly /, '');
 
       const arrayMatch = /^\((.*)\)\[\]$/.exec(type);
       if (arrayMatch !== null) {

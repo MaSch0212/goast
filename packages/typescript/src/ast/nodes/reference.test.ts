@@ -9,10 +9,10 @@ let builder: TypeScriptFileBuilder;
 
 beforeEach(() => {
   // A fixed newLine keeps the expectations below host-independent.
-  builder = new TypeScriptFileBuilder(
-    undefined,
-    { ...defaultTypeScriptGeneratorConfig, newLine: '\n' } as TypeScriptGeneratorConfig,
-  );
+  builder = new TypeScriptFileBuilder(undefined, {
+    ...defaultTypeScriptGeneratorConfig,
+    newLine: '\n',
+  } as TypeScriptGeneratorConfig);
 });
 
 describe('tsReference', () => {
@@ -28,11 +28,9 @@ describe('tsReference', () => {
 
   it('should add the import if module name of file path is provided', () => {
     builder.append(tsReference('X', 'module'));
-    expect(builder.imports.imports).toEqual(
-      [
-        { kind: 'module', modulePath: 'module', name: 'X', type: 'import' },
-      ] as TypeScriptImport[],
-    );
+    expect(builder.imports.imports).toEqual([
+      { kind: 'module', modulePath: 'module', name: 'X', type: 'import' },
+    ] as TypeScriptImport[]);
     expect(builder.toString(false)).toBe("import { X } from 'module';\nX");
   });
 

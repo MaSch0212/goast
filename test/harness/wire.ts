@@ -169,9 +169,8 @@ export function diffResponse(expected: ApiCase['response'], actual: RecordedResp
     }
   }
 
-  const expectedBody: RecordedBody = expected.body === undefined
-    ? { kind: 'none' }
-    : { kind: 'json', value: expected.body };
+  const expectedBody: RecordedBody =
+    expected.body === undefined ? { kind: 'none' } : { kind: 'json', value: expected.body };
   compare('body', expectedBody, actual.body, deviations);
 
   return deviations;

@@ -177,7 +177,7 @@ export function toCamelCase(str: Nullable<string>, options?: Partial<CamelCaseOp
     .map((word, index) =>
       index === 0
         ? wordToCasing(word, opts.keepOriginalCase ? 'first-lower' : 'all-lower')
-        : wordToCasing(word, opts.keepOriginalCase ? 'first-upper' : 'first-upper-then-lower')
+        : wordToCasing(word, opts.keepOriginalCase ? 'first-upper' : 'first-upper-then-lower'),
     )
     .join('');
   return addPrefixAndSuffix(camelCase, opts);
@@ -222,7 +222,7 @@ export function toKebabCase(str: Nullable<string>, options?: Partial<KebabCaseOp
   const words = getWords(str);
   const kebabCase = words
     .map((word, index) =>
-      index === 0 ? wordToCasing(word, opts.firstWordCasing ?? opts.wordCasing) : wordToCasing(word, opts.wordCasing)
+      index === 0 ? wordToCasing(word, opts.firstWordCasing ?? opts.wordCasing) : wordToCasing(word, opts.wordCasing),
     )
     .join('-');
   return addPrefixAndSuffix(kebabCase, opts);
@@ -246,7 +246,7 @@ export function toSnakeCase(str: Nullable<string>, options?: Partial<SnakeCaseOp
   const words = getWords(str);
   const snakeCase = words
     .map((word, index) =>
-      index === 0 ? wordToCasing(word, opts.firstWordCasing ?? opts.wordCasing) : wordToCasing(word, opts.wordCasing)
+      index === 0 ? wordToCasing(word, opts.firstWordCasing ?? opts.wordCasing) : wordToCasing(word, opts.wordCasing),
     )
     .join('_');
   return addPrefixAndSuffix(snakeCase, opts);
@@ -267,12 +267,13 @@ export function toSnakeCase(str: Nullable<string>, options?: Partial<SnakeCaseOp
  */
 export function toCustomCase(str: Nullable<string>, options: CustomCaseOptions): string {
   const words = getWords(str);
-  const wordMapFn: (word: string, index: number) => string = typeof options.wordCasing === 'function'
-    ? (word, index) => wordToCasing(word, options.wordCasing(index))
-    : (word, index) =>
-      index === 0
-        ? wordToCasing(word, options.firstWordCasing ?? options.wordCasing)
-        : wordToCasing(word, options.wordCasing);
+  const wordMapFn: (word: string, index: number) => string =
+    typeof options.wordCasing === 'function'
+      ? (word, index) => wordToCasing(word, options.wordCasing(index))
+      : (word, index) =>
+          index === 0
+            ? wordToCasing(word, options.firstWordCasing ?? options.wordCasing)
+            : wordToCasing(word, options.wordCasing);
   const customCase = words.map(wordMapFn).join(options.wordSeparator ?? '');
   return addPrefixAndSuffix(customCase, options);
 }

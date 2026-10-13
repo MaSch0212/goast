@@ -29,7 +29,7 @@ export class ImportCollection {
         Array.from(importNames).map((importName) => ({
           packageName: fromPackage,
           typeName: importName,
-        }))
+        })),
       )
       .flat();
   }

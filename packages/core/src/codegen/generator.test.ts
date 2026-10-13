@@ -22,8 +22,7 @@ describe('OpenApiGenerator', () => {
   });
 
   it('runs a registered function provider and returns its output', async () => {
-    const generator = new OpenApiGenerator({ outputDir: join(dir, 'out') })
-      .useFn(() => ({ a: 1 }));
+    const generator = new OpenApiGenerator({ outputDir: join(dir, 'out') }).useFn(() => ({ a: 1 }));
 
     expect(await generator.generate(emptyData())).toEqual({ a: 1 });
   });
@@ -59,11 +58,13 @@ describe('OpenApiGenerator', () => {
 
   it('passes the provider config through', async () => {
     let seen: unknown;
-    const generator = new OpenApiGenerator({ outputDir: join(dir, 'out') })
-      .useFn((_context, config) => {
+    const generator = new OpenApiGenerator({ outputDir: join(dir, 'out') }).useFn(
+      (_context, config) => {
         seen = config;
         return {};
-      }, { custom: 'value' } as never);
+      },
+      { custom: 'value' } as never,
+    );
 
     await generator.generate(emptyData());
     expect(seen).toEqual({ custom: 'value' });
@@ -111,7 +112,7 @@ describe('OpenApiGenerator', () => {
       .useFn(() => ({ items: ['a', 'b'] }))
       .useFn(() => ({ items: ['c'] }));
 
-    const result = await generator.generate(emptyData()) as { items: string[] };
+    const result = (await generator.generate(emptyData())) as { items: string[] };
 
     // mergeDeep tests `typeof value === 'object'` before `Array.isArray`, and an array satisfies the
     // first, so the concatenating branch below it is dead code. Two providers contributing to the same
@@ -138,8 +139,9 @@ describe('OpenApiGenerator', () => {
     await mkdir(providerOut);
     await writeFile(join(providerOut, 'stale.txt'), 'old');
 
-    const generator = new OpenApiGenerator({ outputDir: join(dir, 'out'), clearOutputDir: true })
-      .useFn(() => ({}), { outputDir: providerOut } as never);
+    const generator = new OpenApiGenerator({ outputDir: join(dir, 'out'), clearOutputDir: true }).useFn(() => ({}), {
+      outputDir: providerOut,
+    } as never);
 
     await generator.generate(emptyData());
 
@@ -151,8 +153,9 @@ describe('OpenApiGenerator', () => {
     await mkdir(providerOut);
     await writeFile(join(providerOut, 'stale.txt'), 'old');
 
-    const generator = new OpenApiGenerator({ outputDir: join(dir, 'out'), clearOutputDir: false })
-      .useFn(() => ({}), { outputDir: providerOut } as never);
+    const generator = new OpenApiGenerator({ outputDir: join(dir, 'out'), clearOutputDir: false }).useFn(() => ({}), {
+      outputDir: providerOut,
+    } as never);
 
     await generator.generate(emptyData());
 
@@ -162,8 +165,9 @@ describe('OpenApiGenerator', () => {
   it("creates a provider's own outputDir when it does not exist yet, regardless of clearOutputDir", async () => {
     const providerOut = join(dir, 'provider-out', 'nested');
 
-    const generator = new OpenApiGenerator({ outputDir: join(dir, 'out'), clearOutputDir: false })
-      .useFn(() => ({}), { outputDir: providerOut } as never);
+    const generator = new OpenApiGenerator({ outputDir: join(dir, 'out'), clearOutputDir: false }).useFn(() => ({}), {
+      outputDir: providerOut,
+    } as never);
 
     await generator.generate(emptyData());
 
@@ -173,8 +177,9 @@ describe('OpenApiGenerator', () => {
   it('ignores a provider config outputDir that is not a non-empty string', async () => {
     // Exercises the rest of the `'outputDir' in config && config.outputDir && typeof ... === 'string'`
     // guard: an empty string is falsy, so it is skipped like an absent outputDir would be.
-    const generator = new OpenApiGenerator({ outputDir: join(dir, 'out') })
-      .useFn(() => ({}), { outputDir: '' } as never);
+    const generator = new OpenApiGenerator({ outputDir: join(dir, 'out') }).useFn(() => ({}), {
+      outputDir: '',
+    } as never);
 
     await expect(generator.generate(emptyData())).resolves.toEqual({});
   });
@@ -203,13 +208,11 @@ describe('OpenApiGenerator', () => {
 
   it('parseAndGenerate parses real spec files and feeds the resulting data to the providers', async () => {
     const file = join(dir, 'api.yml');
-    await writeFile(
-      file,
-      `openapi: 3.0.0\ninfo:\n  title: Test\n  version: '1.0'\npaths: {}\n`,
-    );
+    await writeFile(file, `openapi: 3.0.0\ninfo:\n  title: Test\n  version: '1.0'\npaths: {}\n`);
 
-    const generator = new OpenApiGenerator({ outputDir: join(dir, 'out') })
-      .useFn((context) => ({ docCount: context.data.documents.length }));
+    const generator = new OpenApiGenerator({ outputDir: join(dir, 'out') }).useFn((context) => ({
+      docCount: context.data.documents.length,
+    }));
 
     expect(await generator.parseAndGenerate(file)).toEqual({ docCount: 1 });
   });

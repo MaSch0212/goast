@@ -60,9 +60,9 @@ paths: {}
     // that touches the network surface, and it is stubbed for its whole body: `fetchSpy.mockRestore()`
     // runs in `finally` so the real `fetch` is back even if the assertion fails, and because
     // nothing here awaits past the `finally`, no request can escape into a later test.
-    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(
-      () => Promise.resolve(new Response(null, { status: 404, statusText: 'Not Found' })),
-    );
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation(() => Promise.resolve(new Response(null, { status: 404, statusText: 'Not Found' })));
     try {
       await expect(new OpenApiParser().parseApi('http://example.test/api.yml')).rejects.toThrow(
         'Unable to download http://example.test/api.yml: Not Found',
@@ -183,10 +183,11 @@ components:
 
     const doc = await new OpenApiParser().parseApi(file);
     // `discriminator` is typed as `OpenApiDiscriminator | string`; narrow for the test.
-    const mapping = (doc.components!.schemas!.Pet.discriminator as {
-      mapping: Record<string, { type?: string; description?: string }>;
-    })
-      .mapping;
+    const mapping = (
+      doc.components!.schemas!.Pet.discriminator as {
+        mapping: Record<string, { type?: string; description?: string }>;
+      }
+    ).mapping;
 
     expect(mapping.dog.type).toBe('object');
     expect(mapping.dog.description).toBe('a dog');

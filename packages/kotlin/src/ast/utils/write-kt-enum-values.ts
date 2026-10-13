@@ -14,7 +14,8 @@ export function writeKtEnumValues<TBuilder extends SourceBuilder>(
         ('doc' in v && v.doc) ||
         ('members' in v && Array.isArray(v.members) && v.members.some(notNullish))),
   );
-  const multiline = spacing ||
+  const multiline =
+    spacing ||
     filteredNodes.length > 4 ||
     filteredNodes.some(
       (v) => typeof v === 'object' && 'arguments' in v && Array.isArray(v.arguments) && v.arguments.length > 0,

@@ -378,16 +378,13 @@ export function synthesizeGradleBuild(
   // The build cache's local directory is pinned inside the project dir so that persisting the project
   // dir persists the cache too. See GRADLE_PROPERTIES for why this is deliberately not a volume over
   // GRADLE_USER_HOME.
-  const settings = [
-    'rootProject.name = "goast-compile-gate"',
-    'buildCache { local { directory = File(rootDir, ".build-cache") } }',
-    ...includes,
-  ].join('\n') + '\n';
-  const build = [
-    'plugins { kotlin("jvm") version "2.2.0" apply false }',
-    '',
-    ...blocks,
-  ].join('\n\n') + '\n';
+  const settings =
+    [
+      'rootProject.name = "goast-compile-gate"',
+      'buildCache { local { directory = File(rootDir, ".build-cache") } }',
+      ...includes,
+    ].join('\n') + '\n';
+  const build = ['plugins { kotlin("jvm") version "2.2.0" apply false }', '', ...blocks].join('\n\n') + '\n';
 
   return { settings, build, projectIds };
 }
@@ -430,10 +427,7 @@ export async function runKotlin(units: readonly CompileUnit[]): Promise<Map<stri
     const storage = gradleWorkStorage(workMode, seedDir);
     const { code, stdout, stderr, timedOut } = await runContainer({
       image,
-      mounts: [
-        { source: join(repoRootDir, 'test', 'output'), target: TREE_MOUNT, readOnly: true },
-        ...storage.mounts,
-      ],
+      mounts: [{ source: join(repoRootDir, 'test', 'output'), target: TREE_MOUNT, readOnly: true }, ...storage.mounts],
       volumes: storage.volumes,
       workdir: WORK_MOUNT,
       timeoutMs: 30 * 60 * 1000,
@@ -517,9 +511,7 @@ export async function runKotlin(units: readonly CompileUnit[]): Promise<Map<stri
     for (const diagnostic of diagnostics) {
       const unit = attribute(diagnostic, units);
       if (unit === undefined) {
-        throw new Error(
-          `Could not attribute a Kotlin diagnostic to a unit: ${diagnostic.file} ${diagnostic.message}`,
-        );
+        throw new Error(`Could not attribute a Kotlin diagnostic to a unit: ${diagnostic.file} ${diagnostic.message}`);
       }
       const treeDir = `${TREE_MOUNT}/kotlin/${unit.profile}/${unit.versionDir}/${unit.spec}`;
       results.get(unit.id)!.push({
@@ -586,9 +578,8 @@ function attribute(diagnostic: Diagnostic, units: readonly CompileUnit[]): Compi
   for (const unit of units) {
     const prefix = `${TREE_MOUNT}/kotlin/${unit.profile}/${unit.versionDir}/${unit.spec}/`;
     if (!diagnostic.file.startsWith(prefix)) continue;
-    const bestPrefix = best === undefined
-      ? undefined
-      : `${TREE_MOUNT}/kotlin/${best.profile}/${best.versionDir}/${best.spec}/`;
+    const bestPrefix =
+      best === undefined ? undefined : `${TREE_MOUNT}/kotlin/${best.profile}/${best.versionDir}/${best.spec}/`;
     if (best === undefined || prefix.length > bestPrefix!.length) best = unit;
   }
   return best;

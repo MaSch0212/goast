@@ -10,10 +10,10 @@ describe('tsDoc', () => {
 
   beforeEach(() => {
     // A fixed newLine keeps the expectations below host-independent.
-    builder = new TypeScriptFileBuilder(
-      undefined,
-      { ...defaultTypeScriptGeneratorConfig, newLine: '\n' } as TypeScriptGeneratorConfig,
-    );
+    builder = new TypeScriptFileBuilder(undefined, {
+      ...defaultTypeScriptGeneratorConfig,
+      newLine: '\n',
+    } as TypeScriptGeneratorConfig);
   });
 
   it('should not write anything if the node is empty', () => {

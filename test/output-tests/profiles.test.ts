@@ -29,20 +29,18 @@ describe('profiles', () => {
 
   it('covers every generator that ships in the two packages', () => {
     const names = profiles.map((p) => `${p.language}/${p.name}`);
-    for (
-      const expected of [
-        'kotlin/models@sb3',
-        'kotlin/spring-controllers@sb3',
-        'kotlin/spring-controllers@sb3-strict',
-        'kotlin/spring-reactive-web-clients@sb3',
-        'kotlin/okhttp3-clients@sb3',
-        'typescript/models',
-        'typescript/fetch-clients',
-        'typescript/angular-services',
-        'typescript/k6-clients',
-        'typescript/easy-network-stub',
-      ]
-    ) {
+    for (const expected of [
+      'kotlin/models@sb3',
+      'kotlin/spring-controllers@sb3',
+      'kotlin/spring-controllers@sb3-strict',
+      'kotlin/spring-reactive-web-clients@sb3',
+      'kotlin/okhttp3-clients@sb3',
+      'typescript/models',
+      'typescript/fetch-clients',
+      'typescript/angular-services',
+      'typescript/k6-clients',
+      'typescript/easy-network-stub',
+    ]) {
       expect(names).toContain(expected);
     }
   });

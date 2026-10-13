@@ -142,8 +142,7 @@ describe('stabilizeFrameworkErrorBody', () => {
       if (apiCase.response.body === undefined) continue;
       const body = { kind: 'json', value: apiCase.response.body } as const;
 
-      expect(stabilizeFrameworkErrorBody(response(body)).body, `case ${apiCase.id} would be normalized`)
-        .toEqual(body);
+      expect(stabilizeFrameworkErrorBody(response(body)).body, `case ${apiCase.id} would be normalized`).toEqual(body);
     }
   });
 });

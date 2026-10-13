@@ -106,7 +106,8 @@ export function dockerRunArgs(options: RunContainerOptions): string[] {
   for (const mount of options.mounts ?? []) {
     assertNoComma(mount.source, 'source');
     assertNoComma(mount.target, 'target');
-    const spec = `type=bind,source=${normalizeMountPath(mount.source)},target=${mount.target}` +
+    const spec =
+      `type=bind,source=${normalizeMountPath(mount.source)},target=${mount.target}` +
       (mount.readOnly === true ? ',readonly' : '');
     args.push('--mount', spec);
   }
@@ -148,11 +149,11 @@ export async function hashBuildContext(contextDir: string): Promise<string> {
     parts.push(await readFile(path, 'utf8'));
   }
 
-  const digest = await crypto.subtle.digest(
-    'SHA-256',
-    new TextEncoder().encode(parts.join(String.fromCharCode(0))),
-  );
-  return [...new Uint8Array(digest)].slice(0, 8).map((b) => b.toString(16).padStart(2, '0')).join('');
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(parts.join(String.fromCharCode(0))));
+  return [...new Uint8Array(digest)]
+    .slice(0, 8)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
 }
 
 /**
@@ -175,9 +176,10 @@ export async function buildImage(name: string, contextDir: string): Promise<stri
   // service returned an error page. Cache *import* is already non-fatal in BuildKit, so only the export
   // needs saying. The error still appears in the build log, so a permanently broken cache is visible
   // rather than silent — it just no longer takes the run down with it.
-  const cacheArgs = (process.env.CI ?? '') !== ''
-    ? ['--cache-from', 'type=gha', '--cache-to', 'type=gha,mode=max,ignore-error=true']
-    : ['--cache-from', `type=local,src=${join(tmpdir(), 'goast-docker-cache')}`];
+  const cacheArgs =
+    (process.env.CI ?? '') !== ''
+      ? ['--cache-from', 'type=gha', '--cache-to', 'type=gha,mode=max,ignore-error=true']
+      : ['--cache-from', `type=local,src=${join(tmpdir(), 'goast-docker-cache')}`];
 
   const { code, stderr } = await runCommand(
     'docker',
@@ -260,8 +262,8 @@ export async function startContainer(options: RunContainerOptions): Promise<Runn
   const child = spawn('docker', dockerRunArgs({ ...options, name }), { stdio: ['ignore', 'pipe', 'pipe'] });
 
   let buffer = '';
-  child.stdout.setEncoding('utf8').on('data', (chunk: string) => buffer += chunk);
-  child.stderr.setEncoding('utf8').on('data', (chunk: string) => buffer += chunk);
+  child.stdout.setEncoding('utf8').on('data', (chunk: string) => (buffer += chunk));
+  child.stderr.setEncoding('utf8').on('data', (chunk: string) => (buffer += chunk));
 
   let alive = true;
   // `close`, not `exit`: `close` fires only once both output streams have ended, so `alive` flips only

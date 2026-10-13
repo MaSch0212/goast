@@ -14,10 +14,7 @@ export type KotlinServicesGeneratorConfig = KotlinGeneratorConfig & {
   packageName: string;
   packageSuffix: string | ((service: ApiService | null) => string);
 
-  basePath?:
-    | string
-    | RegExp
-    | ((basePath: string, service: ApiService) => string);
+  basePath?: string | RegExp | ((basePath: string, service: ApiService) => string);
   pathModifier?: RegExp | ((path: string, endpoint: ApiEndpoint) => string);
 
   addSwaggerAnnotations: boolean;
@@ -60,16 +57,14 @@ export type KotlinServiceGeneratorOutput = {
   apiDelegate: KotlinImport;
 };
 
-export type KotlinServicesGeneratorContext =
-  & OpenApiServicesGenerationProviderContext<
-    KotlinServicesGeneratorInput,
-    KotlinServicesGeneratorOutput,
-    KotlinServicesGeneratorConfig,
-    KotlinServiceGeneratorOutput
-  >
-  & {
-    refs: ReturnType<typeof getReferenceFactories>;
-  };
+export type KotlinServicesGeneratorContext = OpenApiServicesGenerationProviderContext<
+  KotlinServicesGeneratorInput,
+  KotlinServicesGeneratorOutput,
+  KotlinServicesGeneratorConfig,
+  KotlinServiceGeneratorOutput
+> & {
+  refs: ReturnType<typeof getReferenceFactories>;
+};
 
 export type KotlinServiceGeneratorContext = KotlinServicesGeneratorContext & {
   service: ApiService;

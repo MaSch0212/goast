@@ -11,7 +11,7 @@ export type DependencySet = { shared: string[]; sb3?: string[]; sb4?: string[] }
 
 /** Dependency lines per profile family, keyed by the profile name's prefix before `@`. */
 export const KOTLIN_DEPENDENCIES: Readonly<Record<string, DependencySet>> = {
-  'models': {
+  models: {
     shared: [
       'add("implementation", "io.swagger.core.v3:swagger-annotations:2.2.30")',
       'add("implementation", "com.fasterxml.jackson.core:jackson-annotations:2.18.2")',

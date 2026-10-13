@@ -20,10 +20,10 @@ export const SPEC_VERSION_DIRS: {
   readonly 'v3.1': '3.1';
   readonly integration: '3.0';
 } = {
-  'v2': '2.0',
-  'v3': '3.0',
+  v2: '2.0',
+  v3: '3.0',
   'v3.1': '3.1',
-  'integration': '3.0',
+  integration: '3.0',
 } as const satisfies Record<string, OpenApiVersion>;
 
 export type SpecVersionDir = keyof typeof SPEC_VERSION_DIRS;
@@ -88,12 +88,15 @@ export async function discoverSpecs(root: string = specsDir): Promise<Discovered
           claim({ versionDir, version: SPEC_VERSION_DIRS[versionDir], name: entry.name, files }, path);
         }
       } else if (isSpecFile(entry.name)) {
-        claim({
-          versionDir,
-          version: SPEC_VERSION_DIRS[versionDir],
-          name: entry.name.replace(/\.[^.]+$/, ''),
-          files: [path],
-        }, path);
+        claim(
+          {
+            versionDir,
+            version: SPEC_VERSION_DIRS[versionDir],
+            name: entry.name.replace(/\.[^.]+$/, ''),
+            files: [path],
+          },
+          path,
+        );
       }
     }
   }

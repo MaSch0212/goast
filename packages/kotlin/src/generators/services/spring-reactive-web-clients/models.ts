@@ -37,17 +37,16 @@ export type KotlinSpringReactiveWebClientsGeneratorConfig = KotlinGeneratorConfi
   preserveUriTemplate: boolean;
 };
 
-export const defaultKotlinSpringReactiveWebClientsGeneratorConfig: DefaultGenerationProviderConfig<
-  KotlinSpringReactiveWebClientsGeneratorConfig
-> = {
-  ...defaultKotlinGeneratorConfig,
+export const defaultKotlinSpringReactiveWebClientsGeneratorConfig: DefaultGenerationProviderConfig<KotlinSpringReactiveWebClientsGeneratorConfig> =
+  {
+    ...defaultKotlinGeneratorConfig,
 
-  packageName: 'com.openapi.generated',
-  packageSuffix: '.api.client',
-  infrastructurePackageName: { mode: 'append-full-package-name', value: '.infrastructure' },
-  serializerJsonInclude: 'non-absent',
-  preserveUriTemplate: true,
-};
+    packageName: 'com.openapi.generated',
+    packageSuffix: '.api.client',
+    infrastructurePackageName: { mode: 'append-full-package-name', value: '.infrastructure' },
+    serializerJsonInclude: 'non-absent',
+    preserveUriTemplate: true,
+  };
 
 export type KotlinSpringReactiveWebClientsGeneratorInput = KotlinModelsGeneratorOutput;
 
@@ -61,17 +60,15 @@ export type KotlinSpringReactiveWebClientsGeneratorOutput = {
 
 export type KotlinSpringReactiveWebClientGeneratorOutput = KotlinImport;
 
-export type KotlinSpringReactiveWebClientsGeneratorContext =
-  & OpenApiServicesGenerationProviderContext<
-    KotlinSpringReactiveWebClientsGeneratorInput,
-    KotlinSpringReactiveWebClientsGeneratorOutput,
-    KotlinSpringReactiveWebClientsGeneratorConfig,
-    KotlinSpringReactiveWebClientGeneratorOutput
-  >
-  & {
-    infrastructurePackageName: string;
-    refs: ReturnType<typeof getReferenceFactories>;
-  };
+export type KotlinSpringReactiveWebClientsGeneratorContext = OpenApiServicesGenerationProviderContext<
+  KotlinSpringReactiveWebClientsGeneratorInput,
+  KotlinSpringReactiveWebClientsGeneratorOutput,
+  KotlinSpringReactiveWebClientsGeneratorConfig,
+  KotlinSpringReactiveWebClientGeneratorOutput
+> & {
+  infrastructurePackageName: string;
+  refs: ReturnType<typeof getReferenceFactories>;
+};
 
 export type KotlinSpringReactiveWebClientGeneratorContext = KotlinSpringReactiveWebClientsGeneratorContext & {
   service: ApiService;

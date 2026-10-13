@@ -143,96 +143,36 @@ export type TypeScriptAngularServicesGeneratorConfig = TypeScriptGeneratorConfig
   utilsDir: string;
 };
 
-export const defaultTypeScriptAngularServicesGeneratorConfig: DefaultGenerationProviderConfig<
-  TypeScriptAngularServicesGeneratorConfig
-> = {
-  ...defaultTypeScriptGeneratorConfig,
+export const defaultTypeScriptAngularServicesGeneratorConfig: DefaultGenerationProviderConfig<TypeScriptAngularServicesGeneratorConfig> =
+  {
+    ...defaultTypeScriptGeneratorConfig,
 
-  provideKind: 'provide-fn',
-  domainName: undefined,
-  strictResponseTypes: true,
-  defaultStatusCodeResponseTypes: {
-    401: null,
-    403: null,
-    500: null,
-  },
-  defaultRequestContentType: undefined,
-  defaultSuccessResponseContentType: undefined,
-  possibleStatusCodes: [
-    100,
-    101,
-    102,
-    103,
-    200,
-    201,
-    202,
-    203,
-    204,
-    205,
-    206,
-    207,
-    208,
-    226,
-    300,
-    301,
-    302,
-    303,
-    304,
-    305,
-    306,
-    307,
-    308,
-    400,
-    401,
-    402,
-    403,
-    404,
-    405,
-    406,
-    407,
-    408,
-    409,
-    410,
-    411,
-    412,
-    413,
-    414,
-    415,
-    416,
-    417,
-    421,
-    422,
-    423,
-    424,
-    425,
-    426,
-    428,
-    429,
-    431,
-    451,
-    500,
-    501,
-    502,
-    503,
-    504,
-    505,
-    506,
-    507,
-    508,
-    510,
-    511,
-  ],
-  rootUrl: undefined,
-  pathModifier: undefined,
+    provideKind: 'provide-fn',
+    domainName: undefined,
+    strictResponseTypes: true,
+    defaultStatusCodeResponseTypes: {
+      401: null,
+      403: null,
+      500: null,
+    },
+    defaultRequestContentType: undefined,
+    defaultSuccessResponseContentType: undefined,
+    possibleStatusCodes: [
+      100, 101, 102, 103, 200, 201, 202, 203, 204, 205, 206, 207, 208, 226, 300, 301, 302, 303, 304, 305, 306, 307, 308,
+      400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 421, 422, 423, 424, 425,
+      426, 428, 429, 431, 451, 500, 501, 502, 503, 504, 505, 506, 507, 508, 510, 511,
+    ],
+    rootUrl: undefined,
+    pathModifier: undefined,
 
-  servicesDir: 'services',
-  serviceFileNameCasing: { casing: 'kebab', suffix: '.service' },
-  servicesIndexFile: 'services.ts',
-  responseModelsDir: 'models/responses',
-  responseModelFileNameCasing: { casing: 'kebab', suffix: '-responses.model' },
-  responseModelsIndexFile: 'responses.ts',
-  utilsDir: 'utils',
-};
+    servicesDir: 'services',
+    serviceFileNameCasing: { casing: 'kebab', suffix: '.service' },
+    servicesIndexFile: 'services.ts',
+    responseModelsDir: 'models/responses',
+    responseModelFileNameCasing: { casing: 'kebab', suffix: '-responses.model' },
+    responseModelsIndexFile: 'responses.ts',
+    utilsDir: 'utils',
+  };
 
 export type TypeScriptAngularServicesGeneratorInput = {
   typescript: {
@@ -260,16 +200,14 @@ export type TypeScriptAngularServiceGeneratorOutput = TypeScriptExportOutput & {
   };
 };
 
-export type TypeScriptAngularServicesGeneratorContext =
-  & OpenApiServicesGenerationProviderContext<
-    TypeScriptAngularServicesGeneratorInput,
-    TypeScriptAngularServicesGeneratorOutput,
-    TypeScriptAngularServicesGeneratorConfig,
-    TypeScriptAngularServiceGeneratorOutput
-  >
-  & {
-    refs: ReturnType<typeof getReferenceFactories>;
-  };
+export type TypeScriptAngularServicesGeneratorContext = OpenApiServicesGenerationProviderContext<
+  TypeScriptAngularServicesGeneratorInput,
+  TypeScriptAngularServicesGeneratorOutput,
+  TypeScriptAngularServicesGeneratorConfig,
+  TypeScriptAngularServiceGeneratorOutput
+> & {
+  refs: ReturnType<typeof getReferenceFactories>;
+};
 
 export type TypeScriptAngularServiceGeneratorContext = TypeScriptAngularServicesGeneratorContext & {
   readonly service: ApiService;

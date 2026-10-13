@@ -1,6 +1,13 @@
 import { configDefaults, defineConfig } from 'vitest/config';
 
-const exclude = [...configDefaults.exclude, '**/dist/**', 'npm/**', 'test/output/**', 'test/compile/**', 'test/wire/**'];
+const exclude = [
+  ...configDefaults.exclude,
+  '**/dist/**',
+  'npm/**',
+  'test/output/**',
+  'test/compile/**',
+  'test/wire/**',
+];
 
 export default defineConfig({
   resolve: {

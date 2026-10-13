@@ -90,7 +90,7 @@ function toRelativeKey(root: string, path: string): string {
 async function removeEmptyDirs(dir: string): Promise<boolean> {
   let childCount = 0;
   for (const entry of await readdir(dir, { withFileTypes: true })) {
-    if (entry.isDirectory() && await removeEmptyDirs(join(dir, entry.name))) continue;
+    if (entry.isDirectory() && (await removeEmptyDirs(join(dir, entry.name)))) continue;
     childCount++;
   }
   if (childCount > 0) return false;

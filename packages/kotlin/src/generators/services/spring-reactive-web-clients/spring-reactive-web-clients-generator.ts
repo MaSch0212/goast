@@ -42,8 +42,8 @@ export class KotlinSpringReactiveWebClientsGenerator extends OpenApiServicesGene
 
   constructor(serviceGeneratorFactory?: Factory<KotlinSpringReactiveWebClientGenerator, []>) {
     super();
-    this._serviceGeneratorFactory = serviceGeneratorFactory ??
-      Factory.fromValue(new DefaultKotlinSpringReactiveWebClientGenerator());
+    this._serviceGeneratorFactory =
+      serviceGeneratorFactory ?? Factory.fromValue(new DefaultKotlinSpringReactiveWebClientGenerator());
   }
 
   protected override async generateAdditionalFiles(ctx: Context): Promise<void> {
@@ -109,16 +109,16 @@ export class KotlinSpringReactiveWebClientsGenerator extends OpenApiServicesGene
   private async copyInfrastructureFiles(ctx: Context): Promise<void> {
     const targetDir = resolve(ctx.config.outputDir, ctx.infrastructurePackageName.replace(/\./g, '/'));
 
-    const files = [
-      'ApiRequestFile.kt',
-    ];
+    const files = ['ApiRequestFile.kt'];
 
     for (const file of files) {
       const sourcePath = `client/spring-reactive-web-clients/${file}`;
       const targetPath = resolve(targetDir, file);
       console.log(`Copying asset file "${sourcePath}" to "${targetPath}"`);
-      const fileContent = (await getAssetFileContent(sourcePath))
-        .replace(/@PACKAGE_NAME@/g, ctx.infrastructurePackageName);
+      const fileContent = (await getAssetFileContent(sourcePath)).replace(
+        /@PACKAGE_NAME@/g,
+        ctx.infrastructurePackageName,
+      );
       writeGeneratedFile(ctx.config, targetPath, fileContent);
     }
   }

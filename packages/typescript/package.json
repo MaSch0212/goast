@@ -2,6 +2,9 @@
   "name": "@goast/typescript",
   "version": "0.8.0",
   "description": "Provides gOAst generators for generating TypeScript code from OpenAPI specifications.",
+  "bugs": {
+    "url": "https://github.com/MaSch0212/goast/issues"
+  },
   "license": "MIT",
   "author": {
     "name": "Marc Schmidt (MaSch0212)",
@@ -12,9 +15,11 @@
     "url": "git+https://github.com/MaSch0212/goast.git",
     "directory": "packages/typescript"
   },
-  "bugs": {
-    "url": "https://github.com/MaSch0212/goast/issues"
-  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "type": "module",
   "exports": {
     ".": {
@@ -24,15 +29,14 @@
     }
   },
   "publishConfig": {
-    "access": "public",
     "exports": {
       ".": {
         "types": "./dist/mod.d.ts",
         "default": "./dist/mod.js"
       }
-    }
+    },
+    "access": "public"
   },
-  "files": ["dist", "README.md", "LICENSE"],
   "scripts": {
     "build": "node ../../scripts/build-package.ts"
   },

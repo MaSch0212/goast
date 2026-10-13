@@ -24,7 +24,7 @@ describe('waitForHttpReady', () => {
   // on for the whole timeout and then reported as "timed out", hiding the compile error in its log.
   it('fails immediately with the death description once isAlive goes false', async () => {
     let alive = true;
-    setTimeout(() => alive = false, 50);
+    setTimeout(() => (alive = false), 50);
 
     await expect(
       waitForHttpReady('http://127.0.0.1:1/never', {

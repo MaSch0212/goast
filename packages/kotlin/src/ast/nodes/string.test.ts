@@ -9,10 +9,10 @@ describe('ktString', () => {
 
   beforeEach(() => {
     // A fixed newLine keeps the expectations below host-independent.
-    builder = new KotlinFileBuilder(
-      undefined,
-      { ...defaultKotlinGeneratorConfig, newLine: '\n' } as KotlinGeneratorConfig,
-    );
+    builder = new KotlinFileBuilder(undefined, {
+      ...defaultKotlinGeneratorConfig,
+      newLine: '\n',
+    } as KotlinGeneratorConfig);
   });
 
   it('should handle null', () => {

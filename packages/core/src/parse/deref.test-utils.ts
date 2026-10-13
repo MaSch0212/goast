@@ -51,13 +51,15 @@ export function derefSchemaAt<T extends Record<string, any>>(
     if (Array.isArray(value)) {
       mutableSchema[key] = value.map((x, i) => derefSchemaAt(`${path}/${key}/${i}`, x));
     } else if (value && typeof value === 'object') {
-      mutableSchema[key] = key === 'properties'
-        ? Object.fromEntries(
-          Object.entries(value as Record<string, Record<string, unknown>>).map((
-            [k, v],
-          ) => [k, derefSchemaAt(`${path}/${key}/${k}`, v)]),
-        )
-        : derefSchemaAt(`${path}/${key}`, value);
+      mutableSchema[key] =
+        key === 'properties'
+          ? Object.fromEntries(
+              Object.entries(value as Record<string, Record<string, unknown>>).map(([k, v]) => [
+                k,
+                derefSchemaAt(`${path}/${key}/${k}`, v),
+              ]),
+            )
+          : derefSchemaAt(`${path}/${key}`, value);
     }
   }
 

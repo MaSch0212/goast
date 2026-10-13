@@ -8,10 +8,10 @@ let builder: TypeScriptFileBuilder;
 
 beforeEach(() => {
   // A fixed newLine keeps the expectations below host-independent.
-  builder = new TypeScriptFileBuilder(
-    undefined,
-    { ...defaultTypeScriptGeneratorConfig, newLine: '\n' } as TypeScriptGeneratorConfig,
-  );
+  builder = new TypeScriptFileBuilder(undefined, {
+    ...defaultTypeScriptGeneratorConfig,
+    newLine: '\n',
+  } as TypeScriptGeneratorConfig);
 });
 
 describe('TsPropertySetter', () => {
@@ -121,9 +121,7 @@ describe('TsPropertyGetter', () => {
         override: true,
       }),
     );
-    expect(builder.toString(false)).toBe(
-      'public static abstract override get x(): number {\n  return this.x;\n}\n',
-    );
+    expect(builder.toString(false)).toBe('public static abstract override get x(): number {\n  return this.x;\n}\n');
   });
 
   it('should render injections', () => {

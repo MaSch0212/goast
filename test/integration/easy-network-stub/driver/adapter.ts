@@ -135,11 +135,12 @@ export function serveStub(stub: NodeEasyNetworkStub, port: number, readinessPath
             // body therefore arrives quoted, and `undefined` content yields an `undefined` body
             // (`JSON.stringify(undefined) === undefined`, not the string `"undefined"`) — both
             // reproduced here rather than "fixed", since the point is to match what the library does.
-            const body = stubResponse.body === undefined
-              ? ''
-              : typeof stubResponse.body === 'string'
-              ? stubResponse.body
-              : JSON.stringify(stubResponse.body);
+            const body =
+              stubResponse.body === undefined
+                ? ''
+                : typeof stubResponse.body === 'string'
+                  ? stubResponse.body
+                  : JSON.stringify(stubResponse.body);
             response.writeHead(stubResponse.statusCode, stubResponse.headers ?? {}).end(body);
           },
           destroy: () => request.socket.destroy(),

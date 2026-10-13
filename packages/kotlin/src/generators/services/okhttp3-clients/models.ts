@@ -32,17 +32,16 @@ export type KotlinOkHttp3ClientsGeneratorConfig = KotlinGeneratorConfig & {
   serializer: 'static' | 'parameter' | { mode: 'static'; factory: AppendValue<KotlinFileBuilder> };
 };
 
-export const defaultKotlinOkHttp3ClientsGeneratorConfig: DefaultGenerationProviderConfig<
-  KotlinOkHttp3ClientsGeneratorConfig
-> = {
-  ...defaultKotlinGeneratorConfig,
+export const defaultKotlinOkHttp3ClientsGeneratorConfig: DefaultGenerationProviderConfig<KotlinOkHttp3ClientsGeneratorConfig> =
+  {
+    ...defaultKotlinGeneratorConfig,
 
-  packageName: 'com.openapi.generated',
-  packageSuffix: '.api.client',
-  infrastructurePackageName: { mode: 'append-full-package-name', value: '.infrastructure' },
-  serializerJsonInclude: 'non-absent',
-  serializer: 'static',
-};
+    packageName: 'com.openapi.generated',
+    packageSuffix: '.api.client',
+    infrastructurePackageName: { mode: 'append-full-package-name', value: '.infrastructure' },
+    serializerJsonInclude: 'non-absent',
+    serializer: 'static',
+  };
 
 export type KotlinOkHttp3ClientsGeneratorInput = KotlinModelsGeneratorOutput;
 
@@ -56,17 +55,15 @@ export type KotlinOkHttp3ClientsGeneratorOutput = {
 
 export type KotlinOkHttp3ClientGeneratorOutput = KotlinImport;
 
-export type KotlinOkHttp3ClientsGeneratorContext =
-  & OpenApiServicesGenerationProviderContext<
-    KotlinOkHttp3ClientsGeneratorInput,
-    KotlinOkHttp3ClientsGeneratorOutput,
-    KotlinOkHttp3ClientsGeneratorConfig,
-    KotlinOkHttp3ClientGeneratorOutput
-  >
-  & {
-    infrastructurePackageName: string;
-    refs: ReturnType<typeof getReferenceFactories>;
-  };
+export type KotlinOkHttp3ClientsGeneratorContext = OpenApiServicesGenerationProviderContext<
+  KotlinOkHttp3ClientsGeneratorInput,
+  KotlinOkHttp3ClientsGeneratorOutput,
+  KotlinOkHttp3ClientsGeneratorConfig,
+  KotlinOkHttp3ClientGeneratorOutput
+> & {
+  infrastructurePackageName: string;
+  refs: ReturnType<typeof getReferenceFactories>;
+};
 
 export type KotlinOkHttp3ClientGeneratorContext = KotlinOkHttp3ClientsGeneratorContext & {
   service: ApiService;
