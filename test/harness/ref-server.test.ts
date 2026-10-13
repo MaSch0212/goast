@@ -1,11 +1,10 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import type { ApiCase } from '../cases/types.ts';
 import { startRefServer } from './ref-server.ts';
 
-/** Reads and discards a response body so an unconsumed `ReadableStream` never trips Deno's leak
- * sanitizer, then hands back the status the test actually cares about. */
+/** Discards a response body so the connection is released, then hands back the status the test
+ * actually cares about. */
 const drainStatus = async (response: Promise<Response>): Promise<number> => {
   const r = await response;
   await r.body?.cancel();

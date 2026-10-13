@@ -29,8 +29,8 @@
  * before returning the responder's result, and nothing is papered over: a response the generated responder
  * cannot express is a `GoastUnexpressible`, not a substituted status.
  *
- * Container-side Node/TypeScript, compiled by the `tsc` run inside the image; no Deno type-checker sees
- * it, so `boot.test.ts` is the only test that can catch a mistake here.
+ * Container-side Node/TypeScript, compiled by the `tsc` run inside the image; the repo's own `tsc` project
+ * excludes `driver/`, so `boot.test.ts` is the only test that can catch a mistake here.
  */
 import { Buffer } from 'node:buffer';
 

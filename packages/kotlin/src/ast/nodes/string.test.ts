@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { beforeEach, describe, it } from '@std/testing/bdd';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { defaultKotlinGeneratorConfig, type KotlinGeneratorConfig } from '../../config.ts';
 import { KotlinFileBuilder } from './../../file-builder.ts';
@@ -33,7 +32,7 @@ describe('ktString', () => {
 
   it('should not escape $ character in template string', () => {
     builder.append(ktString('\r\n\t${\n"abc"\n}\u0014', { template: true }));
-    expect(builder.toString(false)).toBe('"\\r\\n\\t\${\n"abc"\n}\\u0014"');
+    expect(builder.toString(false)).toBe('"\\r\\n\\t${\n"abc"\n}\\u0014"');
   });
 
   it('should handle multiline strings', () => {

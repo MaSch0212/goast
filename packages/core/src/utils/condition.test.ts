@@ -1,5 +1,4 @@
-import { expect, fn } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it, vi } from 'vitest';
 
 import { type Condition, evalCondition } from './condition.ts';
 
@@ -17,7 +16,7 @@ describe('evalCondition', () => {
   });
 
   it('should call the condition function and return the correct boolean value without context', () => {
-    const condition = fn(() => true) as Condition;
+    const condition = vi.fn<() => boolean>(() => true);
     const result = evalCondition(condition);
     expect(result).toBe(true);
     expect(condition).toHaveBeenCalledTimes(1);
@@ -27,7 +26,7 @@ describe('evalCondition', () => {
     const context = {
       prop: 5,
     };
-    const condition = fn((ctx: typeof context) => ctx.prop === 5) as Condition<typeof context>;
+    const condition = vi.fn<(ctx: typeof context) => boolean>((ctx) => ctx.prop === 5);
     const result = evalCondition(condition, context);
     expect(result).toBe(true);
     expect(condition).toHaveBeenCalledWith(context);

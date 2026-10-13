@@ -1,8 +1,7 @@
 import { appendValueGroup } from '@goast/core';
 import { dedent } from '@goast/test-harness';
 
-import { expect } from '@std/expect';
-import { beforeEach, describe, it } from '@std/testing/bdd';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { defaultKotlinGeneratorConfig, type KotlinGeneratorConfig } from '../../config.ts';
 import { KotlinFileBuilder } from '../../file-builder.ts';
 import { ktAnnotation } from './annotation.ts';

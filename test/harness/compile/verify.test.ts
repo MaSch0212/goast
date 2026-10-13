@@ -1,7 +1,8 @@
+import { mkdtemp, readFile, rm, stat } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { expect } from '@std/expect';
-import { afterEach, beforeEach, describe, it } from '@std/testing/bdd';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { verifyCompileDiagnostics } from './verify.ts';
 import type { Diagnostic } from './types.ts';
@@ -13,16 +14,16 @@ describe('verifyCompileDiagnostics', () => {
   let file: string;
 
   beforeEach(async () => {
-    dir = await Deno.makeTempDir();
+    dir = await mkdtemp(join(tmpdir(), 'goast-'));
     file = join(dir, 'nested', 'unit.txt');
   });
   afterEach(async () => {
-    await Deno.remove(dir, { recursive: true });
+    await rm(dir, { recursive: true });
   });
 
   it('write mode creates the snapshot for a failing unit, parent directories included', async () => {
     await verifyCompileDiagnostics(file, one, { mode: 'write' });
-    expect(await Deno.readTextFile(file)).toBe('a.kt:1:1 boom\n');
+    expect(await readFile(file, 'utf8')).toBe('a.kt:1:1 boom\n');
   });
 
   it('check mode passes when the committed snapshot matches', async () => {
@@ -39,7 +40,7 @@ describe('verifyCompileDiagnostics', () => {
   it('write mode deletes a stale snapshot when the unit now compiles', async () => {
     await verifyCompileDiagnostics(file, one, { mode: 'write' });
     await verifyCompileDiagnostics(file, [], { mode: 'write' });
-    await expect(Deno.stat(file)).rejects.toThrow(Deno.errors.NotFound);
+    await expect(stat(file)).rejects.toMatchObject({ code: 'ENOENT' });
   });
 
   it('check mode fails when the unit now compiles but a snapshot is still committed', async () => {
@@ -55,7 +56,7 @@ describe('verifyCompileDiagnostics', () => {
   });
 
   // Every check-mode failure this function can produce must name tier 3's task. Two of the three
-  // reach the message through `verifyText`, whose own default is tier 2's `deno task test:output` —
+  // reach the message through `verifyText`, whose own default is tier 2's `pnpm test:output` —
   // running that regenerates nothing under `test/compile/` and leaves the run red with the same
   // message, so a wrong command here is worse than no command.
   describe('names the tier 3 task in every check-mode failure', () => {
@@ -67,7 +68,7 @@ describe('verifyCompileDiagnostics', () => {
 
     it('when a failing unit has no committed snapshot', async () => {
       const message = await messageFor(verifyCompileDiagnostics(file, one, { mode: 'check' }));
-      expect(message).toContain('deno task test:compile');
+      expect(message).toContain('pnpm test:compile');
       expect(message).not.toContain('test:output');
     });
 
@@ -75,14 +76,14 @@ describe('verifyCompileDiagnostics', () => {
       await verifyCompileDiagnostics(file, one, { mode: 'write' });
       const other: Diagnostic[] = [{ file: 'a.kt', line: 2, column: 1, message: 'different' }];
       const message = await messageFor(verifyCompileDiagnostics(file, other, { mode: 'check' }));
-      expect(message).toContain('deno task test:compile');
+      expect(message).toContain('pnpm test:compile');
       expect(message).not.toContain('test:output');
     });
 
     it('when the unit now compiles but a snapshot is still committed', async () => {
       await verifyCompileDiagnostics(file, one, { mode: 'write' });
       const message = await messageFor(verifyCompileDiagnostics(file, [], { mode: 'check' }));
-      expect(message).toContain('deno task test:compile');
+      expect(message).toContain('pnpm test:compile');
       expect(message).not.toContain('test:output');
     });
   });

@@ -102,15 +102,13 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       primaryConstructor: kt.constructor(
         parameters.map((property) => this.getClassParameter(ctx, { ...args, inheritedSchemas, parameters, property })),
       ),
-      members: [
-        ...(schema.additionalProperties !== undefined && schema.additionalProperties !== false
-          ? [
-            this.getAdditionalPropertiesProperty(ctx, { schema }),
-            this.getAdditionalPropertiesSetter(ctx, { schema }),
-            this.getAdditionalPropertiesGetter(ctx, { schema }),
-          ]
-          : []),
-      ],
+      members: schema.additionalProperties !== undefined && schema.additionalProperties !== false
+        ? [
+          this.getAdditionalPropertiesProperty(ctx, { schema }),
+          this.getAdditionalPropertiesSetter(ctx, { schema }),
+          this.getAdditionalPropertiesGetter(ctx, { schema }),
+        ]
+        : [],
     });
   }
 
@@ -722,9 +720,7 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
     schema = this.normalizeDiscriminatedBases(ctx, { schema });
     if (schema.kind === 'oneOf') {
       schema = ctx.config.oneOfBehavior === 'treat-as-any-of'
-        // deno-lint-ignore no-explicit-any
         ? { ...(schema as any), kind: 'combined', anyOf: schema.oneOf, allOf: [], oneOf: undefined }
-        // deno-lint-ignore no-explicit-any
         : { ...(schema as any), kind: 'combined', allOf: schema.oneOf, anyOf: [], oneOf: undefined };
       ctx.schema = schema;
     }
@@ -788,7 +784,6 @@ export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Ou
       }
 
       // Registered before descending, so a branch composing back to one of its own ancestors terminates.
-      // deno-lint-ignore no-explicit-any
       const copy: any = { ...schema };
       rewritten.set(schema, copy);
       if (isBase) {

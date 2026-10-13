@@ -15,7 +15,11 @@ type FactoryProvider<T, TArgs extends unknown[]> =
   };
 
 export class Factory<T, TArgs extends unknown[]> {
-  constructor(private readonly _provider: FactoryProvider<T, TArgs>) {}
+  private readonly _provider: FactoryProvider<T, TArgs>;
+
+  constructor(provider: FactoryProvider<T, TArgs>) {
+    this._provider = provider;
+  }
 
   public create(...args: TArgs): T {
     switch (this._provider.kind) {

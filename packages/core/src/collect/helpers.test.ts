@@ -1,6 +1,4 @@
-// deno-lint-ignore-file no-explicit-any
-import { expect, fn } from '@std/expect';
-import { beforeEach, describe, it } from '@std/testing/bdd';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { collect, collectRecord } from './helpers.ts';
 import type { OpenApiCollectorData } from './types.ts';
 
@@ -9,7 +7,7 @@ describe('collect', () => {
   let testFunc: (data: OpenApiCollectorData, obj: object) => void;
 
   beforeEach(() => {
-    testFunc = fn(() => {}) as any;
+    testFunc = vi.fn<(data: OpenApiCollectorData, obj: object) => void>();
   });
 
   it('collect should handle null and undefined input', () => {
@@ -55,7 +53,7 @@ describe('collectRecord', () => {
   let testFunc: (data: OpenApiCollectorData, obj: object) => void;
 
   beforeEach(() => {
-    testFunc = fn(() => {}) as any;
+    testFunc = vi.fn<(data: OpenApiCollectorData, obj: object) => void>();
   });
 
   it('should not call the provided function if the input object is undefined', () => {

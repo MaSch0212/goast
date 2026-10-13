@@ -70,7 +70,7 @@ export abstract class OpenApiServicesGenerationProviderBase<
 
   protected abstract addServiceResult(ctx: TContext, service: ApiService, result: TServiceOutput): void;
 
-  // deno-lint-ignore no-unused-vars
+  // oxlint-disable-next-line no-unused-vars
   protected generateAdditionalFiles(ctx: TContext): MaybePromise<void> {
     // Override if needed
   }

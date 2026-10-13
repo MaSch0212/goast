@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { Factory } from './factory.ts';
 
@@ -7,7 +6,11 @@ describe('Factory', () => {
   describe('create', () => {
     it('should create an instance using a constructor', () => {
       class Foo {
-        constructor(public readonly value: string) {}
+        public readonly value: string;
+
+        constructor(value: string) {
+          this.value = value;
+        }
       }
       const factory = Factory.fromType(Foo);
       const instance = factory.create('bar');

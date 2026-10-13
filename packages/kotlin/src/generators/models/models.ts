@@ -70,7 +70,6 @@ export const defaultKotlinModelsGeneratorConfig: DefaultGenerationProviderConfig
   addSwaggerAnnotations: true,
 };
 
-// deno-lint-ignore ban-types
 export type KotlinModelsGeneratorInput = {};
 
 export type KotlinModelsGeneratorOutput = {

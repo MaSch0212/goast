@@ -1,0 +1,46 @@
+{
+  "name": "@goast/core",
+  "version": "0.6.0",
+  "description": "A tool designed to transform OpenAPI specifications into various forms with flexibility and extensibility at its core.",
+  "license": "MIT",
+  "author": {
+    "name": "Marc Schmidt (MaSch0212)",
+    "url": "https://github.com/MaSch0212"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MaSch0212/goast.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/MaSch0212/goast/issues"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "source": "./mod.ts",
+      "types": "./dist/mod.d.ts",
+      "default": "./dist/mod.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/mod.d.ts",
+        "default": "./dist/mod.js"
+      }
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "node ../../scripts/build-package.ts"
+  },
+  "dependencies": {
+    "fs-extra": "^11.3.3",
+    "yaml": "^2.5.1"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4"
+  }
+}

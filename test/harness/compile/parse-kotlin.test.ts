@@ -1,5 +1,6 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { readFile } from 'node:fs/promises';
+
+import { describe, expect, it } from 'vitest';
 
 import { parseKotlinDiagnostics } from './parse-kotlin.ts';
 
@@ -29,7 +30,7 @@ describe('parseKotlinDiagnostics', () => {
   });
 
   it('parses the captured fixture, so a Kotlin upgrade that changes the format fails here first', async () => {
-    const fixture = await Deno.readTextFile(new URL('../fixtures/kotlin-errors.txt', import.meta.url));
+    const fixture = await readFile(new URL('../fixtures/kotlin-errors.txt', import.meta.url), 'utf8');
     // Asserts the full parsed array, not just its length: a length-only check would still pass if a
     // format drift silently dropped one diagnostic's position or corrupted its message while another
     // still parsed, which is exactly the kind of partial breakage a format change could cause.

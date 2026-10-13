@@ -1,0 +1,16 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 120,
+  "singleQuote": true,
+  "ignorePatterns": [
+    "npm/**",
+    "dist/**",
+    "coverage/**",
+    ".goast-cache/**",
+    "docs/superpowers/**",
+    "test/output/**",
+    "test/compile/**",
+    "test/wire/**",
+    "pnpm-lock.yaml"
+  ]
+}

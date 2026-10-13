@@ -1,12 +1,9 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { TypeScriptAngularServicesGenerator } from './angular-services-generator.ts';
 
 class TestableGenerator extends TypeScriptAngularServicesGenerator {
-  // deno-lint-ignore no-explicit-any
   public callGetRootUrl(ctx: any): string {
-    // deno-lint-ignore no-explicit-any
     return (this as any).getRootUrl(ctx);
   }
 }

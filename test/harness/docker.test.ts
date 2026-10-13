@@ -1,7 +1,8 @@
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { expect } from '@std/expect';
-import { afterEach, beforeEach, describe, it } from '@std/testing/bdd';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   buildImage,
@@ -14,27 +15,27 @@ import {
 } from './docker.ts';
 import { waitForHttpReady } from './integration/health.ts';
 import { repoRootDir } from './paths.ts';
+import { runCommand } from './process.ts';
 
 /**
  * The container-starting tests at the bottom of this file are opt-in behind `GOAST_COMPILE`, the same
  * guard `test/compile-tests/compile.test.ts` uses and for the same reason.
  *
- * This file is a workspace-member unit test, so it is inside `deno.json`'s default `test.include` and
- * every one of `deno task test`, `test:harness`, `test:check` and `test:all` reaches it. An
- * `it({ ignore: !hasDocker })` flag does not keep tiers 1 and 2 Docker-free — it only keeps them
- * *runnable* without Docker; on a machine that has Docker those tests run, build an image and start
- * containers, which is exactly what the "tiers 1 and 2 must stay Docker-free" rule forbids (measured:
+ * This file is in the `unit` vitest project, so every one of `pnpm test`, `test:harness`,
+ * `test:check` and `test:all` reaches it. An `it.skipIf(!hasDocker)` does not keep tiers 1 and 2
+ * Docker-free — it only keeps them *runnable* without Docker; on a machine that has Docker those
+ * tests run, build an image and start containers, which is exactly what the "tiers 1 and 2 must stay Docker-free" rule forbids (measured:
  * the unit suite goes from ~17s to ~60s and leaves a `goast-test-docker-smoke` image behind).
  *
  * Registering nothing rather than registering ignored tests, for the same reason `compile.test.ts`
  * gives: a `describe` that runs is a `describe` whose body executes, and an ignored test is still a
  * line of noise in every everyday run.
  *
- * The coverage is not lost — `deno task test:compile` and `test:compile:check` name this file
+ * The coverage is not lost — `pnpm test:compile` and `test:compile:check` name this file
  * explicitly alongside `test/compile-tests`, so it runs with the rest of tier 3. Docker is a hard
  * prerequisite there, so these tests assert rather than skip when it is missing.
  */
-const enabled = (Deno.env.get('GOAST_COMPILE') ?? '') !== '';
+const enabled = (process.env.GOAST_COMPILE ?? '') !== '';
 
 /**
  * Builds (or, after the first call, reuses via the inspect-skip path) the trivial image shared by
@@ -42,23 +43,21 @@ const enabled = (Deno.env.get('GOAST_COMPILE') ?? '') !== '';
  * the image exists; only the resulting tag is needed afterward.
  */
 async function buildSmokeImage(): Promise<string> {
-  const dir = await Deno.makeTempDir();
+  const dir = await mkdtemp(join(tmpdir(), 'goast-'));
   try {
-    await Deno.writeTextFile(join(dir, 'Dockerfile'), 'FROM alpine:3.20\n');
+    await writeFile(join(dir, 'Dockerfile'), 'FROM alpine:3.20\n');
     return await buildImage('docker-smoke', dir);
   } finally {
-    await Deno.remove(dir, { recursive: true });
+    await rm(dir, { recursive: true });
   }
 }
 
 /** `docker ps -a --filter name=<name>` reports nothing once the daemon has removed the container. */
 async function containerExists(name: string): Promise<boolean> {
-  const { stdout } = await new Deno.Command('docker', {
-    args: ['ps', '-a', '--filter', `name=${name}`, '--format', '{{.Names}}'],
-    stdout: 'piped',
-    stderr: 'null',
-  }).output();
-  return new TextDecoder().decode(stdout).trim() !== '';
+  const { stdout } = await runCommand('docker', ['ps', '-a', '--filter', `name=${name}`, '--format', '{{.Names}}'], {
+    stderr: 'ignore',
+  });
+  return stdout.trim() !== '';
 }
 
 describe('dockerRunArgs', () => {
@@ -165,11 +164,11 @@ describe('hashBuildContext', () => {
   let dir: string;
 
   beforeEach(async () => {
-    dir = await Deno.makeTempDir();
-    await Deno.writeTextFile(join(dir, 'Dockerfile'), 'FROM scratch\n');
+    dir = await mkdtemp(join(tmpdir(), 'goast-'));
+    await writeFile(join(dir, 'Dockerfile'), 'FROM scratch\n');
   });
   afterEach(async () => {
-    await Deno.remove(dir, { recursive: true });
+    await rm(dir, { recursive: true });
   });
 
   it('is stable across calls', async () => {
@@ -178,33 +177,33 @@ describe('hashBuildContext', () => {
 
   it('changes when any file in the context changes', async () => {
     const before = await hashBuildContext(dir);
-    await Deno.writeTextFile(join(dir, 'Dockerfile'), 'FROM scratch\nRUN true\n');
+    await writeFile(join(dir, 'Dockerfile'), 'FROM scratch\nRUN true\n');
     expect(await hashBuildContext(dir)).not.toBe(before);
   });
 
   it('changes when a file is added, not only when one is edited', async () => {
     const before = await hashBuildContext(dir);
-    await Deno.writeTextFile(join(dir, 'extra.txt'), 'x\n');
+    await writeFile(join(dir, 'extra.txt'), 'x\n');
     expect(await hashBuildContext(dir)).not.toBe(before);
   });
 });
 
 describe('requireDocker', () => {
   it('either resolves or explains that Docker is required, never a spawn error', async () => {
-    try {
-      await requireDocker();
-    } catch (error) {
-      expect(String(error)).toContain('Docker is required for this tier');
-    }
+    const outcome = await requireDocker().then(
+      () => 'resolved',
+      (error) => String(error),
+    );
+    expect(outcome).toMatch(/^resolved$|Docker is required for this tier/);
   });
 });
 
 if (enabled) {
   describe('buildImage and runContainer', () => {
     it('builds a trivial image, runs commands in it, and skips a rebuild of the same context', async () => {
-      const dir = await Deno.makeTempDir();
+      const dir = await mkdtemp(join(tmpdir(), 'goast-'));
       try {
-        await Deno.writeTextFile(join(dir, 'Dockerfile'), 'FROM alpine:3.20\n');
+        await writeFile(join(dir, 'Dockerfile'), 'FROM alpine:3.20\n');
 
         const tag = await buildImage('docker-smoke', dir);
         expect(tag).toBe(imageTag('docker-smoke', await hashBuildContext(dir)));
@@ -222,14 +221,13 @@ if (enabled) {
         // and the image the first build produced must still be the one on disk.
         const tagAgain = await buildImage('docker-smoke', dir);
         expect(tagAgain).toBe(tag);
-        const inspectAgain = await new Deno.Command('docker', {
-          args: ['image', 'inspect', tagAgain],
-          stdout: 'null',
-          stderr: 'null',
-        }).output();
+        const inspectAgain = await runCommand('docker', ['image', 'inspect', tagAgain], {
+          stdout: 'ignore',
+          stderr: 'ignore',
+        });
         expect(inspectAgain.code).toBe(0);
       } finally {
-        await Deno.remove(dir, { recursive: true });
+        await rm(dir, { recursive: true });
       }
     });
 
@@ -345,10 +343,7 @@ if (enabled) {
     // `withWatchdog` rather than relying on the test runner's own timeout: a hang reported as "the suite
     // timed out" names no cause, whereas this names the call that failed to resolve.
     const withWatchdog = async <T>(label: string, ms: number, work: Promise<T>): Promise<T> => {
-      // `ReturnType<typeof setTimeout>` rather than `number`: this file's module graph reaches
-      // `@types/node`, so `setTimeout` here is Node's overload returning a `Timeout` object, not the
-      // web one returning a number. Typing it `number` was a `TS2322` that stood since it was written —
-      // Deno's type-check cache kept reporting the suite green until a run that missed the cache.
+      // Node's `setTimeout` returns a `Timeout` object, not a number.
       let timer: ReturnType<typeof setTimeout> | undefined;
       const watchdog = new Promise<never>((_, reject) => {
         timer = setTimeout(() => reject(new Error(`${label} did not resolve within ${ms}ms`)), ms);
@@ -361,12 +356,12 @@ if (enabled) {
     };
 
     const containerNames = async (name: string): Promise<string> => {
-      const { stdout } = await new Deno.Command('docker', {
-        args: ['ps', '--all', '--filter', `name=^${name}$`, '--format', '{{.Names}} {{.State}}'],
-        stdout: 'piped',
-        stderr: 'null',
-      }).output();
-      return new TextDecoder().decode(stdout).trim();
+      const { stdout } = await runCommand(
+        'docker',
+        ['ps', '--all', '--filter', `name=^${name}$`, '--format', '{{.Names}} {{.State}}'],
+        { stderr: 'ignore' },
+      );
+      return stdout.trim();
     };
 
     it('stops a container that the daemon had not finished creating yet', async () => {
@@ -398,6 +393,7 @@ if (enabled) {
         await withWatchdog(
           'hostPort()',
           20_000,
+          // oxlint-disable-next-line vitest/valid-expect -- withWatchdog awaits the assertion
           expect(container.hostPort(8080, 3_000)).rejects.toThrow('Could not read the host port'),
         );
       } finally {

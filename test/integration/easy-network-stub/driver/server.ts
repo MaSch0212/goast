@@ -3,7 +3,7 @@
  *
  * `SERVER_PORT` and `READINESS_PATH` are duplicated here as literals, matching `build.ts`'s `SERVER_PORT`
  * (8080) and `READINESS_PATH` (`/__goast-readiness`), rather than imported. This file is compiled by `tsc`
- * inside the container and cannot import from `build.ts`, which is a Deno module that never enters this
+ * inside the container and cannot import from `build.ts`, which is a host-side module that never enters this
  * program. Nothing catches a drift between the two values by construction — but a drift is not silent:
  * `boot.test.ts` and Task 4's case loop both publish `SERVER_PORT` and poll `READINESS_PATH` from
  * `build.ts`, so either value moving on one side alone makes the readiness probe time out against a

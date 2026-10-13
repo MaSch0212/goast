@@ -40,7 +40,6 @@ export type TypeScriptEasyNetworkStubsGeneratorConfig = TypeScriptGeneratorConfi
    */
   defaultStatusCodeResponseTypes: Record<
     number,
-    // deno-lint-ignore ban-types
     Exclude<ts.Type<TypeScriptFileBuilder>, Function> | ((schemas: readonly ApiSchema[]) => ApiSchema)
   >;
 

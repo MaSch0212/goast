@@ -30,3 +30,6 @@ Thumbs.db
 .openapi
 /out
 playground.ts
+# build output
+dist
+packages/*/LICENSE

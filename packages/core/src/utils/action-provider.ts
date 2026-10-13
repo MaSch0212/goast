@@ -1,4 +1,3 @@
-// deno-lint-ignore-file
 import type { EmptyConstructor, FunctionNames } from './type.utils.ts';
 
 type MatchingFunctionNames<T, TAction> = {
@@ -25,7 +24,11 @@ type ValueActionRunner<T, TAction> = {
 type ActionRunner<TAction> = CtorActionRunner<any, TAction> | FnActionRunner<TAction> | ValueActionRunner<any, TAction>;
 
 export class ActionProvider<TAction extends (...args: any[]) => any> {
-  constructor(private readonly _runner: ActionRunner<TAction>) {}
+  private readonly _runner: ActionRunner<TAction>;
+
+  constructor(runner: ActionRunner<TAction>) {
+    this._runner = runner;
+  }
 
   public run(...args: Parameters<TAction>): ReturnType<TAction> {
     switch (this._runner.kind) {

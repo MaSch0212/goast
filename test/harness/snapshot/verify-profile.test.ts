@@ -1,22 +1,23 @@
+import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { profileSnapshotPaths, verifyProfile } from './verify-profile.ts';
 
 async function withTempDir(fn: (dir: string) => Promise<void>): Promise<void> {
-  const dir = await Deno.makeTempDir({ prefix: 'goast-profile-' });
+  const dir = await mkdtemp(join(tmpdir(), 'goast-profile-'));
   try {
     await fn(dir);
   } finally {
-    await Deno.remove(dir, { recursive: true });
+    await rm(dir, { recursive: true });
   }
 }
 
 async function exists(path: string): Promise<boolean> {
   try {
-    await Deno.stat(path);
+    await stat(path);
     return true;
   } catch {
     return false;
@@ -39,12 +40,12 @@ describe('verifyProfile write mode', () => {
       const paths = profileSnapshotPaths(base, 'spec');
 
       await verifyProfile(paths, async (outputDir) => {
-        await Deno.writeTextFile(join(outputDir, 'Model.kt'), 'class Model\n');
+        await writeFile(join(outputDir, 'Model.kt'), 'class Model\n');
         return { generated: 1 };
       }, { mode: 'write' });
 
-      expect(await Deno.readTextFile(join(paths.treeDir, 'Model.kt'))).toBe('class Model\n');
-      expect(await Deno.readTextFile(paths.stateFile)).toContain('generated: 1');
+      expect(await readFile(join(paths.treeDir, 'Model.kt'), 'utf8')).toBe('class Model\n');
+      expect(await readFile(paths.stateFile, 'utf8')).toContain('generated: 1');
       expect(await exists(paths.errorFile)).toBe(false);
     });
   });
@@ -57,7 +58,7 @@ describe('verifyProfile write mode', () => {
         throw new Error('File already exists: Model.kt');
       }, { mode: 'write' });
 
-      expect(await Deno.readTextFile(paths.errorFile)).toBe('Error: File already exists: Model.kt\n');
+      expect(await readFile(paths.errorFile, 'utf8')).toBe('Error: File already exists: Model.kt\n');
       expect(await exists(paths.treeDir)).toBe(false);
       expect(await exists(paths.stateFile)).toBe(false);
     });
@@ -71,7 +72,7 @@ describe('verifyProfile write mode', () => {
         throw new Error(`File already exists: ${join(outputDir, 'a', 'Model.kt')}`);
       }, { mode: 'write' });
 
-      expect(await Deno.readTextFile(paths.errorFile)).toBe('Error: File already exists: <output>/a/Model.kt\n');
+      expect(await readFile(paths.errorFile, 'utf8')).toBe('Error: File already exists: <output>/a/Model.kt\n');
     });
   });
 
@@ -84,17 +85,17 @@ describe('verifyProfile write mode', () => {
         throw new Error(`File already exists: ${forwardSlash}/a/Model.kt`);
       }, { mode: 'write' });
 
-      expect(await Deno.readTextFile(paths.errorFile)).toBe('Error: File already exists: <output>/a/Model.kt\n');
+      expect(await readFile(paths.errorFile, 'utf8')).toBe('Error: File already exists: <output>/a/Model.kt\n');
     });
   });
 
   it('replaces an error snapshot with a tree once generation succeeds', async () => {
     await withTempDir(async (base) => {
       const paths = profileSnapshotPaths(base, 'spec');
-      await Deno.writeTextFile(paths.errorFile, 'Error: old failure\n');
+      await writeFile(paths.errorFile, 'Error: old failure\n');
 
       await verifyProfile(paths, async (outputDir) => {
-        await Deno.writeTextFile(join(outputDir, 'Model.kt'), 'class Model\n');
+        await writeFile(join(outputDir, 'Model.kt'), 'class Model\n');
         return {};
       }, { mode: 'write' });
 
@@ -106,9 +107,9 @@ describe('verifyProfile write mode', () => {
   it('replaces a tree with an error snapshot once generation starts failing', async () => {
     await withTempDir(async (base) => {
       const paths = profileSnapshotPaths(base, 'spec');
-      await Deno.mkdir(paths.treeDir, { recursive: true });
-      await Deno.writeTextFile(join(paths.treeDir, 'Model.kt'), 'class Model\n');
-      await Deno.writeTextFile(paths.stateFile, '{}\n');
+      await mkdir(paths.treeDir, { recursive: true });
+      await writeFile(join(paths.treeDir, 'Model.kt'), 'class Model\n');
+      await writeFile(paths.stateFile, '{}\n');
 
       await verifyProfile(paths, () => {
         throw new Error('boom');
@@ -116,7 +117,7 @@ describe('verifyProfile write mode', () => {
 
       expect(await exists(paths.treeDir)).toBe(false);
       expect(await exists(paths.stateFile)).toBe(false);
-      expect(await Deno.readTextFile(paths.errorFile)).toBe('Error: boom\n');
+      expect(await readFile(paths.errorFile, 'utf8')).toBe('Error: boom\n');
     });
   });
 
@@ -126,7 +127,7 @@ describe('verifyProfile write mode', () => {
 
       await verifyProfile(paths, () => ({ schemas: {} }), { mode: 'write' });
 
-      expect(await Deno.readTextFile(paths.stateFile)).toContain('schemas');
+      expect(await readFile(paths.stateFile, 'utf8')).toContain('schemas');
       expect(await exists(paths.errorFile)).toBe(false);
     });
   });
@@ -149,7 +150,7 @@ describe('verifyProfile write mode', () => {
         };
       }, { mode: 'write' });
 
-      const state = await Deno.readTextFile(paths.stateFile);
+      const state = await readFile(paths.stateFile, 'utf8');
       expect(capturedOutputDir).not.toBe('');
       expect(state).toContain("native: '<output>/models.ts'");
       expect(state).toContain("forwardSlash: '<output>/models.ts'");
@@ -180,7 +181,7 @@ describe('verifyProfile check mode', () => {
     await withTempDir(async (base) => {
       const paths = profileSnapshotPaths(base, 'spec');
       const generate = async (outputDir: string) => {
-        await Deno.writeTextFile(join(outputDir, 'Model.kt'), 'class Model\n');
+        await writeFile(join(outputDir, 'Model.kt'), 'class Model\n');
         return { generated: 1 };
       };
 
@@ -193,12 +194,12 @@ describe('verifyProfile check mode', () => {
     await withTempDir(async (base) => {
       const paths = profileSnapshotPaths(base, 'spec');
       await verifyProfile(paths, async (outputDir) => {
-        await Deno.writeTextFile(join(outputDir, 'Model.kt'), 'class Model\n');
+        await writeFile(join(outputDir, 'Model.kt'), 'class Model\n');
         return { generated: 1 };
       }, { mode: 'write' });
 
       const error = (await verifyProfile(paths, async (outputDir) => {
-        await Deno.writeTextFile(join(outputDir, 'Model.kt'), 'class Renamed\n');
+        await writeFile(join(outputDir, 'Model.kt'), 'class Renamed\n');
         return { generated: 2 };
       }, { mode: 'check' }).catch((e) => e as Error)) as Error;
 
@@ -237,9 +238,9 @@ describe('verifyProfile check mode', () => {
   it('fails when generation throws but a tree is still committed', async () => {
     await withTempDir(async (base) => {
       const paths = profileSnapshotPaths(base, 'spec');
-      await Deno.mkdir(paths.treeDir, { recursive: true });
-      await Deno.writeTextFile(join(paths.treeDir, 'Model.kt'), 'class Model\n');
-      await Deno.writeTextFile(paths.errorFile, 'Error: boom\n');
+      await mkdir(paths.treeDir, { recursive: true });
+      await writeFile(join(paths.treeDir, 'Model.kt'), 'class Model\n');
+      await writeFile(paths.errorFile, 'Error: boom\n');
 
       const error = (await verifyProfile(paths, () => {
         throw new Error('boom');
@@ -264,10 +265,10 @@ describe('verifyProfile check mode', () => {
   it('fails when a committed error snapshot is stale because generation now succeeds', async () => {
     await withTempDir(async (base) => {
       const paths = profileSnapshotPaths(base, 'spec');
-      await Deno.writeTextFile(paths.errorFile, 'Error: old failure\n');
+      await writeFile(paths.errorFile, 'Error: old failure\n');
 
       const error = (await verifyProfile(paths, async (outputDir) => {
-        await Deno.writeTextFile(join(outputDir, 'Model.kt'), 'class Model\n');
+        await writeFile(join(outputDir, 'Model.kt'), 'class Model\n');
         return {};
       }, { mode: 'check' }).catch((e) => e as Error)) as Error;
 

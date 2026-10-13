@@ -9,8 +9,7 @@
 // is what makes this a real check instead of a comparison of the implementation to itself.
 import { EOL } from 'node:os';
 
-import { expect } from '@std/expect';
-import { beforeEach, describe, it } from '@std/testing/bdd';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { builderTemplate, SourceBuilder, type SourceBuilderOptions } from './source-builder.ts';
 import { appendValueGroup } from './string-builder/utils.ts';

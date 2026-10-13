@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import type { RecordedResponse } from '../cases/types.ts';
 import {
@@ -34,7 +33,7 @@ describe('normalizeHeaders', () => {
     const headers = new Headers({
       'X-Request-Id': 'r1',
       'Host': 'localhost:8080',
-      'User-Agent': 'Deno',
+      'User-Agent': 'node',
       'Accept-Encoding': 'gzip',
       'Content-Length': '12',
     });

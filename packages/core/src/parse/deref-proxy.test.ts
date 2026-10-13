@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { derefAt } from './deref.test-utils.ts';
 import { createDerefProxy } from './deref-proxy.ts';
@@ -71,7 +70,7 @@ describe('createDerefProxy', () => {
     expect(() => {
       'use strict';
       (proxy as { $src?: unknown }).$src = null;
-    }).toThrow();
+    }).toThrow(TypeError);
   });
 
   it('reports a ref-only property as present via in', () => {

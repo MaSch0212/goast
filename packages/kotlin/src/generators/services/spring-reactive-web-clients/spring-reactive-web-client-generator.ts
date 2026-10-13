@@ -55,12 +55,12 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
     return { typeName, packageName };
   }
 
-  // deno-lint-ignore no-unused-vars
+  // oxlint-disable-next-line no-unused-vars
   protected getClientFileContent(ctx: Context, args: Args.GetClientFileContent): AppendValueGroup<Builder> {
     return appendValueGroup([this.getRequestsObject(ctx, {})], '\n\n');
   }
 
-  // deno-lint-ignore no-unused-vars
+  // oxlint-disable-next-line no-unused-vars
   protected getRequestsObject(ctx: Context, args: Args.GetRequestsObject): kt.Object<Builder> {
     return kt.object({
       name: this.getRequestsObjectName(ctx, {}),
@@ -525,7 +525,7 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
       : (fallback ?? kt.refs.any({ nullable }));
   }
 
-  // deno-lint-ignore no-unused-vars
+  // oxlint-disable-next-line no-unused-vars
   protected getPackageName(ctx: Context, args: Args.GetPackageName): string {
     const packageSuffix = typeof ctx.config.packageSuffix === 'string'
       ? ctx.config.packageSuffix
@@ -633,7 +633,7 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
     return `${ctx.config.outputDir}/${packageName.replace(/\./g, '/')}/${this.getRequestsObjectName(ctx, {})}.kt`;
   }
 
-  // deno-lint-ignore no-unused-vars
+  // oxlint-disable-next-line no-unused-vars
   protected getRequestsObjectName(ctx: Context, args: Args.GetRequestsObjectName): string {
     return toCasing(`${ctx.service.name}_Requests`, ctx.config.typeNameCasing);
   }

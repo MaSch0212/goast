@@ -1,0 +1,46 @@
+{
+  "name": "@goast/kotlin",
+  "version": "0.6.0",
+  "description": "Provides gOAst generators for generating Kotlin code from OpenAPI specifications.",
+  "license": "MIT",
+  "author": {
+    "name": "Marc Schmidt (MaSch0212)",
+    "url": "https://github.com/MaSch0212"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MaSch0212/goast.git",
+    "directory": "packages/kotlin"
+  },
+  "bugs": {
+    "url": "https://github.com/MaSch0212/goast/issues"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "source": "./mod.ts",
+      "types": "./dist/mod.d.ts",
+      "default": "./dist/mod.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/mod.d.ts",
+        "default": "./dist/mod.js"
+      }
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "node ../../scripts/build-package.ts"
+  },
+  "dependencies": {
+    "@goast/core": "workspace:^",
+    "http-status-codes": "^2.3.0"
+  },
+  "devDependencies": {
+    "@goast/test-harness": "workspace:*"
+  }
+}

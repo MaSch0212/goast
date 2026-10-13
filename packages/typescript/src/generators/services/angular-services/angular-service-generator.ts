@@ -325,13 +325,11 @@ export class DefaultTypeScriptAngularServiceGenerator extends TypeScriptFileGene
               {${s.indent`
                 errorResponseTypes: ${
             ts.object({
-              members: [
-                ...Object.entries(this.getEndpointStatusCodes(ctx, endpoint))
-                  .filter(([key]) => !key.startsWith('2'))
-                  .map(([key, value]) => {
-                    return ts.property(key, { value: ts.string(value.parser) });
-                  }),
-              ],
+              members: Object.entries(this.getEndpointStatusCodes(ctx, endpoint))
+                .filter(([key]) => !key.startsWith('2'))
+                .map(([key, value]) => {
+                  return ts.property(key, { value: ts.string(value.parser) });
+                }),
             })
           }`}
               }`}

@@ -135,7 +135,7 @@ export function driverTsConfig(): string {
  * **`tsc`'s exit code is ignored, but a driver diagnostic is not** — the same distinction the Angular leg's
  * guard draws, for the same reason: a diagnostic in the generated **tree** must not stop the run (tier 3 owns
  * those as committed snapshots, and a tree that type-checks imperfectly but runs is still informative here),
- * while a diagnostic in the handwritten **driver** must, because the driver is in no Deno module graph and a
+ * while a diagnostic in the handwritten **driver** must, because the driver is in no host `tsc` project and a
  * driver call that does not type-check but still runs makes the whole leg's premise worthless. The guard
  * differs from the Angular leg's only in what it greps for: the driver there is a single `driver.ts`, so
  * `driver\.ts(` pins the diagnostic to that file. Here the driver is four files (`adapter.ts`, `server.ts`,

@@ -1,3 +1,5 @@
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import {
@@ -62,14 +64,14 @@ export async function runTsc(
 
   const image = await buildImage('node', CONTEXT_DIR);
 
-  const runDir = await Deno.makeTempDir({ prefix: 'goast-tsc-' });
+  const runDir = await mkdtemp(join(tmpdir(), 'goast-tsc-'));
   try {
     const treeRoot = join(repoRootDir, 'test', 'output', 'typescript', profile);
     const include = units.flatMap((unit) => [
       `${TREE_MOUNT}/${unit.versionDir}/${unit.spec}/**/*`,
       `${TREE_MOUNT}/${unit.versionDir}/${unit.spec}/**/.*`,
     ]);
-    await Deno.writeTextFile(
+    await writeFile(
       join(runDir, 'tsconfig.json'),
       JSON.stringify(
         {
@@ -134,7 +136,7 @@ export async function runTsc(
       // `check.mjs` (like `tsc` itself) reports each file relative to the container's working
       // directory, which `runContainer` sets to `TREE_MOUNT` above. Restoring the `TREE_MOUNT` prefix
       // here is what lets `attribute`, `relativizeDiagnostic`, and `normalizeMessageUrls` below treat a
-      // diagnostic's file exactly like Task 2's `deno check` runner does: an absolute, container-rooted
+      // diagnostic's file exactly like the host `tsc` runner does: an absolute, container-rooted
       // path to relativize against a unit's own tree.
       .map((diagnostic) =>
         diagnostic.file === '' ? diagnostic : { ...diagnostic, file: `${TREE_MOUNT}/${diagnostic.file}` }
@@ -164,7 +166,7 @@ export async function runTsc(
 
     return results;
   } finally {
-    await Deno.remove(runDir, { recursive: true });
+    await rm(runDir, { recursive: true, force: true });
   }
 }
 

@@ -4,7 +4,7 @@ import type { ApiCase, RecordedBody, RecordedRequest, RecordedResponse } from '.
  * Headers the comparison drops.
  *
  * These are set by the runtime, not by the generated client, so asserting them would make the tier
- * fail on a Deno upgrade rather than on a generator change. Everything else survives, because a
+ * fail on a runtime upgrade rather than on a generator change. Everything else survives, because a
  * header the generator *does* control is exactly what tier 4 is for.
  */
 export const IGNORED_HEADERS: ReadonlySet<string> = new Set([

@@ -295,7 +295,6 @@ function transformHeader(
   const id = context.idGenerator.generateId('header');
   if (isSchema(header)) {
     h = {
-      // deno-lint-ignore no-explicit-any
       $src: Object.assign({}, header.$src, { component: header }) as any,
       $ref: ref as ApiHeader['$ref'],
       id,
@@ -311,7 +310,6 @@ function transformHeader(
     };
   } else {
     h = {
-      // deno-lint-ignore no-explicit-any
       $src: Object.assign({}, header.$src, { component: header }) as any,
       $ref: ref as ApiHeader['$ref'],
       id,

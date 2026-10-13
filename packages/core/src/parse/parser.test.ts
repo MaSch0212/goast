@@ -1,8 +1,8 @@
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { expect } from '@std/expect';
-import { afterEach, beforeEach, describe, it } from '@std/testing/bdd';
-import { stub } from '@std/testing/mock';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { OpenApiParser } from './parser.ts';
 
@@ -10,17 +10,17 @@ describe('OpenApiParser', () => {
   let dir: string;
 
   beforeEach(async () => {
-    dir = await Deno.makeTempDir({ prefix: 'goast-parser-' });
+    dir = await mkdtemp(join(tmpdir(), 'goast-parser-'));
   });
 
   afterEach(async () => {
-    await Deno.remove(dir, { recursive: true });
+    await rm(dir, { recursive: true });
   });
 
   /** Writes `content` to `name` under the temp dir and returns its absolute path. */
   async function write(name: string, content: string): Promise<string> {
     const file = join(dir, name);
-    await Deno.writeTextFile(file, content);
+    await writeFile(file, content);
     return file;
   }
 
@@ -50,19 +50,17 @@ paths: {}
   });
 
   it('propagates a read failure for a file that does not exist', async () => {
-    await expect(new OpenApiParser().parseApi(join(dir, 'missing.yml'))).rejects.toThrow();
+    await expect(new OpenApiParser().parseApi(join(dir, 'missing.yml'))).rejects.toMatchObject({ code: 'ENOENT' });
   });
 
   it('treats an http(s) name as a URL and names it verbatim when the download fails', async () => {
     // A real request to a refused port took a measured ~2s on this host (see report), well past
     // the tens-of-milliseconds budget for this file, so this stubs `fetch` instead — the
     // constraint bans stubbing the filesystem, not `fetch`. This is the only test in the suite
-    // that touches the network surface, and it is stubbed for its whole body: `fetchStub.restore()`
+    // that touches the network surface, and it is stubbed for its whole body: `fetchSpy.mockRestore()`
     // runs in `finally` so the real `fetch` is back even if the assertion fails, and because
     // nothing here awaits past the `finally`, no request can escape into a later test.
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(
       () => Promise.resolve(new Response(null, { status: 404, statusText: 'Not Found' })),
     );
     try {
@@ -70,7 +68,7 @@ paths: {}
         'Unable to download http://example.test/api.yml: Not Found',
       );
     } finally {
-      fetchStub.restore();
+      fetchSpy.mockRestore();
     }
   });
 
@@ -311,13 +309,13 @@ paths: {}
     // the real branch means changing the process's cwd, which is global state — chdir into the
     // temp dir, pass a bare file name, and restore the original cwd in `finally` so a failure
     // here cannot leak into any other test in this run.
-    const originalCwd = Deno.cwd();
-    Deno.chdir(dir);
+    const originalCwd = process.cwd();
+    process.chdir(dir);
     try {
       const doc = await new OpenApiParser().parseApi('api.yml');
       expect(doc.info!.title).toBe('Relative');
     } finally {
-      Deno.chdir(originalCwd);
+      process.chdir(originalCwd);
     }
   });
 });

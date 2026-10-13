@@ -25,14 +25,13 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
     importType?: Nullable<TypeScriptImportType>;
   }
 >;
+// oxlint-disable-next-line no-unused-vars -- keeps call sites generic over TBuilder
 type FactoryOptions<TBuilder extends SourceBuilder> = {
   importType?: Nullable<TypeScriptImportType>;
 };
 
 type _AddImportHandler<T> = {
-  // deno-lint-ignore no-explicit-any
   builderClass: abstract new (...args: any[]) => T;
-  // deno-lint-ignore no-explicit-any
   handler: (builder: T, reference: TsReference<any>) => void;
 };
 
@@ -40,7 +39,6 @@ export class TsReference<TBuilder extends SourceBuilder, TInjects extends string
   TBuilder,
   TInjects | Injects
 > {
-  // deno-lint-ignore no-explicit-any
   private static readonly addImportHandlers: _AddImportHandler<any>[] = [
     {
       builderClass: TypeScriptFileBuilder,

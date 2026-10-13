@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 
-import { describe, it } from '@std/testing/bdd';
+import { describe, it } from 'vitest';
 
 import { OpenApiGenerator } from '@goast/core';
 import { discoverSpecs, profileSnapshotPaths, snapshotRootDir, verifyProfile } from '@goast/test-harness';

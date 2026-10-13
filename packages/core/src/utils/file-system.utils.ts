@@ -1,6 +1,5 @@
 import { basename, dirname, join, resolve } from 'node:path';
 
-// @deno-types="npm:@types/fs-extra@11"
 import fs from 'fs-extra';
 
 import type { OpenApiGeneratorConfig } from '../codegen/config.ts';

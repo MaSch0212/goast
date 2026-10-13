@@ -1,6 +1,6 @@
 import { join, relative } from 'node:path';
 
-import { it } from '@std/testing/bdd';
+import { it } from 'vitest';
 
 import { compileSnapshotFile, discoverCompileUnits, discoverSpecs, findOrphanFiles } from '@goast/test-harness';
 
@@ -20,7 +20,7 @@ it('has no orphaned compile snapshots', async () => {
   // Spelled out rather than left as a bare `toEqual([])` diff, because the fix is not the one a
   // snapshot failure usually implies: no mode deletes these. `verifyCompileDiagnostics` removes a
   // stale snapshot only for a unit `discoverCompileUnits` still finds, and an orphan by definition
-  // has no unit — so `deno task test:compile` will not clear it however many times it is run.
+  // has no unit — so `pnpm test:compile` will not clear it however many times it is run.
   throw new Error(
     `${orphans.length} committed compile snapshot(s) belong to no discovered unit:\n` +
       orphans.map((path) => `  ${join(compileRootDir, path)}`).join('\n') +

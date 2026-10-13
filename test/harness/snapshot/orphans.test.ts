@@ -1,7 +1,8 @@
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { findOrphanFiles, findOrphanSnapshots } from './orphans.ts';
 
@@ -9,16 +10,16 @@ async function withTree(
   files: string[],
   fn: (root: string) => Promise<void>,
 ): Promise<void> {
-  const root = await Deno.makeTempDir({ prefix: 'goast-orphans-' });
+  const root = await mkdtemp(join(tmpdir(), 'goast-orphans-'));
   try {
     for (const file of files) {
       const path = join(root, ...file.split('/'));
-      await Deno.mkdir(join(path, '..'), { recursive: true });
-      await Deno.writeTextFile(path, 'x');
+      await mkdir(join(path, '..'), { recursive: true });
+      await writeFile(path, 'x');
     }
     await fn(root);
   } finally {
-    await Deno.remove(root, { recursive: true });
+    await rm(root, { recursive: true });
   }
 }
 

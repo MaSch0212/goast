@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { derefAt, derefSchemaAt } from '../parse/deref.test-utils.ts';
 import type { OpenApiDocument } from '../parse/openapi-types.ts';
@@ -7,7 +6,6 @@ import type { Deref } from '../parse/types.ts';
 import { collectOpenApi } from './collector.ts';
 
 /** Wraps a plain document literal as the parser would, at the document root. */
-// deno-lint-ignore no-explicit-any
 function doc(value: Record<string, any>): Deref<OpenApiDocument> {
   return derefAt('', value) as unknown as Deref<OpenApiDocument>;
 }
@@ -295,7 +293,6 @@ describe('collectOpenApi', () => {
     });
 
     it('terminates on a self-referential schema', () => {
-      // deno-lint-ignore no-explicit-any
       const node: any = { type: 'object', properties: {} };
       const proxied = derefSchemaAt('/components/schemas/Node', node);
       // Point the schema at itself after proxying, which is the shape a $ref cycle produces.

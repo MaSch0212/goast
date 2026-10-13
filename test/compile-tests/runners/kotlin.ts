@@ -1,4 +1,6 @@
 import { createHash } from 'node:crypto';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import {
@@ -12,6 +14,7 @@ import {
   normalizeMessageUrls,
   relativizeDiagnostic,
   repoRootDir,
+  runCommand,
   runContainer,
 } from '@goast/test-harness';
 import { parseKotlinDiagnostics } from '../../harness/compile/parse-kotlin.ts';
@@ -149,7 +152,7 @@ export type GradleWorkMode = 'persistent' | 'ephemeral';
  * no prior state to reuse and nothing to gain from pretending otherwise.
  */
 export function resolveGradleWorkMode(
-  get: (key: string) => string | undefined = (key) => Deno.env.get(key),
+  get: (key: string) => string | undefined = (key) => process.env[key],
 ): GradleWorkMode {
   const explicit = get('GOAST_GRADLE_CACHE');
   if (explicit !== undefined && explicit !== '') {
@@ -409,11 +412,11 @@ export async function runKotlin(units: readonly CompileUnit[]): Promise<Map<stri
   const { settings, build, projectIds } = synthesizeGradleBuild(units, TREE_MOUNT);
 
   const workMode = resolveGradleWorkMode();
-  const seedDir = await Deno.makeTempDir({ prefix: 'goast-gradle-seed-' });
+  const seedDir = await mkdtemp(join(tmpdir(), 'goast-gradle-seed-'));
   try {
-    await Deno.writeTextFile(join(seedDir, 'settings.gradle.kts'), settings);
-    await Deno.writeTextFile(join(seedDir, 'build.gradle.kts'), build);
-    await Deno.writeTextFile(join(seedDir, 'gradle.properties'), gradleProperties(workMode));
+    await writeFile(join(seedDir, 'settings.gradle.kts'), settings);
+    await writeFile(join(seedDir, 'build.gradle.kts'), build);
+    await writeFile(join(seedDir, 'gradle.properties'), gradleProperties(workMode));
 
     // Still no named volume over `GRADLE_USER_HOME`: `--offline` never downloads anything at run time,
     // so a dependency-cache volume cannot accumulate value across runs — it can only go stale. Docker
@@ -546,7 +549,7 @@ export async function runKotlin(units: readonly CompileUnit[]): Promise<Map<stri
   } finally {
     // Cleanup must never fail a run: this `finally` would replace a complete, passing result with the
     // error. A seed dir left behind is housekeeping for the OS temp reaper, so it warns instead.
-    await Deno.remove(seedDir, { recursive: true }).catch((error: unknown) => {
+    await rm(seedDir, { recursive: true, force: true }).catch((error: unknown) => {
       console.warn(
         `could not remove the Gradle seed directory ${seedDir}: ${error instanceof Error ? error.message : error}. ` +
           'Leaving it behind rather than failing a run whose results are already computed.',
@@ -556,23 +559,19 @@ export async function runKotlin(units: readonly CompileUnit[]): Promise<Map<stri
 }
 
 /**
- * Removes this checkout's persistent Gradle project dir volume. Backs `deno task test:compile:clean`.
+ * Removes this checkout's persistent Gradle project dir volume. Backs `pnpm test:compile:clean`.
  *
  * A missing volume is fine — there is nothing to clean. A volume Docker refuses to remove (in use by a
  * running gate) is not: the caller asked for a cold next run and would silently not get one.
  */
 export async function cleanGradleWorkCache(): Promise<void> {
   const name = gradleWorkVolumeName();
-  const exists = await new Deno.Command('docker', { args: ['volume', 'inspect', name], stdout: 'null', stderr: 'null' })
-    .output();
-  if (!exists.success) return;
+  const exists = await runCommand('docker', ['volume', 'inspect', name], { stdout: 'ignore', stderr: 'ignore' });
+  if (exists.code !== 0) return;
 
-  const removed = await new Deno.Command('docker', { args: ['volume', 'rm', name], stdout: 'null', stderr: 'piped' })
-    .output();
-  if (!removed.success) {
-    throw new Error(
-      `could not remove the Gradle work volume ${name}: ${new TextDecoder().decode(removed.stderr).trim()}`,
-    );
+  const removed = await runCommand('docker', ['volume', 'rm', name], { stdout: 'ignore' });
+  if (removed.code !== 0) {
+    throw new Error(`could not remove the Gradle work volume ${name}: ${removed.stderr.trim()}`);
   }
 }
 

@@ -1,5 +1,7 @@
+import { readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 
+import { isNotFound } from '../fs.ts';
 import { snapshotRootDir } from '../paths.ts';
 import type { DiscoveredSpec } from '../specs.ts';
 import type { CompileUnit, UnitRegistryEntry } from './types.ts';
@@ -43,10 +45,9 @@ export async function discoverCompileUnits(
 
 async function hasFiles(dir: string): Promise<boolean> {
   try {
-    for await (const _ of Deno.readDir(dir)) return true;
-    return false;
+    return (await readdir(dir)).length > 0;
   } catch (error) {
-    if (error instanceof Deno.errors.NotFound) return false;
+    if (isNotFound(error)) return false;
     throw error;
   }
 }

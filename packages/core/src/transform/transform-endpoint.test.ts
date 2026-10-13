@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { derefAt, derefSchemaAt } from '../parse/deref.test-utils.ts';
 import { createTransformerContext } from './transform.test-utils.ts';
@@ -11,9 +10,7 @@ import { transformEndpoint } from './transform-endpoint.ts';
 function endpointInfo(
   path: string,
   method: 'get' | 'post' | 'put' | 'delete',
-  // deno-lint-ignore no-explicit-any
   operation: Record<string, any>,
-  // deno-lint-ignore no-explicit-any
   pathItem: Record<string, any> = {},
 ): OpenApiCollectorEndpointInfo {
   const escaped = path.replace(/\//g, '~1');
@@ -22,7 +19,6 @@ function endpointInfo(
     method,
     pathItem: derefAt(`/paths/${escaped}`, pathItem),
     operation: derefAt(`/paths/${escaped}/${method}`, operation),
-    // deno-lint-ignore no-explicit-any
   } as any;
 }
 
@@ -36,9 +32,7 @@ function endpointInfo(
 function rawEndpointInfo(
   path: string,
   method: 'get' | 'post' | 'put' | 'delete',
-  // deno-lint-ignore no-explicit-any
   pathItem: Record<string, any>,
-  // deno-lint-ignore no-explicit-any
   operation: Record<string, any>,
 ): OpenApiCollectorEndpointInfo {
   const escaped = path.replace(/\//g, '~1');
@@ -47,7 +41,6 @@ function rawEndpointInfo(
     method,
     pathItem,
     operation: derefAt(`/paths/${escaped}/${method}`, operation),
-    // deno-lint-ignore no-explicit-any
   } as any;
 }
 

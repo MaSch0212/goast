@@ -1,7 +1,8 @@
+import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { expect } from '@std/expect';
-import { afterEach, beforeEach, describe, it } from '@std/testing/bdd';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import type { ApiData } from '../transform/api-types.ts';
 import { OpenApiGenerator } from './generator.ts';
@@ -13,11 +14,11 @@ describe('OpenApiGenerator', () => {
   let dir: string;
 
   beforeEach(async () => {
-    dir = await Deno.makeTempDir({ prefix: 'goast-generator-' });
+    dir = await mkdtemp(join(tmpdir(), 'goast-generator-'));
   });
 
   afterEach(async () => {
-    await Deno.remove(dir, { recursive: true });
+    await rm(dir, { recursive: true });
   });
 
   it('runs a registered function provider and returns its output', async () => {
@@ -71,27 +72,27 @@ describe('OpenApiGenerator', () => {
   it('creates the output directory', async () => {
     const out = join(dir, 'out');
     await new OpenApiGenerator({ outputDir: out }).useFn(() => ({})).generate(emptyData());
-    expect((await Deno.stat(out)).isDirectory).toBe(true);
+    expect((await stat(out)).isDirectory()).toBe(true);
   });
 
   it('empties an existing output directory when clearOutputDir is true', async () => {
     const out = join(dir, 'out');
-    await Deno.mkdir(out);
-    await Deno.writeTextFile(join(out, 'stale.txt'), 'old');
+    await mkdir(out);
+    await writeFile(join(out, 'stale.txt'), 'old');
 
     await new OpenApiGenerator({ outputDir: out, clearOutputDir: true }).useFn(() => ({})).generate(emptyData());
 
-    await expect(Deno.stat(join(out, 'stale.txt'))).rejects.toThrow();
+    await expect(stat(join(out, 'stale.txt'))).rejects.toMatchObject({ code: 'ENOENT' });
   });
 
   it('keeps existing files when clearOutputDir is false', async () => {
     const out = join(dir, 'out');
-    await Deno.mkdir(out);
-    await Deno.writeTextFile(join(out, 'stale.txt'), 'old');
+    await mkdir(out);
+    await writeFile(join(out, 'stale.txt'), 'old');
 
     await new OpenApiGenerator({ outputDir: out, clearOutputDir: false }).useFn(() => ({})).generate(emptyData());
 
-    expect(await Deno.readTextFile(join(out, 'stale.txt'))).toBe('old');
+    expect(await readFile(join(out, 'stale.txt'), 'utf8')).toBe('old');
   });
 
   it('accumulates providers on the receiver as well as the returned generator', async () => {
@@ -134,28 +135,28 @@ describe('OpenApiGenerator', () => {
 
   it("clears a provider's own outputDir (from its config) when the generator's clearOutputDir is true", async () => {
     const providerOut = join(dir, 'provider-out');
-    await Deno.mkdir(providerOut);
-    await Deno.writeTextFile(join(providerOut, 'stale.txt'), 'old');
+    await mkdir(providerOut);
+    await writeFile(join(providerOut, 'stale.txt'), 'old');
 
     const generator = new OpenApiGenerator({ outputDir: join(dir, 'out'), clearOutputDir: true })
       .useFn(() => ({}), { outputDir: providerOut } as never);
 
     await generator.generate(emptyData());
 
-    await expect(Deno.stat(join(providerOut, 'stale.txt'))).rejects.toThrow();
+    await expect(stat(join(providerOut, 'stale.txt'))).rejects.toMatchObject({ code: 'ENOENT' });
   });
 
   it("ensures (without clearing) a provider's own outputDir when the generator's clearOutputDir is false", async () => {
     const providerOut = join(dir, 'provider-out');
-    await Deno.mkdir(providerOut);
-    await Deno.writeTextFile(join(providerOut, 'stale.txt'), 'old');
+    await mkdir(providerOut);
+    await writeFile(join(providerOut, 'stale.txt'), 'old');
 
     const generator = new OpenApiGenerator({ outputDir: join(dir, 'out'), clearOutputDir: false })
       .useFn(() => ({}), { outputDir: providerOut } as never);
 
     await generator.generate(emptyData());
 
-    expect(await Deno.readTextFile(join(providerOut, 'stale.txt'))).toBe('old');
+    expect(await readFile(join(providerOut, 'stale.txt'), 'utf8')).toBe('old');
   });
 
   it("creates a provider's own outputDir when it does not exist yet, regardless of clearOutputDir", async () => {
@@ -166,7 +167,7 @@ describe('OpenApiGenerator', () => {
 
     await generator.generate(emptyData());
 
-    expect((await Deno.stat(providerOut)).isDirectory).toBe(true);
+    expect((await stat(providerOut)).isDirectory()).toBe(true);
   });
 
   it('ignores a provider config outputDir that is not a non-empty string', async () => {
@@ -202,7 +203,7 @@ describe('OpenApiGenerator', () => {
 
   it('parseAndGenerate parses real spec files and feeds the resulting data to the providers', async () => {
     const file = join(dir, 'api.yml');
-    await Deno.writeTextFile(
+    await writeFile(
       file,
       `openapi: 3.0.0\ninfo:\n  title: Test\n  version: '1.0'\npaths: {}\n`,
     );
@@ -215,14 +216,14 @@ describe('OpenApiGenerator', () => {
 
   it('parseAndGenerateFromDir only picks up .yml/.yaml/.json files, further narrowed by an optional filter', async () => {
     const specDir = join(dir, 'specs');
-    await Deno.mkdir(specDir);
+    await mkdir(specDir);
     const minimalYaml = `openapi: 3.0.0\ninfo:\n  title: Test\n  version: '1.0'\npaths: {}\n`;
     const minimalJson = JSON.stringify({ openapi: '3.0.0', info: { title: 'Test', version: '1.0' }, paths: {} });
 
-    await Deno.writeTextFile(join(specDir, 'a.yml'), minimalYaml);
-    await Deno.writeTextFile(join(specDir, 'b.yaml'), minimalYaml);
-    await Deno.writeTextFile(join(specDir, 'c.json'), minimalJson);
-    await Deno.writeTextFile(join(specDir, 'notes.txt'), 'not a spec');
+    await writeFile(join(specDir, 'a.yml'), minimalYaml);
+    await writeFile(join(specDir, 'b.yaml'), minimalYaml);
+    await writeFile(join(specDir, 'c.json'), minimalJson);
+    await writeFile(join(specDir, 'notes.txt'), 'not a spec');
 
     const withDocCount = (context: OpenApiGeneratorContext<Record<string, unknown>>) => ({
       docCount: context.data.documents.length,

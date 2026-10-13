@@ -106,7 +106,7 @@ export function driverTsConfig(): string {
  *   * A diagnostic in the **handwritten driver** must stop the run, because this whole target's rationale is
  *     that writing the call in typed TypeScript *is* the assertion that the generated signature is usable.
  *     That assertion is worth nothing if a driver which does not type-check still runs, and the driver is in
- *     no Deno module graph, so nothing else checks it. Measured before this guard existed: injecting
+ *     no host `tsc` project, so nothing else checks it. Measured before this guard existed: injecting
  *     `pets.getPet({ id: 'abc', bogusNotAParam: 1 })` — a `TS2353` — left the entire leg green with the
  *     artifacts unchanged.
  *

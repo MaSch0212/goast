@@ -1,4 +1,3 @@
-// deno-lint-ignore-file no-explicit-any
 export function classifyArray<TItem, TClassification extends Record<string, abstract new (...args: any[]) => any>>(
   items: Iterable<TItem>,
   classification: TClassification,

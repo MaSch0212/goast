@@ -1,9 +1,9 @@
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { expect } from '@std/expect';
-import { afterEach, beforeEach, describe, it } from '@std/testing/bdd';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-// @deno-types="npm:@types/fs-extra@11"
 import fs from 'fs-extra';
 
 import type { OpenApiGeneratorConfig } from '../codegen/config.ts';
@@ -17,11 +17,11 @@ describe('writeGeneratedFile', () => {
   let tempDir: string;
 
   beforeEach(async () => {
-    tempDir = await Deno.makeTempDir();
+    tempDir = await mkdtemp(join(tmpdir(), 'goast-fs-utils-'));
   });
 
   afterEach(async () => {
-    await Deno.remove(tempDir, { recursive: true });
+    await rm(tempDir, { recursive: true });
   });
 
   describe("existingFileBehavior: 'count'", () => {

@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { derefAt } from '../parse/deref.test-utils.ts';
 import { createTransformerContext } from './transform.test-utils.ts';
@@ -8,7 +7,6 @@ import type { OpenApiDocument } from '../parse/openapi-types.ts';
 import type { Deref } from '../parse/types.ts';
 import { transformDocument } from './transform-document.ts';
 
-// deno-lint-ignore no-explicit-any
 const doc = (value: Record<string, any>) => derefAt('', value) as unknown as Deref<OpenApiDocument>;
 
 describe('transformDocument', () => {

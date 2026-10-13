@@ -1,5 +1,8 @@
+import { mkdtemp, rm, stat } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+import { isNotFound } from '../fs.ts';
 import { captureConsole } from './capture-console.ts';
 import { resolveSnapshotMode, type VerifyOptions } from './mode.ts';
 import { replaceOutputDir } from './normalize.ts';
@@ -42,7 +45,7 @@ export async function verifyProfile(
   options: VerifyOptions = {},
 ): Promise<void> {
   const mode = options.mode ?? resolveSnapshotMode();
-  const outputDir = await Deno.makeTempDir({ prefix: 'goast-snapshot-' });
+  const outputDir = await mkdtemp(join(tmpdir(), 'goast-snapshot-'));
 
   try {
     const run = await captureConsole(() => generate(outputDir));
@@ -57,7 +60,7 @@ export async function verifyProfile(
         for (const stale of [snapshot.treeDir, snapshot.stateFile]) {
           if (await pathExists(stale)) {
             failures.push(
-              `Generation failed, but ${stale} is still committed. Run \`deno task test:output\` ` +
+              `Generation failed, but ${stale} is still committed. Run \`pnpm test:output\` ` +
                 'and commit the result.',
             );
           }
@@ -90,7 +93,7 @@ export async function verifyProfile(
       if (mode === 'check') {
         throw new Error(
           `Generation for ${snapshot.treeDir} no longer fails, but ${snapshot.errorFile} is still ` +
-            'committed. Run `deno task test:output` and commit the result.',
+            'committed. Run `pnpm test:output` and commit the result.',
         );
       }
       await removePath(snapshot.errorFile);
@@ -119,7 +122,7 @@ export async function verifyProfile(
     }
     if (failures.length > 0) throw new Error(failures.join('\n\n'));
   } finally {
-    await Deno.remove(outputDir, { recursive: true });
+    await rm(outputDir, { recursive: true });
   }
 }
 
@@ -137,18 +140,18 @@ function formatGenerationError(error: unknown, outputDir: string): string {
 
 async function pathExists(path: string): Promise<boolean> {
   try {
-    await Deno.stat(path);
+    await stat(path);
     return true;
   } catch (error) {
-    if (error instanceof Deno.errors.NotFound) return false;
+    if (isNotFound(error)) return false;
     throw error;
   }
 }
 
-async function removePath(path: string, options: Deno.RemoveOptions = {}): Promise<void> {
+async function removePath(path: string, options: { recursive?: boolean } = {}): Promise<void> {
   try {
-    await Deno.remove(path, options);
+    await rm(path, options);
   } catch (error) {
-    if (!(error instanceof Deno.errors.NotFound)) throw error;
+    if (!isNotFound(error)) throw error;
   }
 }

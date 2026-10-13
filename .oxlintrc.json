@@ -1,0 +1,57 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "typescript",
+    "unicorn",
+    "oxc",
+    "import",
+    "node",
+    "vitest"
+  ],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ],
+    "vitest/no-conditional-tests": "off",
+    "vitest/valid-title": "off",
+    "vitest/valid-expect": [
+      "error",
+      {
+        "maxArgs": 2
+      }
+    ],
+    "vitest/expect-expect": [
+      "error",
+      {
+        "assertFunctionNames": [
+          "expect",
+          "expect*",
+          "verify*",
+          "assert*",
+          "run*",
+          "findOrphan*",
+          "waitFor*"
+        ]
+      }
+    ]
+  },
+  "ignorePatterns": [
+    "npm/**",
+    "**/dist/**",
+    "coverage/**",
+    ".goast-cache/**",
+    "test/output/**",
+    "test/compile/**",
+    "test/wire/**",
+    "playground.ts",
+    "**/assets/**"
+  ]
+}

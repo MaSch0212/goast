@@ -1,6 +1,8 @@
+import type { Stats } from 'node:fs';
+import { stat } from 'node:fs/promises';
 import { relative } from 'node:path';
 
-import { walk } from '@std/fs/walk';
+import { isNotFound, walkFiles } from '../fs.ts';
 
 /**
  * Finds committed snapshots that nothing claims any more.
@@ -21,17 +23,17 @@ export async function findOrphanSnapshots(root: string, expected: Iterable<strin
   const claimed = new Set(expected);
   const orphans = new Set<string>();
 
-  let info: Deno.FileInfo;
+  let info: Stats;
   try {
-    info = await Deno.stat(root);
+    info = await stat(root);
   } catch (error) {
-    if (error instanceof Deno.errors.NotFound) return [];
+    if (isNotFound(error)) return [];
     throw error;
   }
-  if (!info.isDirectory) throw new Error(`Not a directory: ${root}`);
+  if (!info.isDirectory()) throw new Error(`Not a directory: ${root}`);
 
-  for await (const entry of walk(root, { includeDirs: false, includeSymlinks: false })) {
-    const path = relative(root, entry.path).replace(/\\/g, '/');
+  for (const file of await walkFiles(root)) {
+    const path = relative(root, file).replace(/\\/g, '/');
     if (claimed.has(path)) continue;
 
     const base = findUnclaimedBase(path, claimed);
@@ -96,17 +98,17 @@ export async function findOrphanFiles(root: string, expected: Iterable<string>):
   const claimed = new Set(expected);
   const orphans: string[] = [];
 
-  let info: Deno.FileInfo;
+  let info: Stats;
   try {
-    info = await Deno.stat(root);
+    info = await stat(root);
   } catch (error) {
-    if (error instanceof Deno.errors.NotFound) return [];
+    if (isNotFound(error)) return [];
     throw error;
   }
-  if (!info.isDirectory) throw new Error(`Not a directory: ${root}`);
+  if (!info.isDirectory()) throw new Error(`Not a directory: ${root}`);
 
-  for await (const entry of walk(root, { includeDirs: false, includeSymlinks: false })) {
-    const path = relative(root, entry.path).replace(/\\/g, '/');
+  for (const file of await walkFiles(root)) {
+    const path = relative(root, file).replace(/\\/g, '/');
     if (!claimed.has(path)) orphans.push(path);
   }
 

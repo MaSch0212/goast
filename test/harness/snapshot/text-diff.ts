@@ -70,7 +70,7 @@ export function formatMismatchReport(
     lines.push('', `  ... and ${diff.changed.length - detailed.length} more changed file(s)`);
   }
 
-  lines.push('', 'Run `deno task test:output` to update the snapshot, then commit the result.');
+  lines.push('', 'Run `pnpm test:output` to update the snapshot, then commit the result.');
   return lines.join('\n');
 }
 

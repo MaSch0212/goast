@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "customConditions": ["source"]
+  },
+  "include": ["packages", "test", "scripts", "*.ts"],
+  "exclude": [
+    "**/node_modules",
+    "**/dist",
+    "**/assets",
+    "npm",
+    "test/output",
+    "test/compile",
+    "test/wire",
+    "test/docker",
+    "test/integration/angular-services/driver",
+    "test/integration/easy-network-stub/driver",
+    "test/integration/fetch-clients/driver.ts",
+    "test/integration/k6-clients/probe.js"
+  ]
+}

@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import type { ApiCase } from '../cases/types.ts';
 import { buildQueryString, describeTransportFailure, issueCase } from './ref-client.ts';
@@ -159,9 +158,9 @@ describe('issueCase', () => {
 });
 
 describe('describeTransportFailure', () => {
-  // Deno's actual shape, captured against a container that destroyed the socket mid-request. The point
-  // of the helper is that `error.message` here is only `fetch failed`.
-  const denoShape = new TypeError('fetch failed', {
+  // A runtime's actual shape, captured against a container that destroyed the socket mid-request. The
+  // point of the helper is that `error.message` here is only `fetch failed`.
+  const destroyedSocket = new TypeError('fetch failed', {
     cause: new Error(
       'error sending request from 127.0.0.1:62673 for http://127.0.0.1:62661/styles/a,b ' +
         '(127.0.0.1:62661): client error (SendRequest): connection closed before message completed',
@@ -169,7 +168,7 @@ describe('describeTransportFailure', () => {
   });
 
   it('keeps the cause text, which is the only part that says what failed', () => {
-    expect(describeTransportFailure(denoShape)).toContain('connection closed before message completed');
+    expect(describeTransportFailure(destroyedSocket)).toContain('connection closed before message completed');
   });
 
   it('is stable across runs that differ only in ephemeral ports', () => {
@@ -182,8 +181,8 @@ describe('describeTransportFailure', () => {
 
     // Not a tautology: the two inputs differ, and the assertion below proves it before comparing the
     // outputs. An earlier helper elsewhere in this repo compared a value with itself for a year.
-    expect(other.cause).not.toEqual(denoShape.cause);
-    expect(describeTransportFailure(other)).toEqual(describeTransportFailure(denoShape));
+    expect(other.cause).not.toEqual(destroyedSocket.cause);
+    expect(describeTransportFailure(other)).toEqual(describeTransportFailure(destroyedSocket));
   });
 
   it('tells a destroyed socket apart from a server that was never there', () => {
@@ -193,7 +192,7 @@ describe('describeTransportFailure', () => {
       cause: new Error('error sending request for url (http://127.0.0.1:1/x): connection refused'),
     });
 
-    expect(describeTransportFailure(refused)).not.toEqual(describeTransportFailure(denoShape));
+    expect(describeTransportFailure(refused)).not.toEqual(describeTransportFailure(destroyedSocket));
   });
 
   it('handles a thrown value that is not an Error', () => {

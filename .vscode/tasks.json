@@ -3,8 +3,8 @@
   "tasks": [
     {
       "type": "shell",
-      "label": "🧰 Build NPM packages",
-      "command": "deno task npm",
+      "label": "🧰 Build packages",
+      "command": "pnpm build",
       "problemMatcher": [],
       "group": {
         "kind": "build",
@@ -13,8 +13,8 @@
     },
     {
       "type": "shell",
-      "label": "🧰 Build Core NPM package",
-      "command": "deno task npm:core",
+      "label": "🧰 Build Core package",
+      "command": "pnpm build:core",
       "problemMatcher": [],
       "group": {
         "kind": "build",
@@ -23,8 +23,8 @@
     },
     {
       "type": "shell",
-      "label": "🧰 Build Koltin NPM package",
-      "command": "deno task npm:kotlin",
+      "label": "🧰 Build Kotlin package",
+      "command": "pnpm build:kotlin",
       "problemMatcher": [],
       "group": {
         "kind": "build",
@@ -33,8 +33,8 @@
     },
     {
       "type": "shell",
-      "label": "🧰 Build TypeScript NPM package",
-      "command": "deno task npm:typescript",
+      "label": "🧰 Build TypeScript package",
+      "command": "pnpm build:typescript",
       "problemMatcher": [],
       "group": {
         "kind": "build",
@@ -44,7 +44,7 @@
     {
       "type": "shell",
       "label": "🧪 Test",
-      "command": "deno test -A",
+      "command": "pnpm test",
       "problemMatcher": [],
       "group": {
         "kind": "test",
@@ -54,14 +54,14 @@
     {
       "type": "shell",
       "label": "🔎 Lint",
-      "command": "deno lint",
+      "command": "pnpm lint",
       "problemMatcher": [],
       "group": "test"
     },
     {
       "type": "shell",
       "label": "🛝 Run Playground",
-      "command": "deno task pg",
+      "command": "pnpm pg",
       "problemMatcher": [],
       "group": "test"
     }

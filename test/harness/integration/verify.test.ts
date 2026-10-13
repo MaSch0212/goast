@@ -1,7 +1,8 @@
+import { lstat, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { verifyWireDeviations, wireSnapshotFile } from './verify.ts';
 
@@ -15,39 +16,39 @@ describe('wireSnapshotFile', () => {
 
 describe('verifyWireDeviations', () => {
   it('writes the deviations in write mode', async () => {
-    const dir = await Deno.makeTempDir({ prefix: 'goast-wire-' });
+    const dir = await mkdtemp(join(tmpdir(), 'goast-wire-'));
     try {
       const file = join(dir, 'case.txt');
       await verifyWireDeviations(file, 'path\n  expected /a\n  actual   /b\n', { mode: 'write' });
 
-      expect(await Deno.readTextFile(file)).toBe('path\n  expected /a\n  actual   /b\n');
+      expect(await readFile(file, 'utf8')).toBe('path\n  expected /a\n  actual   /b\n');
     } finally {
-      await Deno.remove(dir, { recursive: true });
+      await rm(dir, { recursive: true });
     }
   });
 
   it('removes a stale file in write mode when the case now conforms', async () => {
-    const dir = await Deno.makeTempDir({ prefix: 'goast-wire-' });
+    const dir = await mkdtemp(join(tmpdir(), 'goast-wire-'));
     try {
       const file = join(dir, 'case.txt');
-      await Deno.writeTextFile(file, 'stale\n');
+      await writeFile(file, 'stale\n');
       await verifyWireDeviations(file, '', { mode: 'write' });
 
-      await expect(Deno.lstat(file)).rejects.toThrow();
+      await expect(lstat(file)).rejects.toMatchObject({ code: 'ENOENT' });
     } finally {
-      await Deno.remove(dir, { recursive: true });
+      await rm(dir, { recursive: true });
     }
   });
 
   it('refuses in check mode when the case now conforms', async () => {
-    const dir = await Deno.makeTempDir({ prefix: 'goast-wire-' });
+    const dir = await mkdtemp(join(tmpdir(), 'goast-wire-'));
     try {
       const file = join(dir, 'case.txt');
-      await Deno.writeTextFile(file, 'stale\n');
+      await writeFile(file, 'stale\n');
 
       await expect(verifyWireDeviations(file, '', { mode: 'check' })).rejects.toThrow('no longer deviates');
     } finally {
-      await Deno.remove(dir, { recursive: true });
+      await rm(dir, { recursive: true });
     }
   });
 });

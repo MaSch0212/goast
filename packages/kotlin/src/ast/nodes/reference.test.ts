@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { beforeEach, describe, it } from '@std/testing/bdd';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import type { KotlinImport } from '../../common-results.ts';
 import { KotlinFileBuilder } from '../../file-builder.ts';
@@ -25,12 +24,12 @@ describe('ktReference', () => {
   it('should add import to builder', () => {
     builder.append(ktReference('MyClass', 'my-package'));
     expect(builder.imports.imports).toEqual(
-      <KotlinImport[]> [
+      [
         {
           typeName: 'MyClass',
           packageName: 'my-package',
         },
-      ],
+      ] as KotlinImport[],
     );
   });
 

@@ -1,7 +1,6 @@
 import { join } from 'node:path';
 
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import {
   buildImage,
@@ -32,10 +31,10 @@ import {
 
 /**
  * Tier 4's Angular leg is opt-in for the same reason the Kotlin leg and tier 3 are
- * (`test/integration/kotlin-clients/integration.test.ts:29`): `deno task test` must never start Docker
- * on its own. `deno task test:integration:angular` sets this.
+ * (`test/integration/kotlin-clients/integration.test.ts:29`): `pnpm test` must never start Docker
+ * on its own. `pnpm test:integration:angular` sets this.
  */
-const enabled = (Deno.env.get('GOAST_INTEGRATION') ?? '') !== '';
+const enabled = (process.env.GOAST_INTEGRATION ?? '') !== '';
 
 const CONTEXT_DIR = join(repoRootDir, 'test', 'docker', 'node');
 
@@ -140,129 +139,131 @@ function attributeSurplus(
 // daemon should fail immediately and loudly, not after this file has already spun up a reference server.
 if (enabled) await requireDocker();
 
-if (enabled) {
-  describe(`integration/${PROFILE}`, () => {
-    it('drives every client case and records its deviations', async () => {
-      const cases = casesFor(PROFILE, 'client');
-      // `0.0.0.0`, not loopback: the driver runs inside a container and reaches the server through
-      // `host.docker.internal`, which only routes to an interface the host actually bound.
-      const server = await startRefServer(cases, { hostname: '0.0.0.0' });
+describe.skipIf(!enabled)(`integration/${PROFILE}`, () => {
+  it('drives every client case and records its deviations', async () => {
+    const cases = casesFor(PROFILE, 'client');
+    // `0.0.0.0`, not loopback: the driver runs inside a container and reaches the server through
+    // `host.docker.internal`, which only routes to an interface the host actually bound.
+    const server = await startRefServer(cases, { hostname: '0.0.0.0' });
 
-      let output: string;
-      try {
-        const image = await buildImage('node', CONTEXT_DIR);
-        // Same invocation shape as `smoke.test.ts`: the image's ENTRYPOINT is tier 3's type-check
-        // script, so this leg replaces it with a shell pipeline that writes the tsconfig, compiles,
-        // then runs the emitted driver against the host-side reference server.
-        const result = await runContainer({
-          image,
-          entrypoint: 'sh',
-          args: [
-            '-c',
-            `mkdir -p ${OUT_DIR} && printf '%s' '${
-              driverTsConfig().replaceAll("'", "'\\''")
-            }' > ${OUT_DIR}/tsconfig.json && ` +
+    let output: string;
+    try {
+      const image = await buildImage('node', CONTEXT_DIR);
+      // Same invocation shape as `smoke.test.ts`: the image's ENTRYPOINT is tier 3's type-check
+      // script, so this leg replaces it with a shell pipeline that writes the tsconfig, compiles,
+      // then runs the emitted driver against the host-side reference server.
+      const result = await runContainer({
+        image,
+        entrypoint: 'sh',
+        args: [
+          '-c',
+          `mkdir -p ${OUT_DIR} && printf '%s' '${driverTsConfig().replaceAll(
+            "'",
+            "'\\''",
+          )}' > ${OUT_DIR}/tsconfig.json && ` +
             `${buildCommand()} && node ${OUT_DIR}/driver/driver.js http://host.docker.internal:${server.port}`,
-          ],
-          mounts: [
-            { source: TREE_DIR, target: TREE_MOUNT, readOnly: true },
-            { source: DRIVER_DIR, target: DRIVER_MOUNT, readOnly: true },
-          ],
-          hostGateway: true,
-        });
+        ],
+        mounts: [
+          { source: TREE_DIR, target: TREE_MOUNT, readOnly: true },
+          { source: DRIVER_DIR, target: DRIVER_MOUNT, readOnly: true },
+        ],
+        hostGateway: true,
+      });
 
-        // Asserted before the exit code: a killed run's output is whatever happened to flush before the
-        // signal landed, so neither "clean" nor "these are all the case results" is a safe reading of
-        // it, and a timeout that surfaced as a non-zero exit code would be misreported as a driver
-        // failure.
-        expect(result.timedOut, `the container timed out\n${result.stdout}${result.stderr}`).toBe(false);
-        expect(result.code, `driver container exited ${result.code}\n${result.stdout}\n${result.stderr}`)
-          .toBe(0);
-        output = result.stdout + result.stderr;
-      } finally {
-        await server.close();
-      }
+      // Asserted before the exit code: a killed run's output is whatever happened to flush before the
+      // signal landed, so neither "clean" nor "these are all the case results" is a safe reading of
+      // it, and a timeout that surfaced as a non-zero exit code would be misreported as a driver
+      // failure.
+      expect(result.timedOut, `the container timed out\n${result.stdout}${result.stderr}`).toBe(false);
+      expect(result.code, `driver container exited ${result.code}\n${result.stdout}\n${result.stderr}`).toBe(0);
+      output = result.stdout + result.stderr;
+    } finally {
+      await server.close();
+    }
 
-      const lines = parseCaseLines(output);
-      const reported = new Map<string, unknown>();
-      for (const { caseId, result } of lines) reported.set(caseId, result);
+    const lines = parseCaseLines(output);
+    const reported = new Map<string, unknown>();
+    for (const { caseId, result } of lines) reported.set(caseId, result);
 
-      // `parseCaseLines` returns a list; this `Map` keeps only the last result for a repeated id, and
-      // the key-set check below compares *distinct* ids — so 20 lines covering 19 ids would satisfy it
-      // with one result silently discarded. Comparing the two sizes is what makes a duplicated id loud.
-      expect(lines.length, `duplicate ${CASE_LINE_PREFIX} case id(s)`).toBe(reported.size);
+    // `parseCaseLines` returns a list; this `Map` keeps only the last result for a repeated id, and
+    // the key-set check below compares *distinct* ids — so 20 lines covering 19 ids would satisfy it
+    // with one result silently discarded. Comparing the two sizes is what makes a duplicated id loud.
+    expect(lines.length, `duplicate ${CASE_LINE_PREFIX} case id(s)`).toBe(reported.size);
 
-      // Drift protection: a forgotten case must fail loudly, not quietly shrink coverage. A driver that
-      // dies before printing its `CASE_LINE_PREFIX` line for some case (rather than catching the failure
-      // and reporting it, as `runCase` is written to do) trips this rather than being silently absorbed
-      // into "no request received at all" below.
-      expect([...reported.keys()].sort(), `no ${CASE_LINE_PREFIX} line for one or more cases`)
-        .toEqual(cases.map((c) => c.id).sort());
+    // Drift protection: a forgotten case must fail loudly, not quietly shrink coverage. A driver that
+    // dies before printing its `CASE_LINE_PREFIX` line for some case (rather than catching the failure
+    // and reporting it, as `runCase` is written to do) trips this rather than being silently absorbed
+    // into "no request received at all" below.
+    expect([...reported.keys()].sort(), `no ${CASE_LINE_PREFIX} line for one or more cases`).toEqual(
+      cases.map((c) => c.id).sort(),
+    );
 
-      // Like the Kotlin legs and unlike `fetch-clients`, an Angular call can fail *before it ever
-      // reaches the network* — `HttpClient` validates and serializes on the calling thread, and the
-      // generated `RequestBuilder` runs entirely there too — so "no request recorded" cannot be assumed
-      // to mean "a malformed request arrived as surplus". That breaks `fetch-clients`' assumption that
-      // surplus arrival order equals table order among unmatched cases, so surplus requests are
-      // attributed by route shape instead of by position — see {@link attributeSurplus}.
-      const unmatchedCases = cases.filter((c) => !server.recorded.has(c.id));
-      const surplusQueue = [...server.surplus];
-      const attributedSurplus = attributeSurplus(unmatchedCases, surplusQueue);
+    // Like the Kotlin legs and unlike `fetch-clients`, an Angular call can fail *before it ever
+    // reaches the network* — `HttpClient` validates and serializes on the calling thread, and the
+    // generated `RequestBuilder` runs entirely there too — so "no request recorded" cannot be assumed
+    // to mean "a malformed request arrived as surplus". That breaks `fetch-clients`' assumption that
+    // surplus arrival order equals table order among unmatched cases, so surplus requests are
+    // attributed by route shape instead of by position — see {@link attributeSurplus}.
+    const unmatchedCases = cases.filter((c) => !server.recorded.has(c.id));
+    const surplusQueue = [...server.surplus];
+    const attributedSurplus = attributeSurplus(unmatchedCases, surplusQueue);
 
-      // Whatever is left in `surplusQueue` matches no unmatched case's route at all — a stray retry, a
-      // preflight, a duplicate call — and must not be silently folded into some other case's deviation
-      // text.
-      expect(
-        surplusQueue.map((req) => `${req.method} ${req.path}`),
-        "surplus request(s) matching no unmatched case's route",
-      ).toEqual([]);
+    // Whatever is left in `surplusQueue` matches no unmatched case's route at all — a stray retry, a
+    // preflight, a duplicate call — and must not be silently folded into some other case's deviation
+    // text.
+    expect(
+      surplusQueue.map((req) => `${req.method} ${req.path}`),
+      "surplus request(s) matching no unmatched case's route",
+    ).toEqual([]);
 
-      for (const apiCase of cases) {
-        const recorded = server.recorded.get(apiCase.id);
-        let deviations: Deviation[];
+    for (const apiCase of cases) {
+      const recorded = server.recorded.get(apiCase.id);
+      let deviations: Deviation[];
 
-        if (recorded !== undefined) {
-          deviations = [
-            ...diffRequest(apiCase.expectRequest, recorded),
-            ...diffResult(apiCase.expectResult, reported.get(apiCase.id)),
-          ];
-        } else {
-          const surplus = attributedSurplus.get(apiCase.id);
-          deviations = surplus === undefined
-            ? [{
-              field: 'request',
-              expected: "one request matching this case's route",
-              // No surplus request explains this gap either: the driver's own reported result (already
-              // proven to exist by the drift check above) is the only remaining evidence of what
-              // actually happened, so it is folded into the deviation text here.
-              actual: `no request received at all (driver reported ${JSON.stringify(reported.get(apiCase.id))})`,
-            }]
+      if (recorded !== undefined) {
+        deviations = [
+          ...diffRequest(apiCase.expectRequest, recorded),
+          ...diffResult(apiCase.expectResult, reported.get(apiCase.id)),
+        ];
+      } else {
+        const surplus = attributedSurplus.get(apiCase.id);
+        deviations =
+          surplus === undefined
+            ? [
+                {
+                  field: 'request',
+                  expected: "one request matching this case's route",
+                  // No surplus request explains this gap either: the driver's own reported result (already
+                  // proven to exist by the drift check above) is the only remaining evidence of what
+                  // actually happened, so it is folded into the deviation text here.
+                  actual: `no request received at all (driver reported ${JSON.stringify(reported.get(apiCase.id))})`,
+                },
+              ]
             : [
-              {
-                field: 'request',
-                expected: "one request matching this case's route",
-                actual: `${surplus.method} ${surplus.path} matched no route (server answered 418)`,
-              },
-              // A route mismatch is *one* thing wrong with a request that can be wrong in several ways
-              // at once, so the rest of the request is compared here too rather than discarded. That
-              // was a real bug on the fetch and Kotlin legs: reporting only method and path understated
-              // what the client got wrong, and an absent deviation in a committed artifact reads as
-              // conformance. `diffRequest` re-reports `path`, which the line above already names —
-              // repeating one field in a diagnostic costs a reader nothing; omitting a field costs them
-              // the truth.
-              ...diffRequest(apiCase.expectRequest, surplus),
-            ];
-        }
-
-        await verifyWireDeviations(
-          wireSnapshotFile(wireRootDir, PROFILE, apiCase.id),
-          formatDeviations(deviations),
-          // Not the default `deno task test:integration`: that task does not set `GOAST_INTEGRATION`,
-          // so it cannot regenerate a single artifact in this directory. Naming a command that
-          // silently does nothing is worse than naming none.
-          { updateCommand: 'deno task test:integration:angular' },
-        );
+                {
+                  field: 'request',
+                  expected: "one request matching this case's route",
+                  actual: `${surplus.method} ${surplus.path} matched no route (server answered 418)`,
+                },
+                // A route mismatch is *one* thing wrong with a request that can be wrong in several ways
+                // at once, so the rest of the request is compared here too rather than discarded. That
+                // was a real bug on the fetch and Kotlin legs: reporting only method and path understated
+                // what the client got wrong, and an absent deviation in a committed artifact reads as
+                // conformance. `diffRequest` re-reports `path`, which the line above already names —
+                // repeating one field in a diagnostic costs a reader nothing; omitting a field costs them
+                // the truth.
+                ...diffRequest(apiCase.expectRequest, surplus),
+              ];
       }
-    });
+
+      await verifyWireDeviations(
+        wireSnapshotFile(wireRootDir, PROFILE, apiCase.id),
+        formatDeviations(deviations),
+        // Not the default `pnpm test:integration`: that task does not set `GOAST_INTEGRATION`,
+        // so it cannot regenerate a single artifact in this directory. Naming a command that
+        // silently does nothing is worse than naming none.
+        { updateCommand: 'pnpm test:integration:angular' },
+      );
+    }
   });
-}
+});

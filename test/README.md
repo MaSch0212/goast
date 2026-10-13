@@ -6,35 +6,37 @@ This file documents what exists today.
 
 ## Prerequisites
 
-Deno and Docker. The everyday loop — tiers 1, 2 and the `fetch-clients` leg of tier 4 — needs only Deno; Docker is
+Node.js 24, pnpm and Docker. The everyday loop — tiers 1, 2 and the `fetch-clients` leg of tier 4 — needs only Node.js
+and pnpm; Docker is
 required for tier 3 and for every other tier-4 target (the four Kotlin ones, the four `spring-controllers` ones,
 `angular-services`, `k6-clients`, and `easy-network-stub`).
 
 ## Tiers
 
-| # | Tier        | Question                                              | Command                                                                                   | Status                                                                                                                                                                                                                                                               |
-| - | ----------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1 | Unit        | Does this function do what it says?                   | `deno task test`                                                                          | active                                                                                                                                                                                                                                                               |
-| 2 | Output      | Did the generated text change?                        | `deno task test:output`                                                                   | active                                                                                                                                                                                                                                                               |
-| 3 | Compile     | Is the generated code valid in its language?          | `deno task test:compile`                                                                  | active                                                                                                                                                                                                                                                               |
-| 4 | Integration | Does the generated code behave correctly on the wire? | `deno task test:integration` / `:kotlin` / `:controllers` / `:angular` / `:k6` / `:stubs` | client direction: fetch-clients, angular-services, okhttp3-clients, spring-reactive-web-clients (`k6-clients` cannot be driven at all — see "The k6 leg" — and records a target-level load failure instead); server direction: spring-controllers, easy-network-stub |
+| #   | Tier        | Question                                              | Command                                                                              | Status                                                                                                                                                                                                                                                               |
+| --- | ----------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Unit        | Does this function do what it says?                   | `pnpm test`                                                                          | active                                                                                                                                                                                                                                                               |
+| 2   | Output      | Did the generated text change?                        | `pnpm test:output`                                                                   | active                                                                                                                                                                                                                                                               |
+| 3   | Compile     | Is the generated code valid in its language?          | `pnpm test:compile`                                                                  | active                                                                                                                                                                                                                                                               |
+| 4   | Integration | Does the generated code behave correctly on the wire? | `pnpm test:integration` / `:kotlin` / `:controllers` / `:angular` / `:k6` / `:stubs` | client direction: fetch-clients, angular-services, okhttp3-clients, spring-reactive-web-clients (`k6-clients` cannot be driven at all — see "The k6 leg" — and records a target-level load failure instead); server direction: spring-controllers, easy-network-stub |
 
 ## Tier 1: unit tests
 
 Tier 1 answers one question: does this function do what it says, in isolation? It calls exported functions directly and
 asserts on their return values, thrown errors, or (for a builder) the text a builder renders. It never asserts on
 generated _file_ content — a tree of `.kt`/`.ts` files written to disk, or a snapshot under `test/output/` — that is
-tier 2's job, and a tier-1 test that needs a generated tree to exist is written in the wrong tier. `deno task test` runs
+tier 2's job, and a tier-1 test that needs a generated tree to exist is written in the wrong tier. `pnpm test` runs
 it; no Docker, no network (see the `parse/` note below), no generated output.
 
 The convention every test in this tier follows:
 
-- `it`, never `test` — `@std/testing/bdd`'s `it`, consistently, replacing an earlier mix of the two.
-- `import { expect } from '@std/expect'`, never the `@std/expect/expect` subpath.
+- `it`, never `test` — vitest's `it`, consistently.
+- `describe`, `it`, `expect` and the hooks are imported from `'vitest'` explicitly; `vitest.config.ts` enables no
+  globals.
 - Literal `\n`, never `EOL` from `node:os` — see the one deliberate carve-out below.
 - One top-level `describe` per exported symbol, colocated as `<symbol-file>.test.ts` beside the file it covers.
 - No `stub(fs, ...)`. Verified: zero occurrences anywhere under `packages/` or `test/`.
-- Real IO against a temp directory (`Deno.makeTempDir`, cleaned up in `afterEach`) when a function's contract is IO
+- Real IO against a temp directory (`mkdtemp` from `node:fs/promises`, cleaned up in `afterEach`) when a function's contract is IO
   itself and cannot be tested any other way — e.g. `packages/core/src/codegen/generator.test.ts`,
   `packages/core/src/parse/parser.test.ts`, and `packages/core/src/utils/file-system.utils.test.ts`.
 
@@ -65,7 +67,7 @@ laziness.** `defaultKotlinGeneratorConfig` is typed `DefaultGenerationProviderCo
 `KotlinGeneratorConfig` inherits from the base `OpenApiGeneratorConfig` (including `indent`) _optional in the type_,
 even though the literal object actually sets `indent: { type: 'spaces', count: 4 }` at runtime. So
 `{ ...defaultKotlinGeneratorConfig, newLine: '\n' }` has a _type_ where `indent` is possibly `undefined`, which fails
-`deno check` with `TS2345` when the object needs to satisfy plain `KotlinGeneratorConfig` (where `indent` is required) —
+`pnpm typecheck` with `TS2345` when the object needs to satisfy plain `KotlinGeneratorConfig` (where `indent` is required) —
 verified at runtime that the spread does preserve `indent` regardless; only the type is the problem. 44 test files (16
 under `packages/kotlin`, 28 under `packages/typescript`) carry this exact cast today. The next person to see it and
 assume it is cargo cult should read this paragraph first.
@@ -85,22 +87,12 @@ by relative path — there is no barrel export for either file. This was not the
 were meant to live in the harness so `transform`/`collect` tests could reuse the real `createDerefProxy`
 (`packages/core/src/parse/deref-proxy.ts`) instead of a hand-rolled stand-in — a plain object with a `$src` field passes
 the shape check but silently skips the proxy's `$ref`-fallthrough behaviour that most transform code actually depends
-on. Doing that would have required `test/harness` to import from `packages/core`, and `createDerefProxy` is deliberately
-not part of core's public API (absent from `packages/core/mod.ts`), so the harness would have had to reach it by a
-relative import outside its own directory. That was checked empirically, not assumed: running a dnt build of the harness
-(`deno run -A scripts/build_npm.ts test/harness`, back when `deno task npm:test-harness` still existed to wrap it) with
-such an import in place made `dnt` abort with:
-
-```
-Error stripping prefix of .../packages/core/src/parse/deref-proxy.ts with base .../test/harness
-```
-
-because `dnt` refuses to bundle a file outside the project root it was invoked with. So both fixture files are colocated
-inside `packages/core` instead, named with the `*.test-utils.ts` suffix specifically because Deno's test discovery does
-not treat that suffix as a test file and `deno task npm:core` does not ship it in the published package — both were
-verified, not assumed. If you find yourself wanting to "tidy up" by moving these into the harness, re-run that same
-`deno run -A scripts/build_npm.ts test/harness` check first; it will fail the same way it did before. (The task that
-used to wrap it is gone — see "The dropped `npm:test-utils` task" below for why.)
+on. Doing that would require `test/harness` to import from `packages/core`, and `createDerefProxy` is deliberately
+not part of core's public API (absent from `packages/core/mod.ts`), so the harness would have to reach it by a relative
+import outside its own directory. So both fixture files are colocated inside `packages/core` instead, named with the
+`*.test-utils.ts` suffix specifically because vitest's `include` patterns (`**/*.test.ts`, `vitest.config.ts`) do not
+treat that suffix as a test file and `packages/core/tsconfig.build.json` excludes it, so it never reaches `dist/` or the
+published package.
 
 `derefAt(path, value, ref?)` wraps `value` in a real `createDerefProxy` at the given `$src.path`; `derefSchemaAt` does
 the same but recurses into nested schema keys (`allOf`, `anyOf`, `oneOf`, `properties`, etc.) first, so a nested schema
@@ -149,23 +141,24 @@ Resolution order:
 So the everyday loop will be:
 
 ```bash
-deno task test:output   # regenerates snapshots
+pnpm test:output   # regenerates snapshots
 git diff                # review what changed
 ```
 
 Run tier 2 from the repo root. `getSourceDocLine` (used by the Kotlin and TypeScript generators to stamp source
 provenance into doc comments) renders paths relative to the process's current working directory, so running
-`deno task test:output` from anywhere else silently produces snapshots that differ from the ones CI and every other
+`pnpm test:output` from anywhere else silently produces snapshots that differ from the ones CI and every other
 contributor produce, with no error to flag the mismatch.
 
-Do not add `--parallel` to a tier 2 test task. `captureConsole` patches the global `console` for the duration of a
-generator run so its per-file log lines don't bury the snapshot summary; overlapping runs would stomp on each other's
-patched `console`. Tier 2 test files are written to run sequentially for this reason.
+Do not enable file parallelism or `concurrent` tests for tier 2. `captureConsole` patches the global `console` for the
+duration of a generator run so its per-file log lines don't bury the snapshot summary; overlapping runs would stomp on
+each other's patched `console`. Tier 2 test files are written to run sequentially for this reason, and the `e2e` project
+in `vitest.config.ts` sets `fileParallelism: false`.
 
 To reproduce a CI failure locally:
 
 ```bash
-deno task test:output:check
+pnpm test:output:check
 ```
 
 When CI fails on a snapshot mismatch, the workflow re-runs the job in write mode and uploads the resulting `git diff` as
@@ -175,8 +168,8 @@ a `snapshot.patch` artifact. Applying it is an alternative to regenerating local
 git apply snapshot.patch
 ```
 
-**Measured cost.** `deno task test:output:check` runs the full 57-spec corpus across fifteen profiles in about 22
-seconds wall-clock (18 passed, 919 steps, 0 failed) on a warm Deno cache. The 57 specs and their generated trees
+**Measured cost.** `pnpm test:output:check` runs the full 57-spec corpus across fifteen profiles in about 22
+seconds wall-clock. The 57 specs and their generated trees
 together commit 8,779 files under `test/output/`, ten of them `.error.txt` (see "Error snapshots" under
 [Corpus map](#corpus-map)) rather than a generated tree.
 
@@ -215,7 +208,7 @@ an explicit mode, so they never depend on whether `CI` happens to be set.
   time; it's registered as defect 18 in `docs/superpowers/plans/2026-07-25-generator-bug-fixes.md`, not fixed here.
 - **Write mode will not delete a snapshot wholesale.** If generation emits zero files, the test fails instead of
   pruning, so a generator that throws early cannot wipe committed output.
-- **`test/output/**` is excluded** from `deno fmt` and `deno lint`, and marked `linguist-generated` in `.gitattributes`
+- **`test/output/**` is excluded** from `oxfmt` and `oxlint` (`ignorePatterns` in `.oxfmtrc.json` and `.oxlintrc.json`), and marked `linguist-generated` in `.gitattributes`
   so GitHub collapses those diffs by default.
 
 ## Snapshot forms
@@ -410,8 +403,8 @@ parsed together — that's how multi-file and mixed-reference specs are expresse
 never after**:
 
 ```bash
-deno fmt test/specs
-deno task test:output
+pnpm fmt test/specs
+pnpm test:output
 git add -A test/output && git diff --cached   # review the new snapshot tree
 ```
 
@@ -442,14 +435,14 @@ written), so `'count'` makes a collision inspectable, not correct.
 **Before committing, run the check gate — write mode alone does not prove the tree is right.**
 
 ```bash
-deno fmt --check
-deno lint
-GOAST_SNAPSHOT=check deno test -A test/output-tests
+pnpm fmt:check
+pnpm lint
+pnpm test:output:check
 ```
 
-Write mode (`deno task test:output`, above) always passes by construction — it rewrites whatever it finds, so it cannot
+Write mode (`pnpm test:output`, above) always passes by construction — it rewrites whatever it finds, so it cannot
 catch a mismatch, only produce one to review. The check-mode run is what actually verifies the committed tree is
-deterministic and matches what's on disk. Never substitute bare `deno task test` (equivalently, bare `deno test -A`) for
+deterministic and matches what's on disk. Never substitute bare `pnpm test` (equivalently, bare `vitest run`) for
 this: `test/output-tests` is not excluded from its default test scope, so it runs in write mode too and would silently
 rewrite a real mismatch instead of failing on it.
 
@@ -459,7 +452,7 @@ restating its filename, under the category it fits.
 ## How to add a profile
 
 Add one entry to the `profiles` array in `test/output-tests/profiles.ts` — a generator, or generator chain, plus the
-config it runs with — then run `deno task test:output` and commit the new snapshot trees it writes. A config change is
+config it runs with — then run `pnpm test:output` and commit the new snapshot trees it writes. A config change is
 itself a new profile: give it its own `name` rather than mutating an existing one, so the old snapshot remains a
 reviewable diff instead of disappearing.
 
@@ -475,24 +468,25 @@ an endpoint-only spec, or a spec whose generation failed and left only an `.erro
 exactly that reason. The gate covers **782 units** across three execution groups, because they are what you choose
 between when running it locally:
 
-- **108 host TypeScript** units (`models`, `fetch-clients`) — type-checked on the runner directly with `deno check`, no
-  container. Every `.ts` file in the unit is handed to `deno check`, not a barrel: entering through a barrel and
+- **108 host TypeScript** units (`models`, `fetch-clients`) — type-checked on the runner directly with the repo's own
+  TypeScript 7 `tsc` (`typescript` in the root `devDependencies`), no container. Every `.ts` file in the unit is handed
+  to `tsc`, not a barrel: entering through a barrel and
   following imports checks only what the barrel reaches, and 41 of these 108 units contain at least one file it does not
   — 58 files, of which 20 are generated model files the generator emits and never exports. Those are exactly the files
   defects 18, 21 and 22 are about, so an entry-point gate was blind to the defects it exists to catch.
 - **162 containerized TypeScript** units (`angular-services`, `k6-clients`, `easy-network-stub`) — compiled with `tsc`
-  inside the `node` image, because these profiles' output assumes npm packages a bare `deno check` doesn't have.
+  inside the `node` image, because these profiles' output assumes npm packages the host checkout doesn't have.
 - **512 Kotlin** units (ten profiles — `models`, `okhttp3-clients`, `spring-reactive-web-clients`, and
   `spring-controllers` in both its plain and `-strict` forms, each crossed with Spring Boot 3 and 4) — compiled in one
   Gradle build inside the `kotlin` image.
 
 **Docker is required for the containerized TypeScript and Kotlin groups.** On a checkout without it,
-`deno task test:compile` does not degrade gracefully — it produces one real `requireDocker` failure per containerized
+`pnpm test:compile` does not degrade gracefully — it produces one real `requireDocker` failure per containerized
 group plus a "The compile step did not run" failure for each of their 674 units. The host group is the part that runs
 anywhere, and running only it takes naming it:
 
 ```bash
-deno task test:compile:host
+pnpm test:compile:host
 ```
 
 **Diagnostics are snapshots, the same shape as tier 2's error snapshots but inverted.** A unit that compiles cleanly has
@@ -512,34 +506,34 @@ for the catalog. Do not read a committed diagnostics file as a specification of 
 The commands:
 
 ```bash
-deno task test:compile        # write mode: regenerates snapshots, changes show up in git status
-deno task test:compile:check  # check mode: the CI-equivalent, fails on any drift
+pnpm test:compile        # write mode: regenerates snapshots, changes show up in git status
+pnpm test:compile:check  # check mode: the CI-equivalent, fails on any drift
 ```
 
-A full check-mode pass measures 12m47s (14 passed, 816 steps) on a warm image cache, of which the Kotlin group is
+A full check-mode pass measures 12m47s on a warm image cache, of which the Kotlin group is
 12m10s. The other three groups together are 19s. Budget above 15 minutes for any job timeout.
 
 The Kotlin group keeps its Gradle project dir off host bind mounts — a per-checkout Docker volume locally, the
 container's own filesystem on CI (`gradleWorkStorage` in `test/compile-tests/runners/kotlin.ts`). Under Docker Desktop
 every host file crosses a slow file share; with the project dir bind-mounted, the Kotlin group ran past its 30-minute
 timeout on Windows. Measured there with the project dir in Docker: 7m00s cold, 1m48s warm, 4m57s ephemeral.
-`deno task test:compile:clean` removes the volume.
+`pnpm test:compile:clean` removes the volume.
 
 **CI runs this tier now.** `.github/workflows/build.yml`'s `compile-ts` and `compile-kotlin` jobs run
 `test:compile:ts:check` and `test:compile:kotlin:check` respectively, gated behind `output-check` and `images` — see
 "CI" below for the job graph and why that ordering matters. A green pull request is no longer silent about tier 3;
 before this phase, the only thing enforcing a committed diagnostics file against reality was somebody running
-`deno task test:compile:check` by hand.
+`pnpm test:compile:check` by hand.
 
-**Tier 3 is opt-in via `GOAST_COMPILE`.** `deno.json`'s `test.include` covers all of `test/`, so without a guard
-`deno task test` (and every plain `deno test -A`) would discover `compile.test.ts` and start a container — breaking the
-rule that tiers 1 and 2 never touch Docker. `compile.test.ts` registers zero tests when `GOAST_COMPILE` is unset, so
-`deno test -A test/compile-tests` runs almost nothing by design; that is not the suite being broken. `orphans.test.ts`,
+**Tier 3 is opt-in via `GOAST_COMPILE`.** `vitest.config.ts`'s `e2e` project includes `test/compile-tests/`, so
+without a guard `pnpm test` (and every plain `vitest run`) would discover `compile.test.ts` and start a container — breaking the
+rule that tiers 1 and 2 never touch Docker. `compile.test.ts` registers only one skipped placeholder when `GOAST_COMPILE` is unset (vitest fails a file with no tests), so
+`pnpm vitest run test/compile-tests` runs almost nothing by design; that is not the suite being broken. `orphans.test.ts`,
 below, is deliberately outside that guard, so it does run in the everyday suite, and it needs no Docker.
 
-`test/harness/docker.test.ts` is under the same guard, which is why both `test:compile` tasks name it alongside
+`test/harness/docker.test.ts` is under the same guard, which is why both `test:compile` scripts name it alongside
 `test/compile-tests`. It is a tier-1 unit test file by location, but its `buildImage`/`runContainer` coverage builds a
-real image and starts real containers, and registering those with an `ignore: !hasDocker` flag does not keep tiers 1 and
+real image and starts real containers, and registering those with a `skipIf(!hasDocker)` flag does not keep tiers 1 and
 2 Docker-free — it only keeps them _runnable_ without Docker. On a machine that has Docker they ran, and took the unit
 suite from ~17s to ~60s.
 
@@ -548,19 +542,14 @@ is the question this tier asks, and warning output is far more volatile across c
 recording warnings would turn a routine toolchain bump into mass snapshot churn that buries the real changes.
 
 **A non-zero compiler exit with zero parsed diagnostics is a harness failure, not a clean unit.** Every runner
-(`deno-check.ts`, `tsc.ts`, `kotlin.ts`) checks this explicitly and throws rather than recording an empty diagnostic
+(the host `tsc` runner, `tsc.ts`, `kotlin.ts`) checks this explicitly and throws rather than recording an empty diagnostic
 list, because the alternative is a gate that goes vacuously green the moment a compiler's output format changes
 underneath its parser — a green run here is a real green run, not the parser having silently stopped working.
 
-**TypeScript units are checked under sloppy-import resolution.** `runDenoCheck` passes `--unstable-sloppy-imports`
-because the generated TypeScript uses extensionless relative imports by design (a normal style under
-`moduleResolution: "bundler"`/`"node16"`), which Deno's native resolver otherwise rejects wholesale. That is a real
-relaxation of what this gate proves relative to a plain `tsc` run, worth knowing before treating a clean `deno check`
-result as equivalent to one. `deno check` also refuses to build a module graph containing any file it cannot parse — it
-reports that one file and type-checks nothing else — so `runDenoCheck` records the parse failure, drops that file from
-its root list, and runs again until the graph loads. That is why the host group reports one diagnostic per unparseable
-file where the containerized group reports four: `tsc` recovers from a syntax error and keeps reporting, Deno's parser
-does not.
+**Host TypeScript units are checked under bundler resolution.** The generated TypeScript uses extensionless relative
+imports by design (a normal style under `moduleResolution: "bundler"`), so the host `tsc` resolves them the way a
+bundler would. The host gate's diagnostic text comes from the TypeScript 7 `tsc` pinned in `pnpm-lock.yaml`, which is
+why bumping `typescript` is a tier-3 change — see "The TypeScript version pin" below.
 
 **Compiler and dependency versions are pinned, hand-synchronised, with no machine-enforced source of truth:**
 
@@ -587,14 +576,14 @@ diagnostics committed forever while every test stays green. Unlike the rest of t
 behind `GOAST_COMPILE`, so it runs in the everyday suite.
 
 **An orphan has to be deleted by hand; no mode clears it.** `verifyCompileDiagnostics` removes a stale snapshot only for
-a unit `discoverCompileUnits` still finds, and an orphan by definition has no unit — so `deno task test:compile` will
+a unit `discoverCompileUnits` still finds, and an orphan by definition has no unit — so `pnpm test:compile` will
 not clear it however many times it is run. The failure says so, and names the files.
 
 ## Tier 4: integration
 
 Tier 3 proves the generated code compiles. Tier 4 asks a different question again: does it put the right bytes on the
 wire, and hand back the right value to its caller? A unit that type-checks can still build the wrong request body, drop
-a parameter, or mis-encode a path segment — none of which `deno check` or `tsc` can see, because all of those are
+a parameter, or mis-encode a path segment — none of which `tsc` can see, because all of those are
 runtime behaviour, not a type error.
 
 **The case table is the single source of truth.** `test/cases/cases.ts` declares 19 cases, each one API call: the
@@ -618,7 +607,7 @@ JSON would need a dynamic dispatch layer that erases exactly what is under test.
 **Deviations are committed artifacts, the same shape as tier 3's diagnostics.** A case that conforms exactly has no
 file. A case where the generated client's actual wire behaviour differs from the table gets
 `test/wire/<profile>/<caseId-with-slashes-as-double-underscore>.txt`, holding one `field`/`expected`/`actual` block per
-difference. `deno task test:integration` regenerates in write mode; a file disappearing on a later run means a generator
+difference. `pnpm test:integration` regenerates in write mode; a file disappearing on a later run means a generator
 fix landed, and check mode refuses to pass with a stale file still committed — the same reviewable-deletion discipline
 as `verifyCompileDiagnostics`. 87 such artifacts are committed today — 56 from the client direction (10 under
 `fetch-clients`, **2** under `angular-services`, 11 each under `okhttp3-clients@sb3`/`@sb4`, 11 each under
@@ -695,19 +684,19 @@ Kotlin, compiles together with a driver) the generated client from the **committ
 is exactly what a reviewer already saw in a tier-2 diff.
 
 **`fetch-clients` needs no Docker.** Unlike tier 3, nothing in this leg starts a container or takes minutes — the whole
-run is a loopback HTTP server and one `deno run` subprocess — so it needs no opt-in guard and runs as part of plain
-`deno task test`, which is a feature — though not the feature "catches drift": `deno task test` is plain `deno test -A`,
+run is a loopback HTTP server and one `node` subprocess — so it needs no opt-in guard and runs as part of plain
+`pnpm test`, which is a feature — though not the feature "catches drift": `pnpm test` is plain `vitest run`,
 which resolves to **write** mode locally (see "Snapshot modes" above), so a plain everyday run rewrites and deletes wire
 artifacts rather than failing on them. What the everyday loop genuinely catches is a non-zero driver exit, a mismatch
 between the case ids a driver reported and the ids it was asked for, and a surplus-request count that doesn't match the
 unmatched-case count — real failures, just not the same thing as "the recorded deviations are still accurate." Catching
-drift in the deviation artifacts themselves needs `deno task test:integration:check`, the same way tier 2's drift needs
-`deno task test:output:check`.
+drift in the deviation artifacts themselves needs `pnpm test:integration:check`, the same way tier 2's drift needs
+`pnpm test:output:check`.
 
 **Phase 6 adds four Kotlin targets, gated behind Docker.** `okhttp3-clients@sb3`/`@sb4` and
 `spring-reactive-web-clients@sb3`/`@sb4` are driven the same way tier 3 compiles Kotlin — from inside the `kotlin`
 Docker image — behind the same `GOAST_INTEGRATION` guard tier 3 uses `GOAST_COMPILE` for, via
-`deno task test:integration:kotlin[:check]`. `test/integration/targets.ts`'s `WIRE_TARGETS` is the single source of
+`pnpm test:integration:kotlin[:check]`. `test/integration/targets.ts`'s `WIRE_TARGETS` is the single source of
 truth for which `test/wire/<profile>/` directories are legitimate; `test/integration-tests/orphans.test.ts` sweeps every
 entry in it, not just `fetch-clients`.
 
@@ -939,8 +928,8 @@ appearing under `k6-clients/` fails the Docker-free orphan sweep exactly as a ge
 — `expectedFilesFor` in `test/integration-tests/orphans.test.ts` claims only the load-failure filename for such a
 target, so anything else there is unexpected. But the sweep cannot notice the load-failure file going **missing**:
 `findOrphanFiles` reports files it did not expect, never expected files that are absent. What catches a deleted record
-is the Docker-gated `deno task test:integration:k6:check`, which fails with `Snapshot file does not exist`. So the
-Docker-free gate alone would let an erased finding through, and `deno task test:all` — which includes the gated leg — is
+is the Docker-gated `pnpm test:integration:k6:check`, which fails with `Snapshot file does not exist`. So the
+Docker-free gate alone would let an erased finding through, and `pnpm test:all` — which includes the gated leg — is
 what closes it.
 
 The committed record reads:
@@ -1066,18 +1055,18 @@ one, and each is a place where an absent artifact would be misread:
 The commands:
 
 ```bash
-deno task test:integration                     # write mode: fetch-clients, no Docker
-deno task test:integration:check               # check mode: fetch-clients, no Docker
-deno task test:integration:kotlin              # write mode: the four Kotlin client targets, needs Docker
-deno task test:integration:kotlin:check        # check mode: the four Kotlin client targets, needs Docker
-deno task test:integration:controllers         # write mode: the four spring-controllers units, needs Docker
-deno task test:integration:controllers:check   # check mode: the four spring-controllers units, needs Docker
-deno task test:integration:angular             # write mode: the angular-services target, needs Docker
-deno task test:integration:angular:check       # check mode: the angular-services target, needs Docker
-deno task test:integration:k6                  # write mode: the k6-clients target, needs Docker
-deno task test:integration:k6:check            # check mode: the k6-clients target, needs Docker
-deno task test:integration:stubs               # write mode: the easy-network-stub target, needs Docker
-deno task test:integration:stubs:check         # check mode: the easy-network-stub target, needs Docker
+pnpm test:integration                          # write mode: fetch-clients, no Docker
+pnpm test:integration:check                    # check mode: fetch-clients, no Docker
+pnpm test:integration:kotlin                   # write mode: the four Kotlin client targets, needs Docker
+pnpm test:integration:kotlin:check             # check mode: the four Kotlin client targets, needs Docker
+pnpm test:integration:controllers              # write mode: the four spring-controllers units, needs Docker
+pnpm test:integration:controllers:check        # check mode: the four spring-controllers units, needs Docker
+pnpm test:integration:angular                  # write mode: the angular-services target, needs Docker
+pnpm test:integration:angular:check            # check mode: the angular-services target, needs Docker
+pnpm test:integration:k6                       # write mode: the k6-clients target, needs Docker
+pnpm test:integration:k6:check                 # check mode: the k6-clients target, needs Docker
+pnpm test:integration:stubs                    # write mode: the easy-network-stub target, needs Docker
+pnpm test:integration:stubs:check              # check mode: the easy-network-stub target, needs Docker
 ```
 
 ## CI
@@ -1087,8 +1076,8 @@ than one aggregate "tests" job disappearing into a wall of output.
 
 ### The job graph
 
-- **Four jobs need nothing and run first.** `lint` (`deno fmt --check`, `deno lint`), `unit` (tier 1, the harness's own
-  tests, and the `test/cases` corpus, which has no task of its own so it runs as a bare `deno test -A test/cases`),
+- **Four jobs need nothing and run first.** `lint` (`pnpm fmt:check`, `pnpm lint`, `pnpm typecheck`), `unit` (tier 1,
+  the harness's own tests, and the `test/cases` corpus via `pnpm test:cases`),
   `output-check` (tier 2, `test:output:check`), and `images` (one matrix leg per Docker build context — `kotlin`,
   `node`, `k6` — warming the GHA layer cache the Docker-building jobs below reuse). None of the four depends on the
   others. Three of them are genuinely cheap gates, sub-minute locally; `images` is not — a cold `kotlin` leg builds a
@@ -1097,7 +1086,7 @@ than one aggregate "tests" job disappearing into a wall of output.
 - **Nine jobs need `[output-check, images]`:** the tier-3 jobs `compile-ts`, `compile-kotlin` and `harness-docker`, and
   the tier-4 jobs `it-angular-services`, `it-k6-clients`, `it-easy-network-stub`, `it-okhttp3-clients`,
   `it-spring-reactive-web` and `it-spring-controllers` (the last three are two-, two- and three-way matrices split by
-  `--filter`, not by task name — see "`--filter` and the vacuous-green trap" below). Every one of them builds a Docker
+  `-t`, not by script name — see "`-t` and the vacuous-green trap" below). Every one of them builds a Docker
   image, which is what `images` buys them; `output-check` is the reason in the next section.
 - **`it-fetch-clients` needs `[output-check]` alone.** It runs `test:integration:check`, which sweeps `test/integration`
   and `test/integration-tests` _without_ `GOAST_INTEGRATION`: the fetch driver is the one leg that needs no container,
@@ -1108,14 +1097,13 @@ than one aggregate "tests" job disappearing into a wall of output.
 - **`all-tests` needs all fourteen test jobs** — `lint`, `unit`, `output-check`, `images`, `compile-ts`,
   `compile-kotlin`, `harness-docker`, and the seven `it-*` jobs — and runs with `if: always()` so it still executes (and
   can still fail the gate below) when one of them fails outright.
-- **`build`** needs nothing: `deno publish --dry-run`, `deno task npm`, and an artifact upload of the resulting `npm/`
-  tree. It is the publish path's own gate, independent of every test tier.
+- **`build`** needs nothing: `pnpm build`, `pnpm pack`, and an artifact upload of the resulting `npm/` tarballs. It is the publish path's own gate, independent of every test tier.
 - **`publish`** needs `[all-tests, build]` and runs only when `github.ref == 'refs/heads/main'` — the point of this
   rework is exactly that: publishing now waits on every tier, not on `build` alone.
 
 ### Why `output-check` gates compile and integration
 
-Tier 3 compiles the committed `test/output/**` tree with `deno check`, `tsc`, or Gradle; tier 4 imports the committed
+Tier 3 compiles the committed `test/output/**` tree with `tsc` or Gradle; tier 4 imports the committed
 `typescript/fetch-clients` output directly and compiles the committed Kotlin and Angular trees the same way tier 3 does
 (the kitchen-sink spec behind the case table is an ordinary corpus entry, so it gets the same committed `test/output/`
 tree as every other spec — see "Tier 4: integration" above). Neither tier generates anything fresh — both read exactly
@@ -1151,8 +1139,8 @@ on:
 ```
 
 Two things have to be true at once. The tier-4 jobs exist to catch a client-serialization regression _before_ it merges,
-which they cannot do if they only run on `main`; and the reason `deno task npm` stayed broken for a whole phase is that
-the old `branches: [main]` filter meant CI never looked at `testing-next`, where the work lives. Pull requests plus the
+which they cannot do if they only run on `main`; and a package build broken on `testing-next`, where the work lives,
+goes unnoticed for as long as CI never looks at that branch. Pull requests plus the
 two long-lived branches satisfy both.
 
 The first attempt at that was `branches: ['**']`, and it double-ran every pull request: a same-repo PR branch fires
@@ -1176,7 +1164,7 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 ```
 
-`publish` pushes `@goast/core`, `@goast/kotlin` and `@goast/typescript` to both JSR and NPM and creates a git tag per
+`publish` pushes `@goast/core`, `@goast/kotlin` and `@goast/typescript` to npm and creates a git tag per
 package, one after another. A run on `main` can be partway through that sequence when a newer push supersedes it;
 cancelling it mid-flight would leave the three packages at different published versions with no way to roll back. That
 is the one case worth protecting, and `github.ref` is what identifies it — a pull request's `ref` is
@@ -1189,50 +1177,50 @@ Every third-party action in the workflow and in both composite actions is pinned
 belongs to in a trailing comment (`uses: actions/checkout@11d5960… # v4.4.0`). A floating tag is a mutable pointer in
 someone else's repository: whoever controls it can move it to a different commit, and every run that resolves it
 afterwards executes that commit with the job's token and, in the jobs using the `docker` action, `ACTIONS_RUNTIME_TOKEN`
-in the environment. `denoland/setup-deno@v2` was not even a tag — it is a _branch_ in that repository, which is weaker
-still.
+in the environment. A floating major such as `@v2` can even be a _branch_ in that repository, which is weaker still.
 
 The price of pinning is that a pin never updates itself, including for a security fix, so `.github/dependabot.yml`
 exists to bump them. Its updates arrive as pull requests, which means the full job graph runs against a new action
 version before anyone merges it. There is one Dependabot entry per directory holding a workflow or a composite action —
 the `github-actions` ecosystem finds `.github/workflows` from the `/` entry, but a composite action's `action.yml` only
-when its own directory is listed.
+when its own directory is listed. A separate `npm` entry for `/` keeps the pnpm workspace's dependencies current.
 
-### The Deno version pin, and why it can't move on its own
+### The TypeScript version pin, and why it can't move on its own
 
-`.github/actions/setup/action.yml` pins `deno-version: v2.9.5` — the one Deno every job in the workflow shares. That pin
-carries more weight than "keep the toolchain consistent": the diagnostic snapshots committed under `test/compile/` (see
-"Tier 3: compile gate" above) record the _compiler's own diagnostic text_, verbatim, and Deno rewords that text between
-releases: 2.9 renamed the module-parse abort's message from `The module's source code could not be parsed: …` to
-`SyntaxError: …`. A runner on any other Deno version than the one that generated those snapshots fails the compile gate
-for a reason that has nothing to do with the generated code under test — it's failing because the compiler talks
-differently, not because the generator regressed.
+The host half of tier 3 runs the repo's own TypeScript 7 `tsc`, from `typescript` in the root `devDependencies`, pinned
+by `pnpm-lock.yaml` and installed by `.github/actions/setup/action.yml` with `pnpm install --frozen-lockfile` — the one
+`tsc` every job in the workflow shares. That pin carries more weight than "keep the toolchain consistent": the
+diagnostic snapshots committed under `test/compile/` (see "Tier 3: compile gate" above) record the _compiler's own
+diagnostic text_, verbatim, and `tsc` rewords that text between releases. A runner on any other `typescript` version
+than the one that generated those snapshots fails the compile gate for a reason that has nothing to do with the
+generated code under test — it's failing because the compiler talks differently, not because the generator regressed.
 
-The consequence: bumping this pin is never a one-line version-string edit. Bump it and regenerate `test/compile/`'s
-snapshots (`deno task test:compile`) against the new Deno in the same change, and review the resulting diagnostic churn
+The consequence: bumping `typescript` is never a one-line version-string edit, including when Dependabot proposes it.
+Bump it and regenerate `test/compile/`'s snapshots (`pnpm test:compile`) against the new `tsc` in the same change, and review the resulting diagnostic churn
 the way any other tier-3 diff gets reviewed — a line that disappeared is a fixed generator defect, a line that merely
 reads differently is the compiler's wording moving under an unchanged defect, and the two must not be mistaken for each
 other. Bump the pin without regenerating and the very next CI run reports a wall of "new" tier-3 failures that are, in
 fact, nothing but last release's wording.
 
-### `--filter` and the vacuous-green trap
+### `-t` and the vacuous-green trap
 
-`deno test --filter` exits 0 when it matches nothing. A filter with a typo, or one naming a `describe` that later got
+`vitest run -t` exits 0 when it matches nothing — every test in the selected files reports as skipped. A filter with a typo, or one naming a `describe` that later got
 renamed, silently turns a test job into a no-op that still reports green — the same failure mode tier 4's "an absent
 artifact means this case conforms" inverts, applied to a whole job instead of one case. `it-okhttp3-clients`,
-`it-spring-reactive-web` and `it-spring-controllers` are all built this way, passing a `--filter` string straight from a
-build matrix leg rather than through a named `deno.json` task.
+`it-spring-reactive-web` and `it-spring-controllers` are all built this way, passing a `-t` pattern straight from a
+build matrix leg rather than through a named `package.json` script.
 
-`test/integration-tests/task-filters.test.ts` is the guard, and it covers both places a filter can live: `deno.json`'s
-tasks and `build.yml`'s matrix legs. It parses the workflow itself (not just `deno.json`) and reconstructs what each job
-actually runs — expanding `deno task` chains through `deno.json`, following a filter back through the step's `env:` to
-the matrix leg it came from, and collecting the `NAME=value` prefixes each task sets on the way. Then it asserts three
+`test/integration-tests/task-filters.test.ts` is the guard, and it covers both places a filter can live: the root
+`package.json`'s scripts and `build.yml`'s matrix legs. It parses the workflow itself (not just `package.json`) and
+reconstructs what each job actually runs — expanding `pnpm` script chains through `package.json`, following a filter
+back through the step's `env:` to the matrix leg it came from, and collecting the `NAME=value` prefixes each script sets
+on the way. Then it asserts three
 things.
 
 **Forward: every filter selects something, in the directory its own command runs.** Including each per-leg filter
 (`integration/okhttp3-clients@sb3`, `integration/spring-controllers boot`, and so on), and including the case where one
 `include:` leg loses its `filter:` key while a sibling keeps it: GitHub expands the missing value to `''`, and
-`--filter ''` matches everything in the directory, so that leg would silently stop being the one-unit job its name
+`-t ''` matches everything in the directory, so that leg would silently stop being the one-unit job its name
 promises while a naive "did any leg supply this key" check stayed green. The scoping matters as much as the matching —
 `test:compile:ts:check` filters on `typescript/` over `test/compile-tests`, and `test/output-tests/output.test.ts`
 registers `typescript/models`, `typescript/fetch-clients` and friends, so a check that searched the whole repo for a
@@ -1246,16 +1234,16 @@ legs dropped it out of CI entirely while every leg stayed green and every forwar
 matches something says nothing about the suites nothing matches.
 
 **The gate a suite registers behind counts as part of "runs it".** Every container-backed suite is written as
-`const enabled = (Deno.env.get('GOAST_INTEGRATION') ?? '') !== ''` with its `describe` inside `if (enabled)`, so a job
-that runs the file without that variable does not skip the suite — the suite never exists. Without modelling that, the
+`const enabled = (process.env.GOAST_INTEGRATION ?? '') !== ''` and `describe.skipIf(!enabled)`, so a job that runs
+the file without that variable only ever reports the suite as skipped. Without modelling that, the
 inverse check counts the unfiltered `it-fetch-clients` sweep as running every Docker leg in tier 4, and deleting the
 `boot` leg from `build.yml` leaves the guard green. That was measured, not assumed: it is the state the check was in
 before the gate was modelled, and each of the eight mutations the guard is meant to catch — a dropped matrix leg, a
-renamed `describe`, a typo'd task name, a filter reading an unset variable, a leg missing its key, a job losing its gate
+renamed `describe`, a typo'd script name, a filter reading an unset variable, a leg missing its key, a job losing its gate
 variable — was applied to the real files and confirmed to fail it.
 
-What it still does **not** cover: it collects nested `describe`s as if they were top-level, even though `--filter` only
-ever sees top-level names. A `--filter` built by string concatenation, or interpolating anything other than a bare
+Test names are built the way vitest builds them for `-t`: the describe chain and test name joined with `" > "`.
+Loop-generated names are kept as their source text. What it still does **not** cover: a `-t` pattern built by string concatenation, or interpolating anything other than a bare
 `${{ matrix.<key> }}` or `$VAR`, is reported as unresolvable rather than checked. Suite names built from template
 literals need a resolver in `TEMPLATE_RESOLVERS`, and names it cannot expand sit outside both directions of the check (a
 dead resolver entry is itself a failure, so they cannot silently accumulate). And the gate detection is whole-file: a
@@ -1267,43 +1255,18 @@ in both `unit` (via `test:harness`) and `harness-docker` (via `test:harness:dock
 runs in both `compile-ts` and `compile-kotlin`, because each half of the split compile gate wants its own discovery
 check before it compiles anything.
 
-### The dropped `npm:test-utils` task
+### `@goast/test-harness` is not published
 
-The testing-strategy spec's Migration section left one question open: "Whether the `npm:test-utils` dnt task is still
-required — it exists so dnt can type-check package-internal tests — is verified during implementation and the task is
-dropped if not." (`test/utils` became `test/harness` in the same migration, so this is `npm:test-harness` in the tree as
-it exists today.) It was dropped, for two independent reasons, either of which would have been enough on its own:
-
-- `scripts/build_npm.ts` passes `test: false` to `@deno/dnt`'s `build()` for every package it builds (a
-  `// TODO: Temporarily disabled... errors in GitHub Actions` comment beside the flag), so dnt builds no tests at all,
-  for any of the three published packages — regardless of whether `npm/@goast/test-harness` exists to satisfy their
-  `usedLocalPackages` entry. "Type-check package-internal tests" is the only purpose the spec's Migration section
-  credited to this task, and with test-building already switched off there is nothing left for it to serve.
-- `build_npm.ts`'s `removeTestRelatedDependencies` unconditionally deletes `@goast/test-harness` from every published
-  package's _final_ `package.json`, so the `file:npm/@goast/test-harness` entry `usedLocalPackages` adds for the
-  _transient_ build-time `package.json` never survives into what ships. It never resolved to anything real to begin
-  with, either: `npm/@goast/test-harness` has never been built successfully on this branch — `docker.ts` and
-  `ref-server.ts` carry `Deno.Command`/`Deno.serve` shims dnt cannot produce — so the dependency `npm install`d during
-  the build was always an empty placeholder directory.
-
-The root `npm` task is now `npm:core && npm:typescript && npm:kotlin` — `npm:test-harness` no longer runs on the publish
-path, so the `build` job's `deno task npm` step no longer depends on the harness package's own npm buildability.
-
-The task itself is gone from `deno.json` as well, not merely unreferenced. It was the one task in the file that could
-not succeed — its dnt build is precisely what was failing — and leaving a known-broken task in place is a trap for
-whoever runs it next. If `@goast/test-harness` is ever meant to ship to npm, this is the task to restore:
-
-```
-"npm:test-harness": "deno run -A scripts/build_npm.ts test/harness"
-```
-
-and `docker.ts`'s `Deno.Command` and `ref-server.ts`'s `Deno.serve` are what have to be dealt with first.
+`test/harness` is a `private` workspace package (`test/harness/package.json`, listed in `pnpm-workspace.yaml`). Test
+code imports it as `@goast/test-harness` straight from its TypeScript source, so it has no build step. `pnpm build` and
+`pnpm pack` select `./packages/*` only, so the harness is never built, packed or published. `@goast/kotlin` and
+`@goast/typescript` list it under `devDependencies` only, which never reach a consumer.
 
 ## Layout
 
 ```
 test/
-  harness/            # the test harness, published locally as @goast/test-harness
+  harness/            # the test harness, a private workspace package imported as @goast/test-harness
     snapshot/         # the snapshot engine (mode, tree, text-diff, normalize, verify-*, orphans)
     compile/          # the compile-gate engine (unit discovery, diagnostic parsers, verify)
     integration/      # the tier-4 wire engine (verify.ts: wireSnapshotFile, verifyWireDeviations;

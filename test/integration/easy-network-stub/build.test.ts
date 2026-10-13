@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { buildCommand, DRIVER_MOUNT, driverTsConfig, OUT_DIR, READINESS_PATH, TREE_MOUNT } from './build.ts';
 

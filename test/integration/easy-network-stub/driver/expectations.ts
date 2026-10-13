@@ -30,7 +30,7 @@
  * honest record of what the library put on the wire.
  *
  * Container-side Node/TypeScript, like the rest of `driver/`: type-checked only by the `tsc` run inside
- * the image (`deno lint` sees it, no Deno type-checker does), which is why `boot.test.ts` is the only
+ * the image (the repo's own `tsc` project excludes `driver/`), which is why `boot.test.ts` is the only
  * test that can catch a mistake here.
  */
 

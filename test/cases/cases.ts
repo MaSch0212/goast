@@ -359,7 +359,7 @@ export const cases: ApiCase[] = [
     pathTemplate: '/encoded/{value}',
     expectRequest: {
       // Value is "abc def/x": a space and a slash, both of which must be percent-encoded to survive as
-      // one path segment. `path` is compared literally against `url.pathname`, which Deno's URL parser
+      // one path segment. `path` is compared literally against `url.pathname`, which the WHATWG URL parser
       // does not decode, so the encoded form is exactly what is asserted here.
       path: '/encoded/abc%20def%2Fx',
       // "a&b=c" round-trips through `URLSearchParams`/`parseQuery` already decoded — the encoding lives

@@ -9,15 +9,10 @@
  * and a subclass that exposes it is the whole adapter — the same seam `playwright-easy-network-stub`
  * and `cypress-easy-network-stub` use, just pointed at `node:http` instead of a browser page.
  *
- * This file is container-side Node/TypeScript, compiled by `tsc` inside the image and in no Deno
- * module graph, so no Deno *type-checker* ever sees it: `deno check`/`deno test` only walk the imports
- * reachable from a test entry point, and no `.test.ts` file imports this one. `deno lint` is different —
- * it is not module-graph-based, and lints every `.ts` file in the workspace directly regardless of what
- * imports it — so it *does* see this file; the `node:buffer` import below exists precisely because
- * `deno lint`'s `no-node-globals` rule caught the bare global `Buffer` type here. The only thing that
- * type-checks this file is the `tsc` run in `build.ts`'s pipeline and that pipeline's driver-diagnostic
- * guard, which is why this leg's boot gate (`boot.test.ts`) exists at all — it is the only test that can
- * catch a type-level mistake here.
+ * This file is container-side Node/TypeScript, compiled by `tsc` inside the image. The repo's own `tsc`
+ * project excludes `driver/` (`tsconfig.json`), so the only thing that type-checks this file is the `tsc`
+ * run in `build.ts`'s pipeline and that pipeline's driver-diagnostic guard, which is why this leg's boot
+ * gate (`boot.test.ts`) exists at all — it is the only test that can catch a type-level mistake here.
  */
 import { Buffer } from 'node:buffer';
 import { createServer, type Server } from 'node:http';

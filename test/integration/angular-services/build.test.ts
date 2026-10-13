@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { buildCommand, DRIVER_MOUNT, driverTsConfig, OUT_DIR, PROFILE, TREE_MOUNT, TREE_PATH } from './build.ts';
 
@@ -51,7 +50,7 @@ describe('angular-services build module', () => {
   });
 
   // The leg's whole rationale is that a typed call *is* the assertion the generated signature is usable, and
-  // the driver is in no Deno module graph, so this grep is the only thing enforcing it. Measured before the
+  // the driver is in no host `tsc` project, so this grep is the only thing enforcing it. Measured before the
   // guard existed: a `TS2353` in a driver call left the entire leg green.
   it('fails the build on a diagnostic in the driver while tolerating one in the generated tree', () => {
     const command = buildCommand();

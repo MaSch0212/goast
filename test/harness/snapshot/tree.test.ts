@@ -1,7 +1,8 @@
+import { mkdir, mkdtemp, rm, stat, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { applyTreeDiff, diffFileTrees, type FileTree, formatDiffCounts, isEmptyDiff, readFileTree } from './tree.ts';
 
@@ -12,19 +13,19 @@ function tree(files: Record<string, string>): FileTree {
 }
 
 async function withTempDir(fn: (dir: string) => Promise<void>): Promise<void> {
-  const dir = await Deno.makeTempDir({ prefix: 'goast-tree-test-' });
+  const dir = await mkdtemp(join(tmpdir(), 'goast-tree-test-'));
   try {
     await fn(dir);
   } finally {
-    await Deno.remove(dir, { recursive: true });
+    await rm(dir, { recursive: true });
   }
 }
 
 async function writeTree(dir: string, files: Record<string, string>): Promise<void> {
   for (const [path, content] of Object.entries(files)) {
     const target = join(dir, path);
-    await Deno.mkdir(join(target, '..'), { recursive: true });
-    await Deno.writeTextFile(target, content);
+    await mkdir(join(target, '..'), { recursive: true });
+    await writeFile(target, content);
   }
 }
 
@@ -107,7 +108,7 @@ describe('applyTreeDiff', () => {
       await applyTreeDiff(dir, actual, diff);
 
       expect(await readFileTree(dir)).toEqual(actual);
-      await expect(Deno.stat(join(dir, 'dead'))).rejects.toThrow(Deno.errors.NotFound);
+      await expect(stat(join(dir, 'dead'))).rejects.toMatchObject({ code: 'ENOENT' });
     });
   });
 });

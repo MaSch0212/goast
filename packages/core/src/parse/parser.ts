@@ -1,7 +1,6 @@
 import path from 'node:path';
 import { cwd } from 'node:process';
 
-// @deno-types="npm:@types/fs-extra@11"
 import fs from 'fs-extra';
 
 import { collectOpenApi } from '../collect/collector.ts';
@@ -75,7 +74,6 @@ export class OpenApiParser {
     existingDocument.dereferencedComponents.set(openApiPath, result as Deref<OpenApiObject<string>>);
 
     if (value.$ref) {
-      // deno-lint-ignore no-explicit-any
       result.$ref = await this.resolveReference<T>(file, value as OpenApiReference) as any;
     }
     for (const key of Object.keys(value) as (keyof T)[]) {

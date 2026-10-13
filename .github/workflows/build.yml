@@ -3,8 +3,8 @@ name: Build
 # Every pull request, plus pushes to the two long-lived branches.
 #
 # The tier-4 jobs exist to catch a client-serialization regression *before* it merges, which they cannot
-# do if they only run on `main` — and the old `branches: [main]` filter is why the broken `deno task npm`
-# went unnoticed for a whole phase: that work lives on `testing-next` and CI never looked at it. Both
+# do if they only run on `main` — and a `push`-only trigger never looks at work living on a branch such as
+# `testing-next`, so a broken `pnpm build` there goes unnoticed until it reaches `main`. Both
 # reasons are served by `pull_request` plus the integration branches; neither requires `branches: ['**']`.
 #
 # `branches: ['**']` was the first attempt and it double-ran every PR: a same-repo PR branch fires `push`
@@ -25,7 +25,7 @@ on:
   workflow_dispatch:
 
 # Cancel superseded runs everywhere except `main`. A run on `main` may be part-way through publishing to
-# JSR and NPM, and killing that mid-flight leaves the three packages at different versions with no way to
+# npm, and killing that mid-flight leaves the three packages at different versions with no way to
 # roll back. Nothing else in the graph publishes anything, so a superseded run there is pure waste.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -40,7 +40,7 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
-    # Two whole-tree passes over a small repo; a minute locally. Ten leaves room for a cold runner.
+    # Three whole-tree passes over a small repo; a minute locally. Ten leaves room for a cold runner.
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -50,10 +50,14 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Format
-        run: deno fmt --check
+        run: pnpm fmt:check
 
       - name: Lint
-        run: deno lint
+        run: pnpm lint
+
+      # Vitest strips types without checking them, so nothing else in the graph type-checks the sources.
+      - name: Type-check
+        run: pnpm typecheck
 
   unit:
     name: Unit tests (tier 1)
@@ -68,21 +72,19 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Generator unit tests
-        run: deno task test:unit
+        run: pnpm test:unit
 
       # The harness is what every other tier's assertions are made of, so its own tests belong with the
       # unit gate rather than nowhere. `GOAST_COMPILE` is unset here, which is what keeps
       # `test/harness/docker.test.ts` from starting a container in this job — the `harness-docker` job
       # below is where that half runs.
       - name: Harness self-tests
-        run: deno task test:harness
+        run: pnpm test:harness
 
-      # The shared case corpus every tier-4 driver is fed from. `deno task test` used to sweep the whole
-      # tree, so this file had no job of its own to lose; splitting the tiers apart is exactly what would
-      # have dropped it. Invoked directly rather than through a task because there is no task that names
-      # this directory and it carries no `--filter` to guard.
+      # The shared case corpus every tier-4 driver is fed from. No tier's directory contains it, so
+      # without a step of its own here splitting the tiers apart would leave it unrun.
       - name: Case corpus tests
-        run: deno test -A test/cases
+        run: pnpm test:cases
 
   output-check:
     name: Output snapshots (tier 2)
@@ -97,7 +99,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Check the committed output tree
-        run: deno task test:output:check
+        run: pnpm test:output:check
 
       # `check` mode deliberately never writes, so a failed run leaves a clean working tree and a bare
       # `git diff` would upload an empty patch. Re-running in write mode is what turns the failure into
@@ -107,7 +109,7 @@ jobs:
         if: failure()
         shell: bash
         run: |
-          deno task test:output || true
+          pnpm test:output || true
           git add --intent-to-add --all
           git diff > snapshot.patch
 
@@ -153,8 +155,8 @@ jobs:
         env:
           IMAGE: ${{ matrix.image }}
         run: |
-          deno eval "import { buildImage } from '@goast/test-harness';
-          const image = Deno.env.get('IMAGE');
+          node --conditions=source --input-type=module-typescript -e "import { buildImage } from '@goast/test-harness';
+          const image = process.env.IMAGE;
           console.log(await buildImage(image, 'test/docker/' + image));"
 
   # --- Tier 3: compile gate ----------------------------------------------------------------------
@@ -165,8 +167,8 @@ jobs:
     name: Compile TypeScript (tier 3)
     needs: [output-check, images]
     runs-on: ubuntu-latest
-    # The `tsc` half runs in a container per profile; `deno check` runs on the host. Under a minute
-    # locally with a warm image.
+    # The container `tsc` runs once per profile; the host gate runs the repo's own TypeScript 7 `tsc`.
+    # Under a minute locally with a warm image.
     timeout-minutes: 30
     steps:
       - name: Checkout
@@ -178,12 +180,12 @@ jobs:
       - name: Setup Docker
         uses: ./.github/actions/docker
 
-      # This task is an `&&`-chain of several `deno test` invocations, not one — Deno 2.9.5's `--filter`
-      # is a plain substring match with no way to express "these units and also that one", so the units
-      # no single substring reaches get their own invocation. Expect several summary lines, not one.
+      # This script is an `&&`-chain of several `vitest run` invocations, not one — the discovery test and
+      # the TypeScript units are selected by different `-t` patterns, and each pattern gets its own
+      # invocation. Expect several summary lines, not one.
       - name: Run
         shell: bash
-        run: deno task test:compile:ts:check 2>&1 | tee compile-ts.log
+        run: pnpm test:compile:ts:check 2>&1 | tee compile-ts.log
 
       - name: Upload the compiler output
         if: failure()
@@ -211,10 +213,10 @@ jobs:
         uses: ./.github/actions/docker
 
       # Also an `&&`-chain: the Kotlin units, plus the discovery test and the runner/orphan tests that
-      # no substring filter can select.
+      # the units' `-t` pattern does not select.
       - name: Run
         shell: bash
-        run: deno task test:compile:kotlin:check 2>&1 | tee compile-kotlin.log
+        run: pnpm test:compile:kotlin:check 2>&1 | tee compile-kotlin.log
 
       - name: Upload the compiler output
         if: failure()
@@ -243,7 +245,7 @@ jobs:
 
       - name: Run
         shell: bash
-        run: deno task test:harness:docker 2>&1 | tee harness-docker.log
+        run: pnpm test:harness:docker 2>&1 | tee harness-docker.log
 
       - name: Upload the container output
         if: failure()
@@ -278,7 +280,7 @@ jobs:
 
       - name: Run
         shell: bash
-        run: deno task test:integration:check 2>&1 | tee it-fetch-clients.log
+        run: pnpm test:integration:check 2>&1 | tee it-fetch-clients.log
 
       - name: Upload the driver output
         if: failure()
@@ -306,7 +308,7 @@ jobs:
 
       - name: Run
         shell: bash
-        run: deno task test:integration:angular:check 2>&1 | tee it-angular-services.log
+        run: pnpm test:integration:angular:check 2>&1 | tee it-angular-services.log
 
       - name: Upload the driver output
         if: failure()
@@ -333,7 +335,7 @@ jobs:
 
       - name: Run
         shell: bash
-        run: deno task test:integration:k6:check 2>&1 | tee it-k6-clients.log
+        run: pnpm test:integration:k6:check 2>&1 | tee it-k6-clients.log
 
       - name: Upload the driver output
         if: failure()
@@ -360,7 +362,7 @@ jobs:
 
       - name: Run
         shell: bash
-        run: deno task test:integration:stubs:check 2>&1 | tee it-easy-network-stub.log
+        run: pnpm test:integration:stubs:check 2>&1 | tee it-easy-network-stub.log
 
       - name: Upload the driver output
         if: failure()
@@ -370,8 +372,8 @@ jobs:
           path: it-easy-network-stub.log
           if-no-files-found: warn
 
-  # The two Kotlin client families share one directory and one task, so they split by `--filter` rather
-  # than by task name. Every filter string below is covered by `test/integration-tests/task-filters.test.ts`,
+  # The two Kotlin client families share one directory and one script, so they split by `-t` rather
+  # than by script name. Every filter string below is covered by `test/integration-tests/task-filters.test.ts`,
   # which asserts it still names a suite *in the directory the job runs* — without that, a renamed
   # `describe` would leave these jobs running zero tests and exiting 0, green forever and gating nothing.
   # The same file asserts the converse: that no suite in these directories is left unselected by every
@@ -411,7 +413,7 @@ jobs:
           GOAST_INTEGRATION: '1'
           GOAST_SNAPSHOT: check
           FILTER: ${{ matrix.filter }}
-        run: deno test -A test/integration/kotlin-clients --filter "$FILTER" 2>&1 | tee driver.log
+        run: pnpm vitest run test/integration/kotlin-clients -t "$FILTER" 2>&1 | tee driver.log
 
       - name: Upload the driver output
         if: failure()
@@ -450,7 +452,7 @@ jobs:
           GOAST_INTEGRATION: '1'
           GOAST_SNAPSHOT: check
           FILTER: ${{ matrix.filter }}
-        run: deno test -A test/integration/kotlin-clients --filter "$FILTER" 2>&1 | tee driver.log
+        run: pnpm vitest run test/integration/kotlin-clients -t "$FILTER" 2>&1 | tee driver.log
 
       - name: Upload the driver output
         if: failure()
@@ -471,10 +473,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Two legs for four units, not four. `--filter` is a substring match, so `…@sb3` selects both
-        # `…@sb3` and `…@sb3-strict`; adding the strict units as legs of their own does not split the
-        # work, it runs each of them a second time — six container-backed unit runs to cover four units,
-        # on the most expensive tier in the graph. A disjoint split by filter is a two-way split, and the
+        # Two legs for four units, not four. `-t` is an unanchored match against the full test name, so
+        # `…@sb3` selects both `…@sb3` and `…@sb3-strict`; adding the strict units as legs of their own
+        # does not split the work, it runs each of them a second time — six container-backed unit runs to
+        # cover four units, on the most expensive tier in the graph. A disjoint split by filter is a two-way split, and the
         # plan's fact 7 enumerating four filter strings does not make them four disjoint sets.
         #
         # `boot` is the third leg, and it is not a unit at all: `boot.test.ts` asserts the tier-4
@@ -506,7 +508,7 @@ jobs:
           GOAST_INTEGRATION: '1'
           GOAST_SNAPSHOT: check
           FILTER: ${{ matrix.filter }}
-        run: deno test -A test/integration/spring-controllers --filter "$FILTER" 2>&1 | tee driver.log
+        run: pnpm vitest run test/integration/spring-controllers -t "$FILTER" 2>&1 | tee driver.log
 
       - name: Upload the driver output
         if: failure()
@@ -562,26 +564,23 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    # dnt builds three packages and type-checks each under a Node shim. No `needs:`; it is the publish
-    # path's own gate and is independent of the test tiers.
+    # `tsc` builds three packages and `pnpm pack` turns each into the tarball that gets published. No
+    # `needs:`; it is the publish path's own gate and is independent of the test tiers.
     timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
-      - name: Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version: 22
-
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: JSR dry-run publish
-        run: deno publish --dry-run --allow-dirty
+      - name: Build packages
+        run: pnpm build
 
-      - name: Build NPM packages
-        run: deno task npm
+      # `pnpm pack` applies each package's `publishConfig` and rewrites `workspace:^` to real versions, so
+      # the tarballs in `npm/` are exactly what the publish job uploads, byte for byte.
+      - name: Pack NPM packages
+        run: pnpm pack
 
       - name: Upload NPM packages
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -605,15 +604,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Node 24 for its npm 11, which trusted publishing (OIDC, `id-token: write`) requires.
       - name: Setup
         uses: ./.github/actions/setup
-
-      - name: Setup Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version: 24
-          registry-url: 'https://registry.npmjs.org'
-          always-auth: false
 
       - name: Download NPM packages
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
@@ -621,15 +614,28 @@ jobs:
           name: npm
           path: npm
 
-      - name: Publish @goast/core to JSR
-        run: deno publish
-        working-directory: packages/core
+      # `pnpm pack` names each tarball `<scope>-<name>-<version>.tgz`. Deriving the exact name from the
+      # package's own `version` rather than globbing `npm/` means a stale or unexpected tarball fails this
+      # step instead of being published.
+      - name: Resolve the tarballs
+        id: tarballs
+        shell: bash
+        run: |
+          for pkg in core kotlin typescript; do
+            version=$(node -p "require('./packages/$pkg/package.json').version")
+            file="npm/goast-$pkg-$version.tgz"
+            if [ ! -f "$file" ]; then
+              echo "::error::Expected tarball $file is missing; npm/ contains: $(ls npm)"
+              exit 1
+            fi
+            echo "$pkg=$file" >> "$GITHUB_OUTPUT"
+          done
 
       - name: Publish @goast/core to NPM
         id: publish-core
         uses: JS-DevTools/npm-publish@0fd2f4369c5d6bcfcde6091a7c527d810b9b5c3f # v4.1.5
         with:
-          package: npm/@goast/core
+          package: ${{ steps.tarballs.outputs.core }}
 
       - name: Create Tag for @goast/core
         uses: rickstaa/action-create-tag@a1c7777fcb2fee4f19b0f283ba888afa11678b72 # v1.7.2
@@ -637,15 +643,11 @@ jobs:
           tag: core/v${{ steps.publish-core.outputs.version }}
           tag_exists_error: false
 
-      - name: Publish @goast/kotlin to JSR
-        run: deno publish
-        working-directory: packages/kotlin
-
       - name: Publish @goast/kotlin to NPM
         id: publish-kotlin
         uses: JS-DevTools/npm-publish@0fd2f4369c5d6bcfcde6091a7c527d810b9b5c3f # v4.1.5
         with:
-          package: npm/@goast/kotlin
+          package: ${{ steps.tarballs.outputs.kotlin }}
 
       - name: Create Tag for @goast/kotlin
         uses: rickstaa/action-create-tag@a1c7777fcb2fee4f19b0f283ba888afa11678b72 # v1.7.2
@@ -653,15 +655,11 @@ jobs:
           tag: kotlin/v${{ steps.publish-kotlin.outputs.version }}
           tag_exists_error: false
 
-      - name: Publish @goast/typescript to JSR
-        run: deno publish
-        working-directory: packages/typescript
-
       - name: Publish @goast/typescript to NPM
         id: publish-typescript
         uses: JS-DevTools/npm-publish@0fd2f4369c5d6bcfcde6091a7c527d810b9b5c3f # v4.1.5
         with:
-          package: npm/@goast/typescript
+          package: ${{ steps.tarballs.outputs.typescript }}
 
       - name: Create Tag for @goast/typescript
         uses: rickstaa/action-create-tag@a1c7777fcb2fee4f19b0f283ba888afa11678b72 # v1.7.2

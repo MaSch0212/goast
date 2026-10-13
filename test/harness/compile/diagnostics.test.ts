@@ -1,8 +1,7 @@
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { repoRootDir } from '../paths.ts';
 import { formatDiagnostics, normalizeMessageUrls } from './diagnostics.ts';

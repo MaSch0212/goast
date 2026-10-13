@@ -1,4 +1,6 @@
-models.ts:1:23 TS2307 Import "<output>/models/.ts" not a dependency and not in import map from "models.ts"
-models/.ts:1:14 SyntaxError: Expected '{', got '='
-models/_1.ts:1:14 SyntaxError: Expected '{', got '='
-models/_2.ts:1:14 SyntaxError: Expected '{', got '='
+models/.ts:1:1 TS1128 Declaration or statement expected.
+models/.ts:2:19 TS1005 ',' expected.
+models/_1.ts:1:1 TS1128 Declaration or statement expected.
+models/_1.ts:2:19 TS1005 ',' expected.
+models/_2.ts:1:1 TS1128 Declaration or statement expected.
+models/_2.ts:2:19 TS1005 ',' expected.

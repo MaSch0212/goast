@@ -1,7 +1,8 @@
+import type { Dirent } from 'node:fs';
+import { readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import { walk } from '@std/fs/walk';
-
+import { isNotFound, walkFiles } from './fs.ts';
 import { specsDir } from './paths.ts';
 import type { OpenApiVersion } from './types.ts';
 
@@ -69,11 +70,11 @@ export async function discoverSpecs(root: string = specsDir): Promise<Discovered
 
   for (const versionDir of Object.keys(SPEC_VERSION_DIRS) as SpecVersionDir[]) {
     const versionPath = join(root, versionDir);
-    const entries: Deno.DirEntry[] = [];
+    let entries: Dirent[];
     try {
-      for await (const entry of Deno.readDir(versionPath)) entries.push(entry);
+      entries = await readdir(versionPath, { withFileTypes: true });
     } catch (error) {
-      if (error instanceof Deno.errors.NotFound) continue;
+      if (isNotFound(error)) continue;
       throw error;
     }
 
@@ -81,7 +82,7 @@ export async function discoverSpecs(root: string = specsDir): Promise<Discovered
 
     for (const entry of entries) {
       const path = join(versionPath, entry.name);
-      if (entry.isDirectory) {
+      if (entry.isDirectory()) {
         const files = await collectSpecFiles(path);
         if (files.length > 0) {
           claim({ versionDir, version: SPEC_VERSION_DIRS[versionDir], name: entry.name, files }, path);
@@ -114,9 +115,5 @@ function isSpecFile(name: string): boolean {
 }
 
 async function collectSpecFiles(dir: string): Promise<string[]> {
-  const files: string[] = [];
-  for await (const entry of walk(dir, { includeDirs: false, includeSymlinks: false, exts: SPEC_EXTENSIONS })) {
-    files.push(entry.path);
-  }
-  return files.sort();
+  return (await walkFiles(dir)).filter(isSpecFile);
 }

@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { beforeEach, describe, it } from '@std/testing/bdd';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { TypeScriptFileBuilder } from '../../file-builder.ts';
 import { tsString } from './string.ts';

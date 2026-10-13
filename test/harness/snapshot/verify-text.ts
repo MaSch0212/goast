@@ -1,7 +1,7 @@
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 
-import { ensureDir } from '@std/fs/ensure-dir';
-
+import { isNotFound } from '../fs.ts';
 import { DEFAULT_UPDATE_COMMAND, resolveSnapshotMode, type VerifyOptions } from './mode.ts';
 import { normalizePaths } from './normalize.ts';
 import { firstTextDifference, formatDifferenceExcerpt } from './text-diff.ts';
@@ -21,9 +21,9 @@ export async function verifyText(snapshotFile: string, text: string, options: Ve
 
   let expected: string | undefined;
   try {
-    expected = await Deno.readTextFile(snapshotFile);
+    expected = await readFile(snapshotFile, 'utf8');
   } catch (error) {
-    if (!(error instanceof Deno.errors.NotFound)) throw error;
+    if (!isNotFound(error)) throw error;
   }
 
   if (expected === normalized) return;
@@ -38,8 +38,8 @@ export async function verifyText(snapshotFile: string, text: string, options: Ve
     throw new Error(formatTextMismatch(snapshotFile, expected, normalized, updateCommand));
   }
 
-  await ensureDir(dirname(snapshotFile));
-  await Deno.writeTextFile(snapshotFile, normalized);
+  await mkdir(dirname(snapshotFile), { recursive: true });
+  await writeFile(snapshotFile, normalized);
   console.info(`snapshot updated ${snapshotFile}`);
 }
 

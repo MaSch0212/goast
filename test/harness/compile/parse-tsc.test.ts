@@ -1,5 +1,6 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { readFile } from 'node:fs/promises';
+
+import { describe, expect, it } from 'vitest';
 
 import { parseTscDiagnostics } from './parse-tsc.ts';
 
@@ -43,7 +44,7 @@ describe('parseTscDiagnostics', () => {
   });
 
   it('parses the captured fixture, so a tsc upgrade that changes the format fails here first', async () => {
-    const fixture = await Deno.readTextFile(new URL('../fixtures/tsc-errors.txt', import.meta.url));
+    const fixture = await readFile(new URL('../fixtures/tsc-errors.txt', import.meta.url), 'utf8');
 
     // Captured from a real `check.mjs` run over `angular-services/v3/non-ascii-names`, with the whole
     // profile (not just the one unit) mounted at `/tree` — the same shape `runTsc` itself produces, so

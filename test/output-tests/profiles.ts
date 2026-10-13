@@ -1,4 +1,3 @@
-// deno-lint-ignore-file no-explicit-any
 import type { OpenApiGenerator } from '@goast/core';
 import type { SpecVersionDir } from '@goast/test-harness';
 
