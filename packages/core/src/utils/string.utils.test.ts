@@ -2,6 +2,7 @@ import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
 import {
+  compareString,
   getWords,
   removeStr,
   toCamelCase,
@@ -24,6 +25,42 @@ import type {
   SnakeCaseOptions,
   WordCasing,
 } from './string.utils.types.ts';
+
+describe('compareString', () => {
+  const sorted = (values: string[]) => [...values].sort(compareString);
+
+  it('orders equal strings as equal', () => {
+    expect(compareString('a', 'a')).toBe(0);
+  });
+
+  it('orders case-insensitively, interleaving lowercase with capitalized names', () => {
+    expect(sorted(['WebClient', 'awaitBody', 'ClientResponse', 'awaitExchange'])).toEqual([
+      'awaitBody',
+      'awaitExchange',
+      'ClientResponse',
+      'WebClient',
+    ]);
+  });
+
+  it('orders strings differing only in case deterministically', () => {
+    expect(compareString('Value', 'value')).toBeLessThan(0);
+    expect(compareString('value', 'Value')).toBeGreaterThan(0);
+  });
+
+  it('is antisymmetric for unequal strings', () => {
+    for (const [a, b] of [['a', 'b'], ['B', 'a'], ['x', 'X']]) {
+      expect(Math.sign(compareString(a, b))).toBe(-Math.sign(compareString(b, a)));
+    }
+  });
+
+  it('orders non-ASCII characters by code point rather than by locale collation', () => {
+    // Locale collation would put the umlauts beside their base letters (de-DE sorts Ähre next to
+    // Apfel), but it depends on the host locale and ICU version, so the same input would sort
+    // differently on different machines. Code-point order is stable everywhere, which is what
+    // reproducible generated output requires.
+    expect(sorted(['Zebra', 'Ähre', 'Apfel', 'Ozean', 'Öl'])).toEqual(['Apfel', 'Ozean', 'Zebra', 'Ähre', 'Öl']);
+  });
+});
 
 describe('getWords', () => {
   it('should return an empty array for a nullish string', () => {

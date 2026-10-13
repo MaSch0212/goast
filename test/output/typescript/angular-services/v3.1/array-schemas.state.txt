@@ -1,0 +1,147 @@
+{
+  typescript: {
+    indexFiles: {
+      models: '<output>/models.ts',
+      responseModels: '<output>/responses.ts',
+      services: '<output>/services.ts'
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3.1/array-schemas.yml#/components/schemas/TupleArray',
+        additionalExports: [],
+        component: 'TupleArray',
+        filePath: '<output>/models/tuple-array.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/tuple-array.ts',
+            name: 'TupleArray',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3.1/array-schemas.yml#/components/schemas/UniqueArray/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3.1/array-schemas.yml#/components/schemas/ArrayNoItems',
+        additionalExports: [],
+        component: 'ArrayNoItems',
+        filePath: '<output>/models/array-no-items.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/array-no-items.ts',
+            name: 'ArrayNoItems',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3.1/array-schemas.yml#/components/schemas/TupleWithRest',
+        additionalExports: [],
+        component: 'TupleWithRest',
+        filePath: '<output>/models/tuple-with-rest.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/tuple-with-rest.ts',
+            name: 'TupleWithRest',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3.1/array-schemas.yml#/components/schemas/TupleWithRest/items',
+        component: 'boolean',
+        imports: []
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3.1/array-schemas.yml#/components/schemas/ClosedTuple',
+        additionalExports: [],
+        component: 'ClosedTuple',
+        filePath: '<output>/models/closed-tuple.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/closed-tuple.ts',
+            name: 'ClosedTuple',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3.1/array-schemas.yml#/components/schemas/ContainsArray',
+        additionalExports: [],
+        component: 'ContainsArray',
+        filePath: '<output>/models/contains-array.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/contains-array.ts',
+            name: 'ContainsArray',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3.1/array-schemas.yml#/components/schemas/UnevaluatedItemsArray',
+        additionalExports: [],
+        component: 'UnevaluatedItemsArray',
+        filePath: '<output>/models/unevaluated-items-array.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/unevaluated-items-array.ts',
+            name: 'UnevaluatedItemsArray',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3.1/array-schemas.yml#/components/schemas/ArrayOfString',
+        additionalExports: [],
+        component: 'ArrayOfString',
+        filePath: '<output>/models/array-of-string.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/array-of-string.ts',
+            name: 'ArrayOfString',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3.1/array-schemas.yml#/components/schemas/ArrayOfString/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3.1/array-schemas.yml#/components/schemas/UniqueArray',
+        additionalExports: [],
+        component: 'UniqueArray',
+        filePath: '<output>/models/unique-array.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/unique-array.ts',
+            name: 'UniqueArray',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      }
+    },
+    services: {}
+  }
+}

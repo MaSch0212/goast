@@ -1,0 +1,116 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Response Headers
+
+paths:
+  /one:
+    get:
+      operationId: singleHeader
+      tags: [Headers]
+      responses:
+        '200':
+          description: A response carrying a single rate-limit header.
+          headers:
+            X-Rate-Limit:
+              description: The number of requests remaining in the current window.
+              schema:
+                type: integer
+  /many:
+    get:
+      operationId: multipleHeaders
+      tags: [Headers]
+      responses:
+        '200':
+          description: A response carrying four headers of different types.
+          headers:
+            X-String-Header:
+              schema:
+                type: string
+            X-Int-Header:
+              schema:
+                type: integer
+            X-Bool-Header:
+              schema:
+                type: boolean
+            X-Array-Header:
+              schema:
+                type: array
+                items:
+                  type: string
+  /required:
+    get:
+      operationId: requiredHeader
+      tags: [Headers]
+      responses:
+        '200':
+          description: A response carrying a required header.
+          headers:
+            X-Required-Header:
+              required: true
+              schema:
+                type: string
+  /deprecated:
+    get:
+      operationId: deprecatedHeader
+      tags: [Headers]
+      responses:
+        '200':
+          description: A response carrying a deprecated header.
+          headers:
+            X-Deprecated-Header:
+              deprecated: true
+              schema:
+                type: string
+  /ref:
+    get:
+      operationId: refHeader
+      tags: [Headers]
+      responses:
+        '200':
+          description: A response carrying a header shared through components.headers.
+          headers:
+            X-Shared-Header:
+              $ref: '#/components/headers/SharedHeader'
+  /no-content-headers:
+    get:
+      operationId: headersOnNoContent
+      tags: [Headers]
+      responses:
+        '204':
+          description: A response carrying headers but no body.
+          headers:
+            X-Rate-Limit:
+              schema:
+                type: integer
+  /both:
+    get:
+      operationId: headersAndBody
+      tags: [Headers]
+      responses:
+        '200':
+          description: A response carrying both headers and a body.
+          headers:
+            X-Rate-Limit:
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Thing'
+
+components:
+  schemas:
+    Thing:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+  headers:
+    SharedHeader:
+      description: A header shared through components.headers.
+      schema:
+        type: string

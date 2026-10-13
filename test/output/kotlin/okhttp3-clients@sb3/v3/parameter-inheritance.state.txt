@@ -1,0 +1,109 @@
+{
+  kotlin: {
+    clients: {
+      'service-1': {
+        __source__: 'tag:Inheritance',
+        packageName: 'com.openapi.generated.api.client',
+        typeName: 'InheritanceApiClient'
+      }
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/parameter-inheritance.yml#/paths//inherited/{id}/parameters/0/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/parameter-inheritance.yml#/paths//inherited/{id}/parameters/1/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/parameter-inheritance.yml#/paths//inherited/{id}/post/parameters/0/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/parameter-inheritance.yml#/paths//overridden/{id}/parameters/0/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/parameter-inheritance.yml#/paths//overridden/{id}/parameters/1/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/parameter-inheritance.yml#/paths//overridden/{id}/get/parameters/0/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/parameter-inheritance.yml#/components/parameters/IdParam/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/parameter-inheritance.yml#/components/parameters/PageParam/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      }
+    }
+  }
+}

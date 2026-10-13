@@ -1,0 +1,583 @@
+{
+  kotlin: {
+    clients: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/class',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Class',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/var/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/when',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'When',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/when/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/is',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Is',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/is/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/as',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'As',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/as/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/in',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'In',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/in/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/typeof',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Typeof',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/class/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/typeof/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/interface',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Interface',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/interface/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/enum',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Enum',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/enum/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/null',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Null',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/null/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-27': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/String',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-28': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/String/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-29': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/Int',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/object',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Object',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-30': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/Int/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-31': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/List',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-32': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/List/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-33': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/Map',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Map',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-34': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/Map/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-35': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/Any',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-36': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/Any/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-37': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/Unit',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Unit',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-38': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/Unit/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-39': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/ObjectWithReservedProperties',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'ObjectWithReservedProperties',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/object/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-40': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/ObjectWithReservedProperties/properties/class',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-41': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/ObjectWithReservedProperties/properties/val',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-42': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/ObjectWithReservedProperties/properties/is',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-43': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/ObjectWithReservedProperties/properties/in',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-44': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/ObjectWithReservedProperties/properties/function',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-45': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/ObjectWithReservedProperties/properties/default',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-46': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/ObjectWithReservedProperties/properties/constructor',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-47': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/ObjectWithReservedProperties/properties/prototype',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-48': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/ObjectWithReservedProperties/properties/this',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/fun',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Fun',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/fun/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/val',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Val',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/val/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/reserved-words.yml#/components/schemas/var',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Var',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      }
+    }
+  }
+}

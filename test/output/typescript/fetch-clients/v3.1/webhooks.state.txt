@@ -1,0 +1,37 @@
+{
+  typescript: {
+    clients: {},
+    indexFiles: {
+      clientInterfaces: '<output>/clients.ts',
+      clients: '<output>/clients.ts',
+      models: '<output>/models.ts'
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3.1/webhooks.yml#/components/schemas/Pet',
+        additionalExports: [],
+        component: 'Pet',
+        filePath: '<output>/models/pet.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/pet.ts',
+            name: 'Pet',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3.1/webhooks.yml#/components/schemas/Pet/properties/id',
+        component: 'string',
+        imports: []
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3.1/webhooks.yml#/components/schemas/Pet/properties/name',
+        component: 'string',
+        imports: []
+      }
+    }
+  }
+}

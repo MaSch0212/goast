@@ -1,0 +1,6 @@
+header.content-type
+  expected text/plain
+  actual   text/plain;charset=UTF-8
+body
+  expected {"kind":"text","value":"plain text body"}
+  actual   {"kind":"text","value":"\"plain text body\""}

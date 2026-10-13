@@ -1,0 +1,4 @@
+com/openapi/generated/model/.kt:6:11 Syntax error: Name expected.
+com/openapi/generated/model/ObjectWithNonAsciiProperties.kt:15:8 Syntax error: Parameter name expected.
+com/openapi/generated/model/_1.kt:6:11 Syntax error: Name expected.
+com/openapi/generated/model/_2.kt:6:11 Syntax error: Name expected.

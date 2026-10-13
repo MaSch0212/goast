@@ -1,16 +1,19 @@
-import { EOL } from 'node:os';
-
-import { expect } from '@std/expect/expect';
+import { expect } from '@std/expect';
 import { beforeEach, describe, it } from '@std/testing/bdd';
 
 import type { TypeScriptImport } from '../../common-results.ts';
+import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from '../../config.ts';
 import { TypeScriptFileBuilder } from '../../file-builder.ts';
 import { tsReference } from './reference.ts';
 
 let builder: TypeScriptFileBuilder;
 
 beforeEach(() => {
-  builder = new TypeScriptFileBuilder();
+  // A fixed newLine keeps the expectations below host-independent.
+  builder = new TypeScriptFileBuilder(
+    undefined,
+    { ...defaultTypeScriptGeneratorConfig, newLine: '\n' } as TypeScriptGeneratorConfig,
+  );
 });
 
 describe('tsReference', () => {
@@ -31,7 +34,7 @@ describe('tsReference', () => {
         { kind: 'module', modulePath: 'module', name: 'X', type: 'import' },
       ],
     );
-    expect(builder.toString(false)).toBe(`import { X } from 'module';${EOL}X`);
+    expect(builder.toString(false)).toBe("import { X } from 'module';\nX");
   });
 
   it('should write the injections', () => {

@@ -1,0 +1,223 @@
+{
+  kotlin: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Int32',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/DateTime',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'OffsetDateTime',
+          nullable: false,
+          packageName: 'java.time',
+          subReference: null
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Password',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Uuid',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Uri',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'URI',
+          nullable: false,
+          packageName: 'java.net',
+          subReference: null
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Hostname',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Ipv4',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Ipv6',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/UnknownFormat',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/BoolWithFormat',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Boolean',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Int64',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Long',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/IntNoFormat',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Float',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Float',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Double',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Double',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/NumNoFormat',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Double',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Byte',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Binary',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Date',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'LocalDate',
+          nullable: false,
+          packageName: 'java.time',
+          subReference: null
+        }
+      }
+    },
+    services: {}
+  }
+}

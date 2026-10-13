@@ -1,0 +1,76 @@
+{
+  typescript: {
+    indexFiles: {
+      models: '<output>/models.ts',
+      responseModels: '<output>/responses.ts',
+      services: '<output>/services.ts'
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v2/parameter-locations.yml#/definitions/Payload',
+        additionalExports: [],
+        component: 'Payload',
+        filePath: '<output>/models/payload.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/payload.ts',
+            name: 'Payload',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v2/parameter-locations.yml#/definitions/Payload',
+        additionalExports: [],
+        component: 'Payload',
+        filePath: '<output>/models/payload.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/payload.ts',
+            name: 'Payload',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v2/parameter-locations.yml#/definitions/Payload/properties/name',
+        component: 'string',
+        imports: []
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v2/parameter-locations.yml#/definitions/Payload/properties/value',
+        component: 'number',
+        imports: []
+      }
+    },
+    services: {
+      'service-1': {
+        __source__: 'tag:Parameters',
+        component: 'ParametersService',
+        filePath: '<output>/services/parameters.service.ts',
+        responseModels: {
+          'endpoint-1': {
+            component: 'BodyParamApiResponse',
+            filePath: '<output>/models/responses/parameters-responses.model.ts'
+          },
+          'endpoint-2': {
+            component: 'FormDataParamsApiResponse',
+            filePath: '<output>/models/responses/parameters-responses.model.ts'
+          },
+          'endpoint-3': {
+            component: 'FileUploadApiResponse',
+            filePath: '<output>/models/responses/parameters-responses.model.ts'
+          },
+          'endpoint-4': {
+            component: 'QueryParamsApiResponse',
+            filePath: '<output>/models/responses/parameters-responses.model.ts'
+          }
+        }
+      }
+    }
+  }
+}

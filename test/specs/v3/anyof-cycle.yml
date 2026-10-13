@@ -1,0 +1,41 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: AnyOf Cycle
+
+paths:
+  /x:
+    x-ignore: true
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    AnyOfDiscriminator:
+      type: object
+      discriminator:
+        propertyName: kind
+      anyOf:
+        - $ref: '#/components/schemas/AnyOfDiscriminatorA'
+        - $ref: '#/components/schemas/AnyOfDiscriminatorB'
+      properties:
+        kind:
+          type: string
+      required:
+        - kind
+    AnyOfDiscriminatorA:
+      allOf:
+        - $ref: '#/components/schemas/AnyOfDiscriminator'
+        - type: object
+          properties:
+            aValue:
+              type: string
+    AnyOfDiscriminatorB:
+      allOf:
+        - $ref: '#/components/schemas/AnyOfDiscriminator'
+        - type: object
+          properties:
+            bValue:
+              type: string

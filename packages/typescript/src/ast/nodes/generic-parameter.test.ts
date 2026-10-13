@@ -1,15 +1,18 @@
-import { EOL } from 'node:os';
-
-import { expect } from '@std/expect/expect';
+import { expect } from '@std/expect';
 import { beforeEach, describe, it } from '@std/testing/bdd';
 
+import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from '../../config.ts';
 import { TypeScriptFileBuilder } from '../../file-builder.ts';
 import { tsGenericParameter } from './generic-parameter.ts';
 
 let builder: TypeScriptFileBuilder;
 
 beforeEach(() => {
-  builder = new TypeScriptFileBuilder();
+  // A fixed newLine keeps the expectations below host-independent.
+  builder = new TypeScriptFileBuilder(
+    undefined,
+    { ...defaultTypeScriptGeneratorConfig, newLine: '\n' } as TypeScriptGeneratorConfig,
+  );
 });
 
 describe('tsGenericParameter', () => {
@@ -79,7 +82,7 @@ describe('tsGenericParameter', () => {
 
     it('should write multiline if more than 2 parameters', () => {
       tsGenericParameter.write(builder, [tsGenericParameter('T'), tsGenericParameter('U'), tsGenericParameter('V')]);
-      expect(builder.toString(false)).toBe(`<${EOL}  T,${EOL}  U,${EOL}  V${EOL}>`);
+      expect(builder.toString(false)).toBe('<\n  T,\n  U,\n  V\n>');
     });
   });
 });

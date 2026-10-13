@@ -1,0 +1,3 @@
+result
+  expected {"code":400,"message":"Invalid widget id"}
+  actual   {"status":400}

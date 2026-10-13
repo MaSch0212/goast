@@ -1,0 +1,229 @@
+{
+  typescript: {
+    indexFiles: { models: '<output>/models.ts' },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/multi-file/owners.yml#/paths//owners/{id}/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/multi-file/pets.yml#/components/schemas/Pet',
+        additionalExports: [],
+        component: 'Pet',
+        filePath: '<output>/models/pet.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/pet.ts',
+            name: 'Pet',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/multi-file/pets.yml#/components/schemas/Pet',
+        additionalExports: [],
+        component: 'Pet',
+        filePath: '<output>/models/pet.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/pet.ts',
+            name: 'Pet',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/multi-file/pets.yml#/components/schemas/Pet/properties/id',
+        component: 'string',
+        imports: []
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/multi-file/pets.yml#/components/schemas/Pet/properties/name',
+        component: 'string',
+        imports: []
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/multi-file/shared.yml#/components/schemas/Address',
+        additionalExports: [],
+        component: 'Address',
+        filePath: '<output>/models/address.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/address.ts',
+            name: 'Address',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/multi-file/shared.yml#/components/schemas/Address',
+        additionalExports: [],
+        component: 'Address',
+        filePath: '<output>/models/address.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/address.ts',
+            name: 'Address',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/multi-file/shared.yml#/components/schemas/Address/properties/street',
+        component: 'string',
+        imports: []
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/multi-file/shared.yml#/components/schemas/Address/properties/city',
+        component: 'string',
+        imports: []
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/multi-file/pets.yml#/paths//pets/get/responses/200/content/application/json/schema',
+        component: '(Pet)[]',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/pet.ts',
+            name: 'Pet',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/multi-file/pets.yml#/components/schemas/Pet',
+        additionalExports: [],
+        component: 'Pet',
+        filePath: '<output>/models/pet.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/pet.ts',
+            name: 'Pet',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/multi-file/owners.yml#/components/schemas/Owner',
+        additionalExports: [],
+        component: 'Owner',
+        filePath: '<output>/models/owner.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/owner.ts',
+            name: 'Owner',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/multi-file/pets.yml#/components/schemas/Pet',
+        additionalExports: [],
+        component: 'Pet',
+        filePath: '<output>/models/pet.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/pet.ts',
+            name: 'Pet',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/multi-file/pets.yml#/components/schemas/Pet',
+        additionalExports: [],
+        component: 'Pet',
+        filePath: '<output>/models/pet.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/pet.ts',
+            name: 'Pet',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/multi-file/owners.yml#/components/schemas/Owner',
+        additionalExports: [],
+        component: 'Owner',
+        filePath: '<output>/models/owner.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/owner.ts',
+            name: 'Owner',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/multi-file/owners.yml#/components/schemas/Owner/properties/id',
+        component: 'string',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/multi-file/owners.yml#/components/schemas/Owner/properties/name',
+        component: 'string',
+        imports: []
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/multi-file/shared.yml#/components/schemas/Contact',
+        additionalExports: [],
+        component: 'Contact',
+        filePath: '<output>/models/contact.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/contact.ts',
+            name: 'Contact',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/multi-file/shared.yml#/components/schemas/Contact',
+        additionalExports: [],
+        component: 'Contact',
+        filePath: '<output>/models/contact.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/contact.ts',
+            name: 'Contact',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/multi-file/shared.yml#/components/schemas/Contact/properties/email',
+        component: 'string',
+        imports: []
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/multi-file/shared.yml#/components/schemas/Contact/properties/phone',
+        component: 'string',
+        imports: []
+      }
+    }
+  }
+}

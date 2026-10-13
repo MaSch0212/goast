@@ -1,0 +1,87 @@
+{
+  typescript: {
+    indexFiles: {
+      k6Clients: '<output>/clients.js',
+      k6ResponseModels: '<output>/responses.ts',
+      models: '<output>/models.ts'
+    },
+    k6Clients: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/detailed-schemas.yml#/components/schemas/WithTitle',
+        additionalExports: [],
+        component: 'MyTitle',
+        filePath: '<output>/models/my-title.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/my-title.ts',
+            name: 'MyTitle',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/detailed-schemas.yml#/components/schemas/WithAllCommon',
+        additionalExports: [],
+        component: 'WithAllCommon',
+        filePath: '<output>/models/with-all-common.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/with-all-common.ts',
+            name: 'WithAllCommon',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/detailed-schemas.yml#/components/schemas/MyEnum',
+        additionalExports: [ { name: 'MY_ENUM_VALUES', type: 'export' } ],
+        component: 'MyEnum',
+        filePath: '<output>/models/my-enum.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/my-enum.ts',
+            name: 'MyEnum',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/detailed-schemas.yml#/components/schemas/WriteOnly',
+        additionalExports: [],
+        component: 'WriteOnly',
+        filePath: '<output>/models/write-only.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/write-only.ts',
+            name: 'WriteOnly',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/detailed-schemas.yml#/components/schemas/ReadOnly',
+        additionalExports: [],
+        component: 'ReadOnly',
+        filePath: '<output>/models/read-only.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/read-only.ts',
+            name: 'ReadOnly',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      }
+    }
+  }
+}

@@ -1,0 +1,347 @@
+{
+  kotlin: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/OpenObject',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'String',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            },
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Any',
+              nullable: true,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'Map',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/MapOfArray/additionalProperties',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'String',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/MapOfArray/additionalProperties/items',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/BoundedObject',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'BoundedObject',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/NestedInlineObject',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'NestedInlineObject',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/NestedInlineObject/properties/middle',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'NestedInlineObjectMiddle',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/NestedInlineObject/properties/middle/properties/inner',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'NestedInlineObjectMiddleInner',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/NestedInlineObject/properties/middle/properties/inner/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/NotSchema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/NotSchema/not',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/ObjectWithNot',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'ObjectWithNot',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/ClosedObject',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'ClosedObject',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/ObjectWithNot/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/ObjectWithNot/properties/value/not',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/EmptySchema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/ClosedObjectWithProperties',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'ClosedObjectWithProperties',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/ClosedObjectWithProperties/properties/a',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/ClosedObjectWithProperties/properties/b',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/MapOfRef',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'String',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            },
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'String',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'Map',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/simple-schemas.yml#/components/schemas/MyString',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/simple-schemas.yml#/components/schemas/MyString',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/MapOfArray',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'String',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            },
+            KtReference {
+              classReference: false,
+              generics: [
+                KtReference {
+                  classReference: false,
+                  generics: [],
+                  inject: {},
+                  name: 'String',
+                  nullable: false,
+                  packageName: 'kotlin',
+                  subReference: null
+                }
+              ],
+              inject: {},
+              name: 'List',
+              nullable: false,
+              packageName: 'kotlin.collections',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'Map',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,139 @@
+{
+  typescript: {
+    indexFiles: {
+      k6Clients: '<output>/clients.js',
+      k6ResponseModels: '<output>/responses.ts',
+      models: '<output>/models.ts'
+    },
+    k6Clients: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/external-refs/main.yml#/components/schemas/UsesShared',
+        additionalExports: [],
+        component: 'UsesShared',
+        filePath: '<output>/models/uses-shared.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/uses-shared.ts',
+            name: 'UsesShared',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/external-refs/shared/types.yml#/components/schemas/SharedThing',
+        additionalExports: [],
+        component: 'SharedThing',
+        filePath: '<output>/models/shared-thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/shared-thing.ts',
+            name: 'SharedThing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/external-refs/shared/types.yml#/components/schemas/SharedThing',
+        additionalExports: [],
+        component: 'SharedThing',
+        filePath: '<output>/models/shared-thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/shared-thing.ts',
+            name: 'SharedThing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/external-refs/shared/types.yml#/components/schemas/SharedThing',
+        additionalExports: [],
+        component: 'SharedThing',
+        filePath: '<output>/models/shared-thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/shared-thing.ts',
+            name: 'SharedThing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/external-refs/shared/types.yml#/components/schemas/SharedThing/properties/id',
+        component: 'string',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/external-refs/shared/types.yml#/components/schemas/SharedThing/properties/label',
+        component: 'string',
+        imports: []
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/external-refs/shared/types.yml#/components/schemas/SharedEnum',
+        additionalExports: [ { name: 'SHARED_ENUM_VALUES', type: 'export' } ],
+        component: 'SharedEnum',
+        filePath: '<output>/models/shared-enum.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/shared-enum.ts',
+            name: 'SharedEnum',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/external-refs/shared/types.yml#/components/schemas/SharedEnum',
+        additionalExports: [ { name: 'SHARED_ENUM_VALUES', type: 'export' } ],
+        component: 'SharedEnum',
+        filePath: '<output>/models/shared-enum.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/shared-enum.ts',
+            name: 'SharedEnum',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/external-refs/main.yml#/components/schemas/RefsSharedInArray',
+        additionalExports: [],
+        component: 'RefsSharedInArray',
+        filePath: '<output>/models/refs-shared-in-array.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/refs-shared-in-array.ts',
+            name: 'RefsSharedInArray',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/external-refs/main.yml#/components/schemas/RefsSharedInArray/properties/things',
+        component: '(SharedThing)[]',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/shared-thing.ts',
+            name: 'SharedThing',
+            type: 'type-import'
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,15 +1,20 @@
-import { normalizeEOL } from '@goast/test-utils';
+import { dedent } from '@goast/test-harness';
 
-import { expect } from '@std/expect/expect';
+import { expect } from '@std/expect';
 import { beforeEach, describe, it } from '@std/testing/bdd';
 
+import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from '../../config.ts';
 import { TypeScriptFileBuilder } from '../../file-builder.ts';
 import { tsTuple } from './tuple.ts';
 
 let builder: TypeScriptFileBuilder;
 
 beforeEach(() => {
-  builder = new TypeScriptFileBuilder();
+  // A fixed newLine keeps the expectations below host-independent.
+  builder = new TypeScriptFileBuilder(
+    undefined,
+    { ...defaultTypeScriptGeneratorConfig, newLine: '\n' } as TypeScriptGeneratorConfig,
+  );
 });
 
 describe('tsTuple', () => {
@@ -26,7 +31,7 @@ describe('tsTuple', () => {
   it('should write multiline if there are more than 3 elements', () => {
     builder.append(tsTuple(['string', 'number', 'boolean', 'unknown']));
     expect(builder.toString(false)).toBe(
-      normalizeEOL(8)(
+      dedent(8)(
         `[
           string,
           number,

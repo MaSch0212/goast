@@ -1,0 +1,1 @@
+export type { DeprecatedHeaderApiResponse, HeadersAndBodyApiResponse, HeadersOnNoContentApiResponse, MultipleHeadersApiResponse, RefHeaderApiResponse, RequiredHeaderApiResponse, SingleHeaderApiResponse } from './models/responses/headers-responses.model';

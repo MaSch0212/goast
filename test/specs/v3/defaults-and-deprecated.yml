@@ -1,0 +1,104 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Defaults And Deprecated
+
+paths:
+  /deprecated-op:
+    get:
+      operationId: deprecatedOp
+      tags: [Deprecation]
+      deprecated: true
+      description: This operation is deprecated.
+      responses:
+        '200':
+          description: OK.
+  /deprecated-op-no-desc:
+    get:
+      operationId: deprecatedOpNoDesc
+      tags: [Deprecation]
+      deprecated: true
+      responses:
+        '200':
+          description: OK.
+  /deprecated-params:
+    get:
+      operationId: deprecatedParams
+      tags: [Deprecation]
+      parameters:
+        - name: withDesc
+          in: query
+          deprecated: true
+          description: This parameter is deprecated.
+          schema:
+            type: string
+        - name: noDesc
+          in: query
+          deprecated: true
+          schema:
+            type: string
+        - name: plain
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK.
+
+components:
+  schemas:
+    DefaultString:
+      type: string
+      default: 'hello'
+    DefaultInt:
+      type: integer
+      default: 42
+    DefaultBool:
+      type: boolean
+      default: true
+    DefaultNumber:
+      type: number
+      default: 3.14
+    DefaultEmptyString:
+      type: string
+      default: ''
+    DefaultArray:
+      type: array
+      items:
+        type: string
+      default: []
+    DefaultObject:
+      type: object
+      default: {}
+    DefaultEnum:
+      type: string
+      enum:
+        - one
+        - two
+        - three
+      default: one
+    DeprecatedSchema:
+      type: string
+      deprecated: true
+    ObjectWithDefaults:
+      type: object
+      properties:
+        a:
+          type: string
+          default: 'hello'
+        b:
+          type: integer
+          default: 42
+        c:
+          type: boolean
+          default: true
+    ObjectWithDeprecatedProperties:
+      type: object
+      properties:
+        withDesc:
+          type: string
+          deprecated: true
+          description: This property is deprecated.
+        noDesc:
+          type: string
+          deprecated: true

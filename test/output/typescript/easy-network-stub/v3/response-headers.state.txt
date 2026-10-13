@@ -1,0 +1,109 @@
+{
+  typescript: {
+    indexFiles: { models: '<output>/models.ts', stubs: '<output>/stubs.ts' },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/components/schemas/Thing',
+        additionalExports: [],
+        component: 'Thing',
+        filePath: '<output>/models/thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/thing.ts',
+            name: 'Thing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//many/get/responses/200/headers/X-Array-Header/schema',
+        component: '(string)[]',
+        imports: []
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//many/get/responses/200/headers/X-Array-Header/schema/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//required/get/responses/200/headers/X-Required-Header/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//deprecated/get/responses/200/headers/X-Deprecated-Header/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//no-content-headers/get/responses/204/headers/X-Rate-Limit/schema',
+        component: 'number',
+        imports: []
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//both/get/responses/200/headers/X-Rate-Limit/schema',
+        component: 'number',
+        imports: []
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/components/schemas/Thing',
+        additionalExports: [],
+        component: 'Thing',
+        filePath: '<output>/models/thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/thing.ts',
+            name: 'Thing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/components/schemas/Thing/properties/id',
+        component: 'string',
+        imports: []
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/components/schemas/Thing/properties/label',
+        component: 'string',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/components/headers/SharedHeader/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//one/get/responses/200/headers/X-Rate-Limit/schema',
+        component: 'number',
+        imports: []
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//many/get/responses/200/headers/X-String-Header/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//many/get/responses/200/headers/X-Int-Header/schema',
+        component: 'number',
+        imports: []
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//many/get/responses/200/headers/X-Bool-Header/schema',
+        component: 'boolean',
+        imports: []
+      }
+    },
+    stubs: {
+      'service-1': {
+        __source__: 'tag:Headers',
+        component: 'HeadersStubs',
+        filePath: '<output>/stubs/headers.stubs.ts'
+      }
+    }
+  }
+}

@@ -1,0 +1,345 @@
+{
+  kotlin: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//file/post/requestBody/content/multipart/form-data/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//mixed/post/requestBody/content/multipart/form-data/schema/properties/active',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Boolean',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//nested/post/requestBody/content/multipart/form-data/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//nested/post/requestBody/content/multipart/form-data/schema/properties/metadata',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'NestedObjectPartRequest',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//nested/post/requestBody/content/multipart/form-data/schema/properties/metadata/properties/author',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//nested/post/requestBody/content/multipart/form-data/schema/properties/metadata/properties/version',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//ref-part/post/requestBody/content/multipart/form-data/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/components/schemas/Payload',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Payload',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/components/schemas/Payload',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Payload',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/components/schemas/Payload/properties/id',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/components/schemas/Payload/properties/name',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//file/post/requestBody/content/multipart/form-data/schema/properties/file',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//encoded/post/requestBody/content/multipart/form-data/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//encoded/post/requestBody/content/multipart/form-data/schema/properties/file',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//encoded/post/requestBody/content/multipart/form-data/schema/properties/label',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//encoded/post/requestBody/content/multipart/form-data/schema/properties/quantity',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//encoded/post/requestBody/content/multipart/form-data/schema/properties/active',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Boolean',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//optional-file/post/requestBody/content/multipart/form-data/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//optional-file/post/requestBody/content/multipart/form-data/schema/properties/file',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//files/post/requestBody/content/multipart/form-data/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//files/post/requestBody/content/multipart/form-data/schema/properties/files',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'String',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//files/post/requestBody/content/multipart/form-data/schema/properties/files/items',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//mixed/post/requestBody/content/multipart/form-data/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//mixed/post/requestBody/content/multipart/form-data/schema/properties/file',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//mixed/post/requestBody/content/multipart/form-data/schema/properties/label',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//mixed/post/requestBody/content/multipart/form-data/schema/properties/quantity',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      }
+    },
+    services: {
+      'service-1': {
+        __source__: 'tag:Multipart',
+        apiController: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'MultipartApiController'
+        },
+        apiDelegate: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'MultipartApiDelegate'
+        },
+        apiInterface: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'MultipartApi'
+        }
+      }
+    }
+  }
+}

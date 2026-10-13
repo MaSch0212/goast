@@ -1,0 +1,391 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Kitchen Sink
+
+paths:
+  /pets/{id}:
+    get:
+      operationId: getPet
+      tags: [Pets]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The pet.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+    put:
+      operationId: updatePet
+      tags: [Pets]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PetUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PetUpdate'
+      responses:
+        '200':
+          description: The updated pet.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+    delete:
+      operationId: deletePet
+      tags: [Pets]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: The pet was deleted.
+
+  /pets:
+    post:
+      operationId: createPet
+      tags: [Pets]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pet'
+      responses:
+        '201':
+          description: The pet was created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+
+  /pets/{id}/photo:
+    post:
+      operationId: uploadPetPhoto
+      tags: [Pets]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                caption:
+                  type: string
+      responses:
+        '200':
+          description: The photo was accepted.
+
+  # A text/plain request body. Wire-observable in its own right: the body must arrive as the raw
+  # string with a `text/plain` content type, which is a different shape from every other body kind
+  # in this spec.
+  /pets/{id}/note:
+    post:
+      operationId: addPetNote
+      tags: [Pets]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: The note was added.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+
+  /widgets/{id}:
+    get:
+      operationId: getWidget
+      tags: [Widgets]
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The widget.
+          headers:
+            X-Rate-Limit:
+              description: The number of requests remaining in the current window.
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Widget'
+        '400':
+          description: The request was invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The widget was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: An internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: An unexpected error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /blobs:
+    post:
+      operationId: uploadBlob
+      tags: [Blobs]
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '201':
+          description: The blob was stored.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlobRef'
+
+  /locations/{pathParam}:
+    get:
+      operationId: allLocations
+      tags: [Params]
+      parameters:
+        - name: pathParam
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: queryParam
+          in: query
+          schema:
+            type: string
+        - name: X-Header-Param
+          in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+      responses:
+        '200':
+          description: All four parameter locations echoed back.
+
+  /styles:
+    get:
+      operationId: styleMatrix
+      tags: [Params]
+      parameters:
+        - name: formExploded
+          in: query
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+        - name: formUnexploded
+          in: query
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: spaceDelimited
+          in: query
+          style: spaceDelimited
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: The style/explode query array parameters echoed back.
+
+  /styles/{values}:
+    get:
+      operationId: pathStyleSimple
+      tags: [Params]
+      parameters:
+        - name: values
+          in: path
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: The simple-style path array parameter echoed back.
+
+  /encoded/{value}:
+    get:
+      operationId: getEncoded
+      tags: [Params]
+      parameters:
+        - name: value
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: raw
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A path and a query parameter whose values require percent-encoding.
+
+components:
+  schemas:
+    Pet:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        nickname:
+          type: string
+          nullable: true
+        age:
+          type: integer
+          format: int32
+        status:
+          type: string
+          enum: [available, pending, sold]
+        birthDate:
+          type: string
+          format: date
+        createdAt:
+          type: string
+          format: date-time
+        photo:
+          type: string
+          format: byte
+        owner:
+          $ref: '#/components/schemas/Owner'
+        friend:
+          $ref: '#/components/schemas/Pet'
+        toys:
+          type: array
+          items:
+            $ref: '#/components/schemas/Toy'
+    PetUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        age:
+          type: integer
+    Owner:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    Toy:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        durable:
+          type: boolean
+    Widget:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+          format: double
+    Error:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+    BlobRef:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-Api-Key

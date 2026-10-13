@@ -1,0 +1,16 @@
+package com.openapi.generated.model
+
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.swagger.v3.oas.annotations.media.Schema
+
+data class AnyOfRefs(
+    @Schema
+    @param:JsonProperty("alphaValue")
+    @get:JsonProperty("alphaValue")
+    val alphaValue: String? = null,
+
+    @Schema
+    @param:JsonProperty("betaValue")
+    @get:JsonProperty("betaValue")
+    val betaValue: Int? = null
+)

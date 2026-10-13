@@ -1,0 +1,3 @@
+result
+  expected {"code":404,"message":"Widget not found"}
+  actual   {"status":404}

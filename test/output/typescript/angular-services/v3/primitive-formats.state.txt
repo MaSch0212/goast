@@ -1,0 +1,282 @@
+{
+  typescript: {
+    indexFiles: {
+      models: '<output>/models.ts',
+      responseModels: '<output>/responses.ts',
+      services: '<output>/services.ts'
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Int32',
+        additionalExports: [],
+        component: 'Int32',
+        filePath: '<output>/models/int-32.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/int-32.ts',
+            name: 'Int32',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/DateTime',
+        additionalExports: [],
+        component: 'DateTime',
+        filePath: '<output>/models/date-time.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/date-time.ts',
+            name: 'DateTime',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Password',
+        additionalExports: [],
+        component: 'Password',
+        filePath: '<output>/models/password.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/password.ts',
+            name: 'Password',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Uuid',
+        additionalExports: [],
+        component: 'Uuid',
+        filePath: '<output>/models/uuid.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/uuid.ts',
+            name: 'Uuid',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Uri',
+        additionalExports: [],
+        component: 'Uri',
+        filePath: '<output>/models/uri.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/uri.ts',
+            name: 'Uri',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Hostname',
+        additionalExports: [],
+        component: 'Hostname',
+        filePath: '<output>/models/hostname.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/hostname.ts',
+            name: 'Hostname',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Ipv4',
+        additionalExports: [],
+        component: 'Ipv4',
+        filePath: '<output>/models/ipv-4.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/ipv-4.ts',
+            name: 'Ipv4',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Ipv6',
+        additionalExports: [],
+        component: 'Ipv6',
+        filePath: '<output>/models/ipv-6.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/ipv-6.ts',
+            name: 'Ipv6',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/UnknownFormat',
+        additionalExports: [],
+        component: 'UnknownFormat',
+        filePath: '<output>/models/unknown-format.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/unknown-format.ts',
+            name: 'UnknownFormat',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/BoolWithFormat',
+        additionalExports: [],
+        component: 'BoolWithFormat',
+        filePath: '<output>/models/bool-with-format.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/bool-with-format.ts',
+            name: 'BoolWithFormat',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Int64',
+        additionalExports: [],
+        component: 'Int64',
+        filePath: '<output>/models/int-64.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/int-64.ts',
+            name: 'Int64',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/IntNoFormat',
+        additionalExports: [],
+        component: 'IntNoFormat',
+        filePath: '<output>/models/int-no-format.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/int-no-format.ts',
+            name: 'IntNoFormat',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Float',
+        additionalExports: [],
+        component: 'Float',
+        filePath: '<output>/models/float.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/float.ts',
+            name: 'Float',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Double',
+        additionalExports: [],
+        component: 'Double',
+        filePath: '<output>/models/double.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/double.ts',
+            name: 'Double',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/NumNoFormat',
+        additionalExports: [],
+        component: 'NumNoFormat',
+        filePath: '<output>/models/num-no-format.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/num-no-format.ts',
+            name: 'NumNoFormat',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Byte',
+        additionalExports: [],
+        component: 'Byte',
+        filePath: '<output>/models/byte.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/byte.ts',
+            name: 'Byte',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Binary',
+        additionalExports: [],
+        component: 'Binary',
+        filePath: '<output>/models/binary.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/binary.ts',
+            name: 'Binary',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Date',
+        additionalExports: [],
+        component: 'Date',
+        filePath: '<output>/models/date.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/date.ts',
+            name: 'Date',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      }
+    },
+    services: {}
+  }
+}

@@ -1,0 +1,176 @@
+{
+  typescript: {
+    indexFiles: { models: '<output>/models.ts', stubs: '<output>/stubs.ts' },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/paths//pets/get/responses/200/content/application/json/schema',
+        component: '(Pet)[]',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/pet.ts',
+            name: 'Pet',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Pet',
+        additionalExports: [],
+        component: 'Pet',
+        filePath: '<output>/models/pet.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/pet.ts',
+            name: 'Pet',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/paths//pets/{id}/delete/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Pet',
+        additionalExports: [],
+        component: 'Pet',
+        filePath: '<output>/models/pet.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/pet.ts',
+            name: 'Pet',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Owner',
+        additionalExports: [],
+        component: 'Owner',
+        filePath: '<output>/models/owner.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/owner.ts',
+            name: 'Owner',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Owner',
+        additionalExports: [],
+        component: 'Owner',
+        filePath: '<output>/models/owner.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/owner.ts',
+            name: 'Owner',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Owner/properties/name',
+        component: 'string',
+        imports: []
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Pet',
+        additionalExports: [],
+        component: 'Pet',
+        filePath: '<output>/models/pet.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/pet.ts',
+            name: 'Pet',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Pet',
+        additionalExports: [],
+        component: 'Pet',
+        filePath: '<output>/models/pet.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/pet.ts',
+            name: 'Pet',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Pet/properties/id',
+        component: 'string',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Pet/properties/name',
+        component: 'string',
+        imports: []
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Pet/properties/tag',
+        component: 'string',
+        imports: []
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Pet',
+        additionalExports: [],
+        component: 'Pet',
+        filePath: '<output>/models/pet.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/pet.ts',
+            name: 'Pet',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Pet',
+        additionalExports: [],
+        component: 'Pet',
+        filePath: '<output>/models/pet.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/pet.ts',
+            name: 'Pet',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/paths//pets/{id}/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      }
+    },
+    stubs: {
+      'service-1': {
+        __source__: 'tag:Pets',
+        component: 'PetsStubs',
+        filePath: '<output>/stubs/pets.stubs.ts'
+      }
+    }
+  }
+}

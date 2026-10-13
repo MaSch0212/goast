@@ -1,0 +1,359 @@
+{
+  kotlin: {
+    clients: {
+      'service-1': {
+        __source__: 'tag:Tickets',
+        packageName: 'com.openapi.generated.api.client',
+        typeName: 'TicketsRequests'
+      }
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/paths//tickets/get/parameters/0/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Status',
+              nullable: false,
+              packageName: 'com.openapi.generated.model',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/paths//tickets/get/parameters/4/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Status',
+              nullable: false,
+              packageName: 'com.openapi.generated.model',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Status',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Status',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/paths//tickets/get/responses/200/content/application/json/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Ticket',
+              nullable: false,
+              packageName: 'com.openapi.generated.model',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Ticket',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Ticket',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket/properties/id',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket/properties/statuses',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Status',
+              nullable: false,
+              packageName: 'com.openapi.generated.model',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Status',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Status',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket/properties/tags',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'String',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket/properties/tags/items',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Status',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Status',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Ticket',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Ticket',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/paths//tickets/{id}/put/parameters/0/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Ticket',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Ticket',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Status',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Status',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/paths//tickets/get/parameters/1/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Priority',
+              nullable: false,
+              packageName: 'com.openapi.generated.model',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Priority',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Priority',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Priority',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Priority',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/components/schemas/Priority',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Priority',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/paths//tickets/get/parameters/3/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'String',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/service-endpoints-enum-parameters.yml#/paths//tickets/get/parameters/3/schema/items',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      }
+    }
+  }
+}

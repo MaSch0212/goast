@@ -1,0 +1,170 @@
+{
+  typescript: {
+    indexFiles: {
+      k6Clients: '<output>/clients.js',
+      k6ResponseModels: '<output>/responses.ts',
+      models: '<output>/models.ts'
+    },
+    k6Clients: {
+      'service-1': {
+        __source__: 'tag:Styles',
+        component: 'StylesClient',
+        filePath: '<output>/clients/styles-client.js',
+        responseModels: {
+          'endpoint-1': {
+            component: 'FormArrayApiResponse',
+            filePath: '<output>/models/responses/styles-responses.ts'
+          },
+          'endpoint-10': {
+            component: 'SimpleHeaderApiResponse',
+            filePath: '<output>/models/responses/styles-responses.ts'
+          },
+          'endpoint-2': {
+            component: 'FormArrayNoExplodeApiResponse',
+            filePath: '<output>/models/responses/styles-responses.ts'
+          },
+          'endpoint-3': {
+            component: 'FormObjectApiResponse',
+            filePath: '<output>/models/responses/styles-responses.ts'
+          },
+          'endpoint-4': {
+            component: 'SpaceDelimitedApiResponse',
+            filePath: '<output>/models/responses/styles-responses.ts'
+          },
+          'endpoint-5': {
+            component: 'PipeDelimitedApiResponse',
+            filePath: '<output>/models/responses/styles-responses.ts'
+          },
+          'endpoint-6': {
+            component: 'DeepObjectApiResponse',
+            filePath: '<output>/models/responses/styles-responses.ts'
+          },
+          'endpoint-7': {
+            component: 'SimplePathApiResponse',
+            filePath: '<output>/models/responses/styles-responses.ts'
+          },
+          'endpoint-8': {
+            component: 'LabelPathApiResponse',
+            filePath: '<output>/models/responses/styles-responses.ts'
+          },
+          'endpoint-9': {
+            component: 'MatrixPathApiResponse',
+            filePath: '<output>/models/responses/styles-responses.ts'
+          }
+        }
+      }
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-form-array/get/parameters/0/schema',
+        component: '(string)[]',
+        imports: []
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-pipe-delimited/get/parameters/0/schema',
+        component: '(string)[]',
+        imports: []
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-pipe-delimited/get/parameters/0/schema/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-deep-object/get/parameters/0/schema',
+        component: '{\n  label?: string;\n  count?: number;\n}',
+        imports: []
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-deep-object/get/parameters/0/schema/properties/label',
+        component: 'string',
+        imports: []
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-deep-object/get/parameters/0/schema/properties/count',
+        component: 'number',
+        imports: []
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//simple-path/{values}/get/parameters/0/schema',
+        component: '(string)[]',
+        imports: []
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//simple-path/{values}/get/parameters/0/schema/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//label-path/{values}/get/parameters/0/schema',
+        component: '(string)[]',
+        imports: []
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//label-path/{values}/get/parameters/0/schema/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//matrix-path/{values}/get/parameters/0/schema',
+        component: '(string)[]',
+        imports: []
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-form-array/get/parameters/0/schema/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//matrix-path/{values}/get/parameters/0/schema/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//simple-header/get/parameters/0/schema',
+        component: '(string)[]',
+        imports: []
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//simple-header/get/parameters/0/schema/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-form-array-no-explode/get/parameters/0/schema',
+        component: '(string)[]',
+        imports: []
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-form-array-no-explode/get/parameters/0/schema/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-form-object/get/parameters/0/schema',
+        component: '{\n  label?: string;\n  count?: number;\n}',
+        imports: []
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-form-object/get/parameters/0/schema/properties/label',
+        component: 'string',
+        imports: []
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-form-object/get/parameters/0/schema/properties/count',
+        component: 'number',
+        imports: []
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-space-delimited/get/parameters/0/schema',
+        component: '(string)[]',
+        imports: []
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-space-delimited/get/parameters/0/schema/items',
+        component: 'string',
+        imports: []
+      }
+    }
+  }
+}

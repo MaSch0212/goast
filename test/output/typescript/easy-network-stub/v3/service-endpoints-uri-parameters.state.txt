@@ -1,0 +1,243 @@
+{
+  typescript: {
+    indexFiles: { models: '<output>/models.ts', stubs: '<output>/stubs.ts' },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/components/schemas/Permission',
+        additionalExports: [ { name: 'PERMISSION_VALUES', type: 'export' } ],
+        component: 'Permission',
+        filePath: '<output>/models/permission.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/permission.ts',
+            name: 'Permission',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/components/schemas/Resource/properties/id',
+        component: 'string',
+        imports: []
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/components/schemas/Resource/properties/type',
+        component: 'string',
+        imports: []
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/{resourceType}/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/components/schemas/Permission',
+        additionalExports: [ { name: 'PERMISSION_VALUES', type: 'export' } ],
+        component: 'Permission',
+        filePath: '<output>/models/permission.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/permission.ts',
+            name: 'Permission',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/{resourceType}/get/parameters/2/schema',
+        component: 'number',
+        imports: []
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/{resourceType}/get/responses/200/content/application/json/schema',
+        component: '(Resource)[]',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/resource.ts',
+            name: 'Resource',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/components/schemas/Resource',
+        additionalExports: [],
+        component: 'Resource',
+        filePath: '<output>/models/resource.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/resource.ts',
+            name: 'Resource',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/{resourceType}/{resourceId}/{permission}/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/{resourceType}/{resourceId}/{permission}/get/parameters/1/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/components/schemas/Permission',
+        additionalExports: [ { name: 'PERMISSION_VALUES', type: 'export' } ],
+        component: 'Permission',
+        filePath: '<output>/models/permission.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/permission.ts',
+            name: 'Permission',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/components/schemas/Permission',
+        additionalExports: [ { name: 'PERMISSION_VALUES', type: 'export' } ],
+        component: 'Permission',
+        filePath: '<output>/models/permission.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/permission.ts',
+            name: 'Permission',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/{resourceType}/{resourceId}/{permission}/get/responses/200/content/application/json/schema',
+        component: 'boolean',
+        imports: []
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/{resourceType}/{resourceId}/{permission}/put/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/{resourceType}/{resourceId}/{permission}/put/parameters/1/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/components/schemas/Permission',
+        additionalExports: [ { name: 'PERMISSION_VALUES', type: 'export' } ],
+        component: 'Permission',
+        filePath: '<output>/models/permission.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/permission.ts',
+            name: 'Permission',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/{resourceType}/{resourceId}/{permission}/put/parameters/3/schema',
+        component: 'boolean',
+        imports: []
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/components/schemas/Resource',
+        additionalExports: [],
+        component: 'Resource',
+        filePath: '<output>/models/resource.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/resource.ts',
+            name: 'Resource',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/get/parameters/1/schema',
+        component: 'number',
+        imports: []
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/get/parameters/2/schema',
+        component: '(string)[]',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/get/parameters/2/schema/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/get/parameters/3/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/get/responses/200/content/application/json/schema',
+        component: '(Resource)[]',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/resource.ts',
+            name: 'Resource',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/components/schemas/Resource',
+        additionalExports: [],
+        component: 'Resource',
+        filePath: '<output>/models/resource.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/resource.ts',
+            name: 'Resource',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/components/schemas/Resource',
+        additionalExports: [],
+        component: 'Resource',
+        filePath: '<output>/models/resource.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/resource.ts',
+            name: 'Resource',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      }
+    },
+    stubs: {
+      'service-1': {
+        __source__: 'tag:Resources',
+        component: 'ResourcesStubs',
+        filePath: '<output>/stubs/resources.stubs.ts'
+      }
+    }
+  }
+}

@@ -1,0 +1,202 @@
+{
+  typescript: {
+    clients: {},
+    indexFiles: {
+      clientInterfaces: '<output>/clients.ts',
+      clients: '<output>/clients.ts',
+      models: '<output>/models.ts'
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Größe',
+        additionalExports: [],
+        component: 'GrE',
+        filePath: '<output>/models/gr-e.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/gr-e.ts',
+            name: 'GrE',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Ελληνικά/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Кириллица',
+        additionalExports: [],
+        component: '',
+        filePath: '<output>/models/.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/.ts',
+            name: '',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Кириллица/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/café',
+        additionalExports: [],
+        component: 'Cafe',
+        filePath: '<output>/models/cafe.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/cafe.ts',
+            name: 'Cafe',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/café/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/emoji🎉Name',
+        additionalExports: [],
+        component: 'EmojiName',
+        filePath: '<output>/models/emoji-name.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/emoji-name.ts',
+            name: 'EmojiName',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/emoji🎉Name/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/ObjectWithNonAsciiProperties',
+        additionalExports: [],
+        component: 'ObjectWithNonAsciiProperties',
+        filePath: '<output>/models/object-with-non-ascii-properties.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/object-with-non-ascii-properties.ts',
+            name: 'ObjectWithNonAsciiProperties',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/ObjectWithNonAsciiProperties/properties/größe',
+        component: 'number',
+        imports: []
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/ObjectWithNonAsciiProperties/properties/日本語',
+        component: 'string',
+        imports: []
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Größe/properties/value',
+        component: 'number',
+        imports: []
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/ObjectWithNonAsciiProperties/properties/naïve',
+        component: 'boolean',
+        imports: []
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Überprüfung',
+        additionalExports: [],
+        component: 'BerprFung',
+        filePath: '<output>/models/berpr-fung.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/berpr-fung.ts',
+            name: 'BerprFung',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Überprüfung/properties/value',
+        component: 'boolean',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Ångström',
+        additionalExports: [],
+        component: 'NgstrM',
+        filePath: '<output>/models/ngstr-m.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/ngstr-m.ts',
+            name: 'NgstrM',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Ångström/properties/value',
+        component: 'number',
+        imports: []
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/日本語',
+        additionalExports: [],
+        component: '',
+        filePath: '<output>/models/.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/.ts',
+            name: '',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/日本語/properties/value',
+        component: 'string',
+        imports: []
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Ελληνικά',
+        additionalExports: [],
+        component: '',
+        filePath: '<output>/models/.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/.ts',
+            name: '',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      }
+    }
+  }
+}

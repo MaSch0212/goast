@@ -1,0 +1,333 @@
+{
+  kotlin: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/components/schemas/Payload',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Payload',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//json-array/post/requestBody/content/application/json/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Payload',
+              nullable: false,
+              packageName: 'com.openapi.generated.model',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/components/schemas/Payload',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Payload',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//json-primitive/post/requestBody/content/application/json/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//text/post/requestBody/content/text/plain/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//binary/post/requestBody/content/application/octet-stream/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//any/post/requestBody/content/*/*/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/components/schemas/Payload',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Payload',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//multi-content/post/requestBody/content/application/xml/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'MultiContentBodyRequest',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//multi-content/post/requestBody/content/application/xml/schema/properties/xmlValue',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//multi-content/post/requestBody/content/text/plain/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/components/schemas/Payload',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Payload',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//form/post/requestBody/content/application/x-www-form-urlencoded/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'FormBodyRequest',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//form/post/requestBody/content/application/x-www-form-urlencoded/schema/properties/username',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//form/post/requestBody/content/application/x-www-form-urlencoded/schema/properties/age',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//form/post/requestBody/content/application/x-www-form-urlencoded/schema/properties/subscribed',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Boolean',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/components/schemas/Payload',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Payload',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/components/schemas/Payload',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Payload',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/components/schemas/Payload/properties/id',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/components/schemas/Payload/properties/name',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/components/schemas/Payload/properties/note',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/components/schemas/Payload',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Payload',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//json-inline/post/requestBody/content/application/json/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'InlineJsonBodyRequest',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//json-inline/post/requestBody/content/application/json/schema/properties/name',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//json-inline/post/requestBody/content/application/json/schema/properties/count',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      }
+    },
+    services: {
+      'service-1': {
+        __source__: 'tag:Bodies',
+        apiController: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'BodiesApiController'
+        },
+        apiDelegate: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'BodiesApiDelegate'
+        },
+        apiInterface: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'BodiesApi'
+        }
+      }
+    }
+  }
+}

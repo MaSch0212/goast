@@ -1,4 +1,4 @@
-import { expect } from '@std/expect/expect';
+import { expect } from '@std/expect';
 import { beforeEach, describe, it } from '@std/testing/bdd';
 
 import type { KotlinImport } from '../../common-results.ts';

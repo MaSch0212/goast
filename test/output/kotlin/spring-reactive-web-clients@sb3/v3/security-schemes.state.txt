@@ -1,0 +1,12 @@
+{
+  kotlin: {
+    clients: {
+      'service-1': {
+        __source__: 'tag:service-1',
+        packageName: 'com.openapi.generated.api.client',
+        typeName: 'Service1Requests'
+      }
+    },
+    models: {}
+  }
+}

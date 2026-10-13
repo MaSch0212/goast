@@ -1,0 +1,172 @@
+{
+  typescript: {
+    clients: {},
+    indexFiles: {
+      clientInterfaces: '<output>/clients.ts',
+      clients: '<output>/clients.ts',
+      models: '<output>/models.ts'
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/StringConst',
+        additionalExports: [],
+        component: 'StringConst',
+        filePath: '<output>/models/string-const.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/string-const.ts',
+            name: 'StringConst',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/ObjectWithInlineEnum',
+        additionalExports: [],
+        component: 'ObjectWithInlineEnum',
+        filePath: '<output>/models/object-with-inline-enum.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/object-with-inline-enum.ts',
+            name: 'ObjectWithInlineEnum',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/ObjectWithInlineEnum/properties/status',
+        additionalExports: [
+          {
+            name: 'OBJECT_WITH_INLINE_ENUM_STATUS_VALUES',
+            type: 'export'
+          }
+        ],
+        component: 'ObjectWithInlineEnumStatus',
+        filePath: '<output>/models/object-with-inline-enum-status.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/object-with-inline-enum-status.ts',
+            name: 'ObjectWithInlineEnumStatus',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/IntConst',
+        additionalExports: [],
+        component: 'IntConst',
+        filePath: '<output>/models/int-const.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/int-const.ts',
+            name: 'IntConst',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/BoolConst',
+        additionalExports: [],
+        component: 'BoolConst',
+        filePath: '<output>/models/bool-const.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/bool-const.ts',
+            name: 'BoolConst',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/TypelessEnum',
+        additionalExports: [ { name: 'TYPELESS_ENUM_VALUES', type: 'export' } ],
+        component: 'TypelessEnum',
+        filePath: '<output>/models/typeless-enum.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/typeless-enum.ts',
+            name: 'TypelessEnum',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/ObjectWithConstProperty',
+        additionalExports: [],
+        component: 'ObjectWithConstProperty',
+        filePath: '<output>/models/object-with-const-property.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/object-with-const-property.ts',
+            name: 'ObjectWithConstProperty',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/ObjectWithConstProperty/properties/kind',
+        component: 'unknown',
+        imports: []
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/ConstWithType',
+        additionalExports: [],
+        component: 'ConstWithType',
+        filePath: '<output>/models/const-with-type.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/const-with-type.ts',
+            name: 'ConstWithType',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/IntEnum',
+        additionalExports: [ { name: 'INT_ENUM_VALUES', type: 'export' } ],
+        component: 'IntEnum',
+        filePath: '<output>/models/int-enum.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/int-enum.ts',
+            name: 'IntEnum',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/MixedEnum',
+        additionalExports: [ { name: 'MIXED_ENUM_VALUES', type: 'export' } ],
+        component: 'MixedEnum',
+        filePath: '<output>/models/mixed-enum.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/mixed-enum.ts',
+            name: 'MixedEnum',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      }
+    }
+  }
+}

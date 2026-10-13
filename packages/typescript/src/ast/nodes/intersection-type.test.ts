@@ -1,15 +1,18 @@
-import { EOL } from 'node:os';
-
-import { expect } from '@std/expect/expect';
+import { expect } from '@std/expect';
 import { beforeEach, describe, it } from '@std/testing/bdd';
 
+import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from '../../config.ts';
 import { TypeScriptFileBuilder } from '../../file-builder.ts';
 import { tsIntersectionType } from './intersection-type.ts';
 
 let builder: TypeScriptFileBuilder;
 
 beforeEach(() => {
-  builder = new TypeScriptFileBuilder();
+  // A fixed newLine keeps the expectations below host-independent.
+  builder = new TypeScriptFileBuilder(
+    undefined,
+    { ...defaultTypeScriptGeneratorConfig, newLine: '\n' } as TypeScriptGeneratorConfig,
+  );
 });
 
 describe('tsIntersectionType', () => {
@@ -30,14 +33,14 @@ describe('tsIntersectionType', () => {
 
   it('should write the types on separate lines if there are more than 3', () => {
     builder.append(tsIntersectionType(['string', 'number', 'boolean', 'unknown']));
-    expect(builder.toString(false)).toBe(`${EOL}& (string)${EOL}& (number)${EOL}& (boolean)${EOL}& (unknown)`);
+    expect(builder.toString(false)).toBe('\n& (string)\n& (number)\n& (boolean)\n& (unknown)');
   });
 
   it('should collapse nested intersection types', () => {
     builder.append(
       tsIntersectionType([tsIntersectionType(['string', 'number']), tsIntersectionType(['boolean', 'unknown'])]),
     );
-    expect(builder.toString(false)).toBe(`${EOL}& (string)${EOL}& (number)${EOL}& (boolean)${EOL}& (unknown)`);
+    expect(builder.toString(false)).toBe('\n& (string)\n& (number)\n& (boolean)\n& (unknown)');
   });
 
   it('should render injections', () => {

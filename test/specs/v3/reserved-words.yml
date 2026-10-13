@@ -1,0 +1,131 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Reserved Words
+
+paths:
+  /x:
+    x-ignore: true
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    class:
+      type: object
+      properties:
+        value:
+          type: string
+    object:
+      type: object
+      properties:
+        value:
+          type: string
+    fun:
+      type: object
+      properties:
+        value:
+          type: string
+    val:
+      type: object
+      properties:
+        value:
+          type: string
+    var:
+      type: object
+      properties:
+        value:
+          type: string
+    when:
+      type: object
+      properties:
+        value:
+          type: string
+    is:
+      type: object
+      properties:
+        value:
+          type: string
+    as:
+      type: object
+      properties:
+        value:
+          type: string
+    in:
+      type: object
+      properties:
+        value:
+          type: string
+    typeof:
+      type: object
+      properties:
+        value:
+          type: string
+    interface:
+      type: object
+      properties:
+        value:
+          type: string
+    enum:
+      type: object
+      properties:
+        value:
+          type: string
+    'null':
+      type: object
+      properties:
+        value:
+          type: string
+    String:
+      type: object
+      properties:
+        value:
+          type: string
+    Int:
+      type: object
+      properties:
+        value:
+          type: string
+    List:
+      type: object
+      properties:
+        value:
+          type: string
+    Map:
+      type: object
+      properties:
+        value:
+          type: string
+    Any:
+      type: object
+      properties:
+        value:
+          type: string
+    Unit:
+      type: object
+      properties:
+        value:
+          type: string
+    ObjectWithReservedProperties:
+      type: object
+      properties:
+        class:
+          type: string
+        val:
+          type: string
+        is:
+          type: string
+        in:
+          type: string
+        function:
+          type: string
+        default:
+          type: string
+        constructor:
+          type: string
+        prototype:
+          type: string
+        this:
+          type: string

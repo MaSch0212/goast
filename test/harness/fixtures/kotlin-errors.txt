@@ -1,0 +1,29 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.14.5/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :u0001:checkKotlinGradlePluginConfigurationErrors SKIPPED
+
+> Task :u0001:compileKotlin
+
+> Task :u0001:compileKotlin FAILED
+1 actionable task: 1 executed
+e: file:///output/kotlin/models@sb3/v3/extreme-names/com/openapi/generated/model/.kt:6:11 Syntax error: Name expected.
+e: file:///output/kotlin/models@sb3/v3/extreme-names/com/openapi/generated/model/A.kt:6:12 Redeclaration:
+data class A : Any
+e: file:///output/kotlin/models@sb3/v3/extreme-names/com/openapi/generated/model/A_1.kt:6:12 Redeclaration:
+data class A : Any
+e: file:///output/kotlin/models@sb3/v3/extreme-names/com/openapi/generated/model/ObjectWithExtremeProperties.kt:20:8 Syntax error: Parameter name expected.
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':u0001:compileKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 20s

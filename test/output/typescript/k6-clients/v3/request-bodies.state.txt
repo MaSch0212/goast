@@ -1,0 +1,270 @@
+{
+  typescript: {
+    indexFiles: {
+      k6Clients: '<output>/clients.js',
+      k6ResponseModels: '<output>/responses.ts',
+      models: '<output>/models.ts'
+    },
+    k6Clients: {
+      'service-1': {
+        __source__: 'tag:Bodies',
+        component: 'BodiesClient',
+        filePath: '<output>/clients/bodies-client.js',
+        responseModels: {
+          'endpoint-1': {
+            component: 'JsonBodyApiResponse',
+            filePath: '<output>/models/responses/bodies-responses.ts'
+          },
+          'endpoint-10': {
+            component: 'FormBodyApiResponse',
+            filePath: '<output>/models/responses/bodies-responses.ts'
+          },
+          'endpoint-11': {
+            component: 'DescribedBodyApiResponse',
+            filePath: '<output>/models/responses/bodies-responses.ts'
+          },
+          'endpoint-12': {
+            component: 'RefBodyApiResponse',
+            filePath: '<output>/models/responses/bodies-responses.ts'
+          },
+          'endpoint-2': {
+            component: 'OptionalJsonBodyApiResponse',
+            filePath: '<output>/models/responses/bodies-responses.ts'
+          },
+          'endpoint-3': {
+            component: 'InlineJsonBodyApiResponse',
+            filePath: '<output>/models/responses/bodies-responses.ts'
+          },
+          'endpoint-4': {
+            component: 'ArrayJsonBodyApiResponse',
+            filePath: '<output>/models/responses/bodies-responses.ts'
+          },
+          'endpoint-5': {
+            component: 'PrimitiveJsonBodyApiResponse',
+            filePath: '<output>/models/responses/bodies-responses.ts'
+          },
+          'endpoint-6': {
+            component: 'TextBodyApiResponse',
+            filePath: '<output>/models/responses/bodies-responses.ts'
+          },
+          'endpoint-7': {
+            component: 'BinaryBodyApiResponse',
+            filePath: '<output>/models/responses/bodies-responses.ts'
+          },
+          'endpoint-8': {
+            component: 'AnyBodyApiResponse',
+            filePath: '<output>/models/responses/bodies-responses.ts'
+          },
+          'endpoint-9': {
+            component: 'MultiContentBodyApiResponse',
+            filePath: '<output>/models/responses/bodies-responses.ts'
+          }
+        }
+      }
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/components/schemas/Payload',
+        additionalExports: [],
+        component: 'Payload',
+        filePath: '<output>/models/payload.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/payload.ts',
+            name: 'Payload',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//json-array/post/requestBody/content/application/json/schema',
+        component: '(Payload)[]',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/payload.ts',
+            name: 'Payload',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/components/schemas/Payload',
+        additionalExports: [],
+        component: 'Payload',
+        filePath: '<output>/models/payload.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/payload.ts',
+            name: 'Payload',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//json-primitive/post/requestBody/content/application/json/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//text/post/requestBody/content/text/plain/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//binary/post/requestBody/content/application/octet-stream/schema',
+        component: 'Blob',
+        imports: []
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//any/post/requestBody/content/*/*/schema',
+        component: 'unknown',
+        imports: []
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/components/schemas/Payload',
+        additionalExports: [],
+        component: 'Payload',
+        filePath: '<output>/models/payload.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/payload.ts',
+            name: 'Payload',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//multi-content/post/requestBody/content/application/xml/schema',
+        component: '{\n  xmlValue?: string;\n}',
+        imports: []
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//multi-content/post/requestBody/content/application/xml/schema/properties/xmlValue',
+        component: 'string',
+        imports: []
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//multi-content/post/requestBody/content/text/plain/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/components/schemas/Payload',
+        additionalExports: [],
+        component: 'Payload',
+        filePath: '<output>/models/payload.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/payload.ts',
+            name: 'Payload',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//form/post/requestBody/content/application/x-www-form-urlencoded/schema',
+        component: '{\n  username?: string;\n  age?: number;\n  subscribed?: boolean;\n}',
+        imports: []
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//form/post/requestBody/content/application/x-www-form-urlencoded/schema/properties/username',
+        component: 'string',
+        imports: []
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//form/post/requestBody/content/application/x-www-form-urlencoded/schema/properties/age',
+        component: 'number',
+        imports: []
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//form/post/requestBody/content/application/x-www-form-urlencoded/schema/properties/subscribed',
+        component: 'boolean',
+        imports: []
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/components/schemas/Payload',
+        additionalExports: [],
+        component: 'Payload',
+        filePath: '<output>/models/payload.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/payload.ts',
+            name: 'Payload',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/components/schemas/Payload',
+        additionalExports: [],
+        component: 'Payload',
+        filePath: '<output>/models/payload.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/payload.ts',
+            name: 'Payload',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/components/schemas/Payload/properties/id',
+        component: 'string',
+        imports: []
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/components/schemas/Payload/properties/name',
+        component: 'string',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/components/schemas/Payload/properties/note',
+        component: 'string',
+        imports: []
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/components/schemas/Payload',
+        additionalExports: [],
+        component: 'Payload',
+        filePath: '<output>/models/payload.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/payload.ts',
+            name: 'Payload',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//json-inline/post/requestBody/content/application/json/schema',
+        component: '{\n  name: string;\n  count?: number;\n}',
+        imports: []
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//json-inline/post/requestBody/content/application/json/schema/properties/name',
+        component: 'string',
+        imports: []
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/request-bodies.yml#/paths//json-inline/post/requestBody/content/application/json/schema/properties/count',
+        component: 'number',
+        imports: []
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import { extname } from 'node:path';
 
-import { type SourceBuilderOptions, StringBuilder } from '@goast/core';
+import { compareString, type SourceBuilderOptions, StringBuilder } from '@goast/core';
 
 import type {
   TypeScriptExportType,
@@ -188,7 +188,7 @@ export class ImportExportCollection {
     importModuleTransformer: ImportModuleTransformer,
   ): (readonly [string, TypeScriptImportKind, string[]])[] {
     return Array.from(data.entries())
-      .sort(([fromModuleA], [fromModuleB]) => fromModuleA.localeCompare(fromModuleB))
+      .sort(([a], [b]) => compareString(a, b))
       .map(
         ([fromModule, names]) =>
           [...this.resolveModulePath(fromModule, filePath, importModuleTransformer), Array.from(names).sort()] as const,

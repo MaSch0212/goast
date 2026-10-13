@@ -1,0 +1,111 @@
+{
+  typescript: {
+    indexFiles: {
+      models: '<output>/models.ts',
+      responseModels: '<output>/responses.ts',
+      services: '<output>/services.ts'
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/json-input.json#/paths//things/get/responses/200/content/application/json/schema',
+        component: '(Thing)[]',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/thing.ts',
+            name: 'Thing',
+            type: 'type-import'
+          }
+        ]
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/json-input.json#/components/schemas/Thing',
+        additionalExports: [],
+        component: 'Thing',
+        filePath: '<output>/models/thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/thing.ts',
+            name: 'Thing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/json-input.json#/components/schemas/Thing',
+        additionalExports: [],
+        component: 'Thing',
+        filePath: '<output>/models/thing.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/thing.ts',
+            name: 'Thing',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/json-input.json#/components/schemas/Thing/properties/id',
+        component: 'string',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/json-input.json#/components/schemas/Thing/properties/label',
+        component: 'string',
+        imports: []
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/json-input.json#/components/schemas/Category',
+        additionalExports: [],
+        component: 'Category',
+        filePath: '<output>/models/category.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/category.ts',
+            name: 'Category',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/json-input.json#/components/schemas/Category',
+        additionalExports: [],
+        component: 'Category',
+        filePath: '<output>/models/category.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/category.ts',
+            name: 'Category',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/json-input.json#/components/schemas/Category/properties/name',
+        component: 'string',
+        imports: []
+      }
+    },
+    services: {
+      'service-1': {
+        __source__: 'tag:service-1',
+        component: 'Service1Service',
+        filePath: '<output>/services/service-1.service.ts',
+        responseModels: {
+          'endpoint-1': {
+            component: 'ListThingsApiResponse',
+            filePath: '<output>/models/responses/service-1-responses.model.ts'
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,15 +1,18 @@
-import { EOL } from 'node:os';
-
 import { expect } from '@std/expect';
 import { beforeEach, describe, it } from '@std/testing/bdd';
 
+import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from '../../config.ts';
 import { TypeScriptFileBuilder } from '../../file-builder.ts';
 import { tsArgument } from './argument.ts';
 
 let builder: TypeScriptFileBuilder;
 
 beforeEach(() => {
-  builder = new TypeScriptFileBuilder();
+  // A fixed newLine keeps the expectations below host-independent.
+  builder = new TypeScriptFileBuilder(
+    undefined,
+    { ...defaultTypeScriptGeneratorConfig, newLine: '\n' } as TypeScriptGeneratorConfig,
+  );
 });
 
 describe('tsArgument', () => {
@@ -36,7 +39,7 @@ describe('tsArgument', () => {
 
     it('should write multiline if there are more than 2 arguments', () => {
       tsArgument.write(builder, ['42', 'true', 'false']);
-      expect(builder.toString(false)).toBe(`(${EOL}  42,${EOL}  true,${EOL}  false${EOL})`);
+      expect(builder.toString(false)).toBe('(\n  42,\n  true,\n  false\n)');
     });
   });
 });

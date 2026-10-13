@@ -1,0 +1,10 @@
+export type { ClosedObject } from './models/closed-object';
+export type { DependentRequiredObject } from './models/dependent-required-object';
+export type { DependentSchemasObject } from './models/dependent-schemas-object';
+export type { MapOfRef } from './models/map-of-ref';
+export type { MyString } from './models/my-string';
+export type { OpenObject } from './models/open-object';
+export type { PatternAndAdditional } from './models/pattern-and-additional';
+export type { PatternPropertiesObject } from './models/pattern-properties-object';
+export type { PropertyNamesObject } from './models/property-names-object';
+export type { UnevaluatedPropertiesObject } from './models/unevaluated-properties-object';

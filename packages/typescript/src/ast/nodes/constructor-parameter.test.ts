@@ -1,8 +1,7 @@
-import { EOL } from 'node:os';
-
-import { expect } from '@std/expect/expect';
+import { expect } from '@std/expect';
 import { beforeEach, describe, it } from '@std/testing/bdd';
 
+import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from '../../config.ts';
 import { TypeScriptFileBuilder } from '../../file-builder.ts';
 import { tsConstructorParameter } from './constructor-parameter.ts';
 import { tsDecorator } from './decorator.ts';
@@ -10,7 +9,11 @@ import { tsDecorator } from './decorator.ts';
 let builder: TypeScriptFileBuilder;
 
 beforeEach(() => {
-  builder = new TypeScriptFileBuilder();
+  // A fixed newLine keeps the expectations below host-independent.
+  builder = new TypeScriptFileBuilder(
+    undefined,
+    { ...defaultTypeScriptGeneratorConfig, newLine: '\n' } as TypeScriptGeneratorConfig,
+  );
 });
 
 describe('tsConstructorParameter', () => {
@@ -115,7 +118,7 @@ describe('tsConstructorParameter', () => {
         tsConstructorParameter('y'),
         tsConstructorParameter('z'),
       ]);
-      expect(builder.toString(false)).toBe(`(${EOL}  x,${EOL}  y,${EOL}  z${EOL})`);
+      expect(builder.toString(false)).toBe('(\n  x,\n  y,\n  z\n)');
     });
   });
 });

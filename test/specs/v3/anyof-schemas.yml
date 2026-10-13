@@ -1,0 +1,60 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: AnyOf Schemas
+
+paths:
+  /x:
+    x-ignore: true
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    AnyOfPrimitives:
+      anyOf:
+        - type: string
+        - type: integer
+    Alpha:
+      type: object
+      properties:
+        alphaValue:
+          type: string
+    Beta:
+      type: object
+      properties:
+        betaValue:
+          type: integer
+    AnyOfRefs:
+      anyOf:
+        - $ref: '#/components/schemas/Alpha'
+        - $ref: '#/components/schemas/Beta'
+    AnyOfRefAndPrimitive:
+      anyOf:
+        - $ref: '#/components/schemas/Alpha'
+        - type: string
+    AnyOfWithNullable:
+      anyOf:
+        - type: string
+        - type: integer
+          nullable: true
+    AnyOfSingle:
+      anyOf:
+        - type: string
+    AnyOfArrays:
+      anyOf:
+        - type: array
+          items:
+            type: string
+        - type: array
+          items:
+            type: integer
+    ObjectWithAnyOfProperty:
+      type: object
+      properties:
+        value:
+          anyOf:
+            - type: string
+            - type: integer

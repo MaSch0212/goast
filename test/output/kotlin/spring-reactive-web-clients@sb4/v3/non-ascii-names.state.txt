@@ -1,0 +1,247 @@
+{
+  kotlin: {
+    clients: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Größe',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'GrE',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Ελληνικά/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Кириллица',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: '',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Кириллица/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/café',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Cafe',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/café/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/emoji🎉Name',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'EmojiName',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/emoji🎉Name/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/ObjectWithNonAsciiProperties',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'ObjectWithNonAsciiProperties',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/ObjectWithNonAsciiProperties/properties/größe',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Double',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/ObjectWithNonAsciiProperties/properties/日本語',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Größe/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Double',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/ObjectWithNonAsciiProperties/properties/naïve',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Boolean',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Überprüfung',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'BerprFung',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Überprüfung/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Boolean',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Ångström',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'NgstrM',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Ångström/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Double',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/日本語',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: '',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/日本語/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Ελληνικά',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: '',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      }
+    }
+  }
+}

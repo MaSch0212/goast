@@ -1,0 +1,72 @@
+{
+  typescript: {
+    indexFiles: {
+      models: '<output>/models.ts',
+      responseModels: '<output>/responses.ts',
+      services: '<output>/services.ts'
+    },
+    models: {},
+    services: {
+      'service-1': {
+        __source__: '<root>/test/specs/v3/tags-and-servers.yml#/tags/0',
+        component: 'AlphaService',
+        filePath: '<output>/services/alpha.service.ts',
+        responseModels: {
+          'endpoint-2': {
+            component: 'OneTagApiResponse',
+            filePath: '<output>/models/responses/alpha-responses.model.ts'
+          },
+          'endpoint-3': {
+            component: 'TwoTagsApiResponse',
+            filePath: '<output>/models/responses/alpha-responses.model.ts'
+          },
+          'endpoint-4': {
+            component: 'SharedTagApiResponse',
+            filePath: '<output>/models/responses/alpha-responses.model.ts'
+          }
+        }
+      },
+      'service-2': {
+        __source__: 'tag:service-2',
+        component: 'Service2Service',
+        filePath: '<output>/services/service-2.service.ts',
+        responseModels: {
+          'endpoint-1': {
+            component: 'UntaggedApiResponse',
+            filePath: '<output>/models/responses/service-2-responses.model.ts'
+          },
+          'endpoint-5': {
+            component: 'PathServerApiResponse',
+            filePath: '<output>/models/responses/service-2-responses.model.ts'
+          },
+          'endpoint-6': {
+            component: 'OpServerApiResponse',
+            filePath: '<output>/models/responses/service-2-responses.model.ts'
+          }
+        }
+      },
+      'service-3': {
+        __source__: 'tag:Beta',
+        component: 'BetaService',
+        filePath: '<output>/services/beta.service.ts',
+        responseModels: {
+          'endpoint-3': {
+            component: 'TwoTagsApiResponse',
+            filePath: '<output>/models/responses/beta-responses.model.ts'
+          }
+        }
+      },
+      'service-4': {
+        __source__: 'tag:Tag With Space',
+        component: 'TagWithSpaceService',
+        filePath: '<output>/services/tag-with-space.service.ts',
+        responseModels: {
+          'endpoint-7': {
+            component: 'TagWithSpaceApiResponse',
+            filePath: '<output>/models/responses/tag-with-space-responses.model.ts'
+          }
+        }
+      }
+    }
+  }
+}

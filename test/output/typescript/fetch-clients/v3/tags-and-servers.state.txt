@@ -1,0 +1,40 @@
+{
+  typescript: {
+    clients: {
+      'service-1': {
+        __source__: '<root>/test/specs/v3/tags-and-servers.yml#/tags/0',
+        client: {
+          component: 'AlphaClient',
+          filePath: '<output>/clients/alpha-client.ts'
+        }
+      },
+      'service-2': {
+        __source__: 'tag:service-2',
+        client: {
+          component: 'Service2Client',
+          filePath: '<output>/clients/service-2-client.ts'
+        }
+      },
+      'service-3': {
+        __source__: 'tag:Beta',
+        client: {
+          component: 'BetaClient',
+          filePath: '<output>/clients/beta-client.ts'
+        }
+      },
+      'service-4': {
+        __source__: 'tag:Tag With Space',
+        client: {
+          component: 'TagWithSpaceClient',
+          filePath: '<output>/clients/tag-with-space-client.ts'
+        }
+      }
+    },
+    indexFiles: {
+      clientInterfaces: '<output>/clients.ts',
+      clients: '<output>/clients.ts',
+      models: '<output>/models.ts'
+    },
+    models: {}
+  }
+}

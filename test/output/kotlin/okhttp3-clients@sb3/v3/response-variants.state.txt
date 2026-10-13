@@ -1,0 +1,395 @@
+{
+  kotlin: {
+    clients: {
+      'service-1': {
+        __source__: 'tag:Responses',
+        packageName: 'com.openapi.generated.api.client',
+        typeName: 'ResponsesApiClient'
+      }
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Thing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Error',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Error',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error/properties/message',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error/properties/code',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Error',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Thing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Error',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Error',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Thing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/OtherThing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'OtherThing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Thing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Error',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Thing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Error',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Error',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Error',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Error',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Thing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-27': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/paths//multi-content/get/responses/200/content/text/plain/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-28': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/paths//primitive/get/responses/200/content/application/json/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-29': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/paths//array/get/responses/200/content/application/json/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Thing',
+              nullable: false,
+              packageName: 'com.openapi.generated.model',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing/properties/id',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-30': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Thing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-31': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Thing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing/properties/label',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/OtherThing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'OtherThing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/OtherThing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'OtherThing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/OtherThing/properties/code',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/OtherThing/properties/note',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Thing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      }
+    }
+  }
+}

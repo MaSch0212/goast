@@ -1,0 +1,6 @@
+status
+  expected 200
+  actual   599
+body
+  expected {"kind":"none"}
+  actual   {"kind":"json","value":"MISMATCH styleMatrix.spaceDelimited expected <[\"a\",\"b\"]> but was <[\"a%20b\"]>"}

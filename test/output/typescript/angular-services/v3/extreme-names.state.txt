@@ -1,0 +1,412 @@
+{
+  typescript: {
+    indexFiles: {
+      models: '<output>/models.ts',
+      responseModels: '<output>/responses.ts',
+      services: '<output>/services.ts'
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong',
+        additionalExports: [],
+        component: 'VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong',
+        filePath: '<output>/models/very-long-long-long-long-long-long-long-long-long-long-long-long-long-long-long-long-long-long-long.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/very-long-long-long-long-long-long-long-long-long-long-long-long-long-long-long-long-long-long-long.ts',
+            name: 'VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/A/properties/markerUpperA',
+        component: 'string',
+        imports: []
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/a',
+        additionalExports: [],
+        component: 'A',
+        filePath: '<output>/models/a.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/a.ts',
+            name: 'A',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/a/properties/markerLowerA',
+        component: 'string',
+        imports: []
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/___',
+        additionalExports: [],
+        component: '',
+        filePath: '<output>/models/.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/.ts',
+            name: '',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/___/properties/markerPunctuationOnly',
+        component: 'string',
+        imports: []
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With.Dot',
+        additionalExports: [],
+        component: 'WithDot',
+        filePath: '<output>/models/with-dot.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/with-dot.ts',
+            name: 'WithDot',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With.Dot/properties/markerDot',
+        component: 'string',
+        imports: []
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With/Slash',
+        component: '{\n  markerSlash?: string;\n}',
+        imports: []
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With/Slash/properties/markerSlash',
+        component: 'string',
+        imports: []
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With Space',
+        additionalExports: [],
+        component: 'WithSpace',
+        filePath: '<output>/models/with-space.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/with-space.ts',
+            name: 'WithSpace',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong/properties/markerVeryLongName',
+        component: 'string',
+        imports: []
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With Space/properties/markerSpace',
+        component: 'string',
+        imports: []
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With-Dash',
+        additionalExports: [],
+        component: 'WithDash',
+        filePath: '<output>/models/with-dash.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/with-dash.ts',
+            name: 'WithDash',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With-Dash/properties/markerDash',
+        component: 'string',
+        imports: []
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With+Plus',
+        additionalExports: [],
+        component: 'WithPlus',
+        filePath: '<output>/models/with-plus.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/with-plus.ts',
+            name: 'WithPlus',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With+Plus/properties/markerPlus',
+        component: 'string',
+        imports: []
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/ObjectWithExtremeProperties',
+        additionalExports: [],
+        component: 'ObjectWithExtremeProperties',
+        filePath: '<output>/models/object-with-extreme-properties.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/object-with-extreme-properties.ts',
+            name: 'ObjectWithExtremeProperties',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/ObjectWithExtremeProperties/properties/VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong',
+        component: 'string',
+        imports: []
+      },
+      'schema-27': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/ObjectWithExtremeProperties/properties/2FactorAuth',
+        component: 'string',
+        imports: []
+      },
+      'schema-28': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/ObjectWithExtremeProperties/properties/',
+        component: 'string',
+        imports: []
+      },
+      'schema-29': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/camelCaseName',
+        additionalExports: [],
+        component: 'CamelCaseName',
+        filePath: '<output>/models/camel-case-name.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/camel-case-name.ts',
+            name: 'CamelCaseName',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/2FactorAuth',
+        additionalExports: [],
+        component: 'FactorAuth',
+        filePath: '<output>/models/factor-auth.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/factor-auth.ts',
+            name: 'FactorAuth',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-30': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/camelCaseName/properties/markerCamel',
+        component: 'string',
+        imports: []
+      },
+      'schema-31': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/PascalCaseName',
+        additionalExports: [],
+        component: 'PascalCaseName',
+        filePath: '<output>/models/pascal-case-name.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/pascal-case-name.ts',
+            name: 'PascalCaseName',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-32': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/PascalCaseName/properties/markerPascal',
+        component: 'string',
+        imports: []
+      },
+      'schema-33': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/snake_case_name',
+        additionalExports: [],
+        component: 'SnakeCaseName',
+        filePath: '<output>/models/snake-case-name.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/snake-case-name.ts',
+            name: 'SnakeCaseName',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-34': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/snake_case_name/properties/markerSnake',
+        component: 'string',
+        imports: []
+      },
+      'schema-35': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/SCREAMING_SNAKE_NAME',
+        additionalExports: [],
+        component: 'ScreamingSnakeName',
+        filePath: '<output>/models/screaming-snake-name.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/screaming-snake-name.ts',
+            name: 'ScreamingSnakeName',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-36': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/SCREAMING_SNAKE_NAME/properties/markerScreaming',
+        component: 'string',
+        imports: []
+      },
+      'schema-37': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/kebab-case-name',
+        additionalExports: [],
+        component: 'KebabCaseName',
+        filePath: '<output>/models/kebab-case-name.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/kebab-case-name.ts',
+            name: 'KebabCaseName',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-38': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/kebab-case-name/properties/markerKebab',
+        component: 'string',
+        imports: []
+      },
+      'schema-39': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/HTTPResponseXML',
+        additionalExports: [],
+        component: 'HttpResponseXml',
+        filePath: '<output>/models/http-response-xml.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/http-response-xml.ts',
+            name: 'HttpResponseXml',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/2FactorAuth/properties/markerTwoFactorAuth',
+        component: 'string',
+        imports: []
+      },
+      'schema-40': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/HTTPResponseXML/properties/markerHttpXml',
+        component: 'string',
+        imports: []
+      },
+      'schema-41': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/iOSDevice',
+        additionalExports: [],
+        component: 'IOsDevice',
+        filePath: '<output>/models/i-os-device.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/i-os-device.ts',
+            name: 'IOsDevice',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-42': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/iOSDevice/properties/markerIosDevice',
+        component: 'string',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/_Underscore',
+        additionalExports: [],
+        component: 'Underscore',
+        filePath: '<output>/models/underscore.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/underscore.ts',
+            name: 'Underscore',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/_Underscore/properties/markerUnderscore',
+        component: 'string',
+        imports: []
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/__DoubleUnderscore',
+        additionalExports: [],
+        component: 'DoubleUnderscore',
+        filePath: '<output>/models/double-underscore.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/double-underscore.ts',
+            name: 'DoubleUnderscore',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/__DoubleUnderscore/properties/markerDoubleUnderscore',
+        component: 'string',
+        imports: []
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/A',
+        additionalExports: [],
+        component: 'A',
+        filePath: '<output>/models/a.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/a.ts',
+            name: 'A',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      }
+    },
+    services: {}
+  }
+}

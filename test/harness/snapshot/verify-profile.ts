@@ -1,0 +1,154 @@
+import { join } from 'node:path';
+
+import { captureConsole } from './capture-console.ts';
+import { resolveSnapshotMode, type VerifyOptions } from './mode.ts';
+import { replaceOutputDir } from './normalize.ts';
+import { serializeNormalized } from './serialize.ts';
+import { verifyGeneratedTree } from './verify-file-tree.ts';
+import { verifyText } from './verify-text.ts';
+
+/** Where one profile-and-spec pair keeps its three possible snapshots. */
+export type ProfileSnapshot = {
+  /** Directory holding the generated file tree. */
+  treeDir: string;
+  /** Serialized generator state, beside the tree so the tree holds only generated source. */
+  stateFile: string;
+  /** Generation error message, present only when generation fails. */
+  errorFile: string;
+};
+
+/** Derives the three snapshot paths for a spec inside a profile's version directory. */
+export function profileSnapshotPaths(baseDir: string, specName: string): ProfileSnapshot {
+  return {
+    treeDir: join(baseDir, specName),
+    stateFile: join(baseDir, `${specName}.state.txt`),
+    errorFile: join(baseDir, `${specName}.error.txt`),
+  };
+}
+
+/**
+ * Gates one profile-and-spec pair on all of its snapshots.
+ *
+ * On success the file tree and the serialized `state` must both match, and every mismatch is
+ * reported in one run rather than the first one hiding the rest. On failure the error message
+ * becomes the snapshot and the tree is dropped — a partially written tree is order-dependent and
+ * says nothing useful — so a generator crash is a reviewable committed fact instead of a red test.
+ *
+ * A pair has exactly one of the two forms. Holding both an error file and a tree is a failure.
+ */
+export async function verifyProfile(
+  snapshot: ProfileSnapshot,
+  generate: (outputDir: string) => unknown,
+  options: VerifyOptions = {},
+): Promise<void> {
+  const mode = options.mode ?? resolveSnapshotMode();
+  const outputDir = await Deno.makeTempDir({ prefix: 'goast-snapshot-' });
+
+  try {
+    const run = await captureConsole(() => generate(outputDir));
+
+    if (!run.ok) {
+      const message = formatGenerationError(run.error, outputDir) + '\n';
+
+      if (mode === 'check') {
+        // A committed error snapshot that still matches is a pass: the recorded failure is the
+        // expected outcome. Only a *changed* failure, or a leftover tree, is a problem.
+        const failures: string[] = [];
+        for (const stale of [snapshot.treeDir, snapshot.stateFile]) {
+          if (await pathExists(stale)) {
+            failures.push(
+              `Generation failed, but ${stale} is still committed. Run \`deno task test:output\` ` +
+                'and commit the result.',
+            );
+          }
+        }
+        try {
+          await verifyText(snapshot.errorFile, message, { mode });
+        } catch (error) {
+          failures.push(
+            [
+              `Generation failed for ${snapshot.treeDir}`,
+              '',
+              message.trimEnd(),
+              ...(run.output ? ['', 'Generator output:', run.output.trimEnd()] : []),
+              '',
+              error instanceof Error ? error.message : String(error),
+            ].join('\n'),
+          );
+        }
+        if (failures.length > 0) throw new Error(failures.join('\n\n'));
+        return;
+      }
+
+      await removePath(snapshot.treeDir, { recursive: true });
+      await removePath(snapshot.stateFile);
+      await verifyText(snapshot.errorFile, message, { mode });
+      return;
+    }
+
+    if (await pathExists(snapshot.errorFile)) {
+      if (mode === 'check') {
+        throw new Error(
+          `Generation for ${snapshot.treeDir} no longer fails, but ${snapshot.errorFile} is still ` +
+            'committed. Run `deno task test:output` and commit the result.',
+        );
+      }
+      await removePath(snapshot.errorFile);
+    }
+
+    const failures: string[] = [];
+    for (
+      const verify of [
+        () => verifyGeneratedTree(snapshot.treeDir, outputDir, { mode }),
+        // Normalized on the *value*, before serialization: `util.inspect` chooses its line breaks
+        // from the rendered width of what it is handed, so rewriting the finished text would leave
+        // the layout encoding the length of this machine's temp path.
+        () =>
+          verifyText(
+            snapshot.stateFile,
+            serializeNormalized(run.value, (text) => replaceOutputDir(text, outputDir)) + '\n',
+            { mode },
+          ),
+      ]
+    ) {
+      try {
+        await verify();
+      } catch (error) {
+        failures.push(error instanceof Error ? error.message : String(error));
+      }
+    }
+    if (failures.length > 0) throw new Error(failures.join('\n\n'));
+  } finally {
+    await Deno.remove(outputDir, { recursive: true });
+  }
+}
+
+/**
+ * Renders a generation failure as snapshot text.
+ *
+ * The stack is deliberately dropped: it carries line numbers that churn on unrelated edits. The
+ * generation directory is rewritten to `<output>` via {@link replaceOutputDir} because it is a
+ * fresh temp path on every run and `normalizePaths` only knows about paths inside the repository.
+ */
+function formatGenerationError(error: unknown, outputDir: string): string {
+  const text = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+  return replaceOutputDir(text, outputDir);
+}
+
+async function pathExists(path: string): Promise<boolean> {
+  try {
+    await Deno.stat(path);
+    return true;
+  } catch (error) {
+    if (error instanceof Deno.errors.NotFound) return false;
+    throw error;
+  }
+}
+
+async function removePath(path: string, options: Deno.RemoveOptions = {}): Promise<void> {
+  try {
+    await Deno.remove(path, options);
+  } catch (error) {
+    if (!(error instanceof Deno.errors.NotFound)) throw error;
+  }
+}

@@ -1,0 +1,127 @@
+{
+  typescript: {
+    indexFiles: { models: '<output>/models.ts' },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//path/{id}/{sub}/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//mixed/{id}/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//mixed/{id}/get/parameters/1/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//mixed/{id}/get/parameters/2/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//mixed/{id}/get/parameters/3/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//described/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//described/get/parameters/1/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//described/get/parameters/2/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/components/schemas/ParamSchema',
+        additionalExports: [ { name: 'PARAM_SCHEMA_VALUES', type: 'export' } ],
+        component: 'ParamSchema',
+        filePath: '<output>/models/param-schema.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/param-schema.ts',
+            name: 'ParamSchema',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/components/schemas/ParamSchema',
+        additionalExports: [ { name: 'PARAM_SCHEMA_VALUES', type: 'export' } ],
+        component: 'ParamSchema',
+        filePath: '<output>/models/param-schema.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/param-schema.ts',
+            name: 'ParamSchema',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//empty-value/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//path/{id}/{sub}/get/parameters/1/schema',
+        component: 'number',
+        imports: []
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//reserved/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//query/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//query/get/parameters/1/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//query/get/parameters/2/schema',
+        component: 'number',
+        imports: []
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//query/get/parameters/3/schema',
+        component: 'boolean',
+        imports: []
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//header/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//header/get/parameters/1/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/parameter-locations.yml#/paths//cookie/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      }
+    }
+  }
+}

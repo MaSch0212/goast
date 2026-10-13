@@ -1,0 +1,3 @@
+body
+  expected {"kind":"json","value":{"age":4,"id":"abc","name":"Rex"}}
+  actual   {"kind":"json","value":{"age":4,"birthDate":null,"createdAt":null,"friend":null,"id":"abc","name":"Rex","nickname":null,"owner":null,"photo":null,"status":null,"toys":null}}

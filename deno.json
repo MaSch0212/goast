@@ -1,10 +1,9 @@
 {
   "tasks": {
-    "npm:test-utils": "deno run -A scripts/build_npm.ts test/utils",
     "npm:core": "deno run -A scripts/build_npm.ts packages/core",
     "npm:kotlin": "deno run -A scripts/build_npm.ts packages/kotlin",
     "npm:typescript": "deno run -A scripts/build_npm.ts packages/typescript",
-    "npm": "deno task npm:test-utils && deno task npm:core && deno task npm:typescript && deno task npm:kotlin",
+    "npm": "deno task npm:core && deno task npm:typescript && deno task npm:kotlin",
     "npm:publish:core": "deno run -A scripts/publish_npm.ts @goast/core",
     "npm:publish:kotlin": "deno run -A scripts/publish_npm.ts @goast/kotlin",
     "npm:publish:typescript": "deno run -A scripts/publish_npm.ts @goast/typescript",
@@ -12,15 +11,46 @@
     "test:core": "deno test -A packages/core",
     "test:kotlin": "deno test -A packages/kotlin",
     "test:typescript": "deno test -A packages/typescript",
+    "test:harness": "deno test -A test/harness",
+    "test:harness:docker": "GOAST_COMPILE=1 deno test -A test/harness/docker.test.ts",
+    "test:unit": "deno test -A packages",
+    "test:output": "GOAST_SNAPSHOT=write deno test -A test/output-tests",
+    "test:output:check": "GOAST_SNAPSHOT=check deno test -A test/output-tests",
+    "test:compile": "GOAST_COMPILE=1 GOAST_SNAPSHOT=write deno test -A test/compile-tests test/harness/docker.test.ts",
+    "test:compile:check": "GOAST_COMPILE=1 GOAST_SNAPSHOT=check deno test -A test/compile-tests test/harness/docker.test.ts",
+    "test:compile:host": "GOAST_COMPILE=1 GOAST_SNAPSHOT=check deno test -A test/compile-tests --filter \"typescript/host\"",
+    "test:compile:discovery": "GOAST_COMPILE=1 deno test -A test/compile-tests --filter \"unit discovery\"",
+    "test:compile:support": "deno test -A test/compile-tests/orphans.test.ts test/compile-tests/runners",
+    "test:compile:ts:check": "deno task test:compile:discovery && GOAST_COMPILE=1 GOAST_SNAPSHOT=check deno test -A test/compile-tests --filter \"typescript/\"",
+    "test:compile:kotlin:check": "deno task test:compile:discovery && deno task test:compile:support && GOAST_COMPILE=1 GOAST_SNAPSHOT=check deno test -A test/compile-tests --filter \"kotlin (gradle)\"",
+    "test:compile:cold": "GOAST_GRADLE_CACHE=0 GOAST_COMPILE=1 GOAST_SNAPSHOT=check deno test -A test/compile-tests test/harness/docker.test.ts",
+    "test:compile:clean": "deno run -A scripts/clean_gradle_work.ts",
+    "test:integration": "GOAST_SNAPSHOT=write deno test -A test/integration test/integration-tests",
+    "test:integration:check": "GOAST_SNAPSHOT=check deno test -A test/integration test/integration-tests",
+    "test:integration:kotlin": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=write deno test -A test/integration/kotlin-clients",
+    "test:integration:kotlin:check": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=check deno test -A test/integration/kotlin-clients",
+    "test:integration:angular": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=write deno test -A test/integration/angular-services",
+    "test:integration:angular:check": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=check deno test -A test/integration/angular-services",
+    "test:integration:controllers": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=write deno test -A test/integration/spring-controllers",
+    "test:integration:controllers:check": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=check deno test -A test/integration/spring-controllers",
+    "test:integration:k6": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=write deno test -A test/integration/k6-clients",
+    "test:integration:k6:check": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=check deno test -A test/integration/k6-clients",
+    "test:integration:stubs": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=write deno test -A test/integration/easy-network-stub",
+    "test:integration:stubs:check": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=check deno test -A test/integration/easy-network-stub",
+    "test:check": "GOAST_SNAPSHOT=check deno test -A",
+    "test:all": "deno task test:check && deno task test:compile:check && deno task test:integration:check && deno task test:integration:kotlin:check && deno task test:integration:controllers:check && deno task test:integration:angular:check && deno task test:integration:k6:check && deno task test:integration:stubs:check",
     "pg": "deno run -A playground.ts"
   },
   "imports": {
     "@deno/dnt": "jsr:@deno/dnt@^0.41.3",
     "@std/assert": "jsr:@std/assert@^1.0.6",
+    "@std/bytes": "jsr:@std/bytes@^1.0.5",
     "@std/expect": "jsr:@std/expect@^1.0.5",
     "@std/testing": "jsr:@std/testing@^1.0.4",
     "@std/text": "jsr:@std/text@^1.0.7",
     "@std/fs": "jsr:@std/fs@^1.0.22",
+    "@std/fs/ensure-dir": "jsr:@std/fs@^1.0.22/ensure-dir",
+    "@std/fs/walk": "jsr:@std/fs@^1.0.22/walk",
     "@types/node": "npm:@types/node@^22.7.5",
     "fs-extra": "npm:fs-extra@^11.3.3",
     "http-status-codes": "npm:http-status-codes@^2.3.0",
@@ -29,25 +59,38 @@
   "fmt": {
     "lineWidth": 120,
     "singleQuote": true,
-    "exclude": ["npm/**/*", "out/**/*", "coverage/**/*", ".verify/**/*"]
+    "exclude": [
+      "npm/**/*",
+      "out/**/*",
+      "coverage/**/*",
+      ".goast-cache/**/*",
+      "docs/superpowers/**",
+      "test/output/**",
+      "test/compile/**",
+      "test/wire/**"
+    ]
   },
   "lint": {
     "exclude": [
       "npm/**/*",
       "out/**/*",
       "coverage/**/*",
-      ".verify/**/*",
+      ".goast-cache/**/*",
+      "test/output/**",
+      "test/compile/**",
+      "test/wire/**",
       "playground.ts",
       "**/assets/**/*"
     ]
   },
   "test": {
-    "include": ["/packages/*"]
+    "include": ["packages", "test"],
+    "exclude": ["test/output"]
   },
   "workspace": [
     "packages/core",
     "packages/kotlin",
     "packages/typescript",
-    "test/utils"
+    "test/harness"
   ]
 }

@@ -1,0 +1,60 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Name Collisions
+
+paths:
+  /x:
+    x-ignore: true
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    myThing:
+      type: object
+      properties:
+        fromMyThingCamel:
+          type: string
+    MyThing:
+      type: object
+      properties:
+        fromMyThingPascal:
+          type: string
+    my_thing:
+      type: object
+      properties:
+        fromMyThingSnake:
+          type: string
+    my-thing:
+      type: object
+      properties:
+        fromMyThingKebab:
+          type: string
+    'my thing':
+      type: object
+      properties:
+        fromMyThingSpaced:
+          type: string
+    Thing2:
+      type: object
+      properties:
+        fromThing2:
+          type: string
+    Thing_2:
+      type: object
+      properties:
+        fromThingUnderscore2:
+          type: string
+    ÜberThing:
+      type: object
+      properties:
+        fromUeberThingUmlaut:
+          type: string
+    UberThing:
+      type: object
+      properties:
+        fromUberThingAscii:
+          type: string

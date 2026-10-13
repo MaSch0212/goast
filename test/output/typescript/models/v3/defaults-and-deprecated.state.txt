@@ -1,0 +1,217 @@
+{
+  typescript: {
+    indexFiles: { models: '<output>/models.ts' },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/defaults-and-deprecated.yml#/paths//deprecated-params/get/parameters/0/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/defaults-and-deprecated.yml#/components/schemas/DefaultArray/items',
+        component: 'string',
+        imports: []
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/defaults-and-deprecated.yml#/components/schemas/DefaultObject',
+        additionalExports: [],
+        component: 'DefaultObject',
+        filePath: '<output>/models/default-object.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/default-object.ts',
+            name: 'DefaultObject',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/defaults-and-deprecated.yml#/components/schemas/DefaultEnum',
+        additionalExports: [ { name: 'DEFAULT_ENUM_VALUES', type: 'export' } ],
+        component: 'DefaultEnum',
+        filePath: '<output>/models/default-enum.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/default-enum.ts',
+            name: 'DefaultEnum',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/defaults-and-deprecated.yml#/components/schemas/DeprecatedSchema',
+        additionalExports: [],
+        component: 'DeprecatedSchema',
+        filePath: '<output>/models/deprecated-schema.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/deprecated-schema.ts',
+            name: 'DeprecatedSchema',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/defaults-and-deprecated.yml#/components/schemas/ObjectWithDefaults',
+        additionalExports: [],
+        component: 'ObjectWithDefaults',
+        filePath: '<output>/models/object-with-defaults.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/object-with-defaults.ts',
+            name: 'ObjectWithDefaults',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/defaults-and-deprecated.yml#/components/schemas/ObjectWithDefaults/properties/a',
+        component: 'string',
+        imports: []
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/defaults-and-deprecated.yml#/components/schemas/ObjectWithDefaults/properties/b',
+        component: 'number',
+        imports: []
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/defaults-and-deprecated.yml#/components/schemas/ObjectWithDefaults/properties/c',
+        component: 'boolean',
+        imports: []
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/defaults-and-deprecated.yml#/components/schemas/ObjectWithDeprecatedProperties',
+        additionalExports: [],
+        component: 'ObjectWithDeprecatedProperties',
+        filePath: '<output>/models/object-with-deprecated-properties.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/object-with-deprecated-properties.ts',
+            name: 'ObjectWithDeprecatedProperties',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/defaults-and-deprecated.yml#/components/schemas/ObjectWithDeprecatedProperties/properties/withDesc',
+        component: 'string',
+        imports: []
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/defaults-and-deprecated.yml#/paths//deprecated-params/get/parameters/1/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/defaults-and-deprecated.yml#/components/schemas/ObjectWithDeprecatedProperties/properties/noDesc',
+        component: 'string',
+        imports: []
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/defaults-and-deprecated.yml#/paths//deprecated-params/get/parameters/2/schema',
+        component: 'string',
+        imports: []
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/defaults-and-deprecated.yml#/components/schemas/DefaultString',
+        additionalExports: [],
+        component: 'DefaultString',
+        filePath: '<output>/models/default-string.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/default-string.ts',
+            name: 'DefaultString',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/defaults-and-deprecated.yml#/components/schemas/DefaultInt',
+        additionalExports: [],
+        component: 'DefaultInt',
+        filePath: '<output>/models/default-int.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/default-int.ts',
+            name: 'DefaultInt',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/defaults-and-deprecated.yml#/components/schemas/DefaultBool',
+        additionalExports: [],
+        component: 'DefaultBool',
+        filePath: '<output>/models/default-bool.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/default-bool.ts',
+            name: 'DefaultBool',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/defaults-and-deprecated.yml#/components/schemas/DefaultNumber',
+        additionalExports: [],
+        component: 'DefaultNumber',
+        filePath: '<output>/models/default-number.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/default-number.ts',
+            name: 'DefaultNumber',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/defaults-and-deprecated.yml#/components/schemas/DefaultEmptyString',
+        additionalExports: [],
+        component: 'DefaultEmptyString',
+        filePath: '<output>/models/default-empty-string.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/default-empty-string.ts',
+            name: 'DefaultEmptyString',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/defaults-and-deprecated.yml#/components/schemas/DefaultArray',
+        additionalExports: [],
+        component: 'DefaultArray',
+        filePath: '<output>/models/default-array.ts',
+        imports: [
+          {
+            kind: 'file',
+            modulePath: '<output>/models/default-array.ts',
+            name: 'DefaultArray',
+            type: 'type-import'
+          }
+        ],
+        kind: 'type'
+      }
+    }
+  }
+}

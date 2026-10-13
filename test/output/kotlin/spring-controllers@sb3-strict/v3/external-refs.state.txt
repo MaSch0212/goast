@@ -1,0 +1,137 @@
+{
+  kotlin: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/external-refs/main.yml#/components/schemas/UsesShared',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'UsesShared',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/external-refs/shared/types.yml#/components/schemas/SharedThing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'SharedThing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/external-refs/shared/types.yml#/components/schemas/SharedThing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'SharedThing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/external-refs/shared/types.yml#/components/schemas/SharedThing',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'SharedThing',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/external-refs/shared/types.yml#/components/schemas/SharedThing/properties/id',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/external-refs/shared/types.yml#/components/schemas/SharedThing/properties/label',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/external-refs/shared/types.yml#/components/schemas/SharedEnum',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'SharedEnum',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/external-refs/shared/types.yml#/components/schemas/SharedEnum',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'SharedEnum',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/external-refs/main.yml#/components/schemas/RefsSharedInArray',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'RefsSharedInArray',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/external-refs/main.yml#/components/schemas/RefsSharedInArray/properties/things',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'SharedThing',
+              nullable: false,
+              packageName: 'com.openapi.generated.model',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      }
+    },
+    services: {}
+  }
+}

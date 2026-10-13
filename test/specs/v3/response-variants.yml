@@ -1,0 +1,225 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Response Variants
+
+paths:
+  /two-success:
+    get:
+      operationId: twoSuccessCodes
+      tags: [Responses]
+      responses:
+        '200':
+          description: The thing already existed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Thing'
+        '201':
+          description: The thing was created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OtherThing'
+  /default:
+    get:
+      operationId: successAndDefault
+      tags: [Responses]
+      responses:
+        '200':
+          description: The thing was found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Thing'
+        default:
+          description: An unexpected error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /only-default:
+    get:
+      operationId: onlyDefault
+      tags: [Responses]
+      responses:
+        default:
+          description: Whatever happens, this is the response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /no-content:
+    get:
+      operationId: noContent
+      tags: [Responses]
+      responses:
+        '204':
+          description: There is nothing to return.
+  /empty-200:
+    get:
+      operationId: emptyBody200
+      tags: [Responses]
+      responses:
+        '200':
+          description: The request succeeded, with no response body.
+  /ranges:
+    get:
+      operationId: rangeCodes
+      tags: [Responses]
+      responses:
+        '2XX':
+          description: Any success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Thing'
+        '4XX':
+          description: Any client error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '5XX':
+          description: Any server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /mixed-codes:
+    get:
+      operationId: mixedExactAndRange
+      tags: [Responses]
+      responses:
+        '200':
+          description: The thing was found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Thing'
+        '2XX':
+          description: Some other success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OtherThing'
+        default:
+          description: An unexpected error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /errors:
+    get:
+      operationId: errorCodes
+      tags: [Responses]
+      responses:
+        '200':
+          description: The thing was found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Thing'
+        '400':
+          description: The request was invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The thing was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: An internal error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /multi-content:
+    get:
+      operationId: multiContentResponse
+      tags: [Responses]
+      responses:
+        '200':
+          description: The thing, as JSON or as plain text.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Thing'
+            text/plain:
+              schema:
+                type: string
+  /primitive:
+    get:
+      operationId: primitiveResponse
+      tags: [Responses]
+      responses:
+        '200':
+          description: A plain string.
+          content:
+            application/json:
+              schema:
+                type: string
+  /array:
+    get:
+      operationId: arrayResponse
+      tags: [Responses]
+      responses:
+        '200':
+          description: An array of things.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Thing'
+  /ref-response:
+    get:
+      operationId: refResponse
+      tags: [Responses]
+      responses:
+        '200':
+          $ref: '#/components/responses/SharedResponse'
+
+components:
+  schemas:
+    Thing:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+    OtherThing:
+      type: object
+      required: [code]
+      properties:
+        code:
+          type: integer
+        note:
+          type: string
+    Error:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+  responses:
+    SharedResponse:
+      description: A response shared through components.responses.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Thing'

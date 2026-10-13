@@ -1,0 +1,6 @@
+status
+  expected 200
+  actual   415
+body
+  expected {"kind":"json","value":{"age":4,"id":"abc","name":"Rex"}}
+  actual   {"kind":"json","value":{"error":"Unsupported Media Type","path":"/pets/abc","requestId":"<nondeterministic>","status":415,"timestamp":"<nondeterministic>"}}

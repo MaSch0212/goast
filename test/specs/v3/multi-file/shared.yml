@@ -1,0 +1,29 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Shared
+
+paths:
+  /x:
+    x-ignore: true
+    get:
+      responses:
+        200:
+          description: ''
+
+components:
+  schemas:
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+        city:
+          type: string
+    Contact:
+      type: object
+      properties:
+        email:
+          type: string
+        phone:
+          type: string

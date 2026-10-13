@@ -1,6 +1,4 @@
-import { EOL } from 'node:os';
-
-import { expect } from '@std/expect/expect';
+import { expect } from '@std/expect';
 import { beforeEach, describe, it } from '@std/testing/bdd';
 
 import { SourceBuilder } from '@goast/core';
@@ -21,8 +19,9 @@ describe('tsExport', () => {
   });
 
   it('should write export if not TypeScriptFileBuilder', () => {
-    const builder = new SourceBuilder();
+    // A fixed newLine keeps the expectation below host-independent.
+    const builder = new SourceBuilder({ newLine: '\n' });
     tsExport('myFunction', './my-function').write(builder);
-    expect(builder.toString()).toBe(`export { myFunction } from './my-function';${EOL}`);
+    expect(builder.toString()).toBe("export { myFunction } from './my-function';\n");
   });
 });

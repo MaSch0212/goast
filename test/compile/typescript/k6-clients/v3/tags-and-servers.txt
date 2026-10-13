@@ -1,0 +1,2 @@
+responses.ts:1:51 TS2300 Duplicate identifier 'TwoTagsApiResponse'.
+responses.ts:2:10 TS2300 Duplicate identifier 'TwoTagsApiResponse'.

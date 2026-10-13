@@ -1,0 +1,511 @@
+{
+  kotlin: {
+    clients: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/A/properties/markerUpperA',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/a',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'A',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/a/properties/markerLowerA',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/___',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: '',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/___/properties/markerPunctuationOnly',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With.Dot',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'WithDot',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With.Dot/properties/markerDot',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With/Slash',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Schema17',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With/Slash/properties/markerSlash',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With Space',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'WithSpace',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong/properties/markerVeryLongName',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With Space/properties/markerSpace',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With-Dash',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'WithDash',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With-Dash/properties/markerDash',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With+Plus',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'WithPlus',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With+Plus/properties/markerPlus',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/ObjectWithExtremeProperties',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'ObjectWithExtremeProperties',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/ObjectWithExtremeProperties/properties/VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-27': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/ObjectWithExtremeProperties/properties/2FactorAuth',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-28': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/ObjectWithExtremeProperties/properties/',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-29': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/camelCaseName',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'CamelCaseName',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/2FactorAuth',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'FactorAuth',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-30': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/camelCaseName/properties/markerCamel',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-31': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/PascalCaseName',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'PascalCaseName',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-32': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/PascalCaseName/properties/markerPascal',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-33': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/snake_case_name',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'SnakeCaseName',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-34': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/snake_case_name/properties/markerSnake',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-35': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/SCREAMING_SNAKE_NAME',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'ScreamingSnakeName',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-36': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/SCREAMING_SNAKE_NAME/properties/markerScreaming',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-37': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/kebab-case-name',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'KebabCaseName',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-38': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/kebab-case-name/properties/markerKebab',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-39': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/HTTPResponseXML',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'HttpResponseXml',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/2FactorAuth/properties/markerTwoFactorAuth',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-40': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/HTTPResponseXML/properties/markerHttpXml',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-41': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/iOSDevice',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'IOsDevice',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-42': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/iOSDevice/properties/markerIosDevice',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/_Underscore',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Underscore',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/_Underscore/properties/markerUnderscore',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/__DoubleUnderscore',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'DoubleUnderscore',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/__DoubleUnderscore/properties/markerDoubleUnderscore',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/A',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'A',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,628 @@
+{
+  kotlin: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfString',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'String',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfString',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'String',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfInlineObject',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Schema12',
+              nullable: false,
+              packageName: 'com.openapi.generated.model',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfInlineObject/items',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Schema12',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfInlineObject/items/properties/name',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfInlineObject/items/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/UniqueArray',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'String',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/UniqueArray/items',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/BoundedArray',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'String',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/BoundedArray/items',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayNoItems',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Any',
+              nullable: true,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfString/items',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfAnyOf',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Any',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfAnyOf/items',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfAnyOf/items/anyOf/0',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfAnyOf/items/anyOf/1',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'ObjectWithArrayProperties',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/strings',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'String',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/strings/items',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-27': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/refs',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [
+                KtReference {
+                  classReference: false,
+                  generics: [],
+                  inject: {},
+                  name: 'String',
+                  nullable: false,
+                  packageName: 'kotlin',
+                  subReference: null
+                }
+              ],
+              inject: {},
+              name: 'List',
+              nullable: false,
+              packageName: 'kotlin.collections',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-28': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfString',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'String',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-29': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/nested',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [
+                KtReference {
+                  classReference: false,
+                  generics: [],
+                  inject: {},
+                  name: 'String',
+                  nullable: false,
+                  packageName: 'kotlin',
+                  subReference: null
+                }
+              ],
+              inject: {},
+              name: 'List',
+              nullable: false,
+              packageName: 'kotlin.collections',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfRef',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [
+                KtReference {
+                  classReference: false,
+                  generics: [],
+                  inject: {},
+                  name: 'String',
+                  nullable: false,
+                  packageName: 'kotlin',
+                  subReference: null
+                }
+              ],
+              inject: {},
+              name: 'List',
+              nullable: false,
+              packageName: 'kotlin.collections',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-30': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/nested/items',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'String',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-31': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/nested/items/items',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfString',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'String',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfArray',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [
+                KtReference {
+                  classReference: false,
+                  generics: [],
+                  inject: {},
+                  name: 'String',
+                  nullable: false,
+                  packageName: 'kotlin',
+                  subReference: null
+                }
+              ],
+              inject: {},
+              name: 'List',
+              nullable: false,
+              packageName: 'kotlin.collections',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfArray/items',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'String',
+              nullable: false,
+              packageName: 'kotlin',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfArray/items/items',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfArrayOfRef',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [
+                KtReference {
+                  classReference: false,
+                  generics: [
+                    KtReference {
+                      classReference: false,
+                      generics: [],
+                      inject: {},
+                      name: 'String',
+                      nullable: false,
+                      packageName: 'kotlin',
+                      subReference: null
+                    }
+                  ],
+                  inject: {},
+                  name: 'List',
+                  nullable: false,
+                  packageName: 'kotlin.collections',
+                  subReference: null
+                }
+              ],
+              inject: {},
+              name: 'List',
+              nullable: false,
+              packageName: 'kotlin.collections',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfArrayOfRef/items',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [
+                KtReference {
+                  classReference: false,
+                  generics: [],
+                  inject: {},
+                  name: 'String',
+                  nullable: false,
+                  packageName: 'kotlin',
+                  subReference: null
+                }
+              ],
+              inject: {},
+              name: 'List',
+              nullable: false,
+              packageName: 'kotlin.collections',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      }
+    }
+  }
+}

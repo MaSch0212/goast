@@ -1,0 +1,67 @@
+{
+  kotlin: {
+    models: {},
+    services: {
+      'service-1': {
+        __source__: '<root>/test/specs/v3/tags-and-servers.yml#/tags/0',
+        apiController: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'AlphaApiController'
+        },
+        apiDelegate: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'AlphaApiDelegate'
+        },
+        apiInterface: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'AlphaApi'
+        }
+      },
+      'service-2': {
+        __source__: 'tag:service-2',
+        apiController: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'Service2ApiController'
+        },
+        apiDelegate: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'Service2ApiDelegate'
+        },
+        apiInterface: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'Service2Api'
+        }
+      },
+      'service-3': {
+        __source__: 'tag:Beta',
+        apiController: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'BetaApiController'
+        },
+        apiDelegate: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'BetaApiDelegate'
+        },
+        apiInterface: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'BetaApi'
+        }
+      },
+      'service-4': {
+        __source__: 'tag:Tag With Space',
+        apiController: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'TagWithSpaceApiController'
+        },
+        apiDelegate: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'TagWithSpaceApiDelegate'
+        },
+        apiInterface: {
+          packageName: 'com.openapi.generated.api',
+          typeName: 'TagWithSpaceApi'
+        }
+      }
+    }
+  }
+}

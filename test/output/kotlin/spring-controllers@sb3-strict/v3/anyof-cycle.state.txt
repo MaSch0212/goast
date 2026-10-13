@@ -1,0 +1,151 @@
+{
+  kotlin: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminator',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'AnyOfDiscriminator',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorB/allOf/1/properties/bValue',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorA/allOf/1',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorA/allOf/1/properties/aValue',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminator/properties/kind',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorA',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'AnyOfDiscriminatorA',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorA',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'AnyOfDiscriminatorA',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminator',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'AnyOfDiscriminator',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorB',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'AnyOfDiscriminatorB',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorB',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'AnyOfDiscriminatorB',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminator',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'AnyOfDiscriminator',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorB/allOf/1',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Any',
+          nullable: true,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      }
+    },
+    services: {}
+  }
+}

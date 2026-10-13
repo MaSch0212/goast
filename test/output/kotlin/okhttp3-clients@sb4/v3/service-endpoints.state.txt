@@ -1,0 +1,203 @@
+{
+  kotlin: {
+    clients: {
+      'service-1': {
+        __source__: 'tag:Pets',
+        packageName: 'com.openapi.generated.api.client',
+        typeName: 'PetsApiClient'
+      }
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/paths//pets/get/responses/200/content/application/json/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [
+            KtReference {
+              classReference: false,
+              generics: [],
+              inject: {},
+              name: 'Pet',
+              nullable: false,
+              packageName: 'com.openapi.generated.model',
+              subReference: null
+            }
+          ],
+          inject: {},
+          name: 'List',
+          nullable: false,
+          packageName: 'kotlin.collections',
+          subReference: null
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Pet',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Pet',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/paths//pets/{id}/delete/parameters/0/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Pet',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Pet',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Owner',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Owner',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Owner',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Owner',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Owner/properties/name',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Pet',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Pet',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Pet',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Pet',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Pet/properties/id',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Pet/properties/name',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Pet/properties/tag',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Pet',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Pet',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/components/schemas/Pet',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Pet',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/service-endpoints.yml#/paths//pets/{id}/get/parameters/0/schema',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      }
+    }
+  }
+}

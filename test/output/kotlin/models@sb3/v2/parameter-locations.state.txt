@@ -1,0 +1,54 @@
+{
+  kotlin: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v2/parameter-locations.yml#/definitions/Payload',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Payload',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v2/parameter-locations.yml#/definitions/Payload',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Payload',
+          nullable: false,
+          packageName: 'com.openapi.generated.model',
+          subReference: null
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v2/parameter-locations.yml#/definitions/Payload/properties/name',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'String',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v2/parameter-locations.yml#/definitions/Payload/properties/value',
+        type: KtReference {
+          classReference: false,
+          generics: [],
+          inject: {},
+          name: 'Int',
+          nullable: false,
+          packageName: 'kotlin',
+          subReference: null
+        }
+      }
+    }
+  }
+}

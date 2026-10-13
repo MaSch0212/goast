@@ -1,0 +1,15 @@
+components:
+  schemas:
+    SharedThing:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+    SharedEnum:
+      type: string
+      enum:
+        - FIRST
+        - SECOND
+        - THIRD

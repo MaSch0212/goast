@@ -1,0 +1,72 @@
+{
+  typescript: {
+    indexFiles: {
+      k6Clients: '<output>/clients.js',
+      k6ResponseModels: '<output>/responses.ts',
+      models: '<output>/models.ts'
+    },
+    k6Clients: {
+      'service-1': {
+        __source__: '<root>/test/specs/v3/tags-and-servers.yml#/tags/0',
+        component: 'AlphaClient',
+        filePath: '<output>/clients/alpha-client.js',
+        responseModels: {
+          'endpoint-2': {
+            component: 'OneTagApiResponse',
+            filePath: '<output>/models/responses/alpha-responses.ts'
+          },
+          'endpoint-3': {
+            component: 'TwoTagsApiResponse',
+            filePath: '<output>/models/responses/alpha-responses.ts'
+          },
+          'endpoint-4': {
+            component: 'SharedTagApiResponse',
+            filePath: '<output>/models/responses/alpha-responses.ts'
+          }
+        }
+      },
+      'service-2': {
+        __source__: 'tag:service-2',
+        component: 'Service2Client',
+        filePath: '<output>/clients/service-2-client.js',
+        responseModels: {
+          'endpoint-1': {
+            component: 'UntaggedApiResponse',
+            filePath: '<output>/models/responses/service-2-responses.ts'
+          },
+          'endpoint-5': {
+            component: 'PathServerApiResponse',
+            filePath: '<output>/models/responses/service-2-responses.ts'
+          },
+          'endpoint-6': {
+            component: 'OpServerApiResponse',
+            filePath: '<output>/models/responses/service-2-responses.ts'
+          }
+        }
+      },
+      'service-3': {
+        __source__: 'tag:Beta',
+        component: 'BetaClient',
+        filePath: '<output>/clients/beta-client.js',
+        responseModels: {
+          'endpoint-3': {
+            component: 'TwoTagsApiResponse',
+            filePath: '<output>/models/responses/beta-responses.ts'
+          }
+        }
+      },
+      'service-4': {
+        __source__: 'tag:Tag With Space',
+        component: 'TagWithSpaceClient',
+        filePath: '<output>/clients/tag-with-space-client.js',
+        responseModels: {
+          'endpoint-7': {
+            component: 'TagWithSpaceApiResponse',
+            filePath: '<output>/models/responses/tag-with-space-responses.ts'
+          }
+        }
+      }
+    },
+    models: {}
+  }
+}

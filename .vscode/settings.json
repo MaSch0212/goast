@@ -25,5 +25,8 @@
   "[markdown]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
   },
-  "typescript.tsdk": "node_modules\\typescript\\lib"
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml"
+  },
+  "yaml.format.singleQuote": true
 }

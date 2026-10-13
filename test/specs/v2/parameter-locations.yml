@@ -1,0 +1,81 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Parameter Locations
+
+paths:
+  /body:
+    post:
+      operationId: bodyParam
+      tags: [Parameters]
+      parameters:
+        - name: payload
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Payload'
+      responses:
+        200:
+          description: The body parameter echoed back.
+  /form:
+    post:
+      operationId: formDataParams
+      tags: [Parameters]
+      consumes: [application/x-www-form-urlencoded]
+      parameters:
+        - name: title
+          in: formData
+          type: string
+        - name: count
+          in: formData
+          type: integer
+        - name: active
+          in: formData
+          type: boolean
+      responses:
+        200:
+          description: The three form-data parameters echoed back.
+  /upload:
+    post:
+      operationId: fileUpload
+      tags: [Parameters]
+      consumes: [multipart/form-data]
+      parameters:
+        - name: file
+          in: formData
+          type: file
+        - name: description
+          in: formData
+          type: string
+      responses:
+        200:
+          description: The uploaded file and its description echoed back.
+  /query:
+    get:
+      operationId: queryParams
+      tags: [Parameters]
+      parameters:
+        - name: tags
+          in: query
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+        - name: ids
+          in: query
+          type: array
+          items:
+            type: string
+          collectionFormat: csv
+      responses:
+        200:
+          description: The two array-valued query parameters echoed back.
+
+definitions:
+  Payload:
+    type: object
+    properties:
+      name:
+        type: string
+      value:
+        type: integer

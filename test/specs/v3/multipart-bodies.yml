@@ -1,0 +1,158 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Multipart Bodies
+
+paths:
+  /file:
+    post:
+      operationId: singleFile
+      tags: [Multipart]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: The single file was accepted.
+  /files:
+    post:
+      operationId: multipleFiles
+      tags: [Multipart]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '200':
+          description: The array of files was accepted.
+  /mixed:
+    post:
+      operationId: fileAndFields
+      tags: [Multipart]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                label:
+                  type: string
+                quantity:
+                  type: integer
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: The file and the three fields were accepted.
+  /nested:
+    post:
+      operationId: nestedObjectPart
+      tags: [Multipart]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                metadata:
+                  type: object
+                  properties:
+                    author:
+                      type: string
+                    version:
+                      type: integer
+      responses:
+        '200':
+          description: The nested object part was accepted.
+  /ref-part:
+    post:
+      operationId: refPart
+      tags: [Multipart]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                payload:
+                  $ref: '#/components/schemas/Payload'
+      responses:
+        '200':
+          description: The referenced payload part was accepted.
+  /encoded:
+    post:
+      operationId: withEncoding
+      tags: [Multipart]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                label:
+                  type: string
+                quantity:
+                  type: integer
+                active:
+                  type: boolean
+            encoding:
+              file:
+                contentType: application/octet-stream
+              label:
+                style: form
+      responses:
+        '200':
+          description: The file and fields, with an encoding block, were accepted.
+  /optional-file:
+    post:
+      operationId: optionalFile
+      tags: [Multipart]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: The optional file part was accepted.
+
+components:
+  schemas:
+    Payload:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string

@@ -105,6 +105,15 @@ export type ApiContent = ApiContentComponent & {
 
 export type ApiExampleComponent = ApiComponent<OpenApiResponse>;
 export type ApiResponse = ApiExampleComponent & {
+  /**
+   * The response key exactly as the spec wrote it: an exact code (`'200'`), a range (`'2XX'`), or
+   * `'default'`.
+   *
+   * Kept alongside {@link statusCode} because that field is lossy by construction —
+   * `Number(status) || undefined` collapses `default`, every range code and the literal `'0'` into
+   * `undefined`. Anything that has to *emit* a status code needs this one.
+   */
+  statusKey: string;
   statusCode: number | undefined;
   description: string | undefined;
   headers: ApiHeader[];
@@ -162,6 +171,11 @@ type AdditionalCombinedSchemaProperties = {
   anyOf: ApiSchema[];
 };
 type AdditionalArraySchemaProperties = {
+  /**
+   * The schema of every element of the array, or `undefined` if the array does not constrain its elements to a
+   * single schema. Note that an OpenAPI 3.1 tuple (`prefixItems`) has no single element schema: tuples are not
+   * modelled, so `items` is `undefined` for them even though the OpenAPI schema has an `items` keyword.
+   */
   items: ApiSchema | undefined;
   minItems: number | undefined;
   maxItems: number | undefined;

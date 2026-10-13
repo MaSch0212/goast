@@ -1,0 +1,3 @@
+response
+  expected status 200
+  actual   no response at all (fetch failed <- error sending request from 127.0.0.1:<port> for http://127.0.0.1:<port>/styles/a,b (127.0.0.1:<port>): client error (SendRequest): connection closed before message completed)

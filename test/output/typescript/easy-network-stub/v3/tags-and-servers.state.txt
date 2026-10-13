@@ -1,0 +1,28 @@
+{
+  typescript: {
+    indexFiles: { models: '<output>/models.ts', stubs: '<output>/stubs.ts' },
+    models: {},
+    stubs: {
+      'service-1': {
+        __source__: '<root>/test/specs/v3/tags-and-servers.yml#/tags/0',
+        component: 'AlphaStubs',
+        filePath: '<output>/stubs/alpha.stubs.ts'
+      },
+      'service-2': {
+        __source__: 'tag:service-2',
+        component: 'Service2Stubs',
+        filePath: '<output>/stubs/service-2.stubs.ts'
+      },
+      'service-3': {
+        __source__: 'tag:Beta',
+        component: 'BetaStubs',
+        filePath: '<output>/stubs/beta.stubs.ts'
+      },
+      'service-4': {
+        __source__: 'tag:Tag With Space',
+        component: 'TagWithSpaceStubs',
+        filePath: '<output>/stubs/tag-with-space.stubs.ts'
+      }
+    }
+  }
+}
