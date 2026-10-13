@@ -519,6 +519,12 @@ deno task test:compile:check  # check mode: the CI-equivalent, fails on any drif
 A full check-mode pass measures 12m47s (14 passed, 816 steps) on a warm image cache, of which the Kotlin group is
 12m10s. The other three groups together are 19s. Budget above 15 minutes for any job timeout.
 
+The Kotlin group keeps its Gradle project dir off host bind mounts — a per-checkout Docker volume locally, the
+container's own filesystem on CI (`gradleWorkStorage` in `test/compile-tests/runners/kotlin.ts`). Under Docker Desktop
+every host file crosses a slow file share; with the project dir bind-mounted, the Kotlin group ran past its 30-minute
+timeout on Windows. Measured there with the project dir in Docker: 7m00s cold, 1m48s warm, 4m57s ephemeral.
+`deno task test:compile:clean` removes the volume.
+
 **CI runs this tier now.** `.github/workflows/build.yml`'s `compile-ts` and `compile-kotlin` jobs run
 `test:compile:ts:check` and `test:compile:kotlin:check` respectively, gated behind `output-check` and `images` — see
 "CI" below for the job graph and why that ordering matters. A green pull request is no longer silent about tier 3;

@@ -5,6 +5,8 @@ import type { CompileUnit } from '@goast/test-harness';
 import {
   gradleProjectId,
   gradleProperties,
+  gradleWorkStorage,
+  gradleWorkVolumeName,
   resolveGradleWorkMode,
   scanTaskLines,
   synthesizeGradleBuild,
@@ -255,5 +257,44 @@ describe('resolveGradleWorkMode', () => {
   it('ignores an empty GOAST_GRADLE_CACHE rather than reading it as off', () => {
     expect(resolveGradleWorkMode(env({ GOAST_GRADLE_CACHE: '' }))).toBe('persistent');
     expect(resolveGradleWorkMode(env({ CI: 'true', GOAST_GRADLE_CACHE: '' }))).toBe('ephemeral');
+  });
+});
+
+describe('gradleWorkVolumeName', () => {
+  it('is stable for one checkout', () => {
+    expect(gradleWorkVolumeName('/repo/a')).toBe(gradleWorkVolumeName('/repo/a'));
+  });
+
+  // Two worktrees running the gate at once must not share a project dir, or their Gradle locks and
+  // task state collide.
+  it('differs between checkouts', () => {
+    expect(gradleWorkVolumeName('/repo/a')).not.toBe(gradleWorkVolumeName('/repo/b'));
+  });
+
+  it('is a legal Docker volume name that does not leak the checkout path', () => {
+    expect(gradleWorkVolumeName('C:\\Users\\someone\\repo')).toMatch(/^goast-gradle-work-[0-9a-f]{12}$/);
+  });
+});
+
+// The project dir must live on the Docker VM's own filesystem, never on a host bind mount: measured on
+// Docker Desktop for Windows, the same 50 units took 362s with the project dir bind-mounted from the
+// host and 118s with it inside the container, because every Gradle write crosses the host file share.
+describe('gradleWorkStorage', () => {
+  it('mounts only the seed files from the host, read-only', () => {
+    for (const mode of ['persistent', 'ephemeral'] as const) {
+      expect(gradleWorkStorage(mode, '/seed-dir', '/repo').mounts).toEqual([
+        { source: '/seed-dir', target: '/seed', readOnly: true },
+      ]);
+    }
+  });
+
+  it('keeps a persistent project dir in a per-checkout named volume', () => {
+    expect(gradleWorkStorage('persistent', '/seed-dir', '/repo').volumes).toEqual([
+      { name: gradleWorkVolumeName('/repo'), target: '/work' },
+    ]);
+  });
+
+  it('keeps an ephemeral project dir in the container, discarded with it', () => {
+    expect(gradleWorkStorage('ephemeral', '/seed-dir', '/repo').volumes).toEqual([]);
   });
 });

@@ -5,6 +5,7 @@ import {
   buildImage,
   type CompileUnit,
   type Diagnostic,
+  type DockerMount,
   FALSY_ENV_VALUES,
   KOTLIN_BOM,
   kotlinDependenciesFor,
@@ -18,12 +19,40 @@ import { parseKotlinDiagnostics } from '../../harness/compile/parse-kotlin.ts';
 const CONTEXT_DIR = join(repoRootDir, 'test', 'docker', 'kotlin');
 const TREE_MOUNT = '/output';
 const WORK_MOUNT = '/work';
+/** The synthesized build files, which the image's entrypoint copies into {@link WORK_MOUNT}. */
+const SEED_MOUNT = '/seed';
 
 /**
- * Where a persistent Gradle project directory lives. Git-ignored: it is a local build cache, not a
- * committed artifact, and it holds absolute container paths that mean nothing on another machine.
+ * The Docker volume holding one checkout's persistent Gradle project dir. Keyed by checkout so two
+ * worktrees running the gate at once never share Gradle's locks and task state; hashed so the name is
+ * a legal volume name and does not leak the checkout path.
  */
-const WORK_CACHE_DIR = join(repoRootDir, '.goast-cache', 'gradle-work');
+export function gradleWorkVolumeName(rootDir: string = repoRootDir): string {
+  return `goast-gradle-work-${createHash('sha1').update(rootDir).digest('hex').slice(0, 12)}`;
+}
+
+/**
+ * Where the Gradle project dir lives for one work mode. Never on the host: Docker Desktop shares host
+ * files with its VM through a file server, and every Gradle write — task state, class files, both
+ * caches — crossing it is what made the gate slow. Measured on Docker Desktop for Windows, the same 50
+ * units: 362s with the project dir bind-mounted from the host, 118s with it inside the container.
+ *
+ * Only the three synthesized build files come from the host, read-only; the entrypoint copies them in.
+ * `persistent` keeps the project dir in a named volume, which lives on the VM's own filesystem;
+ * `ephemeral` keeps it in the container, discarded with it. A volume is safe here where one over
+ * `GRADLE_USER_HOME` was not: the image has nothing at {@link WORK_MOUNT} for Docker to seed it with,
+ * so it can never hide a stale copy of an image layer.
+ */
+export function gradleWorkStorage(
+  mode: GradleWorkMode,
+  seedDir: string,
+  rootDir: string = repoRootDir,
+): { mounts: DockerMount[]; volumes: { name: string; target: string }[] } {
+  return {
+    mounts: [{ source: seedDir, target: SEED_MOUNT, readOnly: true }],
+    volumes: mode === 'persistent' ? [{ name: gradleWorkVolumeName(rootDir), target: WORK_MOUNT }] : [],
+  };
+}
 
 /**
  * The Gradle properties for one work mode, written into the project dir rather than baked into the
@@ -380,33 +409,29 @@ export async function runKotlin(units: readonly CompileUnit[]): Promise<Map<stri
   const { settings, build, projectIds } = synthesizeGradleBuild(units, TREE_MOUNT);
 
   const workMode = resolveGradleWorkMode();
-  const workDir = workMode === 'persistent' ? WORK_CACHE_DIR : await Deno.makeTempDir({ prefix: 'goast-gradle-' });
+  const seedDir = await Deno.makeTempDir({ prefix: 'goast-gradle-seed-' });
   try {
-    await Deno.mkdir(workDir, { recursive: true });
-    await Deno.writeTextFile(join(workDir, 'settings.gradle.kts'), settings);
-    await Deno.writeTextFile(join(workDir, 'build.gradle.kts'), build);
-    await Deno.writeTextFile(join(workDir, 'gradle.properties'), gradleProperties(workMode));
+    await Deno.writeTextFile(join(seedDir, 'settings.gradle.kts'), settings);
+    await Deno.writeTextFile(join(seedDir, 'build.gradle.kts'), build);
+    await Deno.writeTextFile(join(seedDir, 'gradle.properties'), gradleProperties(workMode));
 
-    // Still no named volume over `GRADLE_USER_HOME`, and that decision is unchanged: `--offline` never
-    // downloads anything at run time, so a dependency-cache volume cannot accumulate value across runs
-    // — it can only go stale. Verified directly, and load-bearing: Docker seeds a named volume from the
-    // image layer's own directory content only the *first* time that (empty) volume is mounted; once
-    // seeded, rebuilding the image with a changed warmup (a new content-hash tag) does not refresh it.
-    // Two stale `goast-test-kotlin` tags and one `goast-gradle-cache` volume coexisting is exactly how a
-    // fixed-name volume would hide a warmup fix behind a cache that never gets invalidated.
+    // Still no named volume over `GRADLE_USER_HOME`: `--offline` never downloads anything at run time,
+    // so a dependency-cache volume cannot accumulate value across runs — it can only go stale. Docker
+    // seeds a named volume from the image layer's own directory content only the *first* time that
+    // (empty) volume is mounted; once seeded, rebuilding the image with a changed warmup (a new
+    // content-hash tag) does not refresh it.
     //
-    // What DOES persist between runs is the project dir, bind-mounted from the host (see
-    // `resolveGradleWorkMode`). Gradle keeps task state, the configuration cache and — per the settings
-    // script — the local build cache inside the project dir, so reuse needs nothing mounted over
-    // `GRADLE_USER_HOME` and cannot go stale the way a seeded volume can: a bind mount always shows
-    // exactly what is on the host, and every input Gradle keys on is either hashed by Gradle itself or
-    // declared as a task input.
+    // What persists between runs is the project dir (see `gradleWorkStorage`). Gradle keeps task state,
+    // the configuration cache and — per the settings script — the local build cache inside it, and every
+    // input Gradle keys on is either hashed by Gradle itself or declared as a task input.
+    const storage = gradleWorkStorage(workMode, seedDir);
     const { code, stdout, stderr, timedOut } = await runContainer({
       image,
       mounts: [
         { source: join(repoRootDir, 'test', 'output'), target: TREE_MOUNT, readOnly: true },
-        { source: workDir, target: WORK_MOUNT },
+        ...storage.mounts,
       ],
+      volumes: storage.volumes,
       workdir: WORK_MOUNT,
       timeoutMs: 30 * 60 * 1000,
     });
@@ -519,87 +544,36 @@ export async function runKotlin(units: readonly CompileUnit[]): Promise<Map<stri
 
     return results;
   } finally {
-    // A persistent project dir is the whole point of `persistent` mode — deleting it here would make
-    // every run a cold one while looking like it cached. `deno task test:compile:clean` removes it.
-    if (workMode === 'ephemeral') await removeEphemeralWorkDir(workDir, image);
+    // Cleanup must never fail a run: this `finally` would replace a complete, passing result with the
+    // error. A seed dir left behind is housekeeping for the OS temp reaper, so it warns instead.
+    await Deno.remove(seedDir, { recursive: true }).catch((error: unknown) => {
+      console.warn(
+        `could not remove the Gradle seed directory ${seedDir}: ${error instanceof Error ? error.message : error}. ` +
+          'Leaving it behind rather than failing a run whose results are already computed.',
+      );
+    });
   }
 }
 
 /**
- * Removes an ephemeral Gradle work directory, and never throws.
+ * Removes this checkout's persistent Gradle project dir volume. Backs `deno task test:compile:clean`.
  *
- * **Cleanup must never fail a run.** This is called from a `finally`, so anything thrown here replaces
- * whatever the block produced — including a complete, passing result. That is exactly what happened:
- * every one of the 523 Kotlin units compiled and was verified, and then the run failed on `rm`. A
- * temporary directory that outlives the process is housekeeping; on CI the runner is discarded, and
- * locally `deno task test:compile:clean` and the OS temp reaper deal with it. So the last resort is a
- * warning, not a throw. What it has to survive to get there is in `removeContainerWrittenDir`.
- */
-async function removeEphemeralWorkDir(workDir: string, image: string): Promise<void> {
-  await removeContainerWrittenDir(workDir, 'ephemeral Gradle work directory', () => Promise.resolve(image));
-}
-
-/**
- * Empties the persistent Gradle work directory. Backs `deno task test:compile:clean`.
- *
- * The persistent dir is written by the same containers as the ephemeral one and is root-owned on Linux
- * for the same reason, so a plain `rm -rf .goast-cache/gradle-work` fails there in exactly the way the
- * ephemeral cleanup did. It gets the same fallback rather than a second, differently-broken one.
- *
- * The image is resolved lazily, and only on the path that needs it: `buildImage` skips the build when
- * the content-hash tag is already present locally, and the only way to end up with a directory this
- * function cannot delete is to have run the Kotlin compile gate, which leaves that tag behind. If the
- * tag is somehow absent, the plain removal above it will already have succeeded, because nothing ever
- * wrote there as another user.
+ * A missing volume is fine — there is nothing to clean. A volume Docker refuses to remove (in use by a
+ * running gate) is not: the caller asked for a cold next run and would silently not get one.
  */
 export async function cleanGradleWorkCache(): Promise<void> {
-  const present = await Deno.stat(WORK_CACHE_DIR).then(() => true).catch(() => false);
-  if (!present) return;
+  const name = gradleWorkVolumeName();
+  const exists = await new Deno.Command('docker', { args: ['volume', 'inspect', name], stdout: 'null', stderr: 'null' })
+    .output();
+  if (!exists.success) return;
 
-  await removeContainerWrittenDir(
-    WORK_CACHE_DIR,
-    'persistent Gradle work directory',
-    () => buildImage('kotlin', CONTEXT_DIR),
-  );
-}
-
-/**
- * Removes a directory a container wrote into, reporting rather than throwing when it cannot.
- *
- * **Gradle writes as root.** The container's build output lands in the bind-mounted work directory owned
- * by the container's user, and on Linux the host user cannot delete files it does not own — measured:
- * `PermissionDenied: Permission denied (os error 13): remove '/tmp/goast-gradle-…'`. It does not
- * reproduce under Docker Desktop, where the bind mount rewrites ownership to the host user, which is why
- * this stood undetected until the suite first ran on a real Linux CI runner. The fallback deletes the
- * contents from inside a throwaway container, which runs as the only user that can.
- */
-async function removeContainerWrittenDir(
-  dir: string,
-  describe: string,
-  image: () => Promise<string>,
-): Promise<void> {
-  try {
-    await Deno.remove(dir, { recursive: true });
-    return;
-  } catch { /* Fall through to the container-side removal below. */ }
-
-  const tag = await image().catch(() => undefined);
-  if (tag !== undefined) {
-    // `-mindepth 1` so the mount point itself survives — deleting it would break the bind mount rather
-    // than empty it. Dotfiles included, which a `rm -rf /w/*` glob would miss.
-    await new Deno.Command('docker', {
-      args: ['run', '--rm', '-v', `${dir}:/w`, '--entrypoint', 'find', tag, '/w', '-mindepth', '1', '-delete'],
-      stdout: 'null',
-      stderr: 'null',
-    }).output().catch(() => undefined);
-  }
-
-  await Deno.remove(dir, { recursive: true }).catch((error: unknown) => {
-    console.warn(
-      `could not remove the ${describe} ${dir}: ${error instanceof Error ? error.message : error}. ` +
-        'Leaving it behind rather than failing a run whose results are already computed.',
+  const removed = await new Deno.Command('docker', { args: ['volume', 'rm', name], stdout: 'null', stderr: 'piped' })
+    .output();
+  if (!removed.success) {
+    throw new Error(
+      `could not remove the Gradle work volume ${name}: ${new TextDecoder().decode(removed.stderr).trim()}`,
     );
-  });
+  }
 }
 
 /** `<unit id> (<suffix>)` per entry, so a failure names the unit rather than the internal project id. */
