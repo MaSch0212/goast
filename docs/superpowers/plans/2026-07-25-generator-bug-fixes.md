@@ -1189,6 +1189,21 @@ side: no `@RequestParam` argument can express `spaceDelimited` on its own, so th
 something that carries the style — the plainest being a `String` parameter plus a generated split for the non-comma
 styles.
 
+**Kotlin clients, after merging #80: the separator is fixed, the style blindness is not.** #80 passes `","` to
+`joinToString` in both Kotlin client generators' `getParameterToString`, so the comma-space separator is gone while the
+single join strategy remains. That moves the four Kotlin client units onto `fetch-clients`' footing: the two styles a
+plain comma join happens to serve now conform by construction, and the other two still deviate.
+
+- `styleMatrix__formUnexploded.txt` is **deleted** in all four Kotlin client units, and `pathStyleSimple__ok.txt` is
+  **deleted** under `okhttp3-clients@sb3`/`@sb4` — both now `a,b`, as declared.
+- `styleMatrix__formExploded.txt` and `styleMatrix__spaceDelimited.txt` remain in all four, now with actual `["a,b"]`
+  instead of `["a, b"]`.
+- `pathStyleSimple__ok.txt` remains under `spring-reactive-web-clients@sb3`/`@sb4`, now `/styles/a%2Cb` — see
+  **defect 64**, which is why the reactive client does not share okhttp3's deletion.
+
+`spring-controllers` is unaffected; #80 changes only the declared type and conversion of enum-array parameters there,
+and the kitchen-sink's style matrix uses plain strings.
+
 ### Defect 43 — cookie parameters are not implemented: a generated method takes no argument for a `cookie`-location parameter and never sets a `Cookie` header (found by the tier-4 wire contract, not scheduled)
 
 `ParamsClient.allLocations` (`test/output/typescript/fetch-clients/integration/kitchen-sink/clients/params-client.ts:20-24`)
@@ -2615,6 +2630,10 @@ path no conforming server can split back into an array:
 - after: `/styles/a%2C%20b` — the separator is still wrong *and* the delimiter is now unreadable
 
 Recorded by `test/wire/spring-reactive-web-clients@sb3/pathStyleSimple__ok.txt` and its `@sb4` twin.
+
+After merging #80, which fixed the separator half: `/styles/a%2Cb`. The value is now right and only the encoded
+delimiter remains, so this artifact is defect 64 alone. `okhttp3-clients` builds the path without URI variables and
+conforms on the same case, which isolates the remaining deviation to variable encoding.
 
 This is not a regression to revert, and the same change is why
 `test/wire/spring-reactive-web-clients@{sb3,sb4}/getEncoded__ok.txt` **no longer exist**: a *scalar* path value

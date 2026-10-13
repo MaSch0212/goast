@@ -1,3 +1,0 @@
-path
-  expected /styles/a,b
-  actual   /styles/a,%20b

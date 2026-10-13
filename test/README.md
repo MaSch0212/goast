@@ -614,8 +614,8 @@ file. A case where the generated client's actual wire behaviour differs from the
 `test/wire/<profile>/<caseId-with-slashes-as-double-underscore>.txt`, holding one `field`/`expected`/`actual` block per
 difference. `deno task test:integration` regenerates in write mode; a file disappearing on a later run means a generator
 fix landed, and check mode refuses to pass with a stale file still committed — the same reviewable-deletion discipline
-as `verifyCompileDiagnostics`. 93 such artifacts are committed today — 62 from the client direction (10 under
-`fetch-clients`, **2** under `angular-services`, 13 each under `okhttp3-clients@sb3`/`@sb4`, 12 each under
+as `verifyCompileDiagnostics`. 87 such artifacts are committed today — 56 from the client direction (10 under
+`fetch-clients`, **2** under `angular-services`, 11 each under `okhttp3-clients@sb3`/`@sb4`, 11 each under
 `spring-reactive-web-clients@sb3`/`@sb4`) and 31 from the server direction (6 each under
 `spring-controllers@sb3`/`@sb4`, 7 each under `@sb3-strict`/`@sb4-strict`, **5** under `easy-network-stub`) — all traced
 to confirmed generator defects in
