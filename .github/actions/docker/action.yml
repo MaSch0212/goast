@@ -27,7 +27,7 @@ runs:
   using: composite
   steps:
     - name: Export the Actions cache credentials to `run:` steps
-      uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
       with:
         # `ACTIONS_CACHE_SERVICE_V2` is the one that matters and the one whose absence broke the first
         # real run. BuildKit picks its cache protocol from that flag: with it, the v2 service at
