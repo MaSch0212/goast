@@ -1,6 +1,6 @@
 {
   "name": "@goast/kotlin",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Provides gOAst generators for generating Kotlin code from OpenAPI specifications.",
   "bugs": {
     "url": "https://github.com/MaSch0212/goast/issues"
