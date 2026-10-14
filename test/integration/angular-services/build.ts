@@ -43,8 +43,9 @@ export const TREE_DIR: string = join(repoRootDir, 'test', 'output', ...TREE_PATH
  * The tsconfig the container compiles with.
  *
  * Deliberately not the image's `tsconfig.base.json`: that one sets `noEmit` for tier 3's type-check-only
- * gate, and this leg has to produce runnable JavaScript. `rootDirs` is what makes `tsc` lay the two mounts
- * out side by side under `outDir`, so a driver importing `../tree/...` resolves at compile time against
+ * gate, and this leg has to produce runnable JavaScript. `rootDir: '/'` is what makes `tsc` lay the two
+ * mounts out side by side under `outDir` (TypeScript 7 otherwise roots the output at the tsconfig's own
+ * directory and refuses to emit), so a driver importing `../tree/...` resolves at compile time against
  * `/tree` and at run time against `/out/tree` — see the plan's spike notes for why an absolute `/tree/...`
  * import compiles and then fails at run time.
  *
@@ -68,6 +69,7 @@ export function driverTsConfig(): string {
         experimentalDecorators: true,
         emitDecoratorMetadata: true,
         outDir: OUT_DIR,
+        rootDir: '/',
         rootDirs: [TREE_MOUNT, DRIVER_MOUNT],
         typeRoots: ['/opt/goast/node_modules/@types'],
         types: ['node'],

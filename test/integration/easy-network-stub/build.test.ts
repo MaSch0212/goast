@@ -6,9 +6,10 @@ describe('driverTsConfig', () => {
   it('lays the two mounts out side by side under the out dir', () => {
     const config = JSON.parse(driverTsConfig());
 
-    // Without both rootDirs entries, `tsc` roots the program at the common ancestor and the emitted
-    // layout stops being `/out/driver` + `/out/tree`, which is what makes `'../tree/stubs'` resolve at
-    // run time.
+    // Without `rootDir: '/'`, TypeScript 7 roots the output at the tsconfig's own directory and refuses
+    // to emit; the emitted layout has to be `/out/driver` + `/out/tree`, which is what makes
+    // `'../tree/stubs'` resolve at run time.
+    expect(config.compilerOptions.rootDir).toBe('/');
     expect(config.compilerOptions.rootDirs).toEqual([TREE_MOUNT, DRIVER_MOUNT]);
     expect(config.compilerOptions.outDir).toBe(OUT_DIR);
   });

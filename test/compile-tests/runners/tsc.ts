@@ -1,6 +1,6 @@
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, relative } from 'node:path';
 
 import {
   buildImage,
@@ -10,6 +10,7 @@ import {
   relativizeDiagnostic,
   repoRootDir,
   runContainer,
+  walkFiles,
 } from '@goast/test-harness';
 import { parseTscDiagnostics } from '../../harness/compile/parse-tsc.ts';
 
@@ -20,6 +21,12 @@ const CONFIG_MOUNT = '/run';
 /** Prefix `check.mjs` puts before each root file it reports — see that file's doc comment. */
 const ROOT_MARKER = /^##GOAST-ROOT## (.+)$/;
 
+/** Prefix `check.mjs` puts before a reason its result cannot be trusted. */
+const FATAL_MARKER = '##GOAST-FATAL## ';
+
+/** Every file `tsc` takes as a source under `allowJs`. */
+const SOURCE_FILE = /\.[cm]?[jt]sx?$/;
+
 /**
  * Type-checks a containerized TypeScript profile with one `tsc` program.
  *
@@ -28,32 +35,22 @@ const ROOT_MARKER = /^##GOAST-ROOT## (.+)$/;
  * safe; if that ever changes, a cross-unit import would surface as a resolution error naming both
  * paths, which is the right way to find out.
  *
- * The container's entrypoint is `check.mjs`, not the `tsc` binary — see that file's doc comment in
- * `test/docker/node/check.mjs`. Verified directly against this corpus: the `tsc` CLI drops every
- * semantic diagnostic for an entire program the moment *any* file in it has a syntax error, and every
- * profile's `v3/non-ascii-names` unit has one (defect 21). One combined `tsc --noEmit` per profile would
- * therefore silently report only that unit's syntax errors and hide every other unit's real diagnostics
- * — `code !== 0` with `diagnostics.length > 0`, so the vacuous-green guard below does not catch it.
- * `check.mjs` calls the compiler API's `getPreEmitDiagnostics` directly, which has no such short-circuit,
- * while keeping the one-program-per-profile shape (and its cost: a handful of container starts instead
- * of 162).
+ * The container's entrypoint is `check.mjs`, not the `tsc` binary: the TypeScript 7 CLI reports only
+ * syntax errors for the whole program as soon as any file has one, and every profile's
+ * `v3/non-ascii-names` unit has one (defect 21). One plain `tsc -p` per profile would hide every other
+ * unit's real diagnostics behind it — `code !== 0` with `diagnostics.length > 0`, so the vacuous-green
+ * guard below does not catch it. `check.mjs` reruns without the unparseable files instead; see its doc
+ * comment.
  *
- * The container's working directory is the mounted tree root (`/tree`), not `/opt/goast`: `tsc`
- * (and `check.mjs`, which renders diagnostics with the same `convertToRelativePath` the CLI uses)
- * reports each diagnostic's file relative to the process's current directory, not as the absolute
- * container path a naive reading of "the tree is mounted at /tree" would suggest. Running from `/tree`
- * is what makes a diagnostic's `file` come back as `<versionDir>/<spec>/...` — exactly the shape
- * {@link attribute} matches against.
+ * The container's working directory is the mounted tree root (`/tree`), because `tsc` reports each
+ * diagnostic's file relative to the process's current directory. Running from `/tree` is what makes a
+ * diagnostic's `file` come back as `<versionDir>/<spec>/...` — exactly the shape {@link attribute}
+ * matches against.
  *
- * `include` lists two glob patterns per unit below, not one: the plain recursive-wildcard form, and a
- * second one whose final segment starts with a dot. `tsc`'s wildcard matcher behaves like a shell glob
- * without `dotglob`: the plain form never descends into or matches a dot-prefixed entry. This corpus has
- * exactly one dot-prefixed file per affected spec (`models/.ts`, defect 18/21's empty-named model file),
- * silently dropped from the program by the plain pattern alone. Confirmed directly: `v3/extreme-names`
- * (whose only empty-named schema is that file) exits 0 with only the plain pattern, and reports its real
- * `TS1005`/`TS2304`/`TS1109`/`TS2693` errors once the dot-matching pattern is added; `v3/non-ascii-names`
- * (which also has two non-dot casualties of the same defect, `_1.ts`/`_2.ts`) goes from 8 diagnostics to
- * the correct 12.
+ * Roots go into the tsconfig's `files`, listed from the host tree, not an `include` glob: TypeScript 7's
+ * wildcard matcher never matches a dot-prefixed entry, not even with a `.*` pattern or the exact name,
+ * which would silently drop `models/.ts` (defect 18/21's empty-named model file) from
+ * `v3/extreme-names` and `v3/non-ascii-names`.
  */
 export async function runTsc(profile: string, units: readonly CompileUnit[]): Promise<Map<string, Diagnostic[]>> {
   const results = new Map<string, Diagnostic[]>(units.map((unit) => [unit.id, []]));
@@ -64,17 +61,20 @@ export async function runTsc(profile: string, units: readonly CompileUnit[]): Pr
   const runDir = await mkdtemp(join(tmpdir(), 'goast-tsc-'));
   try {
     const treeRoot = join(repoRootDir, 'test', 'output', 'typescript', profile);
-    const include = units.flatMap((unit) => [
-      `${TREE_MOUNT}/${unit.versionDir}/${unit.spec}/**/*`,
-      `${TREE_MOUNT}/${unit.versionDir}/${unit.spec}/**/.*`,
-    ]);
+    const files = ['/opt/goast/k6-jslib.d.ts'];
+    for (const unit of units) {
+      for (const file of await walkFiles(unit.treeDir)) {
+        if (!SOURCE_FILE.test(file)) continue;
+        const path = relative(unit.treeDir, file).replace(/\\/g, '/');
+        files.push(`${TREE_MOUNT}/${unit.versionDir}/${unit.spec}/${path}`);
+      }
+    }
     await writeFile(
       join(runDir, 'tsconfig.json'),
       JSON.stringify(
         {
           extends: '/opt/goast/tsconfig.base.json',
-          include,
-          files: ['/opt/goast/k6-jslib.d.ts'],
+          files,
         },
         null,
         2,
@@ -103,6 +103,10 @@ export async function runTsc(profile: string, units: readonly CompileUnit[]): Pr
     }
 
     const output = stdout + stderr;
+    if (output.split('\n').some((line) => line.startsWith(FATAL_MARKER))) {
+      throw new Error(`check.mjs could not check profile ${profile}.\n\n${output}`);
+    }
+
     const rootFiles: string[] = [];
     const diagnosticLines: string[] = [];
     for (const line of output.split('\n')) {
@@ -115,9 +119,7 @@ export async function runTsc(profile: string, units: readonly CompileUnit[]): Pr
     }
 
     // A unit that contributed zero files to the program compiles trivially and reports nothing — the
-    // same "vacuously clean" shape as a real pass. `include`'s own dot-file gap above is a real instance
-    // of exactly this: before it was fixed, `v3/extreme-names` looked clean for this reason, not because
-    // it was.
+    // same "vacuously clean" shape as a real pass.
     const uncovered = units.filter((unit) => {
       const prefix = `${unit.versionDir}/${unit.spec}/`;
       return !rootFiles.some((file) => file.startsWith(prefix));
@@ -125,13 +127,13 @@ export async function runTsc(profile: string, units: readonly CompileUnit[]): Pr
     if (uncovered.length > 0) {
       throw new Error(
         `${uncovered.length} unit(s) in profile ${profile} contributed no files to the tsc program: ` +
-          `${uncovered.map((u) => u.id).join(', ')}. The include pattern is broken for them; ` +
+          `${uncovered.map((u) => u.id).join(', ')}. Their tree holds no TypeScript or JavaScript source; ` +
           'a unit reporting no diagnostics for this reason has not actually been checked.',
       );
     }
 
     const diagnostics = parseTscDiagnostics(diagnosticLines.join('\n'))
-      // `check.mjs` (like `tsc` itself) reports each file relative to the container's working
+      // `check.mjs` passes on `tsc`'s output, which reports each file relative to the container's working
       // directory, which `runContainer` sets to `TREE_MOUNT` above. Restoring the `TREE_MOUNT` prefix
       // here is what lets `attribute`, `relativizeDiagnostic`, and `normalizeMessageUrls` below treat a
       // diagnostic's file exactly like the host `tsc` runner does: an absolute, container-rooted

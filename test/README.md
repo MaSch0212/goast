@@ -474,8 +474,11 @@ between when running it locally:
   following imports checks only what the barrel reaches, and 41 of these 108 units contain at least one file it does not
   — 58 files, of which 20 are generated model files the generator emits and never exports. Those are exactly the files
   defects 18, 21 and 22 are about, so an entry-point gate was blind to the defects it exists to catch.
-- **162 containerized TypeScript** units (`angular-services`, `k6-clients`, `easy-network-stub`) — compiled with `tsc`
-  inside the `node` image, because these profiles' output assumes npm packages the host checkout doesn't have.
+- **162 containerized TypeScript** units (`angular-services`, `k6-clients`, `easy-network-stub`) — compiled with the
+  TypeScript 7 `tsc` inside the `node` image (Node 24), because these profiles' output assumes npm packages the host
+  checkout doesn't have. One program per profile, driven by the image's `check.mjs`: the `tsc` CLI reports no semantic
+  diagnostic at all once any file in the program has a syntax error, so `check.mjs` takes the syntax errors from a
+  `--noCheck` run, drops the unparseable roots and checks the rest again — the same strategy as the host runner.
 - **512 Kotlin** units (ten profiles — `models`, `okhttp3-clients`, `spring-reactive-web-clients`, and
   `spring-controllers` in both its plain and `-strict` forms, each crossed with Spring Boot 3 and 4) — compiled in one
   Gradle build inside the `kotlin` image.
@@ -1196,7 +1199,8 @@ than the one that generated those snapshots fails the compile gate for a reason 
 generated code under test — it's failing because the compiler talks differently, not because the generator regressed.
 
 The consequence: bumping `typescript` is never a one-line version-string edit, including when Dependabot proposes it.
-Bump it and regenerate `test/compile/`'s snapshots (`pnpm test:compile`) against the new `tsc` in the same change, and review the resulting diagnostic churn
+The containerized half runs the `typescript` pinned in `test/docker/node/package.json`, kept at the same exact version
+by hand, so both halves speak the same diagnostic text. Bump both and regenerate `test/compile/`'s snapshots (`pnpm test:compile`) against the new `tsc` in the same change, and review the resulting diagnostic churn
 the way any other tier-3 diff gets reviewed — a line that disappeared is a fixed generator defect, a line that merely
 reads differently is the compiler's wording moving under an unchanged defect, and the two must not be mistaken for each
 other. Bump the pin without regenerating and the very next CI run reports a wall of "new" tier-3 failures that are, in

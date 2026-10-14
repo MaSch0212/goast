@@ -15,6 +15,7 @@ describe('angular-services build module', () => {
     };
 
     expect(config.compilerOptions.outDir).toBe(OUT_DIR);
+    expect(config.compilerOptions.rootDir).toBe('/');
     expect(config.compilerOptions.rootDirs).toEqual([TREE_MOUNT, DRIVER_MOUNT]);
     expect(config.include).toEqual([`${DRIVER_MOUNT}/driver.ts`, `${TREE_MOUNT}/**/*.ts`]);
   });
