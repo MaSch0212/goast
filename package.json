@@ -53,7 +53,7 @@
     "@goast/test-harness": "workspace:*",
     "@goast/typescript": "workspace:*",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^24.0.0",
+    "@types/node": "^26.6.5",
     "fs-extra": "^11.3.3",
     "oxfmt": "^0.73.0",
     "oxlint": "^1.88.0",
