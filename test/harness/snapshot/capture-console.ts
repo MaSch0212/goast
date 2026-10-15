@@ -1,9 +1,7 @@
 import * as util from 'node:util';
 
 /** The outcome of a captured run, with whatever the function printed. */
-export type CaptureResult<T> =
-  | { ok: true; value: T; output: string }
-  | { ok: false; error: unknown; output: string };
+export type CaptureResult<T> = { ok: true; value: T; output: string } | { ok: false; error: unknown; output: string };
 
 /**
  * Runs `fn` with `console` output collected rather than printed, and reports the outcome instead of
@@ -13,8 +11,8 @@ export type CaptureResult<T> =
  * per-profile snapshot summary across hundreds of profile-and-spec pairs. Callers print the captured
  * output only when the run failed.
  *
- * Patches a global, so runs must not overlap. Test files execute sequentially — do not pass
- * `--parallel` to `deno test`.
+ * Patches a global, so runs must not overlap: never call it from `it.concurrent` tests. Separate
+ * test files are safe, since vitest runs each in its own isolated module context.
  */
 export async function captureConsole<T>(fn: () => Promise<T> | T): Promise<CaptureResult<T>> {
   const chunks: string[] = [];

@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { beforeEach, describe, it } from '@std/testing/bdd';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { dedent } from '@goast/test-harness';
 
@@ -14,10 +13,10 @@ describe('ktConstructor', () => {
 
   beforeEach(() => {
     // A fixed newLine keeps the expectations below host-independent.
-    builder = new KotlinFileBuilder(
-      undefined,
-      { ...defaultKotlinGeneratorConfig, newLine: '\n' } as KotlinGeneratorConfig,
-    );
+    builder = new KotlinFileBuilder(undefined, {
+      ...defaultKotlinGeneratorConfig,
+      newLine: '\n',
+    } as KotlinGeneratorConfig);
   });
 
   it('should write an empty constructor', () => {
@@ -117,10 +116,10 @@ describe('ktPrimaryConstructor', () => {
 
   beforeEach(() => {
     // A fixed newLine keeps the expectations below host-independent.
-    builder = new KotlinFileBuilder(
-      undefined,
-      { ...defaultKotlinGeneratorConfig, newLine: '\n' } as KotlinGeneratorConfig,
-    );
+    builder = new KotlinFileBuilder(undefined, {
+      ...defaultKotlinGeneratorConfig,
+      newLine: '\n',
+    } as KotlinGeneratorConfig);
   });
 
   it('should not write anything if there are no parameters, accessModifier, or annotations', () => {

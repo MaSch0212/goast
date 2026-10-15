@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import {
   compareString,
@@ -48,7 +47,11 @@ describe('compareString', () => {
   });
 
   it('is antisymmetric for unequal strings', () => {
-    for (const [a, b] of [['a', 'b'], ['B', 'a'], ['x', 'X']]) {
+    for (const [a, b] of [
+      ['a', 'b'],
+      ['B', 'a'],
+      ['x', 'X'],
+    ]) {
       expect(Math.sign(compareString(a, b))).toBe(-Math.sign(compareString(b, a)));
     }
   });

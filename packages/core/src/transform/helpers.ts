@@ -54,8 +54,8 @@ export function determineSchemaKind<
   if (schema.oneOf) {
     return 'oneOf';
   } else if (!narrowsToSingleType && schema.type !== 'object' && (schema.allOf || schema.anyOf)) {
-    const hasProperties = (schema.properties && Object.keys(schema.properties).length > 0) ||
-      schema.additionalProperties;
+    const hasProperties =
+      (schema.properties && Object.keys(schema.properties).length > 0) || schema.additionalProperties;
     return hasProperties ? 'object' : 'combined';
   } else if (Array.isArray(schema.type)) {
     return 'multi-type';
@@ -71,7 +71,8 @@ export function determineSchemaKind<
     return schema.type;
   }
 
-  const treadAsObject = ctx.config.unknownTypeBehavior === 'always-object' ||
+  const treadAsObject =
+    ctx.config.unknownTypeBehavior === 'always-object' ||
     (ctx.config.unknownTypeBehavior === 'object-if-properties' &&
       schema.properties &&
       Object.keys(schema.properties).length > 0);
@@ -132,9 +133,10 @@ export function determineSchemaName(
     const parentSchema = getDeepProperty(schema.$src.document, parentSchemaMatch[1].split('/').filter(Boolean));
     const parentSchemaName = determineSchemaName(
       {
-        title: typeof parentSchema === 'object' && parentSchema !== null && 'title' in parentSchema
-          ? String(parentSchema.title)
-          : undefined,
+        title:
+          typeof parentSchema === 'object' && parentSchema !== null && 'title' in parentSchema
+            ? String(parentSchema.title)
+            : undefined,
         $src: {
           file: schema.$src.file,
           pos: getLineInfo(schema.$src.document, parentSchemaMatch[1].split('/').filter(Boolean)),

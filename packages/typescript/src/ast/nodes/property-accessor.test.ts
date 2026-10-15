@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { beforeEach, describe, it } from '@std/testing/bdd';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from '../../config.ts';
 import { TypeScriptFileBuilder } from '../../file-builder.ts';
@@ -9,10 +8,10 @@ let builder: TypeScriptFileBuilder;
 
 beforeEach(() => {
   // A fixed newLine keeps the expectations below host-independent.
-  builder = new TypeScriptFileBuilder(
-    undefined,
-    { ...defaultTypeScriptGeneratorConfig, newLine: '\n' } as TypeScriptGeneratorConfig,
-  );
+  builder = new TypeScriptFileBuilder(undefined, {
+    ...defaultTypeScriptGeneratorConfig,
+    newLine: '\n',
+  } as TypeScriptGeneratorConfig);
 });
 
 describe('TsPropertySetter', () => {
@@ -122,9 +121,7 @@ describe('TsPropertyGetter', () => {
         override: true,
       }),
     );
-    expect(builder.toString(false)).toBe(
-      'public static abstract override get x(): number {\n  return this.x;\n}\n',
-    );
+    expect(builder.toString(false)).toBe('public static abstract override get x(): number {\n  return this.x;\n}\n');
   });
 
   it('should render injections', () => {

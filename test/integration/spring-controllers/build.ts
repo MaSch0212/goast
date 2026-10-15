@@ -132,34 +132,32 @@ export function synthesizeServerBuild(
 ): { settings: string; build: string } {
   const settings = 'rootProject.name = "server"\n';
 
-  const srcDirs = [
-    `${treeMount}/${unit.treePath}`,
-    ...unit.delegateDirs.map((dir) => `${delegateMount}/${dir}`),
-  ];
+  const srcDirs = [`${treeMount}/${unit.treePath}`, ...unit.delegateDirs.map((dir) => `${delegateMount}/${dir}`)];
 
-  const build = [
-    'plugins {',
-    '    kotlin("jvm") version "2.2.0"',
-    '    application',
-    '}',
-    '',
-    // Never resolved — the image runs `--offline` — but Gradle refuses to configure dependency
-    // resolution at all without one, and the resulting "no repositories defined" failure reads exactly
-    // like the missing-dependency failure this build must never be confused with.
-    'repositories { mavenCentral() }',
-    '',
-    'dependencies {',
-    `    add("implementation", platform("${KOTLIN_BOM[unit.variant]}"))`,
-    ...kotlinDependenciesFor('spring-controllers', unit.variant).map((line) => `    ${line}`),
-    ...SERVER_RUNTIME_DEPENDENCIES[unit.variant].map((line) => `    ${line}`),
-    '}',
-    '',
-    `sourceSets["main"].kotlin.srcDirs(${srcDirs.map((dir) => `"${dir}"`).join(', ')})`,
-    '',
-    'application {',
-    `    mainClass.set("${MAIN_CLASS}")`,
-    '}',
-  ].join('\n') + '\n';
+  const build =
+    [
+      'plugins {',
+      '    kotlin("jvm") version "2.2.0"',
+      '    application',
+      '}',
+      '',
+      // Never resolved — the image runs `--offline` — but Gradle refuses to configure dependency
+      // resolution at all without one, and the resulting "no repositories defined" failure reads exactly
+      // like the missing-dependency failure this build must never be confused with.
+      'repositories { mavenCentral() }',
+      '',
+      'dependencies {',
+      `    add("implementation", platform("${KOTLIN_BOM[unit.variant]}"))`,
+      ...kotlinDependenciesFor('spring-controllers', unit.variant).map((line) => `    ${line}`),
+      ...SERVER_RUNTIME_DEPENDENCIES[unit.variant].map((line) => `    ${line}`),
+      '}',
+      '',
+      `sourceSets["main"].kotlin.srcDirs(${srcDirs.map((dir) => `"${dir}"`).join(', ')})`,
+      '',
+      'application {',
+      `    mainClass.set("${MAIN_CLASS}")`,
+      '}',
+    ].join('\n') + '\n';
 
   return { settings, build };
 }

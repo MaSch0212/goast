@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { type ApiEndpoint, defaultOpenApiGeneratorConfig, SourceBuilder } from '@goast/core';
 
@@ -78,9 +77,8 @@ class TestGenerator extends DefaultKotlinSpringReactiveWebClientGenerator {
           SourceBuilder.build(
             (b) => (g as kt.GenericParameter<KotlinFileBuilder>).write(b as KotlinFileBuilder),
             config,
-          )
-            .trim()
-        )
+          ).trim(),
+        ),
       );
   }
 
@@ -155,8 +153,9 @@ describe('DefaultKotlinSpringReactiveWebClientGenerator', () => {
     });
 
     it('passes path parameters as URI variables, so the template survives', () => {
-      expect(new TestGenerator().uriCall(createUriEndpoint('things/{id}', ['path']), true))
-        .toBe('uri("things/{id}", mapOf("id" to id.toString()))');
+      expect(new TestGenerator().uriCall(createUriEndpoint('things/{id}', ['path']), true)).toBe(
+        'uri("things/{id}", mapOf("id" to id.toString()))',
+      );
     });
 
     it('builds query parameters through a UriBuilder, keeping them out of the template', () => {
@@ -168,8 +167,9 @@ describe('DefaultKotlinSpringReactiveWebClientGenerator', () => {
     });
 
     it('delegates to the <endpoint>Uri helper when disabled, expanding the path itself', () => {
-      expect(new TestGenerator().uriCall(createUriEndpoint('things/{id}', ['path', 'query']), false))
-        .toBe('uri(listThingsUri(id, limit))');
+      expect(new TestGenerator().uriCall(createUriEndpoint('things/{id}', ['path', 'query']), false)).toBe(
+        'uri(listThingsUri(id, limit))',
+      );
     });
   });
 });

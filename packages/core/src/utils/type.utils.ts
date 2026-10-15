@@ -1,4 +1,3 @@
-// deno-lint-ignore-file no-explicit-any ban-types
 export type Merge<U extends unknown[]> = U extends [infer A, ...infer R] ? A & Merge<R> : {};
 
 export type OptionalProperties<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
@@ -21,11 +20,9 @@ export type FunctionNames<T> = {
   [K in keyof T]: T[K] extends (...args: any[]) => any ? K : never;
 }[keyof T];
 
-export type Prettify<T> =
-  & {
-    [K in keyof T]: T[K];
-  }
-  & {};
+export type Prettify<T> = {
+  [K in keyof T]: T[K];
+} & {};
 
 export type ValueOf<T> = T[keyof T];
 
@@ -52,42 +49,53 @@ export type ParametersWithOverloads<T extends (...args: any[]) => any> = T exten
   (...args: infer A4): any;
   (...args: infer A5): any;
   (...args: infer A6): any;
-} ? A1 | A2 | A3 | A4 | A5 | A6
+}
+  ? A1 | A2 | A3 | A4 | A5 | A6
   : T extends {
-    (...args: infer A1): any;
-    (...args: infer A2): any;
-    (...args: infer A3): any;
-    (...args: infer A4): any;
-    (...args: infer A5): any;
-  } ? A1 | A2 | A3 | A4 | A5
-  : T extends {
-    (...args: infer A1): any;
-    (...args: infer A2): any;
-    (...args: infer A3): any;
-    (...args: infer A4): any;
-  } ? A1 | A2 | A3 | A4
-  : T extends {
-    (...args: infer A1): any;
-    (...args: infer A2): any;
-    (...args: infer A3): any;
-  } ? A1 | A2 | A3
-  : T extends {
-    (...args: infer A1): any;
-    (...args: infer A2): any;
-  } ? A1 | A2
-  : T extends {
-    (...args: infer A1): any;
-  } ? A1
-  : never;
+        (...args: infer A1): any;
+        (...args: infer A2): any;
+        (...args: infer A3): any;
+        (...args: infer A4): any;
+        (...args: infer A5): any;
+      }
+    ? A1 | A2 | A3 | A4 | A5
+    : T extends {
+          (...args: infer A1): any;
+          (...args: infer A2): any;
+          (...args: infer A3): any;
+          (...args: infer A4): any;
+        }
+      ? A1 | A2 | A3 | A4
+      : T extends {
+            (...args: infer A1): any;
+            (...args: infer A2): any;
+            (...args: infer A3): any;
+          }
+        ? A1 | A2 | A3
+        : T extends {
+              (...args: infer A1): any;
+              (...args: infer A2): any;
+            }
+          ? A1 | A2
+          : T extends {
+                (...args: infer A1): any;
+              }
+            ? A1
+            : never;
 
 type _TupleOf<T, N extends number, R extends unknown[]> = R['length'] extends N ? R : _TupleOf<T, N, [T, ...R]>;
-export type TupleWithCount<T, N extends number | number[]> = N extends number ? number extends N ? T[]
-  : _TupleOf<T, N, []>
+export type TupleWithCount<T, N extends number | number[]> = N extends number
+  ? number extends N
+    ? T[]
+    : _TupleOf<T, N, []>
   : N extends [infer A, ...infer R]
-    ? A extends number ? R extends number[] ? TupleWithCount<T, A> | TupleWithCount<T, R>
+    ? A extends number
+      ? R extends number[]
+        ? TupleWithCount<T, A> | TupleWithCount<T, R>
+        : never
       : never
-    : never
-  : N extends [] ? never
-  : T[];
+    : N extends []
+      ? never
+      : T[];
 
 export type MaybePromise<T> = T | Promise<T>;

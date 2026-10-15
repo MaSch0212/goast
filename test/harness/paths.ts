@@ -1,14 +1,11 @@
+import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
-// @deno-types="npm:@types/fs-extra@11"
-import fs from 'fs-extra';
 
-declare const __dirname: string | undefined;
-const scriptDir = typeof __dirname === 'undefined' ? dirname(fileURLToPath(import.meta.url)) : __dirname;
-
-let _repoRootDir = scriptDir;
-while (!fs.existsSync(join(_repoRootDir, '.git'))) {
-  _repoRootDir = dirname(_repoRootDir);
+let _repoRootDir = import.meta.dirname;
+while (!existsSync(join(_repoRootDir, '.git'))) {
+  const parent = dirname(_repoRootDir);
+  if (parent === _repoRootDir) throw new Error(`No .git found above ${import.meta.dirname}`);
+  _repoRootDir = parent;
 }
 
 export const repoRootDir: string = _repoRootDir;

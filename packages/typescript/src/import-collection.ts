@@ -57,13 +57,14 @@ export class ImportExportCollection {
     return Array.from(map.entries())
       .map(([fromModule, importNames]) =>
         Array.from(importNames).map(
-          (importName) => ({
-            kind: this.getImportKind(fromModule),
-            type,
-            modulePath: fromModule,
-            name: importName,
-          } satisfies TypeScriptImport),
-        )
+          (importName) =>
+            ({
+              kind: this.getImportKind(fromModule),
+              type,
+              modulePath: fromModule,
+              name: importName,
+            }) satisfies TypeScriptImport,
+        ),
       )
       .flat();
   }

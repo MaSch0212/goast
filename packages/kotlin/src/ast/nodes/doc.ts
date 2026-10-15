@@ -71,18 +71,23 @@ function getDoc<TBuilder extends SourceBuilder>(
     generics?: Nullable<Nullable<KtGenericParameter<TBuilder> | BasicAppendValue<TBuilder>>[]>;
   },
 ): KtDoc<TBuilder> | null {
-  const paramsWithDesc = options.parameters
-    ?.filter(getIsInstanceOf(KtParameter<TBuilder>))
-    .filter((x): x is KtParameter<TBuilder> & { description: NonNullable<unknown> } => !!x.description) ?? [];
-  const classParamsWithPropertyDesc = options.parameters
-    ?.filter(getIsInstanceOf(KtParameter<TBuilder>))
-    .filter(
-      (x): x is KtParameter<TBuilder> & { property: NonNullable<unknown>; propertyDescription: NonNullable<unknown> } =>
-        !!x.property && !!x.propertyDescription,
-    ) ?? [];
-  const genericsWithDesc = options.generics
-    ?.filter(getIsInstanceOf(KtGenericParameter<TBuilder>))
-    .filter((x): x is KtGenericParameter<TBuilder> & { description: NonNullable<unknown> } => !!x.description) ?? [];
+  const paramsWithDesc =
+    options.parameters
+      ?.filter(getIsInstanceOf(KtParameter<TBuilder>))
+      .filter((x): x is KtParameter<TBuilder> & { description: NonNullable<unknown> } => !!x.description) ?? [];
+  const classParamsWithPropertyDesc =
+    options.parameters
+      ?.filter(getIsInstanceOf(KtParameter<TBuilder>))
+      .filter(
+        (
+          x,
+        ): x is KtParameter<TBuilder> & { property: NonNullable<unknown>; propertyDescription: NonNullable<unknown> } =>
+          !!x.property && !!x.propertyDescription,
+      ) ?? [];
+  const genericsWithDesc =
+    options.generics
+      ?.filter(getIsInstanceOf(KtGenericParameter<TBuilder>))
+      .filter((x): x is KtGenericParameter<TBuilder> & { description: NonNullable<unknown> } => !!x.description) ?? [];
   if (
     baseDoc === null &&
     paramsWithDesc.length === 0 &&
@@ -95,7 +100,7 @@ function getDoc<TBuilder extends SourceBuilder>(
   const doc = baseDoc ? createOverwriteProxy(baseDoc) : ktDoc<TBuilder>();
   const paramTags = paramsWithDesc.map<KtDocTag<TBuilder>>((p) => ktDocTag('param', p.name, p.description));
   const propertyTags = classParamsWithPropertyDesc.map<KtDocTag<TBuilder>>((p) =>
-    ktDocTag('property', p.name, p.propertyDescription)
+    ktDocTag('property', p.name, p.propertyDescription),
   );
   const genericTags = genericsWithDesc.map<KtDocTag<TBuilder>>((p) => ktDocTag('param', p.name, p.description));
   doc.tags.splice(0, 0, ...genericTags, ...paramTags, ...propertyTags);

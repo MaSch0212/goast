@@ -24,8 +24,10 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
-export class TsDoc<TBuilder extends SourceBuilder, TInjects extends string = never>
-  extends TsNode<TBuilder, TInjects | Injects> {
+export class TsDoc<TBuilder extends SourceBuilder, TInjects extends string = never> extends TsNode<
+  TBuilder,
+  TInjects | Injects
+> {
   public description: BasicAppendValue<TBuilder> | null;
   public tags: TsDocTag<TBuilder>[];
 
@@ -71,12 +73,14 @@ function getDoc<TBuilder extends SourceBuilder>(
     generics?: Nullable<Nullable<TsGenericParameter<TBuilder> | BasicAppendValue<TBuilder>>[]>;
   },
 ): TsDoc<TBuilder> | null {
-  const paramsWithDesc = options.parameters
-    ?.filter(getIsInstanceOf(TsParameter<TBuilder>))
-    .filter((x): x is TsParameter<TBuilder> & { description: NonNullable<unknown> } => !!x.description) ?? [];
-  const genericsWithDesc = options.generics
-    ?.filter(getIsInstanceOf(TsGenericParameter<TBuilder>))
-    .filter((x): x is TsGenericParameter<TBuilder> & { description: NonNullable<unknown> } => !!x.description) ?? [];
+  const paramsWithDesc =
+    options.parameters
+      ?.filter(getIsInstanceOf(TsParameter<TBuilder>))
+      .filter((x): x is TsParameter<TBuilder> & { description: NonNullable<unknown> } => !!x.description) ?? [];
+  const genericsWithDesc =
+    options.generics
+      ?.filter(getIsInstanceOf(TsGenericParameter<TBuilder>))
+      .filter((x): x is TsGenericParameter<TBuilder> & { description: NonNullable<unknown> } => !!x.description) ?? [];
   if (paramsWithDesc.length === 0 && genericsWithDesc.length === 0) {
     return baseDoc;
   }

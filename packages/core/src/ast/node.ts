@@ -10,9 +10,7 @@ export type AstNodeInject<TBuilder extends StringBuilder, TInjects extends strin
 };
 
 export type AstNodeOptions<
-  // deno-lint-ignore no-explicit-any
   TBase extends abstract new (...args: any) => any,
-  // deno-lint-ignore ban-types
   TExtensions extends object = {},
 > = Prettify<TExtensions & ConstructorParameters<TBase>[0]>;
 

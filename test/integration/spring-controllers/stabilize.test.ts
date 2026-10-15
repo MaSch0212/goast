@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import type { RecordedResponse } from '../../cases/cases.ts';
 import { NONDETERMINISTIC, stabilizeFrameworkErrorBody } from './stabilize.ts';
@@ -143,8 +142,7 @@ describe('stabilizeFrameworkErrorBody', () => {
       if (apiCase.response.body === undefined) continue;
       const body = { kind: 'json', value: apiCase.response.body } as const;
 
-      expect(stabilizeFrameworkErrorBody(response(body)).body, `case ${apiCase.id} would be normalized`)
-        .toEqual(body);
+      expect(stabilizeFrameworkErrorBody(response(body)).body, `case ${apiCase.id} would be normalized`).toEqual(body);
     }
   });
 });

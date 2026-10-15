@@ -68,7 +68,6 @@ export abstract class OpenApiSchemasGenerationProviderBase<
     return result;
   }
 
-  // deno-lint-ignore no-unused-vars
   protected getSchemaReference(ctx: TContext, schema: ApiSchema): ApiSchema | undefined {
     const ref = getSchemaReference(schema, ['description']);
     return ref.id !== schema.id ? ref : undefined;
@@ -80,7 +79,7 @@ export abstract class OpenApiSchemasGenerationProviderBase<
 
   protected abstract addSchemaResult(ctx: TContext, schema: ApiSchema, result: TSchemaOutput): void;
 
-  // deno-lint-ignore no-unused-vars
+  // oxlint-disable-next-line no-unused-vars
   protected generateAdditionalFiles(ctx: TContext): MaybePromise<void> {
     // Override if needed
   }

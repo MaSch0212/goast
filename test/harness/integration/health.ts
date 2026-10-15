@@ -27,8 +27,7 @@ export async function waitForHttpReady(url: string, options: WaitForHttpReadyOpt
       throw new Error(`The process serving ${url} exited before becoming ready.\n\n${options.describeDeath()}`);
     }
     try {
-      // The response body must be consumed or Deno leaks the connection and the test runner reports a
-      // leaked resource, which reads like a bug in whatever test happened to run next.
+      // Cancel the unread body so the connection is released rather than held open by the pool.
       const response = await fetch(url);
       await response.body?.cancel();
       return;

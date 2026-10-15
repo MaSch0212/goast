@@ -9,9 +9,6 @@ export function getReferenceFactories(options: KotlinServicesGeneratorConfig): {
   const packageName = options.packageName + packageSuffix;
 
   return {
-    apiExceptionHandler: kt.reference.factory(
-      toCasing('ApiExceptionHandler', options.typeNameCasing),
-      packageName,
-    ),
+    apiExceptionHandler: kt.reference.factory(toCasing('ApiExceptionHandler', options.typeNameCasing), packageName),
   };
 }

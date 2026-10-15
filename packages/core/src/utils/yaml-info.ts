@@ -21,15 +21,20 @@ export function getYamlInfo(obj: unknown): YamlInfo {
 
 export function getLineInfo(obj: unknown, path: unknown[]): { line: number; col: number } {
   const yamlInfo = getYamlInfo(obj);
-  const node = yamlInfo.document.getIn(path, true) ?? yamlInfo.document.getIn(
-    path.map((v) => {
-      const num = Number(v);
-      return isNaN(num) ? v : num;
-    }),
-    true,
-  );
+  const node =
+    yamlInfo.document.getIn(path, true) ??
+    yamlInfo.document.getIn(
+      path.map((v) => {
+        const num = Number(v);
+        return isNaN(num) ? v : num;
+      }),
+      true,
+    );
   if (
-    !node || typeof node !== 'object' || !('range' in node) || !Array.isArray(node.range) ||
+    !node ||
+    typeof node !== 'object' ||
+    !('range' in node) ||
+    !Array.isArray(node.range) ||
     typeof node.range[0] !== 'number'
   ) {
     console.warn(`Unable to get line info for path ${path.join('/')}`);

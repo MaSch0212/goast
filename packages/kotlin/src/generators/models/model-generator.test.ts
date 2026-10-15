@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { type ApiSchema, defaultOpenApiGeneratorConfig } from '@goast/core';
 
@@ -193,11 +192,7 @@ class TestModelGenerator extends DefaultKotlinModelGenerator {
   }
 
   /** The declaration the generator would write to the schema's own file. */
-  public renderDeclaration(
-    schema: ApiSchema,
-    all: ApiSchema[],
-    configOverrides: Partial<typeof config> = {},
-  ): string {
+  public renderDeclaration(schema: ApiSchema, all: ApiSchema[], configOverrides: Partial<typeof config> = {}): string {
     const ctx = createContext(all, configOverrides);
     const builder = new KotlinFileBuilder(`${config.packageName}${config.packageSuffix}`, ctx.config);
     builder.append(this.getSchemaDeclaration(ctx, { schema: this.normalizeSchema(ctx, { schema }) }));
@@ -225,14 +220,12 @@ class TestModelGenerator extends DefaultKotlinModelGenerator {
 
 /** Every `NAME("raw"),` entry line of a rendered enum, in declaration order. */
 function enumEntries(code: string): { name: string; value: string }[] {
-  return [...code.matchAll(/^ {4}([^\s(]*)\("((?:[^"\\]|\\.)*)"\)[,;]$/gm)]
-    .map((m) => ({ name: m[1], value: m[2] }));
+  return [...code.matchAll(/^ {4}([^\s(]*)\("((?:[^"\\]|\\.)*)"\)[,;]$/gm)].map((m) => ({ name: m[1], value: m[2] }));
 }
 
 /** Every `"raw" -> RESULT` branch of the `fromValue` companion, in declaration order. */
 function whenBranches(code: string): { value: string; result: string }[] {
-  return [...code.matchAll(/^ {16}"((?:[^"\\]|\\.)*)" ->(.*)$/gm)]
-    .map((m) => ({ value: m[1], result: m[2].trim() }));
+  return [...code.matchAll(/^ {16}"((?:[^"\\]|\\.)*)" ->(.*)$/gm)].map((m) => ({ value: m[1], result: m[2].trim() }));
 }
 
 /** Every `val` declaration of a rendered interface or class body, in declaration order. */
@@ -310,8 +303,9 @@ describe('DefaultKotlinModelGenerator', () => {
   // carries the trailing `?`. These lock that in, so the Kotlin side cannot regress into the same gap.
   describe('getType nullability', () => {
     it('renders a nullable primitive with a trailing question mark', () => {
-      expect(new TestModelGenerator().renderType(createSchema('S', { kind: 'string', type: 'string', nullable: true })))
-        .toBe('String?');
+      expect(
+        new TestModelGenerator().renderType(createSchema('S', { kind: 'string', type: 'string', nullable: true })),
+      ).toBe('String?');
     });
 
     it('renders the element type of a list from nullable items as nullable', () => {
@@ -365,8 +359,9 @@ describe('DefaultKotlinModelGenerator', () => {
     it("declares only the base's own properties on the base interface", () => {
       const { base, all } = createImplicitShape();
 
-      expect(valDeclarations(new TestModelGenerator().renderDeclaration(base, all)))
-        .toEqual([{ name: 'petType', override: false }]);
+      expect(valDeclarations(new TestModelGenerator().renderDeclaration(base, all))).toEqual([
+        { name: 'petType', override: false },
+      ]);
     });
 
     it('gives a subtype every property its base declares, as an override', () => {
@@ -419,10 +414,10 @@ describe('DefaultKotlinModelGenerator', () => {
       // silently drop the polymorphism rather than simplify an unreferenced empty object.
       for (const emptyObjectTypeBehavior of ['generate-empty-class', 'use-any'] as const) {
         expect(generator.willDeclareType(base, all, { emptyObjectTypeBehavior })).toBe(true);
-        expect(generator.renderDeclaration(base, all, { emptyObjectTypeBehavior }))
-          .toContain('interface PropertylessBase');
-        expect(generator.renderDeclaration(sub, all, { emptyObjectTypeBehavior }))
-          .toContain(': PropertylessBase');
+        expect(generator.renderDeclaration(base, all, { emptyObjectTypeBehavior })).toContain(
+          'interface PropertylessBase',
+        );
+        expect(generator.renderDeclaration(sub, all, { emptyObjectTypeBehavior })).toContain(': PropertylessBase');
       }
     });
 
@@ -431,8 +426,7 @@ describe('DefaultKotlinModelGenerator', () => {
       const generator = new TestModelGenerator();
 
       expect(generator.willDeclareType(empty, [empty], { emptyObjectTypeBehavior: 'use-any' })).toBe(false);
-      expect(generator.willDeclareType(empty, [empty], { emptyObjectTypeBehavior: 'generate-empty-class' }))
-        .toBe(true);
+      expect(generator.willDeclareType(empty, [empty], { emptyObjectTypeBehavior: 'generate-empty-class' })).toBe(true);
     });
 
     it('leaves a schema whose composition holds no discriminated base untouched', () => {
@@ -452,8 +446,10 @@ describe('DefaultKotlinModelGenerator', () => {
         ],
       });
 
-      expect(valDeclarations(new TestModelGenerator().renderDeclaration(holder, [holder])).map((v) => v.name))
-        .toEqual(['a', 'b']);
+      expect(valDeclarations(new TestModelGenerator().renderDeclaration(holder, [holder])).map((v) => v.name)).toEqual([
+        'a',
+        'b',
+      ]);
     });
   });
 

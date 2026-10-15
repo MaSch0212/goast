@@ -7,23 +7,23 @@
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
-    "deno.json": "deno.lock, .prettierrc, .prettierignore",
+    "package.json": "pnpm-lock.yaml, pnpm-workspace.yaml, .oxlintrc.json, .oxfmtrc.json",
     "*.ts": "$(capture).test.ts, $(capture).types.ts",
     "*.js": "$(capture).js.map"
   },
   "task.autoDetect": "off",
-  "editor.defaultFormatter": "denoland.vscode-deno",
+  "editor.defaultFormatter": "oxc.oxc-vscode",
   "[typescript]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
+    "editor.defaultFormatter": "oxc.oxc-vscode"
   },
   "[javascript]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
+    "editor.defaultFormatter": "oxc.oxc-vscode"
   },
   "[json]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
+    "editor.defaultFormatter": "oxc.oxc-vscode"
   },
   "[markdown]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
+    "editor.defaultFormatter": "oxc.oxc-vscode"
   },
   "[yaml]": {
     "editor.defaultFormatter": "redhat.vscode-yaml"

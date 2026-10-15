@@ -98,11 +98,10 @@ abstract class TsPropertyAccessor<TBuilder extends SourceBuilder, TInjects exten
   }
 }
 
-export class TsPropertySetter<TBuilder extends SourceBuilder, TInjects extends string = never>
-  extends TsPropertyAccessor<
-    TBuilder,
-    TInjects
-  > {
+export class TsPropertySetter<
+  TBuilder extends SourceBuilder,
+  TInjects extends string = never,
+> extends TsPropertyAccessor<TBuilder, TInjects> {
   protected override onWrite(builder: TBuilder): void {
     tsDoc.write(builder, this.doc);
     tsDecorator.write(builder, this.decorators);
@@ -132,11 +131,10 @@ export class TsPropertySetter<TBuilder extends SourceBuilder, TInjects extends s
   }
 }
 
-export class TsPropertyGetter<TBuilder extends SourceBuilder, TInjects extends string = never>
-  extends TsPropertyAccessor<
-    TBuilder,
-    TInjects
-  > {
+export class TsPropertyGetter<
+  TBuilder extends SourceBuilder,
+  TInjects extends string = never,
+> extends TsPropertyAccessor<TBuilder, TInjects> {
   protected override onWrite(builder: TBuilder): void {
     tsDoc.write(builder, this.doc);
     tsDecorator.write(builder, this.decorators);

@@ -31,8 +31,10 @@ export interface TypeScriptK6ClientGenerator<TOutput extends Output = Output> {
   generate(context: Context): MaybePromise<TOutput>;
 }
 
-export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<Context, Output>
-  implements TypeScriptK6ClientGenerator {
+export class DefaultTypeScriptK6ClientGenerator
+  extends TypeScriptFileGenerator<Context, Output>
+  implements TypeScriptK6ClientGenerator
+{
   public override generate(ctx: TypeScriptK6ClientGeneratorContext): MaybePromise<TypeScriptK6ClientGeneratorOutput> {
     const responseModels = this.generateResponseModels(ctx);
 
@@ -113,15 +115,15 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
             }),
             !ctx.config.strictResponseTypes
               ? ts.intersectionType([
-                ts.refs.k6.response(),
-                ts.objectType({
-                  members: [
-                    ts.property('status', {
-                      type: ts.refs.exclude([ctx.refs.httpStatusCode(), ts.reference(statusCodesTypeName)]),
-                    }),
-                  ],
-                }),
-              ])
+                  ts.refs.k6.response(),
+                  ts.objectType({
+                    members: [
+                      ts.property('status', {
+                        type: ts.refs.exclude([ctx.refs.httpStatusCode(), ts.reference(statusCodesTypeName)]),
+                      }),
+                    ],
+                  }),
+                ])
               : null,
           ]),
           ts.objectType({ members: [ts.property('status', { type: 'TStatus' })] }),
@@ -151,9 +153,10 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
         key,
         {
           parser: value?.parser ?? 'text',
-          type: typeof value?.type === 'function'
-            ? this.getSchemaType(ctx, value.type(ctx.data.schemas))
-            : value ?? ts.refs.never(),
+          type:
+            typeof value?.type === 'function'
+              ? this.getSchemaType(ctx, value.type(ctx.data.schemas))
+              : (value ?? ts.refs.never()),
         },
       ]),
       ...endpoint.responses
@@ -181,7 +184,7 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
           ts.variable(this.getEndpointPathPropertyName(ctx, e), {
             readonly: true,
             value: ts.string(e.path),
-          })
+          }),
         ),
       ),
     );
@@ -199,23 +202,22 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
       type: ts.Type<Builder>;
       description: string | undefined;
       required: boolean;
-    }[] = endpoint.parameters
-      .map((parameter) => {
-        const schema = parameter.schema;
-        return {
-          schema,
-          name: toCasing(parameter.name, ctx.config.propertyNameCasing),
-          type: schema
-            ? (b) => b.appendModelUsage(ctx.input.typescript.models[schema.id], importOptions)
-            : this.getAnyType(ctx),
-          description: parameter.description
-            ? (parameter.deprecated ? 'Deprecated: ' : '') + parameter.description
-            : parameter.deprecated
+    }[] = endpoint.parameters.map((parameter) => {
+      const schema = parameter.schema;
+      return {
+        schema,
+        name: toCasing(parameter.name, ctx.config.propertyNameCasing),
+        type: schema
+          ? (b) => b.appendModelUsage(ctx.input.typescript.models[schema.id], importOptions)
+          : this.getAnyType(ctx),
+        description: parameter.description
+          ? (parameter.deprecated ? 'Deprecated: ' : '') + parameter.description
+          : parameter.deprecated
             ? 'Deprecated'
             : undefined,
-          required: parameter.required,
-        };
-      });
+        required: parameter.required,
+      };
+    });
 
     if (endpoint.requestBody !== undefined) {
       const body = endpoint.requestBody;
@@ -240,7 +242,7 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
             ts.docTag<'property', Builder>('property', p.required ? p.name : `[${p.name}]`, {
               type: p.type,
               text: p.description,
-            })
+            }),
           ),
         ],
       });
@@ -254,13 +256,12 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
               optional: !p.required,
               doc: p.description
                 ? ts.doc({
-                  description: [
-                    p.description,
-                    p.schema ? getSourceDocLine(p.schema) : null,
-                  ].filter(notNullish).join('\n\n'),
-                })
+                    description: [p.description, p.schema ? getSourceDocLine(p.schema) : null]
+                      .filter(notNullish)
+                      .join('\n\n'),
+                  })
                 : undefined,
-            })
+            }),
           ),
         }),
       );
@@ -285,21 +286,23 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
       }),
       export: true,
       members: [
-        ...(isJs ? [] : [
-          ts.property('rootUrl', {
-            type: rootUrlType,
-            readonly: true,
-            accessModifier: 'public',
-            doc: ts.doc({ description: 'The root URL for this client.' }),
-          }),
-          ts.property('_defaultK6ParamsFactory', {
-            type: paramType,
-            optional: true,
-            readonly: true,
-            accessModifier: 'private',
-            doc: ts.doc({ description: 'A factory function that returns the default K6 parameters.' }),
-          }),
-        ]),
+        ...(isJs
+          ? []
+          : [
+              ts.property('rootUrl', {
+                type: rootUrlType,
+                readonly: true,
+                accessModifier: 'public',
+                doc: ts.doc({ description: 'The root URL for this client.' }),
+              }),
+              ts.property('_defaultK6ParamsFactory', {
+                type: paramType,
+                optional: true,
+                readonly: true,
+                accessModifier: 'private',
+                doc: ts.doc({ description: 'A factory function that returns the default K6 parameters.' }),
+              }),
+            ]),
         ts.constructor({
           doc: ts.doc({
             description: 'Creates a new instance of the client.',
@@ -357,52 +360,51 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
         description: this.getDocDescription(ctx, endpoint),
         tags: isJs
           ? [
-            hasParams ? ts.docTag('param', paramsOptional ? '[params]' : 'params', { type: paramsType }) : null,
-            ts.docTag('param', '[k6Params]', { type: ts.refs.k6.params({ importType: 'js-doc' }) }),
-            ts.docTag('returns', { type: returnTypeWithPromise }),
-            endpoint.deprecated ? ts.docTag('deprecated') : null,
-          ]
+              hasParams ? ts.docTag('param', paramsOptional ? '[params]' : 'params', { type: paramsType }) : null,
+              ts.docTag('param', '[k6Params]', { type: ts.refs.k6.params({ importType: 'js-doc' }) }),
+              ts.docTag('returns', { type: returnTypeWithPromise }),
+              endpoint.deprecated ? ts.docTag('deprecated') : null,
+            ]
           : [],
       }),
       accessModifier: isJs ? null : 'public',
       body: appendValueGroup(
         [
-          s`const rb = new ${ctx.refs.requestBuilder()}(this.rootUrl, ${
-            this.getEndpointPathPropertyName(ctx, endpoint)
-          }, '${endpoint.method}');`,
+          s`const rb = new ${ctx.refs.requestBuilder()}(this.rootUrl, ${this.getEndpointPathPropertyName(
+            ctx,
+            endpoint,
+          )}, '${endpoint.method}');`,
           hasParams
             ? (b) =>
-              b.appendIf(paramsOptional, 'if (params) ').parenthesizeIf(
-                paramsOptional,
-                '{}',
-                appendValueGroup(
-                  [
-                    ...endpoint.parameters
-                      .filter((p) => p.target === 'path' || p.target === 'query' || p.target === 'header')
-                      .map((p) => {
-                        const options = ts.object({
-                          members: [
-                            p.style !== undefined ? ts.property('style', { value: ts.string(p.style) }) : null,
-                            p.explode !== undefined ? ts.property('explode', { value: ts.toNode(p.explode) }) : null,
-                          ],
-                        });
-                        return s<Builder>`rb.${p.target}(${ts.string(p.name)}, params.${
-                          toCasing(
+                b.appendIf(paramsOptional, 'if (params) ').parenthesizeIf(
+                  paramsOptional,
+                  '{}',
+                  appendValueGroup(
+                    [
+                      ...endpoint.parameters
+                        .filter((p) => p.target === 'path' || p.target === 'query' || p.target === 'header')
+                        .map((p) => {
+                          const options = ts.object({
+                            members: [
+                              p.style !== undefined ? ts.property('style', { value: ts.string(p.style) }) : null,
+                              p.explode !== undefined ? ts.property('explode', { value: ts.toNode(p.explode) }) : null,
+                            ],
+                          });
+                          return s<Builder>`rb.${p.target}(${ts.string(p.name)}, params.${toCasing(
                             p.name,
                             ctx.config.propertyNameCasing,
-                          )
-                        }, ${options});`;
-                      }),
-                    endpoint.requestBody
-                      ? s`rb.body(params.body, ${
-                        ts.string(endpoint.requestBody.content[0].type ?? 'application/json')
-                      });`
-                      : null,
-                  ],
-                  '\n',
-                ),
-                { multiline: true },
-              )
+                          )}, ${options});`;
+                        }),
+                      endpoint.requestBody
+                        ? s`rb.body(params.body, ${ts.string(
+                            endpoint.requestBody.content[0].type ?? 'application/json',
+                          )});`
+                        : null,
+                    ],
+                    '\n',
+                  ),
+                  { multiline: true },
+                )
             : null,
           '',
           ctx.config.language === 'javascript'
@@ -430,11 +432,11 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
       accessModifier: isJs ? null : 'private',
       doc: isJs
         ? ts.doc({
-          tags: [
-            ts.docTag('private'),
-            ts.docTag('param', '[k6Params]', { type: ts.refs.k6.params({ importType: 'js-doc' }) }),
-          ],
-        })
+            tags: [
+              ts.docTag('private'),
+              ts.docTag('param', '[k6Params]', { type: ts.refs.k6.params({ importType: 'js-doc' }) }),
+            ],
+          })
         : null,
       parameters: [ts.parameter('k6Params', { type: isJs ? null : ts.refs.k6.params({ importType: 'type-import' }) })],
       body: s`return Object.assign({}, this._defaultK6ParamsFactory ? this._defaultK6ParamsFactory() : {}, k6Params);`,
@@ -444,7 +446,7 @@ export class DefaultTypeScriptK6ClientGenerator extends TypeScriptFileGenerator<
   protected getEndpointSuccessResponse(_ctx: Context, endpoint: ApiEndpoint): ApiResponse | undefined {
     return (
       endpoint.responses.find((x) => x.statusCode && x.statusCode >= 200 && x.statusCode < 300) ??
-        endpoint.responses.find((x) => x.statusCode === undefined)
+      endpoint.responses.find((x) => x.statusCode === undefined)
     );
   }
 

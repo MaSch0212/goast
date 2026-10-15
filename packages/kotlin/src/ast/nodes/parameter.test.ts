@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { beforeEach, describe, it } from '@std/testing/bdd';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { defaultKotlinGeneratorConfig, type KotlinGeneratorConfig } from '../../config.ts';
 import { KotlinFileBuilder } from '../../file-builder.ts';
@@ -11,10 +10,10 @@ describe('ktParameter', () => {
 
   beforeEach(() => {
     // A fixed newLine keeps the expectations below host-independent.
-    builder = new KotlinFileBuilder(
-      undefined,
-      { ...defaultKotlinGeneratorConfig, newLine: '\n' } as KotlinGeneratorConfig,
-    );
+    builder = new KotlinFileBuilder(undefined, {
+      ...defaultKotlinGeneratorConfig,
+      newLine: '\n',
+    } as KotlinGeneratorConfig);
   });
 
   describe('single parameter', () => {
@@ -96,10 +95,10 @@ describe('ktClassParameter', () => {
 
   beforeEach(() => {
     // A fixed newLine keeps the expectations below host-independent.
-    builder = new KotlinFileBuilder(
-      undefined,
-      { ...defaultKotlinGeneratorConfig, newLine: '\n' } as KotlinGeneratorConfig,
-    );
+    builder = new KotlinFileBuilder(undefined, {
+      ...defaultKotlinGeneratorConfig,
+      newLine: '\n',
+    } as KotlinGeneratorConfig);
   });
 
   describe('single class parameter', () => {

@@ -1,7 +1,6 @@
 import { dedent } from '@goast/test-harness';
 
-import { expect } from '@std/expect';
-import { beforeEach, describe, it } from '@std/testing/bdd';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from '../../config.ts';
 import { TypeScriptFileBuilder } from '../../file-builder.ts';
@@ -11,10 +10,10 @@ let builder: TypeScriptFileBuilder;
 
 beforeEach(() => {
   // A fixed newLine keeps the expectations below host-independent.
-  builder = new TypeScriptFileBuilder(
-    undefined,
-    { ...defaultTypeScriptGeneratorConfig, newLine: '\n' } as TypeScriptGeneratorConfig,
-  );
+  builder = new TypeScriptFileBuilder(undefined, {
+    ...defaultTypeScriptGeneratorConfig,
+    newLine: '\n',
+  } as TypeScriptGeneratorConfig);
 });
 
 describe('tsTuple', () => {

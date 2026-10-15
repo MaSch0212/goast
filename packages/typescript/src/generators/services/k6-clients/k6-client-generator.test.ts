@@ -1,15 +1,12 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { defaultTypeScriptGeneratorConfig } from '../../../config.ts';
 import { TypeScriptFileBuilder } from '../../../file-builder.ts';
 import { DefaultTypeScriptK6ClientGenerator } from './k6-client-generator.ts';
 
 class TestableGenerator extends DefaultTypeScriptK6ClientGenerator {
-  // deno-lint-ignore no-explicit-any
   public callGetEndpointParamsType(ctx: any, endpoint: any): string {
     const builder = new TypeScriptFileBuilder();
-    // deno-lint-ignore no-explicit-any
     builder.append((this as any).getEndpointParamsType(ctx, endpoint));
     return builder.toString(false);
   }
@@ -32,7 +29,6 @@ function param(name: string, options: { deprecated?: boolean; description?: stri
 describe('DefaultTypeScriptK6ClientGenerator', () => {
   describe('getEndpointParamsType', () => {
     const generator = () => new TestableGenerator();
-    // deno-lint-ignore no-explicit-any
     const ctx: any = {
       config: { ...defaultTypeScriptGeneratorConfig, language: 'javascript' },
       input: { typescript: { models: {} } },

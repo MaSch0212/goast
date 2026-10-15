@@ -78,7 +78,7 @@ export function buildQueryString(query: Record<string, string[]> | undefined): s
  *
  * Two problems this solves, both measured.
  *
- * `error.message` alone is `fetch failed` — Deno puts the text that says *what* failed one level down in
+ * `error.message` alone is `fetch failed` — `fetch` puts the text that says *what* failed one level down in
  * `cause`. A leg recording only the message commits an artifact that distinguishes nothing: a server the
  * code under test deliberately made destroy the socket, a server that was never listening, and a request
  * that timed out all read identically. In a tier where an absent artifact means "this case conforms",

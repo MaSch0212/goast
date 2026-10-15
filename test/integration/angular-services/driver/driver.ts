@@ -1,5 +1,3 @@
-// deno-lint-ignore-file no-process-global -- this driver is compiled and run under Node inside the container,
-// not Deno, so `process.argv` is the correct way to read the container-supplied base URL.
 // `zone.js` first and `@angular/compiler` second, both for their side effects and both load-order-sensitive:
 // `NgZone` throws without a loaded Zone, and every injectable resolution fails with a JIT error without the
 // compiler, because `@angular/common` ships partially-compiled and nothing here runs the Angular linker.

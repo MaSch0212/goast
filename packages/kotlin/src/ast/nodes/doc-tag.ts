@@ -50,33 +50,28 @@ export class KtDocTag<TBuilder extends SourceBuilder, TInjects extends string = 
 
 type _KtDocTagOpt<TBuilder extends SourceBuilder> = Prettify<Omit<Options<TBuilder>, 'tag'>>;
 
-type _KtDocTagArgsMap<TBuilder extends SourceBuilder> =
-  & {
-    suppress(options?: _KtDocTagOpt<TBuilder>): never;
-  }
-  & {
-    [K in 'return' | 'constructor' | 'receiver' | 'author' | 'since']: (
-      description: BasicAppendValue<TBuilder>,
-      options?: _KtDocTagOpt<TBuilder>,
-    ) => never;
-  }
-  & {
-    [K in 'param' | 'property']: (
-      name: string,
-      description: BasicAppendValue<TBuilder>,
-      options?: _KtDocTagOpt<TBuilder>,
-    ) => never;
-  }
-  & {
-    [K in 'see' | 'sample']: (identifier: string, options?: _KtDocTagOpt<TBuilder>) => never;
-  }
-  & {
-    [K in 'throws' | 'exception']: (
-      $class: BasicAppendValue<TBuilder>,
-      description: BasicAppendValue<TBuilder>,
-      options?: _KtDocTagOpt<TBuilder>,
-    ) => never;
-  };
+type _KtDocTagArgsMap<TBuilder extends SourceBuilder> = {
+  suppress(options?: _KtDocTagOpt<TBuilder>): never;
+} & {
+  [K in 'return' | 'constructor' | 'receiver' | 'author' | 'since']: (
+    description: BasicAppendValue<TBuilder>,
+    options?: _KtDocTagOpt<TBuilder>,
+  ) => never;
+} & {
+  [K in 'param' | 'property']: (
+    name: string,
+    description: BasicAppendValue<TBuilder>,
+    options?: _KtDocTagOpt<TBuilder>,
+  ) => never;
+} & {
+  [K in 'see' | 'sample']: (identifier: string, options?: _KtDocTagOpt<TBuilder>) => never;
+} & {
+  [K in 'throws' | 'exception']: (
+    $class: BasicAppendValue<TBuilder>,
+    description: BasicAppendValue<TBuilder>,
+    options?: _KtDocTagOpt<TBuilder>,
+  ) => never;
+};
 
 const tagsWithDescription = [
   'return',
@@ -94,10 +89,9 @@ type _KtDocTagArgs<
   TTagName extends StringSuggestions<keyof _KtDocTagArgsMap<TBuilder>>,
   TBuilder extends SourceBuilder,
 > = TTagName extends keyof _KtDocTagArgsMap<TBuilder>
-  // deno-lint-ignore no-explicit-any
   ? _KtDocTagArgsMap<TBuilder>[TTagName] extends (...args: any[]) => any
     ? ParametersWithOverloads<_KtDocTagArgsMap<TBuilder>[TTagName]>
-  : never
+    : never
   : [options?: _KtDocTagOpt<TBuilder>];
 
 function createDocTag<

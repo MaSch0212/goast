@@ -40,7 +40,6 @@ export type TypeScriptEasyNetworkStubsGeneratorConfig = TypeScriptGeneratorConfi
    */
   defaultStatusCodeResponseTypes: Record<
     number,
-    // deno-lint-ignore ban-types
     Exclude<ts.Type<TypeScriptFileBuilder>, Function> | ((schemas: readonly ApiSchema[]) => ApiSchema)
   >;
 
@@ -69,23 +68,22 @@ export type TypeScriptEasyNetworkStubsGeneratorConfig = TypeScriptGeneratorConfi
   utilsDir: string;
 };
 
-export const defaultTypeScriptEasyNetworkStubsGeneratorConfig: DefaultGenerationProviderConfig<
-  TypeScriptEasyNetworkStubsGeneratorConfig
-> = {
-  ...defaultTypeScriptGeneratorConfig,
+export const defaultTypeScriptEasyNetworkStubsGeneratorConfig: DefaultGenerationProviderConfig<TypeScriptEasyNetworkStubsGeneratorConfig> =
+  {
+    ...defaultTypeScriptGeneratorConfig,
 
-  domainName: undefined,
-  defaultStatusCodeResponseTypes: {
-    401: ts.refs.never(),
-    403: ts.refs.never(),
-    500: ts.refs.never(),
-  },
+    domainName: undefined,
+    defaultStatusCodeResponseTypes: {
+      401: ts.refs.never(),
+      403: ts.refs.never(),
+      500: ts.refs.never(),
+    },
 
-  stubsDir: 'stubs',
-  stubFileNameCasing: { casing: 'kebab', suffix: '.stubs' },
-  stubsIndexFile: 'stubs.ts',
-  utilsDir: 'utils',
-};
+    stubsDir: 'stubs',
+    stubFileNameCasing: { casing: 'kebab', suffix: '.stubs' },
+    stubsIndexFile: 'stubs.ts',
+    utilsDir: 'utils',
+  };
 
 export type TypeScriptEasyNetworkStubsGeneratorInput = {
   typescript: {
@@ -108,16 +106,14 @@ export type TypeScriptEasyNetworkStubsGeneratorOutput = {
 
 export type TypeScriptEasyNetworkStubGeneratorOutput = TypeScriptExportOutput;
 
-export type TypeScriptEasyNetworkStubsGeneratorContext =
-  & OpenApiServicesGenerationProviderContext<
-    TypeScriptEasyNetworkStubsGeneratorInput,
-    TypeScriptEasyNetworkStubsGeneratorOutput,
-    TypeScriptEasyNetworkStubsGeneratorConfig,
-    TypeScriptEasyNetworkStubGeneratorOutput
-  >
-  & {
-    refs: ReturnType<typeof getReferenceFactories>;
-  };
+export type TypeScriptEasyNetworkStubsGeneratorContext = OpenApiServicesGenerationProviderContext<
+  TypeScriptEasyNetworkStubsGeneratorInput,
+  TypeScriptEasyNetworkStubsGeneratorOutput,
+  TypeScriptEasyNetworkStubsGeneratorConfig,
+  TypeScriptEasyNetworkStubGeneratorOutput
+> & {
+  refs: ReturnType<typeof getReferenceFactories>;
+};
 
 export type TypeScriptEasyNetworkStubGeneratorContext = TypeScriptEasyNetworkStubsGeneratorContext & {
   readonly service: ApiService;

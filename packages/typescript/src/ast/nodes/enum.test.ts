@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { beforeEach, describe, it } from '@std/testing/bdd';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from '../../config.ts';
 import { TypeScriptFileBuilder } from '../../file-builder.ts';
@@ -11,10 +10,10 @@ let builder: TypeScriptFileBuilder;
 
 beforeEach(() => {
   // A fixed newLine keeps the expectations below host-independent.
-  builder = new TypeScriptFileBuilder(
-    undefined,
-    { ...defaultTypeScriptGeneratorConfig, newLine: '\n' } as TypeScriptGeneratorConfig,
-  );
+  builder = new TypeScriptFileBuilder(undefined, {
+    ...defaultTypeScriptGeneratorConfig,
+    newLine: '\n',
+  } as TypeScriptGeneratorConfig);
 });
 
 describe('tsEnum', () => {
@@ -52,9 +51,7 @@ describe('tsEnum', () => {
         const: true,
       }),
     );
-    expect(builder.toString(false)).toBe(
-      '/**\n * description\n */\nexport const enum X {\n  A,\n  B\n}\n',
-    );
+    expect(builder.toString(false)).toBe('/**\n * description\n */\nexport const enum X {\n  A,\n  B\n}\n');
   });
 
   it('should render injections', () => {

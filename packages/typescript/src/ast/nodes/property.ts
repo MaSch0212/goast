@@ -31,20 +31,22 @@ type BaseOptions<TBuilder extends SourceBuilder, TInjects extends string = never
   }
 >;
 
-type SimpleOptions<TBuilder extends SourceBuilder, TInjects extends string = never> =
-  & BaseOptions<TBuilder, TInjects>
-  & {
-    value?: Nullable<TsValue<TBuilder>>;
-    readonly?: Nullable<boolean>;
-    optional?: Nullable<boolean>;
-  };
+type SimpleOptions<TBuilder extends SourceBuilder, TInjects extends string = never> = BaseOptions<
+  TBuilder,
+  TInjects
+> & {
+  value?: Nullable<TsValue<TBuilder>>;
+  readonly?: Nullable<boolean>;
+  optional?: Nullable<boolean>;
+};
 
-type AccessorOptions<TBuilder extends SourceBuilder, TInjects extends string = never> =
-  & BaseOptions<TBuilder, TInjects>
-  & {
-    get?: Nullable<TsPropertyGetter<TBuilder>>;
-    set?: Nullable<TsPropertySetter<TBuilder>>;
-  };
+type AccessorOptions<TBuilder extends SourceBuilder, TInjects extends string = never> = BaseOptions<
+  TBuilder,
+  TInjects
+> & {
+  get?: Nullable<TsPropertyGetter<TBuilder>>;
+  set?: Nullable<TsPropertySetter<TBuilder>>;
+};
 
 export abstract class TsProperty<TBuilder extends SourceBuilder, TInjects extends string = never> extends TsNode<
   TBuilder,

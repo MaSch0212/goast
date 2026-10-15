@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import type { RecordedResponse } from '../cases/types.ts';
 import {
@@ -33,8 +32,8 @@ describe('normalizeHeaders', () => {
   it('lower-cases names and drops the incidental ones', () => {
     const headers = new Headers({
       'X-Request-Id': 'r1',
-      'Host': 'localhost:8080',
-      'User-Agent': 'Deno',
+      Host: 'localhost:8080',
+      'User-Agent': 'node',
       'Accept-Encoding': 'gzip',
       'Content-Length': '12',
     });
@@ -238,9 +237,7 @@ describe('diffResponse', () => {
   it('reports a body on a response the case declares none for', () => {
     const expected = { status: 204 };
     const deviations = diffResponse(expected, recorded({ status: 204, body: { kind: 'json', value: {} } }));
-    expect(deviations).toEqual([
-      { field: 'body', expected: '{"kind":"none"}', actual: '{"kind":"json","value":{}}' },
-    ]);
+    expect(deviations).toEqual([{ field: 'body', expected: '{"kind":"none"}', actual: '{"kind":"json","value":{}}' }]);
   });
 
   it('reports a body that arrived as text where json was declared', () => {

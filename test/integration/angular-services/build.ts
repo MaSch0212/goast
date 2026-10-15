@@ -43,8 +43,9 @@ export const TREE_DIR: string = join(repoRootDir, 'test', 'output', ...TREE_PATH
  * The tsconfig the container compiles with.
  *
  * Deliberately not the image's `tsconfig.base.json`: that one sets `noEmit` for tier 3's type-check-only
- * gate, and this leg has to produce runnable JavaScript. `rootDirs` is what makes `tsc` lay the two mounts
- * out side by side under `outDir`, so a driver importing `../tree/...` resolves at compile time against
+ * gate, and this leg has to produce runnable JavaScript. `rootDir: '/'` is what makes `tsc` lay the two
+ * mounts out side by side under `outDir` (TypeScript 7 otherwise roots the output at the tsconfig's own
+ * directory and refuses to emit), so a driver importing `../tree/...` resolves at compile time against
  * `/tree` and at run time against `/out/tree` — see the plan's spike notes for why an absolute `/tree/...`
  * import compiles and then fails at run time.
  *
@@ -68,6 +69,7 @@ export function driverTsConfig(): string {
         experimentalDecorators: true,
         emitDecoratorMetadata: true,
         outDir: OUT_DIR,
+        rootDir: '/',
         rootDirs: [TREE_MOUNT, DRIVER_MOUNT],
         typeRoots: ['/opt/goast/node_modules/@types'],
         types: ['node'],
@@ -106,7 +108,7 @@ export function driverTsConfig(): string {
  *   * A diagnostic in the **handwritten driver** must stop the run, because this whole target's rationale is
  *     that writing the call in typed TypeScript *is* the assertion that the generated signature is usable.
  *     That assertion is worth nothing if a driver which does not type-check still runs, and the driver is in
- *     no Deno module graph, so nothing else checks it. Measured before this guard existed: injecting
+ *     no host `tsc` project, so nothing else checks it. Measured before this guard existed: injecting
  *     `pets.getPet({ id: 'abc', bogusNotAParam: 1 })` — a `TS2353` — left the entire leg green with the
  *     artifacts unchanged.
  *

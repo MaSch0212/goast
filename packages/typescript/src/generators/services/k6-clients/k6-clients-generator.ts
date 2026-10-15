@@ -1,6 +1,5 @@
 import { resolve } from 'node:path';
 
-// @deno-types="npm:@types/fs-extra@11"
 import fs from 'fs-extra';
 
 import {
@@ -44,8 +43,8 @@ export class TypeScriptK6ClientsGenerator extends OpenApiServicesGenerationProvi
 
   constructor(clientGeneratorFactory?: Factory<TypeScriptK6ClientGenerator, []>) {
     super();
-    this._clientGeneratorFactory = clientGeneratorFactory ??
-      Factory.fromValue(new DefaultTypeScriptK6ClientGenerator());
+    this._clientGeneratorFactory =
+      clientGeneratorFactory ?? Factory.fromValue(new DefaultTypeScriptK6ClientGenerator());
   }
 
   protected override initResult(): Output {
@@ -143,9 +142,9 @@ export class TypeScriptK6ClientsGenerator extends OpenApiServicesGenerationProvi
   protected getIndexFilePath(ctx: Context): string | null {
     return ctx.config.clientsIndexFile
       ? resolve(
-        ctx.config.outputDir,
-        ctx.config.clientsIndexFile.replace(/\.[jt]s$/, ctx.config.language === 'javascript' ? '.js' : '.ts'),
-      )
+          ctx.config.outputDir,
+          ctx.config.clientsIndexFile.replace(/\.[jt]s$/, ctx.config.language === 'javascript' ? '.js' : '.ts'),
+        )
       : null;
   }
 

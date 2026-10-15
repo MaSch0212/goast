@@ -1,24 +1,22 @@
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { findOrphanFiles, findOrphanSnapshots } from './orphans.ts';
 
-async function withTree(
-  files: string[],
-  fn: (root: string) => Promise<void>,
-): Promise<void> {
-  const root = await Deno.makeTempDir({ prefix: 'goast-orphans-' });
+async function withTree(files: string[], fn: (root: string) => Promise<void>): Promise<void> {
+  const root = await mkdtemp(join(tmpdir(), 'goast-orphans-'));
   try {
     for (const file of files) {
       const path = join(root, ...file.split('/'));
-      await Deno.mkdir(join(path, '..'), { recursive: true });
-      await Deno.writeTextFile(path, 'x');
+      await mkdir(join(path, '..'), { recursive: true });
+      await writeFile(path, 'x');
     }
     await fn(root);
   } finally {
-    await Deno.remove(root, { recursive: true });
+    await rm(root, { recursive: true });
   }
 }
 
@@ -32,36 +30,25 @@ describe('findOrphanSnapshots', () => {
 
   it('reports a whole dropped profile as one entry, not one per subdirectory', async () => {
     // A live sibling profile ('kept') keeps 'kotlin' from collapsing further up than 'dropped'.
-    await withTree(
-      ['kotlin/dropped/v3/spec/Model.kt', 'kotlin/kept/v3/spec/Model.kt'],
-      async (root) => {
-        expect(await findOrphanSnapshots(root, ['kotlin/kept/v3/spec'])).toEqual(['kotlin/dropped']);
-      },
-    );
+    await withTree(['kotlin/dropped/v3/spec/Model.kt', 'kotlin/kept/v3/spec/Model.kt'], async (root) => {
+      expect(await findOrphanSnapshots(root, ['kotlin/kept/v3/spec'])).toEqual(['kotlin/dropped']);
+    });
   });
 
   it('collapses a tree spanning multiple subdirectories to the shallowest unclaimed directory', async () => {
-    await withTree(
-      ['k/p/v3/spec/api/A.kt', 'k/p/v3/spec/model/B.kt'],
-      async (root) => {
-        // Nothing anywhere is claimed, so the whole tree collapses to its single top-level segment
-        // rather than reporting 'k/p/v3/spec/api' and 'k/p/v3/spec/model' as two separate orphans.
-        expect(await findOrphanSnapshots(root, [])).toEqual(['k']);
-      },
-    );
+    await withTree(['k/p/v3/spec/api/A.kt', 'k/p/v3/spec/model/B.kt'], async (root) => {
+      // Nothing anywhere is claimed, so the whole tree collapses to its single top-level segment
+      // rather than reporting 'k/p/v3/spec/api' and 'k/p/v3/spec/model' as two separate orphans.
+      expect(await findOrphanSnapshots(root, [])).toEqual(['k']);
+    });
   });
 
   it('collapses a renamed spec spanning multiple subdirectories to its tree base, not a leaf', async () => {
-    await withTree(
-      ['k/p/v3/spec/api/A.kt', 'k/p/v3/spec/model/B.kt'],
-      async (root) => {
-        // A live sibling spec under the same profile/version pins the shallowest-ancestor rule at
-        // the renamed spec's tree base, rather than a hardcoded depth.
-        expect(await findOrphanSnapshots(root, ['k/p/v3/other', 'k/p/v3/other.state.txt'])).toEqual([
-          'k/p/v3/spec',
-        ]);
-      },
-    );
+    await withTree(['k/p/v3/spec/api/A.kt', 'k/p/v3/spec/model/B.kt'], async (root) => {
+      // A live sibling spec under the same profile/version pins the shallowest-ancestor rule at
+      // the renamed spec's tree base, rather than a hardcoded depth.
+      expect(await findOrphanSnapshots(root, ['k/p/v3/other', 'k/p/v3/other.state.txt'])).toEqual(['k/p/v3/spec']);
+    });
   });
 
   it('reports a stale state file left by a renamed spec', async () => {

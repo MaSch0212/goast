@@ -21,132 +21,138 @@
  * `Promise<TypedResponse<void>>`. `_VoidResponse` omits `.json()` entirely, so those cases report only
  * `.status` and must still drain the body themselves (`body?.cancel()`) since nothing else will.
  *
- * Output contract: one `{"caseId":…,"result":…}` line per case on stdout, and nothing else. Anything
- * else on stdout makes the harness fail to parse the run.
+ * Returns one `{ caseId, result }` per call, in issue order. A repeated id is returned twice, not merged:
+ * `integration.test.ts` relies on that to catch a duplicated case.
  */
 import { BlobsClient } from '../../output/typescript/fetch-clients/integration/kitchen-sink/clients/blobs-client.ts';
 import { ParamsClient } from '../../output/typescript/fetch-clients/integration/kitchen-sink/clients/params-client.ts';
 import { PetsClient } from '../../output/typescript/fetch-clients/integration/kitchen-sink/clients/pets-client.ts';
 import { WidgetsClient } from '../../output/typescript/fetch-clients/integration/kitchen-sink/clients/widgets-client.ts';
 
-const baseUrl = Deno.args[0];
-const emit = (caseId: string, result: unknown) => console.log(JSON.stringify({ caseId, result }));
+export type DriverReport = { caseId: string; result: unknown };
 
-// `bearerAuth` and `apiKeyAuth` have no generated code path at all (see cases.ts): the only way this
-// client can satisfy either scheme is a header set at construction time, applied to every request the
-// instance makes. Cases that do not declare the header are unaffected — `diffRequest` only compares
-// headers a case names.
-const pets = new PetsClient({ baseUrl, headers: { authorization: 'Bearer secret-token' } });
-const widgets = new WidgetsClient({ baseUrl, headers: { 'x-api-key': 'secret-key' } });
-const blobs = new BlobsClient({ baseUrl });
-const params = new ParamsClient({ baseUrl });
+export async function driveFetchClients(baseUrl: string): Promise<DriverReport[]> {
+  const reports: DriverReport[] = [];
+  const emit = (caseId: string, result: unknown) => reports.push({ caseId, result });
 
-{
-  const response = await pets.getPet({ id: 'abc' });
-  emit('getPet/ok', await response.json());
-}
+  // `bearerAuth` and `apiKeyAuth` have no generated code path at all (see cases.ts): the only way this
+  // client can satisfy either scheme is a header set at construction time, applied to every request the
+  // instance makes. Cases that do not declare the header are unaffected — `diffRequest` only compares
+  // headers a case names.
+  const pets = new PetsClient({ baseUrl, headers: { authorization: 'Bearer secret-token' } });
+  const widgets = new WidgetsClient({ baseUrl, headers: { 'x-api-key': 'secret-key' } });
+  const blobs = new BlobsClient({ baseUrl });
+  const params = new ParamsClient({ baseUrl });
 
-{
-  const response = await pets.updatePet({ id: 'abc' }, { name: 'Rex', age: 4 });
-  emit('updatePet/json', await response.json());
-}
+  {
+    const response = await pets.getPet({ id: 'abc' });
+    emit('getPet/ok', await response.json());
+  }
 
-{
-  const response = await pets.updatePet({ id: 'abc' }, { name: 'Rex', age: 4 });
-  emit('updatePet/form', await response.json());
-}
+  {
+    const response = await pets.updatePet({ id: 'abc' }, { name: 'Rex', age: 4 });
+    emit('updatePet/json', await response.json());
+  }
 
-{
-  const response = await pets.addPetNote({ id: 'abc' }, 'plain text body');
-  emit('addPetNote/text', await response.json());
-}
+  {
+    const response = await pets.updatePet({ id: 'abc' }, { name: 'Rex', age: 4 });
+    emit('updatePet/form', await response.json());
+  }
 
-{
-  const response = await pets.deletePet({ id: 'abc' });
-  emit('deletePet/noContent', { status: response.status });
-  await response.body?.cancel();
-}
+  {
+    const response = await pets.addPetNote({ id: 'abc' }, 'plain text body');
+    emit('addPetNote/text', await response.json());
+  }
 
-{
-  const response = await pets.createPet({ id: 'new1', name: 'Fido' });
-  emit('createPet/created', await response.json());
-}
+  {
+    const response = await pets.deletePet({ id: 'abc' });
+    emit('deletePet/noContent', { status: response.status });
+    await response.body?.cancel();
+  }
 
-{
-  // `File`, not a plain `Blob`: the case declares filename 'photo.png', which only a fixed generator
-  // producing real multipart output (`form.append('file', body.file)`) could ever send — a plain `Blob`
-  // would come out as `"blob"`. `File extends Blob`, so this still type-checks against the generated
-  // `file: Blob` signature, and it makes the declared case honest without depending on that fix landing.
-  const response = await pets.uploadPetPhoto(
-    { id: 'abc' },
-    { file: new File(['binarydata'], 'photo.png', { type: 'image/png' }), caption: 'A good boy' },
-  );
-  emit('uploadPetPhoto/ok', { status: response.status });
-  await response.body?.cancel();
-}
+  {
+    const response = await pets.createPet({ id: 'new1', name: 'Fido' });
+    emit('createPet/created', await response.json());
+  }
 
-{
-  const response = await widgets.getWidget({ id: 'w1' });
-  emit('getWidget/ok', await response.json());
-}
+  {
+    // `File`, not a plain `Blob`: the case declares filename 'photo.png', which only a fixed generator
+    // producing real multipart output (`form.append('file', body.file)`) could ever send — a plain `Blob`
+    // would come out as `"blob"`. `File extends Blob`, so this still type-checks against the generated
+    // `file: Blob` signature, and it makes the declared case honest without depending on that fix landing.
+    const response = await pets.uploadPetPhoto(
+      { id: 'abc' },
+      { file: new File(['binarydata'], 'photo.png', { type: 'image/png' }), caption: 'A good boy' },
+    );
+    emit('uploadPetPhoto/ok', { status: response.status });
+    await response.body?.cancel();
+  }
 
-{
-  const response = await widgets.getWidget({ id: 'bad' });
-  emit('getWidget/badRequest', await response.json());
-}
+  {
+    const response = await widgets.getWidget({ id: 'w1' });
+    emit('getWidget/ok', await response.json());
+  }
 
-{
-  const response = await widgets.getWidget({ id: 'missing' });
-  emit('getWidget/notFound', await response.json());
-}
+  {
+    const response = await widgets.getWidget({ id: 'bad' });
+    emit('getWidget/badRequest', await response.json());
+  }
 
-{
-  const response = await widgets.getWidget({ id: 'boom' });
-  emit('getWidget/serverError', await response.json());
-}
+  {
+    const response = await widgets.getWidget({ id: 'missing' });
+    emit('getWidget/notFound', await response.json());
+  }
 
-{
-  const response = await widgets.getWidget({ id: 'other' });
-  emit('getWidget/unexpectedError', await response.json());
-}
+  {
+    const response = await widgets.getWidget({ id: 'boom' });
+    emit('getWidget/serverError', await response.json());
+  }
 
-{
-  const response = await blobs.uploadBlob(new Blob(['hello']));
-  emit('uploadBlob/ok', await response.json());
-}
+  {
+    const response = await widgets.getWidget({ id: 'other' });
+    emit('getWidget/unexpectedError', await response.json());
+  }
 
-{
-  const response = await params.allLocations({ pathParam: 'loc1', queryParam: 'q1', xHeaderParam: 'h1' });
-  emit('allLocations/ok', { status: response.status });
-  await response.body?.cancel();
-}
+  {
+    const response = await blobs.uploadBlob(new Blob(['hello']));
+    emit('uploadBlob/ok', await response.json());
+  }
 
-{
-  const response = await params.styleMatrix({ formExploded: ['a', 'b'] });
-  emit('styleMatrix/formExploded', { status: response.status });
-  await response.body?.cancel();
-}
+  {
+    const response = await params.allLocations({ pathParam: 'loc1', queryParam: 'q1', xHeaderParam: 'h1' });
+    emit('allLocations/ok', { status: response.status });
+    await response.body?.cancel();
+  }
 
-{
-  const response = await params.styleMatrix({ formUnexploded: ['a', 'b'] });
-  emit('styleMatrix/formUnexploded', { status: response.status });
-  await response.body?.cancel();
-}
+  {
+    const response = await params.styleMatrix({ formExploded: ['a', 'b'] });
+    emit('styleMatrix/formExploded', { status: response.status });
+    await response.body?.cancel();
+  }
 
-{
-  const response = await params.styleMatrix({ spaceDelimited: ['a', 'b'] });
-  emit('styleMatrix/spaceDelimited', { status: response.status });
-  await response.body?.cancel();
-}
+  {
+    const response = await params.styleMatrix({ formUnexploded: ['a', 'b'] });
+    emit('styleMatrix/formUnexploded', { status: response.status });
+    await response.body?.cancel();
+  }
 
-{
-  const response = await params.pathStyleSimple({ values: ['a', 'b'] });
-  emit('pathStyleSimple/ok', { status: response.status });
-  await response.body?.cancel();
-}
+  {
+    const response = await params.styleMatrix({ spaceDelimited: ['a', 'b'] });
+    emit('styleMatrix/spaceDelimited', { status: response.status });
+    await response.body?.cancel();
+  }
 
-{
-  const response = await params.getEncoded({ value: 'abc def/x', raw: 'a&b=c' });
-  emit('getEncoded/ok', { status: response.status });
-  await response.body?.cancel();
+  {
+    const response = await params.pathStyleSimple({ values: ['a', 'b'] });
+    emit('pathStyleSimple/ok', { status: response.status });
+    await response.body?.cancel();
+  }
+
+  {
+    const response = await params.getEncoded({ value: 'abc def/x', raw: 'a&b=c' });
+    emit('getEncoded/ok', { status: response.status });
+    await response.body?.cancel();
+  }
+
+  return reports;
 }

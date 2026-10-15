@@ -1,19 +1,22 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { createServer } from 'node:http';
+import type { AddressInfo } from 'node:net';
+
+import { describe, expect, it } from 'vitest';
 
 import { waitForHttpReady } from './health.ts';
 
 describe('waitForHttpReady', () => {
   it('returns as soon as the url answers, whatever the status', async () => {
-    const server = Deno.serve({ port: 0, onListen: () => {} }, () => new Response('nope', { status: 404 }));
+    const server = createServer((_, res) => res.writeHead(404).end('nope'));
+    await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
     try {
-      await waitForHttpReady(`http://127.0.0.1:${server.addr.port}/__health`, {
+      await waitForHttpReady(`http://127.0.0.1:${(server.address() as AddressInfo).port}/__health`, {
         timeoutMs: 5_000,
         isAlive: () => true,
         describeDeath: () => 'unused',
       });
     } finally {
-      await server.shutdown();
+      await new Promise((resolve) => server.close(resolve));
     }
   });
 
@@ -21,7 +24,7 @@ describe('waitForHttpReady', () => {
   // on for the whole timeout and then reported as "timed out", hiding the compile error in its log.
   it('fails immediately with the death description once isAlive goes false', async () => {
     let alive = true;
-    setTimeout(() => alive = false, 50);
+    setTimeout(() => (alive = false), 50);
 
     await expect(
       waitForHttpReady('http://127.0.0.1:1/never', {

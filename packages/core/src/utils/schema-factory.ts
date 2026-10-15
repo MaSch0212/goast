@@ -6,17 +6,13 @@ import type {
   ApiSchemaProperty,
 } from '../transform/api-types.ts';
 
-export type TestSchema =
-  & Partial<Omit<ApiSchemaBase, 'required'>>
-  & Partial<ApiSchemaComponent>
-  & {
+export type TestSchema = Partial<Omit<ApiSchemaBase, 'required'>> &
+  Partial<ApiSchemaComponent> & {
     required?: string[];
   };
 export type TestOneofSchema = TestSchema & Partial<Omit<ApiSchemaExtensions<'oneOf'>, 'kind'>>;
-export type TestMultiTypeSchema =
-  & TestSchema
-  & Partial<Omit<ApiSchemaExtensions<'multi-type'>, 'kind' | 'properties'>>
-  & {
+export type TestMultiTypeSchema = TestSchema &
+  Partial<Omit<ApiSchemaExtensions<'multi-type'>, 'kind' | 'properties'>> & {
     properties?: ApiSchemaProperty[];
   };
 export type TestStringSchema = TestSchema & Partial<Omit<ApiSchemaExtensions<'string'>, 'kind' | 'type'>>;
@@ -25,10 +21,8 @@ export type TestNullSchema = TestSchema & Partial<Omit<ApiSchemaExtensions<'null
 export type TestNumberSchema = TestSchema & Partial<Omit<ApiSchemaExtensions<'number'>, 'kind' | 'type'>>;
 export type TestIntegerSchema = TestSchema & Partial<Omit<ApiSchemaExtensions<'integer'>, 'kind' | 'type'>>;
 export type TestArraySchema = TestSchema & Partial<Omit<ApiSchemaExtensions<'array'>, 'kind' | 'type'>>;
-export type TestObjectSchema =
-  & TestSchema
-  & Partial<Omit<ApiSchemaExtensions<'object'>, 'kind' | 'type' | 'properties'>>
-  & {
+export type TestObjectSchema = TestSchema &
+  Partial<Omit<ApiSchemaExtensions<'object'>, 'kind' | 'type' | 'properties'>> & {
     properties?: ApiSchemaProperty[];
   };
 export type TestCombinedSchema = TestSchema & Partial<Omit<ApiSchemaExtensions<'combined'>, 'kind'>>;

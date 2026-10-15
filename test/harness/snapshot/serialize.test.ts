@@ -1,7 +1,8 @@
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { repoRootDir } from '../paths.ts';
 import { rewriteStrings, serializeNormalized, serializeValue } from './serialize.ts';
@@ -49,7 +50,10 @@ describe('rewriteStrings', () => {
 
   it('keeps a class instance and its constructor name intact', () => {
     class Config {
-      constructor(public dir: string) {}
+      dir: string;
+      constructor(dir: string) {
+        this.dir = dir;
+      }
     }
     const value = { config: new Config('x/dir') };
 
@@ -102,12 +106,13 @@ describe('serializeNormalized', () => {
   });
 
   it('is width-independent for a real temp directory too', async () => {
-    const outputDir = await Deno.makeTempDir({ prefix: 'goast-serialize-' });
+    const outputDir = await mkdtemp(join(tmpdir(), 'goast-serialize-'));
     try {
-      expect(serializeNormalized(stateFor(outputDir), replaceOutputDir(outputDir)))
-        .toBe(serializeNormalized(stateFor('/t/x'), replaceOutputDir('/t/x')));
+      expect(serializeNormalized(stateFor(outputDir), replaceOutputDir(outputDir))).toBe(
+        serializeNormalized(stateFor('/t/x'), replaceOutputDir('/t/x')),
+      );
     } finally {
-      await Deno.remove(outputDir, { recursive: true });
+      await rm(outputDir, { recursive: true });
     }
   });
 

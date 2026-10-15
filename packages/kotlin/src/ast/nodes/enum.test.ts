@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { beforeEach, describe, it } from '@std/testing/bdd';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { dedent } from '@goast/test-harness';
 
@@ -18,10 +17,10 @@ describe('ktEnum', () => {
 
   beforeEach(() => {
     // A fixed newLine keeps the expectations below host-independent.
-    builder = new KotlinFileBuilder(
-      undefined,
-      { ...defaultKotlinGeneratorConfig, newLine: '\n' } as KotlinGeneratorConfig,
-    );
+    builder = new KotlinFileBuilder(undefined, {
+      ...defaultKotlinGeneratorConfig,
+      newLine: '\n',
+    } as KotlinGeneratorConfig);
   });
 
   it('should write enum', () => {
@@ -36,9 +35,7 @@ describe('ktEnum', () => {
 
   it('should write documenation', () => {
     builder.append(ktEnum('Foo', [ktEnumValue('BAR')], { doc: ktDoc('This is a foo') }));
-    expect(builder.toString(false)).toBe(
-      '/**\n * This is a foo\n */\nenum class Foo {\n    BAR\n}\n',
-    );
+    expect(builder.toString(false)).toBe('/**\n * This is a foo\n */\nenum class Foo {\n    BAR\n}\n');
   });
 
   it('should write annotations', () => {
@@ -64,9 +61,7 @@ describe('ktEnum', () => {
     builder.append(
       ktEnum('Foo', [ktEnumValue('BAR'), ktEnumValue('BAZ')], { members: ['// Comment 1', '// Comment 2'] }),
     );
-    expect(builder.toString(false)).toBe(
-      'enum class Foo {\n    BAR, BAZ;\n\n    // Comment 1\n    // Comment 2\n}\n',
-    );
+    expect(builder.toString(false)).toBe('enum class Foo {\n    BAR, BAZ;\n\n    // Comment 1\n    // Comment 2\n}\n');
   });
 
   it('should write implemented interfaces', () => {
@@ -76,9 +71,7 @@ describe('ktEnum', () => {
 
   it('should write companion object', () => {
     builder.append(ktEnum('Foo', [ktEnumValue('BAR')], { companionObject: ktObject() }));
-    expect(builder.toString(false)).toBe(
-      'enum class Foo {\n    BAR;\n\n    companion object {}\n}\n',
-    );
+    expect(builder.toString(false)).toBe('enum class Foo {\n    BAR;\n\n    companion object {}\n}\n');
   });
 
   it('should write all options', () => {

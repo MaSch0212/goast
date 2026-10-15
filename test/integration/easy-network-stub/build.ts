@@ -56,9 +56,10 @@ export const TREE_DIR: string = join(repoRootDir, 'test', 'output', ...TREE_PATH
  * The tsconfig the container compiles with.
  *
  * Deliberately not the image's `tsconfig.base.json`: that one sets `noEmit` for tier 3's type-check-only
- * gate, and this leg has to produce runnable JavaScript that the container then executes. `rootDirs` is what
- * makes `tsc` lay the two mounts out side by side under `outDir`, so a driver importing `../tree/...` resolves
- * at compile time against `/tree` and at run time against `/out/tree` — see the plan's spike notes for why an
+ * gate, and this leg has to produce runnable JavaScript that the container then executes. `rootDir: '/'` is
+ * what makes `tsc` lay the two mounts out side by side under `outDir` (TypeScript 7 otherwise roots the output
+ * at the tsconfig's own directory and refuses to emit), so a driver importing `../tree/...` resolves at
+ * compile time against `/tree` and at run time against `/out/tree` — see the plan's spike notes for why an
  * absolute `/tree/...` import compiles and then fails at run time.
  *
  * No `experimentalDecorators`/`emitDecoratorMetadata`, unlike the Angular leg's tsconfig: nothing in this
@@ -81,6 +82,7 @@ export function driverTsConfig(): string {
         allowJs: true,
         noEmit: false,
         outDir: OUT_DIR,
+        rootDir: '/',
         rootDirs: [TREE_MOUNT, DRIVER_MOUNT],
         typeRoots: ['/opt/goast/node_modules/@types'],
         types: ['node'],
@@ -135,7 +137,7 @@ export function driverTsConfig(): string {
  * **`tsc`'s exit code is ignored, but a driver diagnostic is not** — the same distinction the Angular leg's
  * guard draws, for the same reason: a diagnostic in the generated **tree** must not stop the run (tier 3 owns
  * those as committed snapshots, and a tree that type-checks imperfectly but runs is still informative here),
- * while a diagnostic in the handwritten **driver** must, because the driver is in no Deno module graph and a
+ * while a diagnostic in the handwritten **driver** must, because the driver is in no host `tsc` project and a
  * driver call that does not type-check but still runs makes the whole leg's premise worthless. The guard
  * differs from the Angular leg's only in what it greps for: the driver there is a single `driver.ts`, so
  * `driver\.ts(` pins the diagnostic to that file. Here the driver is four files (`adapter.ts`, `server.ts`,

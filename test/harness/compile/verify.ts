@@ -1,5 +1,7 @@
+import { lstat, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 
+import { isNotFound } from '../fs.ts';
 import { resolveSnapshotMode, type VerifyOptions } from '../snapshot/mode.ts';
 import { verifyText } from '../snapshot/verify-text.ts';
 import { formatDiagnostics } from './diagnostics.ts';
@@ -9,10 +11,10 @@ import type { CompileUnit, Diagnostic } from './types.ts';
  * The task that regenerates tier 3's snapshots.
  *
  * Every message this file produces names it, including the ones it delegates to {@link verifyText}:
- * that engine defaults to tier 2's `deno task test:output`, which regenerates nothing under
+ * that engine defaults to tier 2's `pnpm test:output`, which regenerates nothing under
  * `test/compile/` and would leave a newly-failing unit failing with the same message.
  */
-const COMPILE_UPDATE_COMMAND = 'deno task test:compile';
+const COMPILE_UPDATE_COMMAND = 'pnpm test:compile';
 
 /** Where a unit's diagnostics are committed. */
 export function compileSnapshotFile(compileRootDir: string, unit: CompileUnit): string {
@@ -42,9 +44,9 @@ export async function verifyCompileDiagnostics(
 
   let exists = true;
   try {
-    await Deno.lstat(snapshotFile);
+    await lstat(snapshotFile);
   } catch (error) {
-    if (!(error instanceof Deno.errors.NotFound)) throw error;
+    if (!isNotFound(error)) throw error;
     exists = false;
   }
   if (!exists) return;
@@ -56,6 +58,6 @@ export async function verifyCompileDiagnostics(
     );
   }
 
-  await Deno.remove(snapshotFile);
+  await rm(snapshotFile);
   console.info(`snapshot removed ${snapshotFile}`);
 }

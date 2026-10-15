@@ -12,7 +12,6 @@ export function getDeepProperty(obj: object, path: string[]): unknown {
     if (!current || typeof current !== 'object') {
       return undefined;
     }
-    // deno-lint-ignore no-explicit-any
     current = (current as any)[key];
   }
   return current;

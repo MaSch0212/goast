@@ -1,4 +1,3 @@
-// deno-lint-ignore-file no-explicit-any
 import type { OpenApiGenerator } from '@goast/core';
 import type { SpecVersionDir } from '@goast/test-harness';
 
@@ -54,7 +53,8 @@ export const profiles: Profile[] = [
         language: 'kotlin',
         versions: 'all',
         configure: (g) =>
-          g.useType(KotlinModelsGenerator, config)
+          g
+            .useType(KotlinModelsGenerator, config)
             .useType(KotlinSpringControllersGenerator, { ...config, strictResponseEntities: true }),
       },
       {

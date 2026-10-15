@@ -55,10 +55,8 @@ export abstract class OpenApiServicesGenerationProviderBase<
 
     const result = await this.generateService(ctx, service);
 
-    addSourceIfTest(
-      ctx.config,
-      result,
-      () => service.$src ? `${service.$src.file}#${service.$src.path}` : `tag:${service.name}`,
+    addSourceIfTest(ctx.config, result, () =>
+      service.$src ? `${service.$src.file}#${service.$src.path}` : `tag:${service.name}`,
     );
     this.addServiceResult(ctx, service, result);
     return result;
@@ -70,7 +68,7 @@ export abstract class OpenApiServicesGenerationProviderBase<
 
   protected abstract addServiceResult(ctx: TContext, service: ApiService, result: TServiceOutput): void;
 
-  // deno-lint-ignore no-unused-vars
+  // oxlint-disable-next-line no-unused-vars
   protected generateAdditionalFiles(ctx: TContext): MaybePromise<void> {
     // Override if needed
   }

@@ -21,5 +21,6 @@ export function writeKtMembers<TBuilder extends SourceBuilder>(
           .append((b) => writeKtNode(b, m))
           .if(i < filteredMembers.length - 1, (b) => b.ensurePreviousLineEmpty()),
       (b) => b.append((b) => writeKtNode(b, m)).ensureCurrentLineEmpty(),
-    ));
+    ),
+  );
 }

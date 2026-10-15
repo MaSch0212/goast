@@ -24,5 +24,6 @@ export function writeTsMembers<TBuilder extends SourceBuilder>(
           .append((b) => writeTsNode(b, m))
           .if(i < filteredMembers.length - 1, (b) => b.ensurePreviousLineEmpty()),
       (b) => b.append((b) => writeTsNode(b, m)).ensureCurrentLineEmpty(),
-    ));
+    ),
+  );
 }

@@ -1,10 +1,12 @@
+import { lstat, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 
+import { isNotFound } from '../fs.ts';
 import { resolveSnapshotMode, type VerifyOptions } from '../snapshot/mode.ts';
 import { verifyText } from '../snapshot/verify-text.ts';
 
 /** The task that regenerates the `k6-clients` target's record. */
-const K6_UPDATE_COMMAND = 'deno task test:integration:k6';
+const K6_UPDATE_COMMAND = 'pnpm test:integration:k6';
 
 /**
  * Where a target's load failure is committed.
@@ -45,9 +47,9 @@ export async function verifyTargetLoadFailure(
 
   let exists = true;
   try {
-    await Deno.lstat(snapshotFile);
+    await lstat(snapshotFile);
   } catch (error) {
-    if (!(error instanceof Deno.errors.NotFound)) throw error;
+    if (!isNotFound(error)) throw error;
     exists = false;
   }
   if (!exists) return;
@@ -61,6 +63,6 @@ export async function verifyTargetLoadFailure(
     );
   }
 
-  await Deno.remove(snapshotFile);
+  await rm(snapshotFile);
   console.info(`target load failure removed ${snapshotFile}`);
 }

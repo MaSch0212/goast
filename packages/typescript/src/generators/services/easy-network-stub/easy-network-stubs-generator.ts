@@ -1,6 +1,5 @@
 import { resolve } from 'node:path';
 
-// @deno-types="npm:@types/fs-extra@11"
 import fs from 'fs-extra';
 
 import {
@@ -138,7 +137,7 @@ export class TypeScriptEasyNetworkStubsGenerator extends OpenApiServicesGenerati
             accessModifier: 'private',
             optional: true,
             type: ctx.refs.easyNetworkStubGroup([ts.reference(x.component, x.filePath), 'this']),
-          })
+          }),
         ),
         ts.constructor({
           parameters: [
@@ -167,30 +166,26 @@ export class TypeScriptEasyNetworkStubsGenerator extends OpenApiServicesGenerati
             get: ts.property.getter({
               body: appendValueGroup(
                 [
-                  s`return this.${
-                    toCasing(
-                      serviceNames[id],
-                      fieldCasing,
-                    )
-                  } ??= ${ctx.refs.createEasyNetworkStubGroup.infer()}(this, this._stubWrapper, ${
-                    ts.reference(
-                      x.component,
-                      x.filePath,
-                    )
-                  });`,
+                  s`return this.${toCasing(
+                    serviceNames[id],
+                    fieldCasing,
+                  )} ??= ${ctx.refs.createEasyNetworkStubGroup.infer()}(this, this._stubWrapper, ${ts.reference(
+                    x.component,
+                    x.filePath,
+                  )});`,
                 ],
                 '\n',
               ),
             }),
-          })
+          }),
         ),
         ts.method('resetStubs', {
           accessModifier: 'public',
           returnType: 'this',
           body: appendValueGroup(
             [
-              ...Object.keys(ctx.output.typescript.stubs).map((id) =>
-                `this.${toCasing(serviceNames[id], fieldCasing)}?.reset();`
+              ...Object.keys(ctx.output.typescript.stubs).map(
+                (id) => `this.${toCasing(serviceNames[id], fieldCasing)}?.reset();`,
               ),
               'return this;',
             ],

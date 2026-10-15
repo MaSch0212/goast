@@ -1,8 +1,5 @@
-// This file is test-only. It must not be imported from `mod.ts` (or any other production entry point):
-// doing so would pull it into `deno task npm:core`'s build graph and ship it in the published package.
-// It mirrors `packages/core/src/parse/deref.test-utils.ts` from an earlier task: Deno does not discover
-// the `*.test-utils.ts` suffix as a test file, and `deno task npm:core` does not ship it. There is no
-// barrel export; every consumer imports it by relative path.
+// Test-only: never import from `mod.ts` or another production entry point. `tsconfig.build.json` excludes
+// `*.test-utils.ts`, so it stays out of the published package. No barrel export; import by relative path.
 import type { OpenApiCollectorData } from '../collect/types.ts';
 import { IdGenerator } from './helpers.ts';
 import {

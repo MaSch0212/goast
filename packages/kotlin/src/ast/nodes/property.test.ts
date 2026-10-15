@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { beforeEach, describe, it } from '@std/testing/bdd';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { dedent } from '@goast/test-harness';
 
@@ -14,10 +13,10 @@ describe('ktProperty', () => {
 
   beforeEach(() => {
     // A fixed newLine keeps the expectations below host-independent.
-    builder = new KotlinFileBuilder(
-      undefined,
-      { ...defaultKotlinGeneratorConfig, newLine: '\n' } as KotlinGeneratorConfig,
-    );
+    builder = new KotlinFileBuilder(undefined, {
+      ...defaultKotlinGeneratorConfig,
+      newLine: '\n',
+    } as KotlinGeneratorConfig);
   });
 
   it('should write a property', () => {
@@ -178,10 +177,10 @@ describe('ktPropertyAccessor', () => {
 
   beforeEach(() => {
     // A fixed newLine keeps the expectations below host-independent.
-    builder = new KotlinFileBuilder(
-      undefined,
-      { ...defaultKotlinGeneratorConfig, newLine: '\n' } as KotlinGeneratorConfig,
-    );
+    builder = new KotlinFileBuilder(undefined, {
+      ...defaultKotlinGeneratorConfig,
+      newLine: '\n',
+    } as KotlinGeneratorConfig);
   });
 
   it('should write the kind of the accessor', () => {
@@ -227,9 +226,7 @@ describe('ktPropertyAccessor', () => {
         annotations: [ktAnnotation('Inject'), ktAnnotation('Optional')],
       })
       .write(builder);
-    expect(builder.toString(false)).toBe(
-      '@Inject\n@Optional\nprivate get() {\n    println("Hello")\n}\n',
-    );
+    expect(builder.toString(false)).toBe('@Inject\n@Optional\nprivate get() {\n    println("Hello")\n}\n');
   });
 
   it('should render injections', () => {

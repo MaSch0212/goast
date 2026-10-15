@@ -16,11 +16,10 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
-export class TsConstructorParameter<TBuilder extends SourceBuilder, TInjects extends string = never>
-  extends TsParameter<
-    TBuilder,
-    TInjects | Injects
-  > {
+export class TsConstructorParameter<
+  TBuilder extends SourceBuilder,
+  TInjects extends string = never,
+> extends TsParameter<TBuilder, TInjects | Injects> {
   public accessModifier: TsAccessModifier | null;
   public readonly: boolean;
 
@@ -64,7 +63,7 @@ const createConstructorParameter = <TBuilder extends SourceBuilder>(
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
 ): TsConstructorParameter<TBuilder> => new TsConstructorParameter<TBuilder>({ ...options, name });
 
-export const tsConstructorParameter: typeof createConstructorParameter & { write: typeof writeTsParameters } = Object
-  .assign(createConstructorParameter, {
+export const tsConstructorParameter: typeof createConstructorParameter & { write: typeof writeTsParameters } =
+  Object.assign(createConstructorParameter, {
     write: writeTsParameters,
   });

@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { beforeEach, describe, it } from '@std/testing/bdd';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import type { TypeScriptImport } from '../../common-results.ts';
 import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from '../../config.ts';
@@ -10,10 +9,10 @@ let builder: TypeScriptFileBuilder;
 
 beforeEach(() => {
   // A fixed newLine keeps the expectations below host-independent.
-  builder = new TypeScriptFileBuilder(
-    undefined,
-    { ...defaultTypeScriptGeneratorConfig, newLine: '\n' } as TypeScriptGeneratorConfig,
-  );
+  builder = new TypeScriptFileBuilder(undefined, {
+    ...defaultTypeScriptGeneratorConfig,
+    newLine: '\n',
+  } as TypeScriptGeneratorConfig);
 });
 
 describe('tsReference', () => {
@@ -29,11 +28,9 @@ describe('tsReference', () => {
 
   it('should add the import if module name of file path is provided', () => {
     builder.append(tsReference('X', 'module'));
-    expect(builder.imports.imports).toEqual(
-      <TypeScriptImport[]> [
-        { kind: 'module', modulePath: 'module', name: 'X', type: 'import' },
-      ],
-    );
+    expect(builder.imports.imports).toEqual([
+      { kind: 'module', modulePath: 'module', name: 'X', type: 'import' },
+    ] as TypeScriptImport[]);
     expect(builder.toString(false)).toBe("import { X } from 'module';\nX");
   });
 

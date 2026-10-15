@@ -121,8 +121,10 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
       const sourcePath = `client/okhttp3/${file}`;
       const targetPath = resolve(targetDir, file);
       console.log(`Copying asset file "${sourcePath}" to "${targetPath}"`);
-      let fileContent = (await getAssetFileContent(sourcePath))
-        .replace(/@PACKAGE_NAME@/g, ctx.infrastructurePackageName);
+      let fileContent = (await getAssetFileContent(sourcePath)).replace(
+        /@PACKAGE_NAME@/g,
+        ctx.infrastructurePackageName,
+      );
       if (file === 'ApiClient.kt') {
         // This order is positional and must agree with the delegate call's own argument order —
         // `getClientDelegateArguments` in okhttp3-client-generator.ts is the other side of that agreement.
@@ -146,30 +148,30 @@ export class KotlinOkHttp3ClientsGenerator extends OpenApiServicesGenerationProv
 
     if (
       ctx.config.serializer === 'static' ||
-      typeof ctx.config.serializer === 'object' && ctx.config.serializer.mode === 'static'
+      (typeof ctx.config.serializer === 'object' && ctx.config.serializer.mode === 'static')
     ) {
       const filePath = resolve(targetDir, 'Serializer.kt');
       console.log(`Generating Serializer to ${filePath}...`);
       const springBootVersion = ctx.config.springBootVersion;
       const jsonIncludeMember = toCasing(ctx.config.serializerJsonInclude, 'snake');
-      const defaultFactory: AppendValue<KotlinFileBuilder> = springBootVersion === 4
-        // Jackson 3's ObjectMapper is immutable; configuration moved to the (Kotlin) mapper builder.
-        ? s`${kt.refs.jackson.jacksonMapperBuilder(springBootVersion)}()${s.indent`
+      const defaultFactory: AppendValue<KotlinFileBuilder> =
+        springBootVersion === 4
+          ? // Jackson 3's ObjectMapper is immutable; configuration moved to the (Kotlin) mapper builder.
+            s`${kt.refs.jackson.jacksonMapperBuilder(springBootVersion)}()${s.indent`
             .findAndAddModules()
             .changeDefaultPropertyInclusion { it.withValueInclusion(${kt.refs.jackson.jsonInclude()}.Include.${jsonIncludeMember}).withContentInclusion(${kt.refs.jackson.jsonInclude()}.Include.${jsonIncludeMember}) }
             .configure(${kt.refs.jackson.dateTimeFeature()}.WRITE_DATES_AS_TIMESTAMPS, false)
             .configure(${kt.refs.jackson.deserializationFeature(springBootVersion)}.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .build()`}`
-        : s`${kt.refs.jackson.jacksonObjectMapper(springBootVersion)}()${s.indent`
+          : s`${kt.refs.jackson.jacksonObjectMapper(springBootVersion)}()${s.indent`
             .findAndRegisterModules()
             .setSerializationInclusion(${kt.refs.jackson.jsonInclude()}.Include.${jsonIncludeMember})
             .configure(${kt.refs.jackson.serializationFeature(springBootVersion)}.WRITE_DATES_AS_TIMESTAMPS, false)
-            .configure(${
-          kt.refs.jackson.deserializationFeature(springBootVersion)
-        }.FAIL_ON_UNKNOWN_PROPERTIES, false)`}`;
-      const factory: AppendValue<KotlinFileBuilder> = typeof ctx.config.serializer === 'object'
-        ? ctx.config.serializer.factory
-        : defaultFactory;
+            .configure(${kt.refs.jackson.deserializationFeature(
+              springBootVersion,
+            )}.FAIL_ON_UNKNOWN_PROPERTIES, false)`}`;
+      const factory: AppendValue<KotlinFileBuilder> =
+        typeof ctx.config.serializer === 'object' ? ctx.config.serializer.factory : defaultFactory;
 
       const builder = new KotlinFileBuilder(ctx.infrastructurePackageName, ctx.config);
       builder.append(

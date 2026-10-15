@@ -34,8 +34,10 @@ export interface KotlinSpringReactiveWebClientGenerator<TOutput extends Output =
   generate(ctx: Context): MaybePromise<TOutput>;
 }
 
-export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGenerator<Context, Output>
-  implements KotlinSpringReactiveWebClientGenerator {
+export class DefaultKotlinSpringReactiveWebClientGenerator
+  extends KotlinFileGenerator<Context, Output>
+  implements KotlinSpringReactiveWebClientGenerator
+{
   public generate(ctx: Context): MaybePromise<Output> {
     const typeName = this.getRequestsObjectName(ctx, {});
     const packageName = this.getPackageName(ctx, {});
@@ -55,17 +57,17 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
     return { typeName, packageName };
   }
 
-  // deno-lint-ignore no-unused-vars
+  // oxlint-disable-next-line no-unused-vars
   protected getClientFileContent(ctx: Context, args: Args.GetClientFileContent): AppendValueGroup<Builder> {
     return appendValueGroup([this.getRequestsObject(ctx, {})], '\n\n');
   }
 
-  // deno-lint-ignore no-unused-vars
+  // oxlint-disable-next-line no-unused-vars
   protected getRequestsObject(ctx: Context, args: Args.GetRequestsObject): kt.Object<Builder> {
     return kt.object({
       name: this.getRequestsObjectName(ctx, {}),
       members: ctx.service.endpoints.flatMap((endpoint) =>
-        this.getEndpointMembers(ctx, { endpoint, parameters: this.getAllParameters(ctx, { endpoint }) })
+        this.getEndpointMembers(ctx, { endpoint, parameters: this.getAllParameters(ctx, { endpoint }) }),
       ),
     });
   }
@@ -114,7 +116,7 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
           toCasing(parameter.name, ctx.config.parameterNameCasing),
           this.getParameterType(ctx, { endpoint, parameter }),
           { default: this.getParameterDefaultValue(ctx, { endpoint, parameter }) },
-        )
+        ),
       ),
       returnType: this.getTypeUsage(ctx, { schema: responseSchema, fallback: kt.refs.unit() }),
       body: this.getEndpointFunctionBody(ctx, { endpoint, parameters, responseSchema }),
@@ -133,11 +135,11 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
       kt.call('retrieve', []),
       responseSchema
         ? kt.call(
-          kt.refs.springReactive.awaitBody([
-            this.getTypeUsage(ctx, { schema: responseSchema, fallback: kt.refs.unit() }),
-          ]),
-          [],
-        )
+            kt.refs.springReactive.awaitBody([
+              this.getTypeUsage(ctx, { schema: responseSchema, fallback: kt.refs.unit() }),
+            ]),
+            [],
+          )
         : kt.call(kt.refs.springReactive.awaitBodilessEntity(), []),
     ]);
 
@@ -171,7 +173,7 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
             toCasing(parameter.name, ctx.config.parameterNameCasing),
             this.getParameterType(ctx, { endpoint, parameter }),
             { default: this.getParameterDefaultValue(ctx, { endpoint, parameter }) },
-          )
+          ),
         ),
         kt.parameter(
           'responseHandler',
@@ -193,12 +195,12 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
     const requestFunctionName = this.getEndpointRequestFunctionName(ctx, { endpoint });
     const parameterNames = parameters.map((p) => toCasing(p.name, ctx.config.parameterNameCasing));
 
-    result.values.push(s`return ${
-      kt.call([
+    result.values.push(
+      s`return ${kt.call([
         kt.call(['this', requestFunctionName], parameterNames),
         kt.call([kt.refs.springReactive.awaitExchange()], ['responseHandler']),
-      ])
-    }`);
+      ])}`,
+    );
 
     return result;
   }
@@ -221,7 +223,7 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
           toCasing(parameter.name, ctx.config.parameterNameCasing),
           this.getParameterType(ctx, { endpoint, parameter }),
           { default: this.getParameterDefaultValue(ctx, { endpoint, parameter }) },
-        )
+        ),
       ),
       returnType: kt.refs.springReactive.requestHeadersSpec(['*']),
       body: this.getEndpointRequestFunctionBody(ctx, { endpoint, parameters, responseSchema }),
@@ -247,9 +249,9 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
 
     if (endpoint.requestBody?.content[0] !== undefined) {
       callChain.push(
-        s`contentType(${kt.refs.spring.mediaType()}.parseMediaType(${
-          kt.string(endpoint.requestBody.content[0].type)
-        }))`,
+        s`contentType(${kt.refs.spring.mediaType()}.parseMediaType(${kt.string(
+          endpoint.requestBody.content[0].type,
+        )}))`,
       );
     }
 
@@ -257,58 +259,67 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
       if (endpoint.requestBody.content[0].type === 'multipart/form-data') {
         callChain.push(
           kt.call('body', [
-            kt.call([kt.refs.springReactive.bodyInserters(), 'fromMultipartData'], [
-              kt.call([
-                kt.call(kt.refs.spring.multipartBodyBuilder(), []),
-                kt.call('apply', [
-                  kt.lambda(
-                    [],
-                    appendValueGroup(
-                      parameters.filter((x) => x.multipart).map((p) => {
-                        const parameterName = toCasing(p.name, ctx.config.parameterNameCasing);
-                        if (p.multipart?.isFile) {
-                          return kt.call([
-                            p.required && !p.schema?.nullable ? parameterName : `${parameterName}?`,
-                            'addToBuilder',
-                          ], ['this']);
-                        } else {
-                          const call = kt.call([
-                            kt.call('part', [kt.string(p.multipart!.name), parameterName]),
-                            kt.call('contentType', [
-                              kt.call([
-                                kt.refs.spring.mediaType(),
-                                'APPLICATION_JSON',
-                              ]),
-                            ]),
-                          ]);
-                          return p.required && !p.schema?.nullable ? call : kt.call([`${parameterName}?`, 'also'], [
-                            kt.lambda([parameterName], call, { singleline: true }),
-                          ]);
-                        }
-                      }),
-                      '\n',
-                    ),
-                  ),
-                ]),
-                'build',
-              ], []),
-            ]),
+            kt.call(
+              [kt.refs.springReactive.bodyInserters(), 'fromMultipartData'],
+              [
+                kt.call(
+                  [
+                    kt.call(kt.refs.spring.multipartBodyBuilder(), []),
+                    kt.call('apply', [
+                      kt.lambda(
+                        [],
+                        appendValueGroup(
+                          parameters
+                            .filter((x) => x.multipart)
+                            .map((p) => {
+                              const parameterName = toCasing(p.name, ctx.config.parameterNameCasing);
+                              if (p.multipart?.isFile) {
+                                return kt.call(
+                                  [
+                                    p.required && !p.schema?.nullable ? parameterName : `${parameterName}?`,
+                                    'addToBuilder',
+                                  ],
+                                  ['this'],
+                                );
+                              } else {
+                                const call = kt.call([
+                                  kt.call('part', [kt.string(p.multipart!.name), parameterName]),
+                                  kt.call('contentType', [kt.call([kt.refs.spring.mediaType(), 'APPLICATION_JSON'])]),
+                                ]);
+                                return p.required && !p.schema?.nullable
+                                  ? call
+                                  : kt.call(
+                                      [`${parameterName}?`, 'also'],
+                                      [kt.lambda([parameterName], call, { singleline: true })],
+                                    );
+                              }
+                            }),
+                          '\n',
+                        ),
+                      ),
+                    ]),
+                    'build',
+                  ],
+                  [],
+                ),
+              ],
+            ),
           ]),
         );
       } else {
         const bodySchema = endpoint.requestBody.content[0].schema;
         const parameterName = this.getRequestBodyParamName(ctx, { endpoint });
-        const call = kt.call('bodyValue', [
-          toCasing(parameterName, ctx.config.parameterNameCasing),
-        ]);
+        const call = kt.call('bodyValue', [toCasing(parameterName, ctx.config.parameterNameCasing)]);
         callChain.push(
-          endpoint.requestBody.required && !bodySchema?.nullable ? call : kt.call('apply', [
-            kt.lambda(
-              [],
-              kt.call([`${parameterName}?`, 'also'], [kt.lambda([parameterName], call, { singleline: true })]),
-              { singleline: true },
-            ),
-          ]),
+          endpoint.requestBody.required && !bodySchema?.nullable
+            ? call
+            : kt.call('apply', [
+                kt.lambda(
+                  [],
+                  kt.call([`${parameterName}?`, 'also'], [kt.lambda([parameterName], call, { singleline: true })]),
+                  { singleline: true },
+                ),
+              ]),
         );
       }
     }
@@ -319,17 +330,22 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
           kt.lambda(
             ['headers'],
             appendValueGroup(
-              parameters.filter((x) => x.target === 'header').map((p) => {
-                const parameterName = toCasing(p.name, ctx.config.parameterNameCasing);
-                const toString = this.getParameterToString(ctx, { endpoint, parameter: p });
-                return p.required && !p.schema?.nullable
-                  ? kt.call(['headers', 'add'], [kt.string(p.name), s<Builder>`${parameterName}${toString}`])
-                  : kt.call([`${parameterName}?`, 'also'], [
-                    kt.lambda([], kt.call(['headers', 'add'], [kt.string(p.name), s<Builder>`it${toString}`]), {
-                      singleline: true,
-                    }),
-                  ]);
-              }),
+              parameters
+                .filter((x) => x.target === 'header')
+                .map((p) => {
+                  const parameterName = toCasing(p.name, ctx.config.parameterNameCasing);
+                  const toString = this.getParameterToString(ctx, { endpoint, parameter: p });
+                  return p.required && !p.schema?.nullable
+                    ? kt.call(['headers', 'add'], [kt.string(p.name), s<Builder>`${parameterName}${toString}`])
+                    : kt.call(
+                        [`${parameterName}?`, 'also'],
+                        [
+                          kt.lambda([], kt.call(['headers', 'add'], [kt.string(p.name), s<Builder>`it${toString}`]), {
+                            singleline: true,
+                          }),
+                        ],
+                      );
+                }),
               '\n',
             ),
           ),
@@ -350,12 +366,14 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
     const { endpoint, parameters } = args;
 
     if (!ctx.config.preserveUriTemplate) {
-      return kt.call('uri', [kt.call(
-        [this.getEndpointUriFunctionName(ctx, { endpoint })],
-        parameters.filter((p) => p.target === 'path' || p.target === 'query').map((p) =>
-          toCasing(p.name, ctx.config.parameterNameCasing)
+      return kt.call('uri', [
+        kt.call(
+          [this.getEndpointUriFunctionName(ctx, { endpoint })],
+          parameters
+            .filter((p) => p.target === 'path' || p.target === 'query')
+            .map((p) => toCasing(p.name, ctx.config.parameterNameCasing)),
         ),
-      )]);
+      ]);
     }
 
     const uriTemplate = kt.string(this.getEndpointPath(ctx, { endpoint }));
@@ -389,10 +407,12 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
 
     return kt.call(
       [kt.refs.mapOf.infer()],
-      pathParameters.map((p) =>
-        s`${kt.string(p.name)} to ${toCasing(p.name, ctx.config.parameterNameCasing)}${
-          this.getParameterToString(ctx, { endpoint, parameter: p })
-        }`
+      pathParameters.map(
+        (p) =>
+          s`${kt.string(p.name)} to ${toCasing(p.name, ctx.config.parameterNameCasing)}${this.getParameterToString(
+            ctx,
+            { endpoint, parameter: p },
+          )}`,
       ),
     );
   }
@@ -411,11 +431,14 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
         const toString = this.getParameterToString(ctx, { endpoint, parameter: p });
         return p.required && !p.schema?.nullable
           ? kt.call('queryParam', [kt.string(p.name), s<Builder>`${parameterName}${toString}`])
-          : kt.call([`${parameterName}?`, 'also'], [
-            kt.lambda([], kt.call('queryParam', [kt.string(p.name), s<Builder>`it${toString}`]), {
-              singleline: true,
-            }),
-          ]);
+          : kt.call(
+              [`${parameterName}?`, 'also'],
+              [
+                kt.lambda([], kt.call('queryParam', [kt.string(p.name), s<Builder>`it${toString}`]), {
+                  singleline: true,
+                }),
+              ],
+            );
       }),
       '\n',
     );
@@ -432,13 +455,15 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
 
     return kt.function(functionName, {
       annotations: this.getEndpointDeprecatedAnnotations(ctx, { endpoint }),
-      parameters: parameters.filter((p) => p.target === 'path' || p.target === 'query').map((parameter) =>
-        kt.parameter(
-          toCasing(parameter.name, ctx.config.parameterNameCasing),
-          this.getParameterType(ctx, { endpoint, parameter }),
-          { default: this.getParameterDefaultValue(ctx, { endpoint, parameter }) },
-        )
-      ),
+      parameters: parameters
+        .filter((p) => p.target === 'path' || p.target === 'query')
+        .map((parameter) =>
+          kt.parameter(
+            toCasing(parameter.name, ctx.config.parameterNameCasing),
+            this.getParameterType(ctx, { endpoint, parameter }),
+            { default: this.getParameterDefaultValue(ctx, { endpoint, parameter }) },
+          ),
+        ),
       returnType: kt.refs.string(),
       body: this.getEndpointUriFunctionBody(ctx, { endpoint, parameters }),
     });
@@ -472,9 +497,7 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
       const itemEnumSchema = getArrayItemStringEnumSchema(parameter.schema);
       const itemEnumType = itemEnumSchema && this.getSchemaType(ctx, { schema: itemEnumSchema });
       return itemEnumType ? s`.joinToString(",", transform = ${itemEnumType}::value)` : '.joinToString(",")';
-    } else if (
-      getStringEnumSchema(parameter.schema) && this.getSchemaType(ctx, { schema: parameter.schema })
-    ) {
+    } else if (getStringEnumSchema(parameter.schema) && this.getSchemaType(ctx, { schema: parameter.schema })) {
       return '.value';
     } else {
       return '.toString()';
@@ -500,9 +523,11 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
     }
 
     if (getStringEnumSchema(schema) && schema?.default) {
-      return s`${this.getTypeUsage(ctx, { schema, nullable: false })}.${
-        this.toEnumValueName(ctx, schema.enum, schema.default)
-      }`;
+      return s`${this.getTypeUsage(ctx, { schema, nullable: false })}.${this.toEnumValueName(
+        ctx,
+        schema.enum,
+        schema.default,
+      )}`;
     }
 
     const itemEnumSchema = getArrayItemStringEnumSchema(schema);
@@ -525,11 +550,10 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
       : (fallback ?? kt.refs.any({ nullable }));
   }
 
-  // deno-lint-ignore no-unused-vars
+  // oxlint-disable-next-line no-unused-vars
   protected getPackageName(ctx: Context, args: Args.GetPackageName): string {
-    const packageSuffix = typeof ctx.config.packageSuffix === 'string'
-      ? ctx.config.packageSuffix
-      : ctx.config.packageSuffix(ctx.service);
+    const packageSuffix =
+      typeof ctx.config.packageSuffix === 'string' ? ctx.config.packageSuffix : ctx.config.packageSuffix(ctx.service);
     return ctx.config.packageName + packageSuffix;
   }
 
@@ -633,7 +657,7 @@ export class DefaultKotlinSpringReactiveWebClientGenerator extends KotlinFileGen
     return `${ctx.config.outputDir}/${packageName.replace(/\./g, '/')}/${this.getRequestsObjectName(ctx, {})}.kt`;
   }
 
-  // deno-lint-ignore no-unused-vars
+  // oxlint-disable-next-line no-unused-vars
   protected getRequestsObjectName(ctx: Context, args: Args.GetRequestsObjectName): string {
     return toCasing(`${ctx.service.name}_Requests`, ctx.config.typeNameCasing);
   }

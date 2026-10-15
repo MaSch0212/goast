@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import type { ApiData, ApiSchema } from '../transform/api-types.ts';
 import { defaultOpenApiGeneratorConfig } from './config.ts';
@@ -14,8 +13,13 @@ type Output = { items: Record<string, SchemaOutput> };
 type SchemaOutput = { name: string; __source__?: string };
 type Context = OpenApiSchemasGenerationProviderContext<Input, Output, AnyConfig, SchemaOutput>;
 
-class TestSchemasGenerator
-  extends OpenApiSchemasGenerationProviderBase<Input, Output, AnyConfig, SchemaOutput, Context> {
+class TestSchemasGenerator extends OpenApiSchemasGenerationProviderBase<
+  Input,
+  Output,
+  AnyConfig,
+  SchemaOutput,
+  Context
+> {
   public generatedSchemas: ApiSchema[] = [];
   public additionalFilesCalled = false;
 

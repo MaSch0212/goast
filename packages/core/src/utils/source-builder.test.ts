@@ -9,8 +9,7 @@
 // is what makes this a real check instead of a comparison of the implementation to itself.
 import { EOL } from 'node:os';
 
-import { expect } from '@std/expect';
-import { beforeEach, describe, it } from '@std/testing/bdd';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { builderTemplate, SourceBuilder, type SourceBuilderOptions } from './source-builder.ts';
 import { appendValueGroup } from './string-builder/utils.ts';
@@ -206,7 +205,7 @@ describe('SourceBuilder', () => {
         b.appendWithLinePrefix('// ', (b) => {
           b.appendLine('foo');
           b.appendLine('bar');
-        })
+        }),
       );
       expect(builder.toString()).toBe('  // foo\n  // bar\n');
     });
@@ -215,7 +214,7 @@ describe('SourceBuilder', () => {
       const builder = new SourceBuilder({ newLine: '\n' }).indent((b) =>
         b.appendWithLinePrefix('// ', (b) => {
           b.indent((b) => b.appendLine('foo'));
-        })
+        }),
       );
       expect(builder.toString()).toBe('  //   foo\n');
     });

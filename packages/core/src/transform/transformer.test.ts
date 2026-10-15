@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { derefAt, derefSchemaAt } from '../parse/deref.test-utils.ts';
 import type { OpenApiCollectorData } from '../collect/types.ts';
@@ -8,7 +7,6 @@ import type { OpenApiDocument } from '../parse/openapi-types.ts';
 import type { Deref } from '../parse/types.ts';
 import { transformOpenApi } from './transformer.ts';
 
-// deno-lint-ignore no-explicit-any
 const doc = (value: Record<string, any>) => derefAt('', value) as unknown as Deref<OpenApiDocument>;
 
 const empty = (): OpenApiCollectorData => ({ documents: [], schemas: new Map(), endpoints: new Map() });
@@ -38,19 +36,17 @@ describe('transformOpenApi', () => {
     input.documents.push(doc({ tags: [derefAt('/documents/0/tags/0', { name: 'pets' })] }));
     input.documents.push(doc({ tags: [derefAt('/documents/1/tags/0', { name: 'store' })] }));
 
-    expect(transformOpenApi(input).services.map((s) => s.name).sort()).toEqual(['pets', 'store']);
+    expect(
+      transformOpenApi(input)
+        .services.map((s) => s.name)
+        .sort(),
+    ).toEqual(['pets', 'store']);
   });
 
   it('transforms every collected schema, flattened into ApiData', () => {
     const input = empty();
-    input.schemas.set(
-      'test.yml#/components/schemas/Foo',
-      derefSchemaAt('/components/schemas/Foo', { type: 'object' }),
-    );
-    input.schemas.set(
-      'test.yml#/components/schemas/Bar',
-      derefSchemaAt('/components/schemas/Bar', { type: 'string' }),
-    );
+    input.schemas.set('test.yml#/components/schemas/Foo', derefSchemaAt('/components/schemas/Foo', { type: 'object' }));
+    input.schemas.set('test.yml#/components/schemas/Bar', derefSchemaAt('/components/schemas/Bar', { type: 'string' }));
 
     const schemas = transformOpenApi(input).schemas;
     expect(schemas).toHaveLength(2);

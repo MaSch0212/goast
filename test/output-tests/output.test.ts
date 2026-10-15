@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 
-import { describe, it } from '@std/testing/bdd';
+import { describe, it } from 'vitest';
 
 import { OpenApiGenerator } from '@goast/core';
 import { discoverSpecs, profileSnapshotPaths, snapshotRootDir, verifyProfile } from '@goast/test-harness';
@@ -16,11 +16,10 @@ for (const profile of profiles) {
 
       it(`${spec.versionDir}/${spec.name}`, async () => {
         const baseDir = join(snapshotRootDir, profile.language, profile.name, spec.versionDir);
-        await verifyProfile(
-          profileSnapshotPaths(baseDir, spec.name),
-          (outputDir) =>
-            profile.configure(new OpenApiGenerator({ outputDir, newLine: '\n', existingFileBehavior: 'count' }))
-              .parseAndGenerate(spec.files),
+        await verifyProfile(profileSnapshotPaths(baseDir, spec.name), (outputDir) =>
+          profile
+            .configure(new OpenApiGenerator({ outputDir, newLine: '\n', existingFileBehavior: 'count' }))
+            .parseAndGenerate(spec.files),
         );
       });
     }

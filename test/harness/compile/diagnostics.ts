@@ -21,11 +21,12 @@ export function formatDiagnostics(diagnostics: readonly Diagnostic[]): string {
 
 function renderDiagnostic(diagnostic: Diagnostic): string {
   const file = diagnostic.file === '' ? '<no file>' : diagnostic.file;
-  const position = diagnostic.line === null
-    ? ''
-    : diagnostic.column === null
-    ? `:${diagnostic.line}`
-    : `:${diagnostic.line}:${diagnostic.column}`;
+  const position =
+    diagnostic.line === null
+      ? ''
+      : diagnostic.column === null
+        ? `:${diagnostic.line}`
+        : `:${diagnostic.line}:${diagnostic.column}`;
   return `${file}${position} ${collapse(diagnostic.message)}`;
 }
 
@@ -104,7 +105,7 @@ function isWindowsDrivePath(path: string): boolean {
  *
  * Deliberately uses the WHATWG `URL` parser rather than `node:url`'s `fileURLToPath`, which refuses to
  * parse a *foreign*-OS URL on whichever host actually runs it — a POSIX-style URL throws `TypeError:
- * File URL path must be absolute` under Node/Deno on Windows, and the reverse is true on POSIX. That
+ * File URL path must be absolute` under Node on Windows, and the reverse is true on POSIX. That
  * host-coupling is exactly the property that made the original bug possible (see
  * {@link normalizeMessageUrls}'s doc comment): whichever host captured a diagnostic, its URL flavor
  * matched that host, and a later, differently-hosted comparison disagreed on it. Parsing manually here
@@ -144,8 +145,7 @@ export function decodeFileUrl(url: string): string | undefined {
  * climb).
  *
  * `relativizeDiagnostic` only rewrites the structured `file` field. A compiler's message can carry its
- * own `file://` URL too — `deno check`'s `TS2307`'s `not a dependency and not in import map from
- * "file://…"` clause does, and Kotlin's `e: file:///path:line:col message` format carries one as the
+ * own `file://` URL too — Kotlin's `e: file:///path:line:col message` format carries one as the
  * *entire* diagnostic-opening line — and that URL would otherwise survive into the committed snapshot
  * as raw text. The later repo-root normalization pass (`normalizePaths`, run by `verifyText`) matches
  * the checkout root against literal text, and a `file://` URL's boundary with the root differs by

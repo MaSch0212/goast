@@ -14,11 +14,13 @@ const propertiesNotDerivedFromRef: PropertyKey[] = ['title'];
 
 class DerefProxyHandler<T extends OpenApiObject<string>> implements ProxyHandler<T> {
   private readonly _overwrittenValues: Record<PropertyKey, unknown> = {};
+  private readonly _source: DerefSource<T>;
+  private _ref?: Deref<T>;
 
-  constructor(
-    private readonly _source: DerefSource<T>,
-    private _ref?: Deref<T>,
-  ) {}
+  constructor(source: DerefSource<T>, ref?: Deref<T>) {
+    this._source = source;
+    this._ref = ref;
+  }
 
   public get(target: T, prop: PropertyKey): unknown {
     if (prop === '$ref') {

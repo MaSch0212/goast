@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { beforeEach, describe, it } from '@std/testing/bdd';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { dedent } from '@goast/test-harness';
 
@@ -18,10 +17,10 @@ let builder: TypeScriptFileBuilder;
 
 beforeEach(() => {
   // A fixed newLine keeps the expectations below host-independent.
-  builder = new TypeScriptFileBuilder(
-    undefined,
-    { ...defaultTypeScriptGeneratorConfig, newLine: '\n' } as TypeScriptGeneratorConfig,
-  );
+  builder = new TypeScriptFileBuilder(undefined, {
+    ...defaultTypeScriptGeneratorConfig,
+    newLine: '\n',
+  } as TypeScriptGeneratorConfig);
 });
 
 describe('tsClass', () => {
@@ -51,9 +50,7 @@ describe('tsClass', () => {
         generics: [tsGenericParameter('T', { description: 'description' }), 'U'],
       }),
     );
-    expect(builder.toString(false)).toBe(
-      '/**\n * @template T description\n */\nclass X<T, U> {}\n',
-    );
+    expect(builder.toString(false)).toBe('/**\n * @template T description\n */\nclass X<T, U> {}\n');
   });
 
   it('should write the extends if it exists', () => {

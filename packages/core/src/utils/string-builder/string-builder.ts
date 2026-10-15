@@ -13,10 +13,10 @@ export type AppendParam<TBuilder extends StringBuilder, TAdditionalAppends> = Si
   // eslint-disable-next-line @typescript-eslint/ban-types
   | TAdditionalAppends
   | {
-    __type: 'append-value-group';
-    values: AppendParam<TBuilder, TAdditionalAppends>[];
-    separator: string | null;
-  }
+      __type: 'append-value-group';
+      values: AppendParam<TBuilder, TAdditionalAppends>[];
+      separator: string | null;
+    }
 >;
 
 export const AdditionalAppendsSymbol = Symbol('AdditionalAppends');

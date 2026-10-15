@@ -1,8 +1,8 @@
+import type { Stats } from 'node:fs';
+import { mkdir, readdir, readFile, rm, rmdir, stat, writeFile } from 'node:fs/promises';
 import { dirname, join, relative } from 'node:path';
 
-import { equals } from '@std/bytes';
-import { ensureDir } from '@std/fs/ensure-dir';
-import { walk } from '@std/fs/walk';
+import { isNotFound, walkFiles } from '../fs.ts';
 
 /** A directory tree flattened to relative, forward-slash-separated paths and raw file contents. */
 export type FileTree = Map<string, Uint8Array>;
@@ -21,17 +21,19 @@ export type TreeDiff = {
 export async function readFileTree(root: string): Promise<FileTree> {
   const tree: FileTree = new Map();
 
-  let info: Deno.FileInfo;
+  let info: Stats;
   try {
-    info = await Deno.stat(root);
+    info = await stat(root);
   } catch (error) {
-    if (error instanceof Deno.errors.NotFound) return tree;
+    if (isNotFound(error)) return tree;
     throw error;
   }
-  if (!info.isDirectory) throw new Error(`Not a directory: ${root}`);
+  if (!info.isDirectory()) throw new Error(`Not a directory: ${root}`);
 
-  for await (const entry of walk(root, { includeDirs: false, includeSymlinks: false })) {
-    tree.set(toRelativeKey(root, entry.path), await Deno.readFile(entry.path));
+  for (const file of await walkFiles(root)) {
+    // A plain `Uint8Array` view, so a tree compares equal to one built from non-Buffer bytes.
+    const bytes = await readFile(file);
+    tree.set(toRelativeKey(root, file), new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength));
   }
   return tree;
 }
@@ -46,7 +48,7 @@ export function diffFileTrees(expected: FileTree, actual: FileTree): TreeDiff {
     const expectedBytes = expected.get(path);
     if (expectedBytes === undefined) {
       added.push(path);
-    } else if (!equals(expectedBytes, actualBytes)) {
+    } else if (Buffer.compare(expectedBytes, actualBytes) !== 0) {
       changed.push(path);
     }
   }
@@ -69,11 +71,11 @@ export function formatDiffCounts(diff: TreeDiff): string {
 export async function applyTreeDiff(root: string, actual: FileTree, diff: TreeDiff): Promise<void> {
   for (const path of [...diff.added, ...diff.changed]) {
     const target = join(root, path);
-    await ensureDir(dirname(target));
-    await Deno.writeFile(target, actual.get(path)!);
+    await mkdir(dirname(target), { recursive: true });
+    await writeFile(target, actual.get(path)!);
   }
   for (const path of diff.removed) {
-    await Deno.remove(join(root, path));
+    await rm(join(root, path));
   }
   if (diff.removed.length > 0) {
     await removeEmptyDirs(root);
@@ -87,11 +89,11 @@ function toRelativeKey(root: string, path: string): string {
 /** Removes directories that deletions left empty. Returns true when `dir` itself was removed. */
 async function removeEmptyDirs(dir: string): Promise<boolean> {
   let childCount = 0;
-  for await (const entry of Deno.readDir(dir)) {
-    if (entry.isDirectory && await removeEmptyDirs(join(dir, entry.name))) continue;
+  for (const entry of await readdir(dir, { withFileTypes: true })) {
+    if (entry.isDirectory() && (await removeEmptyDirs(join(dir, entry.name)))) continue;
     childCount++;
   }
   if (childCount > 0) return false;
-  await Deno.remove(dir);
+  await rmdir(dir);
   return true;
 }

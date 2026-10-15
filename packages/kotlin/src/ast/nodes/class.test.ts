@@ -1,8 +1,7 @@
 import { appendValueGroup } from '@goast/core';
 import { dedent } from '@goast/test-harness';
 
-import { expect } from '@std/expect';
-import { beforeEach, describe, it } from '@std/testing/bdd';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { defaultKotlinGeneratorConfig, type KotlinGeneratorConfig } from '../../config.ts';
 import { KotlinFileBuilder } from '../../file-builder.ts';
 import { ktAnnotation } from './annotation.ts';
@@ -21,10 +20,10 @@ describe('ktClass', () => {
 
   beforeEach(() => {
     // A fixed newLine keeps the expectations below host-independent.
-    builder = new KotlinFileBuilder(
-      undefined,
-      { ...defaultKotlinGeneratorConfig, newLine: '\n' } as KotlinGeneratorConfig,
-    );
+    builder = new KotlinFileBuilder(undefined, {
+      ...defaultKotlinGeneratorConfig,
+      newLine: '\n',
+    } as KotlinGeneratorConfig);
   });
 
   it('should write class', () => {
@@ -46,9 +45,7 @@ describe('ktClass', () => {
     builder.append(
       ktClass('Foo', { primaryConstructor: ktConstructor([ktParameter.class('x', 'Int')], 'println(x)') }),
     );
-    expect(builder.toString(false)).toBe(
-      'class Foo(x: Int) {\n    init {\n        println(x)\n    }\n}\n',
-    );
+    expect(builder.toString(false)).toBe('class Foo(x: Int) {\n    init {\n        println(x)\n    }\n}\n');
   });
 
   it('should write members', () => {
@@ -122,9 +119,7 @@ describe('ktClass', () => {
         ]),
       }),
     );
-    expect(builder.toString(false)).toBe(
-      '/**\n * @property x The number\n */\nclass Foo(val x: Int)\n',
-    );
+    expect(builder.toString(false)).toBe('/**\n * @property x The number\n */\nclass Foo(val x: Int)\n');
   });
 
   it('should ignore primary constructor parameter property description if property is not set', () => {

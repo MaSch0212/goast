@@ -1,6 +1,10 @@
+import { spawn } from 'node:child_process';
+import { readFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join, relative } from 'node:path';
 
-import { walk } from '@std/fs/walk';
+import { walkFiles } from './fs.ts';
+import { exitCode, runCommand } from './process.ts';
 
 export type DockerMount = { source: string; target: string; readOnly?: boolean };
 
@@ -60,19 +64,17 @@ const REAP_TIMEOUT_MS = 5_000;
  * Fails with one plain sentence when Docker is unusable.
  *
  * Tiers 3 and 4 need it; tiers 1 and 2 never touch it. Without this check the first symptom is a
- * `NotFound` from `Deno.Command`, which reads like a bug in the harness rather than a missing
- * prerequisite.
+ * spawn `ENOENT`, which reads like a bug in the harness rather than a missing prerequisite.
  */
 export async function requireDocker(): Promise<void> {
   let code: number;
   try {
-    ({ code } = await new Deno.Command('docker', {
-      args: ['version', '--format', '{{.Server.Version}}'],
-      stdout: 'null',
-      stderr: 'null',
-    }).output());
-  } catch {
-    throw new Error('Docker is required for this tier, and the `docker` command was not found.');
+    ({ code } = await runCommand('docker', ['version', '--format', '{{.Server.Version}}'], {
+      stdout: 'ignore',
+      stderr: 'ignore',
+    }));
+  } catch (error) {
+    throw new Error('Docker is required for this tier, and the `docker` command was not found.', { cause: error });
   }
   if (code !== 0) {
     throw new Error('Docker is required for this tier, and the daemon did not respond.');
@@ -104,7 +106,8 @@ export function dockerRunArgs(options: RunContainerOptions): string[] {
   for (const mount of options.mounts ?? []) {
     assertNoComma(mount.source, 'source');
     assertNoComma(mount.target, 'target');
-    const spec = `type=bind,source=${normalizeMountPath(mount.source)},target=${mount.target}` +
+    const spec =
+      `type=bind,source=${normalizeMountPath(mount.source)},target=${mount.target}` +
       (mount.readOnly === true ? ',readonly' : '');
     args.push('--mount', spec);
   }
@@ -141,21 +144,16 @@ export function imageTag(name: string, contextHash: string): string {
  */
 export async function hashBuildContext(contextDir: string): Promise<string> {
   const parts: string[] = [];
-  const paths: string[] = [];
-  for await (const entry of walk(contextDir, { includeDirs: false, includeSymlinks: false })) {
-    paths.push(entry.path);
-  }
-  paths.sort();
-  for (const path of paths) {
+  for (const path of await walkFiles(contextDir)) {
     parts.push(relative(contextDir, path).replace(/\\/g, '/'));
-    parts.push(await Deno.readTextFile(path));
+    parts.push(await readFile(path, 'utf8'));
   }
 
-  const digest = await crypto.subtle.digest(
-    'SHA-256',
-    new TextEncoder().encode(parts.join(String.fromCharCode(0))),
-  );
-  return [...new Uint8Array(digest)].slice(0, 8).map((b) => b.toString(16).padStart(2, '0')).join('');
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(parts.join(String.fromCharCode(0))));
+  return [...new Uint8Array(digest)]
+    .slice(0, 8)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
 }
 
 /**
@@ -168,11 +166,7 @@ export async function buildImage(name: string, contextDir: string): Promise<stri
   await requireDocker();
   const tag = imageTag(name, await hashBuildContext(contextDir));
 
-  const inspect = await new Deno.Command('docker', {
-    args: ['image', 'inspect', tag],
-    stdout: 'null',
-    stderr: 'null',
-  }).output();
+  const inspect = await runCommand('docker', ['image', 'inspect', tag], { stdout: 'ignore', stderr: 'ignore' });
   if (inspect.code === 0) return tag;
 
   // `ignore-error=true` on the export, and it is not defensive habit. A layer cache is an optimisation:
@@ -182,17 +176,17 @@ export async function buildImage(name: string, contextDir: string): Promise<stri
   // service returned an error page. Cache *import* is already non-fatal in BuildKit, so only the export
   // needs saying. The error still appears in the build log, so a permanently broken cache is visible
   // rather than silent — it just no longer takes the run down with it.
-  const cacheArgs = Deno.env.get('CI') !== undefined && Deno.env.get('CI') !== ''
-    ? ['--cache-from', 'type=gha', '--cache-to', 'type=gha,mode=max,ignore-error=true']
-    : ['--cache-from', `type=local,src=${join(Deno.env.get('TMPDIR') ?? '/tmp', 'goast-docker-cache')}`];
+  const cacheArgs =
+    (process.env.CI ?? '') !== ''
+      ? ['--cache-from', 'type=gha', '--cache-to', 'type=gha,mode=max,ignore-error=true']
+      : ['--cache-from', `type=local,src=${join(tmpdir(), 'goast-docker-cache')}`];
 
-  const { code, stderr } = await new Deno.Command('docker', {
-    args: ['buildx', 'build', '--load', '--tag', tag, ...cacheArgs, contextDir],
-    stdout: 'inherit',
-    stderr: 'piped',
-  }).output();
-  const errorText = new TextDecoder().decode(stderr);
-  if (code !== 0) throw new Error(`Failed to build image ${tag}:\n${errorText}`);
+  const { code, stderr } = await runCommand(
+    'docker',
+    ['buildx', 'build', '--load', '--tag', tag, ...cacheArgs, contextDir],
+    { stdout: 'inherit' },
+  );
+  if (code !== 0) throw new Error(`Failed to build image ${tag}:\n${stderr}`);
   return tag;
 }
 
@@ -209,41 +203,25 @@ export async function runContainer(options: RunContainerOptions): Promise<Contai
   await requireDocker();
 
   const name = options.name ?? `goast-test-${crypto.randomUUID()}`;
-  const process = new Deno.Command('docker', {
-    args: dockerRunArgs({ ...options, name }),
-    stdout: 'piped',
-    stderr: 'piped',
-  }).spawn();
+  const killClient = new AbortController();
+  const run = runCommand('docker', dockerRunArgs({ ...options, name }), { signal: killClient.signal });
 
   let timedOut = false;
   const timeout = setTimeout(() => {
     timedOut = true;
     (async () => {
       try {
-        await new Deno.Command('docker', {
-          args: ['kill', name],
-          stdout: 'null',
-          stderr: 'null',
-        }).output();
-      } catch {
-        // Best effort; killing the client below still unblocks `process.output()`.
+        await runCommand('docker', ['kill', name], { stdout: 'ignore', stderr: 'ignore' });
+      } catch (error) {
+        // Killing the client below still settles `run`.
+        console.warn(`Could not run \`docker kill ${name}\` for a timed-out container:`, error);
       }
-      try {
-        process.kill('SIGKILL');
-      } catch {
-        // Already exited; nothing to kill.
-      }
+      killClient.abort();
     })();
   }, options.timeoutMs ?? DEFAULT_TIMEOUT_MS);
 
   try {
-    const { code, stdout, stderr } = await process.output();
-    return {
-      code,
-      stdout: new TextDecoder().decode(stdout),
-      stderr: new TextDecoder().decode(stderr),
-      timedOut,
-    };
+    return { ...(await run), timedOut };
   } finally {
     clearTimeout(timeout);
   }
@@ -281,43 +259,28 @@ export async function startContainer(options: RunContainerOptions): Promise<Runn
   await requireDocker();
 
   const name = options.name ?? `goast-test-${crypto.randomUUID()}`;
-  const process = new Deno.Command('docker', {
-    args: dockerRunArgs({ ...options, name }),
-    stdout: 'piped',
-    stderr: 'piped',
-  }).spawn();
+  const child = spawn('docker', dockerRunArgs({ ...options, name }), { stdio: ['ignore', 'pipe', 'pipe'] });
 
   let buffer = '';
-  const decoder = new TextDecoder();
-  const drain = async (stream: ReadableStream<Uint8Array>): Promise<void> => {
-    for await (const chunk of stream) buffer += decoder.decode(chunk, { stream: true });
-  };
-  // `allSettled`, not `all`: `all` short-circuits the moment one stream rejects, so `drained` could
-  // resolve while the *other* stream was still appending to `buffer` — which would falsify the one
-  // guarantee anything downstream relies on here, that `drained` settling means `buffer` is complete.
-  const drained = Promise.allSettled([drain(process.stdout), drain(process.stderr)]);
+  child.stdout.setEncoding('utf8').on('data', (chunk: string) => (buffer += chunk));
+  child.stderr.setEncoding('utf8').on('data', (chunk: string) => (buffer += chunk));
 
   let alive = true;
-  const exited = process.status.then(async ({ code }) => {
-    // `alive` flips only once the output streams have closed, not the instant the process exits, so that
-    // `output()` is complete for anyone who reacts to death by *reporting* it — `waitForHttpReady` calls
-    // `describeDeath()` to build its error, and a container's explanation of why it died is the last
-    // thing it writes.
-    //
-    // Stated honestly: the window this closes is real but small, and the gated
-    // `dies during startup` test passes with or without this `await` (measured, three runs each). The
-    // 250ms readiness-poll interval is wide enough to let the drain catch up on a container whose whole
-    // output is two lines. It is kept because the window scales with output volume and the callers that
-    // matter most are the ones with the most to say — a Gradle build reporting a compile failure emits
-    // kilobytes, and truncating *that* report is the difference between a diagnosable failure and a
-    // shrug. Do not treat the passing test as evidence this line is unnecessary.
-    //
-    // `drained` is an `allSettled`, so it never rejects and needs no `.catch` — and, more to the point,
-    // it does not settle until *both* streams are done, which is what makes `alive === false` a sound
-    // proof that `buffer` is complete. `hostPort`'s error path depends on exactly that.
-    await drained;
-    alive = false;
-    return code;
+  // `close`, not `exit`: `close` fires only once both output streams have ended, so `alive` flips only
+  // when `output()` is complete for anyone who reacts to death by *reporting* it — `waitForHttpReady`
+  // calls `describeDeath()` to build its error, and a container's explanation of why it died is the
+  // last thing it writes. A Gradle compile failure emits kilobytes; `exit` could truncate exactly that.
+  // `hostPort`'s error path relies on `alive === false` proving `buffer` complete.
+  const exited = new Promise<number>((resolve) => {
+    child.on('error', (error) => {
+      buffer += `Failed to run docker: ${error.message}\n`;
+      alive = false;
+      resolve(127);
+    });
+    child.on('close', (code, signal) => {
+      alive = false;
+      resolve(exitCode(code, signal));
+    });
   });
 
   /**
@@ -331,7 +294,7 @@ export async function startContainer(options: RunContainerOptions): Promise<Runn
    * `spawn()` returns before the daemon has created it — and in that case the container comes up moments
    * later and runs to completion.
    *
-   * So `process.kill()` follows, on the `docker run` client. This is what guarantees `exited` resolves at
+   * So `child.kill()` follows, on the `docker run` client. This is what guarantees `exited` resolves at
    * all: without it, a `stop()` issued in that early window awaits a process that will keep running for
    * the container's full lifetime. `runContainer`'s timeout path pairs the same two calls for the same
    * reason; omitting the second one here was a real hang, reproduced twice against a live daemon.
@@ -346,7 +309,7 @@ export async function startContainer(options: RunContainerOptions): Promise<Runn
    *     answers `is not running` and exits non-zero. Only `docker rm --force` removes it.
    *
    * Waiting until the container exists makes removal definitive, because one `docker run` creates exactly
-   * one container: there is no second create to race. `process.kill()` on the client then guarantees
+   * one container: there is no second create to race. `child.kill()` on the client then guarantees
    * `exited` resolves — without it, a `stop()` issued in the early window awaits a process that keeps
    * running for the container's full lifetime, which was a real hang reproduced against a live daemon.
    */
@@ -360,17 +323,20 @@ export async function startContainer(options: RunContainerOptions): Promise<Runn
    * exactly the state the early-stop window produces.
    */
   const remove = async (): Promise<void> => {
-    await new Deno.Command('docker', { args: ['rm', '--force', name], stdout: 'null', stderr: 'null' })
-      .output().then(() => {}).catch(() => {});
+    // A non-zero exit is expected: the container may already be gone.
+    await runCommand('docker', ['rm', '--force', name], { stdout: 'ignore', stderr: 'ignore' }).catch((error) => {
+      console.warn(`Could not run \`docker rm --force ${name}\`:`, error);
+    });
   };
   /** Exact-name existence check. `--filter name=` is a regex, so it is anchored to avoid substring hits. */
   const exists = async (): Promise<boolean> => {
-    const result = await new Deno.Command('docker', {
-      args: ['ps', '--all', '--filter', `name=^${name}$`, '--format', '{{.Names}}'],
-      stdout: 'piped',
-      stderr: 'null',
-    }).output().catch(() => undefined);
-    return result !== undefined && new TextDecoder().decode(result.stdout).trim() !== '';
+    const result = await runCommand('docker', ['ps', '--all', '--filter', `name=^${name}$`, '--format', '{{.Names}}'], {
+      stderr: 'ignore',
+    }).catch((error) => {
+      console.warn(`Could not check whether container ${name} exists:`, error);
+      return undefined;
+    });
+    return result !== undefined && result.stdout.trim() !== '';
   };
   const terminate = (): Promise<void> => {
     terminating ??= (async () => {
@@ -389,12 +355,8 @@ export async function startContainer(options: RunContainerOptions): Promise<Runn
       }
 
       await remove();
-      try {
-        process.kill('SIGKILL');
-      } catch {
-        // Already exited; nothing to kill.
-      }
-      await exited.catch(() => {});
+      child.kill('SIGKILL');
+      await exited;
       // Once more, for the case where the wait above timed out: if the container did appear after the
       // deadline, this is the last chance to take it with us.
       await remove();
@@ -427,12 +389,8 @@ export async function startContainer(options: RunContainerOptions): Promise<Runn
       let detail = '`docker port` was never able to answer';
 
       while (Date.now() < deadline) {
-        const { code, stdout, stderr } = await new Deno.Command('docker', {
-          args: ['port', name, `${containerPort}/tcp`],
-          stdout: 'piped',
-          stderr: 'piped',
-        }).output();
-        const text = new TextDecoder().decode(stdout).trim();
+        const { code, stdout, stderr } = await runCommand('docker', ['port', name, `${containerPort}/tcp`]);
+        const text = stdout.trim();
 
         if (code === 0 && text !== '') {
           // `docker port` prints one `<ip>:<port>` line per mapping; a container published on both IPv4
@@ -442,7 +400,7 @@ export async function startContainer(options: RunContainerOptions): Promise<Runn
           return Number(match[1]);
         }
 
-        detail = new TextDecoder().decode(stderr).trim() || `\`docker port\` exited ${code} with no output`;
+        detail = stderr.trim() || `\`docker port\` exited ${code} with no output`;
         if (!alive) break;
         await new Promise((resolve) => setTimeout(resolve, 100));
       }

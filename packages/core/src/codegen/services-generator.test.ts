@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import type { ApiData, ApiService } from '../transform/api-types.ts';
 import { defaultOpenApiGeneratorConfig } from './config.ts';
@@ -14,8 +13,13 @@ type Output = { items: Record<string, ServiceOutput> };
 type ServiceOutput = { name: string; __source__?: string };
 type Context = OpenApiServicesGenerationProviderContext<Input, Output, AnyConfig, ServiceOutput>;
 
-class TestServicesGenerator
-  extends OpenApiServicesGenerationProviderBase<Input, Output, AnyConfig, ServiceOutput, Context> {
+class TestServicesGenerator extends OpenApiServicesGenerationProviderBase<
+  Input,
+  Output,
+  AnyConfig,
+  ServiceOutput,
+  Context
+> {
   public generatedServices: ApiService[] = [];
   public additionalFilesCalled = false;
 

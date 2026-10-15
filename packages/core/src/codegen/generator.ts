@@ -1,6 +1,5 @@
 import { resolve } from 'node:path';
 
-// @deno-types="npm:@types/fs-extra@11"
 import fs from 'fs-extra';
 
 import { OpenApiParser } from '../parse/parser.ts';
@@ -24,7 +23,8 @@ type OpenApiGenerationProviders = {
   config: AnyConfig | undefined;
 }[];
 
-type VInput<TActual, TExpected> = TExpected extends TActual ? TActual
+type VInput<TActual, TExpected> = TExpected extends TActual
+  ? TActual
   : { __error: 'The current output of the generator does not satisfy the input of this generator.' };
 
 class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
@@ -42,7 +42,6 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
     provider: ActionProvider<OpenApiGenerationProviderFn<VInput<PInput, TOutput>, POutput, PConfig>>,
     config?: Partial<PConfig>,
   ): _OpenApiGenerator<Merge<[TOutput, POutput]>> {
-    // deno-lint-ignore no-explicit-any
     this._providers.push({ provider: provider as any, config });
     return new _OpenApiGenerator<Merge<[TOutput, POutput]>>(this._config, [...this._providers], this._parser);
   }
@@ -120,7 +119,6 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
   }
 }
 
-// deno-lint-ignore ban-types
 export class OpenApiGenerator extends _OpenApiGenerator<{}> {
   constructor(config?: Partial<OpenApiGeneratorConfig>) {
     super(
@@ -154,9 +152,8 @@ function mergeDeep<T extends Record<string, unknown>, U extends Record<string, u
   return mergeDeep(target, ...sources);
 }
 
-export type DefaultGenerationProviderConfig<T extends AnyConfig> =
-  & Omit<T, keyof OpenApiGeneratorConfig>
-  & Partial<Pick<T, keyof OpenApiGeneratorConfig>>;
+export type DefaultGenerationProviderConfig<T extends AnyConfig> = Omit<T, keyof OpenApiGeneratorConfig> &
+  Partial<Pick<T, keyof OpenApiGeneratorConfig>>;
 
 export abstract class OpenApiGenerationProviderBase<
   TInput extends OpenApiGeneratorInput,

@@ -35,8 +35,10 @@ export interface TypeScriptModelGenerator<TOutput extends Output = Output> {
   generate(ctx: Context): MaybePromise<TOutput>;
 }
 
-export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Context, Output>
-  implements TypeScriptModelGenerator {
+export class DefaultTypeScriptModelGenerator
+  extends TypeScriptFileGenerator<Context, Output>
+  implements TypeScriptModelGenerator
+{
   public generate(ctx: Context): MaybePromise<Output> {
     if (this.shouldGenerateTypeDeclaration(ctx, ctx.schema)) {
       const name = this.getDeclarationTypeName(ctx, ctx.schema);
@@ -69,10 +71,11 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
         additionalExports: exports
           .filter((x) => x.name !== name)
           .map(
-            (x) => ({
-              name: x.name,
-              type: x instanceof ts.TypeAlias || x instanceof ts.Interface ? 'type-export' : 'export',
-            } as const),
+            (x) =>
+              ({
+                name: x.name,
+                type: x instanceof ts.TypeAlias || x instanceof ts.Interface ? 'type-export' : 'export',
+              }) as const,
           ),
         kind: this.getNodeKind(node),
       };
@@ -135,7 +138,7 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
       }),
       export: true,
       members: (ctx.schema.enum?.map((x) => String(x)) ?? []).map((x) =>
-        ts.enumValue(toCasing(x, ctx.config.enumValueNameCasing), { value: ts.string(x) })
+        ts.enumValue(toCasing(x, ctx.config.enumValueNameCasing), { value: ts.string(x) }),
       ),
     });
   }
@@ -178,22 +181,25 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
 
     const inheritedSchemas = this.getInheritedSchemas(ctx, schema);
     if (inheritedSchemas.length > 0) {
-      const fixedProperties = inheritedSchemas.reduce((p, c) => {
-        const mappingValues = Object.entries(c.discriminator.mapping)
-          .filter(([_, value]) => value.id === schema.id)
-          .map(([key]) => ts.string(key));
-        if (c.discriminator.propertyName in p) {
-          p[c.discriminator.propertyName].types.push(...mappingValues);
-        } else {
-          p[c.discriminator.propertyName] = ts.unionType(mappingValues);
-        }
-        return p;
-      }, {} as Record<string, ts.UnionType<Builder>>);
+      const fixedProperties = inheritedSchemas.reduce(
+        (p, c) => {
+          const mappingValues = Object.entries(c.discriminator.mapping)
+            .filter(([_, value]) => value.id === schema.id)
+            .map(([key]) => ts.string(key));
+          if (c.discriminator.propertyName in p) {
+            p[c.discriminator.propertyName].types.push(...mappingValues);
+          } else {
+            p[c.discriminator.propertyName] = ts.unionType(mappingValues);
+          }
+          return p;
+        },
+        {} as Record<string, ts.UnionType<Builder>>,
+      );
       result.type = ts.intersectionType([
         ts.refs.omit([result.type, ts.unionType(Object.keys(fixedProperties).map((x) => ts.string(x)))]),
         ts.objectType({
           members: Object.entries(fixedProperties).map(([key, value]) =>
-            ts.property(key, { type: value, readonly: ctx.config.immutableTypes })
+            ts.property(key, { type: value, readonly: ctx.config.immutableTypes }),
           ),
         }),
       ]);
@@ -218,11 +224,11 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
   protected getIndexer(ctx: Context, schema: ObjectLikeApiSchema): ts.Indexer<Builder> | null {
     return schema.additionalProperties
       ? ts.indexer(
-        ts.refs.string(),
-        (schema.additionalProperties === true ? null : this.getMemberType(ctx, schema.additionalProperties)) ??
-          this.getAnyType(ctx),
-        { readonly: ctx.config.immutableTypes },
-      )
+          ts.refs.string(),
+          (schema.additionalProperties === true ? null : this.getMemberType(ctx, schema.additionalProperties)) ??
+            this.getAnyType(ctx),
+          { readonly: ctx.config.immutableTypes },
+        )
       : null;
   }
 
@@ -376,7 +382,7 @@ export class DefaultTypeScriptModelGenerator extends TypeScriptFileGenerator<Con
                   }),
                   this.getType(ctx, value),
                 ]),
-              })
+              }),
             ),
           }),
           this.getDiscriminatorGenericParamName(ctx, schema as ApiSchema),

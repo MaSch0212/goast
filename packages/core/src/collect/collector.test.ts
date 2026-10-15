@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { derefAt, derefSchemaAt } from '../parse/deref.test-utils.ts';
 import type { OpenApiDocument } from '../parse/openapi-types.ts';
@@ -7,7 +6,6 @@ import type { Deref } from '../parse/types.ts';
 import { collectOpenApi } from './collector.ts';
 
 /** Wraps a plain document literal as the parser would, at the document root. */
-// deno-lint-ignore no-explicit-any
 function doc(value: Record<string, any>): Deref<OpenApiDocument> {
   return derefAt('', value) as unknown as Deref<OpenApiDocument>;
 }
@@ -81,10 +79,9 @@ describe('collectOpenApi', () => {
               Body: derefAt('/components/requestBodies/Body', {
                 content: {
                   'application/json': derefAt('/components/requestBodies/Body/content/application~1json', {
-                    schema: derefSchemaAt(
-                      '/components/requestBodies/Body/content/application~1json/schema',
-                      { type: 'object' },
-                    ),
+                    schema: derefSchemaAt('/components/requestBodies/Body/content/application~1json/schema', {
+                      type: 'object',
+                    }),
                   }),
                 },
               }),
@@ -285,9 +282,7 @@ describe('collectOpenApi', () => {
       const a = derefSchemaAt('/components/schemas/A', { type: 'object', properties: {} });
       (a.properties as Record<string, unknown>).bar = second;
 
-      const data = collectOpenApi([
-        doc({ components: { schemas: { Foo: first, A: a } } }),
-      ]);
+      const data = collectOpenApi([doc({ components: { schemas: { Foo: first, A: a } } })]);
 
       expect(data.schemas.size).toBe(2);
       expect(data.schemas.get('test.yml#/components/schemas/Foo')).toBe(first);
@@ -295,7 +290,6 @@ describe('collectOpenApi', () => {
     });
 
     it('terminates on a self-referential schema', () => {
-      // deno-lint-ignore no-explicit-any
       const node: any = { type: 'object', properties: {} };
       const proxied = derefSchemaAt('/components/schemas/Node', node);
       // Point the schema at itself after proxying, which is the shape a $ref cycle produces.
@@ -400,10 +394,9 @@ describe('collectOpenApi', () => {
                 requestBody: derefAt('/paths/~1a/get/requestBody', {
                   content: {
                     'application/json': derefAt('/paths/~1a/get/requestBody/content/application~1json', {
-                      schema: derefSchemaAt(
-                        '/paths/~1a/get/requestBody/content/application~1json/schema',
-                        { type: 'object' },
-                      ),
+                      schema: derefSchemaAt('/paths/~1a/get/requestBody/content/application~1json/schema', {
+                        type: 'object',
+                      }),
                     }),
                   },
                 }),
@@ -411,10 +404,9 @@ describe('collectOpenApi', () => {
                   '200': derefAt('/paths/~1a/get/responses/200', {
                     content: {
                       'application/json': derefAt('/paths/~1a/get/responses/200/content/application~1json', {
-                        schema: derefSchemaAt(
-                          '/paths/~1a/get/responses/200/content/application~1json/schema',
-                          { type: 'object' },
-                        ),
+                        schema: derefSchemaAt('/paths/~1a/get/responses/200/content/application~1json/schema', {
+                          type: 'object',
+                        }),
                       }),
                     },
                   }),
@@ -492,10 +484,9 @@ describe('collectOpenApi', () => {
                   '200': derefAt('/paths/~1a/get/responses/200', {
                     headers: {
                       'X-Rate': derefAt('/paths/~1a/get/responses/200/headers/X-Rate', {
-                        schema: derefSchemaAt(
-                          '/paths/~1a/get/responses/200/headers/X-Rate/schema',
-                          { type: 'integer' },
-                        ),
+                        schema: derefSchemaAt('/paths/~1a/get/responses/200/headers/X-Rate/schema', {
+                          type: 'integer',
+                        }),
                       }),
                     },
                   }),
@@ -530,7 +521,7 @@ describe('collectOpenApi', () => {
               }),
             },
           }),
-        ])
+        ]),
       ).toThrow(TypeError);
     });
   });

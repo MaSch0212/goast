@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { derefAt, derefSchemaAt } from '../parse/deref.test-utils.ts';
 import { createTransformerContext } from './transform.test-utils.ts';
@@ -11,9 +10,7 @@ import { transformEndpoint } from './transform-endpoint.ts';
 function endpointInfo(
   path: string,
   method: 'get' | 'post' | 'put' | 'delete',
-  // deno-lint-ignore no-explicit-any
   operation: Record<string, any>,
-  // deno-lint-ignore no-explicit-any
   pathItem: Record<string, any> = {},
 ): OpenApiCollectorEndpointInfo {
   const escaped = path.replace(/\//g, '~1');
@@ -22,7 +19,6 @@ function endpointInfo(
     method,
     pathItem: derefAt(`/paths/${escaped}`, pathItem),
     operation: derefAt(`/paths/${escaped}/${method}`, operation),
-    // deno-lint-ignore no-explicit-any
   } as any;
 }
 
@@ -36,9 +32,7 @@ function endpointInfo(
 function rawEndpointInfo(
   path: string,
   method: 'get' | 'post' | 'put' | 'delete',
-  // deno-lint-ignore no-explicit-any
   pathItem: Record<string, any>,
-  // deno-lint-ignore no-explicit-any
   operation: Record<string, any>,
 ): OpenApiCollectorEndpointInfo {
   const escaped = path.replace(/\//g, '~1');
@@ -47,7 +41,6 @@ function rawEndpointInfo(
     method,
     pathItem,
     operation: derefAt(`/paths/${escaped}/${method}`, operation),
-    // deno-lint-ignore no-explicit-any
   } as any;
 }
 
@@ -177,9 +170,14 @@ describe('transformEndpoint', () => {
       const context = createTransformerContext();
       const endpoint = transformEndpoint(
         context,
-        endpointInfo('/pets/{id}', 'get', { operationId: 'a' }, {
-          parameters: [derefAt('/paths/~1pets~1{id}/parameters/0', { name: 'id', in: 'path', required: true })],
-        }),
+        endpointInfo(
+          '/pets/{id}',
+          'get',
+          { operationId: 'a' },
+          {
+            parameters: [derefAt('/paths/~1pets~1{id}/parameters/0', { name: 'id', in: 'path', required: true })],
+          },
+        ),
       );
 
       expect(endpoint.parameters.map((p) => p.name)).toEqual(['id']);
@@ -191,12 +189,17 @@ describe('transformEndpoint', () => {
       const context = createTransformerContext();
       const endpoint = transformEndpoint(
         context,
-        endpointInfo('/pets/{id}', 'get', {
-          operationId: 'a',
-          parameters: [derefAt('/paths/~1pets~1{id}/get/parameters/0', { name: 'limit', in: 'query' })],
-        }, {
-          parameters: [derefAt('/paths/~1pets~1{id}/parameters/0', { name: 'id', in: 'path' })],
-        }),
+        endpointInfo(
+          '/pets/{id}',
+          'get',
+          {
+            operationId: 'a',
+            parameters: [derefAt('/paths/~1pets~1{id}/get/parameters/0', { name: 'limit', in: 'query' })],
+          },
+          {
+            parameters: [derefAt('/paths/~1pets~1{id}/parameters/0', { name: 'id', in: 'path' })],
+          },
+        ),
       );
 
       expect(endpoint.parameters.map((p) => p.name)).toEqual(['id', 'limit']);
@@ -206,12 +209,19 @@ describe('transformEndpoint', () => {
       const context = createTransformerContext();
       const endpoint = transformEndpoint(
         context,
-        endpointInfo('/pets/{id}', 'get', {
-          operationId: 'a',
-          parameters: [derefAt('/paths/~1pets~1{id}/get/parameters/0', { name: 'id', in: 'path', description: 'op' })],
-        }, {
-          parameters: [derefAt('/paths/~1pets~1{id}/parameters/0', { name: 'id', in: 'path', description: 'path' })],
-        }),
+        endpointInfo(
+          '/pets/{id}',
+          'get',
+          {
+            operationId: 'a',
+            parameters: [
+              derefAt('/paths/~1pets~1{id}/get/parameters/0', { name: 'id', in: 'path', description: 'op' }),
+            ],
+          },
+          {
+            parameters: [derefAt('/paths/~1pets~1{id}/parameters/0', { name: 'id', in: 'path', description: 'path' })],
+          },
+        ),
       );
 
       expect(endpoint.parameters).toHaveLength(1);
@@ -222,12 +232,17 @@ describe('transformEndpoint', () => {
       const context = createTransformerContext();
       const endpoint = transformEndpoint(
         context,
-        endpointInfo('/pets/{id}', 'get', {
-          operationId: 'a',
-          parameters: [derefAt('/paths/~1pets~1{id}/get/parameters/0', { name: 'id', in: 'query' })],
-        }, {
-          parameters: [derefAt('/paths/~1pets~1{id}/parameters/0', { name: 'id', in: 'path' })],
-        }),
+        endpointInfo(
+          '/pets/{id}',
+          'get',
+          {
+            operationId: 'a',
+            parameters: [derefAt('/paths/~1pets~1{id}/get/parameters/0', { name: 'id', in: 'query' })],
+          },
+          {
+            parameters: [derefAt('/paths/~1pets~1{id}/parameters/0', { name: 'id', in: 'path' })],
+          },
+        ),
       );
 
       // combineParameters matches on `name` alone, so the query parameter displaces the path parameter and
@@ -620,10 +635,7 @@ describe('transformEndpoint', () => {
       const target = derefAt('/components/parameters/Shared', { name: 'limit', in: 'query' });
       const param = derefAt('/paths/~1a/get/parameters/0', { name: 'limit', in: 'query' }, target);
 
-      const endpoint = transformEndpoint(
-        context,
-        endpointInfo('/a', 'get', { operationId: 'a', parameters: [param] }),
-      );
+      const endpoint = transformEndpoint(context, endpointInfo('/a', 'get', { operationId: 'a', parameters: [param] }));
 
       expect(endpoint.parameters[0].$ref).toBeDefined();
       expect(endpoint.parameters[0].$ref!.$src.path).toBe('/components/parameters/Shared');

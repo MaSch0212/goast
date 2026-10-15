@@ -1,10 +1,12 @@
+import { lstat, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 
+import { isNotFound } from '../fs.ts';
 import { resolveSnapshotMode, type VerifyOptions } from '../snapshot/mode.ts';
 import { verifyText } from '../snapshot/verify-text.ts';
 
 /** The task that regenerates tier 4's deviation artifacts. */
-const WIRE_UPDATE_COMMAND = 'deno task test:integration';
+const WIRE_UPDATE_COMMAND = 'pnpm test:integration';
 
 /**
  * Where one case's deviations are committed.
@@ -39,9 +41,9 @@ export async function verifyWireDeviations(
 
   let exists = true;
   try {
-    await Deno.lstat(snapshotFile);
+    await lstat(snapshotFile);
   } catch (error) {
-    if (!(error instanceof Deno.errors.NotFound)) throw error;
+    if (!isNotFound(error)) throw error;
     exists = false;
   }
   if (!exists) return;
@@ -53,6 +55,6 @@ export async function verifyWireDeviations(
     );
   }
 
-  await Deno.remove(snapshotFile);
+  await rm(snapshotFile);
   console.info(`wire deviation removed ${snapshotFile}`);
 }

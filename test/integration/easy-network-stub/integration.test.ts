@@ -30,8 +30,7 @@
  */
 import { join } from 'node:path';
 
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import {
   buildImage,
@@ -61,8 +60,8 @@ import {
   TREE_MOUNT,
 } from './build.ts';
 
-/** Same gate as tier 4's other Docker legs. `deno task test:integration:stubs` sets this. */
-const enabled = (Deno.env.get('GOAST_INTEGRATION') ?? '') !== '';
+/** Same gate as tier 4's other Docker legs. `pnpm test:integration:stubs` sets this. */
+const enabled = (process.env.GOAST_INTEGRATION ?? '') !== '';
 
 const CONTEXT_DIR = join(repoRootDir, 'test', 'docker', 'node');
 
@@ -92,115 +91,117 @@ function registrationReport(output: string): string[] {
 // immediately, not after this file has already built an image.
 if (enabled) await requireDocker();
 
-if (enabled) {
-  describe(`integration/${PROFILE}`, () => {
-    it('answers every server case and records its deviations', async () => {
-      const cases = casesFor(PROFILE, 'server');
-      const image = await buildImage('node', CONTEXT_DIR);
+describe.skipIf(!enabled)(`integration/${PROFILE}`, () => {
+  it('answers every server case and records its deviations', async () => {
+    const cases = casesFor(PROFILE, 'server');
+    const image = await buildImage('node', CONTEXT_DIR);
 
-      // Per case, keyed by case id. Populated inside the container's lifetime and asserted after it, so a
-      // failure to stop the container cannot leave assertions unrun.
-      const responses = new Map<string, Awaited<ReturnType<typeof readResponse>>>();
-      const failures = new Map<string, string>();
-      let registration: string[] = [];
+    // Per case, keyed by case id. Populated inside the container's lifetime and asserted after it, so a
+    // failure to stop the container cannot leave assertions unrun.
+    const responses = new Map<string, Awaited<ReturnType<typeof readResponse>>>();
+    const failures = new Map<string, string>();
+    let registration: string[] = [];
 
-      const container = await startContainer({
-        image,
-        entrypoint: 'sh',
-        args: ['-c', buildCommand()],
-        mounts: [
-          { source: TREE_DIR, target: TREE_MOUNT, readOnly: true },
-          { source: DRIVER_DIR, target: DRIVER_MOUNT, readOnly: true },
-        ],
-        publish: [{ containerPort: SERVER_PORT }],
+    const container = await startContainer({
+      image,
+      entrypoint: 'sh',
+      args: ['-c', buildCommand()],
+      mounts: [
+        { source: TREE_DIR, target: TREE_MOUNT, readOnly: true },
+        { source: DRIVER_DIR, target: DRIVER_MOUNT, readOnly: true },
+      ],
+      publish: [{ containerPort: SERVER_PORT }],
+    });
+
+    try {
+      const port = await container.hostPort(SERVER_PORT);
+      // `tsc` compiles the whole generated tree before the server binds, so the first request cannot be
+      // sent for tens of seconds on a cold container.
+      await waitForHttpReady(`http://127.0.0.1:${port}${READINESS_PATH}`, {
+        timeoutMs: 5 * 60 * 1000,
+        isAlive: () => container.running(),
+        describeDeath: () => container.output(),
       });
 
-      try {
-        const port = await container.hostPort(SERVER_PORT);
-        // `tsc` compiles the whole generated tree before the server binds, so the first request cannot be
-        // sent for tens of seconds on a cold container.
-        await waitForHttpReady(`http://127.0.0.1:${port}${READINESS_PATH}`, {
-          timeoutMs: 5 * 60 * 1000,
-          isAlive: () => container.running(),
-          describeDeath: () => container.output(),
-        });
+      // Read before the first request: the report is printed during start-up, so by the time readiness
+      // answered it is already complete.
+      registration = registrationReport(container.output());
 
-        // Read before the first request: the report is printed during start-up, so by the time readiness
-        // answered it is already complete.
-        registration = registrationReport(container.output());
-
-        const baseUrl = `http://127.0.0.1:${port}`;
-        for (const apiCase of cases) {
-          // Sequential, in table order, one request per case: that is what makes attribution exact. Two
-          // cases sharing an operation (`updatePet/json` and `updatePet/form`, and the five `getWidget`
-          // cases) are told apart by which response *this* call returned, not by anything the server
-          // records.
-          try {
-            responses.set(apiCase.id, await readResponse(await issueCase(baseUrl, apiCase)));
-          } catch (error) {
-            // See this file's header: an unmatched route destroys the socket here, so a transport failure
-            // is a measurement, not a reason to abandon the run.
-            failures.set(apiCase.id, describeTransportFailure(error));
-          }
+      const baseUrl = `http://127.0.0.1:${port}`;
+      for (const apiCase of cases) {
+        // Sequential, in table order, one request per case: that is what makes attribution exact. Two
+        // cases sharing an operation (`updatePet/json` and `updatePet/form`, and the five `getWidget`
+        // cases) are told apart by which response *this* call returned, not by anything the server
+        // records.
+        try {
+          responses.set(apiCase.id, await readResponse(await issueCase(baseUrl, apiCase)));
+        } catch (error) {
+          // See this file's header: an unmatched route destroys the socket here, so a transport failure
+          // is a measurement, not a reason to abandon the run.
+          failures.set(apiCase.id, describeTransportFailure(error));
         }
-
-        // The server must still be up. If it died partway through, every case after that point recorded a
-        // transport failure that says nothing about the generated code, and the whole run's artifacts
-        // would be fiction. Load-bearing in this leg specifically: `destroy()` is a normal outcome here,
-        // and a `destroy()` that took the process down with it would look identical per case.
-        expect(container.running(), `the server exited during the run\n\n${container.output()}`).toBe(true);
-
-        // The adapter's own fault marker, asserted rather than trusted. `driver/adapter.ts` answers an
-        // internal fault with `599` and logs `##ADAPTER-FAULT##` — but its fully degraded path, where the
-        // `599` write *also* fails, ends in destroying the socket, which on the wire is byte-identical to
-        // the library's legitimate `destroy()` of an unmatched route. Two cases in this leg record exactly
-        // that legitimate destroy, so without this line a driver fault would be committed as a generator
-        // defect and nothing would say otherwise. The log is the one channel a wire-only observer cannot
-        // fake.
-        expect(container.output(), 'the adapter faulted during the run').not.toContain('##ADAPTER-FAULT##');
-      } finally {
-        await container.stop();
       }
 
-      // One line per operation the case table drives, and exactly one failure — see this file's header
-      // for why this is asserted before a single artifact is written.
-      //
-      // Derived from the case table rather than written as a literal count. The driver names each report
-      // line after the operation it registers, so comparing the two *sets* says what a number cannot: an
-      // operation the table drives but nobody registered has no route at all, and from the host that is
-      // indistinguishable from a route matcher that refused to match — a silent generator-defect artifact
-      // with no generator defect behind it.
-      expect(
-        registration.map((line) => line.slice(0, line.indexOf(':'))).sort(),
-        `the registration report does not cover every operation\n\n${registration.join('\n')}`,
-      ).toEqual([...new Set(cases.map((c) => c.operationId))].sort());
-      expect(registration.filter((line) => line.includes('FAILED'))).toEqual(EXPECTED_REGISTRATION_FAILURES);
+      // The server must still be up. If it died partway through, every case after that point recorded a
+      // transport failure that says nothing about the generated code, and the whole run's artifacts
+      // would be fiction. Load-bearing in this leg specifically: `destroy()` is a normal outcome here,
+      // and a `destroy()` that took the process down with it would look identical per case.
+      expect(container.running(), `the server exited during the run\n\n${container.output()}`).toBe(true);
 
-      // Drift protection, the analogue of the client direction's reported-ids check: every case must have
-      // produced either a response or a recorded transport failure.
-      expect([...responses.keys(), ...failures.keys()].sort(), 'a case was never driven')
-        .toEqual(cases.map((c) => c.id).sort());
+      // The adapter's own fault marker, asserted rather than trusted. `driver/adapter.ts` answers an
+      // internal fault with `599` and logs `##ADAPTER-FAULT##` — but its fully degraded path, where the
+      // `599` write *also* fails, ends in destroying the socket, which on the wire is byte-identical to
+      // the library's legitimate `destroy()` of an unmatched route. Two cases in this leg record exactly
+      // that legitimate destroy, so without this line a driver fault would be committed as a generator
+      // defect and nothing would say otherwise. The log is the one channel a wire-only observer cannot
+      // fake.
+      expect(container.output(), 'the adapter faulted during the run').not.toContain('##ADAPTER-FAULT##');
+    } finally {
+      await container.stop();
+    }
 
-      for (const apiCase of cases) {
-        const response = responses.get(apiCase.id);
-        const deviations = response === undefined
-          ? [{
-            field: 'response',
-            expected: `status ${apiCase.response.status}`,
-            actual: `no response at all (${failures.get(apiCase.id)})`,
-          }]
+    // One line per operation the case table drives, and exactly one failure — see this file's header
+    // for why this is asserted before a single artifact is written.
+    //
+    // Derived from the case table rather than written as a literal count. The driver names each report
+    // line after the operation it registers, so comparing the two *sets* says what a number cannot: an
+    // operation the table drives but nobody registered has no route at all, and from the host that is
+    // indistinguishable from a route matcher that refused to match — a silent generator-defect artifact
+    // with no generator defect behind it.
+    expect(
+      registration.map((line) => line.slice(0, line.indexOf(':'))).sort(),
+      `the registration report does not cover every operation\n\n${registration.join('\n')}`,
+    ).toEqual([...new Set(cases.map((c) => c.operationId))].sort());
+    expect(registration.filter((line) => line.includes('FAILED'))).toEqual(EXPECTED_REGISTRATION_FAILURES);
+
+    // Drift protection, the analogue of the client direction's reported-ids check: every case must have
+    // produced either a response or a recorded transport failure.
+    expect([...responses.keys(), ...failures.keys()].sort(), 'a case was never driven').toEqual(
+      cases.map((c) => c.id).sort(),
+    );
+
+    for (const apiCase of cases) {
+      const response = responses.get(apiCase.id);
+      const deviations =
+        response === undefined
+          ? [
+              {
+                field: 'response',
+                expected: `status ${apiCase.response.status}`,
+                actual: `no response at all (${failures.get(apiCase.id)})`,
+              },
+            ]
           : diffResponse(apiCase.response, response);
 
-        await verifyWireDeviations(
-          wireSnapshotFile(wireRootDir, PROFILE, apiCase.id),
-          formatDeviations(deviations),
-          // The default this would otherwise print is `deno task test:integration`, which does not set
-          // `GOAST_INTEGRATION` and therefore cannot regenerate a single artifact in this directory. A
-          // check failure that tells you to run a command that silently does nothing is worse than one
-          // that says nothing at all.
-          { updateCommand: 'deno task test:integration:stubs' },
-        );
-      }
-    });
+      await verifyWireDeviations(
+        wireSnapshotFile(wireRootDir, PROFILE, apiCase.id),
+        formatDeviations(deviations),
+        // The default this would otherwise print is `pnpm test:integration`, which does not set
+        // `GOAST_INTEGRATION` and therefore cannot regenerate a single artifact in this directory. A
+        // check failure that tells you to run a command that silently does nothing is worse than one
+        // that says nothing at all.
+        { updateCommand: 'pnpm test:integration:stubs' },
+      );
+    }
   });
-}
+});

@@ -1,8 +1,11 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { readFile } from 'node:fs/promises';
+
+import { describe, expect, it } from 'vitest';
 import * as YAML from 'yaml';
 
 import { cases, casesFor } from './cases.ts';
+
+const kitchenSinkSpec = new URL('../specs/integration/kitchen-sink.yml', import.meta.url);
 
 describe('cases', () => {
   it('gives every case a unique id', () => {
@@ -21,9 +24,7 @@ describe('cases', () => {
   });
 
   it('covers every operation in the kitchen-sink spec at least once', async () => {
-    const spec = await Deno.readTextFile(
-      new URL('../specs/integration/kitchen-sink.yml', import.meta.url),
-    );
+    const spec = await readFile(kitchenSinkSpec, 'utf8');
     const operationIds = [...spec.matchAll(/^\s*operationId:\s*(\S+)/gm)].map((m) => m[1]);
     const covered = new Set(cases.map((c) => c.operationId));
 
@@ -37,15 +38,15 @@ describe('cases', () => {
     // check — the contract proof issues expectRequest verbatim, so a wrong pathTemplate still routes and
     // still round-trips, and the resulting deviation gets attributed to the generator instead of to the
     // table. This test is what would have caught that.
-    const specText = await Deno.readTextFile(
-      new URL('../specs/integration/kitchen-sink.yml', import.meta.url),
-    );
+    const specText = await readFile(kitchenSinkSpec, 'utf8');
     const spec = YAML.parse(specText) as { paths: Record<string, Record<string, { operationId?: string }>> };
 
-    const unresolved = cases.filter((c) => {
-      const operation = spec.paths[c.pathTemplate]?.[c.method];
-      return operation?.operationId !== c.operationId;
-    }).map((c) => c.id);
+    const unresolved = cases
+      .filter((c) => {
+        const operation = spec.paths[c.pathTemplate]?.[c.method];
+        return operation?.operationId !== c.operationId;
+      })
+      .map((c) => c.id);
 
     expect(unresolved).toEqual([]);
   });

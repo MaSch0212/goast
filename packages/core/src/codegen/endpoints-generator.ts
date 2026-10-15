@@ -65,7 +65,7 @@ export abstract class OpenApiEndpointsGenerationProviderBase<
 
   protected abstract addEndpointResult(ctx: TContext, endpoint: ApiEndpoint, result: TEndpointOutput): void;
 
-  // deno-lint-ignore no-unused-vars
+  // oxlint-disable-next-line no-unused-vars
   protected generateAdditionalFiles(ctx: TContext): MaybePromise<void> {
     // Override if needed
   }

@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 
-import { describe, it } from '@std/testing/bdd';
+import { describe, it } from 'vitest';
 
 import { OpenApiParser } from '@goast/core';
 import { declutterApiData, discoverSpecs, serializeNormalized, snapshotRootDir, verifyText } from '@goast/test-harness';

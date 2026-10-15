@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import type { ApiSchema, CombinedLikeApiSchema } from '@goast/core';
 
@@ -9,43 +8,34 @@ import { DefaultTypeScriptModelGenerator } from './model-generator.ts';
 
 class TestableGenerator extends DefaultTypeScriptModelGenerator {
   /** Renders whatever the named protected member returns, so a test can assert on emitted source. */
-  // deno-lint-ignore no-explicit-any
   private render(member: string, ctx: any, ...args: any[]): string {
     const builder = new TypeScriptFileBuilder();
-    // deno-lint-ignore no-explicit-any
     builder.append((this as any)[member](ctx, ...args));
     return builder.toString(false);
   }
 
-  // deno-lint-ignore no-explicit-any
   public callGetCombinedType(ctx: any, schema: any): string {
     return this.render('getCombinedType', ctx, schema);
   }
 
-  // deno-lint-ignore no-explicit-any
   public callGetOneOfType(ctx: any, schema: any): string {
     return this.render('getOneOfType', ctx, schema);
   }
 
-  // deno-lint-ignore no-explicit-any
   public callGetArrayType(ctx: any, schema: any): string {
     return this.render('getArrayType', ctx, schema);
   }
 
-  // deno-lint-ignore no-explicit-any
   public callGetIndexer(ctx: any, schema: any): string {
     return this.render('getIndexer', ctx, schema);
   }
 
-  // deno-lint-ignore no-explicit-any
   public callGetType(ctx: any, schema: any, options?: any): string {
     return this.render('getType', ctx, schema, options);
   }
 
-  // deno-lint-ignore no-explicit-any
   public callGetProperties(ctx: any, schema: any): string {
     const builder = new TypeScriptFileBuilder();
-    // deno-lint-ignore no-explicit-any
     builder.append(ts.objectType({ members: (this as any).getProperties(ctx, schema) }));
     return builder.toString(false);
   }
@@ -86,7 +76,6 @@ function nullSchema(): ApiSchema {
 describe('DefaultTypeScriptModelGenerator', () => {
   describe('getCombinedType', () => {
     const generator = () => new TestableGenerator();
-    // deno-lint-ignore no-explicit-any
     const ctx: any = { schema: { id: 'parent-schema' }, config: {} };
 
     it('renders anyOf as a union of its branches instead of a Partial<> intersection', () => {
@@ -135,7 +124,6 @@ describe('DefaultTypeScriptModelGenerator', () => {
   // could not represent a value the spec explicitly permits.
   describe('nullability of member positions', () => {
     const generator = () => new TestableGenerator();
-    // deno-lint-ignore no-explicit-any
     const ctx: any = { schema: { id: 'parent-schema' }, config: {} };
 
     it('admits null in an anyOf branch whose schema is nullable', () => {

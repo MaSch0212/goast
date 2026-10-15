@@ -1,6 +1,5 @@
 import { resolve } from 'node:path';
 
-// @deno-types="npm:@types/fs-extra@11"
 import fs from 'fs-extra';
 
 import {
@@ -49,8 +48,8 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
 
   constructor(clientGeneratorFactory?: Factory<TypeScriptAngularServiceGenerator, []>) {
     super();
-    this._clientGeneratorFactory = clientGeneratorFactory ??
-      Factory.fromValue(new DefaultTypeScriptAngularServiceGenerator());
+    this._clientGeneratorFactory =
+      clientGeneratorFactory ?? Factory.fromValue(new DefaultTypeScriptAngularServiceGenerator());
   }
 
   protected override initResult(): Output {
@@ -173,8 +172,7 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
             ts.property('_rootUrl', { accessModifier: 'private', type: ts.refs.string(), value: ts.string('') }),
             ts.property('rootUrl', {
               doc: ts.doc({
-                description:
-                  `Gets or sets the root URL for API operations provided by this service.\nFalls back to \`${ctx.refs.apiConfiguration.refName}.rootUrl\` if not set in this service.`,
+                description: `Gets or sets the root URL for API operations provided by this service.\nFalls back to \`${ctx.refs.apiConfiguration.refName}.rootUrl\` if not set in this service.`,
               }),
               accessModifier: 'public',
               type: ts.refs.string(),
@@ -205,8 +203,8 @@ export class TypeScriptAngularServicesGenerator extends OpenApiServicesGeneratio
       [
         ts.function(toCasing(`provide_${ctx.config.domainName ?? ''}_Api`, ctx.config.functionNameCasing), {
           doc: ts.doc({
-            description: 'Provides all the API services' +
-              (ctx.config.domainName ? ` for ${ctx.config.domainName}` : '') + '.',
+            description:
+              'Provides all the API services' + (ctx.config.domainName ? ` for ${ctx.config.domainName}` : '') + '.',
           }),
           export: true,
           parameters: [ts.parameter('config', { type: ctx.refs.apiConfiguration(), optional: true })],

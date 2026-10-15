@@ -1,7 +1,8 @@
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { specsDir } from './paths.ts';
 import { discoverSpecs } from './specs.ts';
@@ -28,16 +29,16 @@ describe('discoverSpecs', () => {
     const key = (s: { versionDir: string; name: string }) => `${s.versionDir}/${s.name}`;
 
     expect(first.map(key)).toEqual(second.map(key));
-    expect(first.map(key)).toEqual([...first.map(key)].sort());
+    expect(first.map(key)).toEqual(first.map(key).sort());
   });
 
   it('treats a directory as one spec whose files parse together', async () => {
-    const root = await Deno.makeTempDir({ prefix: 'goast-specs-' });
+    const root = await mkdtemp(join(tmpdir(), 'goast-specs-'));
     try {
-      await Deno.mkdir(join(root, 'v3', 'split-spec'), { recursive: true });
-      await Deno.writeTextFile(join(root, 'v3', 'split-spec', 'b.yml'), 'openapi: 3.0.0\n');
-      await Deno.writeTextFile(join(root, 'v3', 'split-spec', 'a.yml'), 'openapi: 3.0.0\n');
-      await Deno.writeTextFile(join(root, 'v3', 'split-spec', 'notes.md'), 'ignored\n');
+      await mkdir(join(root, 'v3', 'split-spec'), { recursive: true });
+      await writeFile(join(root, 'v3', 'split-spec', 'b.yml'), 'openapi: 3.0.0\n');
+      await writeFile(join(root, 'v3', 'split-spec', 'a.yml'), 'openapi: 3.0.0\n');
+      await writeFile(join(root, 'v3', 'split-spec', 'notes.md'), 'ignored\n');
 
       const specs = await discoverSpecs(root);
 
@@ -48,50 +49,53 @@ describe('discoverSpecs', () => {
         join(root, 'v3', 'split-spec', 'b.yml'),
       ]);
     } finally {
-      await Deno.remove(root, { recursive: true });
+      await rm(root, { recursive: true });
     }
   });
 
   it('throws when two specs would share one snapshot base', async () => {
-    const root = await Deno.makeTempDir({ prefix: 'goast-specs-' });
+    const root = await mkdtemp(join(tmpdir(), 'goast-specs-'));
     try {
-      await Deno.mkdir(join(root, 'v3'), { recursive: true });
-      await Deno.writeTextFile(join(root, 'v3', 'pets.yml'), 'openapi: 3.0.0\n');
-      await Deno.writeTextFile(join(root, 'v3', 'pets.json'), '{}');
+      await mkdir(join(root, 'v3'), { recursive: true });
+      await writeFile(join(root, 'v3', 'pets.yml'), 'openapi: 3.0.0\n');
+      await writeFile(join(root, 'v3', 'pets.json'), '{}');
 
-      const error = await discoverSpecs(root).then(() => undefined, (e: Error) => e);
+      const error = await discoverSpecs(root).then(
+        () => undefined,
+        (e: Error) => e,
+      );
 
       expect(error).toBeInstanceOf(Error);
       expect(error!.message).toContain('v3/pets');
       expect(error!.message).toContain(join(root, 'v3', 'pets.json'));
       expect(error!.message).toContain(join(root, 'v3', 'pets.yml'));
     } finally {
-      await Deno.remove(root, { recursive: true });
+      await rm(root, { recursive: true });
     }
   });
 
   it('allows the same spec name in different version directories', async () => {
-    const root = await Deno.makeTempDir({ prefix: 'goast-specs-' });
+    const root = await mkdtemp(join(tmpdir(), 'goast-specs-'));
     try {
-      await Deno.mkdir(join(root, 'v2'), { recursive: true });
-      await Deno.mkdir(join(root, 'v3'), { recursive: true });
-      await Deno.writeTextFile(join(root, 'v2', 'pets.yml'), 'swagger: "2.0"\n');
-      await Deno.writeTextFile(join(root, 'v3', 'pets.yml'), 'openapi: 3.0.0\n');
+      await mkdir(join(root, 'v2'), { recursive: true });
+      await mkdir(join(root, 'v3'), { recursive: true });
+      await writeFile(join(root, 'v2', 'pets.yml'), 'swagger: "2.0"\n');
+      await writeFile(join(root, 'v3', 'pets.yml'), 'openapi: 3.0.0\n');
 
       expect((await discoverSpecs(root)).map((s) => `${s.versionDir}/${s.name}`)).toEqual(['v2/pets', 'v3/pets']);
     } finally {
-      await Deno.remove(root, { recursive: true });
+      await rm(root, { recursive: true });
     }
   });
 
   it('ignores an absent version directory', async () => {
-    const root = await Deno.makeTempDir({ prefix: 'goast-specs-' });
+    const root = await mkdtemp(join(tmpdir(), 'goast-specs-'));
     try {
-      await Deno.mkdir(join(root, 'v3'));
-      await Deno.writeTextFile(join(root, 'v3', 'only.json'), '{}');
+      await mkdir(join(root, 'v3'));
+      await writeFile(join(root, 'v3', 'only.json'), '{}');
       expect((await discoverSpecs(root)).map((s) => s.name)).toEqual(['only']);
     } finally {
-      await Deno.remove(root, { recursive: true });
+      await rm(root, { recursive: true });
     }
   });
 

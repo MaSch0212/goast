@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { beforeEach, describe, it } from '@std/testing/bdd';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { defaultTypeScriptGeneratorConfig, type TypeScriptGeneratorConfig } from '../../config.ts';
 import { TypeScriptFileBuilder } from '../../file-builder.ts';
@@ -10,10 +9,10 @@ let builder: TypeScriptFileBuilder;
 
 beforeEach(() => {
   // A fixed newLine keeps the expectations below host-independent.
-  builder = new TypeScriptFileBuilder(
-    undefined,
-    { ...defaultTypeScriptGeneratorConfig, newLine: '\n' } as TypeScriptGeneratorConfig,
-  );
+  builder = new TypeScriptFileBuilder(undefined, {
+    ...defaultTypeScriptGeneratorConfig,
+    newLine: '\n',
+  } as TypeScriptGeneratorConfig);
 });
 
 describe('tsEnumValue', () => {
@@ -54,9 +53,7 @@ describe('tsEnumValue', () => {
         },
       }),
     );
-    expect(builder.toString(false)).toBe(
-      '║b║║bd║\n/**\n * description\n */\n║ad║║bn║x║an║ = ║bv║42║av║║a║',
-    );
+    expect(builder.toString(false)).toBe('║b║║bd║\n/**\n * description\n */\n║ad║║bn║x║an║ = ║bv║42║av║║a║');
   });
 
   describe('write', () => {

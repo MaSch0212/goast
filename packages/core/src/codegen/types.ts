@@ -11,14 +11,12 @@ export type OpenApiGeneratorContext<TInput extends OpenApiGeneratorInput = OpenA
   config: OpenApiGeneratorConfig;
 };
 
-export type OpenApiGenerationProviderContext<TInput extends OpenApiGeneratorInput, TConfig extends AnyConfig> =
-  & Omit<
-    OpenApiGeneratorContext<TInput>,
-    'config'
-  >
-  & {
-    config: OpenApiGeneratorConfig & TConfig;
-  };
+export type OpenApiGenerationProviderContext<TInput extends OpenApiGeneratorInput, TConfig extends AnyConfig> = Omit<
+  OpenApiGeneratorContext<TInput>,
+  'config'
+> & {
+  config: OpenApiGeneratorConfig & TConfig;
+};
 
 export interface OpenApiGenerationProvider<
   TInput extends OpenApiGeneratorInput = OpenApiGeneratorInput,

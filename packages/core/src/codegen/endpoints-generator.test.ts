@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import type { ApiData, ApiEndpoint } from '../transform/api-types.ts';
 import { defaultOpenApiGeneratorConfig } from './config.ts';
@@ -14,8 +13,13 @@ type Output = { items: Record<string, EndpointOutput> };
 type EndpointOutput = { name: string; __source__?: string };
 type Context = OpenApiEndpointsGenerationProviderContext<Input, Output, AnyConfig, EndpointOutput>;
 
-class TestEndpointsGenerator
-  extends OpenApiEndpointsGenerationProviderBase<Input, Output, AnyConfig, EndpointOutput, Context> {
+class TestEndpointsGenerator extends OpenApiEndpointsGenerationProviderBase<
+  Input,
+  Output,
+  AnyConfig,
+  EndpointOutput,
+  Context
+> {
   public generatedEndpoints: ApiEndpoint[] = [];
   public additionalFilesCalled = false;
 

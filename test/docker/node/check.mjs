@@ -1,124 +1,136 @@
 #!/usr/bin/env node
 /**
- * Type-checks a `tsconfig.json` using the TypeScript compiler API, not the `tsc` CLI binary.
+ * Type-checks a `tsconfig.json` as one program with the image's TypeScript 7 `tsc`, without losing
+ * semantic diagnostics to a syntax error.
  *
- * The CLI's own driver (`emitFilesAndReportErrors` in `typescript.js`) only computes semantic
- * diagnostics when the program has **zero** syntactic diagnostics anywhere in it:
+ * TypeScript 7 ships no compiler JS API, only the CLI, and the CLI reports nothing but syntax errors as
+ * soon as any file in the program has one: the syntax errors of every unparseable file, no semantic
+ * diagnostic for any file. Every profile in this corpus has such files (`models/.ts` and friends), so a
+ * plain `tsc -p` would hide every real type error in the whole profile. So:
  *
- * ```js
- * addRange(allDiagnostics, program.getSyntacticDiagnostics(...));
- * if (allDiagnostics.length === configFileParsingDiagnosticsLength) {
- *   // ... only reached when there were no syntax errors ...
- *   addRange(allDiagnostics, program.getSemanticDiagnostics(...));
- * }
- * ```
+ * 1. Full run. Clean exit, or failure without syntax errors, is the answer.
+ * 2. Otherwise a `--noCheck` run reports exactly the syntax errors, of all unparseable files at once.
+ * 3. Those files are dropped from the roots and the rest is checked once more. A syntax error in a file
+ *    that is not a root, or a dropped file a remaining root still imports, is fatal: the rest of the
+ *    program cannot honestly be reported as checked.
  *
- * Verified directly against this repo's corpus: every TypeScript profile's `v3/non-ascii-names` unit
- * carries a real, committed syntax error (defect 21 in `docs/superpowers/plans/2026-07-25-generator-bug-fixes.md`
- * — a schema whose normalized name is empty renders as `export type  = {`, invalid TypeScript). Running
- * a single combined `tsc --noEmit` over a whole profile's 54 units — as the CLI is designed to be run —
- * means that one syntax error silently discards every semantic diagnostic (every `TS2456`, every real
- * type error) for the other 53 units too. `code !== 0` stays true and diagnostics are still parsed (the
- * syntax error itself), so the existing "non-zero exit with zero diagnostics" vacuous-green guard does
- * not catch this — the profile would report only the two known syntax defects and silently hide
- * everything else, indistinguishable from "no other unit has a problem."
+ * `test/compile-tests/runners/host-tsc.ts` runs the same strategy per host unit; this copy exists
+ * because the container sees none of the repo's sources.
  *
- * `ts.getPreEmitDiagnostics` — the same public, stable API `ts-jest` and `ttypescript` build on — has no
- * such short-circuit: it unconditionally concatenates config, options, syntactic, global, and semantic
- * diagnostics. Using it here keeps the one-program-per-profile performance shape the gate is built
- * around while actually finding what a per-unit `tsc` invocation would.
+ * Output contract with `test/compile-tests/runners/tsc.ts`:
  *
- * Config parsing (`extends`, `include` glob expansion, `typeRoots`, everything) goes through
- * `ts.getParsedCommandLineOfConfigFile`, the exact function the CLI itself calls — so behavior stays
- * identical to `tsc` for anything other than the short-circuit above.
+ * - `##GOAST-ROOT## <path>` per config root under the working directory, from `tsc --showConfig` (which
+ *   expands `include` into `files`), so the runner can prove every unit contributed files. A broken
+ *   `include` otherwise exits 0 with nothing to say, which reads like "checked and clean".
+ * - Then `tsc --pretty false` diagnostics verbatim: `file(line,col): error TSxxxx: message`, paths
+ *   relative to the working directory.
+ * - Or `##GOAST-FATAL## <reason>` when the result cannot be trusted. The runner throws on it.
  *
- * Diagnostics are rendered with the public `ts.formatDiagnostic`, which produces the same
- * `file(line,col): error TSxxxx: message` text `tsc` itself prints, so `parseTscDiagnostics` needs no
- * awareness that this script exists.
- *
- * Two more properties matter to the caller (`test/compile-tests/runners/tsc.ts`), both hardened after a
- * review round found them:
- *
- * - **Every write happens through `main()`'s return value, never `process.exit()`.** `runContainer`
- *   captures stdout over a pipe, and Node's stdout is asynchronous on a pipe — a `process.exit()` call
- *   discards whatever is still buffered. Measured directly against this image: at 40,000 lines only
- *   16,686 arrived; at 200,000, only 85,065. `code !== 0 && diagnostics.length === 0` cannot see this,
- *   because plenty of diagnostics still parse — the run just silently loses its tail. Setting
- *   `process.exitCode` and letting the event loop drain naturally is what avoids it.
- * - **Every root file the program actually compiled is reported**, one per `##GOAST-ROOT##` line, so the
- *   runner can confirm each unit contributed at least one file to the program. A misconfigured `include`
- *   (a typo, a pattern matching nothing, `tsc`'s own dot-file exclusion — see `runners/tsc.ts`'s comment
- *   on `include` for a real instance of the last one) otherwise compiles and exits 0 with nothing to say,
- *   which reads identically to "checked and clean."
+ * Output is written once, at the end, and the exit code set via `process.exitCode`, never
+ * `process.exit()`: stdout is asynchronous on a pipe and `process.exit()` drops whatever is still
+ * buffered (measured: 16,686 of 40,000 lines arrived), while plenty of diagnostics still parse.
  */
+import { spawnSync } from 'node:child_process';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { tmpdir } from 'node:os';
+import { dirname, join, relative, resolve } from 'node:path';
 import process from 'node:process';
-import { relative } from 'node:path';
+import { inspect } from 'node:util';
 
-import ts from 'typescript';
+const TSC = join(dirname(createRequire(import.meta.url).resolve('typescript/package.json')), 'bin', 'tsc');
+
+const DIAGNOSTIC = /^(?:(?<file>[^(]+)\(\d+,\d+\): )?error TS\d+: /;
+
+function tsc(args) {
+  const result = spawnSync(process.execPath, [TSC, ...args], { encoding: 'utf8', maxBuffer: 1024 ** 3 });
+  if (result.error !== undefined) throw new Error(`tsc ${args.join(' ')} failed to run`, { cause: result.error });
+  if (result.status === null) throw new Error(`tsc ${args.join(' ')} was killed by ${result.signal}`);
+  const output = result.stdout + result.stderr;
+  return { code: result.status, output, errorFiles: errorFiles(output) };
+}
+
+/** File of every error line, cwd-relative as `tsc` prints it; `''` for an error without a position. */
+function errorFiles(output) {
+  return output
+    .split('\n')
+    .map((line) => DIAGNOSTIC.exec(line)?.groups)
+    .filter((groups) => groups !== undefined)
+    .map((groups) => groups.file ?? '');
+}
+
+/** Config roots, relative to cwd. */
+function rootsOf(configPath) {
+  const shown = tsc(['-p', configPath, '--showConfig']);
+  if (shown.code !== 0) throw new Error(`tsc --showConfig exited ${shown.code}:\n${shown.output}`);
+  const { files } = JSON.parse(shown.output);
+  if (!Array.isArray(files)) throw new Error(`tsc --showConfig listed no files:\n${shown.output}`);
+  return files.map((file) => relative(process.cwd(), resolve(dirname(configPath), file)).replace(/\\/g, '/'));
+}
+
+function check(configPath, roots) {
+  const full = tsc(['-p', configPath, '--pretty', 'false']);
+  if (full.code === 0) return { code: 0, output: full.output };
+
+  const syntax = tsc(['-p', configPath, '--pretty', 'false', '--noCheck']);
+  if (syntax.errorFiles.length === 0) return { code: full.code, output: full.output };
+
+  const remaining = new Set(roots);
+  const dropped = new Set(syntax.errorFiles);
+  for (const file of dropped) {
+    if (!remaining.delete(file)) {
+      throw new Error(
+        `tsc cannot parse ${file === '' ? '<no file>' : file}, which is not a root, so it cannot be excluded ` +
+          'and every other file goes unchecked. Either an import reaches an unparseable file, or the error ' +
+          `carries no position.\n${syntax.output}`,
+      );
+    }
+  }
+  if (remaining.size === 0) return { code: syntax.code, output: syntax.output };
+
+  const dir = mkdtempSync(join(tmpdir(), 'goast-check-'));
+  try {
+    const restConfig = join(dir, 'tsconfig.json');
+    writeFileSync(
+      restConfig,
+      JSON.stringify({ extends: configPath, files: [...remaining].map((file) => resolve(file)), include: [] }),
+    );
+    const rest = tsc(['-p', restConfig, '--pretty', 'false']);
+    const reached = [...new Set(rest.errorFiles.filter((file) => dropped.has(file)))];
+    if (reached.length > 0) {
+      throw new Error(
+        `tsc still reports ${reached.join(', ')} after dropping it from the roots, so a remaining root ` +
+          `imports it and its syntax error hides every semantic diagnostic.\n${rest.output}`,
+      );
+    }
+    return { code: syntax.code, output: syntax.output + rest.output };
+  } finally {
+    rmSync(dir, { recursive: true });
+  }
+}
 
 function main() {
-  const [, , configPath] = process.argv;
-  if (configPath === undefined) {
-    console.error('usage: check.mjs <tsconfig.json>');
+  const [, , configArg] = process.argv;
+  if (configArg === undefined) {
+    process.stderr.write('usage: check.mjs <tsconfig.json>\n');
+    return 2;
+  }
+  const configPath = resolve(configArg);
+
+  let report;
+  let result;
+  try {
+    // `..`-prefixed roots (the ambient `k6-jslib.d.ts`) are outside the tree; no unit prefix could match.
+    const roots = rootsOf(configPath);
+    report = roots.filter((root) => !root.startsWith('..')).map((root) => `##GOAST-ROOT## ${root}\n`);
+    result = check(configPath, roots);
+  } catch (error) {
+    process.stdout.write(`##GOAST-FATAL## ${inspect(error)}\n`);
     return 2;
   }
 
-  const diagnosticsHost = {
-    getCurrentDirectory: () => process.cwd(),
-    getCanonicalFileName: (fileName) => fileName,
-    getNewLine: () => '\n',
-  };
-
-  let fatalConfigDiagnostic;
-  const parseConfigHost = {
-    fileExists: ts.sys.fileExists,
-    readFile: ts.sys.readFile,
-    readDirectory: ts.sys.readDirectory,
-    useCaseSensitiveFileNames: ts.sys.useCaseSensitiveFileNames,
-    getCurrentDirectory: () => process.cwd(),
-    // Recoverable per-entry config errors land in `parsed.errors` below and are handled the same way as
-    // any other diagnostic. This callback only fires for the unrecoverable kind (e.g. malformed JSON),
-    // where `getParsedCommandLineOfConfigFile` returns `undefined` instead.
-    onUnRecoverableConfigFileDiagnostic: (diagnostic) => {
-      fatalConfigDiagnostic = diagnostic;
-    },
-  };
-
-  const parsed = ts.getParsedCommandLineOfConfigFile(configPath, {}, parseConfigHost);
-  if (parsed === undefined) {
-    if (fatalConfigDiagnostic !== undefined) {
-      process.stdout.write(ts.formatDiagnostic(fatalConfigDiagnostic, diagnosticsHost));
-    }
-    return 2;
-  }
-
-  const program = ts.createProgram({
-    rootNames: parsed.fileNames,
-    options: parsed.options,
-    projectReferences: parsed.projectReferences,
-  });
-
-  // Reported before diagnostics, and unconditionally (clean or not) — the runner needs this exactly
-  // when a unit has zero diagnostics, since that is the case a broken `include` is indistinguishable
-  // from a genuinely clean unit without it. `parsed.fileNames` are the config's own root names, already
-  // absolute; the ambient `k6-jslib.d.ts` (outside the tree, so `relative` climbs out with a leading
-  // `..`) is filtered rather than reported as a bare line, since no unit's prefix could ever match it.
-  const cwd = process.cwd();
-  for (const fileName of parsed.fileNames) {
-    const relativePath = relative(cwd, fileName).replace(/\\/g, '/');
-    if (relativePath.startsWith('..')) continue;
-    process.stdout.write(`##GOAST-ROOT## ${relativePath}\n`);
-  }
-
-  const diagnostics = [...parsed.errors, ...ts.getPreEmitDiagnostics(program)];
-
-  let hasError = false;
-  for (const diagnostic of diagnostics) {
-    if (diagnostic.category === ts.DiagnosticCategory.Error) hasError = true;
-    process.stdout.write(ts.formatDiagnostic(diagnostic, diagnosticsHost));
-  }
-
-  return hasError ? 2 : 0;
+  process.stdout.write(report.join('') + result.output);
+  return result.code === 0 ? 0 : 2;
 }
 
 process.exitCode = main();

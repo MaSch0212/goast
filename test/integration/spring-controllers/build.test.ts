@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { MAIN_CLASS, SERVER_UNITS, synthesizeServerBuild } from './build.ts';
 
@@ -69,10 +68,10 @@ describe('synthesizeServerBuild', () => {
   });
 
   it('picks the Jackson line that matches the variant', () => {
-    expect(synthesizeServerBuild(lenientSb3, '/o', '/d').build)
-      .toContain('com.fasterxml.jackson.module:jackson-module-kotlin');
-    expect(synthesizeServerBuild(strictSb4, '/o', '/d').build)
-      .toContain('tools.jackson.module:jackson-module-kotlin');
+    expect(synthesizeServerBuild(lenientSb3, '/o', '/d').build).toContain(
+      'com.fasterxml.jackson.module:jackson-module-kotlin',
+    );
+    expect(synthesizeServerBuild(strictSb4, '/o', '/d').build).toContain('tools.jackson.module:jackson-module-kotlin');
   });
 
   it('declares a repository so resolution configures at all', () => {

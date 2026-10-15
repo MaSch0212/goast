@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import {
   compileSnapshotFile,
@@ -12,19 +11,19 @@ import {
 
 import { profiles } from '../output-tests/profiles.ts';
 import { compileRootDir } from './paths.ts';
-import { runDenoCheck } from './runners/deno-check.ts';
+import { runHostTsc } from './runners/host-tsc.ts';
 import { runKotlin } from './runners/kotlin.ts';
 import { runTsc } from './runners/tsc.ts';
 
 /**
  * Tier 3 is opt-in, and this guard is what makes it so.
  *
- * `deno.json` includes all of `test/` in test discovery, so `deno task test` would otherwise find this
- * file and start a container — breaking the rule that tiers 1 and 2 never touch Docker. Registering no
- * tests at all, rather than registering skipped ones, keeps 797 ignored steps out of the everyday run.
- * `deno task test:compile` sets the variable.
+ * The `e2e` vitest project includes all of `test/compile-tests/`, so a plain `vitest run` would otherwise
+ * find this file and start a container — breaking the rule that tiers 1 and 2 never touch Docker.
+ * `pnpm test:compile` sets the variable. Without it, one skipped placeholder keeps vitest from failing
+ * the file for registering no test.
  */
-const enabled = (Deno.env.get('GOAST_COMPILE') ?? '') !== '';
+const enabled = (process.env.GOAST_COMPILE ?? '') !== '';
 
 /** TypeScript profiles that need no npm package, so they are checked on the host. */
 const HOST_TS_PROFILES = ['models', 'fetch-clients'] as const;
@@ -78,8 +77,8 @@ const MINIMUM_UNITS = 700;
 const specs = enabled ? await discoverSpecs() : [];
 const units = enabled ? await discoverCompileUnits(profiles, specs) : [];
 
-const hostTsUnits = units.filter((u) =>
-  u.language === 'typescript' && (HOST_TS_PROFILES as readonly string[]).includes(u.profile)
+const hostTsUnits = units.filter(
+  (u) => u.language === 'typescript' && (HOST_TS_PROFILES as readonly string[]).includes(u.profile),
 );
 const containerTsUnitsByProfile = new Map(
   CONTAINER_TS_PROFILES.map((profile) => [
@@ -87,8 +86,8 @@ const containerTsUnitsByProfile = new Map(
     units.filter((u) => u.language === 'typescript' && u.profile === profile),
   ]),
 );
-const kotlinUnits = units.filter((u) =>
-  u.language === 'kotlin' && (KOTLIN_PROFILES as readonly string[]).includes(u.profile)
+const kotlinUnits = units.filter(
+  (u) => u.language === 'kotlin' && (KOTLIN_PROFILES as readonly string[]).includes(u.profile),
 );
 
 /**
@@ -99,9 +98,9 @@ const kotlinUnits = units.filter((u) =>
  *
  * Both the host group and the per-profile container groups live under one `enabled` guard, not just the
  * empty `hostTsUnits`/`CONTAINER_TS_PROFILES` filters: with `enabled` false a `describe` call still
- * registers one passing "compiles every ... unit" test (trivially, over zero units), which is exactly
- * the "797 ignored steps" this file exists to avoid — a registered-and-passing test is not the same as
- * no test, so the opt-in guard needs every `describe` call to not run at all.
+ * registers one passing "compiles every ... unit" test (trivially, over zero units), and a
+ * registered-and-passing test claims a check that never ran, so the opt-in guard needs every `describe`
+ * call to not run at all.
  *
  * The `unit discovery` block belongs inside the guard for the opposite reason: with `enabled` false,
  * discovery is deliberately skipped and `units` is deliberately empty, so its floor would fail on a
@@ -135,17 +134,18 @@ if (enabled) {
       const counts = new Map<string, number>();
       for (const unit of units) counts.set(unit.profile, (counts.get(unit.profile) ?? 0) + 1);
 
-      const empty = [...HOST_TS_PROFILES, ...CONTAINER_TS_PROFILES, ...KOTLIN_PROFILES]
-        .filter((profile) => (counts.get(profile) ?? 0) === 0);
+      const empty = [...HOST_TS_PROFILES, ...CONTAINER_TS_PROFILES, ...KOTLIN_PROFILES].filter(
+        (profile) => (counts.get(profile) ?? 0) === 0,
+      );
       expect(empty).toEqual([]);
     });
   });
 
-  describe('typescript/host (deno check)', () => {
+  describe('typescript/host (tsc)', () => {
     let results: Map<string, Diagnostic[]> | undefined;
 
     it('compiles every host TypeScript unit', async () => {
-      results = await runDenoCheck(hostTsUnits);
+      results = await runHostTsc(hostTsUnits);
     });
 
     for (const unit of hostTsUnits) {
@@ -184,6 +184,9 @@ if (enabled) {
       });
     }
   });
+} else {
+  // oxlint-disable-next-line vitest/no-disabled-tests -- vitest fails a file that registers no test
+  it.skip('compile gate (set GOAST_COMPILE to run)', () => {});
 }
 
 async function verifyUnit(unit: CompileUnit, results: Map<string, Diagnostic[]> | undefined): Promise<void> {

@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { derefSchemaAt } from '../parse/deref.test-utils.ts';
 import type { ApiSchema } from './api-types.ts';

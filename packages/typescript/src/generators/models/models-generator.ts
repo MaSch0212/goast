@@ -99,7 +99,7 @@ export class TypeScriptModelsGenerator extends OpenApiSchemasGenerationProviderB
             kind: x.kind === 'type' || x.kind === 'interface' ? 'type-export' : 'export',
           }),
           ...(x.additionalExports?.map((e) =>
-            typeof e === 'string' ? ts.export(e, filePath) : ts.export(e.name, filePath, { kind: e.type })
+            typeof e === 'string' ? ts.export(e, filePath) : ts.export(e.name, filePath, { kind: e.type }),
           ) ?? []),
         ];
       }),

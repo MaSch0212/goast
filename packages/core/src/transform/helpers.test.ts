@@ -1,5 +1,4 @@
-import { expect, fn } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it, vi } from 'vitest';
 import { derefAt } from '../parse/deref.test-utils.ts';
 import type { OpenApiDocument } from '../parse/openapi-types.ts';
 import type { Deref } from '../parse/types.ts';
@@ -226,7 +225,6 @@ components:
     console.log = (...args: unknown[]) => lines.push(args.join(' '));
     try {
       // Still throws — the next statement dereferences $src. Only the silence is under test.
-      // deno-lint-ignore no-explicit-any
       determineSchemaName({} as any, 'some-id');
     } catch {
       // expected
@@ -367,7 +365,7 @@ describe('transformAdditionalProperties', () => {
 
   it('calls transformSchema with the additionalProperties schema if it exists', () => {
     const schema = { additionalProperties: { type: 'string' } };
-    const transformSchema = fn(() => ({})) as () => ApiSchema;
+    const transformSchema = vi.fn<() => ApiSchema>(() => ({}) as ApiSchema);
     transformAdditionalProperties(context, schema, transformSchema);
     expect(transformSchema).toHaveBeenCalledWith(context, schema.additionalProperties);
   });
@@ -375,7 +373,7 @@ describe('transformAdditionalProperties', () => {
   it('returns the result of calling transformSchema with the additionalProperties schema if it exists', () => {
     const schema = { additionalProperties: { type: 'string' } };
     const transformedSchema = { type: 'string' } as ApiSchema;
-    const transformSchema = fn(() => transformedSchema) as () => ApiSchema;
+    const transformSchema = vi.fn<() => ApiSchema>(() => transformedSchema);
     expect(transformAdditionalProperties(context, schema, transformSchema)).toBe(transformedSchema);
   });
 });
@@ -385,7 +383,7 @@ describe('transformSchemaProperties', () => {
 
   it('returns an empty array if properties is undefined', () => {
     const schema = {};
-    const transformSchema = fn(() => ({})) as () => ApiSchema;
+    const transformSchema = vi.fn<() => ApiSchema>(() => ({}) as ApiSchema);
     expect(transformSchemaProperties(context, schema, transformSchema).size).toEqual(0);
   });
 
@@ -399,13 +397,9 @@ describe('transformSchemaProperties', () => {
     };
     const transformedSchema1 = { type: 'string' } as ApiSchema;
     const transformedSchema2 = { type: 'integer' } as ApiSchema;
-    // deno-lint-ignore no-explicit-any
-    const transformSchema = fn((_: unknown, subSchema: any) =>
-      subSchema.type === 'string' ? transformedSchema1 : transformedSchema2
-    ) as (
-      ctx: OpenApiTransformerContext,
-      schema: ApiSchema,
-    ) => ApiSchema;
+    const transformSchema = vi.fn<(ctx: OpenApiTransformerContext, schema: ApiSchema) => ApiSchema>((_, subSchema) =>
+      subSchema === schema.properties.prop1 ? transformedSchema1 : transformedSchema2,
+    );
     const result = transformSchemaProperties(context, schema, transformSchema);
     expect(Array.from(result.entries())).toEqual([
       ['prop1', { name: 'prop1', schema: transformedSchema1 }],
@@ -419,7 +413,7 @@ describe('transformSchemaProperties', () => {
   it('ignores properties with the name "$src"', () => {
     const schema = { properties: { prop1: { type: 'string' }, $src: { path: '/test/schema' } } };
     const transformedSchema1 = { type: 'string' } as ApiSchema;
-    const transformSchema = fn(() => transformedSchema1) as () => ApiSchema;
+    const transformSchema = vi.fn<() => ApiSchema>(() => transformedSchema1);
     const result = transformSchemaProperties(context, schema, transformSchema);
     expect(Array.from(result.entries())).toEqual([['prop1', { name: 'prop1', schema: transformedSchema1 }]]);
     expect(transformSchema).toHaveBeenCalledTimes(1);

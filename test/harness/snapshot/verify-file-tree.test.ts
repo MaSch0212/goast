@@ -1,17 +1,18 @@
+import { mkdir, mkdtemp, rm, stat, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { readFileTree } from './tree.ts';
 import { verifyFileTree } from './verify-file-tree.ts';
 
 async function withTempDir(fn: (dir: string) => Promise<void>): Promise<void> {
-  const dir = await Deno.makeTempDir({ prefix: 'goast-verify-test-' });
+  const dir = await mkdtemp(join(tmpdir(), 'goast-verify-test-'));
   try {
     await fn(dir);
   } finally {
-    await Deno.remove(dir, { recursive: true });
+    await rm(dir, { recursive: true });
   }
 }
 
@@ -20,15 +21,15 @@ function generator(files: Record<string, string>): (outputDir: string) => Promis
   return async (outputDir) => {
     for (const [path, content] of Object.entries(files)) {
       const target = join(outputDir, path);
-      await Deno.mkdir(join(target, '..'), { recursive: true });
-      await Deno.writeTextFile(target, content);
+      await mkdir(join(target, '..'), { recursive: true });
+      await writeFile(target, content);
     }
   };
 }
 
 async function readAsText(dir: string): Promise<Record<string, string>> {
   const decoder = new TextDecoder();
-  return Object.fromEntries([...await readFileTree(dir)].map(([path, bytes]) => [path, decoder.decode(bytes)]));
+  return Object.fromEntries([...(await readFileTree(dir))].map(([path, bytes]) => [path, decoder.decode(bytes)]));
 }
 
 describe('verifyFileTree', () => {
@@ -58,11 +59,11 @@ describe('verifyFileTree', () => {
       await withTempDir(async (dir) => {
         const snapshotDir = join(dir, 'snapshot');
         await verifyFileTree(snapshotDir, generator({ 'a.ts': 'A' }), { mode: 'write' });
-        const before = (await Deno.stat(join(snapshotDir, 'a.ts'))).mtime;
+        const before = (await stat(join(snapshotDir, 'a.ts'))).mtime;
 
         await verifyFileTree(snapshotDir, generator({ 'a.ts': 'A' }), { mode: 'write' });
 
-        expect((await Deno.stat(join(snapshotDir, 'a.ts'))).mtime).toEqual(before);
+        expect((await stat(join(snapshotDir, 'a.ts'))).mtime).toEqual(before);
       });
     });
 
@@ -94,14 +95,18 @@ describe('verifyFileTree', () => {
         const tempDirs: string[] = [];
 
         await expect(
-          verifyFileTree(join(dir, 'snapshot'), (outputDir) => {
-            tempDirs.push(outputDir);
-            throw new Error('generator exploded');
-          }, { mode: 'write' }),
+          verifyFileTree(
+            join(dir, 'snapshot'),
+            (outputDir) => {
+              tempDirs.push(outputDir);
+              throw new Error('generator exploded');
+            },
+            { mode: 'write' },
+          ),
         ).rejects.toThrow('generator exploded');
 
         expect(tempDirs).toHaveLength(1);
-        await expect(Deno.stat(tempDirs[0])).rejects.toThrow(Deno.errors.NotFound);
+        await expect(stat(tempDirs[0])).rejects.toMatchObject({ code: 'ENOENT' });
       });
     });
 
@@ -110,15 +115,19 @@ describe('verifyFileTree', () => {
         const tempDirs: string[] = [];
 
         await expect(
-          verifyFileTree(join(dir, 'snapshot'), async (outputDir) => {
-            tempDirs.push(outputDir);
-            await Promise.resolve();
-            throw new Error('generator async rejected');
-          }, { mode: 'write' }),
+          verifyFileTree(
+            join(dir, 'snapshot'),
+            async (outputDir) => {
+              tempDirs.push(outputDir);
+              await Promise.resolve();
+              throw new Error('generator async rejected');
+            },
+            { mode: 'write' },
+          ),
         ).rejects.toThrow('generator async rejected');
 
         expect(tempDirs).toHaveLength(1);
-        await expect(Deno.stat(tempDirs[0])).rejects.toThrow(Deno.errors.NotFound);
+        await expect(stat(tempDirs[0])).rejects.toMatchObject({ code: 'ENOENT' });
       });
     });
   });
@@ -138,9 +147,9 @@ describe('verifyFileTree', () => {
         const snapshotDir = join(dir, 'snapshot');
         await verifyFileTree(snapshotDir, generator({ 'change.ts': 'old', 'gone.ts': 'G' }), { mode: 'write' });
 
-        const error = await verifyFileTree(snapshotDir, generator({ 'change.ts': 'new', 'fresh.ts': 'F' }), {
+        const error = (await verifyFileTree(snapshotDir, generator({ 'change.ts': 'new', 'fresh.ts': 'F' }), {
           mode: 'check',
-        }).catch((e: Error) => e) as Error;
+        }).catch((e: Error) => e)) as Error;
 
         expect(error.message).toContain('Snapshot mismatch:');
         expect(error.message).toContain('+ fresh.ts');
@@ -149,7 +158,7 @@ describe('verifyFileTree', () => {
         expect(error.message).toContain('First difference in change.ts at line 1');
         expect(error.message).toContain('-1 | old');
         expect(error.message).toContain('+1 | new');
-        expect(error.message).toContain('Run `deno task test:output`');
+        expect(error.message).toContain('Run `pnpm test:output`');
       });
     });
 
@@ -158,7 +167,9 @@ describe('verifyFileTree', () => {
         const snapshotDir = join(dir, 'snapshot');
         await verifyFileTree(snapshotDir, generator({ 'a.ts': 'A' }), { mode: 'write' });
 
-        await expect(verifyFileTree(snapshotDir, generator({ 'a.ts': 'B' }), { mode: 'check' })).rejects.toThrow();
+        await expect(verifyFileTree(snapshotDir, generator({ 'a.ts': 'B' }), { mode: 'check' })).rejects.toThrow(
+          'First difference in a.ts',
+        );
 
         expect(await readAsText(snapshotDir)).toEqual({ 'a.ts': 'A' });
       });
@@ -177,17 +188,21 @@ describe('verifyFileTree', () => {
     // A generator bug (see packages/typescript/src/import-collection.ts's getImportKind, which
     // misclassifies a file whose basename is empty and leaves its absolute path unresolved) can leak
     // the ephemeral per-run output directory straight into generated source. That directory is a
-    // fresh `Deno.makeTempDir` path every run, so committing it verbatim would make the snapshot
+    // fresh `mkdtemp` path every run, so committing it verbatim would make the snapshot
     // fail on the very next run, on any machine. This pins that `verifyFileTree` neutralizes such a
     // leak into `<output>` end to end, the same way it already neutralized a leaked repo-root path.
     it('should neutralize a leaked absolute output-dir path before it reaches the committed snapshot', async () => {
       await withTempDir(async (dir) => {
         const snapshotDir = join(dir, 'snapshot');
 
-        await verifyFileTree(snapshotDir, async (outputDir) => {
-          const target = join(outputDir, 'models.ts');
-          await Deno.writeTextFile(target, `export type {  } from '${outputDir}\\models\\.ts';\n`);
-        }, { mode: 'write' });
+        await verifyFileTree(
+          snapshotDir,
+          async (outputDir) => {
+            const target = join(outputDir, 'models.ts');
+            await writeFile(target, `export type {  } from '${outputDir}\\models\\.ts';\n`);
+          },
+          { mode: 'write' },
+        );
 
         expect(await readAsText(snapshotDir)).toEqual({
           'models.ts': "export type {  } from '<output>/models/.ts';\n",
@@ -196,7 +211,7 @@ describe('verifyFileTree', () => {
     });
 
     it('should render two independent runs, each against its own real temp directory, as byte-identical neutralized snapshots', async () => {
-      // The property that matters most: `verifyFileTree` mints its own `Deno.makeTempDir` internally,
+      // The property that matters most: `verifyFileTree` mints its own `mkdtemp` internally,
       // so each of these two calls gets a genuinely different, differently-named, differently-sized
       // real temp directory. Whichever random name a run happens to mint, the neutralized snapshot
       // must come out byte-identical to another run's — otherwise a snapshot written on one run (or
@@ -206,7 +221,7 @@ describe('verifyFileTree', () => {
       // snapshot check mode never touched.
       await withTempDir(async (dir) => {
         const leak = async (outputDir: string) => {
-          await Deno.writeTextFile(join(outputDir, 'models.ts'), `export type {  } from '${outputDir}';\n`);
+          await writeFile(join(outputDir, 'models.ts'), `export type {  } from '${outputDir}';\n`);
         };
 
         const firstSnapshot = join(dir, 'snapshot-1');

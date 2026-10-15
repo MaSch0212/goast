@@ -70,7 +70,7 @@ export function formatMismatchReport(
     lines.push('', `  ... and ${diff.changed.length - detailed.length} more changed file(s)`);
   }
 
-  lines.push('', 'Run `deno task test:output` to update the snapshot, then commit the result.');
+  lines.push('', 'Run `pnpm test:output` to update the snapshot, then commit the result.');
   return lines.join('\n');
 }
 
@@ -99,10 +99,7 @@ function formatPathList(diff: TreeDiff): string[] {
   ];
   if (entries.length <= MAX_LISTED_PATHS) return entries;
 
-  return [
-    ...entries.slice(0, MAX_LISTED_PATHS),
-    `  ... and ${entries.length - MAX_LISTED_PATHS} more path(s)`,
-  ];
+  return [...entries.slice(0, MAX_LISTED_PATHS), `  ... and ${entries.length - MAX_LISTED_PATHS} more path(s)`];
 }
 
 function formatFileDifference(path: string, expected: Uint8Array, actual: Uint8Array): string[] {
@@ -110,8 +107,5 @@ function formatFileDifference(path: string, expected: Uint8Array, actual: Uint8A
   if (difference === null) return [];
   if (difference === 'binary') return [`First difference in ${path}: binary content differs`];
 
-  return [
-    `First difference in ${path} at line ${difference.lineNumber}:`,
-    ...formatDifferenceExcerpt(difference),
-  ];
+  return [`First difference in ${path} at line ${difference.lineNumber}:`, ...formatDifferenceExcerpt(difference)];
 }

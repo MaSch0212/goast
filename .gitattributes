@@ -1,5 +1,5 @@
-# LF in every working tree, whatever core.autocrlf says. `deno fmt` writes LF, so a CRLF checkout fails
-# `deno fmt --check` on every file; and generators copy asset sources (packages/*/assets, see
+# LF in every working tree, whatever core.autocrlf says. `oxfmt` writes LF, so a CRLF checkout fails
+# `pnpm fmt:check` on every file; and generators copy asset sources (packages/*/assets, see
 # packages/core/src/utils/asset-manager.ts) byte-for-byte into the byte-exact snapshots, so a CRLF
 # asset turns every snapshot that contains it into a diff. The `-text` rules below override this.
 * text=auto eol=lf

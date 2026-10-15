@@ -1,3 +1,6 @@
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { resolveSnapshotMode, type VerifyOptions } from './mode.ts';
 import { normalizeFileTree } from './normalize.ts';
 import { formatMismatchReport } from './text-diff.ts';
@@ -17,12 +20,12 @@ export async function verifyFileTree(
   generate: (outputDir: string) => Promise<void> | void,
   options: VerifyOptions = {},
 ): Promise<void> {
-  const outputDir = await Deno.makeTempDir({ prefix: 'goast-snapshot-' });
+  const outputDir = await mkdtemp(join(tmpdir(), 'goast-snapshot-'));
   try {
     await generate(outputDir);
     await verifyGeneratedTree(snapshotDir, outputDir, options);
   } finally {
-    await Deno.remove(outputDir, { recursive: true });
+    await rm(outputDir, { recursive: true });
   }
 }
 

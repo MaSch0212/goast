@@ -1,7 +1,6 @@
 import { relative } from 'node:path';
 
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'vitest';
 
 import { findOrphanFiles, wireRootDir, wireSnapshotFile } from '@goast/test-harness';
 
@@ -37,7 +36,7 @@ function expectedFilesFor(target: WireTarget): string[] {
   if (target.state === 'load-failure') return [`${target.profile}/__load-failure.txt`];
 
   return casesFor(target.profile, target.direction).map((c) =>
-    relative(wireRootDir, wireSnapshotFile(wireRootDir, target.profile, c.id)).replace(/\\/g, '/')
+    relative(wireRootDir, wireSnapshotFile(wireRootDir, target.profile, c.id)).replace(/\\/g, '/'),
   );
 }
 

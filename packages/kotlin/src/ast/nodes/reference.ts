@@ -30,9 +30,7 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
 >;
 
 type _AddImportHandler<T> = {
-  // deno-lint-ignore no-explicit-any
   builderClass: abstract new (...args: any) => T;
-  // deno-lint-ignore no-explicit-any
   handler: (builder: T, reference: KtReference<any>) => void;
 };
 
@@ -40,7 +38,6 @@ export class KtReference<TBuilder extends SourceBuilder, TInjects extends string
   TBuilder,
   TInjects | Injects
 > {
-  // deno-lint-ignore no-explicit-any
   private static readonly addImportHandlers: _AddImportHandler<any>[] = [
     {
       builderClass: KotlinFileBuilder,
@@ -103,29 +100,25 @@ const createReference = <TBuilder extends SourceBuilder>(
   options?: Prettify<Omit<Options<TBuilder>, 'name' | 'packageName'>>,
 ): KtReference<TBuilder> => new KtReference<TBuilder>({ ...options, name, packageName });
 
-export type KtReferenceFactory =
-  & (<TBuilder extends SourceBuilder>(
-    options?: Prettify<Omit<Options<TBuilder>, 'name' | 'packageName'>>,
-  ) => KtReference<TBuilder>)
-  & {
-    refName: string;
-    packageName: Nullable<string>;
-    matches: (value: unknown) => value is KtReference<never>;
-  };
+export type KtReferenceFactory = (<TBuilder extends SourceBuilder>(
+  options?: Prettify<Omit<Options<TBuilder>, 'name' | 'packageName'>>,
+) => KtReference<TBuilder>) & {
+  refName: string;
+  packageName: Nullable<string>;
+  matches: (value: unknown) => value is KtReference<never>;
+};
 
-export type KtGenericReferenceFactory<TGenericCount extends number | number[]> =
-  & (<TBuilder extends SourceBuilder>(
-    generics: TupleWithCount<KtType<TBuilder>, TGenericCount>,
+export type KtGenericReferenceFactory<TGenericCount extends number | number[]> = (<TBuilder extends SourceBuilder>(
+  generics: TupleWithCount<KtType<TBuilder>, TGenericCount>,
+  options?: Prettify<Omit<Options<TBuilder>, 'name' | 'packageName' | 'generics'>>,
+) => KtReference<TBuilder>) & {
+  refName: string;
+  packageName: Nullable<string>;
+  infer: <TBuilder extends SourceBuilder>(
     options?: Prettify<Omit<Options<TBuilder>, 'name' | 'packageName' | 'generics'>>,
-  ) => KtReference<TBuilder>)
-  & {
-    refName: string;
-    packageName: Nullable<string>;
-    infer: <TBuilder extends SourceBuilder>(
-      options?: Prettify<Omit<Options<TBuilder>, 'name' | 'packageName' | 'generics'>>,
-    ) => KtReference<TBuilder>;
-    matches: (value: unknown) => value is KtReference<never>;
-  };
+  ) => KtReference<TBuilder>;
+  matches: (value: unknown) => value is KtReference<never>;
+};
 
 const createFactory = (name: string, packageName?: Nullable<string>): KtReferenceFactory => {
   return Object.assign(
