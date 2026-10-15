@@ -29,6 +29,8 @@
     }
   },
   "publishConfig": {
+    "main": "./dist/mod.js",
+    "types": "./dist/mod.d.ts",
     "exports": {
       ".": {
         "types": "./dist/mod.d.ts",
