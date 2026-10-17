@@ -1,0 +1,57 @@
+{
+  go: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/detailed-schemas.yml#/components/schemas/WithTitle',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/detailed-schemas.yml#/components/schemas/WithAllCommon',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/detailed-schemas.yml#/components/schemas/MyEnum',
+        fields: undefined,
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'MyEnum',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/detailed-schemas.yml#/components/schemas/WriteOnly',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/detailed-schemas.yml#/components/schemas/ReadOnly',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      }
+    }
+  }
+}

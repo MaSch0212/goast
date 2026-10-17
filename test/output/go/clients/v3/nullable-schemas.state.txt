@@ -1,0 +1,214 @@
+{
+  go: {
+    clients: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableEnum',
+        fields: undefined,
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'NullableEnum',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableWithAllOf/allOf/0',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableWithAllOf/allOf/0/properties/a',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableObjectProperty',
+        fields: {
+          value: {
+            name: 'Value',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'NullableObjectPropertyValue',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'NullableObjectProperty',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableObjectProperty/properties/value',
+        fields: undefined,
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'NullableObjectPropertyValue',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableRequired',
+        fields: {
+          value: {
+            name: 'Value',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'NullableRequired',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableRequired/properties/value',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableRef',
+        fields: undefined,
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'NullableRef',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableArray',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableArray/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/ArrayOfNullable',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/ArrayOfNullable/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableArrayOfNullable',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableArrayOfNullable/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableWithAllOf',
+        fields: {
+          a: {
+            name: 'A',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'NullableWithAllOf',
+          packageName: 'api',
+          typeArguments: []
+        }
+      }
+    }
+  }
+}

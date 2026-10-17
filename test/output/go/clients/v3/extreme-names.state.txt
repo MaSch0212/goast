@@ -1,0 +1,753 @@
+{
+  go: {
+    clients: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong',
+        fields: {
+          markerVeryLongName: {
+            name: 'MarkerVeryLongName',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/A/properties/markerUpperA',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/a',
+        fields: {
+          markerLowerA: {
+            name: 'MarkerLowerA',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'A2',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/a/properties/markerLowerA',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/___',
+        fields: {
+          markerPunctuationOnly: {
+            name: 'MarkerPunctuationOnly',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Model',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/___/properties/markerPunctuationOnly',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With.Dot',
+        fields: {
+          markerDot: {
+            name: 'MarkerDot',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'WithDot',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With.Dot/properties/markerDot',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With/Slash',
+        fields: {
+          markerSlash: {
+            name: 'MarkerSlash',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Schema17',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With/Slash/properties/markerSlash',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With Space',
+        fields: {
+          markerSpace: {
+            name: 'MarkerSpace',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'WithSpace',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong/properties/markerVeryLongName',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With Space/properties/markerSpace',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With-Dash',
+        fields: {
+          markerDash: {
+            name: 'MarkerDash',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'WithDash',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With-Dash/properties/markerDash',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With+Plus',
+        fields: {
+          markerPlus: {
+            name: 'MarkerPlus',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'WithPlus',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/With+Plus/properties/markerPlus',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/ObjectWithExtremeProperties',
+        fields: {
+          '': {
+            name: 'Field',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          '2FactorAuth': {
+            name: 'FactorAuth',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong: {
+            name: 'VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'ObjectWithExtremeProperties',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/ObjectWithExtremeProperties/properties/VeryLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLong',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-27': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/ObjectWithExtremeProperties/properties/2FactorAuth',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-28': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/ObjectWithExtremeProperties/properties/',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-29': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/camelCaseName',
+        fields: {
+          markerCamel: {
+            name: 'MarkerCamel',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'CamelCaseName',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/2FactorAuth',
+        fields: {
+          markerTwoFactorAuth: {
+            name: 'MarkerTwoFactorAuth',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'FactorAuth',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-30': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/camelCaseName/properties/markerCamel',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-31': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/PascalCaseName',
+        fields: {
+          markerPascal: {
+            name: 'MarkerPascal',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'PascalCaseName',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-32': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/PascalCaseName/properties/markerPascal',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-33': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/snake_case_name',
+        fields: {
+          markerSnake: {
+            name: 'MarkerSnake',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'SnakeCaseName',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-34': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/snake_case_name/properties/markerSnake',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-35': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/SCREAMING_SNAKE_NAME',
+        fields: {
+          markerScreaming: {
+            name: 'MarkerScreaming',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'ScreamingSnakeName',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-36': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/SCREAMING_SNAKE_NAME/properties/markerScreaming',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-37': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/kebab-case-name',
+        fields: {
+          markerKebab: {
+            name: 'MarkerKebab',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'KebabCaseName',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-38': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/kebab-case-name/properties/markerKebab',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-39': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/HTTPResponseXML',
+        fields: {
+          markerHttpXml: {
+            name: 'MarkerHTTPXML',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'HTTPResponseXML',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/2FactorAuth/properties/markerTwoFactorAuth',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-40': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/HTTPResponseXML/properties/markerHttpXml',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-41': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/iOSDevice',
+        fields: {
+          markerIosDevice: {
+            name: 'MarkerIosDevice',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'IOsDevice',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-42': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/iOSDevice/properties/markerIosDevice',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/_Underscore',
+        fields: {
+          markerUnderscore: {
+            name: 'MarkerUnderscore',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Underscore',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/_Underscore/properties/markerUnderscore',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/__DoubleUnderscore',
+        fields: {
+          markerDoubleUnderscore: {
+            name: 'MarkerDoubleUnderscore',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'DoubleUnderscore',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/__DoubleUnderscore/properties/markerDoubleUnderscore',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/extreme-names.yml#/components/schemas/A',
+        fields: {
+          markerUpperA: {
+            name: 'MarkerUpperA',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'A',
+          packageName: 'api',
+          typeArguments: []
+        }
+      }
+    }
+  }
+}

@@ -57,6 +57,7 @@ main();
 
 [![@goast/typescript NPM Version](https://img.shields.io/npm/v/%40goast%2Ftypescript?logo=npm&label=%40goast%2Ftypescript)](https://www.npmjs.com/package/@goast/typescript)
 [![@goast/kotlin NPM Version](https://img.shields.io/npm/v/%40goast%2Fkotlin?logo=npm&label=%40goast%2Fkotlin)](https://www.npmjs.com/package/@goast/kotlin)
+[![@goast/go NPM Version](https://img.shields.io/npm/v/%40goast%2Fgo?logo=npm&label=%40goast%2Fgo)](https://www.npmjs.com/package/@goast/go)
 
 ## API Documentation 📖
 

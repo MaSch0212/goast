@@ -5,6 +5,7 @@
 <br>
 [![@goast/core NPM Version](https://img.shields.io/npm/v/%40goast%2Fcore?logo=npm&label=%40goast%2Fcore)](https://www.npmjs.com/package/@goast/core)
 [![@goast/typescript NPM Version](https://img.shields.io/npm/v/%40goast%2Ftypescript?logo=npm&label=%40goast%2Ftypescript)](https://www.npmjs.com/package/@goast/typescript)
+[![@goast/go NPM Version](https://img.shields.io/npm/v/%40goast%2Fgo?logo=npm&label=%40goast%2Fgo)](https://www.npmjs.com/package/@goast/go)
 [![@goast/kotlin NPM Version](https://img.shields.io/npm/v/%40goast%2Fkotlin?logo=npm&label=%40goast%2Fkotlin)](https://www.npmjs.com/package/@goast/kotlin)
 
 **gOAst** stands for **g**enerative **O**pen **A**PI **s**pecification **t**ransformer, a tool designed to transform
@@ -25,7 +26,7 @@ of creating new ones or extending existing functionalities.
 
 ✅ **Type Safety**: Ensures robust and error-free code.
 
-✅ **Basic AST Support**: For TypeScript and Kotlin, facilitating further custom transformations.
+✅ **Basic AST Support**: For TypeScript, Kotlin and Go, facilitating further custom transformations.
 
 ✅ **Module Support**: Ships as native ES modules.
 
@@ -141,6 +142,7 @@ generator.useType(MyTypeScriptModelsGenerator, {/* Options (Optional) */});
 | ----------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
 | @goast/core       | Core library for parsing and transforming OpenAPI specifications | [NPM](https://www.npmjs.com/package/@goast/core) - [README](./packages/core/README.md)             |
 | @goast/typescript | TypeScript generators for OpenAPI specifications                 | [NPM](https://www.npmjs.com/package/@goast/typescript) - [README](./packages/typescript/README.md) |
+| @goast/go         | Go generators for OpenAPI specifications                         | [NPM](https://www.npmjs.com/package/@goast/go) - [README](./packages/go/README.md)                 |
 | @goast/kotlin     | Kotlin generators for OpenAPI specifications                     | [NPM](https://www.npmjs.com/package/@goast/kotlin) - [README](./packages/kotlin/README.md)         |
 
 ## Documentation 📖
@@ -190,9 +192,9 @@ To set up the project for local development, follow these steps:
 ### Other Scripts
 
 - `pnpm build` - Builds all packages.
-- `pnpm build:<core|typescript|kotlin>` - Builds the specified package.
+- `pnpm build:<core|typescript|kotlin|go>` - Builds the specified package.
 - `pnpm test` - Runs the test suite (see [`test/README.md`](./test/README.md) for the tiers).
-- `pnpm test:<core|typescript|kotlin>` - Runs the unit tests for the specified package.
+- `pnpm test:<core|typescript|kotlin|go>` - Runs the unit tests for the specified package.
 
 ## License 🔑
 

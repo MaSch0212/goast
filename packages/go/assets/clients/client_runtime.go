@@ -1,0 +1,456 @@
+// The runtime of the generated clients: options, errors and the helpers the generated client methods call.
+// Everything up to and including the import block is replaced by the generator, which also renames the exported
+// identifiers if the package already declares them.
+package client
+
+import (
+	"bytes"
+	"context"
+	"encoding/base64"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"math"
+	"mime/multipart"
+	"net/http"
+	"net/textproto"
+	"net/url"
+	"strconv"
+	"strings"
+	"time"
+)
+
+// #region Options
+
+// clientOptions holds the settings of a client.
+type clientOptions struct {
+	httpClient *http.Client
+	editors    []func(ctx context.Context, req *http.Request) error
+}
+
+// ClientOption changes the settings of a client. Pass them to the constructor of a generated client.
+type ClientOption func(*clientOptions)
+
+// WithHTTPClient sets the HTTP client that sends the requests. It defaults to http.DefaultClient; use it to set
+// timeouts, a transport or a cookie jar.
+func WithHTTPClient(c *http.Client) ClientOption {
+	return func(o *clientOptions) { o.httpClient = c }
+}
+
+// WithRequestEditor adds a function that is called for every request before it is sent, e.g. to set an
+// authorization header. Editors run in the order they were added, before the editors of a single call.
+func WithRequestEditor(f func(ctx context.Context, req *http.Request) error) ClientOption {
+	return func(o *clientOptions) { o.editors = append(o.editors, f) }
+}
+
+// RequestOption changes a single request. Pass them as the last arguments of a client method.
+type RequestOption func(ctx context.Context, req *http.Request) error
+
+// WithRequestHeader sets a header of a single request, replacing any value set before.
+func WithRequestHeader(name, value string) RequestOption {
+	return func(_ context.Context, req *http.Request) error {
+		req.Header.Set(name, value)
+		return nil
+	}
+}
+
+// WithEditor adds a function that is called for a single request before it is sent. It runs after the request
+// editors of the client.
+func WithEditor(f func(ctx context.Context, req *http.Request) error) RequestOption {
+	return RequestOption(f)
+}
+
+// #endregion
+
+// #region Types
+
+// ResponseError is returned for a response whose status is not a success status of the operation. Use errors.As
+// to inspect it.
+type ResponseError struct {
+	// StatusCode is the HTTP status code of the response.
+	StatusCode int
+	// Header holds the headers of the response.
+	Header http.Header
+	// Body is the raw body of the response.
+	Body []byte
+	// Value is the decoded JSON body if the API declares a schema for the status and the body is valid JSON for
+	// it, otherwise nil.
+	Value any
+}
+
+// Error describes the status and the beginning of the body.
+func (e *ResponseError) Error() string {
+	message := fmt.Sprintf("unexpected status %d %s", e.StatusCode, http.StatusText(e.StatusCode))
+	if len(e.Body) == 0 {
+		return message
+	}
+	body := e.Body
+	if len(body) > 200 {
+		body = body[:200]
+	}
+	return message + ": " + string(body)
+}
+
+// File is a file sent as a part of a multipart body.
+type File struct {
+	// Name is the file name sent to the server.
+	Name string
+	// ContentType is the media type of the file. It defaults to application/octet-stream.
+	ContentType string
+	// Content is read when the request is built.
+	Content io.Reader
+}
+
+// client sends the requests of a generated client.
+type client struct {
+	baseURL    string
+	httpClient *http.Client
+	editors    []func(ctx context.Context, req *http.Request) error
+}
+
+// request is an operation call that is being built.
+type request struct {
+	method      string
+	path        string
+	queryPairs  []string
+	headers     http.Header
+	cookies     []string
+	contentType string
+	body        io.Reader
+}
+
+// #endregion
+
+// #region Client
+
+// newClient creates the client of a generated client type. baseURL is used if it is not empty, otherwise
+// defaultBaseURL.
+func newClient(baseURL, defaultBaseURL string, opts []ClientOption) *client {
+	options := &clientOptions{httpClient: http.DefaultClient}
+	for _, opt := range opts {
+		opt(options)
+	}
+	if baseURL == "" {
+		baseURL = defaultBaseURL
+	}
+	if options.httpClient == nil {
+		options.httpClient = http.DefaultClient
+	}
+	return &client{baseURL: baseURL, httpClient: options.httpClient, editors: options.editors}
+}
+
+// newRequest starts a request. path is the escaped path of the operation, with its parameters already inserted.
+func (c *client) newRequest(method, path string) *request {
+	return &request{method: method, path: path, headers: http.Header{}}
+}
+
+// do builds, edits and sends the request. The caller closes the body of the response.
+func (c *client) do(ctx context.Context, r *request, opts []RequestOption) (*http.Response, error) {
+	target := strings.TrimRight(c.baseURL, "/") + r.path
+	if len(r.queryPairs) > 0 {
+		target += "?" + strings.Join(r.queryPairs, "&")
+	}
+	parsed, err := url.Parse(target)
+	if err != nil {
+		return nil, fmt.Errorf("invalid request URL: %w", err)
+	}
+	if parsed.Scheme == "" || parsed.Host == "" {
+		return nil, errors.New("no base URL: pass one to the client's constructor")
+	}
+
+	req, err := http.NewRequestWithContext(ctx, r.method, target, r.body)
+	if err != nil {
+		return nil, fmt.Errorf("building request: %w", err)
+	}
+	for name, values := range r.headers {
+		req.Header[name] = append([]string(nil), values...)
+	}
+	if len(r.cookies) > 0 {
+		req.Header.Set("Cookie", strings.Join(r.cookies, "; "))
+	}
+	if r.contentType != "" {
+		req.Header.Set("Content-Type", r.contentType)
+	}
+
+	for _, edit := range c.editors {
+		if err := edit(ctx, req); err != nil {
+			return nil, err
+		}
+	}
+	for _, opt := range opts {
+		if err := opt(ctx, req); err != nil {
+			return nil, err
+		}
+	}
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("sending request: %w", err)
+	}
+	return resp, nil
+}
+
+// isSuccess reports whether the response has a 2xx status.
+func isSuccess(resp *http.Response) bool {
+	return resp.StatusCode >= 200 && resp.StatusCode < 300
+}
+
+// #endregion
+
+// #region Parameters
+
+// pathParam returns the escaped text that replaces a path parameter in the path, according to its style.
+func pathParam(name, style string, explode, array bool, values []string) string {
+	escaped := make([]string, len(values))
+	for i, value := range values {
+		escaped[i] = url.PathEscape(value)
+	}
+	switch style {
+	case "label":
+		separator := ","
+		if explode {
+			separator = "."
+		}
+		return "." + strings.Join(escaped, separator)
+	case "matrix":
+		if array && explode {
+			var b strings.Builder
+			for _, value := range escaped {
+				b.WriteString(";" + url.PathEscape(name) + "=" + value)
+			}
+			return b.String()
+		}
+		return ";" + url.PathEscape(name) + "=" + strings.Join(escaped, ",")
+	}
+	return strings.Join(escaped, ",")
+}
+
+// query adds a query parameter. An exploded form array adds one pair per value, every other array is joined into
+// one value with the separator of its style.
+func (r *request) query(name, style string, explode, array bool, values []string) {
+	if !array || (explode && style == "form") {
+		for _, value := range values {
+			r.queryPairs = append(r.queryPairs, url.QueryEscape(name)+"="+url.QueryEscape(value))
+		}
+		return
+	}
+	separator := ","
+	switch style {
+	case "spaceDelimited":
+		separator = " "
+	case "pipeDelimited":
+		separator = "|"
+	}
+	r.queryPairs = append(r.queryPairs, url.QueryEscape(name)+"="+url.QueryEscape(strings.Join(values, separator)))
+}
+
+// header sets a header parameter, joining the values with commas.
+func (r *request) header(name string, values []string) {
+	r.headers.Set(name, strings.Join(values, ","))
+}
+
+// cookie adds a cookie parameter, joining the values with commas.
+func (r *request) cookie(name string, values []string) {
+	cookie := &http.Cookie{Name: name, Value: strings.Join(values, ",")}
+	r.cookies = append(r.cookies, cookie.String())
+}
+
+// #endregion
+
+// #region Formatting
+
+// formatString formats a string parameter.
+func formatString[T ~string](v T) string {
+	return string(v)
+}
+
+// formatInt formats an integer parameter.
+func formatInt[T ~int | ~int8 | ~int16 | ~int32 | ~int64](v T) string {
+	return strconv.FormatInt(int64(v), 10)
+}
+
+// formatFloat formats a floating point parameter with the shortest representation that round-trips for its size.
+func formatFloat[T ~float32 | ~float64](v T) string {
+	bits := 64
+	tiny := math.SmallestNonzeroFloat64
+	if T(tiny) == 0 {
+		bits = 32
+	}
+	return strconv.FormatFloat(float64(v), 'g', -1, bits)
+}
+
+// formatBool formats a boolean parameter.
+func formatBool[T ~bool](v T) string {
+	return strconv.FormatBool(bool(v))
+}
+
+// formatTime formats a date-time parameter as RFC 3339.
+func formatTime(v time.Time) string {
+	return v.Format(time.RFC3339Nano)
+}
+
+// formatBytes formats a binary parameter as standard base64.
+func formatBytes(v []byte) string {
+	return base64.StdEncoding.EncodeToString(v)
+}
+
+// formatJSON formats a value that is itself sent as JSON, e.g. an object in a multipart field.
+func formatJSON[T any](v T) (string, error) {
+	encoded, err := json.Marshal(v)
+	if err != nil {
+		return "", fmt.Errorf("encoding value: %w", err)
+	}
+	return string(encoded), nil
+}
+
+// formatAll formats every value of a slice.
+func formatAll[T any](vs []T, f func(T) string) []string {
+	formatted := make([]string, len(vs))
+	for i, v := range vs {
+		formatted[i] = f(v)
+	}
+	return formatted
+}
+
+// #endregion
+
+// #region Bodies
+
+// jsonBody sets the body to the JSON encoding of v.
+func (r *request) jsonBody(v any) error {
+	encoded, err := json.Marshal(v)
+	if err != nil {
+		return fmt.Errorf("encoding request body: %w", err)
+	}
+	r.contentType = "application/json"
+	r.body = bytes.NewReader(encoded)
+	return nil
+}
+
+// formBody sets the body to the URL-encoded form v.
+func (r *request) formBody(v url.Values) {
+	r.contentType = "application/x-www-form-urlencoded"
+	r.body = strings.NewReader(v.Encode())
+}
+
+// multipartBody sets the body to a multipart form that write fills.
+func (r *request) multipartBody(write func(w *multipart.Writer) error) error {
+	var buffer bytes.Buffer
+	w := multipart.NewWriter(&buffer)
+	if err := write(w); err != nil {
+		return fmt.Errorf("encoding request body: %w", err)
+	}
+	if err := w.Close(); err != nil {
+		return fmt.Errorf("encoding request body: %w", err)
+	}
+	r.contentType = w.FormDataContentType()
+	r.body = bytes.NewReader(buffer.Bytes())
+	return nil
+}
+
+// textBody sets the body to the text v with the given media type.
+func (r *request) textBody(contentType, v string) {
+	r.contentType = contentType
+	r.body = strings.NewReader(v)
+}
+
+// rawBody sets the body to the content of v with the given media type.
+func (r *request) rawBody(contentType string, v io.Reader) {
+	r.contentType = contentType
+	r.body = v
+}
+
+// writeFormFile writes a file part to a multipart form.
+func writeFormFile(w *multipart.Writer, name string, f File) error {
+	contentType := f.ContentType
+	if contentType == "" {
+		contentType = "application/octet-stream"
+	}
+	header := textproto.MIMEHeader{}
+	header.Set("Content-Disposition", fmt.Sprintf(`form-data; name="%s"; filename="%s"`, escapeQuotes(name), escapeQuotes(f.Name)))
+	header.Set("Content-Type", contentType)
+	part, err := w.CreatePart(header)
+	if err != nil {
+		return err
+	}
+	if f.Content == nil {
+		return nil
+	}
+	_, err = io.Copy(part, f.Content)
+	return err
+}
+
+// writeFormField writes a text part to a multipart form.
+func writeFormField(w *multipart.Writer, name, value string) error {
+	return w.WriteField(name, value)
+}
+
+// escapeQuotes escapes the characters that would end a quoted multipart header parameter.
+func escapeQuotes(s string) string {
+	return strings.NewReplacer(`\`, `\\`, `"`, `\"`).Replace(s)
+}
+
+// #endregion
+
+// #region Responses
+
+// readBody reads and closes the body of a response.
+func readBody(resp *http.Response) ([]byte, error) {
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading response body: %w", err)
+	}
+	return body, nil
+}
+
+// decodeJSON decodes the JSON body of a response. An empty body gives the zero value.
+func decodeJSON[T any](resp *http.Response) (T, error) {
+	var value T
+	body, err := readBody(resp)
+	if err != nil {
+		return value, err
+	}
+	if len(bytes.TrimSpace(body)) == 0 {
+		return value, nil
+	}
+	if err := json.Unmarshal(body, &value); err != nil {
+		var zero T
+		return zero, fmt.Errorf("decoding response body: %w", err)
+	}
+	return value, nil
+}
+
+// decodeText returns the body of a response as a string.
+func decodeText(resp *http.Response) (string, error) {
+	body, err := readBody(resp)
+	return string(body), err
+}
+
+// decodeBytes returns the body of a response.
+func decodeBytes(resp *http.Response) ([]byte, error) {
+	return readBody(resp)
+}
+
+// newResponseError reads the body of a response into a ResponseError. value turns the status and body into the
+// decoded Value and may be nil.
+func newResponseError(resp *http.Response, value func(status int, body []byte) any) *ResponseError {
+	body, _ := readBody(resp)
+	e := &ResponseError{StatusCode: resp.StatusCode, Header: resp.Header, Body: body}
+	if value != nil {
+		e.Value = value(resp.StatusCode, body)
+	}
+	return e
+}
+
+// decodeErrorJSON decodes an error body into a *T, or returns nil if the body is not valid JSON for T.
+func decodeErrorJSON[T any](body []byte) any {
+	var value T
+	if err := json.Unmarshal(body, &value); err != nil {
+		return nil
+	}
+	return &value
+}
+
+// #endregion

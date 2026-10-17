@@ -1,0 +1,1124 @@
+{
+  go: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        fields: {
+          a: {
+            name: 'A',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'NestedBranchA',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfContainingOneOf/allOf/1/properties/extra',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfContainingAllOf',
+        fields: {
+          a: {
+            name: 'A',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          b: {
+            name: 'B',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'OneOfContainingAllOf',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfContainingAllOf/oneOf/0',
+        fields: {
+          a: {
+            name: 'A',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          b: {
+            name: 'B',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Schema12',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        fields: {
+          a: {
+            name: 'A',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'NestedBranchA',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        fields: {
+          b: {
+            name: 'B',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'NestedBranchB',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfContainingAllOf/oneOf/1',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AnyOfContainingAllOf',
+        fields: {
+          a: {
+            name: 'A',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          b: {
+            name: 'B',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'AnyOfContainingAllOf',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AnyOfContainingAllOf/anyOf/0',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        fields: {
+          a: {
+            name: 'A',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'NestedBranchA',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        fields: {
+          b: {
+            name: 'B',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'NestedBranchB',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA/properties/a',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AnyOfContainingAllOf/anyOf/1',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfOfAllOf',
+        fields: {
+          a: {
+            name: 'A',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          b: {
+            name: 'B',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          top: {
+            name: 'Top',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'AllOfOfAllOf',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfOfAllOf/allOf/0',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        fields: {
+          a: {
+            name: 'A',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'NestedBranchA',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        fields: {
+          b: {
+            name: 'B',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'NestedBranchB',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfOfAllOf/allOf/1',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfOfAllOf/allOf/1/properties/top',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-27': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfOfOneOf',
+        fields: {
+          a: {
+            name: 'A',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          b: {
+            name: 'B',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'OneOfOfOneOf',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-28': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfOfOneOf/oneOf/0',
+        fields: {
+          a: {
+            name: 'A',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          b: {
+            name: 'B',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Schema28',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-29': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        fields: {
+          a: {
+            name: 'A',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'NestedBranchA',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        fields: {
+          b: {
+            name: 'B',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'NestedBranchB',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-30': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        fields: {
+          b: {
+            name: 'B',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'NestedBranchB',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-31': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfOfOneOf/oneOf/1',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-32': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: 'example.com/generated/api',
+            inject: {},
+            name: 'Schema33',
+            packageName: 'api',
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-33': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items',
+        fields: {
+          kind: {
+            name: 'Kind',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          number: {
+            name: 'Number',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          text: {
+            name: 'Text',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Schema33',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-34': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/0',
+        fields: {
+          kind: {
+            name: 'Kind',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          text: {
+            name: 'Text',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Schema34',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-35': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/0/properties/kind',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-36': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/0/properties/text',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-37': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/1',
+        fields: {
+          kind: {
+            name: 'Kind',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          number: {
+            name: 'Number',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Schema37',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-38': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/1/properties/kind',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-39': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/1/properties/number',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB/properties/b',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-40': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/MapOfOneOf',
+        type: GoMap {
+          inject: {},
+          keyType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          valueType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'any',
+            packageName: null,
+            typeArguments: []
+          }
+        }
+      },
+      'schema-41': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/MapOfOneOf/additionalProperties',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-42': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/MapOfOneOf/additionalProperties/oneOf/0',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-43': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/MapOfOneOf/additionalProperties/oneOf/1',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-44': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition',
+        fields: {
+          value: {
+            name: 'Value',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'PropertyOfNestedCompositionValue',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'PropertyOfNestedComposition',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-45': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value',
+        fields: {
+          extra: {
+            name: 'Extra',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          x: {
+            name: 'X',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          y: {
+            name: 'Y',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'PropertyOfNestedCompositionValue',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-46': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/0',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-47': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/0/oneOf/0',
+        fields: {
+          x: {
+            name: 'X',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Schema47',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-48': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/0/oneOf/0/properties/x',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-49': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/0/oneOf/1',
+        fields: {
+          y: {
+            name: 'Y',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Schema49',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfContainingOneOf',
+        fields: {
+          a: {
+            name: 'A',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          b: {
+            name: 'B',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          extra: {
+            name: 'Extra',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'AllOfContainingOneOf',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-50': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/0/oneOf/1/properties/y',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-51': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/1',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-52': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/1/properties/extra',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfContainingOneOf/allOf/0',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        fields: {
+          a: {
+            name: 'A',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'NestedBranchA',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        fields: {
+          b: {
+            name: 'B',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'NestedBranchB',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfContainingOneOf/allOf/1',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      }
+    }
+  }
+}

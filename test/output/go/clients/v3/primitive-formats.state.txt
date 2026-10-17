@@ -1,0 +1,193 @@
+{
+  go: {
+    clients: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Int32',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int32',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/DateTime',
+        type: GoReference {
+          importPath: 'time',
+          inject: {},
+          name: 'Time',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Password',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Uuid',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Uri',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Hostname',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Ipv4',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Ipv6',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/UnknownFormat',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/BoolWithFormat',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'bool',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Int64',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int64',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/IntNoFormat',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Float',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'float32',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Double',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'float64',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/NumNoFormat',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'float64',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Byte',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'byte',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Binary',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'byte',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/primitive-formats.yml#/components/schemas/Date',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      }
+    }
+  }
+}

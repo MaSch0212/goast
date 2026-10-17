@@ -1,0 +1,55 @@
+// The functions behind the MarshalJSON and UnmarshalJSON methods of structs with additional properties.
+// Everything up to and including the import line is replaced by the generator.
+package models
+
+import "encoding/json"
+
+// marshalWithAdditionalProperties marshals the declared fields, then adds the additional properties that do not
+// collide with a declared one.
+func marshalWithAdditionalProperties[V any](declared any, additional map[string]V) ([]byte, error) {
+	data, err := json.Marshal(declared)
+	if err != nil || len(additional) == 0 {
+		return data, err
+	}
+
+	fields := map[string]json.RawMessage{}
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return nil, err
+	}
+	for name, value := range additional {
+		if _, ok := fields[name]; ok {
+			continue
+		}
+		raw, err := json.Marshal(value)
+		if err != nil {
+			return nil, err
+		}
+		fields[name] = raw
+	}
+	return json.Marshal(fields)
+}
+
+// unmarshalAdditionalProperties returns the properties of a JSON object that are not declared, or nil if there are
+// none.
+func unmarshalAdditionalProperties[V any](data []byte, declared ...string) (map[string]V, error) {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return nil, err
+	}
+	for _, name := range declared {
+		delete(fields, name)
+	}
+	if len(fields) == 0 {
+		return nil, nil
+	}
+
+	additional := make(map[string]V, len(fields))
+	for name, raw := range fields {
+		var value V
+		if err := json.Unmarshal(raw, &value); err != nil {
+			return nil, err
+		}
+		additional[name] = value
+	}
+	return additional, nil
+}

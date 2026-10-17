@@ -1,0 +1,71 @@
+{
+  go: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v2/simple-schemas.yml#/definitions/MyString',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v2/simple-schemas.yml#/definitions/MyInteger',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v2/simple-schemas.yml#/definitions/MyNumber',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'float64',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v2/simple-schemas.yml#/definitions/MyBoolean',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'bool',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v2/simple-schemas.yml#/definitions/MyArray',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'any',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v2/simple-schemas.yml#/definitions/MyObject',
+        fields: undefined,
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'MyObject',
+          packageName: 'api',
+          typeArguments: []
+        }
+      }
+    },
+    servers: {}
+  }
+}
