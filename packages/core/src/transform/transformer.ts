@@ -10,6 +10,13 @@ import {
   type OpenApiTransformerOptions,
 } from './types.ts';
 
+/**
+ * Transforms collected OpenAPI documents into the normalized `ApiData` model that the generators consume.
+ * Documents are processed first, so their tags become services, then all collected schemas, then all endpoints.
+ * @param data The documents, schemas and endpoints gathered by the collector.
+ * @param options Transformer options. Values that are not given fall back to the defaults.
+ * @returns The transformed documents, services, endpoints and schemas.
+ */
 export function transformOpenApi(data: OpenApiCollectorData, options?: Partial<OpenApiTransformerOptions>): ApiData {
   const context: OpenApiTransformerContext = {
     config: { ...defaultOpenApiTransformerOptions, ...options },

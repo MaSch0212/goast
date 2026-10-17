@@ -14,6 +14,14 @@ import type { OpenApiCollectorData } from './types.ts';
 
 type Collect<T> = Deref<T> | Deref<T>[] | undefined;
 
+/**
+ * Collects the documents, schemas and endpoints of the given OpenAPI documents into one data object.
+ * Schemas are collected from the components, definitions, parameters, request bodies, responses and headers, including
+ * all nested schemas. Schemas and endpoints are keyed by their source location, so each one is collected only once.
+ * Objects marked with `x-ignore` are skipped.
+ * @param apis The parsed OpenAPI documents to collect from.
+ * @returns The collected documents, schemas and endpoints.
+ */
 export function collectOpenApi(apis: Deref<OpenApiDocument>[]): OpenApiCollectorData {
   const data: OpenApiCollectorData = {
     documents: [],

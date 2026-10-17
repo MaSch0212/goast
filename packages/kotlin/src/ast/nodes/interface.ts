@@ -39,6 +39,11 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
+/**
+ * A member that can be written in the body of an interface: an enum, an interface, a property, a function, a class,
+ * or any appended value.
+ * @template TBuilder The type of the builder that the member is written to.
+ */
 export type KtInterfaceMember<TBuilder extends SourceBuilder> =
   | KtEnum<TBuilder>
   | KtInterface<TBuilder>
@@ -47,19 +52,63 @@ export type KtInterfaceMember<TBuilder extends SourceBuilder> =
   | KtClass<TBuilder>
   | AppendValue<TBuilder>;
 
+/**
+ * Represents a Kotlin interface declaration, such as `private interface Foo<T> : Bar, Baz { ... }`.
+ *
+ * Written in this order: the KDoc comment, the annotations, the access modifier, the `interface` keyword, the name, the
+ * generic parameters, the super-interfaces, then the body. The body is only written when there are members or a
+ * companion object. The descriptions of generic parameters are merged into the KDoc comment as `@param` tags.
+ *
+ * @template TBuilder The type of the source builder the interface is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see ktInterface
+ */
 export class KtInterface<TBuilder extends SourceBuilder, TInjects extends string = never> extends KtNode<
   TBuilder,
   TInjects | Injects
 > {
+  /**
+   * The KDoc comment written above the interface, or `null` to omit it. The descriptions of the generic parameters are
+   * added to it as `@param` tags.
+   */
   public doc: KtDoc<TBuilder> | null;
+  /**
+   * The annotations written above the interface, each on a line of its own.
+   */
   public annotations: KtAnnotation<TBuilder>[];
+  /**
+   * The visibility written before the `interface` keyword, such as `private`. `null` writes no visibility keyword.
+   */
   public accessModifier: KtAccessModifier | null;
+  /**
+   * The interface name written after the `interface` keyword.
+   */
   public name: string;
+  /**
+   * The generic parameters written in angle brackets after the name, such as `<T, U>`. Plain strings are written as
+   * they are. Described parameters also add a `@param` tag to the KDoc comment.
+   */
   public generics: (KtGenericParameter<TBuilder> | BasicAppendValue<TBuilder>)[];
+  /**
+   * The super-interfaces written after ` : ` as a comma-separated list, such as `Bar, Baz`. The clause is omitted when
+   * the list is empty.
+   */
   public extends: KtType<TBuilder>[];
+  /**
+   * The members written in the body, in the given order. Properties without a doc comment or annotations are written
+   * without blank lines between them, other members are set off by blank lines.
+   */
   public members: KtInterfaceMember<TBuilder>[];
+  /**
+   * The companion object written first in the body, with the `companion` modifier. Setting it writes the body even when
+   * there are no other members.
+   */
   public companionObject: KtObject<TBuilder> | null;
 
+  /**
+   * Initializes a new instance of the KtInterface class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.doc = options.doc ?? null;
@@ -128,6 +177,30 @@ const createInterface = <TBuilder extends SourceBuilder>(
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
 ): KtInterface<TBuilder> => new KtInterface<TBuilder>({ ...options, name });
 
+/**
+ * Factory for creating interface nodes. The `write` function writes one or more interface nodes to a builder.
+ *
+ * @param name The name of the interface.
+ * @param options The settings of the interface. See `KtInterface` for the available properties.
+ * @example
+ * ```ts
+ * ktInterface('Foo', {
+ *   annotations: [ktAnnotation('Deprecated')],
+ *   accessModifier: 'private',
+ *   generics: [ktGenericParameter('T')],
+ *   extends: ['Bar', 'Baz'],
+ *   members: [ktProperty('x', { type: 'Int' })],
+ *   companionObject: ktObject(),
+ * });
+ * // Emits:
+ * // @Deprecated
+ * // private interface Foo<T> : Bar, Baz {
+ * //     companion object {}
+ * //
+ * //     val x: Int
+ * // }
+ * ```
+ */
 export const ktInterface: typeof createInterface & { write: typeof writeKtNodes } = Object.assign(createInterface, {
   write: writeKtNodes,
 });

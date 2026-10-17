@@ -26,14 +26,38 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
+/**
+ * Represents a single tag of a doc comment, such as `@param x The x value.` or `@returns`.
+ *
+ * Written in this order: the `@` sign and the tag name, the type in curly braces when set, then the text. The parts are
+ * separated by spaces. The enclosing doc comment writes its tags one per line.
+ *
+ * @template TBuilder The type of the source builder the doc tag is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see tsDocTag
+ */
 export class TsDocTag<TBuilder extends SourceBuilder, TInjects extends string = never> extends TsNode<
   TBuilder,
   TInjects | Injects
 > {
+  /**
+   * The name of the tag, written after the `@` sign, such as `param`. Any name is written, so custom tags work too.
+   */
   public tag: string;
+  /**
+   * The type written in curly braces after the tag name, such as `{number}`. Nothing is written when `null`.
+   */
   public type: TsType<TBuilder> | null;
+  /**
+   * The text written after the tag name and the type, such as the description of a parameter. Nothing is written when
+   * `null`.
+   */
   public text: BasicAppendValue<TBuilder> | null;
 
+  /**
+   * Initializes a new instance of the TsDocTag class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.tag = options.tag;
@@ -270,6 +294,21 @@ function createDocTag<TBuilder extends SourceBuilder>(tag: string, ...args: any[
   });
 }
 
+/**
+ * Factory for creating doc tag nodes. The arguments depend on the tag. For example, `param` takes a name and a
+ * description, and `author` takes a name and an optional email address, which it writes in angle brackets. Tags such as
+ * `returns` take a single description. Any tag accepts an optional last argument with the `type`, `text` or `inject`
+ * settings. The `write` function writes one or more tags to a builder.
+ *
+ * @param tag The name of the tag, written after the `@` sign.
+ * @param args The arguments of the tag. See the overloads of `tsDocTag` for the arguments that each tag takes.
+ * @example
+ * ```ts
+ * tsDocTag('param', 'x', 'The x coordinate.', { type: 'number' });
+ * // Emits:
+ * // @param {number} x The x coordinate.
+ * ```
+ */
 export const tsDocTag: typeof createDocTag & { write: typeof writeTsNodes } = Object.assign(createDocTag, {
   write: writeTsNodes,
 });

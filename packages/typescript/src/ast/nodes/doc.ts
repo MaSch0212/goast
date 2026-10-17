@@ -24,13 +24,36 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
+/**
+ * Represents a doc comment, which is written above the node that it documents. Nothing is written when the doc has
+ * neither a description nor tags.
+ *
+ * Written in this order: the description, an empty line when both a description and tags are set, then the tags, one
+ * per line. The comment starts on its own line and is followed by a line break.
+ *
+ * @template TBuilder The type of the source builder the doc comment is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see tsDoc
+ */
 export class TsDoc<TBuilder extends SourceBuilder, TInjects extends string = never> extends TsNode<
   TBuilder,
   TInjects | Injects
 > {
+  /**
+   * The text at the top of the doc comment. Each line of the text is prefixed with an asterisk. Nothing is written when
+   * `null`.
+   */
   public description: BasicAppendValue<TBuilder> | null;
+  /**
+   * The tags written below the description, one per line, such as `@param` or `@returns`. An empty line separates them
+   * from the description.
+   */
   public tags: TsDocTag<TBuilder>[];
 
+  /**
+   * Initializes a new instance of the TsDoc class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.description = options.description ?? null;
@@ -95,6 +118,21 @@ function isDocEmpty(doc: Nullable<TsDoc<SourceBuilder>>): boolean {
   return !doc || (!doc.description && doc.tags.length === 0);
 }
 
+/**
+ * Factory for creating doc comment nodes. The `write` function writes a doc comment to a builder. The `get` function
+ * returns a doc with `@template` tags for the described generics and `@param` tags for the described parameters, placed
+ * before the existing tags. The `isEmpty` function tells whether a doc has nothing to write.
+ *
+ * @param options The settings of the doc comment. See `TsDoc` for the available properties.
+ * @example
+ * ```ts
+ * tsDoc({ description: 'Creates a user.', tags: [tsDocTag('returns', 'The new user.')] });
+ * // Emits the lines of the doc comment. The opening and closing delimiters are left out here:
+ * // Creates a user.
+ * //
+ * // @returns The new user.
+ * ```
+ */
 export const tsDoc: typeof createDoc & {
   write: typeof writeTsNodes;
   get: typeof getDoc;

@@ -49,7 +49,7 @@ up as a reviewable deletion rather than a silent behaviour change.
   reads `GOAST_SNAPSHOT`, defaulting to `check` on CI and `write` locally.
 - `test/harness/docker.ts` already exists with `buildImage`, `runContainer`, `requireDocker` and `hostGateway`. **Phase 5
   uses none of it.** It was built in phase 3 with tier 4 in mind; phases 6 and 7 are its tier-4 consumers.
-- `ApiMethod` in `@goast/core` (`packages/core/src/transform/api-types.ts:45`) is `OpenApiHttpMethod`. The case table
+- `ApiMethod` in `@goast/core` (`packages/core/src/transform/api-types.ts:73`) is `OpenApiHttpMethod`. The case table
   declares its own `HttpMethod` union rather than importing it, because the table is a test-side contract and must not
   drift when the generator's type does.
 
@@ -1691,7 +1691,7 @@ number, for each confirmed generator defect. At minimum the four already measure
 2. **No `style`/`explode` support** — a query array becomes `String(value)`, i.e. comma-joined, where OpenAPI's default
    is repeated keys.
 3. **Every request body is `JSON.stringify(body)`** regardless of content type —
-   `packages/typescript/src/generators/services/fetch-clients/fetch-client-generator.ts:226`.
+   `packages/typescript/src/generators/services/fetch-clients/fetch-client-generator.ts:248`.
 4. **Cookie parameters are not implemented** — the generated method takes no arguments.
 
 Match the format of the entries above `### Also registered, not scheduled`, and add a consistent `**Tier 4:**` element

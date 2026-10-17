@@ -15,13 +15,33 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
+/**
+ * Represents an argument that is passed to a call or an annotation, such as `42` or `timeout = 30`.
+ *
+ * Written in this order: the name followed by ` = ` when a name is set, then the value.
+ *
+ * @template TBuilder The type of the source builder the argument is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see ktArgument
+ */
 export class KtArgument<TBuilder extends SourceBuilder, TInjects extends string = never> extends KtNode<
   TBuilder,
   TInjects | Injects
 > {
+  /**
+   * The name of the parameter that the value is passed to, written before ` = ` to pass the value by name. `null` or an
+   * empty name passes the value by position instead.
+   */
   public name: string | null;
+  /**
+   * The value of the argument. A string is written verbatim, while other nodes write their own Kotlin code.
+   */
   public value: KtValue<TBuilder>;
 
+  /**
+   * Initializes a new instance of the KtArgument class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.name = options?.name ?? null;
@@ -53,6 +73,19 @@ const createNamedArgument = <TBuilder extends SourceBuilder>(
   options?: Prettify<Omit<Options<TBuilder>, 'value' | 'name'>>,
 ): KtArgument<TBuilder> => new KtArgument<TBuilder>({ ...options, value, name });
 
+/**
+ * Factory for creating argument nodes. The `named` function creates an argument with a name, and the `write` function
+ * writes a list of arguments in parentheses, or `()` when the list is empty.
+ *
+ * @param value The value of the argument. A string is written verbatim.
+ * @param options The settings of the argument. See `KtArgument` for the available properties.
+ * @example
+ * ```ts
+ * ktArgument('30', { name: 'timeout' });
+ * // Emits:
+ * // timeout = 30
+ * ```
+ */
 export const ktArgument: typeof createArgument & {
   named: typeof createNamedArgument;
   write: typeof writeKtArguments;

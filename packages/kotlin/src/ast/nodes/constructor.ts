@@ -30,19 +30,65 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
+/**
+ * The constructor that a constructor delegates to, written after `:` as `this(...)` or `super(...)`.
+ */
 export type KtDelegateTarget = 'this' | 'super';
 
+/**
+ * Represents a constructor of a Kotlin class. A secondary constructor is written in the class body, while a primary
+ * constructor is written in the class header.
+ *
+ * Written in this order as a secondary constructor: annotations, access modifier, the `constructor` keyword,
+ * parameters, the delegation, then the body. As a primary constructor, only the annotations, the access modifier,
+ * and the parameters are written in the header, and the containing class writes the body as an `init` block.
+ *
+ * @template TBuilder The type of the source builder the constructor is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see ktConstructor
+ */
 export class KtConstructor<TBuilder extends SourceBuilder, TInjects extends string = never> extends KtNode<
   TBuilder,
   TInjects | Injects
 > {
+  /**
+   * The visibility modifier written before the `constructor` keyword, or `null` to omit it. For a primary
+   * constructor, a set modifier also makes the `constructor` keyword appear in the header, such as
+   * `Foo private constructor(x: Int)`.
+   */
   public accessModifier: KtAccessModifier | null;
+  /**
+   * The annotations written above a secondary constructor, each on its own line. For a primary constructor they are
+   * written inline before the parameters, separated by spaces.
+   */
   public annotations: KtAnnotation<TBuilder>[];
+  /**
+   * The parameters written in parentheses after the `constructor` keyword. A parameter with a `property` also
+   * declares a property of the class when it is part of a primary constructor. A secondary constructor always writes
+   * the parentheses, while a primary constructor omits them when there is nothing to write.
+   */
   public parameters: (KtParameter<TBuilder> | BasicAppendValue<TBuilder>)[];
+  /**
+   * The statements written inside the braces of a secondary constructor, or `null` for empty braces. A primary
+   * constructor does not write its body here, since the containing class writes it as an `init` block.
+   */
   public body: AppendValue<TBuilder> | null;
+  /**
+   * The constructor that is called before the body, written as ` : this(...)` or ` : super(...)`, or `null` to omit
+   * the delegation. A primary constructor writes no delegation itself, so the containing class writes `super` after
+   * its base class instead.
+   */
   public delegateTarget: KtDelegateTarget | null;
+  /**
+   * The arguments written in parentheses after the delegation target, such as `(42, true)`. Only written when
+   * `delegateTarget` is set, and an empty list writes `()`.
+   */
   public delegateArguments: (KtArgument<TBuilder> | KtValue<TBuilder>)[];
 
+  /**
+   * Initializes a new instance of the KtConstructor class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.parameters = options.parameters?.filter(notNullish) ?? [];
@@ -118,6 +164,25 @@ const createConstructor = <TBuilder extends SourceBuilder>(
   options?: Prettify<Omit<Options<TBuilder>, 'parameters' | 'body'>>,
 ): KtConstructor<TBuilder> => new KtConstructor<TBuilder>({ ...options, parameters: parameters ?? undefined, body });
 
+/**
+ * Factory for creating constructor nodes. The `write` function writes one or more constructor nodes to a builder.
+ *
+ * @param parameters The parameters of the constructor. Pass nothing for a constructor without parameters.
+ * @param body The statements of the constructor body, or `null` for an empty body.
+ * @param options The settings of the constructor. See `KtConstructor` for the available properties.
+ * @example
+ * ```ts
+ * ktConstructor([ktParameter('x', 'Int')], 'println(x)', {
+ *   accessModifier: 'private',
+ *   delegateTarget: 'this',
+ *   delegateArguments: ['x'],
+ * });
+ * // Emits:
+ * // private constructor(x: Int) : this(x) {
+ * //     println(x)
+ * // }
+ * ```
+ */
 export const ktConstructor: typeof createConstructor & { write: typeof writeKtNodes } = Object.assign(
   createConstructor,
   {

@@ -18,17 +18,59 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
+/**
+ * Represents a Kotlin string literal, such as `"Hello"`, or the `null` literal when the value is `null`.
+ *
+ * The value is escaped like a JSON string, and `$` is escaped so that it stays literal, unless `template` is set. A
+ * multiline string is written as a raw string in triple quotes. Its line breaks are kept, and with `trimMargin` each
+ * line is prefixed with `marginPrefix` and the string is followed by `.trimMargin()`.
+ *
+ * @template TBuilder The type of the source builder the string is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see ktString
+ */
 export class KtString<TBuilder extends SourceBuilder, TInjects extends string = never> extends KtNode<
   TBuilder,
   TInjects | Injects
 > {
+  /**
+   * The text of the string, escaped as described above. `null` writes the Kotlin `null` literal instead of a string.
+   */
   public value: string | null;
+  /**
+   * Whether `${...}` placeholders in the value are kept as Kotlin string templates. Otherwise `$` is escaped as
+   * `\$`, so the placeholder text is written literally.
+   * @default false
+   */
   public template: boolean;
+  /**
+   * Whether the string is written as a raw string in triple quotes. Line breaks in the value become line breaks in the
+   * output, and without `trimMargin` the text is written in one piece.
+   * @default false
+   */
   public multiline: boolean;
+  /**
+   * Whether a multiline string starts on a new line and is followed by `.trimMargin()`, the Kotlin call that removes
+   * the margin prefix at runtime. Has no effect on single-line strings.
+   * @default true
+   */
   public trimMargin: boolean;
+  /**
+   * The prefix written at the start of each line of a multiline string, and passed to `trimMargin` as its argument,
+   * such as `.trimMargin("!")`. `null` uses `|` as the prefix and writes `.trimMargin()` without an argument.
+   */
   public marginPrefix: string | null;
+  /**
+   * Whether the margin prefix is written at the start of each line of a multiline string. When `false`, the lines are
+   * written as they are, and `.trimMargin()` is still appended.
+   * @default true
+   */
   public autoAddMarginPrefix: boolean;
 
+  /**
+   * Initializes a new instance of the KtString class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.value = options?.value ?? null;
@@ -109,6 +151,21 @@ const createString = <TBuilder extends SourceBuilder>(
   options?: Prettify<Omit<Options<TBuilder>, 'value'>>,
 ): KtString<TBuilder> => new KtString<TBuilder>({ ...options, value });
 
+/**
+ * Factory for creating string nodes. The `write` function writes one or more string nodes to a builder.
+ *
+ * @param value The text of the string, or `null` for the Kotlin `null` literal.
+ * @param options The settings of the string. See `KtString` for the available properties.
+ * @example
+ * ```ts
+ * ktString('first line\nsecond line', { multiline: true });
+ * // Emits:
+ * // """
+ * //     |first line
+ * //     |second line
+ * //     """.trimMargin()
+ * ```
+ */
 export const ktString: typeof createString & { write: typeof writeKtNodes } = Object.assign(createString, {
   write: writeKtNodes,
 });

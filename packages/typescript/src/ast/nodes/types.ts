@@ -15,6 +15,12 @@ import type { TsTuple } from './tuple.ts';
 import type { TsTypeof } from './typeof.ts';
 import type { TsUnionType } from './union-type.ts';
 
+/**
+ * A type that can be written in a type position, such as a type annotation, a generic argument or a union member.
+ * Plain strings and other append values are written as they are.
+ *
+ * @template TBuilder The type of the source builder the type is written to.
+ */
 export type TsType<TBuilder extends SourceBuilder> =
   | BasicAppendValue<TBuilder>
   | TsIntersectionType<TBuilder>
@@ -28,6 +34,12 @@ export type TsType<TBuilder extends SourceBuilder> =
   | TsTypeof<TBuilder>
   | TsReference<TBuilder>;
 
+/**
+ * A value that can be written in an expression position, such as the initial value of a variable or the default value
+ * of a parameter. Plain strings and other append values are written as they are.
+ *
+ * @template TBuilder The type of the source builder the value is written to.
+ */
 export type TsValue<TBuilder extends SourceBuilder> =
   | BasicAppendValue<TBuilder>
   | TsObject<TBuilder>

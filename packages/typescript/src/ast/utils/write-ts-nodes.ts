@@ -10,6 +10,13 @@ import {
 
 import { TsNode } from '../node.ts';
 
+/**
+ * Writes a single node or value to a builder.
+ * A `TsNode` writes itself. Any other value is passed to the builder's `append` method.
+ * @template TBuilder The type of the source builder the node is written to.
+ * @param builder The builder to write to.
+ * @param node The node or value to write.
+ */
 export function writeTsNode<TBuilder extends SourceBuilder>(
   builder: TBuilder,
   node: Nullable<AppendValue<TBuilder> | TsNode<TBuilder>>,
@@ -21,6 +28,15 @@ export function writeTsNode<TBuilder extends SourceBuilder>(
   }
 }
 
+/**
+ * Writes one or more nodes or values to a builder, one after another.
+ * Nullish entries are skipped, and nothing is written when no entries remain. Without a separator, the entries are
+ * written back to back, so any line break has to come from the nodes themselves.
+ * @template TBuilder The type of the source builder the nodes are written to.
+ * @param builder The builder to write to.
+ * @param nodes The nodes or values to write. A single entry is also accepted.
+ * @param options Options for writing. `separator` is written between each pair of written entries.
+ */
 export function writeTsNodes<TBuilder extends SourceBuilder>(
   builder: TBuilder,
   nodes: SingleOrMultiple<Nullable<AppendValue<TBuilder> | TsNode<TBuilder>>>,

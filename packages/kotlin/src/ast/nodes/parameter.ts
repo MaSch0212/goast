@@ -34,23 +34,76 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
+/**
+ * Represents a Kotlin parameter of a function or a class constructor. A class constructor parameter can also declare
+ * a property.
+ *
+ * Written in this order: the annotations, each on a line of its own, the modifiers, `val` or `var` for a property, the
+ * name, the type after a colon, then the default value after an equals sign.
+ *
+ * @template TBuilder The type of the source builder the parameter is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see ktParameter
+ */
 export class KtParameter<TBuilder extends SourceBuilder, TInjects extends string = never> extends KtNode<
   TBuilder,
   TInjects | Injects
 > {
+  /**
+   * The name of the parameter, written before the colon.
+   */
   public name: string;
+  /**
+   * The type of the parameter, written after the colon, such as `Int` in `x: Int`.
+   */
   public type: KtType<TBuilder>;
+  /**
+   * The annotations written above the parameter, each on a line of its own. A parameter list with annotations is
+   * written with one parameter per line.
+   */
   public annotations: KtAnnotation<TBuilder>[];
+  /**
+   * The default value written after ` = `, such as `42` in `x: Int = 42`. `null` writes no default value.
+   */
   public default: KtValue<TBuilder> | null;
+  /**
+   * Whether the parameter is written with the `vararg` modifier, such as `vararg x: Int`. The modifier is written for a
+   * plain parameter as well as for a class property.
+   * @default false
+   */
   public vararg: boolean;
+  /**
+   * The description of the parameter. It is not written inline. It becomes a `@param` tag in the KDoc comment of the
+   * function or class whose parameter list contains the parameter.
+   */
   public description: BasicAppendValue<TBuilder> | null;
 
   // class parameter options
+  /**
+   * The visibility written before `val` or `var`, such as `private var x: Int`. Only written when `property` is set.
+   */
   public accessModifier: KtAccessModifier | null;
+  /**
+   * Whether the parameter declares a property: `readonly` writes `val` and `mutable` writes `var`. `null` writes a
+   * plain parameter without either keyword.
+   */
   public property: 'readonly' | 'mutable' | null;
+  /**
+   * The description of the property. It is not written inline. It becomes a `@property` tag in the KDoc comment of the
+   * class that declares the parameter, when `property` is set.
+   */
   public propertyDescription: BasicAppendValue<TBuilder> | null;
+  /**
+   * Whether the property is written with the `override` modifier, such as `override var x: Int`. Only written when
+   * `property` is set.
+   * @default false
+   */
   public override: boolean;
 
+  /**
+   * Initializes a new instance of the KtParameter class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.name = options.name;
@@ -109,6 +162,21 @@ const createClassParameter = <TBuilder extends SourceBuilder>(
   options?: Prettify<Omit<Options<TBuilder>, 'name' | 'type'>>,
 ): KtParameter<TBuilder> => new KtParameter<TBuilder>({ ...options, name, type });
 
+/**
+ * Factory for creating parameter nodes. The `class` function creates a class constructor parameter, which can declare a
+ * property, and accepts the options for it. The `write` function writes a parenthesized parameter list.
+ *
+ * @param name The name of the parameter.
+ * @param type The type of the parameter.
+ * @param options The settings of the parameter. See `KtParameter` for the available properties.
+ * @example
+ * ```ts
+ * ktParameter('x', 'Int', { default: '42', annotations: [ktAnnotation('Inject')] });
+ * // Emits:
+ * // @Inject
+ * // x: Int = 42
+ * ```
+ */
 export const ktParameter: typeof createParameter & {
   class: typeof createClassParameter;
   write: typeof writeKtParameters;

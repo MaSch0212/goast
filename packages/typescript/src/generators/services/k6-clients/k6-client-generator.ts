@@ -27,14 +27,35 @@ type Context = TypeScriptK6ClientGeneratorContext;
 type Output = TypeScriptK6ClientGeneratorOutput;
 type Builder = TypeScriptFileBuilder;
 
+/**
+ * Generates the k6 client class and the response models of one API service.
+ * @template TOutput The type of the output returned for the service.
+ * @see DefaultTypeScriptK6ClientGenerator
+ */
 export interface TypeScriptK6ClientGenerator<TOutput extends Output = Output> {
+  /**
+   * Generates the files of the service in the context and returns the exports that were written.
+   * @param context The context of the service to generate.
+   * @returns The output for the service, or a promise that resolves to it.
+   */
   generate(context: Context): MaybePromise<TOutput>;
 }
 
+/**
+ * The default implementation of `TypeScriptK6ClientGenerator`. It writes the client to
+ * `{outputDir}/{clientDir}/{service}-client.js` (or `.ts`, depending on `language`), and the response models of each
+ * endpoint to `{outputDir}/{responseModelsDir}/{service}-responses.ts`. Extend it to customize the output.
+ * @see TypeScriptK6ClientsGenerator
+ */
 export class DefaultTypeScriptK6ClientGenerator
   extends TypeScriptFileGenerator<Context, Output>
   implements TypeScriptK6ClientGenerator
 {
+  /**
+   * Generates the response models and the client file of the service and returns their exports.
+   * @param ctx The context of the service to generate.
+   * @returns The client `component` and `filePath`, and the `responseModels` keyed by endpoint ID.
+   */
   public override generate(ctx: TypeScriptK6ClientGeneratorContext): MaybePromise<TypeScriptK6ClientGeneratorOutput> {
     const responseModels = this.generateResponseModels(ctx);
 

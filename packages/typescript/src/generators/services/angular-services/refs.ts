@@ -6,6 +6,17 @@ import { ts } from '../../../ast/index.ts';
 
 import type { TypeScriptAngularServicesGeneratorConfig } from './models.ts';
 
+/**
+ * Creates the factories for the references to the Angular utility files and the generated API infrastructure.
+ *
+ * The references point into `{outputDir}/{utilsDir}`. `abortablePromise` and `waitForResponse` are exported by
+ * `angular-service.utils.ts`, `requestBuilder` by `request-builder.ts`, and `apiConfiguration`, `apiBaseService`,
+ * `httpStatusCode` and `provide` by the files that the services generator writes.
+ *
+ * @param options The services generator configuration. It determines the names and the location of the references.
+ * @returns The reference factories, keyed by the name of the referenced component.
+ * @see TypeScriptAngularServicesGeneratorConfig
+ */
 // See packages/typescript/assets/client/angular for reference
 export function getReferenceFactories(options: TypeScriptAngularServicesGeneratorConfig): {
   abortablePromise: ts.GenericModuleReferenceFactory<1>;

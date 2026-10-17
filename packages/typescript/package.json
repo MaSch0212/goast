@@ -1,6 +1,6 @@
 {
   "name": "@goast/typescript",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Provides gOAst generators for generating TypeScript code from OpenAPI specifications.",
   "bugs": {
     "url": "https://github.com/MaSch0212/goast/issues"

@@ -39,24 +39,88 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
+/**
+ * Represents a method of a class, or a method signature of an object type or an object literal.
+ *
+ * Written in this order: doc comment, decorators, modifiers (access modifier, `static`, `abstract`, `override`,
+ * `async`), name, optional marker, generics, parameters, return type, and the body. Without a body the method ends
+ * with a semicolon, except inside an object literal (`tsObject`), where every method ends with a comma instead. The
+ * injection points are named after the parts they wrap, such as `beforeParams` and `afterReturnType`.
+ *
+ * @template TBuilder The type of the source builder the method is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see tsMethod
+ */
 export class TsMethod<TBuilder extends SourceBuilder, TInjects extends string = never> extends TsNode<
   TBuilder,
   TInjects | Injects
 > {
+  /**
+   * The doc comment written above the method, or `null` to omit it. The descriptions of the generic parameters and of
+   * the parameters are added to it as `@template` and `@param` tags.
+   */
   public doc: TsDoc<TBuilder> | null;
+  /**
+   * The decorators written above the method, each on its own line.
+   */
   public decorators: TsDecorator<TBuilder>[];
+  /**
+   * The access modifier written before the method, such as `public`, or `null` to omit it.
+   */
   public accessModifier: TsAccessModifier | null;
+  /**
+   * Whether the method is written with the `static` keyword.
+   * @default false
+   */
   public static: boolean;
+  /**
+   * Whether the method is written with the `abstract` keyword.
+   * @default false
+   */
   public abstract: boolean;
+  /**
+   * Whether the method is written with the `override` keyword.
+   * @default false
+   */
   public override: boolean;
+  /**
+   * Whether the method is written with the `async` keyword, which is placed after `override`.
+   * @default false
+   */
   public async: boolean;
+  /**
+   * The method name, written verbatim after the modifiers.
+   */
   public name: string;
+  /**
+   * Whether the name is followed by `?`, which marks the method as optional, such as `x?()`.
+   * @default false
+   */
   public optional: boolean;
+  /**
+   * The type parameters written in angle brackets after the name, such as `<T, U>`. Described parameters also add a
+   * `@template` tag to the doc comment.
+   */
   public generics: (TsGenericParameter<TBuilder> | BasicAppendValue<TBuilder>)[];
+  /**
+   * The parameters written in parentheses, in the given order. Each parameter with a description adds a `@param` tag to
+   * the doc comment.
+   */
   public parameters: (TsParameter<TBuilder> | BasicAppendValue<TBuilder>)[];
+  /**
+   * The return type written after the parameters, such as `: number`, or `null` to omit it.
+   */
   public returnType: TsType<TBuilder> | null;
+  /**
+   * The code written in braces after the signature, one statement per line. `null` writes the method without a body,
+   * which ends with a semicolon outside of object literals.
+   */
   public body: AppendValue<TBuilder> | null;
 
+  /**
+   * Initializes a new instance of the TsMethod class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.doc = options.doc ?? null;
@@ -128,11 +192,37 @@ export class TsMethod<TBuilder extends SourceBuilder, TInjects extends string = 
   }
 }
 
+/**
+ * Creates a method node. This is the function that `tsMethod` wraps, and `tsMethod` also provides `write`.
+ *
+ * @param name The name of the method. See `TsMethod.name`.
+ * @param options The settings of the method. See `TsMethod` for the available properties.
+ * @example
+ * ```ts
+ * createMethod('x', { returnType: 'number' });
+ * // Emits:
+ * // x(): number;
+ * ```
+ */
 export const createMethod = <TBuilder extends SourceBuilder>(
   name: Options<TBuilder>['name'],
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
 ): TsMethod<TBuilder> => new TsMethod<TBuilder>({ ...options, name });
 
+/**
+ * Factory for creating method nodes. The `write` function writes one or more method nodes to a builder.
+ *
+ * @param name The name of the method. See `TsMethod.name`.
+ * @param options The settings of the method. See `TsMethod` for the available properties.
+ * @example
+ * ```ts
+ * tsMethod('x', { parameters: [tsParameter('y'), tsParameter('z')], returnType: 'number', body: 'return 42;' });
+ * // Emits:
+ * // x(y, z): number {
+ * //   return 42;
+ * // }
+ * ```
+ */
 export const tsMethod: typeof createMethod & { write: typeof writeTsNodes } = Object.assign(createMethod, {
   write: writeTsNodes,
 });

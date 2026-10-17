@@ -29,6 +29,15 @@ export function hasNullType(type: string | string[] | undefined | null): boolean
   return asTypeArray(type).some(isNullType);
 }
 
+/**
+ * Determines the `ApiSchemaKind` of a schema from its keywords. `oneOf` is checked first, then `allOf`/`anyOf`
+ * (unless the schema is typed `object`), then type arrays, then the scalar `type`. A schema with `allOf`/`anyOf`
+ * is `object` if it also declares properties and `combined` otherwise.
+ * @template T The schema-like object type that provides the keywords the kind is derived from.
+ * @param ctx The transformer context, whose `unknownTypeBehavior` decides schemas without a recognised type.
+ * @param schema The schema to classify.
+ * @returns The kind of the schema.
+ */
 export function determineSchemaKind<
   T extends {
     oneOf?: unknown;
@@ -80,6 +89,13 @@ export function determineSchemaKind<
   return treadAsObject ? 'object' : 'unknown';
 }
 
+/**
+ * Derives the name of a schema. A `title` takes precedence. Otherwise the name comes from the schema's place in the
+ * document: its component or `definitions` key, a parameter, response or request body, or its parent property.
+ * @param schema The schema with its `$src` location and optional `title`.
+ * @param id The generated identifier, used as the name when nothing better can be derived.
+ * @returns The name, and whether it was generated rather than taken from the document.
+ */
 export function determineSchemaName(
   schema: {
     title?: string;
@@ -158,6 +174,11 @@ export function determineSchemaName(
   return { name: id, isGenerated: true };
 }
 
+/**
+ * Maps the `readOnly` and `writeOnly` flags of a schema to its accessibility. Setting both flags yields `none`.
+ * @param schema The schema whose flags are read.
+ * @returns The accessibility of the schema.
+ */
 export function determineSchemaAccessibility(schema: {
   readOnly?: boolean;
   writeOnly?: boolean;
@@ -169,6 +190,13 @@ export function determineSchemaAccessibility(schema: {
   }
 }
 
+/**
+ * Narrows an accessibility that is already known by the flags of another schema, such as one reached through `allOf`.
+ * A flag that contradicts the current accessibility yields `none`, and `all` takes the flags of the schema.
+ * @param accessibility The accessibility determined so far.
+ * @param schema The schema whose flags are merged in.
+ * @returns The combined accessibility.
+ */
 export function updateSchemaAccessibility(
   accessibility: ApiSchemaAccessibility,
   schema: {
@@ -186,6 +214,13 @@ type CustomFields<T extends Record<string, unknown>> = {
   [K in keyof T as K extends `x-${string}` ? K : never]: T[K];
 };
 
+/**
+ * Collects the `x-` extension fields of an OpenAPI object. The prefix is removed from each key, so `x-foo`
+ * becomes `foo`.
+ * @template T The type of the OpenAPI object.
+ * @param schema The OpenAPI object to read the extensions from.
+ * @returns The extensions, keyed by their name without the `x-` prefix.
+ */
 export function getCustomFields<T extends Record<string, unknown>>(schema: T): CustomFields<T> {
   const result = {} as CustomFields<T>;
   for (const key in schema) {
@@ -197,6 +232,12 @@ export function getCustomFields<T extends Record<string, unknown>>(schema: T): C
   return result;
 }
 
+/**
+ * Determines the name of an endpoint. The `operationId` is used if present. Otherwise the name is built from the method
+ * and the path, with `{param}` turned into `:param` and slashes into underscores, such as `get_pets_:id`.
+ * @param endpointInfo The method, path and operation of the endpoint.
+ * @returns The name of the endpoint.
+ */
 export function determineEndpointName(endpointInfo: {
   method: string;
   path: string;
@@ -206,6 +247,14 @@ export function determineEndpointName(endpointInfo: {
   return endpointInfo.method + endpointInfo.path.replace(/\{([^}]+)\}/g, ':$1').replace(/\//g, '_');
 }
 
+/**
+ * Transforms the `additionalProperties` keyword. A boolean is returned as written and a schema is transformed.
+ * @template TAdditionalProperties The raw type of the `additionalProperties` keyword.
+ * @param context The transformer context.
+ * @param schema The schema that may declare `additionalProperties`.
+ * @param transformSchema The function that transforms a schema object.
+ * @returns `undefined` if the keyword is absent, the boolean as written, or the transformed schema.
+ */
 export function transformAdditionalProperties<TAdditionalProperties>(
   context: OpenApiTransformerContext,
   schema: {
@@ -221,6 +270,15 @@ export function transformAdditionalProperties<TAdditionalProperties>(
   return transformSchema(context, schema.additionalProperties as Exclude<TAdditionalProperties, undefined | boolean>);
 }
 
+/**
+ * Transforms the `properties` of a schema into a map keyed by property name. Keys starting with `$` or `x-`
+ * are skipped.
+ * @template TProperties The raw type of a property schema.
+ * @param context The transformer context.
+ * @param schema The schema that may declare `properties`.
+ * @param transformSchema The function that transforms a property schema.
+ * @returns The transformed properties, or an empty map if the schema declares none.
+ */
 export function transformSchemaProperties<TProperties>(
   context: OpenApiTransformerContext,
   schema: { properties?: Record<string, TProperties>; required?: string[] },
@@ -238,9 +296,18 @@ export function transformSchemaProperties<TProperties>(
   return result;
 }
 
+/**
+ * Generates identifiers of the form `<name>-<n>`. The counter is kept per name, so identifiers are unique within one
+ * transform run.
+ */
 export class IdGenerator {
   private readonly _idMap = new Map<string, number>();
 
+  /**
+   * Generates the next identifier for the given name.
+   * @param name The prefix of the identifier, such as `schema` or `endpoint`.
+   * @returns The next identifier, such as `schema-1` and then `schema-2`.
+   */
   public generateId(name: string): string {
     const id = this._idMap.get(name) ?? 1;
     this._idMap.set(name, id + 1);
@@ -248,6 +315,12 @@ export class IdGenerator {
   }
 }
 
+/**
+ * Builds the key that identifies an OpenAPI object by its source file and JSON path. The transformer uses it to reuse
+ * the entries it has already created for the same object.
+ * @param obj The OpenAPI object to identify.
+ * @returns The key, in the form `file#path`.
+ */
 export function getOpenApiObjectIdentifier(obj: Deref<OpenApiObject<string>>) {
   return obj.$src.file + '#' + obj.$src.path;
 }

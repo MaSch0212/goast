@@ -50,6 +50,9 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
+/**
+ * The nodes that can be written in the body of an enum class, after the entries. Other append values are written as-is.
+ */
 export type KtEnumMember<TBuilder extends SourceBuilder> =
   | KtConstructor<TBuilder>
   | KtEnum<TBuilder>
@@ -60,20 +63,67 @@ export type KtEnumMember<TBuilder extends SourceBuilder> =
   | KtClass<TBuilder>
   | AppendValue<TBuilder>;
 
+/**
+ * Represents a Kotlin enum class, such as `enum class Color(val rgb: Int) { RED(0xFF0000) }`.
+ *
+ * Written in this order: the doc comment, annotations, the access modifier, `enum class`, the name, the primary
+ * constructor, the implemented interfaces, then the body. The body holds the entries, which are followed by a semicolon
+ * when members or a companion object are written after them.
+ *
+ * @template TBuilder The type of the source builder the enum is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see ktEnum
+ */
 export class KtEnum<TBuilder extends SourceBuilder, TInjects extends string = never> extends KtNode<
   TBuilder,
   TInjects | Injects
 > {
+  /**
+   * The name of the enum class, written verbatim after `enum class`.
+   */
   public name: string;
+  /**
+   * The KDoc comment written above the enum, or `null` to omit it. Descriptions of primary constructor parameters are
+   * merged into it as `@param` tags.
+   */
   public doc: KtDoc<TBuilder> | null;
+  /**
+   * The annotations written above the enum, each on its own line.
+   */
   public annotations: KtAnnotation<TBuilder>[];
+  /**
+   * The visibility modifier written before `enum class`, or `null` to omit it. Kotlin declarations are public by
+   * default, so `null` writes a public enum.
+   */
   public accessModifier: KtAccessModifier | null;
+  /**
+   * The primary constructor written in parentheses after the name, or `null` to omit it. Its body is written as an
+   * `init` block among the members.
+   */
   public primaryConstructor: KtConstructor<TBuilder> | null;
+  /**
+   * The interfaces written after `:`, separated by commas. The clause is omitted when the list is empty.
+   */
   public implements: KtType<TBuilder>[];
+  /**
+   * The entries written at the start of the body, separated by commas, in the given order. The body is omitted when
+   * there are neither entries nor members.
+   */
   public values: KtEnumValue<TBuilder>[];
+  /**
+   * The members written in the body after the entries, in the given order. Like class members, they are set off by
+   * blank lines.
+   */
   public members: KtEnumMember<TBuilder>[];
+  /**
+   * The companion object written first among the members, or `null` to omit it.
+   */
   public companionObject: KtObject<TBuilder> | null;
 
+  /**
+   * Initializes a new instance of the KtEnum class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.name = options.name;
@@ -158,6 +208,23 @@ const createEnum = <TBuilder extends SourceBuilder>(
   options?: Prettify<Omit<Options<TBuilder>, 'name' | 'values'>>,
 ): KtEnum<TBuilder> => new KtEnum<TBuilder>({ ...options, name, values: values ?? undefined });
 
+/**
+ * Factory for creating enum class nodes. The `write` function writes one or more enum nodes to a builder.
+ *
+ * @param name The name of the enum class.
+ * @param values The entries of the enum. See `KtEnum.values`.
+ * @param options The settings of the enum. See `KtEnum` for the available properties.
+ * @example
+ * ```ts
+ * ktEnum('Color', [ktEnumValue('RED', { arguments: ['0xFF0000'] })], {
+ *   primaryConstructor: ktConstructor([ktParameter('rgb', 'Int')]),
+ * });
+ * // Emits:
+ * // enum class Color(rgb: Int) {
+ * //     RED(0xFF0000)
+ * // }
+ * ```
+ */
 export const ktEnum: typeof createEnum & { write: typeof writeKtNodes } = Object.assign(createEnum, {
   write: writeKtNodes,
 });

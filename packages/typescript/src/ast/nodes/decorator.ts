@@ -26,13 +26,34 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
+/**
+ * Represents a decorator, such as `@decorator` or `@decorator(arg1, arg2)`.
+ *
+ * Written in this order: the `@` sign, the function, then the arguments in parentheses when they are set.
+ *
+ * @template TBuilder The type of the source builder the decorator is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see tsDecorator
+ */
 export class TsDecorator<TBuilder extends SourceBuilder, TInjects extends string = never> extends TsNode<
   TBuilder,
   TInjects | Injects
 > {
+  /**
+   * The function that is called as the decorator, such as `decorator` in `@decorator`. It is written right after the
+   * `@` sign, and nodes are written with their own output.
+   */
   public function: TsReference<TBuilder> | BasicAppendValue<TBuilder>;
+  /**
+   * The arguments written in parentheses after the function, or `null` to write no parentheses. An empty array writes
+   * `()`, and more than two arguments are written one per line.
+   */
   public arguments: (TsArgument<TBuilder> | TsValue<TBuilder>)[] | null;
 
+  /**
+   * Initializes a new instance of the TsDecorator class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.function = options.function;
@@ -71,6 +92,20 @@ const writeDecorators = <TBuilder extends SourceBuilder>(
   });
 };
 
+/**
+ * Factory for creating decorator nodes. The `write` function writes one or more decorators to a builder. With
+ * `multiline` each decorator gets its own line, otherwise the decorators are separated by spaces.
+ *
+ * @param fn The decorator function, such as `Injectable`.
+ * @param args The arguments of the decorator. Omit them to write no parentheses.
+ * @param options The settings of the decorator. See `TsDecorator` for the available properties.
+ * @example
+ * ```ts
+ * tsDecorator('Injectable', ["'root'"]);
+ * // Emits:
+ * // @Injectable('root')
+ * ```
+ */
 export const tsDecorator: typeof createDecorator & { write: typeof writeDecorators } = Object.assign(createDecorator, {
   write: writeDecorators,
 });

@@ -30,14 +30,35 @@ type Builder = KotlinFileBuilder;
 
 const strictResponseCustomProperty = 'strict-response';
 
+/**
+ * Generates the controller files of one service. Implement it to replace the generation of a service's controllers.
+ * @template TOutput The type of the result, which describes the files that were written.
+ * @see DefaultKotlinSpringControllerGenerator
+ */
 export interface KotlinSpringControllerGenerator<TOutput extends Output = Output> {
+  /**
+   * Writes the files of the service in the context and describes them.
+   * @param ctx The context of the service to generate.
+   * @returns The output that describes the written files, or a promise that resolves to it.
+   */
   generate(ctx: Context): MaybePromise<TOutput>;
 }
 
+/**
+ * The default generator of the Spring MVC controller files of one service. It writes `{Service}_Api.kt`,
+ * `{Service}_ApiController.kt` and `{Service}_ApiDelegate.kt` into the package directory of the service, below
+ * `{outputDir}`. Each part of the output is built by a protected method, so subclasses can change one part at a time.
+ * @see KotlinSpringControllersGenerator
+ */
 export class DefaultKotlinSpringControllerGenerator
   extends KotlinFileGenerator<Context, Output>
   implements KotlinSpringControllerGenerator
 {
+  /**
+   * Writes the API interface, the controller and the delegate interface of the service.
+   * @param ctx The context of the service to generate.
+   * @returns The imports of the three written files, as `apiInterface`, `apiController` and `apiDelegate`.
+   */
   public generate(ctx: KotlinServiceGeneratorContext): MaybePromise<KotlinServiceGeneratorOutput> {
     const packageName = this.getPackageName(ctx, {});
     const dirPath = this.getDirectoryPath(ctx, { packageName });
@@ -880,6 +901,14 @@ export class DefaultKotlinSpringControllerGenerator
   }
 }
 
+/**
+ * Adjusts an array type for the `arrayType` setting. With `'flux'`, a `List<T>` becomes `Flux<T>`. With `'list'`, or for
+ * any type that is not a `List`, the type is returned unchanged.
+ * @template T The type of the value to adjust, which is a `kt.Type` or a reference to one.
+ * @param ctx The context of the service, which provides `arrayType`.
+ * @param type The type to adjust.
+ * @returns The adjusted type.
+ */
 export function adjustListType<T>(ctx: Context, type: T): T {
   if (!kt.refs.list.matches(type)) return type;
   switch (ctx.config.arrayType) {

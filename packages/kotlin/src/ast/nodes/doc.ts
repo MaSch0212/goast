@@ -25,13 +25,35 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
+/**
+ * Represents a KDoc comment block that is written above a declaration. The block is omitted when it has neither a
+ * description nor tags.
+ *
+ * Written in this order: the description, a blank line, then the tags. Every line of the block is prefixed with an
+ * asterisk.
+ *
+ * @template TBuilder The type of the source builder the doc comment is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see ktDoc
+ */
 export class KtDoc<TBuilder extends SourceBuilder, TInjects extends string = never> extends KtNode<
   TBuilder,
   TInjects | Injects
 > {
+  /**
+   * The text written at the start of the block, or `null` to write only the tags.
+   */
   public description: BasicAppendValue<TBuilder> | null;
+  /**
+   * The tags written after the description, one per line, such as `@param` or `@see`. Tags that `ktDoc.get` generates
+   * from the descriptions of generic and value parameters are placed before these tags.
+   */
   public tags: KtDocTag<TBuilder>[];
 
+  /**
+   * Initializes a new instance of the KtDoc class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.description = options.description ?? null;
@@ -107,6 +129,28 @@ function getDoc<TBuilder extends SourceBuilder>(
   return doc;
 }
 
+/**
+ * Factory for creating doc comment nodes. The `write` function writes one or more doc comments to a builder. The `get`
+ * function returns the doc comment of a declaration with the descriptions of its generic and parameters added as tags,
+ * or `null` when there is nothing to write.
+ *
+ * @param description The text at the start of the block, or `null` for none.
+ * @param tags The tags written after the description.
+ * @param options The settings of the doc comment. See `KtDoc` for the available properties.
+ * @example
+ * ```ts
+ * ktDoc('Returns the pet with the given id.', [
+ *   ktDocTag('param', 'id', 'The identifier of the pet.'),
+ *   ktDocTag('return', 'The pet, or null.'),
+ * ]);
+ * // Emits a KDoc block with one line per entry, which is closed after the last tag:
+ * // /**
+ * // * Returns the pet with the given id.
+ * // *
+ * // * @param id The identifier of the pet.
+ * // * @return The pet, or null.
+ * ```
+ */
 export const ktDoc: typeof createDoc & {
   write: typeof writeKtNodes;
   get: typeof getDoc;

@@ -2,6 +2,19 @@ import { notNullish, type Nullable, type SingleOrMultiple, type SourceBuilder, t
 
 import { type KtAppendValue, writeKtNode } from './write-kt-node.ts';
 
+/**
+ * Writes the entries of a Kotlin enum class, separated by commas.
+ *
+ * The entries are written inline, separated by `, `, unless the list is multiline. The list is multiline when any entry
+ * has annotations, a doc comment or members, when there are more than four entries, or when any entry has arguments.
+ * A multiline list writes each entry on its own line, separated by `,` and a line break. When any entry has
+ * annotations, a doc comment or members, a blank line is also written before every entry except the first. No trailing
+ * comma or semicolon is written, so the caller adds the terminator.
+ *
+ * @template TBuilder The type of the source builder the entries are written to.
+ * @param builder The builder to write to.
+ * @param nodes The enum entries, as a single node or an array. Nullish entries are ignored.
+ */
 export function writeKtEnumValues<TBuilder extends SourceBuilder>(
   builder: TBuilder,
   nodes: SingleOrMultiple<Nullable<KtAppendValue<TBuilder>>>,

@@ -13,6 +13,20 @@ import type {
 } from './string.utils.types.ts';
 import type { Nullable } from './type.utils.ts';
 
+/**
+ * Applies overrides to a casing. If both arguments are plain casings, `b` is returned. Otherwise the result is an
+ * object that combines the options of both arguments, where the properties of `b` take precedence.
+ * @param a The base casing, either a plain casing or a casing with options.
+ * @param b The casing or the options that override `a`.
+ * @returns The adjusted casing.
+ * @example
+ * ```ts
+ * adjustCasing('camel', 'pascal'); // => 'pascal'
+ * adjustCasing('camel', { prefix: '_' }); // => { casing: 'camel', prefix: '_' }
+ * adjustCasing({ casing: 'camel', prefix: '_' }, 'pascal'); // => { casing: 'pascal', prefix: '_' }
+ * adjustCasing({ casing: 'camel', prefix: '_' }, { suffix: '_' }); // => { casing: 'camel', prefix: '_', suffix: '_' }
+ * ```
+ */
 export function adjustCasing(a: StringCasing, b: StringCasing): StringCasing;
 export function adjustCasing(
   a: StringCasing | StringCasingWithOptions,
@@ -35,18 +49,40 @@ export function adjustCasing(
   }
 }
 
+/**
+ * Converts all characters of a string to lower case.
+ * @param str The string to convert.
+ * @returns The lower case string.
+ */
 export function lowercase<T extends string>(str: T): Lowercase<T> {
   return str.toLowerCase() as Lowercase<T>;
 }
 
+/**
+ * Converts all characters of a string to upper case.
+ * @param str The string to convert.
+ * @returns The upper case string.
+ */
 export function uppercase<T extends string>(str: T): Uppercase<T> {
   return str.toUpperCase() as Uppercase<T>;
 }
 
+/**
+ * Converts the first character of a string to upper case and leaves the remaining characters unchanged.
+ * An empty string is returned as is.
+ * @param str The string to capitalize.
+ * @returns The capitalized string.
+ */
 export function capitalize<T extends string>(str: T): Capitalize<T> {
   return (str.charAt(0).toUpperCase() + str.slice(1)) as Capitalize<T>;
 }
 
+/**
+ * Converts the first character of a string to lower case and leaves the remaining characters unchanged.
+ * An empty string is returned as is.
+ * @param str The string to uncapitalize.
+ * @returns The uncapitalized string.
+ */
 export function uncapitalize<T extends string>(str: T): Uncapitalize<T> {
   return (str.charAt(0).toLowerCase() + str.slice(1)) as Uncapitalize<T>;
 }
@@ -119,6 +155,21 @@ export function wordToCasing(str: Nullable<string>, casing: WordCasing): string 
   }
 }
 
+/**
+ * Converts a string to the specified casing. The `camel`, `pascal`, `kebab`, `snake` and `custom` casings are
+ * delegated to their dedicated functions. All other casings are applied to the words of the string joined together,
+ * so non-alphanumerical characters are removed.
+ * @param str The string to convert. `null` and `undefined` are treated as an empty string. The `first-*` word casings
+ * throw a `TypeError` for an empty string.
+ * @param casing The casing to convert to, optionally with options for that casing.
+ * @returns The converted string.
+ * @example
+ * ```ts
+ * toCasing('foo bar', 'pascal'); // => 'FooBar'
+ * toCasing('foo bar', 'first-upper'); // => 'Foobar'
+ * toCasing('foo_bar', { casing: 'kebab', wordCasing: 'all-upper' }); // => 'FOO-BAR'
+ * ```
+ */
 export function toCasing<T extends StringCasing>(
   str: Nullable<string>,
   casing: T | StringCasingWithOptions<T>,
@@ -360,18 +411,39 @@ function isNonLineBreakWhitespaceChar(char: string): boolean {
     char === '\ufeff'
   );
 }
+/**
+ * Removes trailing whitespace from a string.
+ * @param str The string to trim.
+ * @param includeNewLine Whether to also remove trailing line breaks. Defaults to `true`. If `false`, only whitespace
+ * characters other than line breaks are removed.
+ * @returns The trimmed string.
+ */
 export function trimEnd(str: string, includeNewLine: boolean = true): string {
   if (includeNewLine) return str.trimEnd();
   let i = str.length;
   for (; isNonLineBreakWhitespaceChar(str[i - 1]); i--);
   return str.substring(0, i);
 }
+/**
+ * Removes leading whitespace from a string.
+ * @param str The string to trim.
+ * @param includeNewLine Whether to also remove leading line breaks. Defaults to `true`. If `false`, only whitespace
+ * characters other than line breaks are removed.
+ * @returns The trimmed string.
+ */
 export function trimStart(str: string, includeNewLine: boolean = true): string {
   if (includeNewLine) return str.trimStart();
   let i = 0;
   for (; isNonLineBreakWhitespaceChar(str[i]); i++);
   return str.substring(i);
 }
+/**
+ * Removes leading and trailing whitespace from a string.
+ * @param str The string to trim.
+ * @param includeNewLine Whether to also remove leading and trailing line breaks. Defaults to `true`. If `false`, only
+ * whitespace characters other than line breaks are removed.
+ * @returns The trimmed string.
+ */
 export function trim(str: string, includeNewLine: boolean = true): string {
   if (includeNewLine) return str.trim();
   let s = 0;
@@ -381,6 +453,12 @@ export function trim(str: string, includeNewLine: boolean = true): string {
   return str.substring(s, e);
 }
 
+/**
+ * Removes all occurrences of a substring from a string. The substring is matched literally, not as a regex.
+ * @param str The string to remove the substring from.
+ * @param rem The substring to remove. Must not be empty, because the search would never advance.
+ * @returns The string without the occurrences of `rem`, or `str` itself if `rem` does not occur in it.
+ */
 export function removeStr(str: string, rem: string): string {
   let i = str.indexOf(rem);
   if (i === -1) return str;

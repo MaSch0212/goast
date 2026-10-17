@@ -43,20 +43,66 @@ type Member<TBuilder extends SourceBuilder> =
   | TsConstructor<TBuilder>
   | BasicAppendValue<TBuilder>;
 
+/**
+ * Represents a TypeScript class declaration.
+ *
+ * Written in this order: doc comment, decorators, modifiers, name, generics, heritage clauses, then the body.
+ *
+ * @template TBuilder The type of the source builder the class is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see tsClass
+ */
 export class TsClass<TBuilder extends SourceBuilder, TInjects extends string = never> extends TsNode<
   TBuilder,
   TInjects | Injects
 > {
+  /**
+   * The doc comment written above the class, or `null` to omit it.
+   * Descriptions of generic parameters are merged into it as `@template` tags.
+   */
   public doc: TsDoc<TBuilder> | null;
+  /**
+   * The decorators written above the class declaration, each on its own line.
+   */
   public decorators: TsDecorator<TBuilder>[];
+  /**
+   * Whether the class is written with the `export` keyword.
+   * @default false
+   */
   public export: boolean;
+  /**
+   * Whether the class is written with the `abstract` modifier, placed after `export` when both are set.
+   * @default false
+   */
   public abstract: boolean;
+  /**
+   * The class name, written verbatim after the `class` keyword.
+   */
   public name: string;
+  /**
+   * The type parameters written in angle brackets after the name, such as `<T, U>`.
+   * Plain strings are written as-is; described parameters also add a `@template` tag to the doc comment.
+   */
   public generics: (TsGenericParameter<TBuilder> | BasicAppendValue<TBuilder>)[];
+  /**
+   * The base class written after `extends`, or `null` to omit the clause.
+   */
   public extends: TsReference<TBuilder> | BasicAppendValue<TBuilder> | null;
+  /**
+   * The interfaces written after `implements` as a comma-separated list. The clause is omitted when empty.
+   */
   public implements: (TsReference<TBuilder> | BasicAppendValue<TBuilder>)[];
+  /**
+   * The members written in the class body, in the given order.
+   * Properties and bodyless methods without a doc comment or decorators are written without blank lines,
+   * other members are set off by blank lines.
+   */
   public members: Member<TBuilder>[];
 
+  /**
+   * Initializes a new instance of the TsClass class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.doc = options.doc ?? null;
@@ -128,6 +174,33 @@ const createClass = <TBuilder extends SourceBuilder>(
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
 ): TsClass<TBuilder> => new TsClass<TBuilder>({ ...options, name });
 
+/**
+ * Factory for creating class nodes. The `write` function writes one or more class nodes to a builder.
+ *
+ * @param name The name of the class.
+ * @param options The settings of the class. See `TsClass` for the available properties.
+ * @example
+ * ```ts
+ * tsClass('X', {
+ *   decorators: [tsDecorator('decorator')],
+ *   export: true,
+ *   abstract: true,
+ *   generics: ['T', 'U'],
+ *   extends: tsReference('Y'),
+ *   implements: [tsReference('Z')],
+ *   members: [tsProperty('x'), tsConstructor(), tsMethod('y')],
+ * });
+ * // Emits:
+ * // @decorator
+ * // export abstract class X<T, U> extends Y implements Z {
+ * //   x;
+ * //
+ * //   constructor() {}
+ * //
+ * //   y();
+ * // }
+ * ```
+ */
 export const tsClass: typeof createClass & { write: typeof writeTsNodes } = Object.assign(createClass, {
   write: writeTsNodes,
 });

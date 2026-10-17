@@ -5,17 +5,45 @@ import fs from 'fs-extra';
 import type { OpenApiGeneratorConfig } from '../codegen/config.ts';
 import type { Nullable } from './type.utils.ts';
 
+/**
+ * Options for scanning a directory with `getFiles`.
+ * @see getFiles
+ */
 export type DirectoryScanOptions = {
+  /**
+   * Whether to include the files of subdirectories.
+   * @default false
+   */
   recursive: boolean;
+  /**
+   * The maximum number of subdirectory levels to scan when `recursive` is `true`. `null` or `0` prevents subdirectories
+   * from being entered.
+   * @default 5
+   */
   maxDepth: Nullable<number>;
+  /**
+   * A predicate that receives the name of each file (without its directory) and returns whether to include it.
+   * All files are included if omitted.
+   */
   filter?: (file: string) => boolean;
 };
 
+/**
+ * Default options for `getFiles`. Subdirectories are not scanned, and a maximum depth of 5 applies once `recursive` is
+ * enabled.
+ */
 export const defaultDirectoryScanOptions: DirectoryScanOptions = {
   recursive: false,
   maxDepth: 5,
 };
 
+/**
+ * Gets the absolute paths of the files in the specified directory. Subdirectories are only scanned if `recursive` is
+ * enabled. Symbolic links are not followed; a link is returned like a regular file.
+ * @param dir The directory to scan.
+ * @param options The scan options. Merged with `defaultDirectoryScanOptions`, so omitted options use their defaults.
+ * @returns A promise that resolves to the absolute paths of the matching files.
+ */
 export async function getFiles(dir: string, options?: Partial<DirectoryScanOptions>): Promise<string[]> {
   const opts = { ...defaultDirectoryScanOptions, ...options };
   const files: string[] = [];
@@ -77,6 +105,15 @@ function getCountedFilePath(filePath: string): string {
   return candidate;
 }
 
+/**
+ * Writes generated content to the specified file, creating missing parent directories. If the file already exists, the
+ * `existingFileBehavior` of the configuration decides what happens.
+ * @param config The generator configuration. Its `existingFileBehavior` applies when the file already exists:
+ * `'override'` overwrites it, `'error'` throws, `'skip'` leaves it unchanged, and `'count'` writes to the next free
+ * path such as `file_1.ts`.
+ * @param filePath The path of the file to write.
+ * @param content The content to write.
+ */
 export function writeGeneratedFile(config: OpenApiGeneratorConfig, filePath: string, content: string): void {
   let targetPath = filePath;
 
