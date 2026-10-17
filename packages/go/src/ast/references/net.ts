@@ -1,12 +1,12 @@
 import { goReference } from '../nodes/reference.ts';
 
 /** A reference to `http.Handler` of the `net/http` package. */
-export const httpHandler = goReference.factory('Handler', 'net/http');
+export const httpHandler = goReference.factory('Handler', 'net/http', undefined, { nilable: true });
 /** A reference to `http.Header` of the `net/http` package. */
-export const httpHeader = goReference.factory('Header', 'net/http');
+export const httpHeader = goReference.factory('Header', 'net/http', undefined, { nilable: true });
 /** A reference to `http.Request` of the `net/http` package. */
 export const httpRequest = goReference.factory('Request', 'net/http');
 /** A reference to `http.ResponseWriter` of the `net/http` package. */
-export const httpResponseWriter = goReference.factory('ResponseWriter', 'net/http');
+export const httpResponseWriter = goReference.factory('ResponseWriter', 'net/http', undefined, { nilable: true });
 /** A reference to `http.ServeMux` of the `net/http` package. */
 export const httpServeMux = goReference.factory('ServeMux', 'net/http');

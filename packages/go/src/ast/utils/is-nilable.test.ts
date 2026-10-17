@@ -80,28 +80,26 @@ describe('isGoNilableType', () => {
     });
   });
 
-  describe('known gaps', () => {
-    // BUG: the check only knows a fixed list of predeclared and well-known types, while the doc comment defines
-    // nilable as "pointers, slices, maps and interfaces". The interfaces of the standard library below have a zero
-    // value of nil, but are not in that list, so they are reported as not nilable.
-    it.fails('is true for context.Context, an interface', () => {
+  describe('interfaces and maps of the standard library', () => {
+    // Their zero value is nil, so they are nilable although they are named references.
+    it('is true for context.Context, an interface', () => {
       expect(isGoNilableType(refs.context.context())).toBe(true);
     });
 
-    it.fails('is true for io.ReadCloser, an interface', () => {
+    it('is true for io.ReadCloser, an interface', () => {
       expect(isGoNilableType(refs.io.readCloser())).toBe(true);
     });
 
-    it.fails('is true for http.Handler, an interface', () => {
+    it('is true for http.Handler, an interface', () => {
       expect(isGoNilableType(refs.net.httpHandler())).toBe(true);
     });
 
-    it.fails('is true for http.ResponseWriter, an interface', () => {
+    it('is true for http.ResponseWriter, an interface', () => {
       expect(isGoNilableType(refs.net.httpResponseWriter())).toBe(true);
     });
 
-    // BUG: http.Header is declared as `map[string][]string` in the standard library, so its zero value is nil.
-    it.fails('is true for http.Header, a map', () => {
+    // http.Header is declared as `map[string][]string` in the standard library, so its zero value is nil.
+    it('is true for http.Header, a map', () => {
       expect(isGoNilableType(refs.net.httpHeader())).toBe(true);
     });
   });

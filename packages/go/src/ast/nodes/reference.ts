@@ -1,7 +1,7 @@
 import { type AstNodeOptions, notNullish, type Nullable, type Prettify, type SourceBuilder } from '@goast/core';
 
 import { GoFileBuilder } from '../../file-builder.ts';
-import { toGoPackageName } from '../../utils.ts';
+import { defaultGoPackageName } from '../../import-collection.ts';
 import { GoNode } from '../node.ts';
 import { writeGoNodes } from '../utils/write-go-node.ts';
 import type { GoType } from './types.ts';
@@ -79,7 +79,7 @@ export class GoReference<TBuilder extends SourceBuilder, TInjects extends string
     if (builder instanceof GoFileBuilder) {
       return builder.addImport(this.importPath, this.packageName ?? undefined);
     }
-    return this.packageName ?? toGoPackageName(this.importPath);
+    return this.packageName ?? defaultGoPackageName(this.importPath);
   }
 
   protected override onWrite(builder: TBuilder): void {
@@ -120,7 +120,30 @@ export type GoReferenceFactory = (<TBuilder extends SourceBuilder>(
   matches: (value: unknown) => value is GoReference<never>;
 };
 
-const createFactory = (name: string, importPath?: Nullable<string>, packageName?: string): GoReferenceFactory => {
+/** The references whose zero value is `nil`, keyed by import path and name, registered by `createFactory`. */
+const nilableReferences = new Set<string>();
+const nilableKey = (name: string, importPath: Nullable<string>) => `${importPath ?? ''}|${name}`;
+
+/**
+ * Whether the reference names a type whose zero value is `nil` (an interface, map or slice type declared by a reference
+ * factory with `nilable: true`). Pointers, slices and maps written as nodes are not inspected here.
+ * @param value The value to check.
+ * @returns `true` if the value is a reference to a registered nilable type.
+ */
+export function isGoNilableReference(value: unknown): boolean {
+  return value instanceof GoReference && nilableReferences.has(nilableKey(value.name, value.importPath));
+}
+
+const createFactory = (
+  name: string,
+  importPath?: Nullable<string>,
+  packageName?: string,
+  factoryOptions?: {
+    /** Whether the zero value of the referenced type is `nil`, as for interfaces, maps and slices. */
+    nilable?: boolean;
+  },
+): GoReferenceFactory => {
+  if (factoryOptions?.nilable) nilableReferences.add(nilableKey(name, importPath));
   return Object.assign(
     <TBuilder extends SourceBuilder>(
       options?: Prettify<Omit<Options<TBuilder>, 'name' | 'importPath' | 'packageName'>>,

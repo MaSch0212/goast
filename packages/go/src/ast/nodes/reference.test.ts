@@ -176,15 +176,13 @@ describe('goReference', () => {
       expect(goReference('Pet', 'example.com/pets/models').getQualifier(new SourceBuilder(options))).toBe('models');
     });
 
-    it.fails('returns the same qualifier for a plain builder as for a file builder', () => {
-      // BUG: for builders that are not a GoFileBuilder, `getQualifier` falls back to `toGoPackageName`, which keeps
-      // the major version suffix ("v2") and the ".v3" of gopkg.in paths. A GoFileBuilder uses the last segment of
-      // the path without them, so the same reference is qualified differently depending on the builder.
+    it('returns the same qualifier for a plain builder as for a file builder', () => {
+      // A plain builder uses the same package name as a file builder: no major version suffix.
       expect(renderGoNode(new SourceBuilder(options), goReference('Client', 'github.com/x/lib/v2'))).toBe('lib.Client');
     });
 
-    it.fails('returns the same qualifier for a plain builder with a version suffix as a file builder', () => {
-      // BUG: same cause as above. `gopkg.in/yaml.v3` becomes "yamlv3" on a plain builder but "yaml" in a file.
+    it('returns the same qualifier for a plain builder with a version suffix as a file builder', () => {
+      // `gopkg.in/yaml.v3` becomes "yamlv3" on a plain builder but "yaml" in a file.
       expect(renderGoNode(new SourceBuilder(options), goReference('Client', 'gopkg.in/yaml.v3'))).toBe('yaml.Client');
     });
   });

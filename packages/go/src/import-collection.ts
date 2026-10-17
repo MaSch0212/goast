@@ -59,12 +59,12 @@ export class GoImportCollection {
     const existing = this._imports.get(path);
     if (existing) return existing.name;
 
-    const ownName = packageName ?? defaultPackageName(path);
+    const ownName = packageName ?? defaultGoPackageName(path);
     const used = new Set([...this._reservedNames, ...[...this._imports.values()].map((x) => x.name)]);
     let name = ownName;
     for (let i = 2; used.has(name) || goKeywords.has(name); i++) name = `${ownName}${i}`;
 
-    this._imports.set(path, { path, name, aliased: name !== ownName || ownName !== defaultPackageName(path) });
+    this._imports.set(path, { path, name, aliased: name !== ownName || ownName !== defaultGoPackageName(path) });
     return name;
   }
 
@@ -103,7 +103,7 @@ export class GoImportCollection {
 }
 
 /** The package name `go` assumes for an import path: its last segment, without a major version suffix. */
-function defaultPackageName(path: string): string {
+export function defaultGoPackageName(path: string): string {
   const segments = path.split('/');
   let last = segments.at(-1) ?? path;
   if (/^v[0-9]+$/.test(last) && segments.length > 1) {

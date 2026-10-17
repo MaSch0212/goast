@@ -3,13 +3,13 @@ import { goReference } from '../nodes/reference.ts';
 // Predeclared identifiers, which need no import.
 
 /** A reference to the predeclared `any` type, an alias of `interface{}`. */
-export const any = goReference.factory('any');
+export const any = goReference.factory('any', undefined, undefined, { nilable: true });
 /** A reference to the predeclared `bool` type. */
 export const bool = goReference.factory('bool');
 /** A reference to the predeclared `byte` type, an alias of `uint8`. */
 export const byte = goReference.factory('byte');
 /** A reference to the predeclared `error` interface type. */
-export const error = goReference.factory('error');
+export const error = goReference.factory('error', undefined, undefined, { nilable: true });
 /** A reference to the predeclared `float32` type. */
 export const float32 = goReference.factory('float32');
 /** A reference to the predeclared `float64` type. */
