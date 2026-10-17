@@ -1190,9 +1190,9 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 ```
 
-`publish` pushes `@goast/core`, `@goast/kotlin` and `@goast/typescript` to npm and creates a git tag per
+`publish` pushes `@goast/core`, `@goast/kotlin`, `@goast/typescript` and `@goast/go` to npm and creates a git tag per
 package, one after another. A run on `main` can be partway through that sequence when a newer push supersedes it;
-cancelling it mid-flight would leave the three packages at different published versions with no way to roll back. That
+cancelling it mid-flight would leave the four packages at different published versions with no way to roll back. That
 is the one case worth protecting, and `github.ref` is what identifies it — a pull request's `ref` is
 `refs/pull/<n>/merge` and never matches, so PRs cancel as they always did, and so now do pushes to `testing-next`, which
 publish nothing and have nothing mid-flight worth keeping.
@@ -1286,8 +1286,8 @@ check before it compiles anything.
 
 `test/harness` is a `private` workspace package (`test/harness/package.json`, listed in `pnpm-workspace.yaml`). Test
 code imports it as `@goast/test-harness` straight from its TypeScript source, so it has no build step. `pnpm build` and
-`pnpm pack:npm` select `./packages/*` only, so the harness is never built, packed or published. `@goast/kotlin` and
-`@goast/typescript` list it under `devDependencies` only, which never reach a consumer.
+`pnpm pack:npm` select `./packages/*` only, so the harness is never built, packed or published. `@goast/kotlin`,
+`@goast/typescript` and `@goast/go` list it under `devDependencies` only, which never reach a consumer.
 
 ## Layout
 

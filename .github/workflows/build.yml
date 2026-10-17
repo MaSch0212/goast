@@ -16,7 +16,7 @@ name: Build
 #
 # The cost: a push to an ephemeral branch with no PR open gets no CI. Open the PR — draft is enough.
 #
-# Listing branches also excludes tags, which matters because the `publish` job pushes three tags per
+# Listing branches also excludes tags, which matters because the `publish` job pushes four tags per
 # release and an unfiltered `push:` would start a full run for each of them.
 on:
   push:
@@ -25,7 +25,7 @@ on:
   workflow_dispatch:
 
 # Cancel superseded runs everywhere except `main`. A run on `main` may be part-way through publishing to
-# npm, and killing that mid-flight leaves the three packages at different versions with no way to
+# npm, and killing that mid-flight leaves the four packages at different versions with no way to
 # roll back. Nothing else in the graph publishes anything, so a superseded run there is pure waste.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -619,6 +619,7 @@ jobs:
       - it-k6-clients
       - it-easy-network-stub
       - it-go-servers
+      - it-go-clients
       - it-okhttp3-clients
       - it-spring-reactive-web
       - it-spring-controllers
@@ -647,7 +648,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    # `tsc` builds three packages and `pnpm pack:npm` turns each into the tarball that gets published. No
+    # `tsc` builds four packages and `pnpm pack:npm` turns each into the tarball that gets published. No
     # `needs:`; it is the publish path's own gate and is independent of the test tiers.
     timeout-minutes: 30
     steps:
@@ -704,7 +705,7 @@ jobs:
         id: tarballs
         shell: bash
         run: |
-          for pkg in core kotlin typescript; do
+          for pkg in core kotlin typescript go; do
             version=$(node -p "require('./packages/$pkg/package.json').version")
             file="npm/goast-$pkg-$version.tgz"
             if [ ! -f "$file" ]; then
@@ -748,4 +749,16 @@ jobs:
         uses: rickstaa/action-create-tag@a1c7777fcb2fee4f19b0f283ba888afa11678b72 # v1.7.2
         with:
           tag: typescript/v${{ steps.publish-typescript.outputs.version }}
+          tag_exists_error: false
+
+      - name: Publish @goast/go to NPM
+        id: publish-go
+        uses: JS-DevTools/npm-publish@0fd2f4369c5d6bcfcde6091a7c527d810b9b5c3f # v4.1.5
+        with:
+          package: ${{ steps.tarballs.outputs.go }}
+
+      - name: Create Tag for @goast/go
+        uses: rickstaa/action-create-tag@a1c7777fcb2fee4f19b0f283ba888afa11678b72 # v1.7.2
+        with:
+          tag: go/v${{ steps.publish-go.outputs.version }}
           tag_exists_error: false
