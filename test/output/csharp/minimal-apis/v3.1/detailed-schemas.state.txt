@@ -1,0 +1,62 @@
+{
+  csharp: {
+    minimalApis: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3.1/detailed-schemas.yml#/components/schemas/WithTitle',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3.1/detailed-schemas.yml#/components/schemas/WithAllCommon',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: true
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3.1/detailed-schemas.yml#/components/schemas/MyEnum',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'MyEnum',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3.1/detailed-schemas.yml#/components/schemas/WriteOnly',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3.1/detailed-schemas.yml#/components/schemas/ReadOnly',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      }
+    }
+  }
+}

@@ -25,7 +25,7 @@ on:
   workflow_dispatch:
 
 # Cancel superseded runs everywhere except `main`. A run on `main` may be part-way through publishing to
-# npm, and killing that mid-flight leaves the three packages at different versions with no way to
+# npm, and killing that mid-flight leaves the packages at different versions with no way to
 # roll back. Nothing else in the graph publishes anything, so a superseded run there is pure waste.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -130,9 +130,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # The three build contexts under `test/docker/`. There is no Playwright image; the spec's
+        # The four build contexts under `test/docker/`. There is no Playwright image; the spec's
         # "four" predates the decision not to add one.
-        image: [kotlin, node, k6]
+        image: [kotlin, node, k6, csharp]
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -224,6 +224,36 @@ jobs:
         with:
           name: compile-kotlin-log
           path: compile-kotlin.log
+          if-no-files-found: warn
+
+  compile-csharp:
+    name: Compile C# (tier 3)
+    needs: [output-check, images]
+    runs-on: ubuntu-latest
+    # One `dotnet build` of every C# unit against an image whose NuGet cache is warmed at build time.
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Setup Docker
+        uses: ./.github/actions/docker
+
+      # An `&&`-chain, like the Kotlin one: the C# units, plus the discovery test and the runner/orphan
+      # tests that the units' `-t` pattern does not select.
+      - name: Run
+        shell: bash
+        run: pnpm test:compile:csharp:check 2>&1 | tee compile-csharp.log
+
+      - name: Upload the compiler output
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: compile-csharp-log
+          path: compile-csharp.log
           if-no-files-found: warn
 
   harness-docker:
@@ -462,6 +492,81 @@ jobs:
           path: driver.log
           if-no-files-found: warn
 
+  it-csharp-clients:
+    name: Integration (C# clients)
+    needs: [output-check, images]
+    runs-on: ubuntu-latest
+    # Seconds locally against the warm NuGet cache inside the image; a cold runner pays for the image build.
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Setup Docker
+        uses: ./.github/actions/docker
+
+      - name: Run
+        shell: bash
+        run: pnpm test:integration:csharp:check 2>&1 | tee it-csharp-clients.log
+
+      - name: Upload the driver output
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: it-csharp-clients-log
+          path: it-csharp-clients.log
+          if-no-files-found: warn
+
+  it-csharp-servers:
+    name: Integration (C# servers, ${{ matrix.id }})
+    needs: [output-check, images]
+    runs-on: ubuntu-latest
+    # Seconds locally against the warm NuGet cache inside the image; a cold runner pays for the image build.
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        # One leg per generator, plus `boot`: `boot.test.ts` asserts the tier-4 infrastructure under the suite name
+        # `integration/csharp-servers boot`, which no per-unit filter selects, so it is a leg of its own.
+        # `task-filters.test.ts` fails if any suite here goes unselected.
+        include:
+          - id: controllers
+            filter: integration/csharp/controllers
+          - id: minimal-apis
+            filter: integration/csharp/minimal-apis
+          - id: fastendpoints
+            filter: integration/csharp/fastendpoints
+          - id: boot
+            filter: integration/csharp-servers boot
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Setup Docker
+        uses: ./.github/actions/docker
+
+      - name: Run
+        shell: bash
+        env:
+          GOAST_INTEGRATION: '1'
+          GOAST_SNAPSHOT: check
+          FILTER: ${{ matrix.filter }}
+        run: pnpm vitest run test/integration/csharp-servers -t "$FILTER" 2>&1 | tee driver.log
+
+      - name: Upload the driver output
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: it-csharp-servers-${{ matrix.id }}-log
+          path: driver.log
+          if-no-files-found: warn
+
   it-spring-controllers:
     name: Integration (spring controllers, ${{ matrix.id }})
     needs: [output-check, images]
@@ -531,12 +636,15 @@ jobs:
       - images
       - compile-ts
       - compile-kotlin
+      - compile-csharp
       - harness-docker
       - it-fetch-clients
       - it-angular-services
       - it-k6-clients
       - it-easy-network-stub
       - it-okhttp3-clients
+      - it-csharp-clients
+      - it-csharp-servers
       - it-spring-reactive-web
       - it-spring-controllers
     # `always()` so this job runs even when an upstream job failed — without it the aggregator would be
@@ -621,7 +729,7 @@ jobs:
         id: tarballs
         shell: bash
         run: |
-          for pkg in core kotlin typescript; do
+          for pkg in core kotlin typescript csharp; do
             version=$(node -p "require('./packages/$pkg/package.json').version")
             file="npm/goast-$pkg-$version.tgz"
             if [ ! -f "$file" ]; then
@@ -665,4 +773,16 @@ jobs:
         uses: rickstaa/action-create-tag@a1c7777fcb2fee4f19b0f283ba888afa11678b72 # v1.7.2
         with:
           tag: typescript/v${{ steps.publish-typescript.outputs.version }}
+          tag_exists_error: false
+
+      - name: Publish @goast/csharp to NPM
+        id: publish-csharp
+        uses: JS-DevTools/npm-publish@0fd2f4369c5d6bcfcde6091a7c527d810b9b5c3f # v4.1.5
+        with:
+          package: ${{ steps.tarballs.outputs.csharp }}
+
+      - name: Create Tag for @goast/csharp
+        uses: rickstaa/action-create-tag@a1c7777fcb2fee4f19b0f283ba888afa11678b72 # v1.7.2
+        with:
+          tag: csharp/v${{ steps.publish-csharp.outputs.version }}
           tag_exists_error: false

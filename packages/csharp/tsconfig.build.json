@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist",
+    "declaration": true
+  },
+  "include": ["mod.ts", "src"],
+  "exclude": ["**/*.test.ts", "**/*.test-utils.ts"]
+}

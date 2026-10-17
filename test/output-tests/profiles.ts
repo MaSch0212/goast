@@ -1,6 +1,11 @@
 import type { OpenApiGenerator } from '@goast/core';
 import type { SpecVersionDir } from '@goast/test-harness';
 
+import { CSharpModelsGenerator } from '../../packages/csharp/src/generators/models/models-generator.ts';
+import { CSharpHttpClientsGenerator } from '../../packages/csharp/src/generators/services/http-clients/http-clients-generator.ts';
+import { CSharpControllersGenerator } from '../../packages/csharp/src/generators/services/controllers/controllers-generator.ts';
+import { CSharpFastEndpointsGenerator } from '../../packages/csharp/src/generators/services/fast-endpoints/fast-endpoints-generator.ts';
+import { CSharpMinimalApisGenerator } from '../../packages/csharp/src/generators/services/minimal-apis/minimal-apis-generator.ts';
 import { KotlinModelsGenerator } from '../../packages/kotlin/src/generators/models/models-generator.ts';
 import { KotlinOkHttp3ClientsGenerator } from '../../packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-clients-generator.ts';
 import { KotlinSpringControllersGenerator } from '../../packages/kotlin/src/generators/services/spring-controllers/spring-controllers-generator.ts';
@@ -19,7 +24,7 @@ export type Profile = {
   /** Snapshot path segment, e.g. `spring-controllers@sb3-strict`. */
   name: string;
   /** Language directory under `test/output/`. */
-  language: 'kotlin' | 'typescript';
+  language: 'csharp' | 'kotlin' | 'typescript';
   /** Corpus versions this profile runs against. */
   versions: 'all' | SpecVersionDir[];
   /** Chains the generators and config this profile represents. */
@@ -72,6 +77,44 @@ export const profiles: Profile[] = [
       },
     ];
   }),
+
+  // C#.
+  {
+    name: 'models',
+    language: 'csharp',
+    versions: 'all',
+    configure: (g) => g.useType(CSharpModelsGenerator, base),
+  },
+  {
+    name: 'models-mutable',
+    language: 'csharp',
+    versions: 'all',
+    configure: (g) => g.useType(CSharpModelsGenerator, { ...base, immutableTypes: false }),
+  },
+  {
+    name: 'http-clients',
+    language: 'csharp',
+    versions: 'all',
+    configure: (g) => g.useType(CSharpModelsGenerator, base).useType(CSharpHttpClientsGenerator, base),
+  },
+  {
+    name: 'controllers',
+    language: 'csharp',
+    versions: 'all',
+    configure: (g) => g.useType(CSharpModelsGenerator, base).useType(CSharpControllersGenerator, base),
+  },
+  {
+    name: 'fastendpoints',
+    language: 'csharp',
+    versions: 'all',
+    configure: (g) => g.useType(CSharpModelsGenerator, base).useType(CSharpFastEndpointsGenerator, base),
+  },
+  {
+    name: 'minimal-apis',
+    language: 'csharp',
+    versions: 'all',
+    configure: (g) => g.useType(CSharpModelsGenerator, base).useType(CSharpMinimalApisGenerator, base),
+  },
 
   // TypeScript.
   {

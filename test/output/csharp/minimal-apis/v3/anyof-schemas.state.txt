@@ -1,0 +1,304 @@
+{
+  csharp: {
+    minimalApis: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfPrimitives',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/Beta',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Beta',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfRefAndPrimitive',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'AnyOfRefAndPrimitive',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/Alpha',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Alpha',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfRefAndPrimitive/anyOf/1',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfWithNullable',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfWithNullable/anyOf/0',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfWithNullable/anyOf/1',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfSingle',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfSingle/anyOf/0',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfArrays',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfPrimitives/anyOf/0',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfArrays/anyOf/0',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfArrays/anyOf/0/items',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfArrays/anyOf/1',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfArrays/anyOf/1/items',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'int',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/ObjectWithAnyOfProperty',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'ObjectWithAnyOfProperty',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/ObjectWithAnyOfProperty/properties/value',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/ObjectWithAnyOfProperty/properties/value/anyOf/0',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-27': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/ObjectWithAnyOfProperty/properties/value/anyOf/1',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfPrimitives/anyOf/1',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/Alpha',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Alpha',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/Alpha/properties/alphaValue',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/Beta',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Beta',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/Beta/properties/betaValue',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'int',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfRefs',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'AnyOfRefs',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/Alpha',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Alpha',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      }
+    }
+  }
+}

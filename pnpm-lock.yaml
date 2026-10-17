@@ -11,6 +11,9 @@ importers:
       '@goast/core':
         specifier: workspace:*
         version: link:packages/core
+      '@goast/csharp':
+        specifier: workspace:*
+        version: link:packages/csharp
       '@goast/kotlin':
         specifier: workspace:*
         version: link:packages/kotlin
@@ -57,6 +60,16 @@ importers:
       '@types/fs-extra':
         specifier: ^11.0.4
         version: 11.0.4
+
+  packages/csharp:
+    dependencies:
+      '@goast/core':
+        specifier: workspace:^
+        version: link:../core
+    devDependencies:
+      '@goast/test-harness':
+        specifier: workspace:*
+        version: link:../../test/harness
 
   packages/kotlin:
     dependencies:

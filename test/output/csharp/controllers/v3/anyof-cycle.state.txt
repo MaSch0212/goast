@@ -1,0 +1,139 @@
+{
+  csharp: {
+    controllers: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminator',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'AnyOfDiscriminator',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorB/allOf/1/properties/bValue',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorA/allOf/1',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorA/allOf/1/properties/aValue',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminator/properties/kind',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorA',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'AnyOfDiscriminatorA',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorA',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'AnyOfDiscriminatorA',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminator',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'AnyOfDiscriminator',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorB',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'AnyOfDiscriminatorB',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorB',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'AnyOfDiscriminatorB',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminator',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'AnyOfDiscriminator',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorB/allOf/1',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      }
+    }
+  }
+}
