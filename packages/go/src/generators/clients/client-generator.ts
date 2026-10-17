@@ -41,6 +41,8 @@ type Builder = GoFileBuilder;
 type Type = go.Type<SourceBuilder>;
 
 const urlValues = go.reference.factory('Values', 'net/url');
+const multipartWriter = go.reference.factory('Writer', 'mime/multipart');
+const errorsNew = go.reference.factory('New', 'errors');
 
 /** The kinds of request body, in the order the client prefers them when an operation declares several. */
 const bodyKindPreference: GoClientBody['kind'][] = ['json', 'form', 'multipart', 'text', 'raw'];
@@ -82,6 +84,20 @@ const reservedLocalNames = [
 
 /** The qualifiers of the packages the models use, by the models of a run. */
 const modelQualifiers = new WeakMap<object, Set<string>>();
+
+/**
+ * Builds a block: the header, a space, and the statements between braces, one level indented. Without a header it is a
+ * bare block, which scopes the variables of its statements.
+ * @param header What comes before the opening brace, e.g. `if err != nil`.
+ * @param statements The statements of the block.
+ * @returns The value to append.
+ */
+function block(header: AppendValue<Builder>, statements: AppendValue<Builder>[]): AppendValue<Builder> {
+  return (b: Builder) => {
+    if (header !== '') b.append(header, ' ');
+    b.parenthesize('{}', appendValueGroup<Builder>(statements, '\n'), { multiline: true });
+  };
+}
 
 /**
  * Generates the client code of one service. Implement it to replace the generation of a service's client code.
@@ -544,13 +560,21 @@ export class DefaultGoClientGenerator extends GoFileGenerator<Context, Output> i
   }
 
   /**
-   * Builds the body of the method of an operation.
+   * Builds the body of the method of an operation: the statements building the request, followed by the statements
+   * sending it and decoding the response.
    * @param ctx The context of the service to generate.
    * @param args The operation of the method.
    * @returns The statements of the method.
    */
   protected getMethodBody(ctx: Context, args: Args.GetMethodBody): AppendValue<Builder> {
-    return s<Builder>`return ${this.getZeroValues(ctx, { operation: args.operation, error: 'nil' })}`;
+    const { operation } = args;
+    return appendValueGroup<Builder>(
+      [
+        ...this.getRequestStatements(ctx, { operation }),
+        s<Builder>`return ${this.getZeroValues(ctx, { operation, error: 'nil' })}`,
+      ],
+      '\n',
+    );
   }
 
   /**
@@ -591,6 +615,246 @@ export class DefaultGoClientGenerator extends GoFileGenerator<Context, Output> i
    */
   protected isNilable(type: Type): boolean {
     return go.isNilable(type) || urlValues.matches(type);
+  }
+  // #endregion
+
+  // #region Request
+  /**
+   * Builds the statements creating the request of an operation: `newRequest` with the method and the path, a statement
+   * for each required query, header and cookie parameter, one block for the optional parameters that are set in the
+   * params struct, and the body.
+   * @param ctx The context of the service to generate.
+   * @param args The operation of the request.
+   * @returns The statements.
+   */
+  protected getRequestStatements(ctx: Context, args: Args.GetRequestStatements): AppendValue<Builder>[] {
+    const { operation } = args;
+    const statements: AppendValue<Builder>[] = [
+      s<Builder>`r := c.c.newRequest(${toGoStringLiteral(operation.endpoint.method.toUpperCase())}, ${this.getPathExpression(ctx, { operation })})`,
+    ];
+
+    for (const parameter of operation.positional.filter((x) => x.parameter.target !== 'path')) {
+      statements.push(this.getParameterStatement(ctx, { parameter, expression: parameter.name }));
+    }
+    if (operation.optional.length > 0) {
+      statements.push(
+        block(
+          'if params != nil',
+          operation.optional.map((parameter) => {
+            const field = `params.${parameter.name}`;
+            return block(`if ${field} != nil`, [
+              this.getParameterStatement(ctx, {
+                parameter,
+                expression: this.isNilable(parameter.type) ? field : `*${field}`,
+              }),
+            ]);
+          }),
+        ),
+      );
+    }
+    if (operation.body) statements.push(this.getBodyStatement(ctx, { operation }));
+    return statements;
+  }
+
+  /**
+   * Builds the expression for the path of an operation: its literal text and the calls of `pathParam` for its path
+   * parameters, joined with `+`.
+   * @param ctx The context of the service to generate.
+   * @param args The operation whose path is built.
+   * @returns The expression of the path.
+   */
+  protected getPathExpression(ctx: Context, args: Args.GetPathExpression): AppendValue<Builder> {
+    const parts = args.operation.pathParts.map((part) => {
+      if (typeof part === 'string') return toGoStringLiteral(part);
+      const style = part.parameter.style ?? 'simple';
+      const explode = part.parameter.explode ?? style === 'form';
+      return s<Builder>`${ctx.runtimeNames.pathParam}(${toGoStringLiteral(part.parameter.name)}, ${toGoStringLiteral(style)}, ${String(explode)}, ${String(part.array)}, ${this.getParameterValues(ctx, { parameter: part, expression: part.name })})`;
+    });
+    return parts.length > 0 ? appendValueGroup<Builder>(parts, '+') : '""';
+  }
+
+  /**
+   * Builds the expression for the values of a parameter, as the runtime functions take them: a `[]string`. An array is
+   * formatted with `formatAll`, and any other value is the only item of the slice.
+   * @param ctx The context of the service to generate.
+   * @param args The parameter, and the expression of its Go value.
+   * @returns The expression of the values.
+   */
+  protected getParameterValues(ctx: Context, args: Args.GetParameterValues): AppendValue<Builder> {
+    const { parameter, expression } = args;
+    return parameter.array
+      ? s<Builder>`${ctx.runtimeNames.formatAll}(${expression}, ${parameter.itemFormat})`
+      : s<Builder>`[]string{${parameter.format}(${expression})}`;
+  }
+
+  /**
+   * Builds the statement adding a query, header or cookie parameter to the request. The style of a query parameter is
+   * `form` by default, and `explode` is on by default for that style only.
+   * @param ctx The context of the service to generate.
+   * @param args The parameter, and the expression of its Go value.
+   * @returns The statement.
+   */
+  protected getParameterStatement(ctx: Context, args: Args.GetParameterStatement): AppendValue<Builder> {
+    const { parameter, expression } = args;
+    const name = toGoStringLiteral(parameter.parameter.name);
+    const values = this.getParameterValues(ctx, { parameter, expression });
+
+    switch (parameter.parameter.target) {
+      case 'query': {
+        const style = parameter.parameter.style ?? 'form';
+        const explode = parameter.parameter.explode ?? style === 'form';
+        return s<Builder>`r.query(${name}, ${toGoStringLiteral(style)}, ${String(explode)}, ${String(parameter.array)}, ${values})`;
+      }
+      case 'header':
+        return s<Builder>`r.header(${name}, ${values})`;
+      case 'cookie':
+        return s<Builder>`r.cookie(${name}, ${values})`;
+      default:
+        return '';
+    }
+  }
+
+  /**
+   * Builds the statement setting the body of the request, by the kind of the body. An optional body is set only when
+   * the argument is not `nil`.
+   * @param ctx The context of the service to generate.
+   * @param args The operation whose body is set.
+   * @returns The statement.
+   */
+  protected getBodyStatement(ctx: Context, args: Args.GetBodyStatement): AppendValue<Builder> {
+    const { operation } = args;
+    const body = operation.body!;
+    const fail = s<Builder>`return ${this.getZeroValues(ctx, { operation, error: 'err' })}`;
+    const dereferenced = body.optional && !this.isNilable(body.type) ? '*body' : 'body';
+
+    let statement: AppendValue<Builder>;
+    switch (body.kind) {
+      case 'json':
+        statement = block('if err := r.jsonBody(body); err != nil', [fail]);
+        break;
+      case 'text':
+        statement = s<Builder>`r.textBody(${toGoStringLiteral(body.content.type)}, ${dereferenced})`;
+        break;
+      case 'raw': {
+        const mediaType = body.content.type.includes('*') ? 'application/octet-stream' : body.content.type;
+        statement = s<Builder>`r.rawBody(${toGoStringLiteral(mediaType)}, body)`;
+        break;
+      }
+      case 'form':
+        statement =
+          body.fields === null
+            ? s<Builder>`r.formBody(body)`
+            : appendValueGroup<Builder>(
+                [
+                  s<Builder>`values := ${urlValues()}{}`,
+                  ...body.fields.map((field) =>
+                    this.getFormFieldStatement(ctx, { operation, field, multipart: false }),
+                  ),
+                  s<Builder>`r.formBody(values)`,
+                ],
+                '\n',
+              );
+        break;
+      case 'multipart':
+        statement = this.getMultipartStatement(ctx, { operation });
+        break;
+    }
+    return body.optional ? block('if body != nil', [statement]) : statement;
+  }
+
+  /**
+   * Builds the statement writing a multipart body: a call of `multipartBody` with a function that writes each field of
+   * the struct as a part. A body without a struct is a `url.Values`, of which every value is written as a part.
+   * @param ctx The context of the service to generate.
+   * @param args The operation whose multipart body is written.
+   * @returns The statement.
+   */
+  protected getMultipartStatement(ctx: Context, args: Args.GetMultipartStatement): AppendValue<Builder> {
+    const { operation } = args;
+    const fields = operation.body?.fields ?? null;
+    const statements: AppendValue<Builder>[] =
+      fields === null
+        ? [
+            block('for name, vs := range body', [
+              block('for _, v := range vs', [
+                block(s<Builder>`if err := ${ctx.runtimeNames.writeFormField}(w, name, v); err != nil`, ['return err']),
+              ]),
+            ]),
+          ]
+        : fields.map((field) => this.getFormFieldStatement(ctx, { operation, field, multipart: true }));
+
+    return (b: Builder) => {
+      b.append('if err := r.multipartBody(func(w ', go.pointer(multipartWriter()), ') error ');
+      b.parenthesize('{}', appendValueGroup<Builder>([...statements, 'return nil'], '\n'), { multiline: true });
+      b.append('); err != nil ');
+      b.parenthesize('{}', s<Builder>`return ${this.getZeroValues(ctx, { operation, error: 'err' })}`, {
+        multiline: true,
+      });
+    };
+  }
+
+  /**
+   * Builds the statement adding one field of a form or multipart body, which is read from the struct `body`. A field
+   * that is a pointer or nilable is added only when it is set, and a required file that is missing is an error. A
+   * value that is sent as JSON text is formatted first, which can fail.
+   * @param ctx The context of the service to generate.
+   * @param args The operation, the field, and whether the field is written as a part of a multipart body, or else added
+   *   to the `values` of a form.
+   * @returns The statement.
+   */
+  protected getFormFieldStatement(ctx: Context, args: Args.GetFormFieldStatement): AppendValue<Builder> {
+    const { operation, field, multipart } = args;
+    const names = ctx.runtimeNames;
+    const name = toGoStringLiteral(field.name);
+    const ref = `body.${field.fieldName}`;
+    const pointer = field.type instanceof go.Pointer;
+    const nilable = pointer || this.isNilable(field.type);
+    const fail = multipart ? 'return err' : s<Builder>`return ${this.getZeroValues(ctx, { operation, error: 'err' })}`;
+    const add = (value: AppendValue<Builder>, method: 'Set' | 'Add') =>
+      multipart
+        ? block(s<Builder>`if err := ${names.writeFormField}(w, ${name}, ${value}); err != nil`, [fail])
+        : s<Builder>`values.${method}(${name}, ${value})`;
+    const guarded = (statements: AppendValue<Builder>[]) =>
+      nilable ? block(`if ${ref} != nil`, statements) : block('', statements);
+
+    switch (field.kind) {
+      case 'file': {
+        const write = block(s<Builder>`if err := ${names.writeFormFile}(w, ${name}, *${ref}); err != nil`, [fail]);
+        return field.required
+          ? appendValueGroup<Builder>(
+              [
+                block(`if ${ref} == nil`, [
+                  s<Builder>`return ${errorsNew()}(${toGoStringLiteral(`missing required file "${field.name}"`)})`,
+                ]),
+                write,
+              ],
+              '\n',
+            )
+          : block(`if ${ref} != nil`, [write]);
+      }
+      case 'files':
+        return block(`for _, f := range ${ref}`, [
+          block(s<Builder>`if err := ${names.writeFormFile}(w, ${name}, f); err != nil`, [fail]),
+        ]);
+      case 'value': {
+        const statement = add(s<Builder>`${field.format}(${pointer ? '*' : ''}${ref})`, 'Set');
+        return nilable ? block(`if ${ref} != nil`, [statement]) : statement;
+      }
+      case 'array':
+        return block(s<Builder>`for _, v := range ${names.formatAll}(${ref}, ${field.itemFormat})`, [add('v', 'Add')]);
+      case 'json':
+        return guarded([
+          s<Builder>`value, err := ${names.formatJSON}(${ref})`,
+          block('if err != nil', [fail]),
+          add('value', 'Set'),
+        ]);
+      case 'jsons':
+        return block(`for _, item := range ${ref}`, [
+          s<Builder>`value, err := ${names.formatJSON}(item)`,
+          block('if err != nil', [fail]),
+          add('value', 'Add'),
+        ]);
+    }
   }
   // #endregion
 

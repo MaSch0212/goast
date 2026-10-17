@@ -2,7 +2,7 @@ import type { ApiContent, ApiEndpoint, ApiParameter, ApiSchema, AppendValue, Sou
 
 import type { go } from '../../ast/index.ts';
 import type { GoFileBuilder } from '../../file-builder.ts';
-import type { GoClientOperation, GoClientParameter } from './operation.ts';
+import type { GoClientFormField, GoClientOperation, GoClientParameter } from './operation.ts';
 
 /** The arguments for the content of a client file. */
 export type GetFileContent = {
@@ -205,4 +205,54 @@ export type GetObjectSchema = {
 export type GetEndpointDocText = {
   /** The endpoint whose documentation is taken. */
   endpoint: ApiEndpoint;
+};
+
+/** The arguments for the statements creating the request of an operation. */
+export type GetRequestStatements = {
+  /** The operation of the request. */
+  operation: GoClientOperation;
+};
+
+/** The arguments for the expression of the path of an operation. */
+export type GetPathExpression = {
+  /** The operation whose path is built. */
+  operation: GoClientOperation;
+};
+
+/** The arguments for the expression of the values of a parameter. */
+export type GetParameterValues = {
+  /** The parameter whose values are built. */
+  parameter: GoClientParameter;
+  /** The Go expression of the value of the parameter, e.g. `id` or `*params.Limit`. */
+  expression: string;
+};
+
+/** The arguments for the statement adding a parameter to the request. */
+export type GetParameterStatement = {
+  /** The query, header or cookie parameter to add. */
+  parameter: GoClientParameter;
+  /** The Go expression of the value of the parameter, e.g. `q` or `*params.Limit`. */
+  expression: string;
+};
+
+/** The arguments for the statement setting the body of the request. */
+export type GetBodyStatement = {
+  /** The operation whose body is set. */
+  operation: GoClientOperation;
+};
+
+/** The arguments for the statement writing a multipart body. */
+export type GetMultipartStatement = {
+  /** The operation whose multipart body is written. */
+  operation: GoClientOperation;
+};
+
+/** The arguments for the statement adding one field of a form or multipart body. */
+export type GetFormFieldStatement = {
+  /** The operation the body belongs to. */
+  operation: GoClientOperation;
+  /** The field to add. */
+  field: GoClientFormField;
+  /** Whether the field is written as a part of a multipart body, rather than added to the values of a form. */
+  multipart: boolean;
 };

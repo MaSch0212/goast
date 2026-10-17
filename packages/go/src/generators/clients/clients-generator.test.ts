@@ -301,4 +301,273 @@ describe('GoClientsGenerator', () => {
       expect(files['files_client.go']).toContain('func (c *FilesClient) ListThings(');
     });
   });
+
+  describe('requests', () => {
+    /** Generates a client for a single operation on the given path and returns the Pets client file. */
+    async function client(
+      path: string,
+      method: string,
+      operation: Record<string, unknown>,
+      config: Partial<GoClientsGeneratorConfig> = {},
+    ) {
+      const { files } = await generate(
+        {
+          paths: {
+            [path]: {
+              [method]: {
+                tags: ['Pets'],
+                operationId: 'op',
+                responses: { '200': { description: 'ok' } },
+                ...operation,
+              },
+            },
+          },
+          components: { schemas: { Pet: pet } },
+        },
+        config,
+      );
+      return files['pets_client.go'];
+    }
+
+    it('encodes path, query, header and cookie parameters', async () => {
+      const { files } = await generate(petsApi);
+      expect(files['pets_client.go']).toContain(
+        [
+          '\tr := c.c.newRequest("GET", "/pets/"+pathParam("id", "simple", false, false, []string{formatString(id)}))',
+          '\tif params != nil {',
+          '\t\tif params.Fields != nil {',
+          '\t\t\tr.query("fields", "form", true, true, formatAll(params.Fields, formatString[string]))',
+          '\t\t}',
+          '\t\tif params.Limit != nil {',
+          '\t\t\tr.query("limit", "form", true, false, []string{formatInt(*params.Limit)})',
+          '\t\t}',
+          '\t}',
+        ].join('\n'),
+      );
+
+      const code = await client('/pets', 'get', {
+        parameters: [
+          { name: 'X-Tenant', in: 'header', required: true, schema: { type: 'string' } },
+          { name: 'session', in: 'cookie', required: true, schema: { type: 'string' } },
+          { name: 'q', in: 'query', required: true, schema: { type: 'array', items: { type: 'string' } } },
+          { name: 'X-Request-Id', in: 'header', schema: { type: 'string' } },
+          { name: 'theme', in: 'cookie', schema: { type: 'string' } },
+        ],
+      });
+      expect(code).toContain('\tr := c.c.newRequest("GET", "/pets")\n');
+      expect(code).toContain('\tr.header("X-Tenant", []string{formatString(xTenant)})\n');
+      expect(code).toContain('\tr.cookie("session", []string{formatString(session)})\n');
+      expect(code).toContain('\tr.query("q", "form", true, true, formatAll(q, formatString[string]))\n');
+      expect(code).toContain(
+        '\t\tif params.XRequestID != nil {\n\t\t\tr.header("X-Request-Id", []string{formatString(*params.XRequestID)})\n\t\t}\n',
+      );
+      expect(code).toContain(
+        '\t\tif params.Theme != nil {\n\t\t\tr.cookie("theme", []string{formatString(*params.Theme)})\n\t\t}\n',
+      );
+    });
+
+    it('encodes a path parameter that shares its segment', async () => {
+      const { files } = await generate(petsApi);
+
+      expect(files['files_client.go']).toContain(
+        '\tr := c.c.newRequest("GET", "/files/"+pathParam("name", "simple", false, false, []string{formatString(name)})+".json")\n',
+      );
+    });
+
+    it('encodes a label and a matrix path parameter', async () => {
+      const code = await client('/a/{id}/b/{ids}', 'get', {
+        parameters: [
+          { name: 'id', in: 'path', required: true, style: 'label', schema: { type: 'string' } },
+          {
+            name: 'ids',
+            in: 'path',
+            required: true,
+            style: 'matrix',
+            explode: true,
+            schema: { type: 'array', items: { type: 'integer' } },
+          },
+        ],
+      });
+
+      expect(code).toContain(
+        '"/a/"+pathParam("id", "label", false, false, []string{formatString(id)})+"/b/"+pathParam("ids", "matrix", true, true, formatAll(ids, formatInt[int]))',
+      );
+    });
+
+    it('encodes the delimited query styles', async () => {
+      const code = await client('/pets', 'get', {
+        parameters: [
+          {
+            name: 'tags',
+            in: 'query',
+            style: 'pipeDelimited',
+            explode: false,
+            schema: { type: 'array', items: { type: 'string' } },
+          },
+        ],
+      });
+
+      expect(code).toContain(
+        'r.query("tags", "pipeDelimited", false, true, formatAll(params.Tags, formatString[string]))',
+      );
+    });
+
+    it('applies the path modifier', async () => {
+      const code = await client(
+        '/v1/pets/{id}',
+        'get',
+        { parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }] },
+        { pathModifier: /\/pets.*$/ },
+      );
+
+      expect(code).toContain(
+        'c.c.newRequest("GET", "/pets/"+pathParam("id", "simple", false, false, []string{formatString(id)}))',
+      );
+    });
+
+    it('sends a required JSON body', async () => {
+      const { files } = await generate(petsApi);
+
+      expect(files['pets_client.go']).toContain(
+        '\tr := c.c.newRequest("POST", "/pets")\n\tif err := r.jsonBody(body); err != nil {\n\t\treturn err\n\t}\n',
+      );
+    });
+
+    it('skips an optional body that is nil', async () => {
+      const code = await client('/pets', 'post', {
+        requestBody: { content: { 'application/json': { schema: { $ref: '#/components/schemas/Pet' } } } },
+      });
+
+      expect(code).toContain('Op(ctx context.Context, body *api.Pet, opts ...RequestOption) error {');
+      expect(code).toContain(
+        '\tif body != nil {\n\t\tif err := r.jsonBody(body); err != nil {\n\t\t\treturn err\n\t\t}\n\t}\n',
+      );
+    });
+
+    it('prefers JSON when several media types are declared', async () => {
+      const code = await client('/pets', 'post', {
+        requestBody: {
+          required: true,
+          content: {
+            'text/plain': { schema: { type: 'string' } },
+            'application/x-www-form-urlencoded': { schema: { $ref: '#/components/schemas/Pet' } },
+            'application/json': { schema: { $ref: '#/components/schemas/Pet' } },
+          },
+        },
+      });
+
+      expect(code).toContain('r.jsonBody(body)');
+      expect(code).not.toContain('textBody');
+      expect(code).not.toContain('formBody');
+    });
+
+    it('encodes a form body field by field', async () => {
+      const { files } = await generate({
+        paths: {
+          '/pets': {
+            post: {
+              tags: ['Pets'],
+              operationId: 'createPet',
+              requestBody: {
+                required: true,
+                content: { 'application/x-www-form-urlencoded': { schema: { $ref: '#/components/schemas/PetForm' } } },
+              },
+              responses: { '204': { description: 'ok' } },
+            },
+          },
+        },
+        components: {
+          schemas: {
+            PetForm: {
+              type: 'object',
+              required: ['name'],
+              properties: {
+                name: { type: 'string' },
+                age: { type: 'integer', format: 'int32' },
+                tags: { type: 'array', items: { type: 'string' } },
+                meta: { type: 'object', properties: { a: { type: 'string' } } },
+              },
+            },
+          },
+        },
+      });
+
+      expect(files['pets_client.go']).toContain(
+        [
+          '\tvalues := url.Values{}',
+          '\tvalues.Set("name", formatString(body.Name))',
+          '\tif body.Age != nil {',
+          '\t\tvalues.Set("age", formatInt(*body.Age))',
+          '\t}',
+          '\tfor _, v := range formatAll(body.Tags, formatString[string]) {',
+          '\t\tvalues.Add("tags", v)',
+          '\t}',
+          '\tif body.Meta != nil {',
+          '\t\tvalue, err := formatJSON(body.Meta)',
+          '\t\tif err != nil {',
+          '\t\t\treturn err',
+          '\t\t}',
+          '\t\tvalues.Set("meta", value)',
+          '\t}',
+          '\tr.formBody(values)',
+        ].join('\n'),
+      );
+    });
+
+    it('generates a form struct for a multipart body with file parts', async () => {
+      const { files } = await generate({
+        paths: {
+          '/photos': {
+            post: {
+              tags: ['Pets'],
+              operationId: 'uploadPhoto',
+              requestBody: {
+                required: true,
+                content: {
+                  'multipart/form-data': {
+                    schema: {
+                      type: 'object',
+                      required: ['photo'],
+                      properties: {
+                        photo: { type: 'string', format: 'binary' },
+                        extras: { type: 'array', items: { type: 'string', format: 'binary' } },
+                        caption: { type: 'string' },
+                        meta: { $ref: '#/components/schemas/Pet' },
+                      },
+                    },
+                  },
+                },
+              },
+              responses: { '204': { description: 'ok' } },
+            },
+          },
+        },
+        components: { schemas: { Pet: pet } },
+      });
+      const code = files['pets_client.go'];
+
+      expect(code).toContain(
+        'type UploadPhotoForm struct {\n\tPhoto   *File\n\tExtras  []File\n\tCaption *string\n\tMeta    *api.Pet\n}',
+      );
+      expect(code).toContain('UploadPhoto(ctx context.Context, body UploadPhotoForm, opts ...RequestOption) error {');
+      expect(code).toContain('if err := r.multipartBody(func(w *multipart.Writer) error {\n');
+      expect(code).toContain('if err := writeFormFile(w, "photo", *body.Photo); err != nil {');
+      expect(code).toContain('if err := writeFormField(w, "caption", formatString(*body.Caption)); err != nil {');
+      expect(code).toContain('\t\treturn nil\n\t}); err != nil {\n\t\treturn err\n\t}\n');
+    });
+
+    it('sends text and raw bodies with their media type', async () => {
+      const text = await client('/pets', 'post', {
+        requestBody: { required: true, content: { 'text/plain': { schema: { type: 'string' } } } },
+      });
+      expect(text).toContain('Op(ctx context.Context, body string, opts ...RequestOption) error {');
+      expect(text).toContain('\tr.textBody("text/plain", body)\n');
+
+      const raw = await client('/pets', 'post', {
+        requestBody: { required: true, content: { 'image/png': { schema: { type: 'string', format: 'binary' } } } },
+      });
+      expect(raw).toContain('Op(ctx context.Context, body io.Reader, opts ...RequestOption) error {');
+      expect(raw).toContain('\tr.rawBody("image/png", body)\n');
+    });
+  });
 });
