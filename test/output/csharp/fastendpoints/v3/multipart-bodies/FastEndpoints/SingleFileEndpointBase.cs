@@ -2,7 +2,6 @@
 #nullable enable
 
 using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using FastEndpoints;
@@ -34,12 +33,11 @@ public abstract class SingleFileEndpointBase : EndpointWithoutRequest
     public sealed override async Task HandleAsync(CancellationToken cancellationToken)
     {
         var request = HttpContext.Request;
-        Stream fileValue = default!;
+        IFormFile file = default!;
         try
         {
             var form = await ApiEndpointSupport.ReadFormAsync(request, cancellationToken);
-            IFormFile file = ApiEndpointSupport.FormFile(form, "file") ?? throw new ApiRequestException("The form parameter 'file' is required.");
-            fileValue = ApiRequestSupport.OpenReadStream(file)!;
+            file = ApiEndpointSupport.FormFile(form, "file") ?? throw new ApiRequestException("The form parameter 'file' is required.");
         }
         catch (ApiRequestException requestException)
         {
@@ -47,7 +45,7 @@ public abstract class SingleFileEndpointBase : EndpointWithoutRequest
             return;
         }
 
-        var result = await SingleFileAsync(fileValue, cancellationToken);
+        var result = await SingleFileAsync(file, cancellationToken);
 
         await (result switch
         {
@@ -60,5 +58,5 @@ public abstract class SingleFileEndpointBase : EndpointWithoutRequest
     /// Handles the singleFile operation.
     /// </summary>
     /// <param name="cancellationToken">Signals that the request was aborted.</param>
-    protected abstract Task<SingleFileResult> SingleFileAsync(Stream file, CancellationToken cancellationToken);
+    protected abstract Task<SingleFileResult> SingleFileAsync(IFormFile file, CancellationToken cancellationToken);
 }

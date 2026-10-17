@@ -235,11 +235,11 @@ describe('getEndpointParameters', () => {
         ['attachments', 'form', 'attachments', true],
         ['caption', 'form', 'caption', false],
       ]);
-      expect(plans.map((p) => type(p))).toEqual(['Stream', 'IReadOnlyList<Stream>?', 'string?']);
+      expect(plans.map((p) => type(p))).toEqual(['IFormFile', 'IFormFileCollection?', 'string?']);
       expect(actionType(plans[0])).toBe('IFormFile');
-      expect(converted(plans[0])).toBe('ApiRequestSupport.OpenReadStream(file)!');
+      expect(bound(plans[0]).convert).toBeNull();
       expect(actionType(plans[1])).toBe('IFormFileCollection?');
-      expect(converted(plans[1])).toBe('ApiRequestSupport.OpenReadStreams(attachments, false)');
+      expect(bound(plans[1]).convert).toBeNull();
       expect(bound(plans[2]).convert).toBeNull();
     });
   });

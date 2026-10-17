@@ -2,8 +2,6 @@
 #nullable enable
 
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -81,17 +79,7 @@ public static class MultipartApiEndpointRouteBuilderExtensions
         CancellationToken cancellationToken
     )
     {
-        Stream fileValue = default!;
-        try
-        {
-            fileValue = ApiRequestSupport.OpenReadStream(file)!;
-        }
-        catch (ApiRequestException requestException)
-        {
-            return Results.Text(requestException.Message, statusCode: requestException.StatusCode);
-        }
-
-        var result = await api.SingleFileAsync(fileValue, cancellationToken);
+        var result = await api.SingleFileAsync(file, cancellationToken);
 
         return result switch
         {
@@ -109,17 +97,7 @@ public static class MultipartApiEndpointRouteBuilderExtensions
         CancellationToken cancellationToken
     )
     {
-        IReadOnlyList<Stream>? filesValue = default!;
-        try
-        {
-            filesValue = ApiRequestSupport.OpenReadStreams(files, false);
-        }
-        catch (ApiRequestException requestException)
-        {
-            return Results.Text(requestException.Message, statusCode: requestException.StatusCode);
-        }
-
-        var result = await api.MultipleFilesAsync(filesValue, cancellationToken);
+        var result = await api.MultipleFilesAsync(files, cancellationToken);
 
         return result switch
         {
@@ -140,18 +118,8 @@ public static class MultipartApiEndpointRouteBuilderExtensions
         CancellationToken cancellationToken
     )
     {
-        Stream? fileValue = default!;
-        try
-        {
-            fileValue = ApiRequestSupport.OpenReadStream(file);
-        }
-        catch (ApiRequestException requestException)
-        {
-            return Results.Text(requestException.Message, statusCode: requestException.StatusCode);
-        }
-
         var result = await api.FileAndFieldsAsync(
-            fileValue,
+            file,
             label,
             quantity,
             active,
@@ -233,18 +201,8 @@ public static class MultipartApiEndpointRouteBuilderExtensions
         CancellationToken cancellationToken
     )
     {
-        Stream? fileValue = default!;
-        try
-        {
-            fileValue = ApiRequestSupport.OpenReadStream(file);
-        }
-        catch (ApiRequestException requestException)
-        {
-            return Results.Text(requestException.Message, statusCode: requestException.StatusCode);
-        }
-
         var result = await api.WithEncodingAsync(
-            fileValue,
+            file,
             label,
             quantity,
             active,
@@ -267,17 +225,7 @@ public static class MultipartApiEndpointRouteBuilderExtensions
         CancellationToken cancellationToken
     )
     {
-        Stream? fileValue = default!;
-        try
-        {
-            fileValue = ApiRequestSupport.OpenReadStream(file);
-        }
-        catch (ApiRequestException requestException)
-        {
-            return Results.Text(requestException.Message, statusCode: requestException.StatusCode);
-        }
-
-        var result = await api.OptionalFileAsync(fileValue, cancellationToken);
+        var result = await api.OptionalFileAsync(file, cancellationToken);
 
         return result switch
         {

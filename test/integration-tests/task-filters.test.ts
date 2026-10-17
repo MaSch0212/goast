@@ -7,6 +7,7 @@ import { parse as parseYaml } from 'yaml';
 import { isNotFound, repoRootDir, walkFiles } from '@goast/test-harness';
 
 import { DRIVER_UNITS as CSHARP_DRIVER_UNITS } from '../integration/csharp-clients/build.ts';
+import { SERVER_UNITS as CSHARP_SERVER_UNITS } from '../integration/csharp-servers/build.ts';
 import { DRIVER_UNITS } from '../integration/kotlin-clients/build.ts';
 import { SERVER_UNITS } from '../integration/spring-controllers/build.ts';
 import { profiles } from '../output-tests/profiles.ts';
@@ -116,6 +117,8 @@ const TEMPLATE_RESOLVERS: Record<string, (source: string) => string[]> = {
     stringArrayConst(source, 'CONTAINER_TS_PROFILES').map((profile) => `typescript/${profile} (tsc)`),
   'test/integration/csharp-clients/integration.test.ts::integration/${unit.id}': () =>
     CSHARP_DRIVER_UNITS.map((unit) => `integration/${unit.id}`),
+  'test/integration/csharp-servers/integration.test.ts::integration/${unit.id}': () =>
+    CSHARP_SERVER_UNITS.map((unit) => `integration/${unit.id}`),
   'test/integration/kotlin-clients/integration.test.ts::integration/${unit.id}': () =>
     DRIVER_UNITS.map((unit) => `integration/${unit.id}`),
   'test/integration/spring-controllers/integration.test.ts::integration/${unit.id}': () =>

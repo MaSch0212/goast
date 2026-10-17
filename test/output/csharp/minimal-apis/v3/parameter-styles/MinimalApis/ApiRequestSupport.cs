@@ -263,27 +263,6 @@ public static class ApiRequestSupport
             throw new ApiRequestException($"The request body is not valid: {e.Message}", 400, e);
         }
     }
-    /// <summary>Opens the content of an uploaded file.</summary>
-    public static Stream? OpenReadStream(IFormFile? file)
-    {
-        return file?.OpenReadStream();
-    }
-    /// <summary>Opens the content of every uploaded file.</summary>
-    public static List<Stream>? OpenReadStreams(IFormFileCollection? files, bool required)
-    {
-        if (files is null || (files.Count == 0 && !required))
-        {
-            return null;
-        }
-
-        var result = new List<Stream>(files.Count);
-        foreach (var file in files)
-        {
-            result.Add(file.OpenReadStream());
-        }
-
-        return result;
-    }
     private static object? BuildObject(Type type, IReadOnlyDictionary<string, StringValues> values)
     {
         var node = new JsonObject();

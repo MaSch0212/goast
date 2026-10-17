@@ -2,8 +2,6 @@
 #nullable enable
 
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using FastEndpoints;
@@ -35,12 +33,11 @@ public abstract class MultipleFilesEndpointBase : EndpointWithoutRequest
     public sealed override async Task HandleAsync(CancellationToken cancellationToken)
     {
         var request = HttpContext.Request;
-        IReadOnlyList<Stream>? filesValue = default!;
+        IFormFileCollection? files = default!;
         try
         {
             var form = await ApiEndpointSupport.ReadFormAsync(request, cancellationToken);
-            IFormFileCollection? files = ApiEndpointSupport.FormFiles(form, "files", false);
-            filesValue = ApiRequestSupport.OpenReadStreams(files, false);
+            files = ApiEndpointSupport.FormFiles(form, "files", false);
         }
         catch (ApiRequestException requestException)
         {
@@ -48,7 +45,7 @@ public abstract class MultipleFilesEndpointBase : EndpointWithoutRequest
             return;
         }
 
-        var result = await MultipleFilesAsync(filesValue, cancellationToken);
+        var result = await MultipleFilesAsync(files, cancellationToken);
 
         await (result switch
         {
@@ -61,5 +58,5 @@ public abstract class MultipleFilesEndpointBase : EndpointWithoutRequest
     /// Handles the multipleFiles operation.
     /// </summary>
     /// <param name="cancellationToken">Signals that the request was aborted.</param>
-    protected abstract Task<MultipleFilesResult> MultipleFilesAsync(IReadOnlyList<Stream>? files, CancellationToken cancellationToken);
+    protected abstract Task<MultipleFilesResult> MultipleFilesAsync(IFormFileCollection? files, CancellationToken cancellationToken);
 }

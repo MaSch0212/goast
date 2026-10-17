@@ -98,6 +98,7 @@ class TestGenerator extends DefaultCSharpMinimalApiGenerator {
       result: buildStrictResult(ctx, endpoint, { namespace: 'OpenApi.Generated.MinimalApis' }),
       handlerName: `${name}Async`,
       methodName: `${name}Endpoint`,
+      named: true,
     };
   }
 }
@@ -376,6 +377,13 @@ describe('DefaultCSharpMinimalApiGenerator', () => {
       expect(readFileSync(join(dir, 'MinimalApis', 'SharedResult.cs'), 'utf8')).toContain(
         'namespace OpenApi.Generated.MinimalApis;',
       );
+      // Endpoint names are unique per application, so only the first service names the shared route.
+      expect(readFileSync(join(dir, 'MinimalApis', 'FirstApiEndpointRouteBuilderExtensions.cs'), 'utf8')).toContain(
+        '.WithName("shared")',
+      );
+      expect(
+        readFileSync(join(dir, 'MinimalApis', 'SecondApiEndpointRouteBuilderExtensions.cs'), 'utf8'),
+      ).not.toContain('.WithName');
     });
 
     it('writes the support types once, in the namespace of the minimal APIs', async () => {

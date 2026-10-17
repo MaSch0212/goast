@@ -2,7 +2,6 @@
 #nullable enable
 
 using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using FastEndpoints;
@@ -34,12 +33,11 @@ public abstract class OptionalFileEndpointBase : EndpointWithoutRequest
     public sealed override async Task HandleAsync(CancellationToken cancellationToken)
     {
         var request = HttpContext.Request;
-        Stream? fileValue = default!;
+        IFormFile? file = default!;
         try
         {
             var form = await ApiEndpointSupport.ReadFormAsync(request, cancellationToken);
-            IFormFile? file = ApiEndpointSupport.FormFile(form, "file");
-            fileValue = ApiRequestSupport.OpenReadStream(file);
+            file = ApiEndpointSupport.FormFile(form, "file");
         }
         catch (ApiRequestException requestException)
         {
@@ -47,7 +45,7 @@ public abstract class OptionalFileEndpointBase : EndpointWithoutRequest
             return;
         }
 
-        var result = await OptionalFileAsync(fileValue, cancellationToken);
+        var result = await OptionalFileAsync(file, cancellationToken);
 
         await (result switch
         {
@@ -60,5 +58,5 @@ public abstract class OptionalFileEndpointBase : EndpointWithoutRequest
     /// Handles the optionalFile operation.
     /// </summary>
     /// <param name="cancellationToken">Signals that the request was aborted.</param>
-    protected abstract Task<OptionalFileResult> OptionalFileAsync(Stream? file, CancellationToken cancellationToken);
+    protected abstract Task<OptionalFileResult> OptionalFileAsync(IFormFile? file, CancellationToken cancellationToken);
 }

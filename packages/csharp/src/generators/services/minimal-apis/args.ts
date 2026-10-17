@@ -11,6 +11,11 @@ export type EndpointInfo = {
   handlerName: string;
   /** The name of the private static method that binds the request, calls the handler and converts its result. */
   methodName: string;
+  /**
+   * Whether the route is named (`WithName`). Endpoint names must be unique in an application, so an endpoint with
+   * several tags is named in the first service that maps it only.
+   */
+  named: boolean;
 };
 
 export type GetNamespace = object;

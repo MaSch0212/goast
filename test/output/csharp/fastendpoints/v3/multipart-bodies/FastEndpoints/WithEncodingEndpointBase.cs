@@ -2,7 +2,6 @@
 #nullable enable
 
 using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using FastEndpoints;
@@ -34,15 +33,14 @@ public abstract class WithEncodingEndpointBase : EndpointWithoutRequest
     public sealed override async Task HandleAsync(CancellationToken cancellationToken)
     {
         var request = HttpContext.Request;
-        Stream? fileValue = default!;
+        IFormFile? file = default!;
         string? label = default!;
         int? quantity = default!;
         bool? active = default!;
         try
         {
             var form = await ApiEndpointSupport.ReadFormAsync(request, cancellationToken);
-            IFormFile? file = ApiEndpointSupport.FormFile(form, "file");
-            fileValue = ApiRequestSupport.OpenReadStream(file);
+            file = ApiEndpointSupport.FormFile(form, "file");
             label = ApiEndpointSupport.FormValue(form, "label");
             quantity = (int?)ApiRequestSupport.ParseValue(ApiEndpointSupport.FormValue(form, "quantity"), typeof(int));
             active = (bool?)ApiRequestSupport.ParseValue(ApiEndpointSupport.FormValue(form, "active"), typeof(bool));
@@ -54,7 +52,7 @@ public abstract class WithEncodingEndpointBase : EndpointWithoutRequest
         }
 
         var result = await WithEncodingAsync(
-            fileValue,
+            file,
             label,
             quantity,
             active,
@@ -73,7 +71,7 @@ public abstract class WithEncodingEndpointBase : EndpointWithoutRequest
     /// </summary>
     /// <param name="cancellationToken">Signals that the request was aborted.</param>
     protected abstract Task<WithEncodingResult> WithEncodingAsync(
-        Stream? file,
+        IFormFile? file,
         string? label,
         int? quantity,
         bool? active,

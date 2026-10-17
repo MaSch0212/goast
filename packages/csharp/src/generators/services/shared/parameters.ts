@@ -249,22 +249,15 @@ function getParameterPlan(
   const isFile = source === 'form' && isFileSchema(schema);
   const isFileList = source === 'form' && schema?.kind === 'array' && isFileSchema(schema.items);
 
-  // Files
+  // Files: the handler receives the uploaded file as the framework binds it, so it keeps its file name and content type.
   if (isFile || isFileList) {
-    const actionType = isFileList ? formFileCollection({ nullable: optional }) : formFile({ nullable: optional });
+    const fileType = isFileList ? formFileCollection({ nullable: optional }) : formFile({ nullable: optional });
     return {
       ...base,
+      type: fileType,
       isFile: true,
-      valueName: names.next(`${name}Value`),
-      binding: {
-        kind: 'bound',
-        actionName: name,
-        actionType,
-        convert: (action) =>
-          isFileList
-            ? s<Builder>`${support()}.OpenReadStreams(${action}, ${String(!optional)})${optional ? '' : '!'}`
-            : s<Builder>`${support()}.OpenReadStream(${action})${optional ? '' : '!'}`,
-      },
+      valueName: name,
+      binding: { kind: 'bound', actionName: name, actionType: fileType, convert: null },
     };
   }
 

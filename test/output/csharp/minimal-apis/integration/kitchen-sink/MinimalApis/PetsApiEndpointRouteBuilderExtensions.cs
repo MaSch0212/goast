@@ -2,7 +2,6 @@
 #nullable enable
 
 using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -190,11 +189,9 @@ public static class PetsApiEndpointRouteBuilderExtensions
     )
     {
         string idValue = default!;
-        Stream fileValue = default!;
         try
         {
             idValue = ApiRequestSupport.DecodePathSegment(id);
-            fileValue = ApiRequestSupport.OpenReadStream(file)!;
         }
         catch (ApiRequestException requestException)
         {
@@ -203,7 +200,7 @@ public static class PetsApiEndpointRouteBuilderExtensions
 
         var result = await api.UploadPetPhotoAsync(
             idValue,
-            fileValue,
+            file,
             caption,
             cancellationToken
         );

@@ -53,6 +53,9 @@ export const WIRE_TARGETS: readonly WireTarget[] = [
   { profile: 'spring-controllers@sb4', direction: 'server' },
   { profile: 'spring-controllers@sb3-strict', direction: 'server' },
   { profile: 'spring-controllers@sb4-strict', direction: 'server' },
+  { profile: 'csharp/controllers', direction: 'server' },
+  { profile: 'csharp/minimal-apis', direction: 'server' },
+  { profile: 'csharp/fastendpoints', direction: 'server' },
   { profile: 'easy-network-stub', direction: 'server' },
   // Cannot be driven: k6 cannot resolve the generated client's extensionless relative imports, and the request
   // builder imports a CDN polyfill at run time. Defects 55 and 56. `direction` is still `'client'` — that is

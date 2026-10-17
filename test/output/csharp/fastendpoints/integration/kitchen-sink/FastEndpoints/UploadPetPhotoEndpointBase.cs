@@ -2,7 +2,6 @@
 #nullable enable
 
 using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using FastEndpoints;
@@ -35,15 +34,14 @@ public abstract class UploadPetPhotoEndpointBase : EndpointWithoutRequest
     {
         var request = HttpContext.Request;
         string idValue = default!;
-        Stream fileValue = default!;
+        IFormFile file = default!;
         string? caption = default!;
         try
         {
             var form = await ApiEndpointSupport.ReadFormAsync(request, cancellationToken);
             string id = ApiEndpointSupport.Route(request, "id") ?? throw new ApiRequestException("The path parameter 'id' is required.");
             idValue = ApiRequestSupport.DecodePathSegment(id);
-            IFormFile file = ApiEndpointSupport.FormFile(form, "file") ?? throw new ApiRequestException("The form parameter 'file' is required.");
-            fileValue = ApiRequestSupport.OpenReadStream(file)!;
+            file = ApiEndpointSupport.FormFile(form, "file") ?? throw new ApiRequestException("The form parameter 'file' is required.");
             caption = ApiEndpointSupport.FormValue(form, "caption");
         }
         catch (ApiRequestException requestException)
@@ -54,7 +52,7 @@ public abstract class UploadPetPhotoEndpointBase : EndpointWithoutRequest
 
         var result = await UploadPetPhotoAsync(
             idValue,
-            fileValue,
+            file,
             caption,
             cancellationToken
         );
@@ -72,7 +70,7 @@ public abstract class UploadPetPhotoEndpointBase : EndpointWithoutRequest
     /// <param name="cancellationToken">Signals that the request was aborted.</param>
     protected abstract Task<UploadPetPhotoResult> UploadPetPhotoAsync(
         string id,
-        Stream file,
+        IFormFile file,
         string? caption,
         CancellationToken cancellationToken
     );

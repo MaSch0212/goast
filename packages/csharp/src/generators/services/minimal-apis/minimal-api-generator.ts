@@ -106,6 +106,7 @@ export class DefaultCSharpMinimalApiGenerator
         result: buildStrictResult(ctx, endpoint, { namespace }),
         handlerName: handlerNames.next(getHandlerMethodName(ctx, endpoint)),
         methodName: methodNames.next(methodBase),
+        named: !Object.values(ctx.output.csharp.minimalApis).some((x) => endpoint.id in x.results),
       } satisfies Args.EndpointInfo;
     });
 
@@ -327,7 +328,7 @@ export class DefaultCSharpMinimalApiGenerator
   protected getMetadataCalls(ctx: Context, args: Args.GetMetadataCalls): AppendValue<Builder>[] {
     const { info } = args;
     return [
-      s<Builder>`.WithName(${cs.string<Builder>(info.endpoint.name)})`,
+      info.named ? s<Builder>`.WithName(${cs.string<Builder>(info.endpoint.name)})` : null,
       s<Builder>`.WithTags(${cs.string<Builder>(ctx.service.name)})`,
       this.getAcceptsCall(ctx, { info }),
       ...info.result.cases.map((resultCase) => this.getProducesCall(ctx, { resultCase })),

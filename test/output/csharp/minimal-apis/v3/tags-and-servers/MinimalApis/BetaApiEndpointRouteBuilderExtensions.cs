@@ -25,7 +25,6 @@ public static class BetaApiEndpointRouteBuilderExtensions
         var group = app.MapGroup("v1");
 
         group.MapGet("two-tags", TwoTagsEndpoint)
-            .WithName("twoTags")
             .WithTags("Beta")
             .Produces(200);
 

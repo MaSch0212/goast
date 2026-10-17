@@ -13,12 +13,12 @@ required for tier 3 and for every other tier-4 target (the four Kotlin ones, the
 
 ## Tiers
 
-| #   | Tier        | Question                                              | Command                                                                              | Status                                                                                                                                                                                                                                                               |
-| --- | ----------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Unit        | Does this function do what it says?                   | `pnpm test`                                                                          | active                                                                                                                                                                                                                                                               |
-| 2   | Output      | Did the generated text change?                        | `pnpm test:output`                                                                   | active                                                                                                                                                                                                                                                               |
-| 3   | Compile     | Is the generated code valid in its language?          | `pnpm test:compile`                                                                  | active                                                                                                                                                                                                                                                               |
-| 4   | Integration | Does the generated code behave correctly on the wire? | `pnpm test:integration` / `:kotlin` / `:controllers` / `:angular` / `:k6` / `:stubs` | client direction: fetch-clients, angular-services, okhttp3-clients, spring-reactive-web-clients (`k6-clients` cannot be driven at all — see "The k6 leg" — and records a target-level load failure instead); server direction: spring-controllers, easy-network-stub |
+| #   | Tier        | Question                                              | Command                                                                                          | Status                                                                                                                                                                                                                                                                                    |
+| --- | ----------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Unit        | Does this function do what it says?                   | `pnpm test`                                                                                      | active                                                                                                                                                                                                                                                                                    |
+| 2   | Output      | Did the generated text change?                        | `pnpm test:output`                                                                               | active                                                                                                                                                                                                                                                                                    |
+| 3   | Compile     | Is the generated code valid in its language?          | `pnpm test:compile`                                                                              | active                                                                                                                                                                                                                                                                                    |
+| 4   | Integration | Does the generated code behave correctly on the wire? | `pnpm test:integration` / `:kotlin` / `:csharp` / `:controllers` / `:angular` / `:k6` / `:stubs` | client direction: fetch-clients, angular-services, okhttp3-clients, spring-reactive-web-clients, csharp http-clients (`k6-clients` cannot be driven at all — see "The k6 leg" — and records a target-level load failure instead); server direction: spring-controllers, easy-network-stub |
 
 ## Tier 1: unit tests
 
@@ -1180,9 +1180,9 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 ```
 
-`publish` pushes `@goast/core`, `@goast/kotlin` and `@goast/typescript` to npm and creates a git tag per
+`publish` pushes `@goast/core`, `@goast/kotlin`, `@goast/typescript` and `@goast/csharp` to npm and creates a git tag per
 package, one after another. A run on `main` can be partway through that sequence when a newer push supersedes it;
-cancelling it mid-flight would leave the three packages at different published versions with no way to roll back. That
+cancelling it mid-flight would leave the packages at different published versions with no way to roll back. That
 is the one case worth protecting, and `github.ref` is what identifies it — a pull request's `ref` is
 `refs/pull/<n>/merge` and never matches, so PRs cancel as they always did, and so now do pushes to `testing-next`, which
 publish nothing and have nothing mid-flight worth keeping.
@@ -1302,7 +1302,7 @@ test/
   output/             # committed tier 2 snapshots (see "Snapshot forms" above)
   compile-tests/      # tier 3: driver (compile.test.ts), paths.ts, per-language runners, orphans test
   compile/            # committed tier 3 diagnostics (see "Tier 3: compile gate" above)
-  docker/             # image contexts: kotlin/ and node/ (tier 3 compilers, reused by tier 4), k6/ (tier 4 only)
+  docker/             # image contexts: kotlin/, csharp/ and node/ (tier 3 compilers, reused by tier 4), k6/ (tier 4 only)
   cases/              # the tier-4 case table (cases.ts, casesFor, types.ts) — the shared source of truth
   integration/        # tier-4 tests: the oracle-agreement proof, targets.ts (WIRE_TARGETS), and one driver
                       # per target — fetch-clients/ (no Docker) and kotlin-clients/ (build.ts synthesizes the
@@ -1317,7 +1317,9 @@ test/
                       # normalizes k6's error, and the target records a load failure instead of cases;
                       # easy-network-stub/ is the other server direction, where the generated stubs are
                       # the API (build.ts compiles and then serves, driver/adapter.ts bridges the library
-                      # to node:http, driver/stubs.ts holds the registrations, boot.test.ts gates them)
+                      # to node:http, driver/stubs.ts holds the registrations, boot.test.ts gates them);
+                      # csharp-clients/ compiles the committed http-clients tree with drivers/CSharpDriver.cs
+                      # in the csharp image and runs it with dotnet run against the reference server
   integration-tests/  # tier-4 orphan sweep, over every WIRE_TARGETS entry (see "Tier 4: integration" above)
   wire/               # committed tier-4 deviation artifacts, one profile subdirectory per WIRE_TARGETS entry
 ```

@@ -2,8 +2,6 @@
 #nullable enable
 
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -30,17 +28,7 @@ public abstract class MultipartControllerBase : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        Stream fileValue = default!;
-        try
-        {
-            fileValue = ApiRequestSupport.OpenReadStream(file)!;
-        }
-        catch (ApiRequestException requestException)
-        {
-            return StatusCode(requestException.StatusCode, requestException.Message);
-        }
-
-        var result = await SingleFileAsync(fileValue, cancellationToken);
+        var result = await SingleFileAsync(file, cancellationToken);
 
         return result switch
         {
@@ -53,7 +41,7 @@ public abstract class MultipartControllerBase : ControllerBase
     /// Handles the singleFile operation.
     /// </summary>
     /// <param name="cancellationToken">Signals that the request was aborted.</param>
-    protected abstract Task<SingleFileResult> SingleFileAsync(Stream file, CancellationToken cancellationToken);
+    protected abstract Task<SingleFileResult> SingleFileAsync(IFormFile file, CancellationToken cancellationToken);
 
     /// <summary>
     /// Handles the multipleFiles operation.
@@ -66,17 +54,7 @@ public abstract class MultipartControllerBase : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        IReadOnlyList<Stream>? filesValue = default!;
-        try
-        {
-            filesValue = ApiRequestSupport.OpenReadStreams(files, false);
-        }
-        catch (ApiRequestException requestException)
-        {
-            return StatusCode(requestException.StatusCode, requestException.Message);
-        }
-
-        var result = await MultipleFilesAsync(filesValue, cancellationToken);
+        var result = await MultipleFilesAsync(files, cancellationToken);
 
         return result switch
         {
@@ -89,7 +67,7 @@ public abstract class MultipartControllerBase : ControllerBase
     /// Handles the multipleFiles operation.
     /// </summary>
     /// <param name="cancellationToken">Signals that the request was aborted.</param>
-    protected abstract Task<MultipleFilesResult> MultipleFilesAsync(IReadOnlyList<Stream>? files, CancellationToken cancellationToken);
+    protected abstract Task<MultipleFilesResult> MultipleFilesAsync(IFormFileCollection? files, CancellationToken cancellationToken);
 
     /// <summary>
     /// Handles the fileAndFields operation.
@@ -105,18 +83,8 @@ public abstract class MultipartControllerBase : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        Stream? fileValue = default!;
-        try
-        {
-            fileValue = ApiRequestSupport.OpenReadStream(file);
-        }
-        catch (ApiRequestException requestException)
-        {
-            return StatusCode(requestException.StatusCode, requestException.Message);
-        }
-
         var result = await FileAndFieldsAsync(
-            fileValue,
+            file,
             label,
             quantity,
             active,
@@ -135,7 +103,7 @@ public abstract class MultipartControllerBase : ControllerBase
     /// </summary>
     /// <param name="cancellationToken">Signals that the request was aborted.</param>
     protected abstract Task<FileAndFieldsResult> FileAndFieldsAsync(
-        Stream? file,
+        IFormFile? file,
         string? label,
         int? quantity,
         bool? active,
@@ -228,18 +196,8 @@ public abstract class MultipartControllerBase : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        Stream? fileValue = default!;
-        try
-        {
-            fileValue = ApiRequestSupport.OpenReadStream(file);
-        }
-        catch (ApiRequestException requestException)
-        {
-            return StatusCode(requestException.StatusCode, requestException.Message);
-        }
-
         var result = await WithEncodingAsync(
-            fileValue,
+            file,
             label,
             quantity,
             active,
@@ -258,7 +216,7 @@ public abstract class MultipartControllerBase : ControllerBase
     /// </summary>
     /// <param name="cancellationToken">Signals that the request was aborted.</param>
     protected abstract Task<WithEncodingResult> WithEncodingAsync(
-        Stream? file,
+        IFormFile? file,
         string? label,
         int? quantity,
         bool? active,
@@ -276,17 +234,7 @@ public abstract class MultipartControllerBase : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        Stream? fileValue = default!;
-        try
-        {
-            fileValue = ApiRequestSupport.OpenReadStream(file);
-        }
-        catch (ApiRequestException requestException)
-        {
-            return StatusCode(requestException.StatusCode, requestException.Message);
-        }
-
-        var result = await OptionalFileAsync(fileValue, cancellationToken);
+        var result = await OptionalFileAsync(file, cancellationToken);
 
         return result switch
         {
@@ -299,5 +247,5 @@ public abstract class MultipartControllerBase : ControllerBase
     /// Handles the optionalFile operation.
     /// </summary>
     /// <param name="cancellationToken">Signals that the request was aborted.</param>
-    protected abstract Task<OptionalFileResult> OptionalFileAsync(Stream? file, CancellationToken cancellationToken);
+    protected abstract Task<OptionalFileResult> OptionalFileAsync(IFormFile? file, CancellationToken cancellationToken);
 }

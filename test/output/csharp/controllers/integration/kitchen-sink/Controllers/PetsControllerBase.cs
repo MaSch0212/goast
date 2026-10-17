@@ -2,7 +2,6 @@
 #nullable enable
 
 using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -173,11 +172,9 @@ public abstract class PetsControllerBase : ControllerBase
     )
     {
         string idValue = default!;
-        Stream fileValue = default!;
         try
         {
             idValue = ApiRequestSupport.DecodePathSegment(id);
-            fileValue = ApiRequestSupport.OpenReadStream(file)!;
         }
         catch (ApiRequestException requestException)
         {
@@ -186,7 +183,7 @@ public abstract class PetsControllerBase : ControllerBase
 
         var result = await UploadPetPhotoAsync(
             idValue,
-            fileValue,
+            file,
             caption,
             cancellationToken
         );
@@ -204,7 +201,7 @@ public abstract class PetsControllerBase : ControllerBase
     /// <param name="cancellationToken">Signals that the request was aborted.</param>
     protected abstract Task<UploadPetPhotoResult> UploadPetPhotoAsync(
         string id,
-        Stream file,
+        IFormFile file,
         string? caption,
         CancellationToken cancellationToken
     );
