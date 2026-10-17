@@ -32,7 +32,8 @@ export type WireTarget = { profile: string; direction: Direction; state?: WireTa
  * drives — letting a stale artifact survive forever with the sweep still green. A load-failed target has no
  * driver, so its `direction` describes only what it *would* be once it can run.
  *
- * Both directions are represented. The `'client'` entries are generated clients driven against the
+ * Both directions are represented. The `'client'` entries — `fetch-clients`, `angular-services`, the Kotlin families,
+ * `go-clients` and the load-failed `k6-clients` — are generated clients driven against the
  * reference server, compared with `diffRequest`/`diffResult`; the `'server'` entries — the four
  * `spring-controllers@*` variants, `easy-network-stub` and `go-servers` — are generated servers driven by the reference
  * client (`issueCase`), compared with `diffResponse`.
@@ -54,6 +55,7 @@ export const WIRE_TARGETS: readonly WireTarget[] = [
   { profile: 'spring-controllers@sb4-strict', direction: 'server' },
   { profile: 'easy-network-stub', direction: 'server' },
   { profile: 'go-servers', direction: 'server' },
+  { profile: 'go-clients', direction: 'client' },
   // Cannot be driven: k6 cannot resolve the generated client's extensionless relative imports, and the request
   // builder imports a CDN polyfill at run time. Defects 55 and 56. `direction` is still `'client'` — that is
   // what the target *is*, and it becomes meaningful the moment the load failure is fixed.
