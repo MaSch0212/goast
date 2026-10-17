@@ -129,6 +129,8 @@ export type GetZeroValues = {
 export type GetZeroValue = {
   /** The type whose zero value is taken. */
   type: go.Type<SourceBuilder>;
+  /** The schema of the type, if there is one. */
+  schema?: ApiSchema | undefined;
 };
 
 /** The arguments for the request body of an operation. */
@@ -255,4 +257,22 @@ export type GetFormFieldStatement = {
   field: GoClientFormField;
   /** Whether the field is written as a part of a multipart body, rather than added to the values of a form. */
   multipart: boolean;
+};
+
+/** The arguments for the statements sending the request and handling the response. */
+export type GetResponseStatements = {
+  /** The operation of the method. */
+  operation: GoClientOperation;
+};
+
+/** The arguments for the function decoding the body of an error response. */
+export type GetErrorValueFunction = {
+  /** The operation of the method, whose error responses are matched. */
+  operation: GoClientOperation;
+};
+
+/** The arguments for the statement decoding the success response. */
+export type GetSuccessStatement = {
+  /** The operation of the method, whose success response is decoded. */
+  operation: GoClientOperation;
 };

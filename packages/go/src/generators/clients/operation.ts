@@ -1,4 +1,4 @@
-import type { ApiContent, ApiEndpoint, ApiParameter, AppendValue, SourceBuilder } from '@goast/core';
+import type { ApiContent, ApiEndpoint, ApiParameter, ApiSchema, AppendValue, SourceBuilder } from '@goast/core';
 
 import type { go } from '../../ast/index.ts';
 import type { GoFileBuilder } from '../../file-builder.ts';
@@ -80,6 +80,8 @@ export type GoClientSuccessBody = {
   kind: 'json' | 'text' | 'raw';
   /** The type the body is decoded into, a pointer if the model is a struct. */
   type: go.Type<SourceBuilder>;
+  /** The schema of a JSON body, `undefined` for any other body or a JSON body without a schema. */
+  schema: ApiSchema | undefined;
 };
 
 /** The success response of an operation: the responses the client returns the body of. */

@@ -100,6 +100,28 @@ function block(header: AppendValue<Builder>, statements: AppendValue<Builder>[])
 }
 
 /**
+ * Builds a `switch`: the header, and the cases between braces. Like `gofmt` writes it, the labels are not indented
+ * relative to the `switch`, and their statements are.
+ * @param header What comes before the opening brace, e.g. `switch resp.StatusCode`.
+ * @param cases The cases, with their labels (e.g. `case 200:`) and statements.
+ * @returns The value to append.
+ */
+function switchBlock(
+  header: AppendValue<Builder>,
+  cases: { label: string; statements: AppendValue<Builder>[] }[],
+): AppendValue<Builder> {
+  return (b: Builder) => {
+    b.appendLine(header, ' {');
+    for (const { label, statements } of cases) {
+      b.appendLine(label);
+      b.indent(appendValueGroup<Builder>(statements, '\n'));
+      b.ensureCurrentLineEmpty();
+    }
+    b.append('}');
+  };
+}
+
+/**
  * Generates the client code of one service. Implement it to replace the generation of a service's client code.
  * @template TOutput The type of the result, which describes the file that was written.
  * @see DefaultGoClientGenerator
@@ -569,10 +591,7 @@ export class DefaultGoClientGenerator extends GoFileGenerator<Context, Output> i
   protected getMethodBody(ctx: Context, args: Args.GetMethodBody): AppendValue<Builder> {
     const { operation } = args;
     return appendValueGroup<Builder>(
-      [
-        ...this.getRequestStatements(ctx, { operation }),
-        s<Builder>`return ${this.getZeroValues(ctx, { operation, error: 'nil' })}`,
-      ],
+      [...this.getRequestStatements(ctx, { operation }), ...this.getResponseStatements(ctx, { operation })],
       '\n',
     );
   }
@@ -586,18 +605,19 @@ export class DefaultGoClientGenerator extends GoFileGenerator<Context, Output> i
   protected getZeroValues(ctx: Context, args: Args.GetZeroValues): AppendValue<Builder> {
     const { operation, error } = args;
     return operation.success.type
-      ? s<Builder>`${this.getZeroValue(ctx, { type: operation.success.type })}, ${error}`
+      ? s<Builder>`${this.getZeroValue(ctx, { type: operation.success.type, schema: operation.success.byStatus[0]?.schema })}, ${error}`
       : error;
   }
 
   /**
    * Gets the zero value of a type as Go code: `nil` for a pointer, slice, map, interface or `url.Values`, a literal for
-   * strings, booleans and numbers, `time.Time{}` for a time, and `*new(T)` for any other type, e.g. a model.
-   * @param _ctx The context of the service to generate.
-   * @param args The type.
+   * strings, booleans and numbers, `time.Time{}` for a time, and for any other type a literal if its schema is a
+   * primitive (the type is an enum then), or else `*new(T)`, e.g. for a model.
+   * @param ctx The context of the service to generate.
+   * @param args The type, and its schema if there is one.
    * @returns The zero value.
    */
-  protected getZeroValue(_ctx: Context, args: Args.GetZeroValue): AppendValue<Builder> {
+  protected getZeroValue(ctx: Context, args: Args.GetZeroValue): AppendValue<Builder> {
     const { type } = args;
     if (this.isNilable(type)) return 'nil';
     if (go.refs.string.matches(type)) return '""';
@@ -605,7 +625,18 @@ export class DefaultGoClientGenerator extends GoFileGenerator<Context, Output> i
     const numbers = [go.refs.int, go.refs.int32, go.refs.int64, go.refs.float32, go.refs.float64, go.refs.byte];
     if (numbers.some((x) => x.matches(type))) return '0';
     if (go.refs.time.time.matches(type)) return s<Builder>`${type}{}`;
-    return s<Builder>`*new(${type})`;
+
+    switch (this.resolveSchema(ctx, { schema: args.schema })?.kind) {
+      case 'string':
+        return '""';
+      case 'integer':
+      case 'number':
+        return '0';
+      case 'boolean':
+        return 'false';
+      default:
+        return s<Builder>`*new(${type})`;
+    }
   }
 
   /**
@@ -1075,10 +1106,10 @@ export class DefaultGoClientGenerator extends GoFileGenerator<Context, Output> i
         if (isJsonMediaType(mediaType)) {
           const type = content.schema ? this.getSchemaType(ctx, { schema: content.schema }) : go.refs.any();
           const isStruct = !!content.schema && !!ctx.input.go.models[content.schema.id]?.fields;
-          return { status, kind: 'json', type: isStruct ? go.pointer(type) : type };
+          return { status, kind: 'json', type: isStruct ? go.pointer(type) : type, schema: content.schema };
         }
-        if (mediaType.startsWith('text/')) return { status, kind: 'text', type: go.refs.string() };
-        return { status, kind: 'raw', type: go.slice(go.refs.byte()) };
+        if (mediaType.startsWith('text/')) return { status, kind: 'text', type: go.refs.string(), schema: undefined };
+        return { status, kind: 'raw', type: go.slice(go.refs.byte()), schema: undefined };
       })
       .filter(notNullish);
 
@@ -1136,6 +1167,96 @@ export class DefaultGoClientGenerator extends GoFileGenerator<Context, Output> i
       })
       .filter(notNullish)
       .sort((a, b) => rank(a) - rank(b));
+  }
+  // #endregion
+
+  // #region Response
+  /**
+   * Builds the statements sending the request and handling the response: the call of `do`, the deferred close of the
+   * body, a `ResponseError` for a status that is not a success, and the decoding of a success body.
+   * @param ctx The context of the service to generate.
+   * @param args The operation of the method.
+   * @returns The statements.
+   */
+  protected getResponseStatements(ctx: Context, args: Args.GetResponseStatements): AppendValue<Builder>[] {
+    const { operation } = args;
+    const names = ctx.runtimeNames;
+    return [
+      s<Builder>`resp, err := c.c.do(ctx, r, opts)`,
+      block('if err != nil', [s<Builder>`return ${this.getZeroValues(ctx, { operation, error: 'err' })}`]),
+      'defer resp.Body.Close()',
+      block(s<Builder>`if !${names.isSuccess}(resp)`, [
+        s<Builder>`return ${this.getZeroValues(ctx, { operation, error: s<Builder>`${names.newResponseError}(resp, ${this.getErrorValueFunction(ctx, { operation })})` })}`,
+      ]),
+      this.getSuccessStatement(ctx, { operation }),
+    ];
+  }
+
+  /**
+   * Builds the function that decodes the body of an error response into the `Value` of the `ResponseError`, which
+   * matches the status against the declared error responses: codes first, then ranges, then `default`. A status without
+   * a declared JSON body gets `nil`. Without any error response with a JSON body it is `nil`, and so is no function.
+   * @param ctx The context of the service to generate.
+   * @param args The operation of the method.
+   * @returns The function, or `nil`.
+   */
+  protected getErrorValueFunction(ctx: Context, args: Args.GetErrorValueFunction): AppendValue<Builder> {
+    const { errors } = args.operation;
+    if (errors.length === 0) return 'nil';
+
+    const decode = (type: Type) => s<Builder>`return ${ctx.runtimeNames.decodeErrorJSON}[${type}](body)`;
+    const cases: { label: string; statements: AppendValue<Builder>[] }[] = errors.map((error) => ({
+      label:
+        error.status === 'default'
+          ? 'default:'
+          : typeof error.status === 'number'
+            ? `case status == ${error.status}:`
+            : `case status >= ${error.status.range * 100} && status < ${error.status.range * 100 + 100}:`,
+      statements: [decode(error.type)],
+    }));
+    if (!errors.some((x) => x.status === 'default')) cases.push({ label: 'default:', statements: ['return nil'] });
+
+    return (b: Builder) => {
+      b.append('func(status int, body []byte) any ');
+      b.parenthesize('{}', switchBlock('switch', cases), { multiline: true });
+    };
+  }
+
+  /**
+   * Builds the statement decoding the success response. Success bodies that are all decoded the same way are decoded
+   * by one call of `decodeJSON`, `decodeText` or `decodeBytes`. Otherwise the call is chosen by the status: a `switch`
+   * with a case per declared code, and the `2XX` or `default` response, if there is one, or else no value for any other
+   * status.
+   * @param ctx The context of the service to generate.
+   * @param args The operation of the method.
+   * @returns The statement.
+   */
+  protected getSuccessStatement(ctx: Context, args: Args.GetSuccessStatement): AppendValue<Builder> {
+    const { operation } = args;
+    const { byStatus } = operation.success;
+    const names = ctx.runtimeNames;
+    if (byStatus.length === 0) return 'return nil';
+
+    const decode = (body: GoClientSuccessBody) =>
+      body.kind === 'json'
+        ? s<Builder>`return ${names.decodeJSON}[${body.type}](resp)`
+        : body.kind === 'text'
+          ? s<Builder>`return ${names.decodeText}(resp)`
+          : s<Builder>`return ${names.decodeBytes}(resp)`;
+    const keys = new Set(byStatus.map((x) => `${x.kind} ${SourceBuilder.build((b) => go.writeNode(b, x.type))}`));
+    if (keys.size === 1) return decode(byStatus[0]);
+
+    const fixed = byStatus.filter((x) => typeof x.status === 'number');
+    const fallback = byStatus.find((x) => typeof x.status !== 'number');
+    return switchBlock('switch resp.StatusCode', [
+      ...fixed.map((x) => ({ label: `case ${x.status}:`, statements: [decode(x)] })),
+      {
+        label: 'default:',
+        statements: [
+          fallback ? decode(fallback) : s<Builder>`return ${this.getZeroValues(ctx, { operation, error: 'nil' })}`,
+        ],
+      },
+    ]);
   }
   // #endregion
 

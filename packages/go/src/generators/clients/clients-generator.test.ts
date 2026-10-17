@@ -570,4 +570,170 @@ describe('GoClientsGenerator', () => {
       expect(raw).toContain('\tr.rawBody("image/png", body)\n');
     });
   });
+
+  describe('responses', () => {
+    const json = (name: string) => ({ 'application/json': { schema: { $ref: `#/components/schemas/${name}` } } });
+
+    /** Generates a client for a single GET operation with the given responses and returns the Pets client file. */
+    async function client(responses: Record<string, unknown>, schemas: Record<string, unknown> = {}) {
+      const { files } = await generate({
+        paths: { '/pets': { get: { tags: ['Pets'], operationId: 'op', responses } } },
+        components: {
+          schemas: {
+            Pet: pet,
+            Error: { type: 'object', properties: { message: { type: 'string' } } },
+            Problem: { type: 'object', properties: { title: { type: 'string' } } },
+            Status: { type: 'string', enum: ['a', 'b'] },
+            ...schemas,
+          },
+        },
+      });
+      return files['pets_client.go'];
+    }
+
+    it('returns the decoded success body', async () => {
+      const { files } = await generate(petsApi);
+
+      expect(files['pets_client.go']).toContain(
+        [
+          '\tresp, err := c.c.do(ctx, r, opts)',
+          '\tif err != nil {',
+          '\t\treturn nil, err',
+          '\t}',
+          '\tdefer resp.Body.Close()',
+          '\tif !isSuccess(resp) {',
+          '\t\treturn nil, newResponseError(resp, nil)',
+          '\t}',
+          '\treturn decodeJSON[*api.Pet](resp)',
+          '}',
+        ].join('\n'),
+      );
+    });
+
+    it('returns only an error when no success response has a body', async () => {
+      const { files } = await generate(petsApi);
+
+      expect(files['pets_client.go']).toContain(
+        [
+          '\tif err := r.jsonBody(body); err != nil {',
+          '\t\treturn err',
+          '\t}',
+          '\tresp, err := c.c.do(ctx, r, opts)',
+          '\tif err != nil {',
+          '\t\treturn err',
+          '\t}',
+          '\tdefer resp.Body.Close()',
+          '\tif !isSuccess(resp) {',
+          '\t\treturn newResponseError(resp, nil)',
+          '\t}',
+          '\treturn nil',
+          '}',
+        ].join('\n'),
+      );
+    });
+
+    it('decodes the declared error bodies into ResponseError.Value', async () => {
+      const code = await client({
+        '200': { description: 'ok', content: json('Pet') },
+        '404': { description: 'Not found.', content: json('Error') },
+        '4XX': { description: 'Client error.', content: json('Problem') },
+        default: { description: 'Other.', content: json('Error') },
+      });
+
+      expect(code).toContain(
+        [
+          '\tif !isSuccess(resp) {',
+          '\t\treturn nil, newResponseError(resp, func(status int, body []byte) any {',
+          '\t\t\tswitch {',
+          '\t\t\tcase status == 404:',
+          '\t\t\t\treturn decodeErrorJSON[api.Error](body)',
+          '\t\t\tcase status >= 400 && status < 500:',
+          '\t\t\t\treturn decodeErrorJSON[api.Problem](body)',
+          '\t\t\tdefault:',
+          '\t\t\t\treturn decodeErrorJSON[api.Error](body)',
+          '\t\t\t}',
+          '\t\t})',
+          '\t}',
+        ].join('\n'),
+      );
+    });
+
+    it('returns nil from the error value function for a status without a declared body', async () => {
+      const code = await client({
+        '200': { description: 'ok' },
+        '404': { description: 'Not found.', content: json('Error') },
+        '500': { description: 'Broken.' },
+      });
+
+      expect(code).toContain(
+        '\t\t\tcase status == 404:\n\t\t\t\treturn decodeErrorJSON[api.Error](body)\n\t\t\tdefault:\n\t\t\t\treturn nil\n',
+      );
+    });
+
+    it('treats default as success when no 2xx is declared', async () => {
+      const code = await client({
+        '404': { description: 'Not found.', content: json('Error') },
+        default: { description: 'The pets.', content: json('Pet') },
+      });
+
+      expect(code).toContain('(*api.Pet, error) {');
+      expect(code).toContain('\treturn decodeJSON[*api.Pet](resp)\n');
+      expect(code).toContain(
+        '\t\t\tcase status == 404:\n\t\t\t\treturn decodeErrorJSON[api.Error](body)\n\t\t\tdefault:\n\t\t\t\treturn nil\n',
+      );
+    });
+
+    it('returns any when success bodies disagree', async () => {
+      const code = await client({
+        '200': { description: 'ok', content: json('Pet') },
+        '202': { description: 'accepted', content: json('Error') },
+        '204': { description: 'no content' },
+      });
+
+      expect(code).toContain('(any, error) {');
+      expect(code).toContain(
+        [
+          '\tswitch resp.StatusCode {',
+          '\tcase 200:',
+          '\t\treturn decodeJSON[*api.Pet](resp)',
+          '\tcase 202:',
+          '\t\treturn decodeJSON[*api.Error](resp)',
+          '\tdefault:',
+          '\t\treturn nil, nil',
+          '\t}',
+        ].join('\n'),
+      );
+    });
+
+    it('returns a string for text and []byte for other media types', async () => {
+      const text = await client({
+        '200': { description: 'ok', content: { 'text/plain': { schema: { type: 'string' } } } },
+      });
+      expect(text).toContain('Op(ctx context.Context, opts ...RequestOption) (string, error) {');
+      expect(text).toContain('\treturn decodeText(resp)\n');
+
+      const raw = await client({
+        '200': { description: 'ok', content: { 'image/png': { schema: { type: 'string', format: 'binary' } } } },
+      });
+      expect(raw).toContain('Op(ctx context.Context, opts ...RequestOption) ([]byte, error) {');
+      expect(raw).toContain('\treturn decodeBytes(resp)\n');
+    });
+
+    it('returns slices and enums by value and structs by pointer', async () => {
+      const slice = await client({
+        '200': {
+          description: 'ok',
+          content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/Pet' } } } },
+        },
+      });
+      expect(slice).toContain('([]api.Pet, error) {');
+      expect(slice).toContain('\t\treturn nil, err\n');
+      expect(slice).toContain('\treturn decodeJSON[[]api.Pet](resp)\n');
+
+      const status = await client({ '200': { description: 'ok', content: json('Status') } });
+      expect(status).toContain('(api.Status, error) {');
+      expect(status).toContain('\t\treturn "", err\n');
+      expect(status).toContain('\treturn decodeJSON[api.Status](resp)\n');
+    });
+  });
 });
