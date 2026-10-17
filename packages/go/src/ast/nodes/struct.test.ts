@@ -59,4 +59,53 @@ describe('goStruct', () => {
   it('writes an embedded field', () => {
     expect(render(goStruct([goField(null, refs.error())]))).toBe('struct {\n\terror\n}');
   });
+
+  it('writes the example of its documentation', () => {
+    expect(
+      render(
+        goStruct([
+          goField('ID', refs.string(), { tag: [['json', 'id']] }),
+          goField('Tags', goSlice(refs.string()), { tag: [['json', 'tags,omitempty']] }),
+        ]),
+      ),
+    ).toBe(['struct {', '\tID   string   `json:"id"`', '\tTags []string `json:"tags,omitempty"`', '}'].join('\n'));
+  });
+
+  it('skips nullish fields', () => {
+    expect(render(goStruct([null, goField('A', refs.int()), undefined]))).toBe('struct {\n\tA int\n}');
+  });
+
+  it('writes an empty struct on one line when only nullish fields are given', () => {
+    expect(render(goStruct([null, undefined]))).toBe('struct{}');
+  });
+
+  it('writes an empty struct with an injection on several lines', () => {
+    expect(render(goStruct([], { inject: { beforeFields: '/* empty */' } }))).toBe('struct {\n\t/* empty */\n}');
+  });
+
+  it('writes the injections before and after the fields', () => {
+    expect(
+      render(
+        goStruct([goField('A', refs.int())], {
+          inject: { beforeFields: '/* before */', afterFields: '/* after */' },
+        }),
+      ),
+    ).toBe('struct {\n\t/* before */A int\n\t/* after */\n}');
+  });
+
+  it('writes the struct of a field of another struct', () => {
+    expect(render(goStruct([goField('Meta', goStruct([goField('Version', refs.int())]))]))).toBe(
+      'struct {\n\tMeta struct {\n\t\tVersion int\n\t}\n}',
+    );
+  });
+
+  it('writes several structs through its write helper', () => {
+    const builder = new GoFileBuilder('api', undefined, {
+      ...defaultGoGeneratorConfig,
+      newLine: '\n',
+    } as GoGeneratorConfig);
+    goStruct.write(builder, [goStruct(), goStruct([goField('A', refs.int())])], { separator: '\n' });
+
+    expect(builder.toFragmentString()).toBe('struct{}\nstruct {\n\tA int\n}');
+  });
 });
