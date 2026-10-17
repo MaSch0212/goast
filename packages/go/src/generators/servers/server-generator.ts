@@ -45,15 +45,38 @@ const multipartForm = go.reference.factory('Form', 'mime/multipart');
 const urlValues = go.reference.factory('Values', 'net/url');
 const mustCompile = go.reference.factory('MustCompile', 'regexp');
 
+/**
+ * Generates the server code of one service. Implement it to replace the generation of a service's server code.
+ * @template TOutput The type of the result, which describes the file that was written.
+ * @see DefaultGoServerGenerator
+ */
 export interface GoServerGenerator<TOutput extends Output = Output> {
+  /**
+   * Writes the server file of the service and describes it.
+   * @param ctx The context of the service to generate.
+   * @returns The output that describes the written file, or a promise that resolves to it.
+   */
   generate(ctx: Context): MaybePromise<TOutput>;
 }
 
 /**
- * Generates the server code of one service (tag): an interface with a method per operation, the types of their
- * requests and responses, and a function registering a handler per operation on a `*http.ServeMux`.
+ * The default generator of the server code of one service (tag). It writes a single Go file into the package directory
+ * of the service, named after the service with a `_service.go` suffix. The file declares a `<Name>Service` interface
+ * with a method per operation, and a `Register<Name>Routes` function that registers a handler per operation on a
+ * `*http.ServeMux`. For each operation it declares a request struct, a decode function, a response interface, and a
+ * struct and a write method per declared response. An operation with several tags is declared only by the first service
+ * that has it.
+ *
+ * Each part is built by a protected method, so subclasses can change one part at a time.
+ * @see GoServerGenerator
  */
 export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> implements GoServerGenerator {
+  /**
+   * Writes the server file of the service, and returns references to its service interface and register function.
+   * @param ctx The context of the service to generate.
+   * @returns The references to the service interface as `serviceInterface`, and to the register function as
+   *   `registerFunction`.
+   */
   public generate(ctx: Context): MaybePromise<Output> {
     const pkg = ctx.package;
     const registry = this.getIdentifierRegistry(ctx, pkg);
@@ -78,6 +101,14 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     };
   }
 
+  /**
+   * Builds the content of the service file: the service interface, the register function, and the declarations of each
+   * operation that no earlier service has declared. The operations are marked as declared, so each one is declared
+   * once.
+   * @param ctx The context of the service to generate.
+   * @param args The name of the interface, the name of the register function and the operations of the service.
+   * @returns The content of the file.
+   */
   protected getFileContent(ctx: Context, args: Args.GetFileContent): AppendValueGroup<Builder> {
     const { interfaceName, registerFunctionName, operations } = args;
 
@@ -96,6 +127,13 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
   }
 
   // #region Service
+  /**
+   * Builds the interface of the service, with a method per operation. Its documentation names the service, followed by
+   * the description of the service if it has one.
+   * @param ctx The context of the service to generate.
+   * @param args The name of the interface and the operations of the service.
+   * @returns The declaration of the interface.
+   */
   protected getServiceInterface(ctx: Context, args: Args.GetServiceInterface): go.TypeDeclaration<Builder> {
     const { interfaceName, operations } = args;
 
@@ -115,6 +153,14 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     );
   }
 
+  /**
+   * Builds the method of an operation in the service interface. The method takes the context and the request, and
+   * returns the response and an error. Its documentation is the summary and description of the endpoint, and it is
+   * marked deprecated if the endpoint is.
+   * @param ctx The context of the service to generate.
+   * @param args The operation of the method.
+   * @returns The declaration of the method.
+   */
   protected getServiceMethod(ctx: Context, args: Args.GetServiceMethod): go.Method<Builder> {
     const { operation } = args;
 
@@ -127,6 +173,15 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     });
   }
 
+  /**
+   * Builds the function registering the operations of the service on a mux. The body creates the server options from
+   * the base path of the service and the options passed in, and then calls `handle` once per operation with its method,
+   * its route pattern and a `serve` wrapper around its decode function, the service method and the write method of its
+   * responses. The function has no body if the service has no operations.
+   * @param ctx The context of the service to generate.
+   * @param args The name of the interface and of the function, and the operations to register.
+   * @returns The declaration of the register function.
+   */
   protected getRegisterFunction(ctx: Context, args: Args.GetRegisterFunction): go.Function<Builder> {
     const { interfaceName, registerFunctionName, operations } = args;
     const body =
@@ -158,7 +213,14 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
   // #endregion
 
   // #region Operation
-  /** The plan for an endpoint, computed once per run, so every service it belongs to agrees on its names. */
+  /**
+   * Plans an operation of an endpoint: its names, route, parameters, bodies and responses. The plan is computed once
+   * per run and cached in the context, so that every service the endpoint belongs to agrees on its names. Parameters
+   * whose schema cannot be decoded are kept as skipped, so the request struct can still document them.
+   * @param ctx The context of the service to generate.
+   * @param args The endpoint of the operation.
+   * @returns The plan of the operation.
+   */
   protected getOperation(ctx: Context, args: Args.GetOperation): GoOperation {
     const { endpoint } = args;
     const existing = ctx.operations.get(endpoint.id);
@@ -213,6 +275,14 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     return operation;
   }
 
+  /**
+   * Builds the declarations of an operation, in order: a variable with a compiled regular expression for each route
+   * segment that needs one, the request struct, the structs of the declared bodies, the decode function, the response
+   * interface, and a struct and a write method for each response.
+   * @param ctx The context of the service to generate.
+   * @param args The operation to declare.
+   * @returns The declarations, each as one value to append to the file.
+   */
   protected getOperationDeclarations(ctx: Context, args: Args.GetOperationDeclarations): AppendValue<Builder>[] {
     const { operation } = args;
 
@@ -233,7 +303,13 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     ];
   }
 
-  /** The parameters the request struct can hold: those in the path, query, headers and cookies. */
+  /**
+   * Gets the parameters the request struct can hold: those in the path, the query, a header or a cookie. Parameters of
+   * other locations are not considered.
+   * @param _ctx The context of the service to generate.
+   * @param args The endpoint whose parameters are taken.
+   * @returns The parameters of the endpoint in those locations.
+   */
   protected getParameters(_ctx: Context, args: Args.GetParameters): ApiParameter[] {
     return args.endpoint.parameters.filter(
       (x) => x.target === 'path' || x.target === 'query' || x.target === 'header' || x.target === 'cookie',
@@ -243,9 +319,15 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
 
   // #region Route
   /**
-   * The route pattern of the endpoint. A path parameter that is a whole segment becomes a wildcard. A segment holding
-   * a parameter and other text (`{id}.json`) becomes a wildcard for the whole segment, and the parameter is taken from
-   * it with a regular expression, because a `http.ServeMux` wildcard always spans a whole segment.
+   * Builds the route of an endpoint: its `http.ServeMux` pattern, the wildcards of its path parameters, and the regular
+   * expressions for segments that hold text beside a parameter. A path parameter that is a whole segment becomes a
+   * wildcard named after it. A segment holding a parameter and other text (`{id}.json`) becomes a wildcard for the
+   * whole segment, because a `http.ServeMux` wildcard always spans a whole segment. The parameter is then taken from
+   * that segment by a regular expression with a group per parameter, which is stored as a segment pattern. A pattern
+   * ending in a slash gets `{$}` appended, so that it matches only that path and not the paths below it.
+   * @param ctx The context of the service to generate.
+   * @param args The endpoint of the route and the name of its operation.
+   * @returns The route of the endpoint.
    */
   protected getRoute(ctx: Context, args: Args.GetRoute): GoOperationRoute {
     const { endpoint, name } = args;
@@ -296,11 +378,24 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     return route;
   }
 
-  /** Percent-encodes the characters a literal segment of a `http.ServeMux` pattern cannot contain as they are. */
+  /**
+   * Percent-encodes the characters of a literal path segment that a `http.ServeMux` pattern cannot contain as they are.
+   * Other characters, including the sub-delimiters, are kept.
+   * @param segment The literal segment of the path.
+   * @returns The segment, safe to use in a pattern.
+   */
   protected escapePathSegment(segment: string): string {
     return segment.replace(/[^A-Za-z0-9\-._~!$&'()*+,;=:@%]/g, (x) => encodeURIComponent(x));
   }
 
+  /**
+   * Gets the base path the routes are registered below: the path of the first server URL of the service, or of its
+   * first endpoint, after the base path modifier. The scheme and host are removed and trailing slashes are dropped. A
+   * URL with a server variable has no known path, so the base path is empty.
+   * @param ctx The context of the service to generate.
+   * @param _args The arguments of the call, none of which are used.
+   * @returns The base path, or an empty string if there is none.
+   */
   protected getBasePath(ctx: Context, _args: Args.GetBasePath): string {
     const url = (ctx.service.$src ?? ctx.service.endpoints[0]?.$src)?.document.servers?.[0]?.url ?? '/';
     let path = modifyString(url, ctx.config.basePath, ctx.service);
@@ -312,6 +407,14 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
   // #endregion
 
   // #region Request
+  /**
+   * Builds the request struct of an operation. It has a field for each decoded parameter and for each body, and an
+   * `HTTPRequest` field with the request as received. Its documentation lists the parameters that were skipped because
+   * their schema is not supported, which are read from `HTTPRequest` instead.
+   * @param ctx The context of the service to generate.
+   * @param args The operation whose request struct is built.
+   * @returns The declaration of the request struct.
+   */
   protected getRequestStruct(ctx: Context, args: Args.GetRequestStruct): go.TypeDeclaration<Builder> {
     const { operation } = args;
     const docLines = [`${operation.requestTypeName} is the request of ${operation.name}.`];
@@ -350,6 +453,13 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     );
   }
 
+  /**
+   * Builds the struct of a body that is declared as its own type, which is the case for a multipart body. It has a
+   * field for each decoded field of the body.
+   * @param _ctx The context of the service to generate.
+   * @param args The operation and the body whose struct is built.
+   * @returns The declaration of the body struct.
+   */
   protected getBodyStruct(_ctx: Context, args: Args.GetBodyStruct): go.TypeDeclaration<Builder> {
     const { operation, body } = args;
     const name = body.declaredStructName!;
@@ -367,6 +477,14 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     );
   }
 
+  /**
+   * Builds the decode function of an operation. It takes the HTTP request and the server options, and returns the
+   * request struct. The function stores the request as `HTTPRequest`, decodes each parameter, and then decodes the body
+   * by its media type if the operation has bodies. It returns the first error it gets.
+   * @param ctx The context of the service to generate.
+   * @param args The operation whose decode function is built.
+   * @returns The declaration of the decode function.
+   */
   protected getDecodeFunction(ctx: Context, args: Args.GetDecodeFunction): go.Function<Builder> {
     const { operation } = args;
     const statements: AppendValue<Builder>[] = [s<Builder>`req.HTTPRequest = r`];
@@ -400,13 +518,27 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     });
   }
 
-  /** `if <target>, err = <call>; err != nil { return req, err }` */
+  /**
+   * Builds the statement assigning the result of a decode call to a field of the request, and returning on its error.
+   * It is `if <target>, err = <call>; err != nil { return req, err }`.
+   * @param _ctx The context of the service to generate.
+   * @param args The field to assign to, and the call producing its value.
+   * @returns The statement.
+   */
   protected getDecodeStatement(_ctx: Context, args: Args.GetDecodeStatement): AppendValue<Builder> {
     return s<Builder>`if ${args.target}, err = ${args.call}; err != nil {
       \treturn req, err
       }`;
   }
 
+  /**
+   * Builds the call decoding the raw values of a parameter or a form field. The call depends on the decoding mode:
+   * `requiredValue` and `optionalValue` decode a single value, `valueOrDefault` decodes a single value and falls back
+   * to the default value, and `arrayValues` decodes a list of values.
+   * @param _ctx The context of the service to generate.
+   * @param args The location, the name, the raw values and the decoding of the value.
+   * @returns The decode call.
+   */
   protected getDecodeCall(_ctx: Context, args: Args.GetDecodeCall): AppendValue<Builder> {
     const { decoding, location, name, values } = args;
     const prefix = s<Builder>`${toGoStringLiteral(location)}, ${toGoStringLiteral(name)}, ${values}, ${decoding.parse}`;
@@ -422,7 +554,16 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     }
   }
 
-  /** The expression for the raw values of a parameter, as the runtime functions for its location return them. */
+  /**
+   * Builds the expression for the raw values of a parameter, as the runtime functions of its location return them. A
+   * path parameter is read from its wildcard, or from the regular expression of its segment if it shares the segment
+   * with other text. A parameter the path does not contain is always absent, so its values are `nil`. The style
+   * defaults to `simple` for a path parameter and to `form` for a query parameter, and `explode` defaults to whether
+   * the style is `form`.
+   * @param _ctx The context of the service to generate.
+   * @param args The parameter, its route and its decoding.
+   * @returns The expression for the raw values.
+   */
   protected getParameterValues(_ctx: Context, args: Args.GetParameterValues): AppendValue<Builder> {
     const { parameter, route, decoding } = args;
     const name = toGoStringLiteral(parameter.name);
@@ -453,6 +594,13 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     }
   }
 
+  /**
+   * Gets how a parameter is decoded, or `null` if its schema cannot be decoded. A path parameter is always required. A
+   * parameter cannot hold JSON, so its schema must be a primitive, an enum of one, or a list of primitives.
+   * @param ctx The context of the service to generate.
+   * @param args The parameter to decode.
+   * @returns The decoding of the parameter, or `null` if it is not supported.
+   */
   protected getParameterDecoding(ctx: Context, args: Args.GetParameterDecoding): GoValueDecoding | null {
     const { parameter } = args;
     return this.getValueDecoding(ctx, {
@@ -463,9 +611,18 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
   }
 
   /**
-   * How a value is decoded, or `null` if it cannot be: a primitive (or an enum of one) is parsed from its text, as is
-   * each item of an array of primitives. With `allowJson`, anything else is parsed as JSON, as a form field holding
+   * Gets how a value is decoded, or `null` if it cannot be. A primitive, or an enum of one, is parsed from its text, as
+   * is each item of an array of primitives. With `allowJson`, anything else is parsed as JSON, as a form field holding
    * an object can only be.
+   *
+   * If the type of the field the value is decoded into is given, the decoding matches that type: a slice decodes a
+   * list, a pointer is optional, and a nilable type defaults to `nil` unless the value is required. Otherwise, a value
+   * whose schema is an array is a list. Any other value is required if it is required, uses its default value if it has
+   * one, defaults to `nil` if its type is nilable, and is optional behind a pointer in all other cases.
+   * @param ctx The context of the service to generate.
+   * @param args The schema of the value, whether it is required, whether it may be JSON, and the type of the field it
+   *   is decoded into, if any.
+   * @returns The decoding of the value, or `null` if it cannot be decoded.
    */
   protected getValueDecoding(ctx: Context, args: Args.GetValueDecoding): GoValueDecoding | null {
     const { required, allowJson, fieldType } = args;
@@ -496,7 +653,14 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     return { mode: 'optional', fieldType: go.pointer(itemType), parse, required };
   }
 
-  /** The runtime function parsing the text of a primitive value, `null` if the schema is not a primitive. */
+  /**
+   * Gets the runtime function parsing the text of a primitive value: `parseTime` for a string held in a `time.Time`,
+   * `parseBytes` for a string held in a byte slice, `parseString` for other strings, and `parseInt`, `parseFloat` or
+   * `parseBool` for integers, numbers and booleans. A value without a schema is parsed as a string.
+   * @param _ctx The context of the service to generate.
+   * @param args The schema of the value, and the type the value is parsed into.
+   * @returns The call of the parse function, or `null` if the schema is not a primitive.
+   */
   protected getParseFunction(_ctx: Context, args: Args.GetParseFunction): AppendValue<Builder> | null {
     const { schema, type } = args;
     if (!schema) return s<Builder>`parseString[${type}]`;
@@ -517,7 +681,14 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     }
   }
 
-  /** The literal of the default value of a primitive, `null` if there is none or it has no literal. */
+  /**
+   * Gets the Go literal of the default value of a primitive schema, or `null` if the schema has no default or the
+   * default has no literal. A string with a date-time, byte or binary format has no literal, and a default that does
+   * not match the kind of the schema is ignored.
+   * @param _ctx The context of the service to generate.
+   * @param args The schema whose default value is taken.
+   * @returns The literal of the default value, or `null`.
+   */
   protected getDefaultValue(_ctx: Context, args: Args.GetDefaultValue): string | null {
     const { schema } = args;
     const value = schema?.default;
@@ -541,6 +712,15 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
   // #endregion
 
   // #region Request body
+  /**
+   * Gets the request bodies of an operation, one for each media type of its request body. Media types decoded into the
+   * same type share one field. If all bodies share one type, the field is named `Body`. Otherwise a field is named
+   * after the kind of its first body, such as `JSONBody`. A body field is a pointer unless its type is nilable, or all
+   * bodies share one type and the request body is required.
+   * @param ctx The context of the service to generate.
+   * @param args The endpoint and name of the operation, and the field names already reserved for its parameters.
+   * @returns The bodies of the operation.
+   */
   protected getBodies(ctx: Context, args: Args.GetBodies): GoOperationBody[] {
     const { endpoint, name, reservedFieldNames } = args;
     const contents = endpoint.requestBody?.content ?? [];
@@ -575,6 +755,13 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     });
   }
 
+  /**
+   * Gets the kind of a body by its media type: `json` for JSON, `form` for URL-encoded forms, `multipart` for
+   * multipart, `text` for `text/*`, and `raw` for anything else, which is read as a stream.
+   * @param _ctx The context of the service to generate.
+   * @param args The content of the body, with its media type.
+   * @returns The kind of the body.
+   */
   protected getBodyKind(_ctx: Context, args: Args.GetBodyKind): GoOperationBody['kind'] {
     const type = args.content.type.toLowerCase();
     if (isJsonMediaType(type)) return 'json';
@@ -584,6 +771,15 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     return 'raw';
   }
 
+  /**
+   * Gets the Go type of a body, by its kind. A JSON body has the type of its schema, or `any` without one. A text body
+   * is a string, and a raw body is an `io.Reader`. A form body has the type of the model of its schema, with the form
+   * fields that can be decoded, or `url.Values` if the schema has no such model. A multipart body is declared as its
+   * own struct with a field for each part, or is a pointer to a `multipart.Form` if its schema has no properties.
+   * @param ctx The context of the service to generate.
+   * @param args The content of the body, its kind, and the name of the operation.
+   * @returns The type of the body, its decoded fields, and the name of the struct it is declared as, if any.
+   */
   protected getBodyType(
     ctx: Context,
     args: Args.GetBodyType,
@@ -659,6 +855,13 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     }
   }
 
+  /**
+   * Gets how a part of a multipart body is decoded. A binary string is a file, and an array of binary strings is a list
+   * of files. Any other part is decoded like a form field, with JSON allowed.
+   * @param ctx The context of the service to generate.
+   * @param args The schema of the part and whether it is required.
+   * @returns The decoding of the part, or `null` if it cannot be decoded, in which case the part is skipped.
+   */
   protected getMultipartFieldDecoding(
     ctx: Context,
     args: Args.GetMultipartFieldDecoding,
@@ -676,8 +879,13 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
   }
 
   /**
-   * Decodes the body by its media type. A request without a `Content-Type` is decoded as the first media type of the
-   * API description; one with an undeclared media type is rejected with 415 Unsupported Media Type.
+   * Builds the statements decoding the body by its media type, as a `switch` on the media type of the request. A
+   * request without a `Content-Type` is decoded as the first media type of the API description. A request with an
+   * undeclared media type is rejected with 415 Unsupported Media Type. A required body is rejected with a missing body
+   * error if the request has none. An optional body is decoded only if the request has one.
+   * @param ctx The context of the service to generate.
+   * @param args The operation whose body is decoded.
+   * @returns The statements decoding the body.
    */
   protected getBodyDecoding(ctx: Context, args: Args.GetBodyDecoding): AppendValue<Builder> {
     const { operation } = args;
@@ -702,6 +910,15 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
           }`;
   }
 
+  /**
+   * Builds the statements of the `case` for a body, which decode it and store it in its field of the request. A JSON,
+   * text or form body is decoded by its runtime function, and a raw body is stored as the request's body stream. A form
+   * or multipart body with fields is decoded into a local `body` variable, field by field, and then stored. The value
+   * is stored as a pointer if the field is a pointer and the body is not.
+   * @param ctx The context of the service to generate.
+   * @param args The operation and the body whose statements are built.
+   * @returns The statements of the case.
+   */
   protected getBodyCaseStatements(ctx: Context, args: Args.GetBodyCaseStatements): AppendValue<Builder> {
     const { body } = args;
     const assign = (value: string) =>
@@ -741,6 +958,13 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     }
   }
 
+  /**
+   * Builds the statement decoding one field of a form or multipart body into the local `body` variable. A file or a
+   * list of files is taken from the multipart form. Any other field is decoded from the form values by its decode call.
+   * @param ctx The context of the service to generate.
+   * @param args The body and the field to decode.
+   * @returns The statement decoding the field.
+   */
   protected getBodyFieldStatement(ctx: Context, args: Args.GetBodyFieldStatement): AppendValue<Builder> {
     const { body, field } = args;
     const name = toGoStringLiteral(field.name);
@@ -767,6 +991,18 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
   // #endregion
 
   // #region Responses
+  /**
+   * Gets the responses of an operation: one for each declared response, or a single one for the default response if
+   * none is declared. Each response has a type named after the operation and its status, such as
+   * `CreatePet201Response`, where the status is a code, a class such as `2XX`, or `Default`. A fixed status is written
+   * as its code. A status class or the default is variable: its status is the `StatusCode` field of the response if
+   * that is set, and otherwise a fallback. The fallback of a class is its first code, so `2XX` falls back to 200, and
+   * the fallback of the default is 500 if the operation has a successful response, and 200 if not. Headers other than
+   * `Content-Type` become fields, which are pointers unless they are required or nilable.
+   * @param ctx The context of the service to generate.
+   * @param args The endpoint and name of the operation.
+   * @returns The responses of the operation.
+   */
   protected getResponses(ctx: Context, args: Args.GetResponses): GoOperationResponse[] {
     const { endpoint, name } = args;
     const registry = this.getIdentifierRegistry(ctx, ctx.package);
@@ -809,7 +1045,14 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     });
   }
 
-  /** The body of a response: of its first JSON media type if it has one, otherwise of its first media type. */
+  /**
+   * Gets the body of a response, from its first JSON media type if it has one, and otherwise from its first media type.
+   * A JSON body has the type of its schema, or `any` without one. A text body is a string. Any other body is an
+   * `io.Reader`, and its content type is empty if its media type is a wildcard.
+   * @param ctx The context of the service to generate.
+   * @param args The response whose body is taken.
+   * @returns The body, or `null` if the response has no content.
+   */
   protected getResponseBody(ctx: Context, args: Args.GetResponseBody): GoOperationResponse['body'] {
     const { response } = args;
     const content: ApiContent | undefined =
@@ -830,6 +1073,13 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     return { kind: 'raw', type: go.refs.io.reader(), contentType: content.type.includes('*') ? '' : content.type };
   }
 
+  /**
+   * Builds the interface of the response of an operation, which the handler writes with its write method. Its
+   * documentation lists the response types it can be.
+   * @param _ctx The context of the service to generate.
+   * @param args The operation whose response interface is built.
+   * @returns The declaration of the response interface.
+   */
   protected getResponseInterface(_ctx: Context, args: Args.GetResponseInterface): go.TypeDeclaration<Builder> {
     const { operation } = args;
 
@@ -851,6 +1101,14 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     );
   }
 
+  /**
+   * Builds the struct of one response. It has a `StatusCode` field if its status is variable, a `Body` field if the
+   * response has a body, a field for each header, and the `Headers` of the response. Its documentation states the
+   * status the response is for, followed by the description of the response.
+   * @param _ctx The context of the service to generate.
+   * @param args The response whose struct is built.
+   * @returns The declaration of the response struct.
+   */
   protected getResponseStruct(_ctx: Context, args: Args.GetResponseStruct): go.TypeDeclaration<Builder> {
     const { response } = args;
     const description = response.response?.description?.trim();
@@ -890,6 +1148,15 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     );
   }
 
+  /**
+   * Builds the method writing a response. It marshals a JSON body with `marshalJSON`, sets the headers, and then writes
+   * the status and the body. A text body is written as bytes, and a raw body is streamed. A response without a body is
+   * written with an empty content type. The status is the code of the response or, for a variable status, the
+   * `StatusCode` field or its fallback.
+   * @param _ctx The context of the service to generate.
+   * @param args The operation and the response whose write method is built.
+   * @returns The declaration of the write method.
+   */
   protected getResponseWriteMethod(_ctx: Context, args: Args.GetResponseWriteMethod): go.Function<Builder> {
     const { operation, response } = args;
     const status =
@@ -946,12 +1213,23 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
   // #endregion
 
   // #region Schemas
-  /** The type the models generator generated for the schema. */
+  /**
+   * Gets the Go type the models generator generated for a schema, or `any` if it generated none.
+   * @param ctx The context of the service to generate.
+   * @param args The schema whose type is taken.
+   * @returns The type of the schema.
+   */
   protected getSchemaType(ctx: Context, args: Args.GetSchemaType): Type {
     return ctx.input.go.models[args.schema.id]?.type ?? go.refs.any();
   }
 
-  /** The schema a schema refers to, without a `oneOf` that only makes it nullable. */
+  /**
+   * Resolves a schema to the schema it refers to. A `oneOf` of exactly two schemas, one of them `null`, is unwrapped to
+   * the other schema, because it only makes the schema nullable.
+   * @param _ctx The context of the service to generate.
+   * @param args The schema to resolve.
+   * @returns The resolved schema, or `undefined` if no schema is given.
+   */
   protected resolveSchema(_ctx: Context, args: Args.ResolveSchema): ApiSchema | undefined {
     let { schema } = args;
     if (!schema) return undefined;
@@ -965,7 +1243,13 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     return schema;
   }
 
-  /** The object a schema describes, with the properties of its compositions merged, `null` if it is no object. */
+  /**
+   * Gets the object a schema describes, with the properties of its compositions merged in where they can be merged. The
+   * schema is resolved first.
+   * @param ctx The context of the service to generate.
+   * @param args The schema of the object.
+   * @returns The object schema, or `null` if the schema does not describe an object.
+   */
   protected getObjectSchema(ctx: Context, args: Args.GetObjectSchema): ApiSchema<'object'> | null {
     const schema = this.resolveSchema(ctx, { schema: args.schema });
     if (!schema || (schema.kind !== 'object' && schema.kind !== 'combined')) return null;
@@ -974,6 +1258,13 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     return schema.kind === 'object' ? schema : null;
   }
 
+  /**
+   * Gets the documentation of an endpoint: its summary and description, and its source line if the configuration
+   * includes the source in the docs.
+   * @param ctx The context of the service to generate.
+   * @param args The endpoint whose documentation is taken.
+   * @returns The documentation text, which is empty if the endpoint has none.
+   */
   protected getEndpointDocText(ctx: Context, args: Args.GetEndpointDocText): string {
     const { endpoint } = args;
     return [

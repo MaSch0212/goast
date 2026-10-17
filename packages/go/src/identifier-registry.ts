@@ -12,15 +12,22 @@ export class GoIdentifierRegistry {
   private readonly _used = new Set<string>();
   private readonly _byKey = new Map<string, string>();
 
-  /** Whether the identifier is taken. */
+  /**
+   * Checks whether an identifier is taken.
+   * @param name The identifier to check.
+   * @returns `true` if the identifier is reserved, otherwise `false`.
+   */
   public has(name: string): boolean {
     return this._used.has(name);
   }
 
   /**
-   * Reserves an identifier based on `name` and returns it.
+   * Reserves an identifier based on `name` and returns it. If the name is taken, a counter is appended to it, starting
+   * with `2` (`PetID`, `PetID2`, `PetID3`, ...).
+   * @param name The preferred identifier.
    * @param key Identifies what the identifier is for (e.g. a schema id). Reserving the same key again returns the
    * identifier reserved the first time, so a declaration and all references to it agree.
+   * @returns The reserved identifier.
    */
   public reserve(name: string, key?: string): string {
     if (key !== undefined) {
@@ -38,6 +45,10 @@ export class GoIdentifierRegistry {
   /**
    * Reserves the first of the candidates that is still free, e.g. `CreatePetRequest` and then `CreatePetRequestObject`
    * when a schema is named `CreatePetRequest` already. If all are taken, the first gets a counter like in `reserve`.
+   * Like `reserve`, a key that already has an identifier returns that identifier.
+   * @param candidates The identifiers to try, in order of preference. The first one is used if all are taken.
+   * @param key Identifies what the identifier is for, see `reserve`.
+   * @returns The reserved identifier.
    */
   public reserveFirst(candidates: readonly [string, ...string[]], key?: string): string {
     if (key !== undefined) {
@@ -47,7 +58,11 @@ export class GoIdentifierRegistry {
     return this.reserve(candidates.find((x) => !this._used.has(x)) ?? candidates[0], key);
   }
 
-  /** The identifier reserved for the key, if any. */
+  /**
+   * Gets the identifier reserved for a key.
+   * @param key The key the identifier was reserved with.
+   * @returns The identifier, or `undefined` if no identifier was reserved for the key.
+   */
   public get(key: string): string | undefined {
     return this._byKey.get(key);
   }
@@ -56,9 +71,11 @@ export class GoIdentifierRegistry {
 const registries = new WeakMap<object, Map<string, GoIdentifierRegistry>>();
 
 /**
- * The registry of a package within one generator run.
+ * Gets the registry of a package within one generator run. The registry is created on first use, and every later call
+ * with the same run and import path returns the same registry.
  * @param run An object that is the same for all generators of the run, e.g. the `ApiData` of the context.
  * @param importPath The import path of the package.
+ * @returns The registry of the package for the run.
  */
 export function getGoIdentifierRegistry(run: object, importPath: string): GoIdentifierRegistry {
   let packages = registries.get(run);

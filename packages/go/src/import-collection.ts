@@ -22,25 +22,38 @@ export class GoImportCollection {
   private readonly _reservedNames: Set<string>;
 
   /**
-   * @param reservedNames Names imports must not use, e.g. identifiers declared at the top level of the file.
+   * Initializes a new instance of the GoImportCollection class.
+   * @param reservedNames Names imports must not use, e.g. identifiers declared at the top level of the file. An import
+   * that would take one of these names gets a counter instead.
    */
   constructor(reservedNames: Iterable<string> = []) {
     this._reservedNames = new Set(reservedNames);
   }
 
+  /**
+   * Gets a value indicating whether any import has been added.
+   * @returns `true` if at least one import has been added, otherwise `false`.
+   */
   public get hasImports(): boolean {
     return this._imports.size > 0;
   }
 
+  /**
+   * Gets all added imports, in the order in which they were first added.
+   * @returns The added imports.
+   */
   public get imports(): GoImport[] {
     return [...this._imports.values()];
   }
 
   /**
-   * Adds an import and returns the name to refer to the package by.
+   * Adds an import and returns the name to refer to the package by. Adding a path that was added before returns the
+   * name it got then. If the default name of the package is taken, by a reserved name or another import, a counter is
+   * appended (`rand2`). A name that is a Go keyword is never used either.
    * @param path The import path.
    * @param packageName The name the package declares, if it differs from the last segment of its path (e.g.
    * `gopkg.in/yaml.v3` declares `yaml`).
+   * @returns The name to refer to the package by in the file.
    */
   public addImport(path: string, packageName?: string): string {
     const existing = this._imports.get(path);
@@ -55,13 +68,16 @@ export class GoImportCollection {
     return name;
   }
 
+  /** Removes all added imports. The reserved names are kept. */
   public clear(): void {
     this._imports.clear();
   }
 
   /**
    * Writes the import declaration: standard library packages first, then a blank line and all others, each group
-   * sorted by path, as `goimports` does.
+   * sorted by path, as `goimports` does. A single import is written on one line, and nothing is written when there are
+   * no imports. An import whose name differs from its package's own name is written with the name as an alias.
+   * @param builder The builder to write the import declaration to.
    */
   public writeTo(builder: StringBuilder): void {
     if (this._imports.size === 0) return;

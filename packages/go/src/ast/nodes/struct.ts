@@ -14,13 +14,28 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
-/** A struct type: `struct { ... }`, with the fields aligned like `gofmt` aligns them. */
+/**
+ * A struct type, written as `struct { ... }`. Each field is written on a line of its own, indented by a tab, and the
+ * names, types and tags are aligned like `gofmt` aligns them. The doc comment of a field is written above it, and it
+ * restarts the alignment. Without fields, the struct is written on one line as `struct{}`.
+ *
+ * @template TBuilder The type of the source builder the struct type is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see goStruct
+ */
 export class GoStruct<TBuilder extends SourceBuilder, TInjects extends string = never> extends GoNode<
   TBuilder,
   TInjects | Injects
 > {
+  /**
+   * The fields of the struct, in order. Each field is written on its own line.
+   */
   public fields: GoField<TBuilder>[];
 
+  /**
+   * Initializes a new instance of the GoStruct class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.fields = options.fields?.filter(notNullish) ?? [];
@@ -59,6 +74,24 @@ const createStruct = <TBuilder extends SourceBuilder>(
   options?: Prettify<Omit<Options<TBuilder>, 'fields'>>,
 ): GoStruct<TBuilder> => new GoStruct<TBuilder>({ ...options, fields });
 
+/**
+ * Factory for creating struct nodes. The `write` function writes one or more struct nodes to a builder.
+ *
+ * @param fields The fields of the struct, in order. Nullish entries are skipped.
+ * @param options The settings of the struct. See `GoStruct` for the available properties.
+ * @example
+ * ```ts
+ * goStruct([
+ *   goField('ID', refs.string(), { tag: [['json', 'id']] }),
+ *   goField('Tags', goSlice(refs.string()), { tag: [['json', 'tags,omitempty']] }),
+ * ]);
+ * // Emits:
+ * // struct {
+ * // 	ID   string   `json:"id"`
+ * // 	Tags []string `json:"tags,omitempty"`
+ * // }
+ * ```
+ */
 export const goStruct: typeof createStruct & { write: typeof writeGoNodes } = Object.assign(createStruct, {
   write: writeGoNodes,
 });

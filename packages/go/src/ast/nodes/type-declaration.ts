@@ -21,17 +21,45 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
-/** A type declaration: `type Name Type`. */
+/**
+ * A type declaration, written as `type Name Type`. The doc comment is written above the declaration. Type parameters
+ * follow the name in square brackets, as in `type Set[T any] map[T]bool`. With `alias`, an equals sign is written
+ * before the type, as in `type Anything = any`. The declaration ends with a line break.
+ *
+ * @template TBuilder The type of the source builder the declaration is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see goTypeDeclaration
+ */
 export class GoTypeDeclaration<TBuilder extends SourceBuilder, TInjects extends string = never> extends GoNode<
   TBuilder,
   TInjects | Injects
 > {
+  /**
+   * The name of the declared type.
+   */
   public name: string;
+  /**
+   * The type the name is declared as, written after the name, or after the equals sign of an alias.
+   */
   public type: GoType<TBuilder>;
+  /**
+   * The doc comment written above the declaration, or `null` to omit it.
+   */
   public doc: GoDoc<TBuilder> | null;
+  /**
+   * The type parameters written in square brackets after the name, in order. An empty list writes nothing.
+   */
   public typeParameters: GoParameter<TBuilder>[];
+  /**
+   * Whether to declare an alias, which writes `=` before the type, instead of a new type.
+   * @default false
+   */
   public alias: boolean;
 
+  /**
+   * Initializes a new instance of the GoTypeDeclaration class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.name = options.name;
@@ -66,6 +94,21 @@ const createTypeDeclaration = <TBuilder extends SourceBuilder>(
   options?: Prettify<Omit<Options<TBuilder>, 'name' | 'type'>>,
 ): GoTypeDeclaration<TBuilder> => new GoTypeDeclaration<TBuilder>({ ...options, name, type });
 
+/**
+ * Factory for creating type declaration nodes. The `write` function writes one or more type declaration nodes to a
+ * builder.
+ *
+ * @param name The name of the declared type.
+ * @param type The type the name is declared as.
+ * @param options The settings of the declaration. See `GoTypeDeclaration` for the available properties.
+ * @example
+ * ```ts
+ * goTypeDeclaration('Tags', goMap(refs.string(), refs.string()), { doc: goDoc('Tags.') });
+ * // Emits:
+ * // // Tags.
+ * // type Tags map[string]string
+ * ```
+ */
 export const goTypeDeclaration: typeof createTypeDeclaration & { write: typeof writeGoNodes } = Object.assign(
   createTypeDeclaration,
   { write: writeGoNodes },

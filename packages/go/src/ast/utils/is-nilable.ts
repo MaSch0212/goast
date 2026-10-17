@@ -12,6 +12,10 @@ import { reader } from '../references/io.ts';
 /**
  * Whether the zero value of the type is `nil`: pointers, slices, maps and interfaces. Such a type can express an
  * absent value without becoming a pointer.
+ *
+ * @template TBuilder The type of the source builder the type is written to.
+ * @param type The type to check.
+ * @returns Whether the zero value of the type is `nil`.
  */
 export function isGoNilableType<TBuilder extends SourceBuilder>(type: GoType<TBuilder>): boolean {
   return (

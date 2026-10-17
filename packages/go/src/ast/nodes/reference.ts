@@ -20,16 +20,46 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
-/** A reference to a type, function or value, qualified by its package and imported when needed. */
+/**
+ * A reference to a type, function or value, qualified by its package and imported when needed.
+ *
+ * Written in this order: the qualifier, the name, then the type arguments in square brackets. The qualifier is the
+ * package name followed by a dot, as the `models.` in `models.Pet`. Writing the reference adds its import to the file,
+ * unless the package is the package of the file itself, which writes no qualifier. Without an `importPath`, only the
+ * name is written. Type arguments are written as `[T1, T2]` and are left out when there are none.
+ *
+ * @template TBuilder The type of the source builder the reference is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see goReference
+ */
 export class GoReference<TBuilder extends SourceBuilder, TInjects extends string = never> extends GoNode<
   TBuilder,
   TInjects | Injects
 > {
+  /**
+   * The name of the referenced identifier, such as `Pet`.
+   */
   public name: string;
+  /**
+   * The import path of the package that declares the identifier, such as `example.com/pets/models`. `null` for
+   * predeclared identifiers and identifiers of the current package, which need no import.
+   */
   public importPath: string | null;
+  /**
+   * The package name written as the qualifier, if it differs from the last segment of `importPath`. `null` derives the
+   * qualifier from the last segment of `importPath`.
+   */
   public packageName: string | null;
+  /**
+   * The type arguments written in square brackets after the name, such as `[string]` in `Set[string]`. An empty list
+   * writes nothing.
+   */
   public typeArguments: GoType<TBuilder>[];
 
+  /**
+   * Initializes a new instance of the GoReference class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.name = options.name;
@@ -38,7 +68,12 @@ export class GoReference<TBuilder extends SourceBuilder, TInjects extends string
     this.typeArguments = options.typeArguments?.filter(notNullish) ?? [];
   }
 
-  /** The name to qualify the identifier with in the builder, `null` if it needs none. */
+  /**
+   * Returns the name that qualifies the identifier in the builder. A `GoFileBuilder` also gets the import of the
+   * package.
+   * @param builder The builder that the reference is written to.
+   * @returns The qualifier, such as `models`, or `null` when the identifier needs none.
+   */
   public getQualifier(builder: TBuilder): string | null {
     if (!this.importPath) return null;
     if (builder instanceof GoFileBuilder) {
@@ -63,11 +98,25 @@ const createReference = <TBuilder extends SourceBuilder>(
   options?: Prettify<Omit<Options<TBuilder>, 'name' | 'importPath'>>,
 ): GoReference<TBuilder> => new GoReference<TBuilder>({ ...options, name, importPath });
 
+/**
+ * A function that creates references to one fixed name, import path and package name, as returned by
+ * `goReference.factory`. Calling it creates the same reference as `goReference` with those values. Its only option is
+ * `typeArguments`, since the other settings are fixed.
+ */
 export type GoReferenceFactory = (<TBuilder extends SourceBuilder>(
   options?: Prettify<Omit<Options<TBuilder>, 'name' | 'importPath' | 'packageName'>>,
 ) => GoReference<TBuilder>) & {
+  /**
+   * The name that every reference created by this factory is written with.
+   */
   refName: string;
+  /**
+   * The import path that every reference created by this factory is imported from, or `null` for none.
+   */
   importPath: Nullable<string>;
+  /**
+   * Whether the value is a reference with the name and import path of this factory. Use it to check the type of a node.
+   */
   matches: (value: unknown) => value is GoReference<never>;
 };
 
@@ -85,6 +134,23 @@ const createFactory = (name: string, importPath?: Nullable<string>, packageName?
   );
 };
 
+/**
+ * Factory for creating reference nodes. The `factory` function creates a factory for one fixed name, import path and
+ * package name, such as `goReference.factory('Request', 'net/http')`. The `write` function writes one or more reference
+ * nodes to a builder.
+ *
+ * @param name The name of the referenced identifier, such as `Pet`.
+ * @param importPath The import path of the package that declares the identifier, or `null` for predeclared identifiers
+ * and the current package.
+ * @param options The settings of the reference. See `GoReference` for the available properties.
+ * @example
+ * ```ts
+ * goReference('Pet', 'example.com/pets/models');
+ * // Emits:
+ * // models.Pet
+ * // and adds the import "example.com/pets/models" to the file.
+ * ```
+ */
 export const goReference: typeof createReference & {
   factory: typeof createFactory;
   write: typeof writeGoNodes;

@@ -1,4 +1,6 @@
 import { goReference } from '../nodes/reference.ts';
 
+/** A reference to `io.Reader` of the `io` package. */
 export const reader = goReference.factory('Reader', 'io');
+/** A reference to `io.ReadCloser` of the `io` package. */
 export const readCloser = goReference.factory('ReadCloser', 'io');

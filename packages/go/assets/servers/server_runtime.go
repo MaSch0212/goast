@@ -66,7 +66,8 @@ type RequestError struct {
 	In string
 	// Name is the name of the parameter or of the form field, empty for the body as a whole.
 	Name string
-	// StatusCode is the status DefaultErrorHandler responds with: 400 Bad Request, or 415 Unsupported Media Type.
+	// StatusCode is the status DefaultErrorHandler responds with: 400 Bad Request, 413 Request Entity Too Large, or
+	// 415 Unsupported Media Type.
 	StatusCode int
 	// Err is the cause.
 	Err error

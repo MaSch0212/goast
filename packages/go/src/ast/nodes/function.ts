@@ -29,19 +29,53 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
-/** A function or method declaration. */
+/**
+ * A function or method declaration. A receiver makes the declaration a method.
+ *
+ * Written in this order: the doc comment, `func`, the receiver (if any), the name, the type parameters (if any), the
+ * parameters, the results (if any), and the body. A `null` body writes an empty body, `{}`.
+ *
+ * @template TBuilder The type of the source builder the function is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see goFunction
+ */
 export class GoFunction<TBuilder extends SourceBuilder, TInjects extends string = never> extends GoNode<
   TBuilder,
   TInjects | Injects
 > {
+  /**
+   * The name of the function.
+   */
   public name: string;
+  /**
+   * The doc comment written above the function, or `null` for none.
+   */
   public doc: GoDoc<TBuilder> | null;
+  /**
+   * The receiver, which makes the declaration a method, or `null` for a plain function.
+   */
   public receiver: GoParameter<TBuilder> | null;
+  /**
+   * The type parameters, written in square brackets after the name.
+   */
   public typeParameters: GoParameter<TBuilder>[];
+  /**
+   * The parameters, written in parentheses after the name.
+   */
   public parameters: GoParameter<TBuilder>[];
+  /**
+   * The results, written after the parameters. A single unnamed result is written without parentheses.
+   */
   public results: GoParameter<TBuilder>[];
+  /**
+   * The statements of the body, without braces, or `null` for an empty body.
+   */
   public body: AppendValue<TBuilder> | null;
 
+  /**
+   * Initializes a new instance of the GoFunction class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.name = options.name;
@@ -93,6 +127,24 @@ const createFunction = <TBuilder extends SourceBuilder>(
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
 ): GoFunction<TBuilder> => new GoFunction<TBuilder>({ ...options, name });
 
+/**
+ * Factory for creating function nodes. The `write` function writes one or more function nodes to a builder.
+ *
+ * @param name The name of the function.
+ * @param options The settings of the function. See `GoFunction` for the available properties.
+ * @example
+ * ```ts
+ * goFunction('IsValid', {
+ *   receiver: goParameter('v', goReference('PetStatus')),
+ *   results: [goParameter(null, goReference('bool'))],
+ *   body: 'return v != ""',
+ * });
+ * // Emits:
+ * // func (v PetStatus) IsValid() bool {
+ * // 	return v != ""
+ * // }
+ * ```
+ */
 export const goFunction: typeof createFunction & { write: typeof writeGoNodes } = Object.assign(createFunction, {
   write: writeGoNodes,
 });
