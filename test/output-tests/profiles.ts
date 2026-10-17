@@ -19,7 +19,7 @@ export type Profile = {
   /** Snapshot path segment, e.g. `spring-controllers@sb3-strict`. */
   name: string;
   /** Language directory under `test/output/`. */
-  language: 'kotlin' | 'typescript';
+  language: 'csharp' | 'kotlin' | 'typescript';
   /** Corpus versions this profile runs against. */
   versions: 'all' | SpecVersionDir[];
   /** Chains the generators and config this profile represents. */
