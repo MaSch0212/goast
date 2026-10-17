@@ -48,6 +48,7 @@ export const WIRE_TARGETS: readonly WireTarget[] = [
   { profile: 'okhttp3-clients@sb4', direction: 'client' },
   { profile: 'spring-reactive-web-clients@sb3', direction: 'client' },
   { profile: 'spring-reactive-web-clients@sb4', direction: 'client' },
+  { profile: 'csharp/http-clients', direction: 'client' },
   { profile: 'spring-controllers@sb3', direction: 'server' },
   { profile: 'spring-controllers@sb4', direction: 'server' },
   { profile: 'spring-controllers@sb3-strict', direction: 'server' },

@@ -38,6 +38,8 @@
     "test:integration:check": "GOAST_SNAPSHOT=check vitest run test/integration test/integration-tests",
     "test:integration:kotlin": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=write vitest run test/integration/kotlin-clients",
     "test:integration:kotlin:check": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=check vitest run test/integration/kotlin-clients",
+    "test:integration:csharp": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=write vitest run test/integration/csharp-clients",
+    "test:integration:csharp:check": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=check vitest run test/integration/csharp-clients",
     "test:integration:angular": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=write vitest run test/integration/angular-services",
     "test:integration:angular:check": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=check vitest run test/integration/angular-services",
     "test:integration:controllers": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=write vitest run test/integration/spring-controllers",
@@ -47,7 +49,7 @@
     "test:integration:stubs": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=write vitest run test/integration/easy-network-stub",
     "test:integration:stubs:check": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=check vitest run test/integration/easy-network-stub",
     "test:check": "GOAST_SNAPSHOT=check vitest run",
-    "test:all": "pnpm test:check && pnpm test:compile:check && pnpm test:integration:check && pnpm test:integration:kotlin:check && pnpm test:integration:controllers:check && pnpm test:integration:angular:check && pnpm test:integration:k6:check && pnpm test:integration:stubs:check",
+    "test:all": "pnpm test:check && pnpm test:compile:check && pnpm test:integration:check && pnpm test:integration:kotlin:check && pnpm test:integration:csharp:check && pnpm test:integration:controllers:check && pnpm test:integration:angular:check && pnpm test:integration:k6:check && pnpm test:integration:stubs:check",
     "pg": "node --conditions=source playground.ts"
   },
   "devDependencies": {

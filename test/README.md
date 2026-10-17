@@ -726,6 +726,19 @@ A few things about the Kotlin leg are easy to get wrong reading only the wire ar
   Reactor `Mono`/`Flux`) are never imported by the generated code itself, only by the driver that calls it — see
   `test/docker/kotlin/warmup/build.gradle.kts`.
 
+### The C# leg
+
+`test/integration/csharp-clients/` drives `csharp/http-clients` (wire artifacts under `test/wire/csharp/http-clients/`)
+from inside the `csharp` image via `pnpm test:integration:csharp[:check]`, the same way the Kotlin leg runs `gradle run`.
+`synthesizeDriverBuild` writes one `Microsoft.NET.Sdk.Web` console project (and the offline `nuget.config` tier 3 uses)
+compiling the committed `test/output/csharp/http-clients/integration/kitchen-sink/` tree together with the handwritten
+`drivers/CSharpDriver.cs`; the container then runs `dotnet run` against the reference server on `host.docker.internal`.
+Three conventions of the driver are easy to misread: void operations (`Task`) report `{ "status": n }` from a
+`DelegatingHandler` that records the last response status, because the generated method gives a caller no other way to
+see it; non-2xx cases catch the operation's _typed_ exception (`GetWidgetBadRequestException`, ...) and report its decoded
+`Body`; and the `Authorization`/`x-api-key` headers are attached with `DefaultRequestHeaders`, since the generated
+client takes a plain `HttpClient` and models no security scheme.
+
 ### The server direction
 
 **Phase 6b adds the other direction: four `spring-controllers` units, behind the same Docker guard.** Everything above

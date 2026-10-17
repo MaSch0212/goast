@@ -130,9 +130,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # The three build contexts under `test/docker/`. There is no Playwright image; the spec's
+        # The four build contexts under `test/docker/`. There is no Playwright image; the spec's
         # "four" predates the decision not to add one.
-        image: [kotlin, node, k6]
+        image: [kotlin, node, k6, csharp]
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -224,6 +224,36 @@ jobs:
         with:
           name: compile-kotlin-log
           path: compile-kotlin.log
+          if-no-files-found: warn
+
+  compile-csharp:
+    name: Compile C# (tier 3)
+    needs: [output-check, images]
+    runs-on: ubuntu-latest
+    # One `dotnet build` of every C# unit against an image whose NuGet cache is warmed at build time.
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Setup Docker
+        uses: ./.github/actions/docker
+
+      # An `&&`-chain, like the Kotlin one: the C# units, plus the discovery test and the runner/orphan
+      # tests that the units' `-t` pattern does not select.
+      - name: Run
+        shell: bash
+        run: pnpm test:compile:csharp:check 2>&1 | tee compile-csharp.log
+
+      - name: Upload the compiler output
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: compile-csharp-log
+          path: compile-csharp.log
           if-no-files-found: warn
 
   harness-docker:
@@ -462,6 +492,34 @@ jobs:
           path: driver.log
           if-no-files-found: warn
 
+  it-csharp-clients:
+    name: Integration (C# clients)
+    needs: [output-check, images]
+    runs-on: ubuntu-latest
+    # Seconds locally against the warm NuGet cache inside the image; a cold runner pays for the image build.
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Setup Docker
+        uses: ./.github/actions/docker
+
+      - name: Run
+        shell: bash
+        run: pnpm test:integration:csharp:check 2>&1 | tee it-csharp-clients.log
+
+      - name: Upload the driver output
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: it-csharp-clients-log
+          path: it-csharp-clients.log
+          if-no-files-found: warn
+
   it-spring-controllers:
     name: Integration (spring controllers, ${{ matrix.id }})
     needs: [output-check, images]
@@ -531,12 +589,14 @@ jobs:
       - images
       - compile-ts
       - compile-kotlin
+      - compile-csharp
       - harness-docker
       - it-fetch-clients
       - it-angular-services
       - it-k6-clients
       - it-easy-network-stub
       - it-okhttp3-clients
+      - it-csharp-clients
       - it-spring-reactive-web
       - it-spring-controllers
     # `always()` so this job runs even when an upstream job failed — without it the aggregator would be
