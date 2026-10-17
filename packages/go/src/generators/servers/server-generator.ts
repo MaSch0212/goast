@@ -9,7 +9,6 @@ import {
   builderTemplate as s,
   DEFAULT_IGNORED_SCHEMA_PROPERTIES,
   getSchemaReference,
-  getSourceDisplayName,
   type MaybePromise,
   notNullish,
   type Nullable,
@@ -67,10 +66,7 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
     const filePath = `${pkg.dir}/${fileName}`;
 
     console.log(`Generating service ${ctx.service.id} [${interfaceName}] to ${filePath}...`);
-    const operations = ctx.service.endpoints.map((endpoint) => {
-      console.log(`  - ${getSourceDisplayName(ctx.data, endpoint)}`);
-      return this.getOperation(ctx, { endpoint });
-    });
+    const operations = ctx.service.endpoints.map((endpoint) => this.getOperation(ctx, { endpoint }));
 
     const builder = new GoFileBuilder(pkg.name, pkg.importPath, ctx.config);
     builder.append(this.getFileContent(ctx, { interfaceName, registerFunctionName, operations }));

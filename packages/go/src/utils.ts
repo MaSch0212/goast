@@ -1,4 +1,4 @@
-import { type ApiComponent, type ApiSchema, getWords, type Nullable } from '@goast/core';
+import { type ApiComponent, getWords, type Nullable } from '@goast/core';
 import path from 'node:path';
 import process from 'node:process';
 
@@ -264,9 +264,4 @@ export function getSourceDocLine<T>(component: ApiComponent<T>): string {
 export function isJsonMediaType(mediaType: Nullable<string>): boolean {
   const type = mediaType?.split(';')[0].trim().toLowerCase() ?? '';
   return type === 'application/json' || type.endsWith('+json');
-}
-
-/** The schema if it is a string schema with enum values. */
-export function getStringEnumSchema(schema: Nullable<ApiSchema>): ApiSchema<'string'> | undefined {
-  return schema?.kind === 'string' && schema.enum?.length ? schema : undefined;
 }
