@@ -1,0 +1,26 @@
+{
+  csharp: {
+    clients: {
+      'service-1': {
+        __source__: 'tag:service-1',
+        interfaceType: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'IService1Client',
+          namespace: 'OpenApi.Generated.Clients',
+          nullable: false
+        },
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Service1Client',
+          namespace: 'OpenApi.Generated.Clients',
+          nullable: false
+        }
+      }
+    },
+    models: {}
+  }
+}

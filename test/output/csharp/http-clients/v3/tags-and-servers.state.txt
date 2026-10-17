@@ -1,0 +1,83 @@
+{
+  csharp: {
+    clients: {
+      'service-1': {
+        __source__: '<root>/test/specs/v3/tags-and-servers.yml#/tags/0',
+        interfaceType: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'IAlphaClient',
+          namespace: 'OpenApi.Generated.Clients',
+          nullable: false
+        },
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'AlphaClient',
+          namespace: 'OpenApi.Generated.Clients',
+          nullable: false
+        }
+      },
+      'service-2': {
+        __source__: 'tag:service-2',
+        interfaceType: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'IService2Client',
+          namespace: 'OpenApi.Generated.Clients',
+          nullable: false
+        },
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Service2Client',
+          namespace: 'OpenApi.Generated.Clients',
+          nullable: false
+        }
+      },
+      'service-3': {
+        __source__: 'tag:Beta',
+        interfaceType: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'IBetaClient',
+          namespace: 'OpenApi.Generated.Clients',
+          nullable: false
+        },
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'BetaClient',
+          namespace: 'OpenApi.Generated.Clients',
+          nullable: false
+        }
+      },
+      'service-4': {
+        __source__: 'tag:Tag With Space',
+        interfaceType: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'ITagWithSpaceClient',
+          namespace: 'OpenApi.Generated.Clients',
+          nullable: false
+        },
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'TagWithSpaceClient',
+          namespace: 'OpenApi.Generated.Clients',
+          nullable: false
+        }
+      }
+    },
+    models: {}
+  }
+}

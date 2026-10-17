@@ -2,6 +2,8 @@ import type { OpenApiGenerator } from '@goast/core';
 import type { SpecVersionDir } from '@goast/test-harness';
 
 import { CSharpModelsGenerator } from '../../packages/csharp/src/generators/models/models-generator.ts';
+import { CSharpHttpClientsGenerator } from '../../packages/csharp/src/generators/services/http-clients/http-clients-generator.ts';
+import { CSharpControllersGenerator } from '../../packages/csharp/src/generators/services/controllers/controllers-generator.ts';
 import { KotlinModelsGenerator } from '../../packages/kotlin/src/generators/models/models-generator.ts';
 import { KotlinOkHttp3ClientsGenerator } from '../../packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-clients-generator.ts';
 import { KotlinSpringControllersGenerator } from '../../packages/kotlin/src/generators/services/spring-controllers/spring-controllers-generator.ts';
@@ -86,6 +88,18 @@ export const profiles: Profile[] = [
     language: 'csharp',
     versions: 'all',
     configure: (g) => g.useType(CSharpModelsGenerator, { ...base, immutableTypes: false }),
+  },
+  {
+    name: 'http-clients',
+    language: 'csharp',
+    versions: 'all',
+    configure: (g) => g.useType(CSharpModelsGenerator, base).useType(CSharpHttpClientsGenerator, base),
+  },
+  {
+    name: 'controllers',
+    language: 'csharp',
+    versions: 'all',
+    configure: (g) => g.useType(CSharpModelsGenerator, base).useType(CSharpControllersGenerator, base),
   },
 
   // TypeScript.
