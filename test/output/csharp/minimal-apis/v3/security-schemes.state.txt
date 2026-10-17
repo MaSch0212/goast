@@ -1,0 +1,76 @@
+{
+  csharp: {
+    minimalApis: {
+      'service-1': {
+        __source__: 'tag:service-1',
+        api: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Service1ApiBase',
+          namespace: 'OpenApi.Generated.MinimalApis',
+          nullable: false
+        },
+        extensions: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Service1ApiEndpointRouteBuilderExtensions',
+          namespace: 'OpenApi.Generated.MinimalApis',
+          nullable: false
+        },
+        results: {
+          'endpoint-1': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'InheritsSecurityResult',
+            namespace: 'OpenApi.Generated.MinimalApis',
+            nullable: false
+          },
+          'endpoint-2': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'OverridesSecurityResult',
+            namespace: 'OpenApi.Generated.MinimalApis',
+            nullable: false
+          },
+          'endpoint-3': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'NoSecurityResult',
+            namespace: 'OpenApi.Generated.MinimalApis',
+            nullable: false
+          },
+          'endpoint-4': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'MultiSecurityResult',
+            namespace: 'OpenApi.Generated.MinimalApis',
+            nullable: false
+          },
+          'endpoint-5': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'AndSecurityResult',
+            namespace: 'OpenApi.Generated.MinimalApis',
+            nullable: false
+          },
+          'endpoint-6': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'ScopedSecurityResult',
+            namespace: 'OpenApi.Generated.MinimalApis',
+            nullable: false
+          }
+        }
+      }
+    },
+    models: {}
+  }
+}

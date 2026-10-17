@@ -1,0 +1,318 @@
+{
+  csharp: {
+    fastEndpoints: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/OpenObject',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: false
+            },
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'JsonElement',
+              namespace: 'System.Text.Json',
+              nullable: true
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyDictionary',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/MapOfArray/additionalProperties',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyList',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/MapOfArray/additionalProperties/items',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/BoundedObject',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'BoundedObject',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/NestedInlineObject',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'NestedInlineObject',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/NestedInlineObject/properties/middle',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'NestedInlineObjectMiddle',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/NestedInlineObject/properties/middle/properties/inner',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'NestedInlineObjectMiddleInner',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/NestedInlineObject/properties/middle/properties/inner/properties/value',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/NotSchema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/NotSchema/not',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/ObjectWithNot',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'ObjectWithNot',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/ClosedObject',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'ClosedObject',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/ObjectWithNot/properties/value',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/ObjectWithNot/properties/value/not',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/EmptySchema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/ClosedObjectWithProperties',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'ClosedObjectWithProperties',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/ClosedObjectWithProperties/properties/a',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/ClosedObjectWithProperties/properties/b',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'int',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/MapOfRef',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: false
+            },
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyDictionary',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/simple-schemas.yml#/components/schemas/MyString',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/simple-schemas.yml#/components/schemas/MyString',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/object-extras.yml#/components/schemas/MapOfArray',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: false
+            },
+            CsReference {
+              arrayOf: null,
+              generics: [
+                CsReference {
+                  arrayOf: null,
+                  generics: [],
+                  inject: {},
+                  name: 'string',
+                  namespace: null,
+                  nullable: false
+                }
+              ],
+              inject: {},
+              name: 'IReadOnlyList',
+              namespace: 'System.Collections.Generic',
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyDictionary',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      }
+    }
+  }
+}

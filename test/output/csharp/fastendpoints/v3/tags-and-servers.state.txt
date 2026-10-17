@@ -1,0 +1,163 @@
+{
+  csharp: {
+    fastEndpoints: {
+      'service-1': {
+        __source__: '<root>/test/specs/v3/tags-and-servers.yml#/tags/0',
+        endpoints: {
+          'endpoint-2': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'OneTagEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-3': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'TwoTagsEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-4': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'SharedTagEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          }
+        },
+        results: {
+          'endpoint-2': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'OneTagResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-3': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'TwoTagsResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-4': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'SharedTagResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          }
+        }
+      },
+      'service-2': {
+        __source__: 'tag:service-2',
+        endpoints: {
+          'endpoint-1': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'UntaggedEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-5': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'PathServerEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-6': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'OpServerEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          }
+        },
+        results: {
+          'endpoint-1': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'UntaggedResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-5': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'PathServerResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-6': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'OpServerResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          }
+        }
+      },
+      'service-3': {
+        __source__: 'tag:Beta',
+        endpoints: {
+          'endpoint-3': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'TwoTagsEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          }
+        },
+        results: {
+          'endpoint-3': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'TwoTagsResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          }
+        }
+      },
+      'service-4': {
+        __source__: 'tag:Tag With Space',
+        endpoints: {
+          'endpoint-7': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'TagWithSpaceEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          }
+        },
+        results: {
+          'endpoint-7': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'TagWithSpaceResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          }
+        }
+      }
+    },
+    models: {}
+  }
+}

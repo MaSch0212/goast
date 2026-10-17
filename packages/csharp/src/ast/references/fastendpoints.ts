@@ -13,3 +13,4 @@ export const bindFrom: CsReferenceFactory = csReference.factory('BindFrom', 'Fas
 export const routeParam: CsReferenceFactory = csReference.factory('RouteParam', 'FastEndpoints');
 export const queryParam: CsReferenceFactory = csReference.factory('QueryParam', 'FastEndpoints');
 export const fromHeader: CsReferenceFactory = csReference.factory('FromHeader', 'FastEndpoints');
+export const http: CsReferenceFactory = csReference.factory('Http', 'FastEndpoints');

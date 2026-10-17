@@ -1,0 +1,475 @@
+{
+  csharp: {
+    minimalApis: {
+      'service-1': {
+        __source__: 'tag:Responses',
+        api: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'ResponsesApiBase',
+          namespace: 'OpenApi.Generated.MinimalApis',
+          nullable: false
+        },
+        extensions: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'ResponsesApiEndpointRouteBuilderExtensions',
+          namespace: 'OpenApi.Generated.MinimalApis',
+          nullable: false
+        },
+        results: {
+          'endpoint-1': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'TwoSuccessCodesResult',
+            namespace: 'OpenApi.Generated.MinimalApis',
+            nullable: false
+          },
+          'endpoint-10': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'PrimitiveResponseResult',
+            namespace: 'OpenApi.Generated.MinimalApis',
+            nullable: false
+          },
+          'endpoint-11': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'ArrayResponseResult',
+            namespace: 'OpenApi.Generated.MinimalApis',
+            nullable: false
+          },
+          'endpoint-12': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'RefResponseResult',
+            namespace: 'OpenApi.Generated.MinimalApis',
+            nullable: false
+          },
+          'endpoint-2': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'SuccessAndDefaultResult',
+            namespace: 'OpenApi.Generated.MinimalApis',
+            nullable: false
+          },
+          'endpoint-3': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'OnlyDefaultResult',
+            namespace: 'OpenApi.Generated.MinimalApis',
+            nullable: false
+          },
+          'endpoint-4': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'NoContentResult',
+            namespace: 'OpenApi.Generated.MinimalApis',
+            nullable: false
+          },
+          'endpoint-5': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'EmptyBody200Result',
+            namespace: 'OpenApi.Generated.MinimalApis',
+            nullable: false
+          },
+          'endpoint-6': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'RangeCodesResult',
+            namespace: 'OpenApi.Generated.MinimalApis',
+            nullable: false
+          },
+          'endpoint-7': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'MixedExactAndRangeResult',
+            namespace: 'OpenApi.Generated.MinimalApis',
+            nullable: false
+          },
+          'endpoint-8': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'ErrorCodesResult',
+            namespace: 'OpenApi.Generated.MinimalApis',
+            nullable: false
+          },
+          'endpoint-9': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'MultiContentResponseResult',
+            namespace: 'OpenApi.Generated.MinimalApis',
+            nullable: false
+          }
+        }
+      }
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Thing',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Error',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Error',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error/properties/message',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error/properties/code',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'int',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Error',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Thing',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Error',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Error',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Thing',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/OtherThing',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'OtherThing',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Thing',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Error',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Thing',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Error',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Error',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Error',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Error',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Thing',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-27': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/paths//multi-content/get/responses/200/content/text/plain/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-28': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/paths//primitive/get/responses/200/content/application/json/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-29': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/paths//array/get/responses/200/content/application/json/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'Thing',
+              namespace: 'OpenApi.Generated.Models',
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyList',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing/properties/id',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-30': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Thing',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-31': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Thing',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing/properties/label',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/OtherThing',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'OtherThing',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/OtherThing',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'OtherThing',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/OtherThing/properties/code',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'int',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/OtherThing/properties/note',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Thing',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      }
+    }
+  }
+}

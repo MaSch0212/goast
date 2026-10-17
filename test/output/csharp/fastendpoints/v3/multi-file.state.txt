@@ -1,0 +1,303 @@
+{
+  csharp: {
+    fastEndpoints: {
+      'service-1': {
+        __source__: 'tag:service-1',
+        endpoints: {
+          'endpoint-1': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'GetOwnerEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-2': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'ListPetsEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-3': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'CreatePetEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          }
+        },
+        results: {
+          'endpoint-1': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'GetOwnerResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-2': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'ListPetsResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-3': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'CreatePetResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          }
+        }
+      }
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/multi-file/owners.yml#/paths//owners/{id}/get/parameters/0/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/multi-file/pets.yml#/components/schemas/Pet',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Pet',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/multi-file/pets.yml#/components/schemas/Pet',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Pet',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/multi-file/pets.yml#/components/schemas/Pet/properties/id',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/multi-file/pets.yml#/components/schemas/Pet/properties/name',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/multi-file/shared.yml#/components/schemas/Address',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Address',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/multi-file/shared.yml#/components/schemas/Address',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Address',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/multi-file/shared.yml#/components/schemas/Address/properties/street',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/multi-file/shared.yml#/components/schemas/Address/properties/city',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/multi-file/pets.yml#/paths//pets/get/responses/200/content/application/json/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'Pet',
+              namespace: 'OpenApi.Generated.Models',
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyList',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/multi-file/pets.yml#/components/schemas/Pet',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Pet',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/multi-file/owners.yml#/components/schemas/Owner',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Owner',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/multi-file/pets.yml#/components/schemas/Pet',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Pet',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/multi-file/pets.yml#/components/schemas/Pet',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Pet',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/multi-file/owners.yml#/components/schemas/Owner',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Owner',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/multi-file/owners.yml#/components/schemas/Owner/properties/id',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/multi-file/owners.yml#/components/schemas/Owner/properties/name',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/multi-file/shared.yml#/components/schemas/Contact',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Contact',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/multi-file/shared.yml#/components/schemas/Contact',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Contact',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/multi-file/shared.yml#/components/schemas/Contact/properties/email',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/multi-file/shared.yml#/components/schemas/Contact/properties/phone',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      }
+    }
+  }
+}

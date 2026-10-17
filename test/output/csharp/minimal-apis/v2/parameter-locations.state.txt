@@ -1,0 +1,105 @@
+{
+  csharp: {
+    minimalApis: {
+      'service-1': {
+        __source__: 'tag:Parameters',
+        api: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'ParametersApiBase',
+          namespace: 'OpenApi.Generated.MinimalApis',
+          nullable: false
+        },
+        extensions: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'ParametersApiEndpointRouteBuilderExtensions',
+          namespace: 'OpenApi.Generated.MinimalApis',
+          nullable: false
+        },
+        results: {
+          'endpoint-1': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'BodyParamResult',
+            namespace: 'OpenApi.Generated.MinimalApis',
+            nullable: false
+          },
+          'endpoint-2': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'FormDataParamsResult',
+            namespace: 'OpenApi.Generated.MinimalApis',
+            nullable: false
+          },
+          'endpoint-3': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'FileUploadResult',
+            namespace: 'OpenApi.Generated.MinimalApis',
+            nullable: false
+          },
+          'endpoint-4': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'QueryParamsResult',
+            namespace: 'OpenApi.Generated.MinimalApis',
+            nullable: false
+          }
+        }
+      }
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v2/parameter-locations.yml#/definitions/Payload',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Payload',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v2/parameter-locations.yml#/definitions/Payload',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Payload',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v2/parameter-locations.yml#/definitions/Payload/properties/name',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v2/parameter-locations.yml#/definitions/Payload/properties/value',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'int',
+          namespace: null,
+          nullable: false
+        }
+      }
+    }
+  }
+}

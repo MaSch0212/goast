@@ -13,10 +13,12 @@ import { cs } from '../../../ast/index.ts';
 import { CSharpFileBuilder } from '../../../file-builder.ts';
 import { CSharpFileGenerator } from '../../file-generator.ts';
 import {
+  appendParameterConversion,
   buildApiJsonSupportClass,
   buildApiRequestExceptionClass,
   buildApiRequestSupportClass,
   buildApiResponseSupportClass,
+  buildResponseWrapperClass,
   buildStrictResult,
   getBasePath,
   getEndpointDocDescription,
@@ -24,6 +26,8 @@ import {
   getEndpointPath,
   getHandlerMethod,
   getHandlerMethodName,
+  getResultArm,
+  getResultSwitch,
   getServerNamespace,
   type SupportClass,
   toIdentifier,
@@ -192,54 +196,18 @@ export class DefaultCSharpControllerGenerator
 
   /** The `IActionResult` that writes a response through `ApiResponseSupport`. */
   protected getActionResultClass(_ctx: CSharpControllersGeneratorContext): SupportClass {
-    const iActionResult = aspNetMvc('IActionResult');
     const actionContext = cs.reference.factory('ActionContext', 'Microsoft.AspNetCore.Mvc');
-    const declaration = cs.class<Builder>(actionResultName, {
-      doc: cs.doc('An action result that writes a response: status code, headers and a body.'),
-      accessModifier: 'public',
-      sealed: true,
-      implements: [iActionResult()],
-      members: [
-        cs.field<Builder>('statusCode', { type: cs.refs.system.int(), accessModifier: 'private', readonly: true }),
-        cs.field<Builder>('contentType', {
-          type: cs.refs.system.string({ nullable: true }),
-          accessModifier: 'private',
-          readonly: true,
-        }),
-        cs.field<Builder>('body', {
-          type: cs.refs.system.object({ nullable: true }),
-          accessModifier: 'private',
-          readonly: true,
-        }),
-        cs.field<Builder>('headers', {
-          type: '(string Name, object? Value)[]',
-          accessModifier: 'private',
-          readonly: true,
-        }),
-        [
-          '/// <summary>Creates the result.</summary>',
-          '/// <param name="statusCode">The status code of the response.</param>',
-          '/// <param name="contentType">The content type of the body. Ignored without a body.</param>',
-          '/// <param name="body">The body, or <c>null</c> for a response without a body.</param>',
-          '/// <param name="headers">The response headers. A header without a value is not sent.</param>',
-          `public ${actionResultName}(int statusCode, string? contentType, object? body, params (string Name, object? Value)[] headers)`,
-          '{',
-          '    this.statusCode = statusCode;',
-          '    this.contentType = contentType;',
-          '    this.body = body;',
-          '    this.headers = headers;',
-          '}',
-        ].join('\n'),
-        s<Builder>`
-          /// <inheritdoc />
-          public ${cs.refs.system.task()} ExecuteResultAsync(${actionContext()} context)
-          {
-              return ApiResponseSupport.WriteAsync(context.HttpContext.Response, statusCode, contentType, body, headers, context.HttpContext.RequestAborted);
-          }
-        `,
-      ],
+    return buildResponseWrapperClass(actionResultName, {
+      doc: 'An action result that writes a response: status code, headers and a body.',
+      implements: aspNetMvc('IActionResult')(),
+      execute: s<Builder>`
+        /// <inheritdoc />
+        public ${cs.refs.system.task()} ExecuteResultAsync(${actionContext()} context)
+        {
+            return ApiResponseSupport.WriteAsync(context.HttpContext.Response, statusCode, contentType, body, headers, context.HttpContext.RequestAborted);
+        }
+      `,
     });
-    return { name: actionResultName, declaration, usings: [] };
   }
   // #endregion
 
@@ -426,7 +394,6 @@ export class DefaultCSharpControllerGenerator
     const resultVariable = used.next('result');
     const exceptionVariable = used.next('requestException');
 
-    const converted = info.plans.filter((plan) => plan.binding.kind === 'request' || plan.binding.convert !== null);
     const handlerCall = cs.call<Builder>(
       info.handlerName,
       [...info.plans.map((plan) => plan.valueName), 'cancellationToken'],
@@ -434,35 +401,13 @@ export class DefaultCSharpControllerGenerator
     );
 
     return (b: Builder) => {
-      if (converted.length > 0) {
-        for (const plan of converted) {
-          b.appendLine(s<Builder>`${plan.type} ${plan.valueName} = default!;`);
-        }
-        b.appendLine('try')
-          .parenthesize(
-            '{}',
-            (b) => {
-              for (const plan of converted) {
-                const binding = plan.binding;
-                const expression =
-                  binding.kind === 'request'
-                    ? binding.convert('Request', 'cancellationToken')
-                    : binding.convert!(binding.actionName);
-                b.appendLine(s<Builder>`${plan.valueName} = ${expression};`);
-              }
-            },
-            { multiline: true },
-          )
-          .appendLine()
-          .appendLine(s<Builder>`catch (${exceptionRef} ${exceptionVariable})`)
-          .parenthesize(
-            '{}',
-            (b) => b.appendLine(`return StatusCode(${exceptionVariable}.StatusCode, ${exceptionVariable}.Message);`),
-            { multiline: true },
-          )
-          .appendLine()
-          .appendLine();
-      }
+      appendParameterConversion(b, info.plans, {
+        request: 'Request',
+        cancellationToken: 'cancellationToken',
+        exception: exceptionRef,
+        exceptionVariable,
+        onException: (variable) => `return StatusCode(${variable}.StatusCode, ${variable}.Message);`,
+      });
 
       b.appendLine(s<Builder>`var ${resultVariable} = ${handlerCall};`);
       b.appendLine();
@@ -475,42 +420,15 @@ export class DefaultCSharpControllerGenerator
   /** The exhaustive conversion of the result to an action result: one arm per documented response. */
   protected getResultSwitch(ctx: Context, args: Args.GetResultSwitch): cs.SwitchExpression<Builder> {
     const { info, variable } = args;
-    const used = new UniqueNames([
-      'cancellationToken',
-      variable,
-      ...info.plans.flatMap((plan) => [plan.name, plan.valueName]),
-    ]);
-    const pattern = used.next('response');
-
-    return cs.switchExpression<Builder>(variable, [
-      ...info.result.cases.map((resultCase) => this.getResultArm(ctx, { info, resultCase, variable: pattern })),
-      cs.switchExpression.arm(
-        '_',
-        s<Builder>`throw new ${cs.refs.system.invalidOperationException()}("The result is not one of the documented responses.")`,
-      ),
-    ]);
+    return getResultSwitch(info.result, variable, info.plans, this.getActionResultReference(ctx));
   }
 
   protected getResultArm(ctx: Context, args: Args.GetResultArm): ReturnType<typeof cs.switchExpression.arm<Builder>> {
-    const { resultCase: c, variable } = args;
-    const supportNamespace = this.getSupportNamespace(ctx, {});
-    const actionResult = cs.reference<Builder>(actionResultName, supportNamespace);
+    return getResultArm(args.resultCase, args.variable, this.getActionResultReference(ctx));
+  }
 
-    const contentType = !c.bodyProperty
-      ? 'null'
-      : c.contentTypeProperty
-        ? `${variable}.${c.contentTypeProperty}`
-        : cs.string<Builder>(c.defaultContentType ?? '');
-    const usesVariable = c.statusCodeProperty || c.bodyProperty || c.headers.length > 0;
-    return cs.switchExpression.arm(
-      usesVariable ? s<Builder>`${c.caseType} ${variable}` : c.caseType,
-      cs.objectCreation<Builder>(actionResult, [
-        c.statusCodeProperty ? `${variable}.${c.statusCodeProperty}` : String(c.statusCode),
-        contentType,
-        c.bodyProperty ? `${variable}.${c.bodyProperty}` : 'null',
-        ...c.headers.map((header) => s<Builder>`(${cs.string<Builder>(header.name)}, ${variable}.${header.property})`),
-      ]),
-    );
+  private getActionResultReference(ctx: Context): cs.Reference<Builder> {
+    return cs.reference<Builder>(actionResultName, this.getSupportNamespace(ctx, {}));
   }
   // #endregion
 

@@ -89,6 +89,7 @@ describe('references', () => {
       ['ControllerBase', refs.aspNetCore.mvc.controllerBase, 'Microsoft.AspNetCore.Mvc'],
       ['IEndpointRouteBuilder', refs.aspNetCore.routing.iEndpointRouteBuilder, 'Microsoft.AspNetCore.Routing'],
       ['Endpoint', refs.fastEndpoints.endpoint, 'FastEndpoints'],
+      ['Http', refs.fastEndpoints.http, 'FastEndpoints'],
       [
         'IServiceCollection',
         refs.extensionsDependencyInjection.iServiceCollection,

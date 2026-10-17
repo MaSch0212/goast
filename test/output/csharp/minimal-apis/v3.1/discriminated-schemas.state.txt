@@ -1,0 +1,128 @@
+{
+  csharp: {
+    minimalApis: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3.1/discriminated-schemas.yml#/components/schemas/Pet',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Pet',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3.1/discriminated-schemas.yml#/components/schemas/Dog/allOf/1',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3.1/discriminated-schemas.yml#/components/schemas/Dog/allOf/1/properties/packSize',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'int',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3.1/discriminated-schemas.yml#/components/schemas/Pet/properties/name',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3.1/discriminated-schemas.yml#/components/schemas/Pet/properties/petType',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3.1/discriminated-schemas.yml#/components/schemas/Dog',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Dog',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3.1/discriminated-schemas.yml#/components/schemas/Pet',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Pet',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3.1/discriminated-schemas.yml#/components/schemas/Cat',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Cat',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3.1/discriminated-schemas.yml#/components/schemas/Pet',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Pet',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3.1/discriminated-schemas.yml#/components/schemas/Cat/allOf/1',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3.1/discriminated-schemas.yml#/components/schemas/Cat/allOf/1/properties/huntingSkill',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Schema9',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      }
+    }
+  }
+}

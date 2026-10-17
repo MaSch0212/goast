@@ -5,8 +5,8 @@ import { OpenApiGenerator } from '@goast/core';
 import { profiles } from './profiles.ts';
 
 describe('profiles', () => {
-  it('covers all nineteen generator and config combinations', () => {
-    expect(profiles).toHaveLength(19);
+  it('covers all twenty-one generator and config combinations', () => {
+    expect(profiles).toHaveLength(21);
   });
 
   it('uses a unique language and name pair per profile', () => {
@@ -44,6 +44,8 @@ describe('profiles', () => {
       'csharp/models-mutable',
       'csharp/http-clients',
       'csharp/controllers',
+      'csharp/fastendpoints',
+      'csharp/minimal-apis',
     ]) {
       expect(names).toContain(expected);
     }

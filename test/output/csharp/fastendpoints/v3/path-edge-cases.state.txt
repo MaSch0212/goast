@@ -1,0 +1,278 @@
+{
+  csharp: {
+    fastEndpoints: {
+      'service-1': {
+        __source__: 'tag:Paths',
+        endpoints: {
+          'endpoint-1': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'OverlapTemplatedEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-10': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'ParamOnlyPathEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-11': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'ThreeParamsEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-12': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'CaseVarietyEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-13': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'VeryDeepPathEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-2': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'OverlapLiteralEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-3': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'WithDotEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-4': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'WithDashEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-5': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'WithUnderscoreEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-6': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'WithTildeEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-7': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'WithColonEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-8': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'WithAtEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-9': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'TrailingSlashEndpointBase',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          }
+        },
+        results: {
+          'endpoint-1': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'OverlapTemplatedResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-10': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'ParamOnlyPathResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-11': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'ThreeParamsResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-12': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'CaseVarietyResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-13': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'VeryDeepPathResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-2': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'OverlapLiteralResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-3': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'WithDotResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-4': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'WithDashResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-5': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'WithUnderscoreResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-6': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'WithTildeResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-7': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'WithColonResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-8': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'WithAtResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          },
+          'endpoint-9': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'TrailingSlashResult',
+            namespace: 'OpenApi.Generated.FastEndpoints',
+            nullable: false
+          }
+        }
+      }
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/path-edge-cases.yml#/paths//overlap/{id}/get/parameters/0/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/path-edge-cases.yml#/paths//{id}/get/parameters/0/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/path-edge-cases.yml#/paths//a/{p1}/b/{p2}/c/{p3}/get/parameters/0/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/path-edge-cases.yml#/paths//a/{p1}/b/{p2}/c/{p3}/get/parameters/1/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/path-edge-cases.yml#/paths//a/{p1}/b/{p2}/c/{p3}/get/parameters/2/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      }
+    }
+  }
+}

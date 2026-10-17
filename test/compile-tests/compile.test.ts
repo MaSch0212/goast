@@ -83,6 +83,8 @@ const CSHARP_PROFILES = [
   'models',
   'models-mutable',
   'controllers',
+  'fastendpoints',
+  'minimal-apis',
   'http-clients',
 ] as const satisfies readonly string[];
 
