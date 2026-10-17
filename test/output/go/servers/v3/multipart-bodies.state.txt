@@ -1,0 +1,390 @@
+{
+  go: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//file/post/requestBody/content/multipart/form-data/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//mixed/post/requestBody/content/multipart/form-data/schema/properties/active',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'bool',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//nested/post/requestBody/content/multipart/form-data/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//nested/post/requestBody/content/multipart/form-data/schema/properties/metadata',
+        fields: {
+          author: {
+            name: 'Author',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          version: {
+            name: 'Version',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'NestedObjectPartRequest',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//nested/post/requestBody/content/multipart/form-data/schema/properties/metadata/properties/author',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//nested/post/requestBody/content/multipart/form-data/schema/properties/metadata/properties/version',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//ref-part/post/requestBody/content/multipart/form-data/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/components/schemas/Payload',
+        fields: {
+          id: {
+            name: 'ID',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Payload',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/components/schemas/Payload',
+        fields: {
+          id: {
+            name: 'ID',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Payload',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/components/schemas/Payload/properties/id',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/components/schemas/Payload/properties/name',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//file/post/requestBody/content/multipart/form-data/schema/properties/file',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'byte',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//encoded/post/requestBody/content/multipart/form-data/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//encoded/post/requestBody/content/multipart/form-data/schema/properties/file',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'byte',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//encoded/post/requestBody/content/multipart/form-data/schema/properties/label',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//encoded/post/requestBody/content/multipart/form-data/schema/properties/quantity',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//encoded/post/requestBody/content/multipart/form-data/schema/properties/active',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'bool',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//optional-file/post/requestBody/content/multipart/form-data/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//optional-file/post/requestBody/content/multipart/form-data/schema/properties/file',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'byte',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//files/post/requestBody/content/multipart/form-data/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//files/post/requestBody/content/multipart/form-data/schema/properties/files',
+        type: GoSlice {
+          elementType: GoSlice {
+            elementType: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'byte',
+              packageName: null,
+              typeArguments: []
+            },
+            inject: {}
+          },
+          inject: {}
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//files/post/requestBody/content/multipart/form-data/schema/properties/files/items',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'byte',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//mixed/post/requestBody/content/multipart/form-data/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//mixed/post/requestBody/content/multipart/form-data/schema/properties/file',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'byte',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//mixed/post/requestBody/content/multipart/form-data/schema/properties/label',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//mixed/post/requestBody/content/multipart/form-data/schema/properties/quantity',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      }
+    },
+    servers: {
+      'service-1': {
+        __source__: 'tag:Multipart',
+        registerFunction: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'RegisterMultipartRoutes',
+          packageName: 'api',
+          typeArguments: []
+        },
+        serviceInterface: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'MultipartService',
+          packageName: 'api',
+          typeArguments: []
+        }
+      }
+    }
+  }
+}

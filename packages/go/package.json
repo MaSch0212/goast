@@ -1,0 +1,51 @@
+{
+  "name": "@goast/go",
+  "version": "0.1.0",
+  "description": "Provides gOAst generators for generating Go code from OpenAPI specifications.",
+  "bugs": {
+    "url": "https://github.com/MaSch0212/goast/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Marc Schmidt (MaSch0212)",
+    "url": "https://github.com/MaSch0212"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MaSch0212/goast.git",
+    "directory": "packages/go"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "source": "./mod.ts",
+      "types": "./dist/mod.d.ts",
+      "default": "./dist/mod.js"
+    }
+  },
+  "publishConfig": {
+    "main": "./dist/mod.js",
+    "types": "./dist/mod.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/mod.d.ts",
+        "default": "./dist/mod.js"
+      }
+    },
+    "access": "public"
+  },
+  "scripts": {
+    "build": "node ../../scripts/build-package.ts"
+  },
+  "dependencies": {
+    "@goast/core": "workspace:^"
+  },
+  "devDependencies": {
+    "@goast/test-harness": "workspace:*"
+  }
+}

@@ -5,8 +5,8 @@ import { OpenApiGenerator } from '@goast/core';
 import { profiles } from './profiles.ts';
 
 describe('profiles', () => {
-  it('covers all fifteen generator and config combinations', () => {
-    expect(profiles).toHaveLength(15);
+  it('covers all seventeen generator and config combinations', () => {
+    expect(profiles).toHaveLength(17);
   });
 
   it('uses a unique language and name pair per profile', () => {
@@ -27,7 +27,7 @@ describe('profiles', () => {
     }
   });
 
-  it('covers every generator that ships in the two packages', () => {
+  it('covers every generator that ships in the three packages', () => {
     const names = profiles.map((p) => `${p.language}/${p.name}`);
     for (const expected of [
       'kotlin/models@sb3',
@@ -40,6 +40,8 @@ describe('profiles', () => {
       'typescript/angular-services',
       'typescript/k6-clients',
       'typescript/easy-network-stub',
+      'go/models',
+      'go/servers',
     ]) {
       expect(names).toContain(expected);
     }

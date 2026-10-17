@@ -1,0 +1,301 @@
+{
+  go: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/PatternPropertiesObject',
+        fields: undefined,
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'PatternPropertiesObject',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/DependentSchemasObject/properties/creditCard',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/DependentSchemasObject/properties/billingAddress',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/DependentRequiredObject',
+        fields: {
+          billingAddress: {
+            name: 'BillingAddress',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          creditCard: {
+            name: 'CreditCard',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'DependentRequiredObject',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/DependentRequiredObject/properties/creditCard',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/DependentRequiredObject/properties/billingAddress',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/PropertyNamesObject',
+        fields: undefined,
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'PropertyNamesObject',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/OpenObject',
+        type: GoMap {
+          inject: {},
+          keyType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          valueType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'any',
+            packageName: null,
+            typeArguments: []
+          }
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/ClosedObject',
+        fields: undefined,
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'ClosedObject',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/MapOfRef',
+        type: GoMap {
+          inject: {},
+          keyType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          valueType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          }
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3.1/simple-schemas.yml#/components/schemas/MyString',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/PatternPropertiesObject/patternProperties/^str_',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3.1/simple-schemas.yml#/components/schemas/MyString',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/PatternPropertiesObject/patternProperties/count',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/PatternAndAdditional',
+        fields: undefined,
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'PatternAndAdditional',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/PatternAndAdditional/patternProperties/^str_',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/UnevaluatedPropertiesObject',
+        fields: {
+          a: {
+            name: 'A',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'UnevaluatedPropertiesObject',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/UnevaluatedPropertiesObject/allOf/0',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/UnevaluatedPropertiesObject/allOf/0/properties/a',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/DependentSchemasObject',
+        fields: {
+          billingAddress: {
+            name: 'BillingAddress',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          creditCard: {
+            name: 'CreditCard',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'DependentSchemasObject',
+          packageName: 'api',
+          typeArguments: []
+        }
+      }
+    }
+  }
+}
