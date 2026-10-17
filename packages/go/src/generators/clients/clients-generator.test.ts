@@ -127,4 +127,178 @@ describe('GoClientsGenerator', () => {
       );
     });
   });
+
+  describe('client type', () => {
+    it('imports the models from the api package', async () => {
+      const { files } = await generate(petsApi);
+
+      expect(files['pets_client.go']).toContain('"example.com/generated/api"');
+      expect(files['pets_client.go']).toContain('api.Pet');
+    });
+
+    it('generates the client type and constructor', async () => {
+      const { files } = await generate(petsApi);
+
+      expect(files['pets_client.go']).toContain(
+        [
+          '// PetsClientDefaultBaseURL is the base URL a PetsClient uses when NewPetsClient gets none.',
+          'const PetsClientDefaultBaseURL = "https://example.com/v1"',
+          '',
+          '// PetsClient calls the operations of the Pets API.',
+          'type PetsClient struct {',
+          '\tc *client',
+          '}',
+          '',
+          '// NewPetsClient creates a client for the Pets API. baseURL is prepended to the path of every operation; when it is',
+          '// empty, PetsClientDefaultBaseURL is used.',
+          'func NewPetsClient(baseURL string, opts ...ClientOption) *PetsClient {',
+          '\treturn &PetsClient{c: newClient(baseURL, PetsClientDefaultBaseURL, opts)}',
+          '}',
+        ].join('\n'),
+      );
+    });
+
+    it('uses server variable defaults in the default base URL', async () => {
+      const { files } = await generate({
+        ...petsApi,
+        servers: [{ url: 'https://{host}/{version}', variables: { host: { default: 'api.example.com' } } }],
+      });
+
+      expect(files['pets_client.go']).toContain('const PetsClientDefaultBaseURL = "https://api.example.com/{version}"');
+    });
+
+    it('uses the configured base URL', async () => {
+      const { files } = await generate(petsApi, { baseUrl: 'http://localhost:8080' });
+
+      expect(files['pets_client.go']).toContain('const PetsClientDefaultBaseURL = "http://localhost:8080"');
+    });
+
+    it('has an empty default base URL without a server', async () => {
+      const { files } = await generate({ ...petsApi, servers: undefined });
+
+      expect(files['pets_client.go']).toContain('const PetsClientDefaultBaseURL = ""');
+    });
+  });
+
+  describe('method signatures', () => {
+    it('passes path parameters positionally and optional query parameters in a params struct', async () => {
+      const { files } = await generate(petsApi);
+
+      expect(files['pets_client.go']).toContain(
+        'func (c *PetsClient) GetPet(ctx context.Context, id string, params *GetPetParams, opts ...RequestOption) (*api.Pet, error) {',
+      );
+      expect(files['pets_client.go']).toContain('type GetPetParams struct {\n\tFields []string\n\tLimit  *int32\n}');
+      expect(files['pets_client.go']).toContain(
+        'func (c *PetsClient) CreatePet(ctx context.Context, body api.Pet, opts ...RequestOption) error {',
+      );
+    });
+
+    it('passes required query, header and cookie parameters positionally', async () => {
+      const { files } = await generate({
+        paths: {
+          '/pets': {
+            get: {
+              tags: ['Pets'],
+              operationId: 'listPets',
+              parameters: [
+                { name: 'X-Tenant', in: 'header', required: true, schema: { type: 'string' } },
+                { name: 'session', in: 'cookie', required: true, schema: { type: 'string' } },
+                { name: 'q', in: 'query', required: true, schema: { type: 'string' } },
+                { name: 'limit', in: 'query', schema: { type: 'integer' } },
+              ],
+              responses: { '200': { description: 'ok' } },
+            },
+          },
+        },
+      });
+
+      expect(files['pets_client.go']).toContain(
+        'func (c *PetsClient) ListPets(ctx context.Context, xTenant string, session string, q string, params *ListPetsParams, opts ...RequestOption) error {',
+      );
+    });
+
+    it('omits the params struct when there are no optional parameters', async () => {
+      const { files } = await generate(petsApi);
+
+      expect(files['files_client.go']).not.toContain('Params');
+      expect(files['files_client.go']).toContain(
+        'func (c *FilesClient) GetFile(ctx context.Context, name string, opts ...RequestOption) (string, error) {',
+      );
+    });
+
+    it('does not let a parameter shadow what the method body uses', async () => {
+      const { files } = await generate({
+        paths: {
+          '/x/{resp}': {
+            get: {
+              tags: ['Pets'],
+              operationId: 'getX',
+              parameters: [
+                { name: 'resp', in: 'path', required: true, schema: { type: 'string' } },
+                { name: 'url', in: 'query', required: true, schema: { type: 'string' } },
+                { name: 'api', in: 'query', required: true, schema: { type: 'string' } },
+              ],
+              responses: {
+                '200': {
+                  description: 'ok',
+                  content: { 'application/json': { schema: { $ref: '#/components/schemas/Pet' } } },
+                },
+              },
+            },
+          },
+        },
+        components: { schemas: { Pet: pet } },
+      });
+
+      expect(files['pets_client.go']).toContain('GetX(ctx context.Context, resp2 string, url2 string, api2 string,');
+    });
+
+    it('skips parameters the server cannot decode and lists them in the doc', async () => {
+      const { files } = await generate({
+        paths: {
+          '/pets': {
+            get: {
+              tags: ['Pets'],
+              operationId: 'listPets',
+              parameters: [
+                {
+                  name: 'filter',
+                  in: 'query',
+                  schema: { type: 'object', properties: { name: { type: 'string' } } },
+                },
+              ],
+              responses: { '200': { description: 'ok' } },
+            },
+          },
+        },
+      });
+
+      expect(files['pets_client.go']).toContain(
+        '// The query parameter "filter" is not sent, because its schema is not supported. Set it with a RequestOption.',
+      );
+      expect(files['pets_client.go']).toContain(
+        'func (c *PetsClient) ListPets(ctx context.Context, opts ...RequestOption) error {',
+      );
+    });
+
+    it('declares the structs of an operation with several tags once', async () => {
+      const { files } = await generate({
+        paths: {
+          '/things': {
+            get: {
+              tags: ['Pets', 'Files'],
+              operationId: 'listThings',
+              parameters: [{ name: 'limit', in: 'query', schema: { type: 'integer' } }],
+              responses: { '200': { description: 'ok' } },
+            },
+          },
+        },
+      });
+
+      const declarations = Object.values(files).filter((x) => x.includes('type ListThingsParams struct'));
+      expect(declarations).toHaveLength(1);
+      expect(files['pets_client.go']).toContain('func (c *PetsClient) ListThings(');
+      expect(files['files_client.go']).toContain('func (c *FilesClient) ListThings(');
+    });
+  });
 });

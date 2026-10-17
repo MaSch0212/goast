@@ -30,6 +30,7 @@ export type GoClientParameter = {
  * - `value`: a value of a primitive type, formatted as text.
  * - `array`: a list of primitive values, sent as one field per value.
  * - `json`: any other value, sent as its JSON text.
+ * - `jsons`: a list of other values, sent as one field per item, each as its JSON text.
  * - `file`: a file of a multipart body.
  * - `files`: a list of files of a multipart body.
  */
@@ -41,7 +42,7 @@ export type GoClientFormField = {
   /** The type of that field. */
   type: go.Type<SourceBuilder>;
   /** How the field is sent, see the list above. */
-  kind: 'value' | 'array' | 'json' | 'file' | 'files';
+  kind: 'value' | 'array' | 'json' | 'jsons' | 'file' | 'files';
   /** The function formatting one value, e.g. `formatString`, without type arguments. */
   format: AppendValue<GoFileBuilder>;
   /** The function formatting one item of an array, with its type arguments, e.g. `formatString[string]`. */
