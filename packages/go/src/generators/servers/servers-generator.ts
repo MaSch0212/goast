@@ -7,10 +7,8 @@ import {
 } from '@goast/core';
 
 import { getAssetFileContent } from '../../assets.ts';
-import { GoFileBuilder } from '../../file-builder.ts';
-import { getGoIdentifierRegistry } from '../../identifier-registry.ts';
-import { toGoPackageName } from '../../utils.ts';
 import type { GoPackageInfo } from '../file-generator.ts';
+import { getGoRuntimePackage, reserveGoRuntimeNames, writeGoRuntimeFile } from '../runtime.ts';
 import {
   defaultGoServersGeneratorConfig,
   type GoServerGeneratorOutput,
@@ -135,14 +133,7 @@ export class GoServersGenerator extends OpenApiServicesGenerationProviderBase<
    * @param config The configuration of the generator.
    */
   protected getPackage(config: Config): GoPackageInfo {
-    const path = config.packagePath.replace(/\\/g, '/').replace(/^\/+|\/+$/g, '');
-    const modulePath = config.modulePath.replace(/\/+$/, '');
-    return {
-      path,
-      name: config.packageName ?? toGoPackageName(path || modulePath),
-      importPath: path ? `${modulePath}/${path}` : modulePath,
-      dir: path ? `${config.outputDir}/${path}` : config.outputDir,
-    };
+    return getGoRuntimePackage(config);
   }
 
   /**
@@ -153,12 +144,7 @@ export class GoServersGenerator extends OpenApiServicesGenerationProviderBase<
    * @param runtime The content of the server runtime asset, whose top-level declarations are reserved.
    */
   protected reserveRuntimeNames(run: object, pkg: GoPackageInfo, runtime: string): GoServerRuntimeNames {
-    const registry = getGoIdentifierRegistry(run, pkg.importPath);
-    const names: GoServerRuntimeNames = {};
-    for (const [, name] of runtime.matchAll(/^(?:func|type|var|const) ([A-Za-z_][A-Za-z0-9_]*)/gm)) {
-      names[name] = registry.reserve(name, `runtime:${name}`);
-    }
-    return names;
+    return reserveGoRuntimeNames(run, pkg, runtime);
   }
 
   /**
@@ -167,24 +153,14 @@ export class GoServersGenerator extends OpenApiServicesGenerationProviderBase<
    * @param ctx The context shared by all services.
    */
   protected async generateRuntime(ctx: Context): Promise<void> {
-    const pkg = ctx.package;
-    const files = getGoIdentifierRegistry(ctx.data, `${pkg.importPath}\u0000files`);
-    const filePath = `${pkg.dir}/${files.reserve('server_runtime')}.go`;
-    console.log(`Generating server runtime to ${filePath}...`);
-
-    const runtime = await getAssetFileContent(runtimeAsset);
-    const importBlock = /^import \(\n([\s\S]*?)\n\)\n/m.exec(runtime);
-    if (!importBlock) throw new Error(`The asset ${runtimeAsset} has no import block.`);
-
-    const builder = new GoFileBuilder(pkg.name, pkg.importPath, ctx.config);
-    for (const [, path] of importBlock[1].matchAll(/"([^"]+)"/g)) {
-      builder.imports.addImport(path);
-    }
-    let body = runtime.slice(importBlock.index + importBlock[0].length);
-    for (const [name, renamed] of Object.entries(ctx.runtimeNames)) {
-      if (name !== renamed) body = body.replace(new RegExp(`\\b${name}\\b`, 'g'), renamed);
-    }
-    builder.append(body);
-    builder.writeToFile(filePath);
+    await writeGoRuntimeFile({
+      data: ctx.data,
+      config: ctx.config,
+      pkg: ctx.package,
+      asset: runtimeAsset,
+      fileName: 'server_runtime',
+      runtimeNames: ctx.runtimeNames,
+      label: 'server',
+    });
   }
 }
