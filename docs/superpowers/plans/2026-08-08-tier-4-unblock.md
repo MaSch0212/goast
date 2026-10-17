@@ -90,7 +90,7 @@ cold run.
 
 **Files:**
 
-- Modify: `packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:164-166`
+- Modify: `packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:200-166`
 - Test: `packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.test.ts`
 
 **Interfaces:**
@@ -245,7 +245,7 @@ git commit -m "fix(kotlin): bound awaitExchange's T by Any on both Spring Boot l
 
 **Files:**
 
-- Modify: `packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:58-88`
+- Modify: `packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:91-88`
 - Test: `packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.test.ts` (**new file**)
 
 **Interfaces:**
@@ -401,7 +401,7 @@ git commit -m "fix(kotlin): derive okhttp3 super() argument order from the seria
 
 - Modify: `packages/kotlin/src/ast/references/jackson.ts`
 - Modify: `packages/kotlin/src/ast/references/jackson.test.ts`
-- Modify: `packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-clients-generator.ts:158`
+- Modify: `packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-clients-generator.ts:179`
 
 **Interfaces:**
 
@@ -556,10 +556,10 @@ git commit -m "fix(kotlin): emit Jackson 3's DateTimeFeature for WRITE_DATES_AS_
 
 **Files:**
 
-- Modify: `packages/core/src/transform/api-types.ts:107-112`
-- Modify: `packages/core/src/transform/transform-endpoint.ts:198-209`
+- Modify: `packages/core/src/transform/api-types.ts:306-112`
+- Modify: `packages/core/src/transform/transform-endpoint.ts:206-209`
 - Test: `packages/core/src/transform/transform-endpoint.test.ts` (extend the existing status-code describe)
-- Modify: `packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:211-212`
+- Modify: `packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:232-212`
 - Test: `packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.test.ts`
 
 **Interfaces:**
@@ -571,7 +571,7 @@ Read defect 19's register entry first. Mechanism:
 `getApiInterfaceEndpointMethodAnnnotations` (note the three-`n` spelling — it is the real method name) builds each
 `@ApiResponse`'s `responseCode` as `kt.string(response.statusCode?.toString())`. `statusCode` is populated only for an
 exact numeric code, so a `default` or range code (`2XX`/`4XX`/`5XX`) leaves it `undefined`, `kt.string(undefined)`
-constructs a `KtString` with `value: null`, and `KtString.onWrite` (`packages/kotlin/src/ast/nodes/string.ts:43-45`)
+constructs a `KtString` with `value: null`, and `KtString.onWrite` (`packages/kotlin/src/ast/nodes/string.ts:85-45`)
 renders `null` as the bare token `null`. `ApiResponse.responseCode()` is a non-nullable annotation element, so the
 result does not compile: 28 occurrences across the 4 `spring-controllers` variants, plus 1 per variant on the
 kitchen-sink.
@@ -874,14 +874,14 @@ and `'0'` distinguishable — the entry's secondary complaint, now also closed.
 Add to the `### Also registered, not scheduled` section:
 
 - **`kt.string(undefined)` silently renders the bare token `null`.** `KtString.onWrite`
-  (`packages/kotlin/src/ast/nodes/string.ts:43-45`) branches on `this.value === null` and appends `null`
+  (`packages/kotlin/src/ast/nodes/string.ts:85-45`) branches on `this.value === null` and appends `null`
   unconditionally, with no branch that omits the argument or throws. This is how defect 19 stayed invisible until a
   compile gate existed: a generator passing an `undefined` through `kt.string` produces syntactically valid but
   semantically wrong Kotlin. Defect 19 fixed its own caller; the footgun remains for every other caller. A fix needs to
   decide whether a null-valued `KtString` should throw at construction or render an empty string, and auditing existing
   callers is part of that decision.
 - **`ApiResponse.statusCode` remains lossy on purpose.** `Number(status) || undefined`
-  (`packages/core/src/transform/transform-endpoint.ts:206`) still maps `'0'` to `undefined` — this is **defect 38**,
+  (`packages/core/src/transform/transform-endpoint.ts:214`) still maps `'0'` to `undefined` — this is **defect 38**,
   which stays open. `statusKey`, added by defect 19's fix, is the non-lossy field; anything that needs to emit or
   distinguish a response key must read it. Cross-reference defect 38.
 

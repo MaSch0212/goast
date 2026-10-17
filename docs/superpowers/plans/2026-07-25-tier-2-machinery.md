@@ -1256,14 +1256,14 @@ product changes with their own tests, not worked around in the harness.
 the corpus. The trailing `?? '/'` shows the intent was already to tolerate missing data. Every other TypeScript services
 generator handles a spec with no services without complaint.
 
-`packages/core/src/transform/helpers.ts:58` contains a stray `console.log('woot?')` debug leftover that fires whenever
+`packages/core/src/transform/helpers.ts:67` contains a stray `console.log('woot?')` debug leftover that fires whenever
 `schema.$src` is falsy.
 
 **Files:**
 
-- Modify: `packages/typescript/src/generators/services/angular-services/angular-services-generator.ts:236`
+- Modify: `packages/typescript/src/generators/services/angular-services/angular-services-generator.ts:257`
 - Create: `packages/typescript/src/generators/services/angular-services/angular-services-generator.test.ts`
-- Modify: `packages/core/src/transform/helpers.ts:58`
+- Modify: `packages/core/src/transform/helpers.ts:67`
 - Modify: `packages/core/src/transform/helpers.test.ts`
 
 **Interfaces:**
