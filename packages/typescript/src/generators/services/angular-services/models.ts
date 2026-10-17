@@ -15,12 +15,16 @@ import type { TypeScriptFileBuilder } from '../../../file-builder.ts';
 import type { TypeScriptModelGeneratorOutput } from '../../models/index.ts';
 import type { getReferenceFactories } from './refs.ts';
 
+/**
+ * The options of the `TypeScriptAngularServicesGenerator`. They extend the common TypeScript generator options with
+ * the settings for the services, their response models and the utility files.
+ */
 export type TypeScriptAngularServicesGeneratorConfig = TypeScriptGeneratorConfig & {
   /**
    * How the services should be provided in the Angular application.
    * - `root` - provides all the services using `Injectable({ providedIn: 'root' })`
    * - `provide-fn` - generates a function `provideApiClients` that provides the services
-   * @default 'root'
+   * @default 'provide-fn'
    */
   provideKind: 'root' | 'provide-fn';
 
@@ -143,6 +147,11 @@ export type TypeScriptAngularServicesGeneratorConfig = TypeScriptGeneratorConfig
   utilsDir: string;
 };
 
+/**
+ * The default values of the `TypeScriptAngularServicesGeneratorConfig` options. Options that are not set take these
+ * values.
+ * @see TypeScriptAngularServicesGeneratorConfig
+ */
 export const defaultTypeScriptAngularServicesGeneratorConfig: DefaultGenerationProviderConfig<TypeScriptAngularServicesGeneratorConfig> =
   {
     ...defaultTypeScriptGeneratorConfig,
@@ -174,41 +183,101 @@ export const defaultTypeScriptAngularServicesGeneratorConfig: DefaultGenerationP
     utilsDir: 'utils',
   };
 
+/**
+ * The input of the `TypeScriptAngularServicesGenerator`. It contains the models generated before, which the services
+ * use for their parameter and response types.
+ */
 export type TypeScriptAngularServicesGeneratorInput = {
+  /**
+   * The TypeScript results of the models generator.
+   */
   typescript: {
+    /**
+     * The generated models, keyed by the ID of their schema (`ApiSchema['id']`).
+     */
     models: {
+      /**
+       * The result of the model for the schema with the given ID.
+       */
       [schemaId: string]: TypeScriptModelGeneratorOutput;
     };
   };
 };
 
+/**
+ * The output of the `TypeScriptAngularServicesGenerator`. Later generators read the generated services and index files
+ * from it.
+ */
 export type TypeScriptAngularServicesGeneratorOutput = {
+  /**
+   * The TypeScript results of the services generator.
+   */
   typescript: {
+    /**
+     * The generated services, keyed by the ID of their service (`ApiService['id']`).
+     */
     services: {
+      /**
+       * The result of the service with the given ID.
+       */
       [serviceId: string]: TypeScriptAngularServiceGeneratorOutput;
     };
+    /**
+     * The index files that were generated.
+     */
     indexFiles: {
+      /**
+       * The path to the services index file, or `null` if `servicesIndexFile` is nullish.
+       */
       services: Nullable<string>;
+      /**
+       * The path to the response models index file, or `null` if `responseModelsIndexFile` is nullish.
+       */
       responseModels: Nullable<string>;
     };
   };
 };
 
+/**
+ * The result of generating a single Angular service. `component` is the name of the service class, and `filePath` is
+ * the file it is written to.
+ */
 export type TypeScriptAngularServiceGeneratorOutput = TypeScriptExportOutput & {
+  /**
+   * The response models of the service, keyed by the ID of their endpoint (`ApiEndpoint['id']`).
+   */
   responseModels: {
+    /**
+     * The export of the response model for the endpoint with the given ID.
+     */
     [operationId: string]: TypeScriptExportOutput;
   };
 };
 
+/**
+ * The context of the `TypeScriptAngularServicesGenerator`. It is passed to the services generator, and each service
+ * generator receives it together with its `service`.
+ */
 export type TypeScriptAngularServicesGeneratorContext = OpenApiServicesGenerationProviderContext<
   TypeScriptAngularServicesGeneratorInput,
   TypeScriptAngularServicesGeneratorOutput,
   TypeScriptAngularServicesGeneratorConfig,
   TypeScriptAngularServiceGeneratorOutput
 > & {
+  /**
+   * The factories for the references to the utility files and the generated API infrastructure.
+   * See `getReferenceFactories`.
+   */
   refs: ReturnType<typeof getReferenceFactories>;
 };
 
+/**
+ * The context of the `TypeScriptAngularServiceGenerator` for a single service.
+ * @see TypeScriptAngularServicesGeneratorContext
+ */
 export type TypeScriptAngularServiceGeneratorContext = TypeScriptAngularServicesGeneratorContext & {
+  /**
+   * The service to generate the Angular service class for.
+   */
   readonly service: ApiService;
 };

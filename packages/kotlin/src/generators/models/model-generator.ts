@@ -31,11 +31,36 @@ type Context = KotlinModelGeneratorContext;
 type Output = KotlinModelGeneratorOutput;
 type Builder = KotlinFileBuilder;
 
+/**
+ * Generates the model for one schema. Implement this interface to replace the default model generation, or extend
+ * `DefaultKotlinModelGenerator` to change parts of it.
+ * @template TOutput The type of the result the generator returns. It extends `KotlinModelGeneratorOutput`.
+ * @see DefaultKotlinModelGenerator
+ */
 export interface KotlinModelGenerator<TOutput extends Output = Output> {
+  /**
+   * Generates the model for the schema in the context.
+   * @param ctx The context containing the schema to generate the model for.
+   * @returns The result for the schema, or a promise of it.
+   */
   generate(ctx: Context): MaybePromise<TOutput>;
 }
 
+/**
+ * The default model generator. A schema that gets its own declaration is written to
+ * `{outputDir}/{packagePath}/{TypeName}.kt` as a `data class`, a plain class, an interface for a discriminated base
+ * or an enum, depending on the schema.
+ * Any other schema is mapped to a built-in Kotlin type and no file is written. Schemas that exist only as `anyOf` or
+ * `allOf` members resolve to a nullable `Any`.
+ * @see KotlinModelGenerator
+ * @see KotlinModelsGenerator
+ */
 export class DefaultKotlinModelGenerator extends KotlinFileGenerator<Context, Output> implements KotlinModelGenerator {
+  /**
+   * Generates the model for the schema in the context. Writes the model file when the schema gets its own declaration.
+   * @param ctx The context containing the schema to generate the model for.
+   * @returns The Kotlin type the schema maps to, which is a reference to the generated declaration or a built-in type.
+   */
   public generate(ctx: Context): MaybePromise<KotlinModelGeneratorOutput> {
     if (/\/(anyOf|allOf)(\/[0-9]+)?$/.test(ctx.schema.$src.path)) {
       // Do not generate types that are only used for anyOf and/or allOf

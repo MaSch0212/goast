@@ -16,6 +16,16 @@ import {
 } from './helpers.ts';
 import type { IncompleteApiSchema, OpenApiTransformerContext } from './types.ts';
 
+/**
+ * Transforms an OpenAPI schema into an `ApiSchema`, together with every schema it references through `$ref`, `items`,
+ * `properties`, `allOf` and the other keywords. Each source schema is transformed once and then reused. A type array
+ * that narrows to one non-null type is normalized to that type, and its `null` member sets `nullable` instead.
+ * @template T The type of the source schema object.
+ * @param ctx The transformer context.
+ * @param schema The schema to transform.
+ * @returns The transformed schema.
+ * @throws Error if no schema is given.
+ */
 export function transformSchema<T extends Deref<OpenApiSchema>>(ctx: OpenApiTransformerContext, schema: T): ApiSchema {
   if (!schema) {
     throw new Error('Schema is required.');

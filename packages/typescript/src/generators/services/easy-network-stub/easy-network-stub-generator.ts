@@ -21,14 +21,36 @@ type Context = TypeScriptEasyNetworkStubGeneratorContext;
 type Output = TypeScriptEasyNetworkStubGeneratorOutput;
 type Builder = TypeScriptFileBuilder;
 
+/**
+ * Generates the stub class of one API service.
+ * @template TOutput The type of the output returned for the service.
+ * @see DefaultTypeScriptEasyNetworkStubGenerator
+ */
 export interface TypeScriptEasyNetworkStubGenerator<TOutput extends Output = Output> {
+  /**
+   * Generates the stub file of the service in the context and returns the export that was written.
+   * @param ctx The context of the service to generate.
+   * @returns The output for the service, or a promise that resolves to it.
+   */
   generate(ctx: Context): MaybePromise<TOutput>;
 }
 
+/**
+ * The default implementation of `TypeScriptEasyNetworkStubGenerator`. It writes the stub class of one service to
+ * `{outputDir}/{stubsDir}/{service}.stubs.ts`, where `{service}` is the kebab-cased service name. The class extends
+ * `EasyNetworkStubBase` and has a responder, a request list and a `stub_*` method for each endpoint.
+ * Extend it to customize the output.
+ * @see TypeScriptEasyNetworkStubsGenerator
+ */
 export class DefaultTypeScriptEasyNetworkStubGenerator
   extends TypeScriptFileGenerator<Context, Output>
   implements TypeScriptEasyNetworkStubGenerator
 {
+  /**
+   * Generates the stub file of the service and returns the export that was written.
+   * @param ctx The context of the service to generate.
+   * @returns The `component` (the stub class name) and `filePath` of the generated stub class.
+   */
   public generate(ctx: Context): MaybePromise<Output> {
     const filePath = this.getStubFilePath(ctx);
     const name = this.getStubClassName(ctx);

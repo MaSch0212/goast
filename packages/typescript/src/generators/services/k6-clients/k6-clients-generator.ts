@@ -32,6 +32,19 @@ type Config = TypeScriptK6ClientsGeneratorConfig;
 type ServiceOutput = TypeScriptK6ClientGeneratorOutput;
 type Context = TypeScriptK6ClientsGeneratorContext;
 
+/**
+ * Generates a k6 client class for each API service (tag), plus index files for the clients and the response models.
+ *
+ * Each service produces `{outputDir}/{clientDir}/{service}-client.js` (or `.ts`, depending on `language`) and its
+ * response models in `{outputDir}/{responseModelsDir}/{service}-responses.ts`, where `{service}` is the kebab-cased
+ * service name. The request builder is copied to `{outputDir}/{utilsDir}`, and `http-status-code.ts` is generated there
+ * when `strictResponseTypes` is disabled. The index files `{outputDir}/{clientsIndexFile}` and
+ * `{outputDir}/{responseModelsIndexFile}` are written when they are configured.
+ *
+ * It publishes `typescript.k6Clients[serviceId]` with the client `component` and `filePath` and the `responseModels`
+ * of each service, and `typescript.indexFiles.k6Clients` and `typescript.indexFiles.k6ResponseModels`.
+ * @see TypeScriptK6ClientGenerator
+ */
 export class TypeScriptK6ClientsGenerator extends OpenApiServicesGenerationProviderBase<
   Input,
   Output,
@@ -41,6 +54,11 @@ export class TypeScriptK6ClientsGenerator extends OpenApiServicesGenerationProvi
 > {
   private readonly _clientGeneratorFactory: Factory<TypeScriptK6ClientGenerator, []>;
 
+  /**
+   * Initializes a new instance of the TypeScriptK6ClientsGenerator class.
+   * @param clientGeneratorFactory The factory that creates the generator for each service. Defaults to a
+   * `DefaultTypeScriptK6ClientGenerator`.
+   */
   constructor(clientGeneratorFactory?: Factory<TypeScriptK6ClientGenerator, []>) {
     super();
     this._clientGeneratorFactory =

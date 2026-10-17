@@ -36,6 +36,18 @@ type Config = TypeScriptFetchClientsGeneratorConfig;
 type ServiceOutput = TypeScriptFetchClientGeneratorOutput;
 type Context = TypeScriptFetchClientsGeneratorContext;
 
+/**
+ * Generates a fetch client class and/or client interface for each API service (tag).
+ *
+ * Each service produces `{outputDir}/{clientDir}/{service}-client.ts` (the class) and/or
+ * `{outputDir}/{clientInterfaceDir}/{service}.ts` (the interface), depending on `clientFileKind`, where `{service}` is
+ * the kebab-cased service name. The utilities are copied to `{outputDir}/{utilsDir}`. The index files
+ * `{outputDir}/{clientsIndexFile}` and `{outputDir}/{clientInterfacesIndexFile}` are written when they are configured.
+ *
+ * It publishes `typescript.clients[serviceId]` with the `client` and `clientInterface` exports of each service, and
+ * `typescript.indexFiles.clients` and `typescript.indexFiles.clientInterfaces` for subsequent generators.
+ * @see TypeScriptFetchClientGenerator
+ */
 export class TypeScriptFetchClientsGenerator extends OpenApiServicesGenerationProviderBase<
   Input,
   Output,
@@ -45,6 +57,11 @@ export class TypeScriptFetchClientsGenerator extends OpenApiServicesGenerationPr
 > {
   private readonly _clientGeneratorFactory: Factory<TypeScriptFetchClientGenerator, []>;
 
+  /**
+   * Initializes a new instance of the TypeScriptFetchClientsGenerator class.
+   * @param clientGeneratorFactory The factory that creates the generator for each service. Defaults to a
+   * `DefaultTypeScriptFetchClientGenerator`.
+   */
   constructor(clientGeneratorFactory?: Factory<TypeScriptFetchClientGenerator, []>) {
     super();
     this._clientGeneratorFactory =

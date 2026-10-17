@@ -24,14 +24,36 @@ type Context = TypeScriptFetchClientGeneratorContext;
 type Output = TypeScriptFetchClientGeneratorOutput;
 type Builder = TypeScriptFileBuilder;
 
+/**
+ * Generates the client class and/or the client interface of one API service.
+ * @template TOutput The type of the output returned for the service.
+ * @see DefaultTypeScriptFetchClientGenerator
+ */
 export interface TypeScriptFetchClientGenerator<TOutput extends Output = Output> {
+  /**
+   * Generates the files of the service in the context and returns the exports that were written.
+   * @param ctx The context of the service to generate.
+   * @returns The output for the service, or a promise that resolves to it.
+   */
   generate(ctx: Context): MaybePromise<TOutput>;
 }
 
+/**
+ * The default implementation of `TypeScriptFetchClientGenerator`. It writes the client interface to
+ * `{outputDir}/{clientInterfaceDir}/{service}.ts` and the client class to
+ * `{outputDir}/{clientDir}/{service}-client.ts`, as selected by `clientFileKind`, where `{service}` is the kebab-cased
+ * service name. Extend it to customize the output.
+ * @see TypeScriptFetchClientsGenerator
+ */
 export class DefaultTypeScriptFetchClientGenerator
   extends TypeScriptFileGenerator<Context, Output>
   implements TypeScriptFetchClientGenerator
 {
+  /**
+   * Generates the client interface and/or the client class of the service.
+   * @param ctx The context of the service to generate.
+   * @returns The `clientInterface` and `client` exports that were written, depending on `clientFileKind`.
+   */
   public generate(ctx: Context): MaybePromise<Output> {
     const result: Output = {};
 

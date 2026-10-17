@@ -2,6 +2,16 @@ import { isOpenApiObjectProperty } from '../internal-utils.ts';
 import type { OpenApiSchema } from '../parse/openapi-types.ts';
 import type { ApiSchema, ApiSchemaProperty, ObjectLikeApiSchema } from '../transform/api-types.ts';
 
+/**
+ * Merges the `allOf` and `anyOf` branches of a `combined` or `object` schema into one `object` schema, combining their
+ * properties, required names and additional properties. Required names from `anyOf` and composed `oneOf` branches are
+ * not taken over, and a property declared with conflicting kinds in different branches becomes a `oneOf` of both.
+ * @param schema The `combined` or `object` schema whose branches should be merged.
+ * @param ignoreNonObjectParts Whether non-object branches are tolerated. If `false`, a non-object branch makes the
+ * merge return `undefined`.
+ * @returns The merged `object` schema, or `undefined` if the merge is not possible or if there are no properties to
+ * merge and the additional properties do not change.
+ */
 export function resolveAnyOfAndAllOf(
   schema: ApiSchema<'combined' | 'object'>,
   ignoreNonObjectParts: boolean,
@@ -219,6 +229,11 @@ function hasInvalidSubSchema(subSchemas: ApiSchema[]): boolean {
   );
 }
 
+/**
+ * The annotation keywords (`description`, `example` and `deprecated`) that do not count as defining a schema. A schema
+ * with a `$ref` that sets only these keywords is treated as a plain reference by {@link getSchemaReference}.
+ * @see getSchemaReference
+ */
 export const DEFAULT_IGNORED_SCHEMA_PROPERTIES: (keyof OpenApiSchema)[] = ['description', 'example', 'deprecated'];
 
 /**

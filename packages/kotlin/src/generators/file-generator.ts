@@ -9,10 +9,22 @@ import {
 import type { KotlinGeneratorConfig } from '../config.ts';
 import { toKotlinPropertyName, toKotlinStringLiteral } from '../utils.ts';
 
+/**
+ * Base class for the generators that produce Kotlin output. It provides the naming helpers that the generators share,
+ * such as the enum constant names, which are derived from the enum values with the `enumValueNameCasing` option.
+ * Subclasses implement `generate` to produce the output for a context.
+ * @template TContext The type of the context the generator receives.
+ * @template TOutput The type of the output the generator produces.
+ */
 export abstract class KotlinFileGenerator<
   TContext extends OpenApiGenerationProviderContext<OpenApiGeneratorInput, KotlinGeneratorConfig>,
   TOutput,
 > {
+  /**
+   * Generates the Kotlin output for the given context.
+   * @param context The context to generate the output from.
+   * @returns The generated output, or a promise of it.
+   */
   public abstract generate(context: TContext): MaybePromise<TOutput>;
 
   protected toPropertyName(context: TContext, name: string): string {

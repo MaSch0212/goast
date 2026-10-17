@@ -48,19 +48,64 @@ type AccessorOptions<TBuilder extends SourceBuilder, TInjects extends string = n
   set?: Nullable<TsPropertySetter<TBuilder>>;
 };
 
+/**
+ * Base class for the properties of classes and object literals. It holds the parts that all properties share: the name,
+ * the doc comment, the decorators, the type and the modifiers.
+ *
+ * Use `tsProperty` to create a property. It returns a `TsSimpleProperty` for a plain property, and a
+ * `TsAccessorProperty` when getters or setters are passed in its options.
+ *
+ * @template TBuilder The type of the source builder the property is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see tsProperty
+ */
 export abstract class TsProperty<TBuilder extends SourceBuilder, TInjects extends string = never> extends TsNode<
   TBuilder,
   TInjects | BaseInjects
 > {
+  /**
+   * The name of the property. A simple property writes it verbatim, or in quotes when it is not a plain identifier,
+   * such as `'x y'`. An accessor property writes it through its getter and setter instead.
+   */
   public name: string;
+  /**
+   * The doc comment written above the property, or `null` to omit it. It is written as given, so no tags are added.
+   */
   public doc: TsDoc<TBuilder> | null;
+  /**
+   * The decorators written before the property. They are separated by spaces and written on the same line as the
+   * property, such as `@decorator x;`.
+   */
   public decorators: TsDecorator<TBuilder>[];
+  /**
+   * The type annotation written after the name, such as `: number`, or `null` to omit it. A simple property also omits
+   * the annotation inside an object literal, which has none.
+   */
   public type: TsType<TBuilder> | null;
+  /**
+   * The access modifier written before the property, such as `public`, or `null` to omit it.
+   */
   public accessModifier: TsAccessModifier | null;
+  /**
+   * Whether the property is written with the `static` keyword. `null` and `false` both omit the keyword.
+   * @default null
+   */
   public static: boolean | null;
+  /**
+   * Whether the property is written with the `abstract` keyword. `null` and `false` both omit the keyword.
+   * @default null
+   */
   public abstract: boolean | null;
+  /**
+   * Whether the property is written with the `override` keyword. `null` and `false` both omit the keyword.
+   * @default null
+   */
   public override: boolean | null;
 
+  /**
+   * Initializes a new instance of the TsProperty class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: BaseOptions<TBuilder, TInjects>) {
     super(options);
     this.name = options.name;
@@ -74,14 +119,42 @@ export abstract class TsProperty<TBuilder extends SourceBuilder, TInjects extend
   }
 }
 
+/**
+ * Represents a property with a name, an optional type and an optional value, such as `readonly x?: number = 42;`.
+ *
+ * Written in this order: doc comment, decorators, modifiers (access modifier, `static`, `abstract`, `override`,
+ * `readonly`), name, optional marker, type annotation, value, and a terminator. Inside an object literal (`tsObject`),
+ * the property is written as `x: 42,` instead: the type annotation is omitted, the value follows a colon, and a comma
+ * ends the property.
+ *
+ * @template TBuilder The type of the source builder the property is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see tsProperty
+ */
 export class TsSimpleProperty<TBuilder extends SourceBuilder, TInjects extends string = never> extends TsProperty<
   TBuilder,
   TInjects
 > {
+  /**
+   * The initial value of the property, or `null` to omit it. In a class it is written after ` = `, such as `x = 42;`,
+   * and in an object literal after a colon, such as `x: 42,`. Falsy values are not written.
+   */
   public value: TsValue<TBuilder> | null;
+  /**
+   * Whether the property is written with the `readonly` keyword, which is placed after the other modifiers.
+   * @default false
+   */
   public readonly: boolean;
+  /**
+   * Whether the name is followed by `?`, which marks the property as optional, such as `x?: number`.
+   * @default false
+   */
   public optional: boolean;
 
+  /**
+   * Initializes a new instance of the TsSimpleProperty class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: SimpleOptions<TBuilder, TInjects>) {
     super(options);
     this.value = options.value ?? null;
@@ -120,6 +193,18 @@ export class TsSimpleProperty<TBuilder extends SourceBuilder, TInjects extends s
   }
 }
 
+/**
+ * Represents a property that is written as a getter, a setter, or both, such as `get x(): number` and `set x(value)`.
+ *
+ * The property writes its doc comment and decorators first, then its getter, and then its setter. The accessors take
+ * their name, type and modifiers from this property when those are set here.
+ *
+ * @template TBuilder The type of the source builder the property is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see tsProperty
+ * @see TsPropertyGetter
+ * @see TsPropertySetter
+ */
 export class TsAccessorProperty<TBuilder extends SourceBuilder, TInjects extends string = never> extends TsProperty<
   TBuilder,
   TInjects
@@ -127,6 +212,10 @@ export class TsAccessorProperty<TBuilder extends SourceBuilder, TInjects extends
   private _get: TsPropertyGetter<TBuilder> | null = null;
   private _set: TsPropertySetter<TBuilder> | null = null;
 
+  /**
+   * The getter of the property, or `null` to omit it. Assigning a getter links it to this property, so the getter takes
+   * its name, type and modifiers from here. A getter that was assigned before is unlinked.
+   */
   public get get(): TsPropertyGetter<TBuilder> | null {
     return this._get;
   }
@@ -140,6 +229,10 @@ export class TsAccessorProperty<TBuilder extends SourceBuilder, TInjects extends
     this._get = value;
   }
 
+  /**
+   * The setter of the property, or `null` to omit it. Assigning a setter links it to this property, so the setter takes
+   * its name, type and modifiers from here. A setter that was assigned before is unlinked.
+   */
   public get set(): TsPropertySetter<TBuilder> | null {
     return this._set;
   }
@@ -153,6 +246,10 @@ export class TsAccessorProperty<TBuilder extends SourceBuilder, TInjects extends
     this._set = value;
   }
 
+  /**
+   * Initializes a new instance of the TsAccessorProperty class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: AccessorOptions<TBuilder, TInjects>) {
     super(options);
     this.get = options.get ?? null;
@@ -183,6 +280,22 @@ const createProperty = <TBuilder extends SourceBuilder>(
   return new TsSimpleProperty({ ...options, name });
 };
 
+/**
+ * Factory for creating property nodes. The `write` function writes one or more property nodes to a builder. The
+ * `getter` and `setter` functions create the accessors that are passed to an accessor property.
+ *
+ * Passing `get` or `set` in the options creates a `TsAccessorProperty`. Otherwise a `TsSimpleProperty` is created.
+ *
+ * @param name The name of the property. See `TsProperty.name`.
+ * @param options The settings of the property. See `TsSimpleProperty` and `TsAccessorProperty` for the available
+ * properties.
+ * @example
+ * ```ts
+ * tsProperty('x', { type: 'number', value: 42, readonly: true, accessModifier: 'public' });
+ * // Emits:
+ * // public readonly x: number = 42;
+ * ```
+ */
 export const tsProperty: typeof createProperty & {
   write: typeof writeTsNodes;
   getter: typeof createPropertyGetter;

@@ -31,14 +31,38 @@ type Context = TypeScriptModelGeneratorContext;
 type Output = TypeScriptModelGeneratorOutput;
 type Builder = TypeScriptFileBuilder;
 
+/**
+ * Generates the model of a single schema. Implement it to replace the default model generation.
+ * @template TOutput The type of the result that is returned for the schema.
+ */
 export interface TypeScriptModelGenerator<TOutput extends Output = Output> {
+  /**
+   * Generates the model of the schema in the context.
+   * @param ctx The context of the schema to generate, including its configuration.
+   * @returns The result of the model, or a promise that resolves to it.
+   */
   generate(ctx: Context): MaybePromise<TOutput>;
 }
 
+/**
+ * The default model generator. It generates a schema as a type declaration (`type` or `interface`) or as an enum,
+ * depending on the `enumGeneration` and `typeDeclaration` options. Discriminator schemas also get a base type named
+ * with `discriminatorBaseTypeCasing`.
+ *
+ * A schema that is declared as its own type is written to `{outputDir}/{modelsDir}/{name}.ts`, with the file name
+ * cased by `modelFileNameCasing` (or `fileNameCasing`). Other schemas are only rendered as a type expression that is
+ * inlined where it is used, and no file is written for them.
+ */
 export class DefaultTypeScriptModelGenerator
   extends TypeScriptFileGenerator<Context, Output>
   implements TypeScriptModelGenerator
 {
+  /**
+   * Generates the model of the schema in the context and writes its file, if it has one.
+   * @param ctx The context of the schema to generate, including its configuration.
+   * @returns The component name, the imports and, if a file was written, its path. For an inline schema, the component
+   * is the type expression.
+   */
   public generate(ctx: Context): MaybePromise<Output> {
     if (this.shouldGenerateTypeDeclaration(ctx, ctx.schema)) {
       const name = this.getDeclarationTypeName(ctx, ctx.schema);

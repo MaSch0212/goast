@@ -39,18 +39,56 @@ type Member<TBuilder extends SourceBuilder> =
   | TsMethod<TBuilder>
   | BasicAppendValue<TBuilder>;
 
+/**
+ * Represents an interface declaration.
+ *
+ * Written in this order: the doc comment, the decorators, the `export` keyword, the name, the generics, the `extends`
+ * list, then the members in braces, followed by a line break.
+ *
+ * @template TBuilder The type of the source builder the interface is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see tsInterface
+ */
 export class TsInterface<TBuilder extends SourceBuilder, TInjects extends string = never> extends TsNode<
   TBuilder,
   TInjects | Injects
 > {
+  /**
+   * The doc comment written above the interface, or `null` to omit it. Descriptions of generic parameters are merged
+   * into it as `@template` tags.
+   */
   public doc: TsDoc<TBuilder> | null;
+  /**
+   * The decorators written above the interface, each on its own line.
+   */
   public decorators: TsDecorator<TBuilder>[];
+  /**
+   * Whether the interface is written with the `export` keyword.
+   * @default false
+   */
   public export: boolean;
+  /**
+   * The name of the interface, written after the `interface` keyword.
+   */
   public name: string;
+  /**
+   * The type parameters written in angle brackets after the name, such as `<T, U>`. Nothing is written when empty.
+   */
   public generics: (TsGenericParameter<TBuilder> | BasicAppendValue<TBuilder>)[];
+  /**
+   * The interfaces written after `extends` as a comma-separated list. The clause is omitted when empty.
+   */
   public extends: (TsReference<TBuilder> | BasicAppendValue<TBuilder>)[];
+  /**
+   * The members written in the body, in the given order. Properties and bodyless methods without a doc comment or
+   * decorators are written without blank lines, other members are set off by blank lines.
+   */
   public members: Member<TBuilder>[];
 
+  /**
+   * Initializes a new instance of the TsInterface class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.doc = options.doc ?? null;
@@ -112,6 +150,25 @@ const createInterface = <TBuilder extends SourceBuilder>(
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
 ): TsInterface<TBuilder> => new TsInterface<TBuilder>({ ...options, name });
 
+/**
+ * Factory for creating interface nodes. The `write` function writes one or more interfaces to a builder.
+ *
+ * @param name The name of the interface.
+ * @param options The settings of the interface. See `TsInterface` for the available properties.
+ * @example
+ * ```ts
+ * tsInterface('User', {
+ *   export: true,
+ *   extends: [tsReference('Entity')],
+ *   members: [tsProperty('name', { type: 'string' }), tsMethod('save')],
+ * });
+ * // Emits:
+ * // export interface User extends Entity {
+ * //   name: string;
+ * //   save();
+ * // }
+ * ```
+ */
 export const tsInterface: typeof createInterface & { write: typeof writeTsNodes } = Object.assign(createInterface, {
   write: writeTsNodes,
 });

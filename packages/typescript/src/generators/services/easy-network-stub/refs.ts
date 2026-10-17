@@ -3,6 +3,13 @@ import { join, resolve } from 'node:path';
 import { ts } from '../../../ast/index.ts';
 import type { TypeScriptEasyNetworkStubsGeneratorConfig } from './models.ts';
 
+/**
+ * Creates the references to the utilities that the generated stubs import from the `utils` directory.
+ * `TypeScriptEasyNetworkStubsGenerator` copies these utilities to `{outputDir}/{utilsDir}`.
+ * @param options The configuration of the stubs generator, which provides `outputDir` and `utilsDir`.
+ * @returns The reference factories for the members of `easy-network-stub.utils.ts`, and for `StubHandle`, which is
+ * imported from the `easy-network-stub` module.
+ */
 // See packages/typescript/assets/stubs/easy-network-stub for reference
 export function getReferenceFactories(options: TypeScriptEasyNetworkStubsGeneratorConfig): {
   easyNetworkStubWrapperOptions: ts.ModuleReferenceFactory;

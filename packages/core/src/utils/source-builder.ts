@@ -6,6 +6,10 @@ import type { AppendValue } from './string-builder/utils.ts';
 import { removeStr, trimEnd } from './string.utils.ts';
 import type { Nullable } from './type.utils.ts';
 
+/**
+ * Describes one level of indentation. `{ type: 'tabs' }` indents with a tab character, and `{ type: 'spaces', count }`
+ * indents with `count` space characters.
+ */
 export type IndentOptions = { readonly type: 'tabs' } | { readonly type: 'spaces'; readonly count: number };
 
 /**
@@ -29,11 +33,27 @@ export const defaultSourceBuilderOptions: SourceBuilderOptions = {
 };
 
 type KnownParatheses = '()' | '[]' | '{}' | '<>';
+/**
+ * The brackets that `parenthesize` adds around content. A string is split into its characters, where the first
+ * character is the opening and the second character is the closing bracket. A tuple specifies the opening and closing
+ * values explicitly, and nullish values are appended as nothing.
+ * @template TBuilder The builder type that the brackets are appended to.
+ */
 export type Paratheses<TBuilder extends StringBuilder> =
   | KnownParatheses
   | Omit<string, KnownParatheses>
   | [open: Nullable<AppendValue<TBuilder>>, close: Nullable<AppendValue<TBuilder>>];
 
+/**
+ * A callback that appends a separator between two items of a `forEach` loop.
+ * @template TBuilder The builder type that the separator is appended to.
+ * @template TItem The type of the items.
+ * @param builder The builder to append the separator to.
+ * @param previousItem The item before the separator.
+ * @param nextItem The item after the separator.
+ * @param previousItemIndex The index of the item before the separator.
+ * @param nextItemIndex The index of the item after the separator.
+ */
 export type SeparatorBuidlerFn<TBuilder, TItem> = (
   builder: TBuilder,
   previousItem: TItem,
@@ -41,6 +61,13 @@ export type SeparatorBuidlerFn<TBuilder, TItem> = (
   previousItemIndex: number,
   nextItemIndex: number,
 ) => void;
+/**
+ * A separator between two items of a `forEach` loop: either a string that is appended as is, or a callback that appends
+ * the separator.
+ * @template TBuilder The builder type that the separator is appended to.
+ * @template TItem The type of the items.
+ * @see SeparatorBuidlerFn
+ */
 export type Separator<TBuilder, TItem> = string | SeparatorBuidlerFn<TBuilder, TItem>;
 
 /**
@@ -93,6 +120,11 @@ type LinePrefixNode = {
   chars: string;
 };
 
+/**
+ * Gets the string that represents one level of indentation.
+ * @param options The indentation to get the string for.
+ * @returns A tab character for tabs, or the number of spaces specified by `count`.
+ */
 export function getIndentString(options: IndentOptions): string {
   return options.type === 'tabs' ? '\t' : ' '.repeat(options.count);
 }
@@ -116,6 +148,10 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
     return this.__options;
   }
 
+  /**
+   * Gets a value indicating whether the current line is empty or consists only of whitespace characters.
+   * The `pretend...LineEmpty` methods affect this value.
+   */
   public get isCurrentLineEmpty(): boolean {
     return this._isCurrentLineEmpty;
   }
@@ -370,11 +406,29 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
     return evalCondition(condition) ? this.append(builderFn) : this.append(elseBuilderFn);
   }
 
+  /**
+   * Appends the content of the case that has the specified key, or the default content if there is no such case.
+   * The content of a case that is nullish is replaced by the default content.
+   * @param value The value to switch on. Only strings and numbers are used as keys.
+   * @param cases The content of each case, keyed by the case value.
+   * @param defaultBuilderFn The content to append if no case matches.
+   * @returns A reference to this instance.
+   */
   public switch<T extends string | number>(
     value: T,
     cases: Record<T, AppendParam<this, TAdditionalAppends>>,
     defaultBuilderFn?: AppendParam<this, TAdditionalAppends>,
   ): this;
+  /**
+   * Appends the content of the first case whose value matches the switch value, or the default content if none matches.
+   * This overload works with any value type and supports a custom comparison.
+   * @template T The type of the switch value and the case values.
+   * @param value The value to switch on.
+   * @param cases The cases to compare the value with, in order.
+   * @param defaultBuilderFn The content to append if no case matches.
+   * @param equals The function that compares the switch value with a case value. Defaults to strict equality.
+   * @returns A reference to this instance.
+   */
   public switch<T>(
     value: T,
     cases: SwitchCase<T, this>[],
@@ -528,6 +582,15 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
     return this;
   }
 
+  /**
+   * Adds content for each item in the specified items if the specified condition is true.
+   * @template T The type of the items.
+   * @param condition The condition to check before adding content for the items.
+   * @param items The items to add content for.
+   * @param builderFn The function to add content for each item.
+   * @param options The options for the loop.
+   * @returns A reference to this instance.
+   */
   public forEachIf<T>(
     condition: Condition,
     items: Iterable<T>,
@@ -540,10 +603,29 @@ export class SourceBuilder<TAdditionalAppends = never> extends StringBuilder<TAd
     return this;
   }
 
+  /**
+   * Appends the items with the specified separator between them. The separator is also appended before an item that
+   * appends nothing, such as `null`, so that item leaves an empty slot.
+   * @param items The items to append.
+   * @param separator The string to append between two items.
+   * @returns A reference to this instance.
+   * @example
+   * ```ts
+   * new SourceBuilder().appendSeparated(['a', 'b', 'c'], ', '); // => 'a, b, c'
+   * ```
+   */
   public appendSeparated(items: Iterable<AppendParam<this, TAdditionalAppends>>, separator: string): this {
     return this.forEach(items, (builder, item) => builder.append(item), { separator });
   }
 
+  /**
+   * Appends the items with the specified separator between them if the specified condition is true.
+   * @param condition The condition to check before appending the items.
+   * @param items The items to append.
+   * @param separator The string to append between two items.
+   * @returns A reference to this instance.
+   * @see SourceBuilder.appendSeparated
+   */
   public appendSeparatedIf(
     condition: Condition,
     items: Iterable<AppendParam<this, TAdditionalAppends>>,
@@ -583,6 +665,13 @@ function _builderTemplate<T extends SourceBuilder>(
 }
 
 const _builderTemplateExtensions = {
+  /**
+   * Creates a builder function from a template, like `builderTemplate`, and indents its content by one level.
+   * @template T The type of the builder.
+   * @param template The strings of the template literal.
+   * @param substitutions The values that are substituted into the template.
+   * @returns A builder function that appends the indented content.
+   */
   indent: <T extends SourceBuilder>(
     template: readonly string[] | ArrayLike<string>,
     ...substitutions: AppendValue<T>[]
@@ -591,6 +680,20 @@ const _builderTemplateExtensions = {
   },
 } as const;
 
+/**
+ * Creates a builder function from a template literal, which can be passed to `append`. Each substitution is appended as
+ * an append value. The indentation of the last line of the template is removed from the lines of the template, so the
+ * template can be indented to match the surrounding code. Use `builderTemplate.indent` to also indent the content by
+ * one level.
+ * @example
+ * ```ts
+ * const sb = new SourceBuilder({ newLine: '\n' });
+ * sb.append(builderTemplate`
+ *     const ${name} = ${value};
+ *   `);
+ * // => "\n  const foo = 1;\n"
+ * ```
+ */
 export const builderTemplate: typeof _builderTemplate & typeof _builderTemplateExtensions = Object.assign(
   _builderTemplate,
   _builderTemplateExtensions,

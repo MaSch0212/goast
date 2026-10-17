@@ -30,6 +30,24 @@ type Config = KotlinServicesGeneratorConfig;
 type ServiceOutput = KotlinServiceGeneratorOutput;
 type Context = KotlinServicesGeneratorContext;
 
+/**
+ * Generates the Spring MVC controllers of all services. For each service it writes three Kotlin files into
+ * `{outputDir}/{packageDir}`, where `{packageDir}` is `packageName` followed by the service's `packageSuffix`,
+ * with each `.` replaced by `/`. With the default settings this is `{outputDir}/com/openapi/generated/api`.
+ * - `{Service}_Api.kt`: the API interface, with `@RequestMapping` and the path constants in its companion object.
+ * - `{Service}_ApiController.kt`: the `@Controller` class that implements the interface and forwards to the delegate.
+ * - `{Service}_ApiDelegate.kt`: the delegate interface, with one function per endpoint to override.
+ *
+ * The names are the service name plus the `_Api`, `_ApiController` or `_ApiDelegate` suffix, converted with
+ * `typeNameCasing`. Once per run it also writes `{outputDir}/{basePackageDir}/ApiExceptionHandler.kt`, where the base
+ * package is `packageName` followed by the `packageSuffix` for no service. Services named `exclude-from-generation`
+ * are removed from `data.services` before generation.
+ *
+ * Publishes `kotlin.services`, keyed by service id, with `apiInterface`, `apiController` and `apiDelegate`. Each entry
+ * is a `KotlinImport` (`typeName` and `packageName`) that later generators use to reference the file.
+ * @see DefaultKotlinSpringControllerGenerator
+ * @see KotlinServicesGeneratorConfig
+ */
 export class KotlinSpringControllersGenerator extends OpenApiServicesGenerationProviderBase<
   Input,
   Output,
@@ -39,6 +57,10 @@ export class KotlinSpringControllersGenerator extends OpenApiServicesGenerationP
 > {
   private readonly _serviceGeneratorFactory: Factory<KotlinSpringControllerGenerator, []>;
 
+  /**
+   * Initializes a new instance of the KotlinSpringControllersGenerator class.
+   * @param serviceGeneratorFactory Creates the generator of each service. Defaults to the default generator.
+   */
   constructor(serviceGeneratorFactory?: Factory<KotlinSpringControllerGenerator, []>) {
     super();
     this._serviceGeneratorFactory =

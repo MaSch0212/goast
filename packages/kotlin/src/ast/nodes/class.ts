@@ -56,7 +56,13 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
+/**
+ * The kinds of class that are written as a keyword before `class`, such as `data` for `data class`.
+ */
 export type KtClassKind = 'data' | 'value' | 'annotation' | 'sealed';
+/**
+ * The nodes that can be written as members of a class body. Other append values are written as-is.
+ */
 export type KtClassMember<TBuilder extends SourceBuilder> =
   | KtConstructor<TBuilder>
   | KtEnum<TBuilder>
@@ -67,24 +73,91 @@ export type KtClassMember<TBuilder extends SourceBuilder> =
   | KtClass<TBuilder>
   | AppendValue<TBuilder>;
 
+/**
+ * Represents a Kotlin class declaration, such as `data class PetDto(val id: Long)`.
+ *
+ * Written in this order: the doc comment, annotations, modifiers, the `class` keyword and name, generics, the primary
+ * constructor, the inheritance list, then the body. The modifiers are written in the order access modifier, `open`,
+ * `abstract`, class kind. The body is written in braces only when it has members, a companion object or a primary
+ * constructor body.
+ *
+ * @template TBuilder The type of the source builder the class is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see ktClass
+ */
 export class KtClass<TBuilder extends SourceBuilder, TInjects extends string = never> extends KtNode<
   TBuilder,
   TInjects | Injects
 > {
+  /**
+   * The KDoc comment written above the class, or `null` to omit it. Descriptions of generic parameters and primary
+   * constructor parameters are merged into it as `@param` tags, and property descriptions of primary constructor
+   * parameters are merged into it as `@property` tags.
+   */
   public doc: KtDoc<TBuilder> | null;
+  /**
+   * The annotations written above the class, each on its own line.
+   */
   public annotations: KtAnnotation<TBuilder>[];
+  /**
+   * The visibility modifier written before the `class` keyword, or `null` to omit it. Kotlin classes are public by
+   * default, so `null` writes a public class.
+   */
   public accessModifier: KtAccessModifier | null;
+  /**
+   * Whether the class is written with the `open` modifier, which allows other classes to extend it.
+   * @default false
+   */
   public open: boolean;
+  /**
+   * Whether the class is written with the `abstract` modifier, placed after `open` when both are set.
+   * @default false
+   */
   public abstract: boolean;
+  /**
+   * The kind of the class, written as a keyword before `class`, such as `data` for `data class`. `null` writes a
+   * regular class.
+   */
   public classKind: KtClassKind | null;
+  /**
+   * The class name, written verbatim after the `class` keyword.
+   */
   public name: string;
+  /**
+   * The type parameters written in angle brackets after the name, such as `<T, U>`. Plain strings are written as-is,
+   * while described parameters also add a `@param` tag to the doc comment.
+   */
   public generics: (KtGenericParameter<TBuilder> | BasicAppendValue<TBuilder>)[];
+  /**
+   * The primary constructor written in parentheses after the name, or `null` to omit it. Only its annotations, access
+   * modifier and parameters are written in the header, while its body is written as an `init` block in the class body.
+   */
   public primaryConstructor: KtConstructor<TBuilder> | null;
+  /**
+   * The base class written after `:` in the inheritance list, or `null` to omit it. When the primary constructor
+   * delegates to `super`, its arguments are written after the base class, such as `Bar(x)`.
+   */
   public extends: KtType<TBuilder> | null;
+  /**
+   * The further supertypes written in the inheritance list after `:`, separated by commas. When a base class is also
+   * set, they follow it after a comma.
+   */
   public implements: KtType<TBuilder>[];
+  /**
+   * The members written in the class body, in the given order. Properties without a doc comment or annotations are
+   * written without blank lines between them, while other members are set off by blank lines.
+   */
   public members: KtClassMember<TBuilder>[];
+  /**
+   * The companion object written first in the class body, or `null` to omit it. It is written before the `init` block
+   * of the primary constructor and before the members.
+   */
   public companionObject: Nullable<KtObject<TBuilder>>;
 
+  /**
+   * Initializes a new instance of the KtClass class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.doc = options.doc ?? null;
@@ -173,6 +246,29 @@ const createClass = <TBuilder extends SourceBuilder>(
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
 ): KtClass<TBuilder> => new KtClass<TBuilder>({ ...options, name });
 
+/**
+ * Factory for creating class nodes. The `write` function writes one or more class nodes to a builder.
+ *
+ * @param name The name of the class.
+ * @param options The settings of the class. See `KtClass` for the available properties.
+ * @example
+ * ```ts
+ * ktClass('PetDto', {
+ *   annotations: [ktAnnotation('Serializable')],
+ *   classKind: 'data',
+ *   primaryConstructor: ktConstructor([
+ *     ktParameter.class('id', 'Long', { property: 'readonly' }),
+ *     ktParameter.class('name', 'String', { property: 'readonly' }),
+ *   ]),
+ *   members: [ktProperty('tag', { type: 'String?' })],
+ * });
+ * // Emits:
+ * // @Serializable
+ * // data class PetDto(val id: Long, val name: String) {
+ * //     val tag: String?
+ * // }
+ * ```
+ */
 export const ktClass: typeof createClass & { write: typeof writeKtNodes } = Object.assign(createClass, {
   write: writeKtNodes,
 });

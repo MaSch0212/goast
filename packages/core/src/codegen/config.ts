@@ -2,6 +2,11 @@ import type { OpenApiParserOptions } from '../parse/types.ts';
 import { defaultOpenApiTransformerOptions } from '../transform/types.ts';
 import { defaultSourceBuilderOptions, type SourceBuilderOptions } from '../utils/source-builder.ts';
 
+/**
+ * The configuration of the `OpenApiGenerator`. It combines the source builder options and the parser options
+ * with the output settings of the generator.
+ * @see OpenApiGenerator
+ */
 export type OpenApiGeneratorConfig = SourceBuilderOptions &
   OpenApiParserOptions & {
     /**
@@ -38,6 +43,10 @@ export type OpenApiGeneratorConfig = SourceBuilderOptions &
     existingFileBehavior: 'override' | 'skip' | 'error' | 'count';
   };
 
+/**
+ * The default configuration of the `OpenApiGenerator`. Options passed to its constructor are merged on top of these.
+ * @see OpenApiGeneratorConfig
+ */
 export const defaultOpenApiGeneratorConfig: OpenApiGeneratorConfig = {
   ...defaultSourceBuilderOptions,
   ...defaultOpenApiTransformerOptions,

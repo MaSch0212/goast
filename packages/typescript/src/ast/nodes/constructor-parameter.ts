@@ -16,13 +16,37 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
+/**
+ * Represents a parameter of a constructor. Besides the properties of `TsParameter`, it can declare a class property by
+ * setting an access modifier and the `readonly` keyword.
+ *
+ * Written in this order: the decorators, the access modifier, the `readonly` keyword, the name, the optional marker,
+ * the type, then the default value. The description is not written on the parameter. The constructor adds it as a
+ * `@param` tag to its doc comment instead.
+ *
+ * @template TBuilder The type of the source builder the constructor parameter is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see tsConstructorParameter
+ */
 export class TsConstructorParameter<
   TBuilder extends SourceBuilder,
   TInjects extends string = never,
 > extends TsParameter<TBuilder, TInjects | Injects> {
+  /**
+   * The access modifier written before the name, such as `public`. Setting one makes the parameter a class property.
+   * Nothing is written when `null`.
+   */
   public accessModifier: TsAccessModifier | null;
+  /**
+   * Whether the parameter is written with the `readonly` keyword, placed after the access modifier.
+   * @default false
+   */
   public readonly: boolean;
 
+  /**
+   * Initializes a new instance of the TsConstructorParameter class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.accessModifier = options.accessModifier ?? null;
@@ -63,6 +87,19 @@ const createConstructorParameter = <TBuilder extends SourceBuilder>(
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
 ): TsConstructorParameter<TBuilder> => new TsConstructorParameter<TBuilder>({ ...options, name });
 
+/**
+ * Factory for creating constructor parameter nodes. The `write` function writes the parameters of a constructor to a
+ * builder, enclosed in parentheses.
+ *
+ * @param name The name of the parameter.
+ * @param options The settings of the parameter. See `TsConstructorParameter` for the available properties.
+ * @example
+ * ```ts
+ * tsConstructorParameter('name', { accessModifier: 'private', readonly: true, type: 'string' });
+ * // Emits:
+ * // private readonly name: string
+ * ```
+ */
 export const tsConstructorParameter: typeof createConstructorParameter & { write: typeof writeTsParameters } =
   Object.assign(createConstructorParameter, {
     write: writeTsParameters,

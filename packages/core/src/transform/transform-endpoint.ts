@@ -24,6 +24,14 @@ import { determineEndpointName, getCustomFields, getOpenApiObjectIdentifier } fr
 import { transformSchema } from './transform-schema.ts';
 import type { OpenApiTransformerContext } from './types.ts';
 
+/**
+ * Transforms one operation into an `ApiEndpoint` and registers it with its path and with the service of each of its
+ * tags. Operations without tags go to a service with a generated name. Tags that no document declares create implicit
+ * services, which have no `$src`.
+ * @param context The transformer context.
+ * @param endpointInfo The collected path, method, path item and operation.
+ * @returns The transformed endpoint.
+ */
 export function transformEndpoint(context: OpenApiTransformerContext, endpointInfo: OpenApiCollectorEndpointInfo) {
   const apiPath = transformApiPath(context, endpointInfo.path, endpointInfo.pathItem);
   const endpoint: ApiEndpoint = {

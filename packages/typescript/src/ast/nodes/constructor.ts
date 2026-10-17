@@ -26,15 +26,43 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
+/**
+ * Represents the constructor of a class.
+ *
+ * Written in this order: the doc comment, the decorators, the `constructor` keyword, the parameters in parentheses, a
+ * space, then the body in braces, followed by a line break.
+ *
+ * @template TBuilder The type of the source builder the constructor is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see tsConstructor
+ */
 export class TsConstructor<TBuilder extends SourceBuilder, TInjects extends string = never> extends TsNode<
   TBuilder,
   TInjects | Injects
 > {
+  /**
+   * The doc comment written above the constructor, or `null` to omit it. The descriptions of the parameters are added
+   * to it as `@param` tags, which also creates a doc comment when none is set.
+   */
   public doc: TsDoc<TBuilder> | null;
+  /**
+   * The decorators written above the constructor, each on its own line.
+   */
   public decorators: TsDecorator<TBuilder>[];
+  /**
+   * The parameters written in parentheses. They are written one per line when there are more than two, or when one of
+   * them has decorators.
+   */
   public parameters: (TsConstructorParameter<TBuilder> | BasicAppendValue<TBuilder>)[];
+  /**
+   * The statements written in the body, on their own indented lines, or `null` to write empty braces `{}`.
+   */
   public body: AppendValue<TBuilder> | null;
 
+  /**
+   * Initializes a new instance of the TsConstructor class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.doc = options.doc ?? null;
@@ -69,6 +97,22 @@ export class TsConstructor<TBuilder extends SourceBuilder, TInjects extends stri
 const createConstructor = <TBuilder extends SourceBuilder>(options?: Options<TBuilder>): TsConstructor<TBuilder> =>
   new TsConstructor<TBuilder>(options ?? {});
 
+/**
+ * Factory for creating constructor nodes. The `write` function writes one or more constructors to a builder.
+ *
+ * @param options The settings of the constructor. See `TsConstructor` for the available properties.
+ * @example
+ * ```ts
+ * tsConstructor({
+ *   parameters: [tsConstructorParameter('x', { type: 'number' }), 'y'],
+ *   body: 'this.x = x;',
+ * });
+ * // Emits:
+ * // constructor(x: number, y) {
+ * //   this.x = x;
+ * // }
+ * ```
+ */
 export const tsConstructor: typeof createConstructor & { write: typeof writeTsNodes } = Object.assign(
   createConstructor,
   {

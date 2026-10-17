@@ -39,6 +39,17 @@ type Config = TypeScriptEasyNetworkStubsGeneratorConfig;
 type ServiceOutput = TypeScriptEasyNetworkStubGeneratorOutput;
 type Context = TypeScriptEasyNetworkStubsGeneratorContext;
 
+/**
+ * Generates an easy-network-stub stub class for each API service (tag), and an index file that combines them.
+ *
+ * Each service produces `{outputDir}/{stubsDir}/{service}.stubs.ts`, where `{service}` is the kebab-cased service name.
+ * The utilities are copied to `{outputDir}/{utilsDir}`. The index file `{outputDir}/{stubsIndexFile}` exports all stub
+ * classes and an aggregate `{domainName}_ApiStubs` class (named by `typeNameCasing`) with one group per service.
+ *
+ * It publishes `typescript.stubs[serviceId]` with the `component` and `filePath` of each stub class, and
+ * `typescript.indexFiles.stubs` with the path of the index file, for subsequent generators.
+ * @see TypeScriptEasyNetworkStubGenerator
+ */
 export class TypeScriptEasyNetworkStubsGenerator extends OpenApiServicesGenerationProviderBase<
   Input,
   Output,
@@ -48,6 +59,11 @@ export class TypeScriptEasyNetworkStubsGenerator extends OpenApiServicesGenerati
 > {
   private readonly _generatorFactory: Factory<TypeScriptEasyNetworkStubGenerator, []>;
 
+  /**
+   * Initializes a new instance of the TypeScriptEasyNetworkStubsGenerator class.
+   * @param generatorFactory The factory that creates the generator for each service. Defaults to a
+   * `DefaultTypeScriptEasyNetworkStubGenerator`.
+   */
   constructor(generatorFactory?: Factory<TypeScriptEasyNetworkStubGenerator, []>) {
     super();
     this._generatorFactory = generatorFactory ?? Factory.fromValue(new DefaultTypeScriptEasyNetworkStubGenerator());

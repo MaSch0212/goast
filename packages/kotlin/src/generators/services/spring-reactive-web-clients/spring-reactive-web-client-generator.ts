@@ -30,14 +30,50 @@ type Context = KotlinSpringReactiveWebClientGeneratorContext;
 type Output = KotlinSpringReactiveWebClientGeneratorOutput;
 type Builder = KotlinFileBuilder;
 
+/**
+ * Generates the Spring WebFlux client for one service. Implement it to replace the default client of a service, or
+ * pass a custom implementation to the `KotlinSpringReactiveWebClientsGenerator`.
+ *
+ * @template TOutput The type of the output the generator returns. Defaults to the default service output type.
+ */
 export interface KotlinSpringReactiveWebClientGenerator<TOutput extends Output = Output> {
+  /**
+   * Generates the client for the service in `ctx.service`.
+   * @param ctx The context of the service to generate.
+   * @returns The output for the service, directly or as a promise.
+   */
   generate(ctx: Context): MaybePromise<TOutput>;
 }
 
+/**
+ * The default generator of a Spring WebFlux client for one service. It writes a single Kotlin file,
+ * `{outputDir}/{package path}/{Name}.kt`, where the package is `packageName + packageSuffix` and `{Name}` is the
+ * service name followed by `_Requests`, cased with `typeNameCasing`.
+ *
+ * The file contains a Kotlin `object` with four functions per endpoint. Their names come from `functionNameCasing`,
+ * shown here with the default camel casing:
+ * - `<endpoint>`: a `suspend` extension function on `WebClient` that returns the response body as its model type, or
+ *   `Unit` without a response body. It awaits the body with `awaitBody`, or with `awaitBodilessEntity` without one.
+ * - `<endpoint>`, overloaded with a `responseHandler` parameter: a `suspend` function `<T : Any>` that passes the
+ *   `ClientResponse` to the handler through `awaitExchange` and returns the handler's result.
+ * - `<endpoint>Request`: a plain function that returns a `WebClient.RequestHeadersSpec<*>` for the request.
+ * - `<endpoint>Uri`: a function that returns the expanded URI `String`. Requests use it only when `preserveUriTemplate`
+ *   is `false`.
+ *
+ * No `Mono` or `Flux` appears in the generated code: the functions suspend instead of returning reactive publishers.
+ * Deprecated operations annotate all four functions with `@Deprecated("")`.
+ *
+ * @see KotlinSpringReactiveWebClientsGenerator
+ */
 export class DefaultKotlinSpringReactiveWebClientGenerator
   extends KotlinFileGenerator<Context, Output>
   implements KotlinSpringReactiveWebClientGenerator
 {
+  /**
+   * Writes the requests object file of `ctx.service` and returns its name and package.
+   * @param ctx The context of the service to generate.
+   * @returns The `typeName` and `packageName` of the generated requests object, published under `kotlin.clients`.
+   */
   public generate(ctx: Context): MaybePromise<Output> {
     const typeName = this.getRequestsObjectName(ctx, {});
     const packageName = this.getPackageName(ctx, {});

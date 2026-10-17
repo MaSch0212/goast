@@ -26,14 +26,38 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
+/**
+ * Represents a documentation tag, such as `@param x The value.` or `@see Foo`. Tags are written inside the KDoc comment
+ * of the declaration that they document.
+ *
+ * Written in this order: the `@` sign and the tag name, the arguments, then the description. Each part after the tag
+ * name is preceded by a space.
+ *
+ * @template TBuilder The type of the source builder the tag is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see ktDocTag
+ */
 export class KtDocTag<TBuilder extends SourceBuilder, TInjects extends string = never> extends KtNode<
   TBuilder,
   TInjects | Injects
 > {
+  /**
+   * The name of the tag, written after the `@` sign, such as `param` or `see`.
+   */
   public tag: string;
+  /**
+   * The arguments written after the tag name, each preceded by a space. For `@param x`, the name `x` is an argument.
+   */
   public args: BasicAppendValue<TBuilder>[];
+  /**
+   * The text written at the end of the tag, preceded by a space, or `null` to omit it.
+   */
   public description: BasicAppendValue<TBuilder> | null;
 
+  /**
+   * Initializes a new instance of the KtDocTag class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.tag = options.tag;
@@ -127,6 +151,23 @@ const writeDocTags = <TBuilder extends SourceBuilder>(
   writeKtNodes(builder, nodes, { separator: '\n' });
 };
 
+/**
+ * Factory for creating doc tag nodes. The `write` function writes one or more tags to a builder, one per line.
+ *
+ * The arguments depend on the tag. `param` and `property` take a name and a description, `throws` and `exception` take
+ * a class and a description, and `see` and `sample` take an identifier. `suppress` takes no arguments, and tags such as
+ * `return` take only a description. Other tags take their arguments as given. A settings object can be passed last.
+ *
+ * @param tag The name of the tag, written after the `@` sign.
+ * @param args The arguments of the tag, followed by an optional settings object. See the description for the arguments
+ * of each tag.
+ * @example
+ * ```ts
+ * ktDocTag('param', 'id', 'The identifier of the pet.');
+ * // Emits:
+ * // @param id The identifier of the pet.
+ * ```
+ */
 export const ktDocTag: typeof createDocTag & { write: typeof writeDocTags } = Object.assign(createDocTag, {
   write: writeDocTags,
 });
