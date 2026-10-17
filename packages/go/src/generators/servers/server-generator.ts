@@ -7,12 +7,8 @@ import {
   appendValueGroup,
   type AppendValueGroup,
   builderTemplate as s,
-  DEFAULT_IGNORED_SCHEMA_PROPERTIES,
-  getSchemaReference,
   type MaybePromise,
   notNullish,
-  type Nullable,
-  resolveAnyOfAndAllOf,
   SourceBuilder,
 } from '@goast/core';
 
@@ -20,6 +16,7 @@ import { go } from '../../ast/index.ts';
 import { GoFileBuilder } from '../../file-builder.ts';
 import { getSourceDocLine, isJsonMediaType, modifyString, toGoFileName, toGoStringLiteral } from '../../utils.ts';
 import { GoFileGenerator } from '../file-generator.ts';
+import { getGoBodyKind, getGoObjectSchema, isGoFileSchema, resolveGoSchema } from '../schema-utils.ts';
 import type { DefaultGoServerGeneratorArgs as Args } from './index.ts';
 import type { GoServerGeneratorContext, GoServerGeneratorOutput } from './models.ts';
 import type {
@@ -763,12 +760,7 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
    * @returns The kind of the body.
    */
   protected getBodyKind(_ctx: Context, args: Args.GetBodyKind): GoOperationBody['kind'] {
-    const type = args.content.type.toLowerCase();
-    if (isJsonMediaType(type)) return 'json';
-    if (type === 'application/x-www-form-urlencoded') return 'form';
-    if (type.startsWith('multipart/')) return 'multipart';
-    if (type.startsWith('text/')) return 'text';
-    return 'raw';
+    return getGoBodyKind(args.content.type);
   }
 
   /**
@@ -868,11 +860,10 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
   ): GoBodyField['decoding'] | null {
     const { required } = args;
     const schema = this.resolveSchema(ctx, { schema: args.schema });
-    const isFile = (x: Nullable<ApiSchema>) => x?.kind === 'string' && x.format === 'binary';
-    if (isFile(schema)) {
+    if (isGoFileSchema(schema)) {
       return { mode: 'file', fieldType: go.pointer(multipartFileHeader()), required };
     }
-    if (schema?.kind === 'array' && isFile(this.resolveSchema(ctx, { schema: schema.items }))) {
+    if (schema?.kind === 'array' && isGoFileSchema(schema.items)) {
       return { mode: 'files', fieldType: go.slice(go.pointer(multipartFileHeader())), required };
     }
     return this.getValueDecoding(ctx, { schema: args.schema, required, allowJson: true });
@@ -1231,16 +1222,7 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
    * @returns The resolved schema, or `undefined` if no schema is given.
    */
   protected resolveSchema(_ctx: Context, args: Args.ResolveSchema): ApiSchema | undefined {
-    let { schema } = args;
-    if (!schema) return undefined;
-    schema = getSchemaReference(schema, DEFAULT_IGNORED_SCHEMA_PROPERTIES);
-    if (schema.kind === 'oneOf' && schema.oneOf.length === 2 && schema.oneOf.some((x) => x.kind === 'null')) {
-      schema = getSchemaReference(
-        schema.oneOf.find((x) => x.kind !== 'null')!,
-        DEFAULT_IGNORED_SCHEMA_PROPERTIES,
-      );
-    }
-    return schema;
+    return resolveGoSchema(args.schema);
   }
 
   /**
@@ -1251,11 +1233,7 @@ export class DefaultGoServerGenerator extends GoFileGenerator<Context, Output> i
    * @returns The object schema, or `null` if the schema does not describe an object.
    */
   protected getObjectSchema(ctx: Context, args: Args.GetObjectSchema): ApiSchema<'object'> | null {
-    const schema = this.resolveSchema(ctx, { schema: args.schema });
-    if (!schema || (schema.kind !== 'object' && schema.kind !== 'combined')) return null;
-    const merged = resolveAnyOfAndAllOf(schema, true);
-    if (merged) return merged;
-    return schema.kind === 'object' ? schema : null;
+    return getGoObjectSchema(this.resolveSchema(ctx, { schema: args.schema }));
   }
 
   /**

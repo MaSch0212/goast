@@ -132,8 +132,9 @@ so a schema called e.g. `ClientOption` doesn't collide). It contains:
 - `packageName`, default derived from `packagePath`.
 - `baseUrl?: string | RegExp | ((baseUrl: string, service: ApiService) => string)` *(my call — named differently from
   the servers' `basePath` because it keeps scheme and host)*: the default base URL emitted as the generated constant
-  `DefaultBaseURL` that `NewXClient("")` uses. Default: the first server URL of the API description with server
-  variables replaced by their `default` values; `''` when there is none. A string replaces it, a RegExp keeps its first
+  `{Client}DefaultBaseURL` (e.g. `PetsClientDefaultBaseURL`, per client, since `baseUrl` may differ per service) that
+  `NewXClient("")` uses. Default: the first server URL of the API description with server variables replaced by their
+  `default` values; `''` when there is none. A string replaces it, a RegExp keeps its first
   match, a function computes it. A relative result (e.g. `/v1`) is kept as is. If the URL a call ends up with has no
   scheme and host, the call returns an error ("no base URL: pass one to NewXClient") instead of sending.
 - `pathModifier` *(my call)*: same type and semantics as the servers' option, so a client and server generated with the
