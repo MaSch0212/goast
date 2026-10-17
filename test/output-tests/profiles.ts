@@ -1,6 +1,7 @@
 import type { OpenApiGenerator } from '@goast/core';
 import type { SpecVersionDir } from '@goast/test-harness';
 
+import { CSharpModelsGenerator } from '../../packages/csharp/src/generators/models/models-generator.ts';
 import { KotlinModelsGenerator } from '../../packages/kotlin/src/generators/models/models-generator.ts';
 import { KotlinOkHttp3ClientsGenerator } from '../../packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-clients-generator.ts';
 import { KotlinSpringControllersGenerator } from '../../packages/kotlin/src/generators/services/spring-controllers/spring-controllers-generator.ts';
@@ -72,6 +73,20 @@ export const profiles: Profile[] = [
       },
     ];
   }),
+
+  // C#.
+  {
+    name: 'models',
+    language: 'csharp',
+    versions: 'all',
+    configure: (g) => g.useType(CSharpModelsGenerator, base),
+  },
+  {
+    name: 'models-mutable',
+    language: 'csharp',
+    versions: 'all',
+    configure: (g) => g.useType(CSharpModelsGenerator, { ...base, immutableTypes: false }),
+  },
 
   // TypeScript.
   {

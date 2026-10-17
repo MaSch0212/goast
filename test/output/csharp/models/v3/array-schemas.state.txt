@@ -1,0 +1,572 @@
+{
+  csharp: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfString',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyList',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfString',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyList',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfInlineObject',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'Schema12',
+              namespace: 'OpenApi.Generated.Models',
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyList',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfInlineObject/items',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Schema12',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfInlineObject/items/properties/name',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfInlineObject/items/properties/value',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'int',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/UniqueArray',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyList',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/UniqueArray/items',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/BoundedArray',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyList',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/BoundedArray/items',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayNoItems',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'JsonElement',
+              namespace: 'System.Text.Json',
+              nullable: true
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyList',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfString/items',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfAnyOf',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'JsonElement',
+              namespace: 'System.Text.Json',
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyList',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfAnyOf/items',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfAnyOf/items/anyOf/0',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfAnyOf/items/anyOf/1',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'ObjectWithArrayProperties',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/strings',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyList',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/strings/items',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-27': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/refs',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [
+                CsReference {
+                  arrayOf: null,
+                  generics: [],
+                  inject: {},
+                  name: 'string',
+                  namespace: null,
+                  nullable: false
+                }
+              ],
+              inject: {},
+              name: 'IReadOnlyList',
+              namespace: 'System.Collections.Generic',
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyList',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-28': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfString',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyList',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-29': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/nested',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [
+                CsReference {
+                  arrayOf: null,
+                  generics: [],
+                  inject: {},
+                  name: 'string',
+                  namespace: null,
+                  nullable: false
+                }
+              ],
+              inject: {},
+              name: 'IReadOnlyList',
+              namespace: 'System.Collections.Generic',
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyList',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfRef',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [
+                CsReference {
+                  arrayOf: null,
+                  generics: [],
+                  inject: {},
+                  name: 'string',
+                  namespace: null,
+                  nullable: false
+                }
+              ],
+              inject: {},
+              name: 'IReadOnlyList',
+              namespace: 'System.Collections.Generic',
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyList',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-30': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/nested/items',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyList',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-31': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/nested/items/items',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfString',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyList',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfArray',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [
+                CsReference {
+                  arrayOf: null,
+                  generics: [],
+                  inject: {},
+                  name: 'string',
+                  namespace: null,
+                  nullable: false
+                }
+              ],
+              inject: {},
+              name: 'IReadOnlyList',
+              namespace: 'System.Collections.Generic',
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyList',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfArray/items',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyList',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfArray/items/items',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfArrayOfRef',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [
+                CsReference {
+                  arrayOf: null,
+                  generics: [
+                    CsReference {
+                      arrayOf: null,
+                      generics: [],
+                      inject: {},
+                      name: 'string',
+                      namespace: null,
+                      nullable: false
+                    }
+                  ],
+                  inject: {},
+                  name: 'IReadOnlyList',
+                  namespace: 'System.Collections.Generic',
+                  nullable: false
+                }
+              ],
+              inject: {},
+              name: 'IReadOnlyList',
+              namespace: 'System.Collections.Generic',
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyList',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfArrayOfRef/items',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [
+                CsReference {
+                  arrayOf: null,
+                  generics: [],
+                  inject: {},
+                  name: 'string',
+                  namespace: null,
+                  nullable: false
+                }
+              ],
+              inject: {},
+              name: 'IReadOnlyList',
+              namespace: 'System.Collections.Generic',
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyList',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      }
+    }
+  }
+}

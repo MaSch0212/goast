@@ -1,0 +1,199 @@
+{
+  csharp: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3.1/array-schemas.yml#/components/schemas/TupleArray',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'JsonElement',
+              namespace: 'System.Text.Json',
+              nullable: true
+            }
+          ],
+          inject: {},
+          name: 'List',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3.1/array-schemas.yml#/components/schemas/UniqueArray/items',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3.1/array-schemas.yml#/components/schemas/ArrayNoItems',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'JsonElement',
+              namespace: 'System.Text.Json',
+              nullable: true
+            }
+          ],
+          inject: {},
+          name: 'List',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3.1/array-schemas.yml#/components/schemas/TupleWithRest',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'JsonElement',
+              namespace: 'System.Text.Json',
+              nullable: true
+            }
+          ],
+          inject: {},
+          name: 'List',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3.1/array-schemas.yml#/components/schemas/TupleWithRest/items',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'bool',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3.1/array-schemas.yml#/components/schemas/ClosedTuple',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'JsonElement',
+              namespace: 'System.Text.Json',
+              nullable: true
+            }
+          ],
+          inject: {},
+          name: 'List',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3.1/array-schemas.yml#/components/schemas/ContainsArray',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'JsonElement',
+              namespace: 'System.Text.Json',
+              nullable: true
+            }
+          ],
+          inject: {},
+          name: 'List',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3.1/array-schemas.yml#/components/schemas/UnevaluatedItemsArray',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'JsonElement',
+              namespace: 'System.Text.Json',
+              nullable: true
+            }
+          ],
+          inject: {},
+          name: 'List',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3.1/array-schemas.yml#/components/schemas/ArrayOfString',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'List',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3.1/array-schemas.yml#/components/schemas/ArrayOfString/items',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3.1/array-schemas.yml#/components/schemas/UniqueArray',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'List',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      }
+    }
+  }
+}

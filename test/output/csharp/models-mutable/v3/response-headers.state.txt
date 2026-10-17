@@ -1,0 +1,180 @@
+{
+  csharp: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/components/schemas/Thing',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Thing',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//many/get/responses/200/headers/X-Array-Header/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'List',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//many/get/responses/200/headers/X-Array-Header/schema/items',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//required/get/responses/200/headers/X-Required-Header/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//deprecated/get/responses/200/headers/X-Deprecated-Header/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//no-content-headers/get/responses/204/headers/X-Rate-Limit/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'int',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//both/get/responses/200/headers/X-Rate-Limit/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'int',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/components/schemas/Thing',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Thing',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/components/schemas/Thing/properties/id',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/components/schemas/Thing/properties/label',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/components/headers/SharedHeader/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//one/get/responses/200/headers/X-Rate-Limit/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'int',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//many/get/responses/200/headers/X-String-Header/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//many/get/responses/200/headers/X-Int-Header/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'int',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//many/get/responses/200/headers/X-Bool-Header/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'bool',
+          namespace: null,
+          nullable: false
+        }
+      }
+    }
+  }
+}

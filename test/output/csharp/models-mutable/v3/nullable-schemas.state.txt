@@ -1,0 +1,198 @@
+{
+  csharp: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableEnum',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'NullableEnum',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableWithAllOf/allOf/0',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableWithAllOf/allOf/0/properties/a',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableObjectProperty',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'NullableObjectProperty',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableObjectProperty/properties/value',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'NullableObjectPropertyValue',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableRequired',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'NullableRequired',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableRequired/properties/value',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: true
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableRef',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'NullableRef',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableArray',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'List',
+          namespace: 'System.Collections.Generic',
+          nullable: true
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableArray/items',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/ArrayOfNullable',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: true
+            }
+          ],
+          inject: {},
+          name: 'List',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/ArrayOfNullable/items',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: true
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableArrayOfNullable',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: true
+            }
+          ],
+          inject: {},
+          name: 'List',
+          namespace: 'System.Collections.Generic',
+          nullable: true
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableArrayOfNullable/items',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: true
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/nullable-schemas.yml#/components/schemas/NullableWithAllOf',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'NullableWithAllOf',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      }
+    }
+  }
+}

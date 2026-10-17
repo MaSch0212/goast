@@ -79,7 +79,7 @@ const MINIMUM_UNITS = 700;
  * Every C# profile in the corpus, all compiled in one `dotnet build`. Empty until the C# generators
  * and their `profiles.ts` entries exist; listed explicitly for the same reason as {@link KOTLIN_PROFILES}.
  */
-const CSHARP_PROFILES = [] as const satisfies readonly string[];
+const CSHARP_PROFILES = ['models', 'models-mutable'] as const satisfies readonly string[];
 
 const specs = enabled ? await discoverSpecs() : [];
 const units = enabled ? await discoverCompileUnits(profiles, specs) : [];

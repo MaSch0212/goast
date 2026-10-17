@@ -1,0 +1,127 @@
+{
+  csharp: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/StringConst',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/ObjectWithInlineEnum',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'ObjectWithInlineEnum',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/ObjectWithInlineEnum/properties/status',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'ObjectWithInlineEnumStatus',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/IntConst',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/BoolConst',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/TypelessEnum',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/ObjectWithConstProperty',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'ObjectWithConstProperty',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/ObjectWithConstProperty/properties/kind',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/ConstWithType',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/IntEnum',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'IntEnum',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/MixedEnum',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      }
+    }
+  }
+}

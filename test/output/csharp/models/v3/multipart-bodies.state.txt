@@ -1,0 +1,301 @@
+{
+  csharp: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//file/post/requestBody/content/multipart/form-data/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//mixed/post/requestBody/content/multipart/form-data/schema/properties/active',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'bool',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//nested/post/requestBody/content/multipart/form-data/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//nested/post/requestBody/content/multipart/form-data/schema/properties/metadata',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'NestedObjectPartRequest',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//nested/post/requestBody/content/multipart/form-data/schema/properties/metadata/properties/author',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//nested/post/requestBody/content/multipart/form-data/schema/properties/metadata/properties/version',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'int',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//ref-part/post/requestBody/content/multipart/form-data/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/components/schemas/Payload',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Payload',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/components/schemas/Payload',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Payload',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/components/schemas/Payload/properties/id',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/components/schemas/Payload/properties/name',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//file/post/requestBody/content/multipart/form-data/schema/properties/file',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Stream',
+          namespace: 'System.IO',
+          nullable: false
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//encoded/post/requestBody/content/multipart/form-data/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//encoded/post/requestBody/content/multipart/form-data/schema/properties/file',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Stream',
+          namespace: 'System.IO',
+          nullable: false
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//encoded/post/requestBody/content/multipart/form-data/schema/properties/label',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//encoded/post/requestBody/content/multipart/form-data/schema/properties/quantity',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'int',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//encoded/post/requestBody/content/multipart/form-data/schema/properties/active',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'bool',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//optional-file/post/requestBody/content/multipart/form-data/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//optional-file/post/requestBody/content/multipart/form-data/schema/properties/file',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Stream',
+          namespace: 'System.IO',
+          nullable: false
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//files/post/requestBody/content/multipart/form-data/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//files/post/requestBody/content/multipart/form-data/schema/properties/files',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'Stream',
+              namespace: 'System.IO',
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyList',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//files/post/requestBody/content/multipart/form-data/schema/properties/files/items',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Stream',
+          namespace: 'System.IO',
+          nullable: false
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//mixed/post/requestBody/content/multipart/form-data/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//mixed/post/requestBody/content/multipart/form-data/schema/properties/file',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Stream',
+          namespace: 'System.IO',
+          nullable: false
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//mixed/post/requestBody/content/multipart/form-data/schema/properties/label',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/multipart-bodies.yml#/paths//mixed/post/requestBody/content/multipart/form-data/schema/properties/quantity',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'int',
+          namespace: null,
+          nullable: false
+        }
+      }
+    }
+  }
+}
