@@ -264,6 +264,11 @@ function getParameterPlan(
   const style = parameter.style ?? (source === 'path' || source === 'header' ? 'simple' : 'form');
   const explode = parameter.explode ?? style === 'form';
   const bang = parameter.required ? '!' : '';
+  // A required value that is absent is a rejected request, the same as for a bound parameter.
+  const missing = (): AppendValue<Builder> =>
+    s<Builder>`throw new ${exception()}(${toCSharpStringLiteral(`The ${source} parameter '${wireName}' is required.`)})`;
+  const orMissing = (value: AppendValue<Builder>): AppendValue<Builder> =>
+    parameter.required ? s<Builder>`(${value} ?? ${missing()})` : value;
   // ASP.NET Core leaves an encoded slash (`%2F`) of a path segment encoded in the route value.
   const raw = (action: string): AppendValue<Builder> =>
     source === 'path' ? s<Builder>`${support()}.DecodePathSegment(${action})` : action;
@@ -280,7 +285,9 @@ function getParameterPlan(
         binding: {
           kind: 'request',
           convert: (request) =>
-            s<Builder>`${support()}.ParseDelimitedList<${item}>(${request}.Cookies[${toCSharpStringLiteral(wireName)}], ",")${bang}`,
+            orMissing(
+              s<Builder>`${support()}.ParseDelimitedList<${item}>(${request}.Cookies[${toCSharpStringLiteral(wireName)}], ",")`,
+            ),
         },
       };
     }
@@ -331,7 +338,7 @@ function getParameterPlan(
       binding: {
         kind: 'request',
         convert: (request) =>
-          s<Builder>`(${type})${support()}.ReadQueryObject(${request}, typeof(${nonNull}), ${toCSharpStringLiteral(wireName)}, ${toCSharpStringLiteral(style)}, ${String(explode)})${bang}`,
+          s<Builder>`(${type})${orMissing(s<Builder>`${support()}.ReadQueryObject(${request}, typeof(${nonNull}), ${toCSharpStringLiteral(wireName)}, ${toCSharpStringLiteral(style)}, ${String(explode)})`)}`,
       },
     };
   }
@@ -345,7 +352,7 @@ function getParameterPlan(
       binding: {
         kind: 'request',
         convert: (request) =>
-          s<Builder>`(${type})${support()}.ParseValue(${request}.Cookies[${toCSharpStringLiteral(wireName)}], typeof(${nonNull}))${bang}`,
+          s<Builder>`(${type})${orMissing(s<Builder>`${support()}.ParseValue(${request}.Cookies[${toCSharpStringLiteral(wireName)}], typeof(${nonNull}))`)}`,
       },
     };
   }

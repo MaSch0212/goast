@@ -179,6 +179,25 @@ describe('getEndpointParameters', () => {
       expect(converted(plan)).toBe('(string?)ApiRequestSupport.ParseValue(Request.Cookies["session"], typeof(string))');
     });
 
+    it('rejects a request that lacks a required cookie, cookie list or query object', () => {
+      const [cookie, list, object] = plansOf([
+        createParameter('session', 'cookie', string, { required: true }),
+        createParameter('ids', 'cookie', stringList, { required: true }),
+        createParameter('filter', 'query', filter, { required: true, style: 'deepObject', explode: true }),
+      ]);
+      const missing = (name: string) =>
+        `throw new ApiRequestException("The ${name.split(':')[0]} parameter '${name.split(':')[1]}' is required.")`;
+
+      expect(converted(cookie)).toBe(
+        `(string)(ApiRequestSupport.ParseValue(Request.Cookies["session"], typeof(string)) ?? ${missing('cookie:session')})`,
+      );
+      expect(converted(list)).toContain(`?? ${missing('cookie:ids')})`);
+      expect(converted(list)).not.toContain('!');
+      expect(converted(object)).toBe(
+        `(Filter)(ApiRequestSupport.ReadQueryObject(Request, typeof(Filter), "filter", "deepObject", true) ?? ${missing('query:filter')})`,
+      );
+    });
+
     it('assembles an object of the query string from its style', () => {
       const [plan] = plansOf([createParameter('filter', 'query', filter, { style: 'deepObject', explode: true })]);
 

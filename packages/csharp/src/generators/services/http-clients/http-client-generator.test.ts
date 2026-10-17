@@ -219,6 +219,11 @@ describe('DefaultCSharpHttpClientGenerator', () => {
     expect(client).toContain('ApiRuntime.AddQuery(__query, "filter", filter, style: "deepObject");');
     expect(client).toContain('ApiRuntime.AddQuery(__query, "q", q, allowReserved: true);');
     expect(client).toContain('ApiRuntime.AddHeader(__request, "X-Trace", xTrace);');
+    // Content headers are held back until the content is set, and never dropped.
+    expect(client).toContain('ApiRuntime.ApplyContentHeaders(__request);');
+    const runtime = read('Clients', 'ApiRuntime.cs');
+    expect(runtime).toContain('AddContentHeader(request.Content, name, text);');
+    expect(runtime).toContain('cannot be added to the request');
     expect(client).toContain('ApiRuntime.AddCookie(__cookies, "session", session);');
     expect(client).not.toContain('"Authorization"');
   });

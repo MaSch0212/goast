@@ -491,6 +491,10 @@ export class DefaultCSharpHttpClientGenerator
     if (endpoint.body) {
       statements.push(...this.getRequestBodyStatements(ctx, { endpoint, body: endpoint.body }));
     }
+    if (headerParameters.length > 0) {
+      // Content headers (Content-Language, Expires, ...) can only be set once the content exists.
+      statements.push('ApiRuntime.ApplyContentHeaders(__request);');
+    }
 
     statements.push('');
     statements.push(

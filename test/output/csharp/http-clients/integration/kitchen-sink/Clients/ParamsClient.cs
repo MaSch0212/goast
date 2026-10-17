@@ -51,6 +51,7 @@ public class ParamsClient : IParamsClient
         var __cookies = new List<string>();
         ApiRuntime.AddCookie(__cookies, "session", session);
         ApiRuntime.ApplyCookies(__request, __cookies);
+        ApiRuntime.ApplyContentHeaders(__request);
 
         using var __response = await _httpClient.SendAsync(__request, cancellationToken).ConfigureAwait(false);
 

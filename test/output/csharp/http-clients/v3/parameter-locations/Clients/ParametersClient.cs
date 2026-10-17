@@ -99,6 +99,7 @@ public class ParametersClient : IParametersClient
         using var __request = new HttpRequestMessage(HttpMethod.Get, ApiRuntime.BuildUri(_httpClient, __path, null));
         ApiRuntime.AddHeader(__request, "X-Request-Id", xRequestId);
         ApiRuntime.AddHeader(__request, "X-Optional-Header", xOptionalHeader);
+        ApiRuntime.ApplyContentHeaders(__request);
 
         using var __response = await _httpClient.SendAsync(__request, cancellationToken).ConfigureAwait(false);
 
@@ -161,6 +162,7 @@ public class ParametersClient : IParametersClient
         var __cookies = new List<string>();
         ApiRuntime.AddCookie(__cookies, "session", session);
         ApiRuntime.ApplyCookies(__request, __cookies);
+        ApiRuntime.ApplyContentHeaders(__request);
 
         using var __response = await _httpClient.SendAsync(__request, cancellationToken).ConfigureAwait(false);
 

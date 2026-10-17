@@ -53,6 +53,7 @@ public class ResourcesClient : IResourcesClient
         using var __request = new HttpRequestMessage(HttpMethod.Get, ApiRuntime.BuildUri(_httpClient, __path, __query));
         ApiRuntime.SetAccept(__request, "application/json");
         ApiRuntime.AddHeader(__request, "X-Tenant", xTenant);
+        ApiRuntime.ApplyContentHeaders(__request);
 
         using var __response = await _httpClient.SendAsync(__request, cancellationToken).ConfigureAwait(false);
 

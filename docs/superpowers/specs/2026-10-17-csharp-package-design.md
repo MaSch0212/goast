@@ -219,6 +219,16 @@ harness sends; where a framework cannot bind a form natively, generate the parsi
 package list, `test/README.md` (tiers table, layout). Root `package.json`: `build:csharp`, `test:csharp`,
 `test:compile:csharp:check`, `test:integration:csharp-*[:check]`, `test:all`, devDependency `@goast/csharp`.
 
+## Implementation deviations
+
+- **FastEndpoints:** there is no request DTO. Endpoints derive from `EndpointWithoutRequest` and generated parsing
+  (`ApiEndpointSupport`) reads everything from the `HttpRequest`, so FastEndpoints' binding and validation never run.
+  The abstract handler is named `<Op>Async`, because FastEndpoints already uses `ExecuteAsync`.
+- **Minimal APIs:** routes always return a generated `IResult` rather than a typed `Results<...>`, for wire fidelity.
+  Metadata comes from `.Produces` and `.Accepts`.
+- **Multipart files:** server handlers receive them as `IFormFile`/`IFormFileCollection`; client file parameters use the
+  generated `ApiFile`.
+
 ## Decided by the user
 
 - .NET 10; strict mode for every generator; non-strict maybe later.

@@ -49,8 +49,8 @@ main();
   `Map<Tag>Api` extension method per service.
   - Depends on the output of the `CSharpModelsGenerator` generator.
 - [`CSharpFastEndpointsGenerator`](#csharpfastendpointsgenerator): Generates abstract
-  [FastEndpoints](https://fast-endpoints.com/) endpoint classes, with request DTOs and binding attributes, per
-  operation.
+  [FastEndpoints](https://fast-endpoints.com/) endpoint classes per operation, which parse the request
+  themselves.
   - Depends on the output of the `CSharpModelsGenerator` generator.
 - [`CSharpHttpClientsGenerator`](#csharphttpclientsgenerator): Generates typed `HttpClient` clients per service, with
   one method per operation and a registration helper.
@@ -158,7 +158,9 @@ public sealed class PetsController : PetsControllerBase
 ### CSharpMinimalApisGenerator
 
 Generates an abstract `<Service>Api` class that declares the handler methods, a static `Map<Service>Api` extension
-method that registers the routes, and the result types. Output: `<rootNamespace>.MinimalApis` in the `MinimalApis`
+method that registers the routes, and the result types. Every route returns a generated `IResult` (not a typed
+`Results<...>`), so the response is written exactly as the contract says; the route metadata is declared with
+`.Produces` and `.Accepts`. Output: `<rootNamespace>.MinimalApis` in the `MinimalApis`
 directory.
 
 | Option            | Default              | Description                                                                                                     |
@@ -171,9 +173,12 @@ directory.
 
 ### CSharpFastEndpointsGenerator
 
-Generates one abstract FastEndpoints endpoint class per operation, with a generated request DTO that carries the
-FastEndpoints binding attributes (`[RouteParam]`, `[QueryParam]`, `[FromHeader]`, `[HttpGet]`, ...), and the result
-types. Requires FastEndpoints 8.3.0. Output: `<rootNamespace>.FastEndpoints` in the `FastEndpoints` directory.
+Generates one abstract FastEndpoints endpoint class per operation, and the result types. The endpoint derives from
+`EndpointWithoutRequest` and has no request DTO: route, query, header, cookie and body values are parsed from the
+`HttpRequest` by a generated `ApiEndpointSupport` class, so FastEndpoints' own binding and validation never run and the
+wire behaviour matches the other server generators. You implement the abstract `<Operation>Async` method (not
+`ExecuteAsync`, which FastEndpoints already uses). Requires FastEndpoints 8.3.0. Output: `<rootNamespace>.FastEndpoints`
+in the `FastEndpoints` directory.
 
 | Option             | Default              | Description                                                                                                     |
 | ------------------ | -------------------- | --------------------------------------------------------------------------------------------------------------- |

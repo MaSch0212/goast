@@ -171,6 +171,7 @@ export function buildApiRequestSupportClass(
       'System.Threading',
       'System.Threading.Tasks',
       'Microsoft.AspNetCore.Http',
+      'Microsoft.AspNetCore.Http.Features',
       'Microsoft.Extensions.Primitives',
       'Microsoft.Net.Http.Headers',
     ],
@@ -373,7 +374,8 @@ export function buildApiRequestSupportClass(
         /// </summary>
         public static async Task<object?> ReadBodyAsync(HttpRequest request, Type type, bool required, CancellationToken cancellationToken)
         {
-            var hasBody = request.ContentLength > 0 || request.Headers.ContainsKey(HeaderNames.TransferEncoding);
+            var hasBody = request.HttpContext.Features.Get<IHttpRequestBodyDetectionFeature>()?.CanHaveBody
+                ?? (request.ContentLength > 0 || request.Headers.ContainsKey(HeaderNames.TransferEncoding));
             if (!hasBody)
             {
                 return required ? throw new ${exception}("A request body is required.") : null;

@@ -36,6 +36,8 @@ const apiRuntime: CSharpRuntimeFile = {
 /// </summary>
 public static class ApiRuntime
 {
+    private static readonly HttpRequestOptionsKey<List<KeyValuePair<string, string>>> PendingContentHeaders = new("goast.PendingContentHeaders");
+
     private const string ReservedCharacters = ":/?#[]@!$&'()*+,;=";
 
     /// <summary>
@@ -209,7 +211,53 @@ public static class ApiRuntime
                         : new[] { property.Key, Scalar(property.Value) })),
             _ => Scalar(node),
         };
-        request.Headers.TryAddWithoutValidation(name, text);
+        if (request.Headers.TryAddWithoutValidation(name, text))
+        {
+            return;
+        }
+
+        // Content headers (Content-Language, Content-MD5, Expires, Last-Modified, ...) belong to the content, which is
+        // set after the header parameters. They are kept until ApplyContentHeaders.
+        if (request.Content is not null)
+        {
+            AddContentHeader(request.Content, name, text);
+            return;
+        }
+
+        if (!request.Options.TryGetValue(PendingContentHeaders, out var pending))
+        {
+            pending = new List<KeyValuePair<string, string>>();
+            request.Options.Set(PendingContentHeaders, pending);
+        }
+
+        pending.Add(new KeyValuePair<string, string>(name, text));
+    }
+
+    /// <summary>
+    /// Adds the content headers that header parameters collected before the content existed. Call it once the content
+    /// of the request is set.
+    /// </summary>
+    public static void ApplyContentHeaders(HttpRequestMessage request)
+    {
+        if (!request.Options.TryGetValue(PendingContentHeaders, out var pending))
+        {
+            return;
+        }
+
+        request.Options.Set(PendingContentHeaders, new List<KeyValuePair<string, string>>());
+        request.Content ??= new ByteArrayContent(Array.Empty<byte>());
+        foreach (var header in pending)
+        {
+            AddContentHeader(request.Content, header.Key, header.Value);
+        }
+    }
+
+    private static void AddContentHeader(HttpContent content, string name, string value)
+    {
+        if (!content.Headers.TryAddWithoutValidation(name, value))
+        {
+            throw new InvalidOperationException($"The header '{name}' cannot be added to the request.");
+        }
     }
 
     /// <summary>Adds a cookie parameter (style <c>form</c>). A <c>null</c> value adds nothing.</summary>

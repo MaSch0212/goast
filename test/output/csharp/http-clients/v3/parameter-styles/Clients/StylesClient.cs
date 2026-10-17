@@ -248,6 +248,7 @@ public class StylesClient : IStylesClient
         var __path = "/simple-header";
         using var __request = new HttpRequestMessage(HttpMethod.Get, ApiRuntime.BuildUri(_httpClient, __path, null));
         ApiRuntime.AddHeader(__request, "X-Tags", xTags);
+        ApiRuntime.ApplyContentHeaders(__request);
 
         using var __response = await _httpClient.SendAsync(__request, cancellationToken).ConfigureAwait(false);
 

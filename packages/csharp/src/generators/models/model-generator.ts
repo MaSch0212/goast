@@ -479,6 +479,8 @@ export class DefaultCSharpModelGenerator extends CSharpFileGenerator<Context, Ou
     for (const [value, mapped] of Object.entries(schema.discriminator.mapping)) {
       const type = this.getGeneratedType(ctx, { schema: mapped, nullable: false });
       if (!type) continue;
+      // A record derives from its first discriminated base only; listing any other type fails at runtime.
+      if (!this.derivesFrom(ctx, mapped, schema)) continue;
       const key = `${type.namespace}.${type.name}`;
       if (seen.has(key)) continue;
       seen.add(key);
@@ -713,6 +715,23 @@ export class DefaultCSharpModelGenerator extends CSharpFileGenerator<Context, Ou
    */
   protected getBaseSchema(ctx: Context, args: Args.GetBaseSchema): ApiSchema | undefined {
     return this.getInheritedSchemas(ctx, { schema: args.schema })[0];
+  }
+
+  /** Whether the record of `schema` inherits (directly or transitively) from the record of `base`. */
+  protected derivesFrom(ctx: Context, schema: ApiSchema, base: ApiSchema): boolean {
+    // Schemas are compared by the type they are emitted as: the same declaration can be reached through several references.
+    const keyOf = (item: ApiSchema) =>
+      `${this.getNamespace(ctx, { schema: item })}.${this.getDeclarationTypeName(ctx, { schema: item })}`;
+    const target = keyOf(base);
+    const visited = new Set<string>();
+    for (let current = this.getBaseSchema(ctx, { schema }); current;) {
+      const key = keyOf(current);
+      if (key === target) return true;
+      if (visited.has(key)) return false;
+      visited.add(key);
+      current = this.getBaseSchema(ctx, { schema: current });
+    }
+    return false;
   }
 
   protected getRecordProperties(ctx: Context, args: Args.GetRecordProperties): ApiSchemaProperty[] {

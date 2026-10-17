@@ -679,6 +679,24 @@ describe('DefaultCSharpModelGenerator', () => {
       const code = new TestModelGenerator().renderDeclaration(both, all);
       expect(code).toContain('public sealed record Both : First');
       expect(propertyDeclarations(code).map((p) => p.name)).toEqual(['B']);
+
+      // Only the base the record derives from lists it; the other would make System.Text.Json fail at runtime.
+      const generator = new TestModelGenerator();
+      expect(generator.renderDeclaration(first, all)).toContain('[JsonDerivedType(typeof(Both), "both")]');
+      expect(generator.renderDeclaration(second, all)).not.toContain('JsonDerivedType');
+    });
+
+    it('lists the subtypes that derive from a base transitively', () => {
+      const { base, dog, all } = createImplicitShape();
+      const puppy = createSchema('Puppy', { kind: 'combined', allOf: [dog] });
+      puppy.inheritedSchemas.push(dog as never);
+      dog.discriminator = { propertyName: 'petType', mapping: { puppy } };
+      const generator = new TestModelGenerator();
+      const everything = [...all, puppy];
+
+      expect(generator.renderDeclaration(base, everything)).toContain('JsonDerivedType(typeof(ImplicitDog), "dog")');
+      base.discriminator!.mapping = { ...base.discriminator!.mapping, puppy };
+      expect(generator.renderDeclaration(base, everything)).toContain('JsonDerivedType(typeof(Puppy), "puppy")');
     });
 
     it('keeps a base that declares no properties of its own declared under every emptyObjectTypeBehavior', () => {
