@@ -58,7 +58,7 @@ const KOTLIN_PROFILES = [
 ] as const;
 
 /** Go profiles, each checked in the `go` container. They need nothing outside the standard library. */
-const GO_PROFILES = ['models', 'servers'] as const;
+const GO_PROFILES = ['models', 'servers', 'clients'] as const;
 
 /**
  * The fewest units a healthy corpus can produce, below which the run is a harness failure.
@@ -76,7 +76,7 @@ const GO_PROFILES = ['models', 'servers'] as const;
  * without a test edit. Per-group and per-profile emptiness is checked separately below, which is the
  * finer-grained guard; this is the blunt backstop for a shrink neither of those sees.
  *
- * The 101 Go units came later and are not part of that arithmetic: losing them leaves 797, above the floor, so
+ * The 157 Go units (models, servers, clients) came later and are not part of that arithmetic: losing them leaves 797, above the floor, so
  * the per-profile check below is what notices an empty Go group.
  */
 const MINIMUM_UNITS = 700;

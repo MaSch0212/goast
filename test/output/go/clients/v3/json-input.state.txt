@@ -1,0 +1,208 @@
+{
+  go: {
+    clients: {
+      'service-1': {
+        __source__: 'tag:service-1',
+        client: GoReference {
+          importPath: 'example.com/generated/client',
+          inject: {},
+          name: 'Service1Client',
+          packageName: 'client',
+          typeArguments: []
+        },
+        constructor: GoReference {
+          importPath: 'example.com/generated/client',
+          inject: {},
+          name: 'NewService1Client',
+          packageName: 'client',
+          typeArguments: []
+        }
+      }
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/json-input.json#/paths//things/get/responses/200/content/application/json/schema',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: 'example.com/generated/api',
+            inject: {},
+            name: 'Thing',
+            packageName: 'api',
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/json-input.json#/components/schemas/Thing',
+        fields: {
+          category: {
+            name: 'Category',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Category',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          label: {
+            name: 'Label',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Thing',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/json-input.json#/components/schemas/Thing',
+        fields: {
+          category: {
+            name: 'Category',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Category',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          label: {
+            name: 'Label',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Thing',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/json-input.json#/components/schemas/Thing/properties/id',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/json-input.json#/components/schemas/Thing/properties/label',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/json-input.json#/components/schemas/Category',
+        fields: {
+          name: {
+            name: 'Name',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Category',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/json-input.json#/components/schemas/Category',
+        fields: {
+          name: {
+            name: 'Name',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Category',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/json-input.json#/components/schemas/Category/properties/name',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      }
+    }
+  }
+}

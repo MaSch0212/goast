@@ -1,0 +1,24 @@
+{
+  go: {
+    clients: {
+      'service-1': {
+        __source__: 'tag:service-1',
+        client: GoReference {
+          importPath: 'example.com/generated/client',
+          inject: {},
+          name: 'Service1Client',
+          packageName: 'client',
+          typeArguments: []
+        },
+        constructor: GoReference {
+          importPath: 'example.com/generated/client',
+          inject: {},
+          name: 'NewService1Client',
+          packageName: 'client',
+          typeArguments: []
+        }
+      }
+    },
+    models: {}
+  }
+}

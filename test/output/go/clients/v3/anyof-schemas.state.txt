@@ -1,0 +1,407 @@
+{
+  go: {
+    clients: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfPrimitives',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/Beta',
+        fields: {
+          betaValue: {
+            name: 'BetaValue',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Beta',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfRefAndPrimitive',
+        fields: {
+          alphaValue: {
+            name: 'AlphaValue',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'AnyOfRefAndPrimitive',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/Alpha',
+        fields: {
+          alphaValue: {
+            name: 'AlphaValue',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Alpha',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfRefAndPrimitive/anyOf/1',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfWithNullable',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfWithNullable/anyOf/0',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfWithNullable/anyOf/1',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfSingle',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfSingle/anyOf/0',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfArrays',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfPrimitives/anyOf/0',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfArrays/anyOf/0',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfArrays/anyOf/0/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfArrays/anyOf/1',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfArrays/anyOf/1/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/ObjectWithAnyOfProperty',
+        fields: {
+          value: {
+            name: 'Value',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'any',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'ObjectWithAnyOfProperty',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/ObjectWithAnyOfProperty/properties/value',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/ObjectWithAnyOfProperty/properties/value/anyOf/0',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-27': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/ObjectWithAnyOfProperty/properties/value/anyOf/1',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfPrimitives/anyOf/1',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/Alpha',
+        fields: {
+          alphaValue: {
+            name: 'AlphaValue',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Alpha',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/Alpha/properties/alphaValue',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/Beta',
+        fields: {
+          betaValue: {
+            name: 'BetaValue',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Beta',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/Beta/properties/betaValue',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/AnyOfRefs',
+        fields: {
+          alphaValue: {
+            name: 'AlphaValue',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          betaValue: {
+            name: 'BetaValue',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'AnyOfRefs',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/anyof-schemas.yml#/components/schemas/Alpha',
+        fields: {
+          alphaValue: {
+            name: 'AlphaValue',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Alpha',
+          packageName: 'api',
+          typeArguments: []
+        }
+      }
+    }
+  }
+}

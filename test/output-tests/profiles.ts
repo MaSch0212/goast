@@ -2,6 +2,7 @@ import type { OpenApiGenerator } from '@goast/core';
 import type { SpecVersionDir } from '@goast/test-harness';
 
 import { GoModelsGenerator } from '../../packages/go/src/generators/models/models-generator.ts';
+import { GoClientsGenerator } from '../../packages/go/src/generators/clients/clients-generator.ts';
 import { GoServersGenerator } from '../../packages/go/src/generators/servers/servers-generator.ts';
 import { KotlinModelsGenerator } from '../../packages/kotlin/src/generators/models/models-generator.ts';
 import { KotlinOkHttp3ClientsGenerator } from '../../packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-clients-generator.ts';
@@ -119,5 +120,11 @@ export const profiles: Profile[] = [
     language: 'go',
     versions: 'all',
     configure: (g) => g.useType(GoModelsGenerator, base).useType(GoServersGenerator, base),
+  },
+  {
+    name: 'clients',
+    language: 'go',
+    versions: 'all',
+    configure: (g) => g.useType(GoModelsGenerator, base).useType(GoClientsGenerator, base),
   },
 ];

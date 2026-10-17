@@ -1,0 +1,75 @@
+{
+  go: {
+    clients: {
+      'service-1': {
+        __source__: '<root>/test/specs/v3/tags-and-servers.yml#/tags/0',
+        client: GoReference {
+          importPath: 'example.com/generated/client',
+          inject: {},
+          name: 'AlphaClient',
+          packageName: 'client',
+          typeArguments: []
+        },
+        constructor: GoReference {
+          importPath: 'example.com/generated/client',
+          inject: {},
+          name: 'NewAlphaClient',
+          packageName: 'client',
+          typeArguments: []
+        }
+      },
+      'service-2': {
+        __source__: 'tag:service-2',
+        client: GoReference {
+          importPath: 'example.com/generated/client',
+          inject: {},
+          name: 'Service2Client',
+          packageName: 'client',
+          typeArguments: []
+        },
+        constructor: GoReference {
+          importPath: 'example.com/generated/client',
+          inject: {},
+          name: 'NewService2Client',
+          packageName: 'client',
+          typeArguments: []
+        }
+      },
+      'service-3': {
+        __source__: 'tag:Beta',
+        client: GoReference {
+          importPath: 'example.com/generated/client',
+          inject: {},
+          name: 'BetaClient',
+          packageName: 'client',
+          typeArguments: []
+        },
+        constructor: GoReference {
+          importPath: 'example.com/generated/client',
+          inject: {},
+          name: 'NewBetaClient',
+          packageName: 'client',
+          typeArguments: []
+        }
+      },
+      'service-4': {
+        __source__: 'tag:Tag With Space',
+        client: GoReference {
+          importPath: 'example.com/generated/client',
+          inject: {},
+          name: 'TagWithSpaceClient',
+          packageName: 'client',
+          typeArguments: []
+        },
+        constructor: GoReference {
+          importPath: 'example.com/generated/client',
+          inject: {},
+          name: 'NewTagWithSpaceClient',
+          packageName: 'client',
+          typeArguments: []
+        }
+      }
+    },
+    models: {}
+  }
+}

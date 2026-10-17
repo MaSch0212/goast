@@ -5,8 +5,8 @@ import { OpenApiGenerator } from '@goast/core';
 import { profiles } from './profiles.ts';
 
 describe('profiles', () => {
-  it('covers all seventeen generator and config combinations', () => {
-    expect(profiles).toHaveLength(17);
+  it('covers all eighteen generator and config combinations', () => {
+    expect(profiles).toHaveLength(18);
   });
 
   it('uses a unique language and name pair per profile', () => {
@@ -42,6 +42,7 @@ describe('profiles', () => {
       'typescript/easy-network-stub',
       'go/models',
       'go/servers',
+      'go/clients',
     ]) {
       expect(names).toContain(expected);
     }

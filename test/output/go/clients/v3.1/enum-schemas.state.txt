@@ -1,0 +1,148 @@
+{
+  go: {
+    clients: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/StringConst',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/ObjectWithInlineEnum',
+        fields: {
+          status: {
+            name: 'Status',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'ObjectWithInlineEnumStatus',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'ObjectWithInlineEnum',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/ObjectWithInlineEnum/properties/status',
+        fields: undefined,
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'ObjectWithInlineEnumStatus',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/IntConst',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/BoolConst',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/TypelessEnum',
+        fields: undefined,
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'TypelessEnum',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/ObjectWithConstProperty',
+        fields: {
+          kind: {
+            name: 'Kind',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'any',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'ObjectWithConstProperty',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/ObjectWithConstProperty/properties/kind',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/ConstWithType',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/IntEnum',
+        fields: undefined,
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'IntEnum',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3.1/enum-schemas.yml#/components/schemas/MixedEnum',
+        fields: undefined,
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'MixedEnum',
+          packageName: 'api',
+          typeArguments: []
+        }
+      }
+    }
+  }
+}
