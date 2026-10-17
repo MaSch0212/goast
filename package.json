@@ -48,8 +48,10 @@
     "test:integration:stubs:check": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=check vitest run test/integration/easy-network-stub",
     "test:integration:go": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=write vitest run test/integration/go-servers",
     "test:integration:go:check": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=check vitest run test/integration/go-servers",
+    "test:integration:go-clients": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=write vitest run test/integration/go-clients",
+    "test:integration:go-clients:check": "GOAST_INTEGRATION=1 GOAST_SNAPSHOT=check vitest run test/integration/go-clients",
     "test:check": "GOAST_SNAPSHOT=check vitest run",
-    "test:all": "pnpm test:check && pnpm test:compile:check && pnpm test:integration:check && pnpm test:integration:kotlin:check && pnpm test:integration:controllers:check && pnpm test:integration:angular:check && pnpm test:integration:k6:check && pnpm test:integration:stubs:check && pnpm test:integration:go:check",
+    "test:all": "pnpm test:check && pnpm test:compile:check && pnpm test:integration:check && pnpm test:integration:kotlin:check && pnpm test:integration:controllers:check && pnpm test:integration:angular:check && pnpm test:integration:k6:check && pnpm test:integration:stubs:check && pnpm test:integration:go:check && pnpm test:integration:go-clients:check",
     "pg": "node --conditions=source playground.ts"
   },
   "devDependencies": {

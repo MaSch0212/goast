@@ -426,6 +426,33 @@ jobs:
           path: it-go-servers.log
           if-no-files-found: warn
 
+  it-go-clients:
+    name: Integration (go-clients)
+    needs: [output-check, images]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Setup Docker
+        uses: ./.github/actions/docker
+
+      - name: Run
+        shell: bash
+        run: pnpm test:integration:go-clients:check 2>&1 | tee it-go-clients.log
+
+      - name: Upload the output
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: it-go-clients-log
+          path: it-go-clients.log
+          if-no-files-found: warn
+
   # The two Kotlin client families share one directory and one script, so they split by `-t` rather
   # than by script name. Every filter string below is covered by `test/integration-tests/task-filters.test.ts`,
   # which asserts it still names a suite *in the directory the job runs* — without that, a renamed
