@@ -1,0 +1,75 @@
+{
+  go: {
+    models: {},
+    servers: {
+      'service-1': {
+        __source__: '<root>/test/specs/v3/tags-and-servers.yml#/tags/0',
+        registerFunction: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'RegisterAlphaRoutes',
+          packageName: 'api',
+          typeArguments: []
+        },
+        serviceInterface: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'AlphaService',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'service-2': {
+        __source__: 'tag:service-2',
+        registerFunction: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'RegisterService2Routes',
+          packageName: 'api',
+          typeArguments: []
+        },
+        serviceInterface: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Service2Service',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'service-3': {
+        __source__: 'tag:Beta',
+        registerFunction: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'RegisterBetaRoutes',
+          packageName: 'api',
+          typeArguments: []
+        },
+        serviceInterface: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'BetaService',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'service-4': {
+        __source__: 'tag:Tag With Space',
+        registerFunction: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'RegisterTagWithSpaceRoutes',
+          packageName: 'api',
+          typeArguments: []
+        },
+        serviceInterface: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'TagWithSpaceService',
+          packageName: 'api',
+          typeArguments: []
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,628 @@
+{
+  go: {
+    clients: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/SelfRecursive',
+        fields: {
+          child: {
+            name: 'Child',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'SelfRecursive',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'SelfRecursive',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/MutualA',
+        fields: {
+          b: {
+            name: 'B',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'MutualB',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'MutualA',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/RecursiveThroughArray',
+        fields: {
+          items: {
+            name: 'Items',
+            type: GoSlice {
+              elementType: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Schema13',
+                packageName: 'api',
+                typeArguments: []
+              },
+              inject: {}
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'RecursiveThroughArray',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/RecursiveThroughArray/properties/items',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: 'example.com/generated/api',
+            inject: {},
+            name: 'Schema13',
+            packageName: 'api',
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/RecursiveThroughArray/properties/items/items',
+        fields: {
+          nested: {
+            name: 'Nested',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'RecursiveThroughArray',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Schema13',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/RecursiveThroughArray',
+        fields: {
+          items: {
+            name: 'Items',
+            type: GoSlice {
+              elementType: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Schema13',
+                packageName: 'api',
+                typeArguments: []
+              },
+              inject: {}
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'RecursiveThroughArray',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/RecursiveRequired',
+        fields: {
+          name: {
+            name: 'Name',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          parent: {
+            name: 'Parent',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'RecursiveRequired',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'RecursiveRequired',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/RecursiveRequired/properties/name',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/RecursiveRequired',
+        fields: {
+          name: {
+            name: 'Name',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          parent: {
+            name: 'Parent',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'RecursiveRequired',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'RecursiveRequired',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/RecursiveThroughMap',
+        fields: undefined,
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'RecursiveThroughMap',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/RecursiveThroughMap',
+        fields: undefined,
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'RecursiveThroughMap',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/SelfRecursive/properties/name',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/TreeNode',
+        fields: {
+          children: {
+            name: 'Children',
+            type: GoSlice {
+              elementType: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'TreeNode',
+                packageName: 'api',
+                typeArguments: []
+              },
+              inject: {}
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          parent: {
+            name: 'Parent',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'TreeNode',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'TreeNode',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/TreeNode/properties/name',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/TreeNode',
+        fields: {
+          children: {
+            name: 'Children',
+            type: GoSlice {
+              elementType: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'TreeNode',
+                packageName: 'api',
+                typeArguments: []
+              },
+              inject: {}
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          parent: {
+            name: 'Parent',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'TreeNode',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'TreeNode',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/TreeNode/properties/children',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: 'example.com/generated/api',
+            inject: {},
+            name: 'TreeNode',
+            packageName: 'api',
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/TreeNode',
+        fields: {
+          children: {
+            name: 'Children',
+            type: GoSlice {
+              elementType: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'TreeNode',
+                packageName: 'api',
+                typeArguments: []
+              },
+              inject: {}
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          parent: {
+            name: 'Parent',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'TreeNode',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'TreeNode',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/SelfRecursive',
+        fields: {
+          child: {
+            name: 'Child',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'SelfRecursive',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'SelfRecursive',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/SelfRecursiveArray',
+        fields: {
+          children: {
+            name: 'Children',
+            type: GoSlice {
+              elementType: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'SelfRecursiveArray',
+                packageName: 'api',
+                typeArguments: []
+              },
+              inject: {}
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'SelfRecursiveArray',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/SelfRecursiveArray/properties/children',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: 'example.com/generated/api',
+            inject: {},
+            name: 'SelfRecursiveArray',
+            packageName: 'api',
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/SelfRecursiveArray',
+        fields: {
+          children: {
+            name: 'Children',
+            type: GoSlice {
+              elementType: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'SelfRecursiveArray',
+                packageName: 'api',
+                typeArguments: []
+              },
+              inject: {}
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'SelfRecursiveArray',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/MutualA',
+        fields: {
+          b: {
+            name: 'B',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'MutualB',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'MutualA',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/MutualB',
+        fields: {
+          a: {
+            name: 'A',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'MutualA',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'MutualB',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/recursive-refs.yml#/components/schemas/MutualB',
+        fields: {
+          a: {
+            name: 'A',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'MutualA',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'MutualB',
+          packageName: 'api',
+          typeArguments: []
+        }
+      }
+    }
+  }
+}

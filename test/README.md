@@ -13,12 +13,12 @@ required for tier 3 and for every other tier-4 target (the four Kotlin ones, the
 
 ## Tiers
 
-| #   | Tier        | Question                                              | Command                                                                              | Status                                                                                                                                                                                                                                                               |
-| --- | ----------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Unit        | Does this function do what it says?                   | `pnpm test`                                                                          | active                                                                                                                                                                                                                                                               |
-| 2   | Output      | Did the generated text change?                        | `pnpm test:output`                                                                   | active                                                                                                                                                                                                                                                               |
-| 3   | Compile     | Is the generated code valid in its language?          | `pnpm test:compile`                                                                  | active                                                                                                                                                                                                                                                               |
-| 4   | Integration | Does the generated code behave correctly on the wire? | `pnpm test:integration` / `:kotlin` / `:controllers` / `:angular` / `:k6` / `:stubs` | client direction: fetch-clients, angular-services, okhttp3-clients, spring-reactive-web-clients (`k6-clients` cannot be driven at all — see "The k6 leg" — and records a target-level load failure instead); server direction: spring-controllers, easy-network-stub |
+| #   | Tier        | Question                                              | Command                                                                                      | Status                                                                                                                                                                                                                                                                           |
+| --- | ----------- | ----------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Unit        | Does this function do what it says?                   | `pnpm test`                                                                                  | active                                                                                                                                                                                                                                                                           |
+| 2   | Output      | Did the generated text change?                        | `pnpm test:output`                                                                           | active                                                                                                                                                                                                                                                                           |
+| 3   | Compile     | Is the generated code valid in its language?          | `pnpm test:compile`                                                                          | active                                                                                                                                                                                                                                                                           |
+| 4   | Integration | Does the generated code behave correctly on the wire? | `pnpm test:integration` / `:kotlin` / `:controllers` / `:angular` / `:k6` / `:stubs` / `:go` | client direction: fetch-clients, angular-services, okhttp3-clients, spring-reactive-web-clients (`k6-clients` cannot be driven at all — see "The k6 leg" — and records a target-level load failure instead); server direction: spring-controllers, easy-network-stub, go-servers |
 
 ## Tier 1: unit tests
 
@@ -482,6 +482,9 @@ between when running it locally:
 - **512 Kotlin** units (ten profiles — `models`, `okhttp3-clients`, `spring-reactive-web-clients`, and
   `spring-controllers` in both its plain and `-strict` forms, each crossed with Spring Boot 3 and 4) — compiled in one
   Gradle build inside the `kotlin` image.
+- **Go** units (`models` and `servers`) — checked inside the `go` image (`golang:1.27-alpine`) by its `check.sh`, which
+  copies each unit out of the read-only tree, gives it a `go.mod` and runs `gofmt -l`, `go build` and `go vet` on it. A
+  file `gofmt` would change is recorded as a diagnostic without a position, so formatting is part of the gate.
 
 **Docker is required for the containerized TypeScript and Kotlin groups.** On a checkout without it,
 `pnpm test:compile` does not degrade gracefully — it produces one real `requireDocker` failure per containerized
@@ -522,8 +525,8 @@ every host file crosses a slow file share; with the project dir bind-mounted, th
 timeout on Windows. Measured there with the project dir in Docker: 7m00s cold, 1m48s warm, 4m57s ephemeral.
 `pnpm test:compile:clean` removes the volume.
 
-**CI runs this tier now.** `.github/workflows/build.yml`'s `compile-ts` and `compile-kotlin` jobs run
-`test:compile:ts:check` and `test:compile:kotlin:check` respectively, gated behind `output-check` and `images` — see
+**CI runs this tier now.** `.github/workflows/build.yml`'s `compile-ts`, `compile-kotlin` and `compile-go` jobs run
+`test:compile:ts:check`, `test:compile:kotlin:check` and `test:compile:go:check` respectively, gated behind `output-check` and `images` — see
 "CI" below for the job graph and why that ordering matters. A green pull request is no longer silent about tier 3;
 before this phase, the only thing enforcing a committed diagnostics file against reality was somebody running
 `pnpm test:compile:check` by hand.
@@ -545,7 +548,7 @@ is the question this tier asks, and warning output is far more volatile across c
 recording warnings would turn a routine toolchain bump into mass snapshot churn that buries the real changes.
 
 **A non-zero compiler exit with zero parsed diagnostics is a harness failure, not a clean unit.** Every runner
-(the host `tsc` runner, `tsc.ts`, `kotlin.ts`) checks this explicitly and throws rather than recording an empty diagnostic
+(the host `tsc` runner, `tsc.ts`, `kotlin.ts`, `go.ts`) checks this explicitly and throws rather than recording an empty diagnostic
 list, because the alternative is a gate that goes vacuously green the moment a compiler's output format changes
 underneath its parser — a green run here is a real green run, not the parser having silently stopped working.
 
@@ -563,6 +566,7 @@ why bumping `typescript` is a tier-3 change — see "The TypeScript version pin"
   for the synthesized per-unit Gradle build.
 - `test/docker/node/` (`Dockerfile`, `package.json`) pins the TypeScript compiler and npm packages for the containerized
   TypeScript group.
+- `test/docker/go/Dockerfile` pins the Go toolchain (`golang:1.27-alpine`) for the Go group.
 
 The Gradle build runs `--offline`, so **a new dependency has to be added to both the warmup project and `DEPENDENCIES`**
 — nothing keeps them in sync automatically, and this drift has already caused a real offline-resolution failure on this
@@ -1072,6 +1076,25 @@ pnpm test:integration:stubs                    # write mode: the easy-network-st
 pnpm test:integration:stubs:check              # check mode: the easy-network-stub target, needs Docker
 ```
 
+### The `go-servers` leg
+
+`test/integration/go-servers/` drives the `go/servers` profile's kitchen-sink tree in the tier-3 `go` image.
+`build.ts`'s `buildCommand()` copies the read-only tree and `driver/main.go` into one module
+(`example.com/generated`, the generators' default `modulePath`), builds it and `exec`s the server. The driver
+implements the four generated service interfaces the way the Spring delegates do: each method asserts the decoded
+request against the case table and returns the declared response, and a mismatch is answered `599 MISMATCH …`
+through `WithErrorHandler`. Every other error goes to the generated `DefaultErrorHandler`, so how the runtime answers
+a request it cannot decode is part of what is recorded.
+
+Before writing any artifact, the case loop probes `/widgets/no-such-case` and requires that `599`: a driver that
+stopped asserting would otherwise record every case as conforming. All server cases conform today, so the leg
+commits no artifacts.
+
+```bash
+pnpm test:integration:go                       # write mode: the go-servers target, needs Docker
+pnpm test:integration:go:check                 # check mode: the go-servers target, needs Docker
+```
+
 ## CI
 
 `.github/workflows/build.yml` runs every tier above as its own job, so a failure names the tier that produced it rather
@@ -1167,9 +1190,9 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 ```
 
-`publish` pushes `@goast/core`, `@goast/kotlin` and `@goast/typescript` to npm and creates a git tag per
+`publish` pushes `@goast/core`, `@goast/kotlin`, `@goast/typescript` and `@goast/go` to npm and creates a git tag per
 package, one after another. A run on `main` can be partway through that sequence when a newer push supersedes it;
-cancelling it mid-flight would leave the three packages at different published versions with no way to roll back. That
+cancelling it mid-flight would leave the four packages at different published versions with no way to roll back. That
 is the one case worth protecting, and `github.ref` is what identifies it — a pull request's `ref` is
 `refs/pull/<n>/merge` and never matches, so PRs cancel as they always did, and so now do pushes to `testing-next`, which
 publish nothing and have nothing mid-flight worth keeping.
@@ -1263,8 +1286,8 @@ check before it compiles anything.
 
 `test/harness` is a `private` workspace package (`test/harness/package.json`, listed in `pnpm-workspace.yaml`). Test
 code imports it as `@goast/test-harness` straight from its TypeScript source, so it has no build step. `pnpm build` and
-`pnpm pack:npm` select `./packages/*` only, so the harness is never built, packed or published. `@goast/kotlin` and
-`@goast/typescript` list it under `devDependencies` only, which never reach a consumer.
+`pnpm pack:npm` select `./packages/*` only, so the harness is never built, packed or published. `@goast/kotlin`,
+`@goast/typescript` and `@goast/go` list it under `devDependencies` only, which never reach a consumer.
 
 ## Layout
 

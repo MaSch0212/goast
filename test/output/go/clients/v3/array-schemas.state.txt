@@ -1,0 +1,467 @@
+{
+  go: {
+    clients: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfString',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfString',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfInlineObject',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: 'example.com/generated/api',
+            inject: {},
+            name: 'Schema12',
+            packageName: 'api',
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfInlineObject/items',
+        fields: {
+          name: {
+            name: 'Name',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          value: {
+            name: 'Value',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Schema12',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfInlineObject/items/properties/name',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfInlineObject/items/properties/value',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/UniqueArray',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/UniqueArray/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/BoundedArray',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/BoundedArray/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayNoItems',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'any',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfString/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfAnyOf',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'any',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfAnyOf/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfAnyOf/items/anyOf/0',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfAnyOf/items/anyOf/1',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties',
+        fields: {
+          nested: {
+            name: 'Nested',
+            type: GoSlice {
+              elementType: GoSlice {
+                elementType: GoReference {
+                  importPath: null,
+                  inject: {},
+                  name: 'string',
+                  packageName: null,
+                  typeArguments: []
+                },
+                inject: {}
+              },
+              inject: {}
+            }
+          },
+          refs: {
+            name: 'Refs',
+            type: GoSlice {
+              elementType: GoSlice {
+                elementType: GoReference {
+                  importPath: null,
+                  inject: {},
+                  name: 'string',
+                  packageName: null,
+                  typeArguments: []
+                },
+                inject: {}
+              },
+              inject: {}
+            }
+          },
+          strings: {
+            name: 'Strings',
+            type: GoSlice {
+              elementType: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              },
+              inject: {}
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'ObjectWithArrayProperties',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/strings',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/strings/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-27': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/refs',
+        type: GoSlice {
+          elementType: GoSlice {
+            elementType: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            },
+            inject: {}
+          },
+          inject: {}
+        }
+      },
+      'schema-28': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfString',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-29': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/nested',
+        type: GoSlice {
+          elementType: GoSlice {
+            elementType: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            },
+            inject: {}
+          },
+          inject: {}
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfRef',
+        type: GoSlice {
+          elementType: GoSlice {
+            elementType: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            },
+            inject: {}
+          },
+          inject: {}
+        }
+      },
+      'schema-30': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/nested/items',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-31': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ObjectWithArrayProperties/properties/nested/items/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfString',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfArray',
+        type: GoSlice {
+          elementType: GoSlice {
+            elementType: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            },
+            inject: {}
+          },
+          inject: {}
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfArray/items',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfArray/items/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfArrayOfRef',
+        type: GoSlice {
+          elementType: GoSlice {
+            elementType: GoSlice {
+              elementType: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              },
+              inject: {}
+            },
+            inject: {}
+          },
+          inject: {}
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/array-schemas.yml#/components/schemas/ArrayOfArrayOfRef/items',
+        type: GoSlice {
+          elementType: GoSlice {
+            elementType: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            },
+            inject: {}
+          },
+          inject: {}
+        }
+      }
+    }
+  }
+}
