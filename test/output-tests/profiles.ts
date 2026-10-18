@@ -6,6 +6,9 @@ import { CSharpHttpClientsGenerator } from '../../packages/csharp/src/generators
 import { CSharpControllersGenerator } from '../../packages/csharp/src/generators/services/controllers/controllers-generator.ts';
 import { CSharpFastEndpointsGenerator } from '../../packages/csharp/src/generators/services/fast-endpoints/fast-endpoints-generator.ts';
 import { CSharpMinimalApisGenerator } from '../../packages/csharp/src/generators/services/minimal-apis/minimal-apis-generator.ts';
+import { GoModelsGenerator } from '../../packages/go/src/generators/models/models-generator.ts';
+import { GoClientsGenerator } from '../../packages/go/src/generators/clients/clients-generator.ts';
+import { GoServersGenerator } from '../../packages/go/src/generators/servers/servers-generator.ts';
 import { KotlinModelsGenerator } from '../../packages/kotlin/src/generators/models/models-generator.ts';
 import { KotlinOkHttp3ClientsGenerator } from '../../packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-clients-generator.ts';
 import { KotlinSpringControllersGenerator } from '../../packages/kotlin/src/generators/services/spring-controllers/spring-controllers-generator.ts';
@@ -24,7 +27,7 @@ export type Profile = {
   /** Snapshot path segment, e.g. `spring-controllers@sb3-strict`. */
   name: string;
   /** Language directory under `test/output/`. */
-  language: 'csharp' | 'kotlin' | 'typescript';
+  language: 'csharp' | 'go' | 'kotlin' | 'typescript';
   /** Corpus versions this profile runs against. */
   versions: 'all' | SpecVersionDir[];
   /** Chains the generators and config this profile represents. */
@@ -146,5 +149,25 @@ export const profiles: Profile[] = [
     language: 'typescript',
     versions: 'all',
     configure: (g) => g.useType(TypeScriptModelsGenerator, base).useType(TypeScriptEasyNetworkStubsGenerator, base),
+  },
+
+  // Go.
+  {
+    name: 'models',
+    language: 'go',
+    versions: 'all',
+    configure: (g) => g.useType(GoModelsGenerator, base),
+  },
+  {
+    name: 'servers',
+    language: 'go',
+    versions: 'all',
+    configure: (g) => g.useType(GoModelsGenerator, base).useType(GoServersGenerator, base),
+  },
+  {
+    name: 'clients',
+    language: 'go',
+    versions: 'all',
+    configure: (g) => g.useType(GoModelsGenerator, base).useType(GoClientsGenerator, base),
   },
 ];

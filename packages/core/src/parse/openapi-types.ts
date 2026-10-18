@@ -1,14 +1,27 @@
+/**
+ * Reference Object (OpenAPI 2.0 and 3.x). Points to another definition, either within the same document or in an
+ * external file or URL.
+ */
 export type OpenApiReference = {
   /**
    * Allows for an external definition of this object.
    */
   $ref: string;
 };
+/**
+ * Base shape shared by the OpenAPI object types in this file. Adds specification extensions (`x-*` keys), an optional
+ * `$ref`, and an optional type-only `__marker` that tags the kind of object.
+ * @template TMarker The string literal that identifies the object kind, such as `'info'` or `'schema'`.
+ */
 export type OpenApiObject<TMarker extends string> = Record<`x-${string}`, unknown> &
   Partial<OpenApiReference> & {
     __marker?: TMarker;
   };
 
+/**
+ * Root object of an OpenAPI document. Accepts OpenAPI 2.0 (Swagger) as well as 3.0 and 3.1 documents. Fields marked
+ * as OpenAPI 2.0 belong to Swagger documents, and the remaining fields apply to 3.x.
+ */
 export type OpenApiDocument = OpenApiObject<'document'> & {
   /**
    * The OpenAPI (v3.x) version.
@@ -93,6 +106,10 @@ export type OpenApiDocument = OpenApiObject<'document'> & {
   securityDefinitions?: Record<string, OpenApiSecurityScheme>;
 };
 
+/**
+ * Info Object (OpenAPI 2.0 and 3.x). Provides metadata about the API, such as its title, version and license.
+ * The `summary` field exists only in OpenAPI 3.1.
+ */
 export type OpenApiInfo = OpenApiObject<'info'> & {
   /**
    * The title of the API.
@@ -123,6 +140,9 @@ export type OpenApiInfo = OpenApiObject<'info'> & {
    */
   license?: OpenApiLicense;
 };
+/**
+ * Contact Object (OpenAPI 2.0 and 3.x). Holds the contact information for the exposed API.
+ */
 export type OpenApiContact = OpenApiObject<'contact'> & {
   /**
    * The identifying name of the contact person/organization.
@@ -137,6 +157,10 @@ export type OpenApiContact = OpenApiObject<'contact'> & {
    */
   email?: string;
 };
+/**
+ * License Object (OpenAPI 2.0 and 3.x). Holds the license information for the exposed API.
+ * The `identifier` field, an SPDX license expression, exists only in OpenAPI 3.1.
+ */
 export type OpenApiLicense = OpenApiObject<'license'> & {
   /**
    * The license name used for the API.
@@ -152,6 +176,10 @@ export type OpenApiLicense = OpenApiObject<'license'> & {
   identifier?: string;
 };
 
+/**
+ * Server Object (OpenAPI 3.x). Provides connectivity information for a target server. OpenAPI 2.0 uses `host`,
+ * `basePath` and `schemes` on the document instead.
+ */
 export type OpenApiServer = OpenApiObject<'server'> & {
   /**
    * A URL to the target host. This URL supports Server Variables and MAY be relative, to indicate that the host location is relative to the location where the OpenAPI document is being served. Variable substitutions will be made when a variable is named in {brackets}.
@@ -166,6 +194,9 @@ export type OpenApiServer = OpenApiObject<'server'> & {
    */
   variables?: Record<string, OpenApiServerVariable>;
 };
+/**
+ * Server Variable Object (OpenAPI 3.x). Defines a substitution value for a variable in a Server Object's URL template.
+ */
 export type OpenApiServerVariable = OpenApiObject<'server-variable'> & {
   /**
    * An enumeration of string values to be used if the substitution options are from a limited set.
@@ -181,6 +212,10 @@ export type OpenApiServerVariable = OpenApiObject<'server-variable'> & {
   description?: string;
 };
 
+/**
+ * Fields shared by the OpenAPI 3.x Parameter and Header Objects. A Parameter Object adds `name` and `in`.
+ * @template TMarker The object kind, either `'parameter'` or `'header'`.
+ */
 export type OpenApiParameterBase<TMarker extends string> = OpenApiObject<'param-base'> & {
   /**
    * A brief description of the parameter. This could contain examples of use. CommonMark syntax MAY be used for rich text representation.
@@ -227,7 +262,14 @@ export type OpenApiParameterBase<TMarker extends string> = OpenApiObject<'param-
    */
   content?: Record<string, OpenApiMediaType>;
 } & { __pbMarker: TMarker };
+/**
+ * Header Object (OpenAPI 3.x). Describes a header of a response, or a header in an encoding.
+ * @see OpenApiParameterBase
+ */
 export type OpenApiHeader = OpenApiParameterBase<'header'>;
+/**
+ * Example Object (OpenAPI 3.x). Holds an example value, either inline or as an external URL.
+ */
 export type OpenApiExample = OpenApiObject<'example'> & {
   /**
    * Short description for the example.
@@ -246,6 +288,10 @@ export type OpenApiExample = OpenApiObject<'example'> & {
    */
   externalValue?: string;
 };
+/**
+ * Media Type Object (OpenAPI 3.x). Describes the schema, examples and encoding for one media type of a request or
+ * response body. OpenAPI 2.0 declares body schemas directly on parameters and responses instead.
+ */
 export type OpenApiMediaType = OpenApiObject<'media-type'> & {
   /**
    * The schema defining the type used for the component.
@@ -264,6 +310,9 @@ export type OpenApiMediaType = OpenApiObject<'media-type'> & {
    */
   encoding?: Record<string, OpenApiEncoding>;
 };
+/**
+ * Encoding Object (OpenAPI 3.x). Describes how a property of a multipart or form-urlencoded request body is encoded.
+ */
 export type OpenApiEncoding = OpenApiObject<'encoding'> & {
   /**
    * The Content-Type for encoding a specific property. Default value depends on the property type: for string with format being binary – application/octet-stream; for other primitive types – text/plain; for object - application/json; for array – the default is defined based on the inner type. The value can be a specific media type (e.g. application/json), a wildcard media type (e.g. image/*), or a comma-separated list of the two types.
@@ -287,7 +336,15 @@ export type OpenApiEncoding = OpenApiObject<'encoding'> & {
   allowReserved?: boolean;
 };
 
+/**
+ * HTTP methods that can be used as operation keys on a Path Item Object. OpenAPI 2.0 supports the same methods,
+ * except `trace`.
+ */
 export type OpenApiHttpMethod = 'get' | 'put' | 'post' | 'delete' | 'options' | 'head' | 'patch' | 'trace';
+/**
+ * Path Item Object (OpenAPI 2.0 and 3.x). Groups the operations and shared parameters for one path. The `summary`,
+ * `description` and `servers` fields exist only in OpenAPI 3.x.
+ */
 export type OpenApiPathItem = OpenApiObject<'path-item'> & {
   /**
    * An optional, string summary, intended to apply to all operations in this path.
@@ -311,8 +368,20 @@ export type OpenApiPathItem = OpenApiObject<'path-item'> & {
    */
   [method in OpenApiHttpMethod]?: OpenApiOperation;
 };
+/**
+ * Parameter locations known to the parser. OpenAPI 3.x defines `path`, `query`, `header` and `cookie`, and OpenAPI 2.0
+ * uses `body`.
+ */
 export type KnownOpenApiParameterTarget = 'path' | 'query' | 'header' | 'cookie' | 'body' | 'form';
+/**
+ * Parameter location. Accepts a known location or any other string.
+ * @see KnownOpenApiParameterTarget
+ */
 export type OpenApiParameterTarget = KnownOpenApiParameterTarget | string;
+/**
+ * Parameter Object (OpenAPI 2.0 and 3.x). Describes one parameter of an operation or path item. The `in` field gives
+ * the location of the parameter.
+ */
 export type OpenApiParameter = OpenApiParameterBase<'parameter'> & {
   /**
    * The name of the parameter. Parameter names are case sensitive.
@@ -323,6 +392,11 @@ export type OpenApiParameter = OpenApiParameterBase<'parameter'> & {
    */
   in?: OpenApiParameterTarget;
 };
+/**
+ * Operation Object (OpenAPI 2.0 and 3.x). Describes one API operation on a path, such as a GET on `/pets`.
+ * `consumes`, `produces` and `schemes` apply only to OpenAPI 2.0, while `requestBody`, `callbacks` and `servers`
+ * apply only to OpenAPI 3.x.
+ */
 export type OpenApiOperation = OpenApiObject<'operation'> & {
   /**
    * A list of tags for API documentation control. Tags can be used for logical grouping of operations by resources or any other qualifier.
@@ -386,8 +460,15 @@ export type OpenApiOperation = OpenApiObject<'operation'> & {
    * (OpenAPI v2) The MIME types the operation can produce. This overrides the produces definition at the OpenAPI Object. An empty value MAY be used to clear the global definition. Value MUST be as described under Mime Types.
    */
   produces?: Record<string, string[]>;
+  /**
+   * (OpenAPI v2) The transfer protocols used by this operation, such as `http`, `https`, `ws` or `wss`.
+   */
   schemes?: string[];
 };
+/**
+ * External Documentation Object (OpenAPI 2.0 and 3.x). Points to additional documentation that is kept outside
+ * the API description.
+ */
 export type OpenApiExternalDocumentation = OpenApiObject<'external-doc'> & {
   /**
    * A short description of the target documentation. CommonMark syntax MAY be used for rich text representation.
@@ -398,6 +479,10 @@ export type OpenApiExternalDocumentation = OpenApiObject<'external-doc'> & {
    */
   url: string;
 };
+/**
+ * Request Body Object (OpenAPI 3.x). Describes the body of an operation's request, keyed by media type.
+ * OpenAPI 2.0 uses a `body` parameter for this purpose.
+ */
 export type OpenApiRequestBody = OpenApiObject<'request-body'> & {
   /**
    * A brief description of the request body. This could contain examples of use. CommonMark syntax MAY be used for rich text representation.
@@ -412,6 +497,11 @@ export type OpenApiRequestBody = OpenApiObject<'request-body'> & {
    */
   required?: boolean;
 };
+/**
+ * Response Object (OpenAPI 2.0 and 3.x). Describes one response of an operation, keyed by HTTP status code or
+ * `default`. The `schema` and `examples` fields apply only to OpenAPI 2.0, while `content` and `links` apply only to
+ * OpenAPI 3.x.
+ */
 export type OpenApiResponse = OpenApiObject<'response'> & {
   /**
    * A short description of the response. CommonMark syntax MAY be used for rich text representation.
@@ -439,6 +529,9 @@ export type OpenApiResponse = OpenApiObject<'response'> & {
    */
   examples?: Record<string, unknown>;
 };
+/**
+ * Link Object (OpenAPI 3.x). Describes how a value from a response can be used to call another operation.
+ */
 export type OpenApiLink = OpenApiObject<'link'> & {
   /**
    * A relative or absolute reference to an OAS operation. This field is mutually exclusive of the operationId field, and MUST point to an Operation Object. Relative operationRef values MAY be used to locate an existing Operation Object in the OpenAPI definition.
@@ -466,6 +559,10 @@ export type OpenApiLink = OpenApiObject<'link'> & {
   server?: OpenApiServer;
 };
 
+/**
+ * Components Object (OpenAPI 3.x). Holds reusable objects that other parts of the document can reference with `$ref`.
+ * OpenAPI 2.0 places the equivalent definitions at the root of the document instead.
+ */
 export type OpenApiComponents = OpenApiObject<'components'> & {
   /**
    * An object to hold reusable OpenAPI objects.
@@ -509,12 +606,21 @@ export type OpenApiComponents = OpenApiObject<'components'> & {
   pathItems?: Record<string, OpenApiPathItem>;
 };
 
+/**
+ * Security Scheme Object (OpenAPI 2.0 and 3.x). A union of the known scheme kinds, told apart by their `type` field.
+ * The known kinds are `basic` (OpenAPI 2.0 only), `http` and `openIdConnect` (OpenAPI 3.x only), and `apiKey` and
+ * `oauth2` (both versions). Any other object is also accepted.
+ */
 export type OpenApiSecurityScheme =
   | OpenApiHttpSecurityScheme
   | OpenApiApiKeySecurityScheme
   | OpenApiOAuth2SecurityScheme
   | OpenApiOpenIdSecurityScheme
   | OpenApiObject<'security-scheme'>;
+/**
+ * Basic authentication security scheme (OpenAPI 2.0). OpenAPI 3.x expresses basic authentication as an `http`
+ * scheme with `scheme: 'basic'`.
+ */
 export type OpenApiBasicSecurityScheme = OpenApiObject<'security-scheme'> & {
   /**
    * The type of the security scheme.
@@ -525,6 +631,10 @@ export type OpenApiBasicSecurityScheme = OpenApiObject<'security-scheme'> & {
    */
   description?: string;
 };
+/**
+ * HTTP authentication security scheme (OpenAPI 3.x), such as `bearer` or `basic`. The credentials are sent in the
+ * `Authorization` header.
+ */
 export type OpenApiHttpSecurityScheme = OpenApiObject<'security-scheme'> & {
   /**
    * The type of the security scheme.
@@ -543,8 +653,20 @@ export type OpenApiHttpSecurityScheme = OpenApiObject<'security-scheme'> & {
    */
   bearerFormat?: string;
 };
+/**
+ * Locations where an API key can be sent. OpenAPI 2.0 supports `query` and `header`, and OpenAPI 3.x also supports
+ * `cookie`.
+ */
 export type KnownOpenApiApiKeySource = 'query' | 'header' | 'cookie';
+/**
+ * Location of an API key. Accepts a known location or any other string.
+ * @see KnownOpenApiApiKeySource
+ */
 export type OpenApiApiKeySource = KnownOpenApiApiKeySource | string;
+/**
+ * API key security scheme (OpenAPI 2.0 and 3.x). The key is sent in the query string, a header or a cookie, as
+ * named by `name`.
+ */
 export type OpenApiApiKeySecurityScheme = OpenApiObject<'security-scheme'> & {
   /**
    * The type of the security scheme.
@@ -563,8 +685,20 @@ export type OpenApiApiKeySecurityScheme = OpenApiObject<'security-scheme'> & {
    */
   in?: OpenApiApiKeySource;
 };
+/**
+ * OAuth 2.0 flow names known to the parser. OpenAPI 2.0 uses `implicit`, `password`, `application` and `accessCode`,
+ * and OpenAPI 3.x uses `implicit`, `password`, `clientCredentials` and `authorizationCode`.
+ */
 export type KnownOpenApiOAuth2SecurityFlow = 'implicit' | 'password' | 'application' | 'accessCode';
+/**
+ * OAuth 2.0 flow name. Accepts a known flow name or any other string.
+ * @see KnownOpenApiOAuth2SecurityFlow
+ */
 export type OpenApiOAuth2SecurityFlow = KnownOpenApiOAuth2SecurityFlow | string;
+/**
+ * OAuth 2.0 security scheme (OpenAPI 2.0 and 3.x). OpenAPI 3.x describes its flows in the `flows` object, while
+ * OpenAPI 2.0 uses the top-level `flow`, `scopes`, `authorizationUrl` and `tokenUrl` fields.
+ */
 export type OpenApiOAuth2SecurityScheme = OpenApiObject<'security-scheme'> & {
   /**
    * The type of the security scheme.
@@ -668,6 +802,9 @@ export type OpenApiOAuth2SecurityScheme = OpenApiObject<'security-scheme'> & {
    */
   tokenUrl?: string;
 };
+/**
+ * OpenID Connect security scheme (OpenAPI 3.x). The OAuth 2.0 configuration is discovered from `openIdConnectUrl`.
+ */
 export type OpenApiOpenIdSecurityScheme = OpenApiObject<'security-scheme'> & {
   /**
    * The type of the security scheme.
@@ -683,6 +820,9 @@ export type OpenApiOpenIdSecurityScheme = OpenApiObject<'security-scheme'> & {
   openIdConnectUrl: string;
 };
 
+/**
+ * Tag Object (OpenAPI 2.0 and 3.x). Adds a name and optional metadata to a tag that is used to group operations.
+ */
 export type OpenApiTag = OpenApiObject<'tag'> & {
   /**
    * The name of the tag.
@@ -698,9 +838,21 @@ export type OpenApiTag = OpenApiObject<'tag'> & {
   externalDocs?: OpenApiExternalDocumentation;
 };
 
+/**
+ * JSON Schema primitive type names known to the parser. `null` is a type in OpenAPI 3.1, while OpenAPI 3.0 expresses
+ * nullability with `nullable` instead.
+ */
 export type KnownOpenApiSchemaType = 'object' | 'array' | 'string' | 'number' | 'boolean' | 'integer' | 'null';
+/**
+ * JSON Schema type name. Accepts a known primitive type or any other string.
+ * @see KnownOpenApiSchemaType
+ */
 export type OpenApiSchemaType = KnownOpenApiSchemaType | string;
 
+/**
+ * Format names known to the parser. These include the OpenAPI formats, such as `int64`, `byte` and `password`, and
+ * the JSON Schema formats, such as `date-time` and `uri`. A format refines a `string`, `number` or `integer` schema.
+ */
 export type KnownOpenApiSchemaFormat =
   | 'int32'
   | 'int64'
@@ -727,8 +879,16 @@ export type KnownOpenApiSchemaFormat =
   | 'relative-json-pointer'
   | 'regex'
   | 'password';
+/**
+ * Schema format name. Accepts a known format or any other string.
+ * @see KnownOpenApiSchemaFormat
+ */
 export type OpenApiSchemaFormat = KnownOpenApiSchemaFormat | string;
 
+/**
+ * Schema Object (OpenAPI 2.0 and 3.x). Describes the data type of a value using JSON Schema keywords. OpenAPI 2.0 uses
+ * it for parameters, responses and `definitions`, and OpenAPI 3.x uses it for components, media types and parameters.
+ */
 export type OpenApiSchema = OpenApiObject<'schema'> & {
   /**
    * Type of the schema (e.g., object, array, string, number, boolean, integer).
@@ -905,6 +1065,10 @@ export type OpenApiSchema = OpenApiObject<'schema'> & {
   deprecated?: boolean;
 };
 
+/**
+ * Discriminator Object (OpenAPI 3.x). Names the property that selects between polymorphic schemas, and can map its
+ * values to schema names. OpenAPI 2.0 uses a plain string property name instead.
+ */
 export type OpenApiDiscriminator = OpenApiObject<'discriminator'> & {
   /**
    * The name of the property in the payload that will hold the discriminator value.
@@ -920,6 +1084,10 @@ export type OpenApiDiscriminator = OpenApiObject<'discriminator'> & {
     [key: string]: string;
   };
 };
+/**
+ * XML Object (OpenAPI 2.0 and 3.x). Controls how a schema is serialized as XML, such as its element name, its
+ * namespace, and whether it is an attribute.
+ */
 export type OpenApiXml = OpenApiObject<'xml'> & {
   /**
    * Replaces the name of the element/attribute used for the described schema property.

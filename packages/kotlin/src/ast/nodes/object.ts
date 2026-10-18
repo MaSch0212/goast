@@ -24,24 +24,71 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
+/**
+ * A member that can be written in the body of an object: an init block, a property, a function, or any appended value.
+ * @template TBuilder The type of the builder that the member is written to.
+ */
 export type KtObjectMember<TBuilder extends SourceBuilder> =
   | KtInitBlock<TBuilder>
   | KtProperty<TBuilder>
   | KtFunction<TBuilder>
   | BasicAppendValue<TBuilder>;
 
+/**
+ * Represents a Kotlin `object` declaration or object expression, such as `object Foo : Bar(1, 2), Baz { ... }`.
+ *
+ * Written in this order: the `data` and `companion` modifiers, the `object` keyword, the name, the supertypes with the
+ * base class constructor call, then the body. A named object is followed by a line break. An anonymous object, such as
+ * `object : Bar() {}`, is not, so it can be written inside another expression.
+ *
+ * @template TBuilder The type of the source builder the object is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see ktObject
+ */
 export class KtObject<TBuilder extends SourceBuilder, TInjects extends string = never> extends KtNode<
   TBuilder,
   TInjects | Injects
 > {
+  /**
+   * Whether the object is written with the `data` modifier, such as `data object Foo`.
+   * @default false
+   */
   public data: boolean;
+  /**
+   * The object name written after the `object` keyword. `null` writes an anonymous object, such as `object : Bar() {}`.
+   */
   public name: string | null;
+  /**
+   * The base class written after ` : `, followed by its constructor call in parentheses, such as `Bar()`. The call is
+   * always written, even without arguments. `null` writes no base class.
+   */
   public class: KtType<TBuilder> | null;
+  /**
+   * The arguments written inside the parentheses of the base class constructor call, separated by commas. Only written
+   * when `class` is set.
+   */
   public classArguments: (KtArgument<TBuilder> | KtValue<TBuilder>)[];
+  /**
+   * The interfaces written after the base class, separated by commas, such as `Bar, Baz`. Without a base class, they
+   * are written directly after ` : `. The clause is omitted when the list is empty.
+   */
   public implements: KtType<TBuilder>[];
+  /**
+   * The members written in the body, in the given order. Properties without a doc comment or annotations and plain
+   * strings are written without blank lines between them, other members are set off by blank lines. An empty list
+   * writes `{}` on one line.
+   */
   public members: KtObjectMember<TBuilder>[];
+  /**
+   * Whether the object is written with the `companion` modifier, such as `companion object`.
+   * @default false
+   */
   public companion: boolean;
 
+  /**
+   * Initializes a new instance of the KtObject class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.data = options.data ?? false;
@@ -97,6 +144,25 @@ export class KtObject<TBuilder extends SourceBuilder, TInjects extends string = 
 const createObject = <TBuilder extends SourceBuilder>(options?: Options<TBuilder>): KtObject<TBuilder> =>
   new KtObject<TBuilder>(options ?? {});
 
+/**
+ * Factory for creating object nodes. The `write` function writes one or more object nodes to a builder.
+ *
+ * @param options The settings of the object. See `KtObject` for the available properties.
+ * @example
+ * ```ts
+ * ktObject({
+ *   name: 'Foo',
+ *   class: 'Bar',
+ *   classArguments: ['1', '2'],
+ *   implements: ['Baz'],
+ *   members: [ktProperty('x', { type: 'Int', default: '1' })],
+ * });
+ * // Emits:
+ * // object Foo : Bar(1, 2), Baz {
+ * //     val x: Int = 1
+ * // }
+ * ```
+ */
 export const ktObject: typeof createObject & { write: typeof writeKtNodes } = Object.assign(createObject, {
   write: writeKtNodes,
 });

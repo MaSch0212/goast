@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { CASE_LINE_PREFIX, DRIVER_UNITS, parseCaseLines, synthesizeDriverBuild } from './build.ts';
+import { CASE_LINE_PREFIX, parseCaseLines } from '../case-lines.ts';
+import { DRIVER_UNITS, synthesizeDriverBuild } from './build.ts';
 
 describe('DRIVER_UNITS', () => {
   it('drives both client families on both Spring Boot lines', () => {

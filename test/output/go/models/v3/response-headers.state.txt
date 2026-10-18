@@ -1,0 +1,209 @@
+{
+  go: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/components/schemas/Thing',
+        fields: {
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          label: {
+            name: 'Label',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Thing',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//many/get/responses/200/headers/X-Array-Header/schema',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//many/get/responses/200/headers/X-Array-Header/schema/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//required/get/responses/200/headers/X-Required-Header/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//deprecated/get/responses/200/headers/X-Deprecated-Header/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//no-content-headers/get/responses/204/headers/X-Rate-Limit/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//both/get/responses/200/headers/X-Rate-Limit/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/components/schemas/Thing',
+        fields: {
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          label: {
+            name: 'Label',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Thing',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/components/schemas/Thing/properties/id',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/components/schemas/Thing/properties/label',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/components/headers/SharedHeader/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//one/get/responses/200/headers/X-Rate-Limit/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//many/get/responses/200/headers/X-String-Header/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//many/get/responses/200/headers/X-Int-Header/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/response-headers.yml#/paths//many/get/responses/200/headers/X-Bool-Header/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'bool',
+          packageName: null,
+          typeArguments: []
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,377 @@
+{
+  go: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/components/schemas/Permission',
+        fields: undefined,
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Permission',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/components/schemas/Resource/properties/id',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/components/schemas/Resource/properties/type',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/{resourceType}/get/parameters/0/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/components/schemas/Permission',
+        fields: undefined,
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Permission',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/{resourceType}/get/parameters/2/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/{resourceType}/get/responses/200/content/application/json/schema',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: 'example.com/generated/api',
+            inject: {},
+            name: 'Resource',
+            packageName: 'api',
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/components/schemas/Resource',
+        fields: {
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          type: {
+            name: 'Type',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Resource',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/{resourceType}/{resourceId}/{permission}/get/parameters/0/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/{resourceType}/{resourceId}/{permission}/get/parameters/1/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/components/schemas/Permission',
+        fields: undefined,
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Permission',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/components/schemas/Permission',
+        fields: undefined,
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Permission',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/{resourceType}/{resourceId}/{permission}/get/responses/200/content/application/json/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'bool',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/{resourceType}/{resourceId}/{permission}/put/parameters/0/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/{resourceType}/{resourceId}/{permission}/put/parameters/1/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/components/schemas/Permission',
+        fields: undefined,
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Permission',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/{resourceType}/{resourceId}/{permission}/put/parameters/3/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'bool',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/components/schemas/Resource',
+        fields: {
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          type: {
+            name: 'Type',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Resource',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/get/parameters/1/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/get/parameters/2/schema',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/get/parameters/2/schema/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/get/parameters/3/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/paths//resources/get/responses/200/content/application/json/schema',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: 'example.com/generated/api',
+            inject: {},
+            name: 'Resource',
+            packageName: 'api',
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/components/schemas/Resource',
+        fields: {
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          type: {
+            name: 'Type',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Resource',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/service-endpoints-uri-parameters.yml#/components/schemas/Resource',
+        fields: {
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          type: {
+            name: 'Type',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Resource',
+          packageName: 'api',
+          typeArguments: []
+        }
+      }
+    },
+    servers: {
+      'service-1': {
+        __source__: 'tag:Resources',
+        registerFunction: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'RegisterResourcesRoutes',
+          packageName: 'api',
+          typeArguments: []
+        },
+        serviceInterface: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'ResourcesService',
+          packageName: 'api',
+          typeArguments: []
+        }
+      }
+    }
+  }
+}

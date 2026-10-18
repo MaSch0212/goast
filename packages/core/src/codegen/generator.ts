@@ -38,6 +38,15 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
     this._parser = parser;
   }
 
+  /**
+   * Adds a generation provider to the pipeline. Providers run in the order they were added.
+   * @template PInput The input the provider requires. The output of the providers added so far must satisfy it.
+   * @template POutput The output produced by the provider.
+   * @template PConfig The type of the provider-specific configuration.
+   * @param provider The provider to add. Its output is deep-merged into the input of the following providers.
+   * @param config The provider-specific configuration that is passed to the provider when it runs.
+   * @returns A new generator whose output type includes the output of the added provider.
+   */
   public use<PInput extends OpenApiGeneratorInput, POutput extends OpenApiGeneratorOutput, PConfig extends AnyConfig>(
     provider: ActionProvider<OpenApiGenerationProviderFn<VInput<PInput, TOutput>, POutput, PConfig>>,
     config?: Partial<PConfig>,
@@ -46,6 +55,17 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
     return new _OpenApiGenerator<Merge<[TOutput, POutput]>>(this._config, [...this._providers], this._parser);
   }
 
+  /**
+   * Adds a generation provider from a class. A new instance of the class is created when the generator runs,
+   * and its `generate` method is called to produce the output.
+   * @template PInput The input the provider requires. The output of the providers added so far must satisfy it.
+   * @template POutput The output produced by the provider.
+   * @template PConfig The type of the provider-specific configuration.
+   * @param type The class of the provider. It must have a constructor without parameters.
+   * @param config The provider-specific configuration that is passed to the provider when it runs.
+   * @returns A new generator whose output type includes the output of the added provider.
+   * @see OpenApiGenerationProvider
+   */
   public useType<
     PInput extends OpenApiGeneratorInput,
     POutput extends OpenApiGeneratorOutput,
@@ -57,6 +77,16 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
     return this.use(ActionProvider.fromType(type, 'generate'), config);
   }
 
+  /**
+   * Adds a generation provider from a function. The function is called when the generator runs.
+   * @template PInput The input the function requires. The output of the providers added so far must satisfy it.
+   * @template POutput The output produced by the function.
+   * @template PConfig The type of the provider-specific configuration.
+   * @param fn The function that produces the output of the provider.
+   * @param config The provider-specific configuration that is passed to the function when it runs.
+   * @returns A new generator whose output type includes the output of the added provider.
+   * @see OpenApiGenerationProviderFn
+   */
   public useFn<PInput extends TOutput, POutput extends OpenApiGeneratorOutput, PConfig extends AnyConfig>(
     fn: OpenApiGenerationProviderFn<VInput<PInput, TOutput>, POutput, PConfig>,
     config?: Partial<PConfig>,
@@ -64,6 +94,16 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
     return this.use(ActionProvider.fromFn(fn), config);
   }
 
+  /**
+   * Adds a generation provider from an object. Its `generate` method is called when the generator runs.
+   * @template PInput The input the provider requires. The output of the providers added so far must satisfy it.
+   * @template POutput The output produced by the provider.
+   * @template PConfig The type of the provider-specific configuration.
+   * @param value The object that produces the output of the provider.
+   * @param config The provider-specific configuration that is passed to the provider when it runs.
+   * @returns A new generator whose output type includes the output of the added provider.
+   * @see OpenApiGenerationProvider
+   */
   public useValue<PInput extends TOutput, POutput extends OpenApiGeneratorOutput, PConfig extends AnyConfig>(
     value: OpenApiGenerationProvider<VInput<PInput, TOutput>, POutput, PConfig>,
     config?: Partial<PConfig>,
@@ -71,6 +111,14 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
     return this.use(ActionProvider.fromValue(value, 'generate'), config);
   }
 
+  /**
+   * Runs all added generation providers in order on already parsed API data.
+   * The output directory and the `outputDir` of each provider that defines one are created, or emptied first if
+   * `clearOutputDir` is enabled. Each provider receives the merged output of the providers that ran before it.
+   * @template T The type of the parsed and transformed API data.
+   * @param data The parsed and transformed API data of the OpenAPI specifications.
+   * @returns The merged output of all providers.
+   */
   public async generate<T extends ApiData>(data: T): Promise<TOutput> {
     const absOutputPath = resolve(this._config.outputDir);
     if (this._config.clearOutputDir) {
@@ -107,11 +155,24 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
     return input;
   }
 
+  /**
+   * Parses and transforms the given OpenAPI specification files, then runs the generation providers on the result.
+   * @param fileNames The paths of the specification files. Each argument can be a single path or an array of paths.
+   * @returns The merged output of all providers.
+   */
   public async parseAndGenerate(...fileNames: (string | string[])[]): Promise<TOutput> {
     const data = await this._parser.parseApisAndTransform(...fileNames);
     return await this.generate(data);
   }
 
+  /**
+   * Parses and transforms all OpenAPI specification files in a directory, then runs the generation providers on the
+   * result. Only files with the extensions `.json`, `.yaml` and `.yml` are considered. The directory is scanned
+   * non-recursively unless `options.recursive` is enabled.
+   * @param dir The directory that contains the specification files.
+   * @param options Options for scanning the directory, including an optional filter for the files to consider.
+   * @returns The merged output of all providers.
+   */
   public async parseAndGenerateFromDir(dir: string, options?: Partial<DirectoryScanOptions>): Promise<TOutput> {
     const filter = (file: string) =>
       (file.endsWith('.yml') || file.endsWith('.yaml') || file.endsWith('.json')) && (options?.filter?.(file) ?? true);
@@ -119,7 +180,34 @@ class _OpenApiGenerator<TOutput extends OpenApiGeneratorInput> {
   }
 }
 
+/**
+ * Generates output from OpenAPI specifications by running a pipeline of generation providers.
+ * Providers are added with `useType`, `useFn` or `useValue` and run in the order they were added. Each provider can
+ * read the output of the providers before it from `ctx.input`.
+ * @example
+ * ```ts
+ * import { OpenApiGenerator } from '@goast/core';
+ * import { TypeScriptModelsGenerator } from '@goast/typescript';
+ *
+ * const generator = new OpenApiGenerator()
+ *   // Add a generator using a class
+ *   .useType(TypeScriptModelsGenerator)
+ *   // Add a generator using a function that can read the output of the previous generator from `ctx.input`
+ *   .useFn((ctx, cfg) => {
+ *     // Do the generation
+ *     return {}; // Return information about the generated files so it can be used by other generators
+ *   });
+ *
+ * // Generate for all OpenAPI specification files in a directory
+ * await generator.parseAndGenerateFromDir('path/to/openapi/specs');
+ * ```
+ */
 export class OpenApiGenerator extends _OpenApiGenerator<{}> {
+  /**
+   * Initializes a new instance of the OpenApiGenerator class.
+   * @param config The configuration to use. Options that are not specified fall back to
+   * `defaultOpenApiGeneratorConfig`.
+   */
   constructor(config?: Partial<OpenApiGeneratorConfig>) {
     super(
       { ...defaultOpenApiGeneratorConfig, ...config },
@@ -152,15 +240,35 @@ function mergeDeep<T extends Record<string, unknown>, U extends Record<string, u
   return mergeDeep(target, ...sources);
 }
 
+/**
+ * The default configuration of a generation provider. The options of `OpenApiGeneratorConfig` become optional and fall
+ * back to the generator configuration, while the provider-specific options keep their own optionality.
+ * @template T The type of the provider configuration.
+ */
 export type DefaultGenerationProviderConfig<T extends AnyConfig> = Omit<T, keyof OpenApiGeneratorConfig> &
   Partial<Pick<T, keyof OpenApiGeneratorConfig>>;
 
+/**
+ * Base class for generation providers. Subclasses implement `buildContext`, which creates a provider-specific context
+ * from the generator context and configuration, and `onGenerate`, which produces the output from that context.
+ * @template TInput The type of the merged output of the providers that ran before.
+ * @template TOutput The type of the output produced by the provider.
+ * @template TConfig The type of the provider-specific configuration.
+ * @template TContext The type of the context that is created by `buildContext` and consumed by `onGenerate`.
+ * @see OpenApiGenerationProvider
+ */
 export abstract class OpenApiGenerationProviderBase<
   TInput extends OpenApiGeneratorInput,
   TOutput extends OpenApiGeneratorOutput,
   TConfig extends AnyConfig,
   TContext extends OpenApiGenerationProviderContext<TInput, TConfig>,
 > implements OpenApiGenerationProvider<TInput, TOutput, TConfig> {
+  /**
+   * Generates the output of this provider by building its context and then calling `onGenerate` with it.
+   * @param context The context of the generator, including the output of the providers that ran before.
+   * @param config The provider-specific configuration, if any.
+   * @returns The output of this provider.
+   */
   public async generate(
     context: OpenApiGeneratorContext<TInput>,
     config?: Partial<TConfig> | undefined,

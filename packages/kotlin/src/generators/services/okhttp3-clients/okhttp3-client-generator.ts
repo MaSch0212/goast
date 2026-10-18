@@ -27,14 +27,47 @@ type Context = KotlinOkHttp3ClientGeneratorContext;
 type Output = KotlinOkHttp3ClientGeneratorOutput;
 type Builder = KotlinFileBuilder;
 
+/**
+ * Generates the API client class of one service. Implement this interface to replace the default client generation,
+ * and pass the implementation to the `KotlinOkHttp3ClientsGenerator` constructor.
+ *
+ * @template TOutput The type of the result that the generation returns.
+ * @see DefaultKotlinOkHttp3Generator
+ */
 export interface KotlinOkHttp3Generator<TOutput extends Output = Output> {
+  /**
+   * Generates the client class for the service in `ctx.service`.
+   *
+   * @param ctx The context of the service, with its endpoints, the generator configuration and the reference factories.
+   * @returns The name and package of the generated client class.
+   */
   generate(ctx: Context): MaybePromise<TOutput>;
 }
 
+/**
+ * The default generator of a service's API client. It writes one Kotlin class to
+ * `{outputDir}/{packagePath}/{ClientName}.kt`, where `packagePath` is `packageName` followed by `packageSuffix`,
+ * with the dots replaced by slashes, and `ClientName` is the service name in `typeNameCasing` followed by `ApiClient`.
+ * With the default configuration, the service `pet` is written to
+ * `{outputDir}/com/openapi/generated/api/client/PetApiClient.kt`.
+ *
+ * The generated class extends `ApiClient`. For each endpoint it has the endpoint method, a `{name}WithHttpInfo`
+ * method that returns the whole `ApiResponse`, and a private `{name}RequestConfig` method that builds the request.
+ * It returns
+ * `{ typeName, packageName }`, which `KotlinOkHttp3ClientsGenerator` publishes under `kotlin.clients[serviceId]`.
+ *
+ * @see KotlinOkHttp3ClientsGenerator
+ */
 export class DefaultKotlinOkHttp3Generator
   extends KotlinFileGenerator<Context, Output>
   implements KotlinOkHttp3Generator
 {
+  /**
+   * Generates the client class file for the service in `ctx.service` and writes it to disk.
+   *
+   * @param ctx The context of the service to generate the client for.
+   * @returns The `typeName` and `packageName` of the generated client class.
+   */
   public generate(ctx: KotlinOkHttp3ClientGeneratorContext): MaybePromise<Output> {
     const typeName = this.getApiClientName(ctx, {});
     const packageName = this.getPackageName(ctx, {});

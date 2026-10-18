@@ -1,7 +1,7 @@
 import type { SpecVersionDir } from '../specs.ts';
 
 /** The target languages tier 3 compiles. */
-export type CompileLanguage = 'csharp' | 'kotlin' | 'typescript';
+export type CompileLanguage = 'csharp' | 'go' | 'kotlin' | 'typescript';
 
 /**
  * One committed generated tree that must be valid in its language.

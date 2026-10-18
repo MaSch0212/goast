@@ -2,9 +2,23 @@ import { isNullish } from '../common.utils.ts';
 import type { Nullable, SingleOrMultiple } from '../type.utils.ts';
 import { defaultStringBuilderOptions, type StringBuilderOptions } from './options.ts';
 
+/**
+ * A callback that receives a builder and appends content to it.
+ * @template TBuilder The builder type that is passed to the callback.
+ */
 export type BuilderFn<TBuilder extends StringBuilder> = (builder: TBuilder) => void;
+
+/**
+ * A primitive value that can be appended to a `StringBuilder`. Numbers and booleans are converted with `toString`.
+ */
 export type Primitive = string | number | boolean;
 
+/**
+ * A value, or an array of values, that can be appended to a `StringBuilder`. Nullish values are ignored, arrays are
+ * flattened, and functions are invoked with the builder.
+ * @template TBuilder The builder type that the value is appended to.
+ * @template TAdditionalAppends Additional value types that the builder accepts.
+ */
 export type AppendParam<TBuilder extends StringBuilder, TAdditionalAppends> = SingleOrMultiple<
   | Primitive
   | null
@@ -19,6 +33,10 @@ export type AppendParam<TBuilder extends StringBuilder, TAdditionalAppends> = Si
     }
 >;
 
+/**
+ * The key of the method that carries the additional append types of a `StringBuilder` subclass in the type system.
+ * The method is never called at runtime.
+ */
 export const AdditionalAppendsSymbol = Symbol('AdditionalAppends');
 
 /**
@@ -28,10 +46,17 @@ export class StringBuilder<TAdditionalAppends = never> {
   private readonly _options: StringBuilderOptions;
   protected str: string = '';
 
+  /**
+   * Type-only marker for the additional append types. Calling it throws, because it must never be called at runtime.
+   * @param _ The additional append value. Not used.
+   */
   [AdditionalAppendsSymbol](_: TAdditionalAppends): void {
     throw new Error('This method should never be called.');
   }
 
+  /**
+   * Gets the options used by this instance.
+   */
   public get options(): StringBuilderOptions {
     return this._options;
   }

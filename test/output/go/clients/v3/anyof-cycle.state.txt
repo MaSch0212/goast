@@ -1,0 +1,393 @@
+{
+  go: {
+    clients: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminator',
+        fields: {
+          aValue: {
+            name: 'AValue',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          bValue: {
+            name: 'BValue',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          kind: {
+            name: 'Kind',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'AnyOfDiscriminator',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorB/allOf/1/properties/bValue',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorA/allOf/1',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorA/allOf/1/properties/aValue',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminator/properties/kind',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorA',
+        fields: {
+          aValue: {
+            name: 'AValue',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          bValue: {
+            name: 'BValue',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          kind: {
+            name: 'Kind',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'AnyOfDiscriminatorA',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorA',
+        fields: {
+          aValue: {
+            name: 'AValue',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          bValue: {
+            name: 'BValue',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          kind: {
+            name: 'Kind',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'AnyOfDiscriminatorA',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminator',
+        fields: {
+          aValue: {
+            name: 'AValue',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          bValue: {
+            name: 'BValue',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          kind: {
+            name: 'Kind',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'AnyOfDiscriminator',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorB',
+        fields: {
+          aValue: {
+            name: 'AValue',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          bValue: {
+            name: 'BValue',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          kind: {
+            name: 'Kind',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'AnyOfDiscriminatorB',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorB',
+        fields: {
+          aValue: {
+            name: 'AValue',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          bValue: {
+            name: 'BValue',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          kind: {
+            name: 'Kind',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'AnyOfDiscriminatorB',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminator',
+        fields: {
+          aValue: {
+            name: 'AValue',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          bValue: {
+            name: 'BValue',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          kind: {
+            name: 'Kind',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'AnyOfDiscriminator',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/anyof-cycle.yml#/components/schemas/AnyOfDiscriminatorB/allOf/1',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      }
+    }
+  }
+}

@@ -19,14 +19,36 @@ type LoadedDocument = {
   dereferencedComponents: Map<string, Deref<OpenApiObject<string>>>;
 };
 
+/**
+ * Loads OpenAPI 2.0, 3.0 and 3.1 documents from files or HTTP(S) URLs, in JSON or YAML, and resolves their `$ref`
+ * references, both local and remote. Dereferenced documents are then transformed into `ApiData`.
+ *
+ * Each document is loaded once per parser instance and cached. Relative file names are resolved against the current
+ * working directory, and relative `$ref` targets are resolved against the file that contains the reference.
+ * @example
+ * ```ts
+ * const parser = new OpenApiParser();
+ * const apiData = await parser.parseApisAndTransform('./petstore.yaml');
+ * ```
+ */
 export class OpenApiParser {
   private readonly _loadedDocuments = new Map<string, LoadedDocument>();
   private readonly _config: OpenApiParserOptions;
 
+  /**
+   * Creates a parser.
+   * @param config Options that override the defaults in `defaultOpenApiParserOptions`.
+   */
   constructor(config?: Partial<OpenApiParserOptions>) {
     this._config = { ...defaultOpenApiParserOptions, ...config };
   }
 
+  /**
+   * Parses one or more documents and transforms them into a single `ApiData` model. Each argument can be one file name
+   * or URL, or an array of them. Documents are parsed in parallel.
+   * @param fileNames File paths or HTTP(S) URLs, given individually or as arrays.
+   * @returns The API data built from all parsed documents.
+   */
   public async parseApisAndTransform(...fileNames: (string | string[])[]): Promise<ApiData> {
     const flatFileNames = ([] as string[]).concat(...fileNames);
     const apis = await Promise.all(flatFileNames.map((fileName) => this.parseApi(fileName)));
@@ -36,12 +58,28 @@ export class OpenApiParser {
     return transformed;
   }
 
+  /**
+   * Loads and dereferences a single document without transforming it. Relative paths are resolved against the current
+   * working directory, and HTTP(S) URLs are downloaded.
+   * @param fileName File path or HTTP(S) URL of the document.
+   * @returns The dereferenced document. Its `$ref` references are followed when properties are read.
+   * @example
+   * ```ts
+   * const doc = await parser.parseApi('./petstore.yaml');
+   * const title = doc.info?.title;
+   * ```
+   */
   public async parseApi(fileName: string): Promise<Deref<OpenApiDocument>> {
     const absoluteFilePath = this.isUrl(fileName) ? fileName : path.resolve(cwd(), fileName);
     const doc = await this.loadDocument(absoluteFilePath);
     return await this.dereference(absoluteFilePath, [], doc.document);
   }
 
+  /**
+   * Collects and transforms documents that were already dereferenced, for example by `parseApi`.
+   * @param apis The dereferenced documents to transform together.
+   * @returns The API data built from all given documents.
+   */
   public transformApis(apis: Deref<OpenApiDocument>[]): ApiData {
     const collectedData = collectOpenApi(apis);
     const transformedData = transformOpenApi(collectedData, this._config);

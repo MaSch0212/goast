@@ -1763,7 +1763,7 @@ fields `transformSchema` touches. `transformDocument` and `transformEndpoint` to
 - [ ] **Step 1: Write the shared context factory**
 
 Create `packages/core/src/transform/transform.test-utils.ts`. Mirror `transformOpenApi`'s own context literal
-(`packages/core/src/transform/transformer.ts:16-35`) exactly, so a test context and a production context cannot drift:
+(`packages/core/src/transform/transformer.ts:23-35`) exactly, so a test context and a production context cannot drift:
 
 ```ts
 import type { OpenApiCollectorData } from '../collect/types.ts';
@@ -2099,7 +2099,7 @@ it('reuses a service created by an earlier endpoint', () => {
 ```
 
 Note that the service created here has **no `$src`** — the object literal at
-`packages/core/src/transform/transform-endpoint.ts:60` omits it, while `transformTag` in `transform-document.ts` sets
+`packages/core/src/transform/transform-endpoint.ts:68` omits it, while `transformTag` in `transform-document.ts` sets
 it. Assert the actual behaviour:
 
 ```ts
@@ -2623,7 +2623,7 @@ was unfounded. **Do not change `generator.ts`.**
 
 - [ ] **Step 5: Pin `mergeDeep`'s array handling**
 
-`mergeDeep` (`packages/core/src/codegen/generator.ts:134`) checks `value && typeof value === 'object'` before
+`mergeDeep` (`packages/core/src/codegen/generator.ts:222`) checks `value && typeof value === 'object'` before
 `Array.isArray(value)`. Arrays are objects, so the first branch always wins and the `Array.isArray` branch — the one
 that concatenates — is unreachable.
 
@@ -2689,13 +2689,13 @@ person to "fix" it breaks a passing test with no explanation of why the test wan
 Read the reports from Tasks 5 through 11 and list every finding. The ones this plan already predicts, each of which
 must be **verified against the committed test and the source before you write it up** — a prediction is not evidence:
 
-1. **`mergeDeep`'s `Array.isArray` branch is unreachable** (`packages/core/src/codegen/generator.ts:134-152`). Arrays
+1. **`mergeDeep`'s `Array.isArray` branch is unreachable** (`packages/core/src/codegen/generator.ts:222-152`). Arrays
    satisfy `typeof value === 'object'`, so the concatenating branch below never runs and two providers contributing to
    one array key merge by index. Cite the Task 11 Step 5 test.
-2. **`combineParameters` matches on `name` alone** (`packages/core/src/transform/transform-endpoint.ts:253-264`),
+2. **`combineParameters` matches on `name` alone** (`packages/core/src/transform/transform-endpoint.ts:261-264`),
    ignoring `target`. OpenAPI identifies a parameter by `(name, in)`. A query parameter named `id` displaces a path
    parameter named `id`, so `/pets/{id}` can lose its path argument. Cite the Task 10 Step 4 test.
-3. **The implicit service has no `$src`** (`packages/core/src/transform/transform-endpoint.ts:60-67`) while a
+3. **The implicit service has no `$src`** (`packages/core/src/transform/transform-endpoint.ts:68-67`) while a
    tag-derived service does (`transform-document.ts:22-31`). A consumer reading `service.$src.file` crashes for
    untagged operations. Cite the Task 10 Step 2 test.
 4. **`statusCode: Number(status) || undefined`** (`transform-endpoint.ts:205`) maps `'0'` to `undefined` as well as

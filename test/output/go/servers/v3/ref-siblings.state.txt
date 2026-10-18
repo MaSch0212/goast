@@ -1,0 +1,125 @@
+{
+  go: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/ref-siblings.yml#/components/schemas/Target',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/ref-siblings.yml#/components/schemas/Target',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/ref-siblings.yml#/components/schemas/RefWithTitle',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/ref-siblings.yml#/components/schemas/RefWithNullable',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/ref-siblings.yml#/components/schemas/RefWithDefault',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/ref-siblings.yml#/components/schemas/RefWithExample',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/ref-siblings.yml#/components/schemas/ObjectWithRefSiblingProperties',
+        fields: {
+          first: {
+            name: 'First',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          second: {
+            name: 'Second',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'ObjectWithRefSiblingProperties',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/ref-siblings.yml#/components/schemas/Target',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/ref-siblings.yml#/components/schemas/Target',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      }
+    },
+    servers: {}
+  }
+}

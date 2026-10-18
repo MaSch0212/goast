@@ -11,6 +11,7 @@ import {
 
 import { profiles } from '../output-tests/profiles.ts';
 import { compileRootDir } from './paths.ts';
+import { runGo } from './runners/go.ts';
 import { runHostTsc } from './runners/host-tsc.ts';
 import { runCSharp } from './runners/csharp.ts';
 import { runKotlin } from './runners/kotlin.ts';
@@ -57,6 +58,9 @@ const KOTLIN_PROFILES = [
   'spring-reactive-web-clients@sb4',
 ] as const;
 
+/** Go profiles, each checked in the `go` container. They need nothing outside the standard library. */
+const GO_PROFILES = ['models', 'servers', 'clients'] as const;
+
 /**
  * The fewest units a healthy corpus can produce, below which the run is a harness failure.
  *
@@ -72,6 +76,9 @@ const KOTLIN_PROFILES = [
  * removal of a spec or two (a spec is worth roughly 15 units across the profiles that generate it)
  * without a test edit. Per-group and per-profile emptiness is checked separately below, which is the
  * finer-grained guard; this is the blunt backstop for a shrink neither of those sees.
+ *
+ * The 157 Go units (models, servers, clients) came later and are not part of that arithmetic: losing them leaves 797, above the floor, so
+ * the per-profile check below is what notices an empty Go group.
  */
 const MINIMUM_UNITS = 700;
 
@@ -106,6 +113,9 @@ const kotlinUnits = units.filter(
 const csharpUnits = units.filter(
   (u) => u.language === 'csharp' && (CSHARP_PROFILES as readonly string[]).includes(u.profile),
 );
+const goUnitsByProfile = new Map(
+  GO_PROFILES.map((profile) => [profile, units.filter((u) => u.language === 'go' && u.profile === profile)]),
+);
 
 /**
  * Compiles once per group, then asserts once per unit.
@@ -136,7 +146,13 @@ if (enabled) {
     });
 
     it('assigns every discovered unit to exactly one execution group', () => {
-      const grouped = [hostTsUnits, ...containerTsUnitsByProfile.values(), kotlinUnits, csharpUnits].flat();
+      const grouped = [
+        hostTsUnits,
+        ...containerTsUnitsByProfile.values(),
+        kotlinUnits,
+        csharpUnits,
+        ...goUnitsByProfile.values(),
+      ].flat();
       const groupedIds = new Set(grouped.map((u) => u.id));
 
       // Set size against array length catches a unit claimed by two groups, which the bare sum would
@@ -147,13 +163,17 @@ if (enabled) {
       expect(ungrouped).toEqual([]);
     });
 
-    it('finds units for every profile the four group lists name', () => {
+    it('finds units for every profile the group lists name', () => {
       const counts = new Map<string, number>();
       for (const unit of units) counts.set(unit.profile, (counts.get(unit.profile) ?? 0) + 1);
 
-      const empty = [...HOST_TS_PROFILES, ...CONTAINER_TS_PROFILES, ...KOTLIN_PROFILES, ...CSHARP_PROFILES].filter(
-        (profile) => (counts.get(profile) ?? 0) === 0,
-      );
+      const empty = [
+        ...HOST_TS_PROFILES,
+        ...CONTAINER_TS_PROFILES,
+        ...KOTLIN_PROFILES,
+        ...CSHARP_PROFILES,
+        ...GO_PROFILES,
+      ].filter((profile) => (counts.get(profile) ?? 0) === 0);
       expect(empty).toEqual([]);
     });
   });
@@ -212,6 +232,24 @@ if (enabled) {
     for (const unit of csharpUnits) {
       it(unit.id, async () => {
         await verifyUnit(unit, results);
+      });
+    }
+  });
+
+  describe('go (go vet)', () => {
+    for (const [profile, profileUnits] of goUnitsByProfile) {
+      describe(profile, () => {
+        let results: Map<string, Diagnostic[]> | undefined;
+
+        it('compiles every unit', async () => {
+          results = await runGo(profile, profileUnits);
+        });
+
+        for (const unit of profileUnits) {
+          it(unit.id, async () => {
+            await verifyUnit(unit, results);
+          });
+        }
       });
     }
   });

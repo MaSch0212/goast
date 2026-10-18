@@ -1,0 +1,306 @@
+{
+  go: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-form-array/get/parameters/0/schema',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-pipe-delimited/get/parameters/0/schema',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-pipe-delimited/get/parameters/0/schema/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-deep-object/get/parameters/0/schema',
+        fields: {
+          count: {
+            name: 'Count',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          label: {
+            name: 'Label',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Schema12',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-deep-object/get/parameters/0/schema/properties/label',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-deep-object/get/parameters/0/schema/properties/count',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//simple-path/{values}/get/parameters/0/schema',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//simple-path/{values}/get/parameters/0/schema/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//label-path/{values}/get/parameters/0/schema',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//label-path/{values}/get/parameters/0/schema/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//matrix-path/{values}/get/parameters/0/schema',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-form-array/get/parameters/0/schema/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//matrix-path/{values}/get/parameters/0/schema/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//simple-header/get/parameters/0/schema',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//simple-header/get/parameters/0/schema/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-form-array-no-explode/get/parameters/0/schema',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-form-array-no-explode/get/parameters/0/schema/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-form-object/get/parameters/0/schema',
+        fields: {
+          count: {
+            name: 'Count',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          label: {
+            name: 'Label',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Schema5',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-form-object/get/parameters/0/schema/properties/label',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-form-object/get/parameters/0/schema/properties/count',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-space-delimited/get/parameters/0/schema',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/parameter-styles.yml#/paths//query-space-delimited/get/parameters/0/schema/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      }
+    }
+  }
+}

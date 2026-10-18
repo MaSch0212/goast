@@ -16,7 +16,7 @@ name: Build
 #
 # The cost: a push to an ephemeral branch with no PR open gets no CI. Open the PR — draft is enough.
 #
-# Listing branches also excludes tags, which matters because the `publish` job pushes three tags per
+# Listing branches also excludes tags, which matters because the `publish` job pushes four tags per
 # release and an unfiltered `push:` would start a full run for each of them.
 on:
   push:
@@ -130,9 +130,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # The four build contexts under `test/docker/`. There is no Playwright image; the spec's
-        # "four" predates the decision not to add one.
-        image: [kotlin, node, k6, csharp]
+        # The build contexts under `test/docker/`. There is no Playwright image.
+        image: [kotlin, node, k6, go, csharp]
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -254,6 +253,34 @@ jobs:
         with:
           name: compile-csharp-log
           path: compile-csharp.log
+          if-no-files-found: warn
+
+  compile-go:
+    name: Compile Go (tier 3)
+    needs: [output-check, images]
+    runs-on: ubuntu-latest
+    # gofmt, `go build` and `go vet` per unit against the standard library only; a few minutes at most.
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Setup Docker
+        uses: ./.github/actions/docker
+
+      - name: Run
+        shell: bash
+        run: pnpm test:compile:go:check 2>&1 | tee compile-go.log
+
+      - name: Upload the compiler output
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: compile-go-log
+          path: compile-go.log
           if-no-files-found: warn
 
   harness-docker:
@@ -400,6 +427,60 @@ jobs:
         with:
           name: it-easy-network-stub-log
           path: it-easy-network-stub.log
+          if-no-files-found: warn
+
+  it-go-servers:
+    name: Integration (go-servers)
+    needs: [output-check, images]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Setup Docker
+        uses: ./.github/actions/docker
+
+      - name: Run
+        shell: bash
+        run: pnpm test:integration:go:check 2>&1 | tee it-go-servers.log
+
+      - name: Upload the driver output
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: it-go-servers-log
+          path: it-go-servers.log
+          if-no-files-found: warn
+
+  it-go-clients:
+    name: Integration (go-clients)
+    needs: [output-check, images]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Setup Docker
+        uses: ./.github/actions/docker
+
+      - name: Run
+        shell: bash
+        run: pnpm test:integration:go-clients:check 2>&1 | tee it-go-clients.log
+
+      - name: Upload the output
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: it-go-clients-log
+          path: it-go-clients.log
           if-no-files-found: warn
 
   # The two Kotlin client families share one directory and one script, so they split by `-t` rather
@@ -637,11 +718,14 @@ jobs:
       - compile-ts
       - compile-kotlin
       - compile-csharp
+      - compile-go
       - harness-docker
       - it-fetch-clients
       - it-angular-services
       - it-k6-clients
       - it-easy-network-stub
+      - it-go-servers
+      - it-go-clients
       - it-okhttp3-clients
       - it-csharp-clients
       - it-csharp-servers
@@ -672,7 +756,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    # `tsc` builds three packages and `pnpm pack:npm` turns each into the tarball that gets published. No
+    # `tsc` builds four packages and `pnpm pack:npm` turns each into the tarball that gets published. No
     # `needs:`; it is the publish path's own gate and is independent of the test tiers.
     timeout-minutes: 30
     steps:
@@ -729,7 +813,7 @@ jobs:
         id: tarballs
         shell: bash
         run: |
-          for pkg in core kotlin typescript csharp; do
+          for pkg in core kotlin typescript go csharp; do
             version=$(node -p "require('./packages/$pkg/package.json').version")
             file="npm/goast-$pkg-$version.tgz"
             if [ ! -f "$file" ]; then
@@ -785,4 +869,16 @@ jobs:
         uses: rickstaa/action-create-tag@a1c7777fcb2fee4f19b0f283ba888afa11678b72 # v1.7.2
         with:
           tag: csharp/v${{ steps.publish-csharp.outputs.version }}
+          tag_exists_error: false
+
+      - name: Publish @goast/go to NPM
+        id: publish-go
+        uses: JS-DevTools/npm-publish@0fd2f4369c5d6bcfcde6091a7c527d810b9b5c3f # v4.1.5
+        with:
+          package: ${{ steps.tarballs.outputs.go }}
+
+      - name: Create Tag for @goast/go
+        uses: rickstaa/action-create-tag@a1c7777fcb2fee4f19b0f283ba888afa11678b72 # v1.7.2
+        with:
+          tag: go/v${{ steps.publish-go.outputs.version }}
           tag_exists_error: false

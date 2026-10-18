@@ -36,10 +36,26 @@ abstract class TsPropertyAccessor<TBuilder extends SourceBuilder, TInjects exten
   private _abstract: boolean;
   private _override: boolean;
 
+  /**
+   * The doc comment written above the accessor, or `null` to omit it. It is written as given, after the doc comment of
+   * the owning property when there is one.
+   */
   public doc: TsDoc<TBuilder> | null;
+  /**
+   * The decorators written before the accessor. They are separated by spaces and written on the same line as the
+   * accessor, such as `@decorator get x();`.
+   */
   public decorators: TsDecorator<TBuilder>[];
+  /**
+   * The code written in braces after the signature, on separate lines. `null` writes the accessor without a body,
+   * which ends with a semicolon instead.
+   */
   public body: AppendValue<TBuilder> | null;
 
+  /**
+   * The name written after `get` or `set`. When the accessor belongs to an accessor property, the name of that property
+   * is used instead. Defaults to `someProperty` when neither is set.
+   */
   public get propertyName(): string {
     return this.property?.name ?? this._propertyName ?? 'someProperty';
   }
@@ -47,6 +63,11 @@ abstract class TsPropertyAccessor<TBuilder extends SourceBuilder, TInjects exten
     this._propertyName = value;
   }
 
+  /**
+   * The type of the accessor. A getter writes it as its return type, such as `: number`, and a setter writes it as the
+   * type of its `value` parameter. When the accessor belongs to an accessor property, the type of that property is used
+   * if it is set. `null` omits the type.
+   */
   public get type(): TsType<TBuilder> | null {
     return this.property?.type ?? this._type;
   }
@@ -54,6 +75,10 @@ abstract class TsPropertyAccessor<TBuilder extends SourceBuilder, TInjects exten
     this._type = value;
   }
 
+  /**
+   * The access modifier written before the accessor, such as `public`, or `null` to omit it. When the accessor belongs
+   * to an accessor property, the modifier of that property is used if it is set.
+   */
   public get accessModifier(): TsAccessModifier | null {
     return this.property?.accessModifier ?? this._accessModifier;
   }
@@ -61,6 +86,11 @@ abstract class TsPropertyAccessor<TBuilder extends SourceBuilder, TInjects exten
     this._accessModifier = value;
   }
 
+  /**
+   * Whether the accessor is written with the `static` keyword. When the accessor belongs to an accessor property, the
+   * value of that property is used if it is set.
+   * @default false
+   */
   public get static(): boolean {
     return this.property?.static ?? this._static;
   }
@@ -68,6 +98,11 @@ abstract class TsPropertyAccessor<TBuilder extends SourceBuilder, TInjects exten
     this._static = value;
   }
 
+  /**
+   * Whether the accessor is written with the `abstract` keyword. When the accessor belongs to an accessor property, the
+   * value of that property is used if it is set.
+   * @default false
+   */
   public get abstract(): boolean {
     return this.property?.abstract ?? this._abstract;
   }
@@ -75,6 +110,11 @@ abstract class TsPropertyAccessor<TBuilder extends SourceBuilder, TInjects exten
     this._abstract = value;
   }
 
+  /**
+   * Whether the accessor is written with the `override` keyword. When the accessor belongs to an accessor property, the
+   * value of that property is used if it is set.
+   * @default false
+   */
   public get override(): boolean {
     return this.property?.override ?? this._override;
   }
@@ -84,6 +124,10 @@ abstract class TsPropertyAccessor<TBuilder extends SourceBuilder, TInjects exten
 
   protected property?: TsProperty<TBuilder>;
 
+  /**
+   * Initializes a new instance of the TsPropertyAccessor class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this._propertyName = options.propertyName ?? null;
@@ -98,6 +142,17 @@ abstract class TsPropertyAccessor<TBuilder extends SourceBuilder, TInjects exten
   }
 }
 
+/**
+ * Represents the setter of a property, such as `set x(value: number) { ... }`.
+ *
+ * Written in this order: doc comment, decorators, modifiers (access modifier, `static`, `abstract`, `override`), the
+ * `set` keyword, the name, and a `value` parameter, which is typed when a type is set. Without a body the setter ends
+ * with a semicolon. A body is written in braces over several lines.
+ *
+ * @template TBuilder The type of the source builder the setter is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see createPropertySetter
+ */
 export class TsPropertySetter<
   TBuilder extends SourceBuilder,
   TInjects extends string = never,
@@ -131,6 +186,17 @@ export class TsPropertySetter<
   }
 }
 
+/**
+ * Represents the getter of a property, such as `get x(): number { ... }`.
+ *
+ * Written in this order: doc comment, decorators, modifiers (access modifier, `static`, `abstract`, `override`), the
+ * `get` keyword, the name, an empty parameter list, and the return type when a type is set. Without a body the getter
+ * ends with a semicolon. A body is written in braces over several lines.
+ *
+ * @template TBuilder The type of the source builder the getter is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see createPropertyGetter
+ */
 export class TsPropertyGetter<
   TBuilder extends SourceBuilder,
   TInjects extends string = never,
@@ -162,10 +228,38 @@ export class TsPropertyGetter<
   }
 }
 
+/**
+ * Factory for creating property setter nodes. The returned node is written with its `write` method, or it is passed
+ * to the `set` of an accessor property (see `tsProperty`).
+ *
+ * @param options The settings of the setter. See `TsPropertySetter` for the available properties.
+ * @example
+ * ```ts
+ * createPropertySetter({ propertyName: 'x', type: 'number', body: 'this.x = value;' });
+ * // Emits:
+ * // set x(value: number) {
+ * //   this.x = value;
+ * // }
+ * ```
+ */
 export const createPropertySetter = <TBuilder extends SourceBuilder>(
   options?: Options<TBuilder>,
 ): TsPropertySetter<TBuilder> => new TsPropertySetter<TBuilder>(options ?? {});
 
+/**
+ * Factory for creating property getter nodes. The returned node is written with its `write` method, or it is passed
+ * to the `get` of an accessor property (see `tsProperty`).
+ *
+ * @param options The settings of the getter. See `TsPropertyGetter` for the available properties.
+ * @example
+ * ```ts
+ * createPropertyGetter({ propertyName: 'x', type: 'number', body: 'return this.x;' });
+ * // Emits:
+ * // get x(): number {
+ * //   return this.x;
+ * // }
+ * ```
+ */
 export const createPropertyGetter = <TBuilder extends SourceBuilder>(
   options?: Options<TBuilder>,
 ): TsPropertyGetter<TBuilder> => new TsPropertyGetter<TBuilder>(options ?? {});

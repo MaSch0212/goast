@@ -31,6 +31,21 @@ type Config = KotlinSpringReactiveWebClientsGeneratorConfig;
 type ServiceOutput = KotlinSpringReactiveWebClientGeneratorOutput;
 type Context = KotlinSpringReactiveWebClientsGeneratorContext;
 
+/**
+ * Generates a Spring WebFlux `WebClient` based Kotlin client for each service.
+ *
+ * Each service produces one file, `{outputDir}/{package path}/{Name}.kt`, where `{Name}` is the service name followed
+ * by `_Requests`, cased with `typeNameCasing`. The file is written by the service generator, which defaults to
+ * `DefaultKotlinSpringReactiveWebClientGenerator`. The shared `ApiRequestFile.kt` helper is also copied to
+ * `{outputDir}/{infrastructure package path}/ApiRequestFile.kt`. Services named `exclude-from-generation` are skipped.
+ *
+ * Publishes the result under `kotlin.clients`, keyed by service id, with the `typeName` and `packageName` of each
+ * requests object, so later generators can import them. Reads the `kotlin.models` output of the models generator.
+ *
+ * `springBootVersion` has no effect on this generator.
+ *
+ * @see KotlinSpringReactiveWebClientsGeneratorOutput
+ */
 export class KotlinSpringReactiveWebClientsGenerator extends OpenApiServicesGenerationProviderBase<
   Input,
   Output,
@@ -40,6 +55,11 @@ export class KotlinSpringReactiveWebClientsGenerator extends OpenApiServicesGene
 > {
   private readonly _serviceGeneratorFactory: Factory<KotlinSpringReactiveWebClientGenerator, []>;
 
+  /**
+   * Creates the generator.
+   * @param serviceGeneratorFactory Creates the generator that writes the client of each service. Defaults to a
+   * `DefaultKotlinSpringReactiveWebClientGenerator`.
+   */
   constructor(serviceGeneratorFactory?: Factory<KotlinSpringReactiveWebClientGenerator, []>) {
     super();
     this._serviceGeneratorFactory =

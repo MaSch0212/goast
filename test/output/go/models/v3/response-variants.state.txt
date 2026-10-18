@@ -1,0 +1,869 @@
+{
+  go: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        fields: {
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          label: {
+            name: 'Label',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Thing',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        fields: {
+          code: {
+            name: 'Code',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          message: {
+            name: 'Message',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Error',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        fields: {
+          code: {
+            name: 'Code',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          message: {
+            name: 'Message',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Error',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error/properties/message',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error/properties/code',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        fields: {
+          code: {
+            name: 'Code',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          message: {
+            name: 'Message',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Error',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        fields: {
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          label: {
+            name: 'Label',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Thing',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        fields: {
+          code: {
+            name: 'Code',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          message: {
+            name: 'Message',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Error',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        fields: {
+          code: {
+            name: 'Code',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          message: {
+            name: 'Message',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Error',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        fields: {
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          label: {
+            name: 'Label',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Thing',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/OtherThing',
+        fields: {
+          code: {
+            name: 'Code',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'int',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          note: {
+            name: 'Note',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'OtherThing',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        fields: {
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          label: {
+            name: 'Label',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Thing',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        fields: {
+          code: {
+            name: 'Code',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          message: {
+            name: 'Message',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Error',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        fields: {
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          label: {
+            name: 'Label',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Thing',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        fields: {
+          code: {
+            name: 'Code',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          message: {
+            name: 'Message',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Error',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        fields: {
+          code: {
+            name: 'Code',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          message: {
+            name: 'Message',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Error',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        fields: {
+          code: {
+            name: 'Code',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          message: {
+            name: 'Message',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Error',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Error',
+        fields: {
+          code: {
+            name: 'Code',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          message: {
+            name: 'Message',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Error',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        fields: {
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          label: {
+            name: 'Label',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Thing',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-27': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/paths//multi-content/get/responses/200/content/text/plain/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-28': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/paths//primitive/get/responses/200/content/application/json/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-29': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/paths//array/get/responses/200/content/application/json/schema',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: 'example.com/generated/api',
+            inject: {},
+            name: 'Thing',
+            packageName: 'api',
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing/properties/id',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-30': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        fields: {
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          label: {
+            name: 'Label',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Thing',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-31': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        fields: {
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          label: {
+            name: 'Label',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Thing',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing/properties/label',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/OtherThing',
+        fields: {
+          code: {
+            name: 'Code',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'int',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          note: {
+            name: 'Note',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'OtherThing',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/OtherThing',
+        fields: {
+          code: {
+            name: 'Code',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'int',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          note: {
+            name: 'Note',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'OtherThing',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/OtherThing/properties/code',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/OtherThing/properties/note',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/response-variants.yml#/components/schemas/Thing',
+        fields: {
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          label: {
+            name: 'Label',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Thing',
+          packageName: 'api',
+          typeArguments: []
+        }
+      }
+    }
+  }
+}

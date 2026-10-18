@@ -41,12 +41,28 @@ export type WordCasing =
  */
 export type StringCasing = WordCasing | 'camel' | 'pascal' | 'kebab' | 'snake' | 'custom';
 
+/**
+ * Represents a casing together with the options that apply to it.
+ * @template T The casing that determines which options are available.
+ */
 export type StringCasingWithOptions<T extends StringCasing = StringCasing> = {
+  /**
+   * The casing to apply.
+   */
   casing: T;
 } & CaseOptions<T>;
 
+/**
+ * Represents either a plain casing or a casing with options.
+ * @see StringCasing
+ * @see StringCasingWithOptions
+ */
 export type ExtendedStringCasing = StringCasing | StringCasingWithOptions;
 
+/**
+ * Resolves the options that a casing accepts. Casings without options resolve to `never`.
+ * @template T The casing to resolve the options for.
+ */
 export type CaseOptions<T extends StringCasing> = T extends 'camel'
   ? Partial<CamelCaseOptions>
   : T extends 'pascal'
@@ -59,6 +75,9 @@ export type CaseOptions<T extends StringCasing> = T extends 'camel'
           ? CustomCaseOptions
           : never;
 
+/**
+ * Options that are shared by all casings and add text around the converted string.
+ */
 export type BaseCaseOptions = {
   /**
    * Specifies a prefix to add to the string.
@@ -76,6 +95,9 @@ export type BaseCaseOptions = {
   suffix?: string;
 };
 
+/**
+ * Options for the camel casing.
+ */
 export type CamelCaseOptions = BaseCaseOptions & {
   /**
    * Controls the casing of all characters except the first one for each word.
@@ -91,6 +113,9 @@ export type CamelCaseOptions = BaseCaseOptions & {
   keepOriginalCase: boolean;
 };
 
+/**
+ * Options for the pascal casing.
+ */
 export type PascalCaseOptions = BaseCaseOptions & {
   /**
    * Controls the casing of all characters except the first one for each word.
@@ -106,6 +131,9 @@ export type PascalCaseOptions = BaseCaseOptions & {
   keepOriginalCase: boolean;
 };
 
+/**
+ * Options for the kebab casing, which joins the words with hyphens.
+ */
 export type KebabCaseOptions = BaseCaseOptions & {
   /**
    * Specifies the casing of words.
@@ -126,6 +154,9 @@ export type KebabCaseOptions = BaseCaseOptions & {
   firstWordCasing?: WordCasing;
 };
 
+/**
+ * Options for the snake casing, which joins the words with underscores.
+ */
 export type SnakeCaseOptions = BaseCaseOptions & {
   /**
    * Specifies the casing of words.
@@ -146,6 +177,9 @@ export type SnakeCaseOptions = BaseCaseOptions & {
   firstWordCasing?: WordCasing;
 };
 
+/**
+ * Options for the custom casing, which applies the word casing and joins the words with an optional separator.
+ */
 export type CustomCaseOptions = BaseCaseOptions & {
   /**
    * Specifies the separator between words.

@@ -1,0 +1,2177 @@
+{
+  go: {
+    clients: {
+      'service-1': {
+        __source__: 'tag:Pets',
+        client: GoReference {
+          importPath: 'example.com/generated/client',
+          inject: {},
+          name: 'PetsClient',
+          packageName: 'client',
+          typeArguments: []
+        },
+        constructor: GoReference {
+          importPath: 'example.com/generated/client',
+          inject: {},
+          name: 'NewPetsClient',
+          packageName: 'client',
+          typeArguments: []
+        }
+      },
+      'service-2': {
+        __source__: 'tag:Widgets',
+        client: GoReference {
+          importPath: 'example.com/generated/client',
+          inject: {},
+          name: 'WidgetsClient',
+          packageName: 'client',
+          typeArguments: []
+        },
+        constructor: GoReference {
+          importPath: 'example.com/generated/client',
+          inject: {},
+          name: 'NewWidgetsClient',
+          packageName: 'client',
+          typeArguments: []
+        }
+      },
+      'service-3': {
+        __source__: 'tag:Blobs',
+        client: GoReference {
+          importPath: 'example.com/generated/client',
+          inject: {},
+          name: 'BlobsClient',
+          packageName: 'client',
+          typeArguments: []
+        },
+        constructor: GoReference {
+          importPath: 'example.com/generated/client',
+          inject: {},
+          name: 'NewBlobsClient',
+          packageName: 'client',
+          typeArguments: []
+        }
+      },
+      'service-4': {
+        __source__: 'tag:Params',
+        client: GoReference {
+          importPath: 'example.com/generated/client',
+          inject: {},
+          name: 'ParamsClient',
+          packageName: 'client',
+          typeArguments: []
+        },
+        constructor: GoReference {
+          importPath: 'example.com/generated/client',
+          inject: {},
+          name: 'NewParamsClient',
+          packageName: 'client',
+          typeArguments: []
+        }
+      }
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//pets/{id}/get/parameters/0/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet/properties/createdAt',
+        type: GoReference {
+          importPath: 'time',
+          inject: {},
+          name: 'Time',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet/properties/photo',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'byte',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Owner',
+        fields: {
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Owner',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Owner',
+        fields: {
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Owner',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Owner/properties/id',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Owner/properties/name',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet',
+        fields: {
+          age: {
+            name: 'Age',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int32',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          birthDate: {
+            name: 'BirthDate',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          createdAt: {
+            name: 'CreatedAt',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'time',
+                inject: {},
+                name: 'Time',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          friend: {
+            name: 'Friend',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Pet',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          nickname: {
+            name: 'Nickname',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          owner: {
+            name: 'Owner',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Owner',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          photo: {
+            name: 'Photo',
+            type: GoSlice {
+              elementType: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'byte',
+                packageName: null,
+                typeArguments: []
+              },
+              inject: {}
+            }
+          },
+          status: {
+            name: 'Status',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'PetStatus',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          toys: {
+            name: 'Toys',
+            type: GoSlice {
+              elementType: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Toy',
+                packageName: 'api',
+                typeArguments: []
+              },
+              inject: {}
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Pet',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet/properties/toys',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: 'example.com/generated/api',
+            inject: {},
+            name: 'Toy',
+            packageName: 'api',
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Toy',
+        fields: {
+          durable: {
+            name: 'Durable',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'bool',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Toy',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Toy',
+        fields: {
+          durable: {
+            name: 'Durable',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'bool',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Toy',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet',
+        fields: {
+          age: {
+            name: 'Age',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int32',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          birthDate: {
+            name: 'BirthDate',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          createdAt: {
+            name: 'CreatedAt',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'time',
+                inject: {},
+                name: 'Time',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          friend: {
+            name: 'Friend',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Pet',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          nickname: {
+            name: 'Nickname',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          owner: {
+            name: 'Owner',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Owner',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          photo: {
+            name: 'Photo',
+            type: GoSlice {
+              elementType: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'byte',
+                packageName: null,
+                typeArguments: []
+              },
+              inject: {}
+            }
+          },
+          status: {
+            name: 'Status',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'PetStatus',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          toys: {
+            name: 'Toys',
+            type: GoSlice {
+              elementType: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Toy',
+                packageName: 'api',
+                typeArguments: []
+              },
+              inject: {}
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Pet',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Toy/properties/name',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Toy/properties/durable',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'bool',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//pets/{id}/put/parameters/0/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/PetUpdate',
+        fields: {
+          age: {
+            name: 'Age',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'PetUpdate',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/PetUpdate',
+        fields: {
+          age: {
+            name: 'Age',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'PetUpdate',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/PetUpdate/properties/name',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/PetUpdate/properties/age',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-27': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/PetUpdate',
+        fields: {
+          age: {
+            name: 'Age',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'PetUpdate',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-28': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet',
+        fields: {
+          age: {
+            name: 'Age',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int32',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          birthDate: {
+            name: 'BirthDate',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          createdAt: {
+            name: 'CreatedAt',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'time',
+                inject: {},
+                name: 'Time',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          friend: {
+            name: 'Friend',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Pet',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          nickname: {
+            name: 'Nickname',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          owner: {
+            name: 'Owner',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Owner',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          photo: {
+            name: 'Photo',
+            type: GoSlice {
+              elementType: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'byte',
+                packageName: null,
+                typeArguments: []
+              },
+              inject: {}
+            }
+          },
+          status: {
+            name: 'Status',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'PetStatus',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          toys: {
+            name: 'Toys',
+            type: GoSlice {
+              elementType: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Toy',
+                packageName: 'api',
+                typeArguments: []
+              },
+              inject: {}
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Pet',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-29': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//pets/{id}/delete/parameters/0/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet',
+        fields: {
+          age: {
+            name: 'Age',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int32',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          birthDate: {
+            name: 'BirthDate',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          createdAt: {
+            name: 'CreatedAt',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'time',
+                inject: {},
+                name: 'Time',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          friend: {
+            name: 'Friend',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Pet',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          nickname: {
+            name: 'Nickname',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          owner: {
+            name: 'Owner',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Owner',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          photo: {
+            name: 'Photo',
+            type: GoSlice {
+              elementType: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'byte',
+                packageName: null,
+                typeArguments: []
+              },
+              inject: {}
+            }
+          },
+          status: {
+            name: 'Status',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'PetStatus',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          toys: {
+            name: 'Toys',
+            type: GoSlice {
+              elementType: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Toy',
+                packageName: 'api',
+                typeArguments: []
+              },
+              inject: {}
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Pet',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-30': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet',
+        fields: {
+          age: {
+            name: 'Age',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int32',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          birthDate: {
+            name: 'BirthDate',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          createdAt: {
+            name: 'CreatedAt',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'time',
+                inject: {},
+                name: 'Time',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          friend: {
+            name: 'Friend',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Pet',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          nickname: {
+            name: 'Nickname',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          owner: {
+            name: 'Owner',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Owner',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          photo: {
+            name: 'Photo',
+            type: GoSlice {
+              elementType: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'byte',
+                packageName: null,
+                typeArguments: []
+              },
+              inject: {}
+            }
+          },
+          status: {
+            name: 'Status',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'PetStatus',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          toys: {
+            name: 'Toys',
+            type: GoSlice {
+              elementType: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Toy',
+                packageName: 'api',
+                typeArguments: []
+              },
+              inject: {}
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Pet',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-31': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet',
+        fields: {
+          age: {
+            name: 'Age',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int32',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          birthDate: {
+            name: 'BirthDate',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          createdAt: {
+            name: 'CreatedAt',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'time',
+                inject: {},
+                name: 'Time',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          friend: {
+            name: 'Friend',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Pet',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          nickname: {
+            name: 'Nickname',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          owner: {
+            name: 'Owner',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Owner',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          photo: {
+            name: 'Photo',
+            type: GoSlice {
+              elementType: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'byte',
+                packageName: null,
+                typeArguments: []
+              },
+              inject: {}
+            }
+          },
+          status: {
+            name: 'Status',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'PetStatus',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          toys: {
+            name: 'Toys',
+            type: GoSlice {
+              elementType: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Toy',
+                packageName: 'api',
+                typeArguments: []
+              },
+              inject: {}
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Pet',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-32': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//pets/{id}/photo/post/parameters/0/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-33': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//pets/{id}/photo/post/requestBody/content/multipart/form-data/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-34': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//pets/{id}/photo/post/requestBody/content/multipart/form-data/schema/properties/file',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'byte',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-35': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//pets/{id}/photo/post/requestBody/content/multipart/form-data/schema/properties/caption',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-36': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//pets/{id}/note/post/parameters/0/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-37': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//pets/{id}/note/post/requestBody/content/text/plain/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-38': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet',
+        fields: {
+          age: {
+            name: 'Age',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int32',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          birthDate: {
+            name: 'BirthDate',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          createdAt: {
+            name: 'CreatedAt',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'time',
+                inject: {},
+                name: 'Time',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          friend: {
+            name: 'Friend',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Pet',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          nickname: {
+            name: 'Nickname',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          owner: {
+            name: 'Owner',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Owner',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          photo: {
+            name: 'Photo',
+            type: GoSlice {
+              elementType: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'byte',
+                packageName: null,
+                typeArguments: []
+              },
+              inject: {}
+            }
+          },
+          status: {
+            name: 'Status',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'PetStatus',
+                packageName: 'api',
+                typeArguments: []
+              }
+            }
+          },
+          toys: {
+            name: 'Toys',
+            type: GoSlice {
+              elementType: GoReference {
+                importPath: 'example.com/generated/api',
+                inject: {},
+                name: 'Toy',
+                packageName: 'api',
+                typeArguments: []
+              },
+              inject: {}
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Pet',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-39': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//widgets/{id}/get/parameters/0/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet/properties/id',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-40': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Widget',
+        fields: {
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          price: {
+            name: 'Price',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'float64',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Widget',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-41': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Widget',
+        fields: {
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          price: {
+            name: 'Price',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'float64',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Widget',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-42': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Widget/properties/id',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-43': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Widget/properties/name',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-44': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Widget/properties/price',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'float64',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-45': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error',
+        fields: {
+          code: {
+            name: 'Code',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          message: {
+            name: 'Message',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Error',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-46': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error',
+        fields: {
+          code: {
+            name: 'Code',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          message: {
+            name: 'Message',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Error',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-47': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error/properties/message',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-48': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error/properties/code',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-49': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error',
+        fields: {
+          code: {
+            name: 'Code',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          message: {
+            name: 'Message',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Error',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet/properties/name',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-50': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error',
+        fields: {
+          code: {
+            name: 'Code',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          message: {
+            name: 'Message',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Error',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-51': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Error',
+        fields: {
+          code: {
+            name: 'Code',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'int',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          message: {
+            name: 'Message',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Error',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-52': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//blobs/post/requestBody/content/application/octet-stream/schema',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'byte',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-53': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/BlobRef',
+        fields: {
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'BlobRef',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-54': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/BlobRef',
+        fields: {
+          id: {
+            name: 'ID',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'BlobRef',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-55': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/BlobRef/properties/id',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-56': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//locations/{pathParam}/get/parameters/0/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-57': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//locations/{pathParam}/get/parameters/1/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-58': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//locations/{pathParam}/get/parameters/2/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-59': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//locations/{pathParam}/get/parameters/3/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet/properties/nickname',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-60': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/get/parameters/0/schema',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-61': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/get/parameters/0/schema/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-62': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/get/parameters/1/schema',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-63': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/get/parameters/1/schema/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-64': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/get/parameters/2/schema',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-65': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/get/parameters/2/schema/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-66': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/{values}/get/parameters/0/schema',
+        type: GoSlice {
+          elementType: GoReference {
+            importPath: null,
+            inject: {},
+            name: 'string',
+            packageName: null,
+            typeArguments: []
+          },
+          inject: {}
+        }
+      },
+      'schema-67': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//styles/{values}/get/parameters/0/schema/items',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-68': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//encoded/{value}/get/parameters/0/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-69': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//encoded/{value}/get/parameters/1/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet/properties/age',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int32',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-70': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/paths//widgets/{id}/get/responses/200/headers/X-Rate-Limit/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet/properties/status',
+        fields: undefined,
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'PetStatus',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/integration/kitchen-sink.yml#/components/schemas/Pet/properties/birthDate',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      }
+    }
+  }
+}

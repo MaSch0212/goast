@@ -44,7 +44,7 @@ Every entry was found by the phase-2b corpus and independently verified by a rev
 
 | # | Defect | Site | Pinned by |
 | - | ------ | ---- | --------- |
-| 6 | `anyOf` is rendered as an **intersection** of `Partial<>` instead of a union. `AnyOfPrimitives` becomes `(Partial<string>) & (Partial<number>)`, which collapses to `never`. Every `anyOf` in the corpus is semantically wrong. **This no longer holds, and the Site citation had rotted — found by phase 7a's citation audit.** `getCombinedType` (`packages/typescript/src/generators/models/model-generator.ts:391-401`) now emits a union for `anyOf` branches, its own comment saying why no `Partial<>` wrapper is needed, and the committed output agrees: `test/output/typescript/models/v3/anyof-schemas/models/any-of-primitives.ts` reads `export type AnyOfPrimitives = (string) \| (number);`. Fixed by `8c2424e`, an ancestor of the commit adding this note. The site this row used to cite, `packages/typescript/src/generators/models/model-generator.ts:363-366`, now holds the unrelated discriminator-mapping intersection. Annotated rather than removed, as rows 8 and 16 are. | `packages/typescript/src/generators/models/model-generator.ts:391-401` | `v3/anyof-schemas` (all names) |
+| 6 | `anyOf` is rendered as an **intersection** of `Partial<>` instead of a union. `AnyOfPrimitives` becomes `(Partial<string>) & (Partial<number>)`, which collapses to `never`. Every `anyOf` in the corpus is semantically wrong. **This no longer holds, and the Site citation had rotted — found by phase 7a's citation audit.** `getCombinedType` (`packages/typescript/src/generators/models/model-generator.ts:415-401`) now emits a union for `anyOf` branches, its own comment saying why no `Partial<>` wrapper is needed, and the committed output agrees: `test/output/typescript/models/v3/anyof-schemas/models/any-of-primitives.ts` reads `export type AnyOfPrimitives = (string) \| (number);`. Fixed by `8c2424e`, an ancestor of the commit adding this note. The site this row used to cite, `packages/typescript/src/generators/models/model-generator.ts:387-366`, now holds the unrelated discriminator-mapping intersection. Annotated rather than removed, as rows 8 and 16 are. | `packages/typescript/src/generators/models/model-generator.ts:415-401` | `v3/anyof-schemas` (all names) |
 | 7 | **105 ×** `TS2456` circular-type-alias errors (the original count of 18 was one spec in one profile): composed schemas are emitted as bare `type` aliases, which TypeScript forbids from referencing themselves. Assess feasibility — emitting an `interface` for object-shaped composed schemas is the known fix. If it proves disproportionate, document and defer rather than silently skipping. **Compile gate:** `test/compile/typescript/models/v3/discriminator-variants.txt`, `…/v3/anyof-cycle.txt` and the same pair under the other four TypeScript profiles — `TS2456 Type alias 'X' circularly references itself.`, **105 occurrences across 10 units** (two units in each of the 5 profiles; 21 occurrences per profile, being 18 in `v3/discriminator-variants` plus 3 in `v3/anyof-cycle`, which the original count did not include). Largest TypeScript defect the gate found on both occurrences and units. | model emission | `v3/discriminator-variants` |
 
 ### Batch 3 — Kotlin generator
@@ -68,7 +68,7 @@ Every entry was found by the phase-2b corpus and independently verified by a rev
 
 | # | Defect | Site | Pinned by |
 | - | ------ | ---- | --------- |
-| 15 | `nullable` is honoured **only** when rendering an object property. A nullable schema used as a type alias, an array item, or an `anyOf`/`oneOf` branch silently loses its `| null`. In TypeScript, `nullable` was read at exactly one site when this row was written (`model-generator.ts:238`); it is read at two now — see the annotation below. So `AnyOfWithNullable`, whose second branch is `{integer, nullable: true}`, renders `(string) \| (number)` with no `null` anywhere. **That worked example no longer holds — found by phase 7a's citation audit.** `test/output/typescript/models/v3/anyof-schemas/models/any-of-with-nullable.ts` now reads `export type AnyOfWithNullable = (string) \| (number) \| (null);`, fixed by `0ec7875` (an ancestor of the commit adding this note); the property-level site is still `packages/typescript/src/generators/models/model-generator.ts:238`. **An earlier revision of this annotation mis-stated the remaining scope**, naming "an array `items`, a `$ref`'d composition member, the Kotlin half"; two of those three were already closed by the very commit it cited. `0ec7875` routed array `items` (`model-generator.ts:338`), the `allOf`/`anyOf`/`oneOf` branches (`:399`/`:401`/`:410`) and `additionalProperties` (`:222`) through `getMemberType`, whose `isNullableMember` (`:269-272`) reads nullability *through* the reference chain — so a `$ref`'d nullable composition member is handled too. Measured: `test/output/typescript/models/v3/nullable-schemas/models/array-of-nullable.ts` reads `export type ArrayOfNullable = ((string) \| (null))[];`. What actually remains in TypeScript is the **declaration-level alias**: a schema that is itself `nullable: true` does not hoist the `null` into its own alias, so `nullable-array.ts` reads `export type NullableArray = (string)[];` and `nullable-ref.ts` reads `export type NullableRef = ('one') \| ('two') \| ('three')`, both from `nullable: true` schemas. That, plus the still-unlocated Kotlin half, is the scope; re-verify it before picking this up. | TypeScript `packages/typescript/src/generators/models/model-generator.ts:238`; the Kotlin equivalent needs locating | `v3/anyof-schemas` `AnyOfWithNullable`, `v3/nullable-schemas` (all), `v3.1/nullable-schemas` |
+| 15 | `nullable` is honoured **only** when rendering an object property. A nullable schema used as a type alias, an array item, or an `anyOf`/`oneOf` branch silently loses its `| null`. In TypeScript, `nullable` was read at exactly one site when this row was written (`model-generator.ts:238`); it is read at two now — see the annotation below. So `AnyOfWithNullable`, whose second branch is `{integer, nullable: true}`, renders `(string) \| (number)` with no `null` anywhere. **That worked example no longer holds — found by phase 7a's citation audit.** `test/output/typescript/models/v3/anyof-schemas/models/any-of-with-nullable.ts` now reads `export type AnyOfWithNullable = (string) \| (number) \| (null);`, fixed by `0ec7875` (an ancestor of the commit adding this note); the property-level site is still `packages/typescript/src/generators/models/model-generator.ts:262`. **An earlier revision of this annotation mis-stated the remaining scope**, naming "an array `items`, a `$ref`'d composition member, the Kotlin half"; two of those three were already closed by the very commit it cited. `0ec7875` routed array `items` (`model-generator.ts:338`), the `allOf`/`anyOf`/`oneOf` branches (`:399`/`:401`/`:410`) and `additionalProperties` (`:222`) through `getMemberType`, whose `isNullableMember` (`:269-272`) reads nullability *through* the reference chain — so a `$ref`'d nullable composition member is handled too. Measured: `test/output/typescript/models/v3/nullable-schemas/models/array-of-nullable.ts` reads `export type ArrayOfNullable = ((string) \| (null))[];`. What actually remains in TypeScript is the **declaration-level alias**: a schema that is itself `nullable: true` does not hoist the `null` into its own alias, so `nullable-array.ts` reads `export type NullableArray = (string)[];` and `nullable-ref.ts` reads `export type NullableRef = ('one') \| ('two') \| ('three')`, both from `nullable: true` schemas. That, plus the still-unlocated Kotlin half, is the scope; re-verify it before picking this up. | TypeScript `packages/typescript/src/generators/models/model-generator.ts:262`; the Kotlin equivalent needs locating | `v3/anyof-schemas` `AnyOfWithNullable`, `v3/nullable-schemas` (all), `v3.1/nullable-schemas` |
 
 Found by the batch-2 reviewer, and it is the same gap batch 1 ran into from the other side: batch 1's core fixes for 3.1
 nullability churned no generator output precisely because no generator reads declaration-level nullability. Fixing this
@@ -111,10 +111,10 @@ introducing a semantic lie — so it needs its own batch.
 `NestedDiscriminatorGroup` compiles, but the inheritance relation it describes cannot be expressed at all. Two
 independent causes, one per package:
 
-- `getInterface` (`packages/kotlin/src/generators/models/model-generator.ts:117-132`) passes only `doc`, `annotations`
+- `getInterface` (`packages/kotlin/src/generators/models/model-generator.ts:142-132`) passes only `doc`, `annotations`
   and `members` to `kt.interface`. There is no `implements`, where `getClass` twenty lines above has one. **An interface
   can never be a subtype in this generator.**
-- `resolveDescriminatorMapping` (`packages/core/src/transform/transform-schema.ts:192`) registers an implicit subtype
+- `resolveDescriminatorMapping` (`packages/core/src/transform/transform-schema.ts:202`) registers an implicit subtype
   only under `schema.kind === 'combined' && schema.allOf`. A `'oneOf'`-kind subtype is skipped, so
   `NestedDiscriminatorGroup` never enters `NestedDiscriminator`'s mapping and never gains it in `inheritedSchemas`.
 
@@ -126,7 +126,7 @@ for the `Group` branch. Fixing it needs both an emitter change and a core change
 A TypeScript-generated model whose normalized name is the empty string (a schema name from which no ASCII
 alphanumeric character survives `getWords`'s strip — see `___`, `日本語`, `Ελληνικά`, `Кириллица` in the phase 2b
 corpus) writes its file under a basename that is literally `.ts` (e.g. `models/.ts`). `getImportKind`
-(`packages/typescript/src/import-collection.ts:198-201`):
+(`packages/typescript/src/import-collection.ts:279-201`):
 
 ```ts
 protected getImportKind(fromModule: string): TypeScriptImportKind {
@@ -138,7 +138,7 @@ protected getImportKind(fromModule: string): TypeScriptImportKind {
 `node:path`'s `extname` returns `''` for a path whose basename is exactly `.ts` — the same reason `.bashrc` has no
 extension: a leading dot with nothing before it is a hidden file, not an extension. So this one file is misclassified
 as a bare `'module'` specifier instead of a `'file'`, and `resolveModulePath`
-(`packages/typescript/src/import-collection.ts:203-215`) only
+(`packages/typescript/src/import-collection.ts:284-215`) only
 calls `getModulePathRelativeToFile` — the function that turns an absolute path into a relative import — for the
 `'file'` kind. For `'module'`, the schema's raw absolute *output-directory* path is written straight into the
 package's `models.ts` barrel instead of a relative import.
@@ -187,11 +187,11 @@ a path whose basename is **exactly** `.ts`, `.js`, or `.json` (i.e. an empty com
 
 ### Defect 19 — `spring-controllers` writes `responseCode = null` for `default` and range-coded responses, uncompilable (found by phase 2b task 7, confirmed by the tier-3 compile gate, fixed by b3bba55)
 
-`getApiInterfaceEndpointMethodAnnnotations` (`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:211-212`) builds each `@ApiResponse`'s `responseCode` argument as
+`getApiInterfaceEndpointMethodAnnnotations` (`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:232-212`) builds each `@ApiResponse`'s `responseCode` argument as
 `kt.string(response.statusCode?.toString())`. `response.statusCode` is only populated for an exact numeric code; a
 `default` response or a range code (`2XX`, `4XX`, `5XX`) leaves it `undefined`, so `response.statusCode?.toString()`
 is `undefined` and `kt.string(undefined)` constructs a `KtString` with `value: null`. `KtString.onWrite`
-(`packages/kotlin/src/ast/nodes/string.ts:43-45`) renders a `null` value as the bare token `null`, unconditionally —
+(`packages/kotlin/src/ast/nodes/string.ts:85-45`) renders a `null` value as the bare token `null`, unconditionally —
 there is no branch that omits the argument or substitutes a sentinel string. The result, written straight into
 generated Kotlin source, is `ApiResponse(responseCode = null, ...)`.
 
@@ -228,9 +228,9 @@ the literal string `"default"` for the default response and has no standard repr
 particular annotation field); that decision, plus verifying the fix actually compiles, belongs to whichever batch
 picks this up.
 
-**Fixed:** `b3bba55` adds `statusKey: string` to `ApiResponse` (`packages/core/src/transform/api-types.ts:116`) — the
+**Fixed:** `b3bba55` adds `statusKey: string` to `ApiResponse` (`packages/core/src/transform/api-types.ts:339`) — the
 spec's own response key, populated for every response by `transformResponse`
-(`packages/core/src/transform/transform-endpoint.ts:205`) — and changes
+(`packages/core/src/transform/transform-endpoint.ts:213`) — and changes
 `getApiInterfaceEndpointMethodAnnnotations` to render `kt.string(response.statusKey)` in place of
 `kt.string(response.statusCode?.toString())` (`spring-controller-generator.ts:210-216`), so a `default` or
 range-coded response now emits its own literal key instead of `null`. This also closes the entry's secondary
@@ -246,7 +246,7 @@ in the next release's notes.
 
 ### Defect 20 — the TypeScript fetch client JSON-stringifies every request body and never sets a `content-type` header, regardless of the declared media type (found by phase 2b task 9, confirmed broader in scope by the tier-4 wire contract, not scheduled)
 
-`FetchClientsGenerator`'s request builder (`packages/typescript/src/generators/services/fetch-clients/fetch-client-generator.ts:226`) decides how to serialize a request body from schema presence alone:
+`FetchClientsGenerator`'s request builder (`packages/typescript/src/generators/services/fetch-clients/fetch-client-generator.ts:248`) decides how to serialize a request body from schema presence alone:
 
 ```ts
 endpoint.requestBody?.content[0]?.schema ? ts.property('body', { value: 'JSON.stringify(body)' }) : null,
@@ -349,9 +349,9 @@ until-now mechanism. See **defect 44**, which owns that artifact and explains wh
 `getDeclarationTypeName` computes a type's emitted identifier as `toCasing(schema.name, ...)` with no fallback for the
 empty string, in both language generators:
 
-- Kotlin: `packages/kotlin/src/generators/models/model-generator.ts:658`, feeding `getClass` (`:94`) and `getInterface`
+- Kotlin: `packages/kotlin/src/generators/models/model-generator.ts:683`, feeding `getClass` (`:94`) and `getInterface`
   (`:120`).
-- TypeScript: `packages/typescript/src/generators/models/model-generator.ts:502`, feeding `getTypeAlias` (`:157`).
+- TypeScript: `packages/typescript/src/generators/models/model-generator.ts:526`, feeding `getTypeAlias` (`:157`).
 
 For a schema whose name normalizes to the empty string via `getWords`'s ASCII-alphanumeric strip
 (`string.utils.ts:69`) — `___` in `v3/extreme-names.yml`, and `日本語`/`Ελληνικά`/`Кириллица` in
@@ -405,7 +405,7 @@ Not fixed here — this phase records defects rather than fixing them.
 
 ### Defect 22 — Kotlin emits an unnamed constructor parameter for an object property whose normalized name is empty (found by phase 2b task 5, not scheduled)
 
-`getClassParameter` (`packages/kotlin/src/generators/models/model-generator.ts:308`) computes a property's Kotlin
+`getClassParameter` (`packages/kotlin/src/generators/models/model-generator.ts:333`) computes a property's Kotlin
 parameter name the same way — `toCasing(property.name, ctx.config.propertyNameCasing)`, no fallback — so a property
 whose name normalizes to empty emits `val : String? = null` inside an otherwise-valid `data class`: invalid Kotlin,
 missing the identifier between `val` and `:`.
@@ -422,7 +422,7 @@ That message shape occurs 80 times in the committed snapshots overall; the other
 belong to **defect 23** below, not here. Counting the shape rather than the spec would overstate this entry fourfold.
 
 TypeScript has no equivalent defect at this site: `getProperties`
-(`packages/typescript/src/generators/models/model-generator.ts:231`) emits a
+(`packages/typescript/src/generators/models/model-generator.ts:255`) emits a
 property using its raw, uncased name as a quoted string-literal key rather than routing it through `toCasing`, so an
 empty or non-ASCII property name still produces a valid quoted key — `''?: string;` and `'日本語'?: string;` in
 `test/output/typescript/models/v3/extreme-names/models/object-with-extreme-properties.ts` and its `non-ascii-names`
@@ -440,20 +440,20 @@ Not fixed here — this phase records defects rather than fixing them.
 
 ### Defect 23 — Kotlin emits hard keywords unbackticked as property and constructor-parameter names (found by phase 2b task 5, confirmed by the tier-3 compile gate, not scheduled)
 
-`getClassParameter` (`packages/kotlin/src/generators/models/model-generator.ts:308`) and `getInterfaceProperty`
+`getClassParameter` (`packages/kotlin/src/generators/models/model-generator.ts:333`) and `getInterfaceProperty`
 (`:338`) both compute a Kotlin identifier as `toCasing(property.name, ctx.config.propertyNameCasing)` and hand the
 result to the AST unexamined. Nothing downstream examines it either: `KtParameter.onWrite`
-(`packages/kotlin/src/ast/nodes/parameter.ts:81`) and `KtProperty.onWrite`
-(`packages/kotlin/src/ast/nodes/property.ts:168`) each do `builder.append(this.inject.beforeName, this.name,
+(`packages/kotlin/src/ast/nodes/parameter.ts:134`) and `KtProperty.onWrite`
+(`packages/kotlin/src/ast/nodes/property.ts:301`) each do `builder.append(this.inject.beforeName, this.name,
 this.inject.afterName)` and nothing more. A property named after a Kotlin **hard** keyword therefore emits an
 identifier the parser rejects.
 
 **A backtick-quoting helper does exist, it is the natural fix site, and two separate things are wrong with it.**
-`toKotlinPropertyName` (`packages/kotlin/src/utils.ts:18-23`) returns a backticked name for any value failing
+`toKotlinPropertyName` (`packages/kotlin/src/utils.ts:40-23`) returns a backticked name for any value failing
 `/^[a-zA-Z_$][a-zA-Z_$0-9]*$/`, and `KotlinFileGenerator.toPropertyName`
-(`packages/kotlin/src/generators/file-generator.ts:18-20`) already composes it with `toCasing` — precisely the
+(`packages/kotlin/src/generators/file-generator.ts:30-20`) already composes it with `toCasing` — precisely the
 composition `getClassParameter` open-codes at
-`packages/kotlin/src/generators/models/model-generator.ts:308`. First, **it has zero callers**: `grep -rn "toPropertyName"
+`packages/kotlin/src/generators/models/model-generator.ts:333`. First, **it has zero callers**: `grep -rn "toPropertyName"
 packages/` matches only its own definition and the import that feeds it, so the model generator bypasses it entirely.
 Second, **routing through it unchanged would fix nothing here**, because it guards on identifier *charset* alone, and
 `class`, `val`, `is`, `in` and `this` all match that pattern and would pass through unquoted. There is no keyword list
@@ -494,7 +494,7 @@ them.
 
 ### Defect 24 — a Kotlin schema named after a `kotlin.*` type shadows that type for its whole package (found by phase 2b task 5, **not** caught by the tier-3 compile gate, not scheduled)
 
-`getDeclarationTypeName` (`packages/kotlin/src/generators/models/model-generator.ts:657-658`) computes a type's
+`getDeclarationTypeName` (`packages/kotlin/src/generators/models/model-generator.ts:682-658`) computes a type's
 emitted identifier as `toCasing(args.schema.name, ctx.config.typeNameCasing)` and never checks it against the names
 Kotlin's default imports already bind. A schema named `String`, `Int`, `List`, `Map`, `Any` or `Unit` is emitted as a
 top-level class in `com.openapi.generated.model`, and a class declared in a package outranks a default import for
@@ -535,11 +535,11 @@ show no snapshot change either way.
 ### Defect 25 — the `_N` file-name disambiguation renames the file and never the declaration, so colliding Kotlin models redeclare each other (found by the tier-3 compile gate, not scheduled)
 
 Two schemas whose names normalize to one Kotlin identifier target one output path. `writeGeneratedFile`
-(`packages/core/src/utils/file-system.utils.ts:81`) resolves that under `existingFileBehavior: 'count'` by calling
+(`packages/core/src/utils/file-system.utils.ts:118`) resolves that under `existingFileBehavior: 'count'` by calling
 `getCountedFilePath` (`:68`, invoked at `:92`), which inserts `_1`, `_2`, … before the extension until it finds a free
 path. It operates on the path string alone; it never sees, and could not change, the identifier inside the file. That
 identifier was fixed much earlier by `getDeclarationTypeName`
-(`packages/kotlin/src/generators/models/model-generator.ts:657-658`) and is never revisited. The result is N
+(`packages/kotlin/src/generators/models/model-generator.ts:682-658`) and is never revisited. The result is N
 differently-named files declaring the same class in the same package — which in Kotlin is one namespace, not N.
 
 **Compile gate:** `test/compile/kotlin/models@sb3/v3/name-collisions.txt` and its 19 siblings — `Redeclaration:`,
@@ -578,17 +578,17 @@ fixed here — this phase records defects rather than fixing them.
 
 The static-serializer template branches on `springBootVersion` and gets the Jackson 3 migration almost entirely right,
 then splices in one member Jackson 3 removed. In
-`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-clients-generator.ts:158`, inside the
+`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-clients-generator.ts:179`, inside the
 `springBootVersion === 4` branch:
 
 ```ts
 .configure(${kt.refs.jackson.serializationFeature(springBootVersion)}.WRITE_DATES_AS_TIMESTAMPS, false)
 ```
 
-`kt.refs.jackson.serializationFeature` (`packages/kotlin/src/ast/references/jackson.ts:42-45`) resolves correctly to
+`kt.refs.jackson.serializationFeature` (`packages/kotlin/src/ast/references/jackson.ts:79-45`) resolves correctly to
 `tools.jackson.databind.SerializationFeature` for Spring Boot 4. `WRITE_DATES_AS_TIMESTAMPS` is a bare literal, and
 Jackson 3 moved date handling off `SerializationFeature`. The sb3 branch at
-`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-clients-generator.ts:166` uses the same literal
+`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-clients-generator.ts:187` uses the same literal
 correctly against Jackson 2.
 
 **This is not a gate dependency gap.** Every other `tools.jackson` name in the same generated file resolves — the
@@ -610,7 +610,7 @@ class of defect that gating both Spring Boot lines exists to find** — a single
 entirely. Not fixed here — this phase records defects rather than fixing them; a fix needs Jackson 3's replacement for
 the feature, a lookup this entry deliberately does not guess at.
 
-**Fixed:** `f13fe6f` adds a dedicated `dateTimeFeature` reference (`packages/kotlin/src/ast/references/jackson.ts:57`
+**Fixed:** `f13fe6f` adds a dedicated `dateTimeFeature` reference (`packages/kotlin/src/ast/references/jackson.ts:104`
 — Jackson 3 only, no `springBootVersion` parameter, since Jackson 2 has nothing to switch on) and uses it in the
 Spring Boot 4 static-serializer branch (`okhttp3-clients-generator.ts:160`) in place of
 `serializationFeature(springBootVersion).WRITE_DATES_AS_TIMESTAMPS`; the `@sb3` branch, which already targets
@@ -663,7 +663,7 @@ list above it already is, rather than to reorder the base: the `'parameter'` pat
 nothing here shows it is broken, and reordering the base would be a change made blind.
 
 **Fixed:** `73b89a7` extracts the decision into `getClientDelegateArguments(serializerAsParameter: boolean):
-string[]` (`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:66-68`) and calls it
+string[]` (`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:99-68`) and calls it
 for the `super(…)` argument list (`:97`), so the delegate call now derives its order from the same flag — and
 therefore agrees with — the subclass's own constructor parameter order, instead of the constant
 `['basePath', 'objectMapper', 'client']` that matched only `serializer: 'parameter'`. Drove the
@@ -709,7 +709,7 @@ records defects rather than fixing them.
 
 **Fixed:** `01493d4` drops the `ctx.config.springBootVersion === 4` guard and makes the `Any` bound on `<T>`
 unconditional — `generics: [kt.genericParameter('T', { constraint: kt.refs.any() })]`
-(`packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:166`)
+(`packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:202`)
 — so `@sb3` now emits `<T : Any>` too, matching `@sb4`. Whether Spring 7 also needs the bound independently of this
 change remains unsettled; making it unconditional is known to satisfy both lines as they stand. Drove the
 `SuspendFunction1<…, T>` / `SuspendFunction1<…, T & Any>` argument-mismatch pair to zero across **127 occurrences
@@ -758,10 +758,10 @@ in both generators.
 An operation carrying two tags is generated into one service per tag, and each service emits its own response-model
 type named after the operation. The barrel then re-exports both without deduplicating:
 
-- `packages/typescript/src/generators/services/angular-services/angular-services-generator.ts:277-282` —
+- `packages/typescript/src/generators/services/angular-services/angular-services-generator.ts:298-282` —
   `getResponseModelsIndexFileContent` flat-maps every service's `responseModels` straight into one `ts.export(…)` per
   entry.
-- `packages/typescript/src/generators/services/k6-clients/k6-clients-generator.ts:164-169` — the same, as a value
+- `packages/typescript/src/generators/services/k6-clients/k6-clients-generator.ts:182-169` — the same, as a value
   export rather than a type export.
 
 Nothing between the flat-map and the emit asks whether a component name has already been exported.
@@ -784,7 +784,7 @@ to the two barrel builders. Not fixed here — this phase records defects rather
 ### Defect 31 — `easy-network-stub` emits `OPTIONS` and `HEAD` into a stub API whose `HttpMethod` union rejects them (found by the tier-3 compile gate, not scheduled)
 
 `EasyNetworkStubGenerator` passes each operation's HTTP method through verbatim:
-`packages/typescript/src/generators/services/easy-network-stub/easy-network-stub-generator.ts:160` emits
+`packages/typescript/src/generators/services/easy-network-stub/easy-network-stub-generator.ts:182` emits
 `ts.string(endpoint.method.toUpperCase())` as the first argument to `this.stubWrapper.stub2<…>()(…)` (`:159`). The
 `easy-network-stub` package types that argument as `HttpMethod`, and in the version the gate pins
 (`easy-network-stub@9.0.0`, `test/docker/node/package.json`) that union admits neither `OPTIONS` nor `HEAD`. OpenAPI
@@ -809,7 +809,7 @@ this defect is a property of the pinned library version and could resolve with n
 ### Defect 32 — `collectResponse` treats a response's entire `headers` map as one item, so no named header is ever
 collected, and a header literally named `"type"` crashes it (found by the tier-1 unit tests, not scheduled)
 
-`collectResponse` (`packages/core/src/collect/collector.ts:125-136`) calls `collect(data, responses.headers, ...)` at
+`collectResponse` (`packages/core/src/collect/collector.ts:133-136`) calls `collect(data, responses.headers, ...)` at
 line 128. `responses.headers` is a `Record<string, OpenApiHeader>`, and `collect` (`collect/helpers.ts:5-21`) treats
 any non-array, non-nullish argument as **one** item, handing the whole map to the callback rather than iterating it by
 key — iterating by key is what `collectRecord` (`helpers.ts:23-36`) does, and `collectResponse` never calls it. So
@@ -836,8 +836,8 @@ Not fixed here — this phase records defects rather than fixing them. The fix i
 directly instead of through `collect`/`collectRecord` (found by the tier-1 unit tests, not scheduled)
 
 `x-ignore` is checked in exactly two places in the whole codebase: `collect` and `collectRecord`
-(`packages/core/src/collect/helpers.ts:14,18,33`) — confirmed by `grep -rn "x-ignore" packages/`, which matches
-nothing else. `collectPathItem` (`packages/core/src/collect/collector.ts:56-75`) reads each HTTP method directly off
+(`packages/core/src/collect/helpers.ts:22,18,33`) — confirmed by `grep -rn "x-ignore" packages/`, which matches
+nothing else. `collectPathItem` (`packages/core/src/collect/collector.ts:64-75`) reads each HTTP method directly off
 the path item — `const operation = pathItem[m];` at line 60 — bypassing both helpers entirely. An operation carrying
 `x-ignore: true` is therefore collected and generated exactly like any other operation; nothing downstream re-checks
 the flag.
@@ -852,7 +852,7 @@ Not fixed here — this phase records defects rather than fixing them.
 enumerates with `for...in` over a proxy whose `getOwnPropertyDescriptor` trap is missing (found by the tier-1 unit
 tests, not scheduled)
 
-`getCustomFields` (`packages/core/src/transform/helpers.ts:187-196`) collects vendor extensions with
+`getCustomFields` (`packages/core/src/transform/helpers.ts:215-196`) collects vendor extensions with
 `for (const key in schema)` (line 189). A `for...in` loop walks a proxy's `[[OwnPropertyKeys]]` (the `ownKeys` trap)
 and then, per key, its `[[GetOwnProperty]]` (the `getOwnPropertyDescriptor` trap) to decide enumerability.
 `createDerefProxy`'s handler (`packages/core/src/parse/deref-proxy.ts`) implements `ownKeys` (lines 59-69) — which
@@ -879,15 +879,15 @@ Not fixed here — this phase records defects rather than fixing them.
 ### Defect 35 — `combineParameters` matches a path parameter against an operation parameter by `name` alone, ignoring
 `target`, so a same-named query parameter displaces a path parameter (found by the tier-1 unit tests, not scheduled)
 
-`combineParameters` (`packages/core/src/transform/transform-endpoint.ts:254-265`) finds a colliding parameter with
+`combineParameters` (`packages/core/src/transform/transform-endpoint.ts:262-265`) finds a colliding parameter with
 `result.findIndex((p) => p.name === opParam.name)` (line 257) and, on a match, **replaces** the path-level entry with
 the operation-level one. OpenAPI identifies a parameter by the pair `(name, in)`, not by `name` alone, so an
 operation-level query parameter named `id` on `/pets/{id}` overwrites the path-level `id` parameter instead of
-coexisting with it. Every downstream consumer that filters by `target` — `packages/core/src/utils/endpoint.utils.ts:5`
+coexisting with it. Every downstream consumer that filters by `target` — `packages/core/src/utils/endpoint.utils.ts:17`
 (`p.target === 'query'`) and the generators' own `target === 'path'`/`'query'`/`'header'` filters, e.g.
-`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:493`,
+`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:526`,
 `spring-controller-generator.ts:407`, `spring-reactive-web-client-generator.ts:401`, and
-`packages/typescript/src/generators/services/fetch-clients/fetch-client-generator.ts:98` — never sees the lost path
+`packages/typescript/src/generators/services/fetch-clients/fetch-client-generator.ts:120` — never sees the lost path
 parameter, so a generated client for `/pets/{id}` has no `id` path argument to substitute.
 
 **Tier 1:** `packages/core/src/transform/transform-endpoint.test.ts`, describe block `'parameter combination'` —
@@ -898,7 +898,7 @@ Not fixed here — this phase records defects rather than fixing them.
 ### Defect 36 — the implicit (untagged) service omits `$src`, while a tag-derived service always sets it (found by the
 tier-1 unit tests, not scheduled)
 
-`transformEndpoint` (`packages/core/src/transform/transform-endpoint.ts:55-68`) creates one `ApiService` per tag an
+`transformEndpoint` (`packages/core/src/transform/transform-endpoint.ts:63-68`) creates one `ApiService` per tag an
 operation carries, falling back to the empty-string tag when it carries none. The object literal for a newly-seen tag
 (lines 60-66) has no `$src` field at all, unlike `transformTag` (`packages/core/src/transform/transform-document.ts:
 20-30`), whose `ApiService` always sets `$src` from the tag object (lines 21-24). A consumer that reads
@@ -914,7 +914,7 @@ Not fixed here — this phase records defects rather than fixing them.
 ### Defect 37 — `ApiPath.path` goes stale on a `transformed.paths` cache hit reached via a different path string (found
 by the tier-1 unit tests, not scheduled)
 
-`transformApiPath` (`packages/core/src/transform/transform-endpoint.ts:78-118`) keeps two caches: `context.paths`,
+`transformApiPath` (`packages/core/src/transform/transform-endpoint.ts:86-118`) keeps two caches: `context.paths`,
 keyed by the path string, and `context.transformed.paths`, keyed by the path item's own identifier (line 88). The
 `path` field is set exactly once, at construction (line 101, `path: path`), from whichever path string reached the
 constructor first. A second call that misses `context.paths` (a different path string) but hits
@@ -932,11 +932,11 @@ Not fixed here — this phase records defects rather than fixing them.
 ### Defect 38 — `statusCode: Number(status) || undefined` maps the numeric string `'0'` to `undefined`, the same
 bucket as `'default'` and a wildcard range (found by the tier-1 unit tests, not scheduled)
 
-`transformResponse` (`packages/core/src/transform/transform-endpoint.ts:206`) computes
+`transformResponse` (`packages/core/src/transform/transform-endpoint.ts:214`) computes
 `statusCode: Number(status) || undefined`. `Number('0')` is `0`, which is falsy, so the `||` collapses a genuine (if
 unusual) `'0'` status code to `undefined` — indistinguishable from `'default'` or a range code like `'2XX'`.
 Cross-reference **defect 19**, the `responseCode = null` consequence in the Kotlin `spring-controllers` generator
-(`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:211-212`), which is
+(`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:232-212`), which is
 downstream of the same "no status code" bucket this line produces.
 
 **Tier 1:** `packages/core/src/transform/transform-endpoint.test.ts`, describe block `'responses'` — `'also leaves
@@ -948,7 +948,7 @@ Not fixed here — this phase records defects rather than fixing them.
 twice off one generator leaks the second branch's providers into the first (found by the tier-1 unit tests, not
 scheduled)
 
-`use()` (`packages/core/src/codegen/generator.ts:41-48`) does `this._providers.push({ provider, config })` (line 46) —
+`use()` (`packages/core/src/codegen/generator.ts:50-48`) does `this._providers.push({ provider, config })` (line 46) —
 mutating the array already stored on `this` — and only afterwards constructs the returned generator from
 `[...this._providers]` (line 47). So calling `.use()` twice on the same base generator does not produce two
 independent branches: the second call's push lands on the same array the first call already mutated, and the
@@ -963,7 +963,7 @@ Not fixed here — this phase records defects rather than fixing them.
 ### Defect 40 — `mergeDeep`'s array-concatenation branch is unreachable, so two providers contributing to the same
 array-valued output key merge by index instead of concatenating (found by the tier-1 unit tests, not scheduled)
 
-`mergeDeep` (`packages/core/src/codegen/generator.ts:134-155`) tests `value && typeof value === 'object'` (line 143)
+`mergeDeep` (`packages/core/src/codegen/generator.ts:222-155`) tests `value && typeof value === 'object'` (line 143)
 before `Array.isArray(value)` (line 146). Every non-null array satisfies the first condition — arrays are objects —
 so the concatenating branch below it can never run; an array-valued key is always routed into the object-merge
 branch instead, which recurses `mergeDeep(target[key], value)` and, because array indices are just string keys,
@@ -1019,13 +1019,13 @@ paragraph from a reading of the generator into a quotation from the artifact.
 **Tier 4, confirmed on a second generator, with the opposite outcome on its sibling — `spring-reactive-web-clients`
 only, not `okhttp3-clients`.** The two Kotlin client generators build a path substitution through entirely different
 library calls, and only one of them closes this gap. `okhttp3-clients` generates its own `encodeURIComponent` helper
-per client (`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:432-438`), built as
+per client (`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:465-438`), built as
 `HttpUrl.Builder().scheme("http").host("localhost").addPathSegment(uriComponent).build().encodedPathSegments[0]` —
 `addPathSegment` treats its whole argument as one opaque segment and percent-encodes any `/` inside it, so
 `okhttp3-clients`' `getEncoded/ok` case produces no artifact in either `@sb3` or `@sb4`: this generator gets it right.
 `spring-reactive-web-clients` has no equivalent helper; its path substitution instead calls
 `UriComponentsBuilder.buildAndExpand(...)` then `.toUriString()`
-(`packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:402,416`),
+(`packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:438,416`),
 and Spring's own URI-template expansion does not percent-encode a `/` embedded inside a single path-variable value —
 the identical wire consequence this entry already records for `fetch-clients`, reached through a completely
 unrelated code path in a generator the original entry never covered.
@@ -1096,8 +1096,8 @@ cases since `UrlBuilder` has exactly one join strategy).
 lines.** Both Kotlin client generators share the identical gap through an identically-named, identically-bodied
 method: `getParameterToString` returns the literal `.joinToString()` for any array-typed parameter, with no
 inspection of `parameter.style`/`parameter.explode` anywhere in the function —
-`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:413-416` and
-`packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:421-424`,
+`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:446-416` and
+`packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:457-424`,
 the same three-branch `if`/`else if`/`else` in both files. Kotlin's default `joinToString()` separator is `", "`
 (comma-space), one character wider than `fetch-clients`' bare `Array.prototype.toString` comma join — wide enough
 that, unlike `fetch-clients`, none of the three `styleMatrix` styles nor `pathStyleSimple` happens to match by
@@ -1118,7 +1118,7 @@ exercises.
 flavours.** The server direction reaches the same missing capability from the other side: instead of building a query
 string the generated code has to *bind* one, and it emits nothing that could express a declared style there either.
 The query arm of `getApiInterfaceEndpointMethodParameter`
-(`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:391-405`) emits
+(`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:412-405`) emits
 `@RequestParam` with exactly three possible arguments — `value`, `required`, and `defaultValue` when the schema has a
 default — and reads `parameter.style`/`parameter.explode` nowhere. Grepping the whole `spring-controllers` generator
 directory for `style` or `explode` returns only `spring-controller-generator.ts:1101-1102`, where both are *written*
@@ -1157,7 +1157,7 @@ so the bound single element is `"a b"` either way and the conclusion is unaffect
 **Tier 4 (angular), the opposite outcome on a fourth family — `angular-services` implements `style` and `explode`
 end to end.** Two things have to be true and both are. The generator *carries* the declared style: the per-parameter
 options object it emits gets a `style` property whenever `p.style` is defined and an `explode` property whenever
-`p.explode` is (`packages/typescript/src/generators/services/angular-services/angular-service-generator.ts:296-301`),
+`p.explode` is (`packages/typescript/src/generators/services/angular-services/angular-service-generator.ts:323-301`),
 which is what produces
 `rb.query('spaceDelimited', params.spaceDelimited, { style: 'spaceDelimited', explode: false })` and its two `form`
 siblings in the generated output
@@ -1185,7 +1185,7 @@ join for `spaceDelimited`/`pipeDelimited`, and the current comma join kept only 
 it. For Kotlin, `getParameterToString` needs the equivalent branch in both generators, since they share the identical
 gap at an identically-named site. For `spring-controllers` the fix is on the binding side rather than the building
 side: no `@RequestParam` argument can express `spaceDelimited` on its own, so the query arm at
-`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:391-405` has to emit
+`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:412-405` has to emit
 something that carries the style — the plainest being a `String` parameter plus a generated split for the non-comma
 styles.
 
@@ -1221,8 +1221,8 @@ any argument the generated type accepts.
 lines.** Both Kotlin client generators collect an operation's parameters through an identically-bodied
 `getAllParameters`, filtering to `parameter.target === 'query' || parameter.target === 'path' || parameter.target
 === 'header'` with no `'cookie'` arm at all —
-`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:518-520` and
-`packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:487-489`
+`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:551-520` and
+`packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:523-489`
 — the same three-target filter, and the same omission, this entry already records for `fetch-clients`'s own
 parameter-collection pass.
 
@@ -1254,12 +1254,12 @@ above. Both `test/README.md`'s server-direction section and
 **Tier 4 (angular), confirmed on a fifth family — and this is the worst form of the defect so far, because the
 generated type advertises the parameter it drops.** `angular-services` has two passes over an operation's parameters
 and they disagree with each other. The params-type pass iterates `endpoint.parameters` with **no filter at all**
-(`packages/typescript/src/generators/services/angular-services/angular-service-generator.ts:187-199`), so the cookie
+(`packages/typescript/src/generators/services/angular-services/angular-service-generator.ts:214-199`), so the cookie
 parameter does reach the generated signature: `AllLocationsParams` declares `session?: string`
 (`test/output/typescript/angular-services/integration/kitchen-sink/services/params.service.ts:14-19`). The method-body
 pass then filters to the same three targets every other generator in this entry filters to —
 `p.target === 'path' || p.target === 'query' || p.target === 'header'`
-(`packages/typescript/src/generators/services/angular-services/angular-service-generator.ts:293-294`) — so the body emits
+(`packages/typescript/src/generators/services/angular-services/angular-service-generator.ts:320-294`) — so the body emits
 `rb.path`,
 `rb.query` and `rb.header` calls and nothing whatsoever for `params.session` (`params.service.ts:52-57`). There is
 nothing for it to emit into either: `RequestBuilder`'s only parameter setters are `path`, `query` and `header`
@@ -1289,14 +1289,14 @@ site. `spring-controllers` needs the same addition at its own `getAllParameters`
 (`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:1031-1035`) plus a
 `@CookieValue` arm in the annotation pass — the server side of this defect needs a fix even though this tier cannot
 fail on it. `angular-services` needs the addition in two places: a `'cookie'` arm on the method-body filter at
-`packages/typescript/src/generators/services/angular-services/angular-service-generator.ts:293-294`, and a `cookie()`
+`packages/typescript/src/generators/services/angular-services/angular-service-generator.ts:320-294`, and a `cookie()`
 setter on the `RequestBuilder` asset that joins every collected cookie into one `Cookie` header the way the three
 existing setters build their own targets. Whichever way it is fixed, the two passes must end up agreeing: a params type
 that keeps advertising a field the body pass cannot send is worse than one that never offered it.
 
 ### Defect 44 — a multi-media-type `requestBody` collapses to its first declared content entry, with no way for a caller to select another (found by the tier-4 wire contract, not scheduled)
 
-`getInterfaceEndpointMethod` (`packages/typescript/src/generators/services/fetch-clients/fetch-client-generator.ts:100`)
+`getInterfaceEndpointMethod` (`packages/typescript/src/generators/services/fetch-clients/fetch-client-generator.ts:122`)
 computes the body parameter's type from `endpoint.requestBody?.content[0]?.schema` alone, and the serialization branch
 defect 20 describes (`:226`) reads the identical `content[0]`. Neither ever looks at `content[1]` or beyond. For an
 operation whose `requestBody.content` declares more than one media type, the generated client has exactly one method,
@@ -1332,11 +1332,11 @@ lines.** Both Kotlin client generators build `updatePet`'s single method from `e
 alone, the identical collapse-to-first-entry this entry describes, at a different site in each generator.
 `okhttp3-clients` hardcodes the request's `Content-Type` header directly from `content[0].type`:
 `localVariableHeaders["Content-Type"] = "${endpoint.requestBody?.content[0].type}"`
-(`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:381-382`), so
+(`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:414-382`), so
 `updatePetRequestConfig` always sends `Content-Type: application/json` — `content[0]` for this operation — regardless
 of which of the two declared media types a caller means to send. `spring-reactive-web-clients` reads the same
 `content[0]` for both its `.contentType(...)` call and the schema it hands to `bodyValue(...)`
-(`packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:253-256,304`).
+(`packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:289-256,304`).
 Neither generator emits a second method, parameter, or branch for `updatePet`'s second declared media type
 (`application/x-www-form-urlencoded`), so — exactly as for `fetch-clients` — no caller of either generated client can
 send that alternative through any argument the generated signature accepts.
@@ -1351,7 +1351,7 @@ distinct-but-related reason discussed above.
 already implements the media type its caller cannot select.** `angular-services` reads `content[0]` at both of the two
 sites that decide what a caller can send, exactly as this entry describes for the other four. The body property's type
 comes from `endpoint.requestBody.content[0].schema`
-(`packages/typescript/src/generators/services/angular-services/angular-service-generator.ts:201-210`, the `content[0]`
+(`packages/typescript/src/generators/services/angular-services/angular-service-generator.ts:228-210`, the `content[0]`
 at `:203`), and the content type the emitted `rb.body(...)` call carries comes from
 `ctx.config.defaultRequestContentType ?? endpoint?.requestBody?.content[0].type ?? 'application/json'` (`:358-359`,
 emitted at `:310`). So `PetsService.updatePet` is one method, `UpdatePetParams = { id: string; body: PetUpdate }`
@@ -1361,7 +1361,7 @@ unconditionally runs `rb.body(params.body, 'application/json')` (`:93`) — no o
 Two things make this family's form of the collapse distinctive, and both narrow the fix rather than widen the defect.
 First, the collapse is *documented as intended*: `defaultRequestContentType`'s own doc comment reads "If not defined the
 first one defined in the OpenApi specification is used"
-(`packages/typescript/src/generators/services/angular-services/models.ts:72-76`, defaulting to `undefined` at `:160`).
+(`packages/typescript/src/generators/services/angular-services/models.ts:76-76`, defaulting to `undefined` at `:160`).
 That option is the only existing escape hatch and it is generator-wide — `angular-service-generator.ts:359` applies it to
 every operation — so it
 can trade one media type for the other wholesale but cannot select per operation, let alone per call. Second, the
@@ -1394,8 +1394,8 @@ operation that genuinely declares two.
 
 Both Kotlin client generators pick each endpoint's success response the same way:
 
-- `packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:507`
-- `packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:476`
+- `packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:540`
+- `packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:512`
 
 ```ts
 endpoint.responses.find((x) => !x.statusCode || (x.statusCode >= 200 && x.statusCode < 300))
@@ -1424,7 +1424,7 @@ picked the wrong response".
 that operation. This safety is incidental, resting entirely on declaration order, not on any check the generator
 performs.
 
-**Cross-reference defect 19.** Its fix added `statusKey` (`packages/core/src/transform/api-types.ts:116`), the field
+**Cross-reference defect 19.** Its fix added `statusKey` (`packages/core/src/transform/api-types.ts:339`), the field
 that makes the correct predicate expressible at all: prefer an exact 2xx status, then a `2XX` range, then `default`.
 Before `statusKey` existed, `getResponseSchema` had no way to distinguish those three cases from one another —
 `statusCode` collapses all of them to `undefined` alike. `statusKey` is the enabler for a fix, not a fix itself; this
@@ -1519,12 +1519,12 @@ This entry deliberately stops at recording the mechanism rather than guessing at
 Neither Kotlin client family gives an ordinary caller any way to inspect a declared error response's decoded body.
 `okhttp3-clients`' per-operation plain method (e.g. `getWidget`) delegates to `<op>WithHttpInfo` and switches on
 `localVarResponse.responseType`
-(`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:198-227`): the `ClientError`
+(`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-client-generator.ts:231-227`): the `ClientError`
 and `ServerError` arms (`:210-217`, `:219-226`) always throw `ClientException`/`ServerException`, constructed from
 only the response's status code and an undecoded message string, with the raw `ClientError`/`ServerError` response
 object attached — never running the response body through `objectMapper` against the operation's declared error
 schema. `spring-reactive-web-clients`' plain call form uses `.retrieve()`
-(`packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:133`)
+(`packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:169`)
 with no custom status handler, which is Spring `WebClient`'s own documented default: any 4xx/5xx response throws
 `WebClientResponseException`, again carrying only the raw response text, before the operation's declared response
 type is ever considered. In both families this is unconditional for every operation with a possible non-2xx
@@ -1550,15 +1550,15 @@ well-behaved client would offer.
 `okhttp3-clients` generates its own `Serializer.kt` per client, whose builder calls
 `changeDefaultPropertyInclusion`/`setSerializationInclusion` against `ctx.config.serializerJsonInclude` (default
 `'non-absent'`) to exclude absent/null values
-(`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-clients-generator.ts:154-166`).
+(`packages/kotlin/src/generators/services/okhttp3-clients/okhttp3-clients-generator.ts:175-166`).
 `spring-reactive-web-clients` declares the identical config option, with the identical default, in its own
-`models.ts` (`packages/kotlin/src/generators/services/spring-reactive-web-clients/models.ts:22,33`) — but grepping
+`models.ts` (`packages/kotlin/src/generators/services/spring-reactive-web-clients/models.ts:68,33`) — but grepping
 the whole `spring-reactive-web-clients` generator directory for `serializerJsonInclude`, `JsonInclude`, `ObjectMapper`
 or `Serializer` turns up exactly one hit, that same declaration in `models.ts`: the option is read nowhere. There is
 no `Serializer.kt`-equivalent file for this family at all — `packages/kotlin/assets/client/spring-reactive-web-clients/`
 holds only `ApiRequestFile.kt` — and its generated extension functions call `bodyValue(...)` directly on a
 caller-supplied `WebClient`
-(`packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:304-309`),
+(`packages/kotlin/src/generators/services/spring-reactive-web-clients/spring-reactive-web-client-generator.ts:340-309`),
 so request serialization is whatever `ObjectMapper`/`Jackson2JsonEncoder` that `WebClient`'s own codec configuration
 resolves to. Under the harness's own reference `WebClient` (built with no Spring Boot autoconfiguration and no
 inclusion customization), that default is Jackson's own `Include.ALWAYS`, so every unset field on a
@@ -1584,7 +1584,7 @@ leaving the option declared and silently inert, as it stands today, is not.
 Two independent pieces of the generated `@RequestMapping` disagree about how many media types the operation can
 actually accept. The `consumes` argument is built from **every** entry in the request body's content map —
 `endpoint.requestBody?.content.map((x) => kt.string(x.type))`, unconditionally, whenever there is at least one
-(`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:294-303`). The body
+(`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:315-303`). The body
 *parameter* is built from `endpoint.requestBody.content[0]` alone (`:1037-1039`), and the annotation it receives is
 `@RequestBody` for anything that is not multipart: the only carve-out in the whole annotation pass is
 `if (parameter.target === 'body' && !parameter.multipart)` (`:387-389`), with `@RequestPart` emitted for the multipart
@@ -1660,9 +1660,9 @@ That leaves the models as the only place inside generated code where inclusion c
 Kotlin model generator emits `@JsonInclude` only behind a per-property vendor extension:
 `getJacksonJsonIncludeAnnotation` returns an annotation exactly when
 `ctx.config.addJacksonAnnotations && property.schema.custom['exclude-when-null'] === true`
-(`packages/kotlin/src/generators/models/model-generator.ts:495-506`), called from both the data-class parameter path
+(`packages/kotlin/src/generators/models/model-generator.ts:520-506`), called from both the data-class parameter path
 (`:320`) and the interface property path (`:344`). `addJacksonAnnotations` defaults to `true`
-(`packages/kotlin/src/generators/models/models.ts:68`), so the gate actually closed is the second one: absent an
+(`packages/kotlin/src/generators/models/models.ts:121`), so the gate actually closed is the second one: absent an
 `x-exclude-when-null: true` on the individual property there is no `@JsonInclude` emitted anywhere, at property level
 or at class level, and no generator config that changes it. The generated `Pet` is the ordinary case — a `data class`
 with two required properties and nine nullable ones defaulted to `null`
@@ -1704,17 +1704,17 @@ Under `strictResponseEntities` the generator replaces the delegate's `ResponseEn
 per-operation nested class whose only construction points are companion-object factories — one per status code in a set
 built as `[...ctx.config.defaultStatusCodes, 501, ...endpoint.responses.map((x) => x.statusCode)]`, de-duplicated
 through a `Set` and `.filter(notNullish)`-ed
-(`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:520-529`), with
+(`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:541-529`), with
 `defaultStatusCodes` defaulting to `[400, 401, 403, 500, 501]`
-(`packages/kotlin/src/generators/services/spring-controllers/models.ts:44`). The `filter(notNullish)` is where the
+(`packages/kotlin/src/generators/services/spring-controllers/models.ts:127`). The `filter(notNullish)` is where the
 spec's `default` response is lost: a `default` — and likewise a range code such as `5XX` — has no numeric
 `statusCode`, `undefined` being exactly what that field holds, as this same generator's own comment records where it
 has to fall back to `response.statusKey` for the Swagger annotation
-(`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:212-214`). A `default`
+(`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:233-214`). A `default`
 response therefore contributes nothing to the factory set. The escape hatch is closed in the same class: the primary
 constructor is emitted `private` whenever the endpoint declares any response at all
 (`accessModifier: endpoint.responses.length > 0 ? 'private' : null`,
-`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:510`).
+`packages/kotlin/src/generators/services/spring-controllers/spring-controller-generator.ts:531`).
 
 Each half is individually defensible and together they are a dead end. `getWidget` declares `200`, `400`, `404`, `500`
 and a `default` (`test/specs/integration/kitchen-sink.yml:178-179`), and the generated class is
@@ -1760,7 +1760,7 @@ for anything this generator emits today they cannot both be true.
 
 The map's values come from each error response's first declared content type —
 `parser: this.contentTypeToResponseType(x.contentOptions[0]?.type)`
-(`packages/typescript/src/generators/services/angular-services/angular-service-generator.ts:165`), with the helper
+(`packages/typescript/src/generators/services/angular-services/angular-service-generator.ts:192`), with the helper
 returning `'json'` exactly when the media-type string contains `json` (`:428-430`). The request's own `responseType` is
 derived independently, from the **success** response alone (`:261-262`, via `getEndpointSuccessResponseType` at
 `:362-373`). Two independent derivations, so a `'json'` error entry paired with a non-json `responseType` — the one
@@ -1821,9 +1821,9 @@ simultaneously unreachable and unsafe.
 Every relative import in the generated `k6-clients` output omits the file extension — `clients/pets-client.js` opens with
 `import { RequestBuilder } from '../utils/request-builder';` and `clients.js` re-exports through
 `export { PetsClient } from './clients/pets-client';`. That is produced by `importModuleTransformer`, whose default is
-`'omit-extension'` (`packages/typescript/src/config.ts:82`) and which the k6 generator never overrides:
+`'omit-extension'` (`packages/typescript/src/config.ts:114`) and which the k6 generator never overrides:
 `defaultTypeScriptK6ClientsGeneratorConfig`
-(`packages/typescript/src/generators/services/k6-clients/models.ts:125-128`) spreads
+(`packages/typescript/src/generators/services/k6-clients/models.ts:135-128`) spreads
 `defaultTypeScriptGeneratorConfig` and sets `language: 'javascript'` but never touches
 `importModuleTransformer` — which also establishes that the knob is reachable exactly where a fix would go.
 
@@ -1860,7 +1860,7 @@ rests on.
 whole nature is that the runtime loader disagrees with the type-checker.
 
 Not fixed here — this phase records defects rather than fixing them. The fix is unusually small: `'js-extension'` is
-already an implemented `ImportModuleTransformer` mode (`packages/typescript/src/utils.ts:48-49`, `modulePath.replace(/\.[^/.]+$/, '.js')`),
+already an implemented `ImportModuleTransformer` mode (`packages/typescript/src/utils.ts:93-49`, `modulePath.replace(/\.[^/.]+$/, '.js')`),
 so the k6 generator needs to default to it instead of inheriting `'omit-extension'`. Doing so changes generated output
 and therefore belongs to a phase that can regenerate the tier-2 snapshots.
 
@@ -1899,7 +1899,7 @@ dependency in a manifest, and this one is pinned inside a string in an asset.
 
 ### Defect 57 — `easy-network-stub` emits an array route parameter, which the library rejects synchronously while registering, so the operation cannot be stubbed at all and one generated stub can take every other one down with it (found by the tier-4 server direction, not scheduled)
 
-`getStubRoute` (`packages/typescript/src/generators/services/easy-network-stub/easy-network-stub-generator.ts:208-231`)
+`getStubRoute` (`packages/typescript/src/generators/services/easy-network-stub/easy-network-stub-generator.ts:230-231`)
 rewrites each path parameter into the library's `{name:type}` route syntax at `:224`, where `type` is the generated
 model component name with an array wrapper unwrapped from `(X)[]` to `X[]` at `:218-221`. For `pathStyleSimple`, whose
 `values` path parameter is an array of strings, that produces
@@ -1970,7 +1970,7 @@ parameter type carries a matcher *and* a parser.
 ### Defect 59 — `easy-network-stub` emits array query parameters with no regard to their declared style, and because they are generated optional a value the library's default matcher rejects binds to nothing instead of failing (found by the tier-4 server direction, not scheduled)
 
 `getStubRoute` appends one `{name?:type}` group per query parameter
-(`packages/typescript/src/generators/services/easy-network-stub/easy-network-stub-generator.ts:226`), so `styleMatrix`
+(`packages/typescript/src/generators/services/easy-network-stub/easy-network-stub-generator.ts:248`), so `styleMatrix`
 — whose three array
 parameters are the spec's three `style`/`explode` encodings of the same `['a', 'b']` — generates
 `STYLE_MATRIX_PATH = 'styles?{formExploded?:string[]}&{formUnexploded?:string[]}&{spaceDelimited?:string[]}'`
@@ -2057,15 +2057,15 @@ collection before relying on it.
 ### Defect 61 — the `easy-network-stub` responder's status map is built by filtering out responses with no numeric status code, so the spec's `default` response is dropped and an operation relying on it has statuses its own generated API cannot name (found by the tier-4 server direction, not scheduled)
 
 `getEndpointStatusCodes`
-(`packages/typescript/src/generators/services/easy-network-stub/easy-network-stub-generator.ts:233-243`) builds the
+(`packages/typescript/src/generators/services/easy-network-stub/easy-network-stub-generator.ts:255-243`) builds the
 type argument of `getStubResponder<{…}>()` from two sources: the configured
 `defaultStatusCodeResponseTypes` — `401`, `403` and `500`, all `never`
-(`packages/typescript/src/generators/services/easy-network-stub/models.ts:78-82`) — and the endpoint's own responses,
+(`packages/typescript/src/generators/services/easy-network-stub/models.ts:88-82`) — and the endpoint's own responses,
 `endpoint.responses.filter((x) => x.statusCode)` at
-`packages/typescript/src/generators/services/easy-network-stub/easy-network-stub-generator.ts:239-241`. That filter is
+`packages/typescript/src/generators/services/easy-network-stub/easy-network-stub-generator.ts:261-241`. That filter is
 where the `default` response is lost: a
 `default` (and likewise a range code such as `5XX`) has no numeric `statusCode`, `undefined` being exactly what the
-field holds — `Number(status) || undefined`, `packages/core/src/transform/transform-endpoint.ts:206`, which is
+field holds — `Number(status) || undefined`, `packages/core/src/transform/transform-endpoint.ts:214`, which is
 **defect 38**'s lossiness, with `statusKey` the non-lossy field a fix must read instead.
 
 Measured on the committed tree: `getWidget` declares `200`, `400`, `404`, `500` and a `default`
@@ -2141,7 +2141,7 @@ generated code can produce.
 
 `getStubRoute` is the only place in this generator that reads a parameter's location, and it has arms for two of the
 four: `if (param.target === 'path') … else if (param.target === 'query')`
-(`packages/typescript/src/generators/services/easy-network-stub/easy-network-stub-generator.ts:223-228`). There is no
+(`packages/typescript/src/generators/services/easy-network-stub/easy-network-stub-generator.ts:245-228`). There is no
 `else`, and `grep -n "param.target"` over that file returns exactly those two lines — so a `header` or `cookie`
 parameter is not emitted anywhere, not as a route segment, not as a callback argument, not as a remembered field.
 
@@ -2173,7 +2173,7 @@ current silence, in which the generated signature and the spec disagree with not
 
 Small, verified, and each needing either a decision or a home:
 
-- **Kotlin `hasProperty` is not undefined-safe** at `packages/kotlin/src/generators/models/model-generator.ts:835-836`
+- **Kotlin `hasProperty` is not undefined-safe** at `packages/kotlin/src/generators/models/model-generator.ts:860-836`
   (`hasProperty` itself begins at `:819`; this bullet cited `:732-733` before the citation audit of phase 7a caught the
   drift — the code moved, the defect did not): `'oneOf' in schema && !schema.discriminator && schema.oneOf.some(...)`,
   the discriminator guard having been added since. `normalizeSchema` in the same file constructs `{...schema, oneOf:
@@ -2218,7 +2218,7 @@ Small, verified, and each needing either a decision or a home:
   existingEndpointResults is pre-populated'`). No generated output is affected today because nothing currently
   produces two `ApiEndpoint`/`ApiService` objects sharing an id within one provider run.
 - **`deref-proxy.ts`'s `set` trap silently no-ops when `$ref` is written a non-object, non-`undefined` value.** The
-  first branch of `set` (`packages/core/src/parse/deref-proxy.ts:43-46`) only recognizes
+  first branch of `set` (`packages/core/src/parse/deref-proxy.ts:62-46`) only recognizes
   `typeof value === 'object' || typeof value === 'undefined'`; a string falls through to the generic
   `_overwrittenValues[prop] = value` path, and the trap still returns `true` (a well-formed write, per the Proxy
   invariants). But `get` (lines 23-40) intercepts `prop === '$ref'` before ever consulting `_overwrittenValues`, so the
@@ -2228,7 +2228,7 @@ Small, verified, and each needing either a decision or a home:
   and is easy to trip over by accident.
 - **`deref-proxy.ts`'s `get` treats an explicit `undefined` as "absent" on both sides, so writing `undefined` cannot
   shadow a `$ref` value, and a target's own real `undefined`-valued property falls through to the `$ref` anyway.**
-  `get` (`packages/core/src/parse/deref-proxy.ts:23-40`) only treats `_overwrittenValues[prop]` as a shadow when
+  `get` (`packages/core/src/parse/deref-proxy.ts:42-40`) only treats `_overwrittenValues[prop]` as a shadow when
   `!== undefined` (line 30), and only treats the target's own property as present under the same `!== undefined` test
   (line 33). So `(proxy as any).description = undefined` does not clear an inherited `description` — the read still
   falls through to `$ref` — and a target constructed with an explicit `{ description: undefined }` behaves
@@ -2239,7 +2239,7 @@ Small, verified, and each needing either a decision or a home:
   `undefined` field (verified: no such shape outside test files under `transform/` or `collect/`), so this has no
   established generated-output consequence today — recorded because both tests explicitly flagged themselves for this
   task in their own descriptions.
-- **`createTypeof` is exported** from `packages/typescript/src/ast/nodes/typeof.ts:35`, and grepping for the bare
+- **`createTypeof` is exported** from `packages/typescript/src/ast/nodes/typeof.ts:64`, and grepping for the bare
   identifier finds no importer anywhere in `packages/` or `test/` outside its own defining file. The framing that
   "every sibling node keeps its factory private" needs correcting, though: `createExport` (`ast/nodes/export.ts:46`)
   and `createMethod` (`ast/nodes/method.ts:131`) are exported the identical way, with the identical property — zero
@@ -2251,12 +2251,12 @@ Small, verified, and each needing either a decision or a home:
   redundant raw factory alongside their public `tsXxx` wrapper, where every other sibling keeps it module-private;
   `createTypeof` is one instance of a three-way pattern, not a singleton.
 - **Both file-builder constructors take a full config rather than a `Partial<…>`** —
-  `packages/kotlin/src/file-builder.ts:34` (`constructor(packageName?: string, options?: KotlinGeneratorConfig)`) and
-  `packages/typescript/src/file-builder.ts:40` (`constructor(filePath?: string, options?: TypeScriptGeneratorConfig)`).
+  `packages/kotlin/src/file-builder.ts:81` (`constructor(packageName?: string, options?: KotlinGeneratorConfig)`) and
+  `packages/typescript/src/file-builder.ts:89` (`constructor(filePath?: string, options?: TypeScriptGeneratorConfig)`).
   This is the root cause of a 48-fold duplication across 44 test files: pinning `newLine` requires
   `{ ...defaultKotlinGeneratorConfig, newLine: '\n' } as KotlinGeneratorConfig` (or the TypeScript equivalent), and
   the cast is unavoidable because `defaultKotlinGeneratorConfig` is typed
-  `DefaultGenerationProviderConfig<KotlinGeneratorConfig>` (`packages/kotlin/src/config.ts:37`), which makes every
+  `DefaultGenerationProviderConfig<KotlinGeneratorConfig>` (`packages/kotlin/src/config.ts:109`), which makes every
   inherited field optional in the *type* even though the runtime object is complete — the same shape on the
   TypeScript side. Verified by direct count: 48 occurrences of `as KotlinGeneratorConfig`/`as TypeScriptGeneratorConfig`
   across 44 `*.test.ts` files. All 12 production call sites (`new KotlinFileBuilder(...)`/`new
@@ -2266,9 +2266,9 @@ Small, verified, and each needing either a decision or a home:
   with defaults — the way `SourceBuilder`'s own constructor already does for `Partial<SourceBuilderOptions>` — is
   backwards-compatible and cannot alter generated output. This is the entry point for a follow-up phase: fix the two
   constructors, then collapse the 44 pins down to `{ newLine: '\n' }` with no cast.
-- **`addSourceIfTest`'s `!result.__source__` guard** (`packages/core/src/codegen/internal-utils.ts:3`) gives a `$ref`
+- **`addSourceIfTest`'s `!result.__source__` guard** (`packages/core/src/codegen/internal-utils.ts:11`) gives a `$ref`
   wrapper schema the *target's* provenance rather than its own. `getSchemaResult`
-  (`packages/core/src/codegen/schemas-generator.ts:53-68`) resolves a pure-`$ref` schema to its target via
+  (`packages/core/src/codegen/schemas-generator.ts:86-68`) resolves a pure-`$ref` schema to its target via
   `getSchemaReference`, recurses to get (or generate) the target's result, and only then calls `addSourceIfTest` with
   the *wrapper* schema's own `$src`. Because the recursive call already stamped `__source__` from the target's own
   `$src`, the guard's refusal to overwrite an existing value means the wrapper's `__source__` — populated only when
@@ -2277,21 +2277,21 @@ Small, verified, and each needing either a decision or a home:
   `task-11-report.md`). No production-output consequence beyond that `__test__`-only field is established here;
   flagged because the direction (target wins over wrapper) is a real, verified choice this code makes, not because
   it is known to be wrong.
-- **`tryParseYamlOrJson` is far more lenient than assumed** (`packages/core/src/parse/parser.ts:183`). Task 7 tried
+- **`tryParseYamlOrJson` is far more lenient than assumed** (`packages/core/src/parse/parser.ts:221`). Task 7 tried
   roughly a dozen "obviously broken" YAML snippets — including `{ this is: [not valid` — and every one of them
   recovered silently via the `yaml` package's `parseDocument().toJS()` instead of throwing. The one input confirmed
   to throw is an alias to an anchor that was never defined (`a: *undefined\n`, `Unresolved alias (the anchor must be
   set before the alias): undefined`). So a malformed spec is far more likely to parse into some garbage document
   object than to raise the "unparseable content" error `parser.ts` otherwise handles — decoding failure is not a
   reliable signal for a malformed OpenAPI document.
-- **`resolveReference` leaves `$ref` as `undefined`** (`packages/core/src/parse/parser.ts:79`, resolving via
+- **`resolveReference` leaves `$ref` as `undefined`** (`packages/core/src/parse/parser.ts:117`, resolving via
   `resolveReference` at `:112-131`) when a reference resolves to a non-object value — e.g. `$ref: '#/info/title'`,
   a string. `resolveReference` returns `undefined` in that case (`:128-129` guards `typeof value === 'object'`
   before recursing), and the deref proxy's `set` trap accepts an `undefined` assignment silently
   (`typeof value === 'undefined'` is allowed), storing `this._ref = undefined` — so `Source.$ref` reads back as
   `undefined`, not a thrown error and not the unresolved reference string. Pinned by task 7's `'leaves $ref undefined
   when it resolves to a non-object value'` test in `packages/core/src/parse/parser.test.ts`.
-- **The `Deref<OpenApiDiscriminator>` special case** in `packages/core/src/parse/types.ts:12-16` (`_DerefDiscriminator`)
+- **The `Deref<OpenApiDiscriminator>` special case** in `packages/core/src/parse/types.ts:33-16` (`_DerefDiscriminator`)
   drops `$src`/`$ref`: every other branch of `_Deref<T>` adds `$src: DerefSource<T>` and `$ref?: Deref<T>` to the
   mapped type, but the discriminator branch is `Omit<OpenApiDiscriminator, 'mapping'> & { mapping?: Record<string,
   Deref<OpenApiSchema>> }` alone — no `$src`, no `$ref`. Confirmed by task 8: a plain `{ propertyName, mapping }`
@@ -2300,7 +2300,7 @@ Small, verified, and each needing either a decision or a home:
   `schema.discriminator.$src`. Consistent with production code never reading that field off a discriminator; flagged
   as a documented asymmetry in the `Deref` type rather than a defect.
 - **`kt.string(undefined)` silently renders the bare token `null`.** `KtString.onWrite`
-  (`packages/kotlin/src/ast/nodes/string.ts:43-45`) branches on `this.value === null` and appends `null`
+  (`packages/kotlin/src/ast/nodes/string.ts:85-45`) branches on `this.value === null` and appends `null`
   unconditionally, with no branch that omits the argument or throws. This is how defect 19 stayed invisible until a
   compile gate existed: a generator passing an `undefined` through `kt.string` produces syntactically valid but
   semantically wrong Kotlin. Defect 19 fixed its own caller; the footgun remains for every other caller. A fix needs
@@ -2321,11 +2321,11 @@ Small, verified, and each needing either a decision or a home:
   exactly that reason — no corpus case reaches it — and is not fixed here, matching every other entry in this
   section.
 - **`ApiResponse.statusCode` remains lossy on purpose.** `Number(status) || undefined`
-  (`packages/core/src/transform/transform-endpoint.ts:206`) still maps `'0'` to `undefined` — this is **defect 38**,
+  (`packages/core/src/transform/transform-endpoint.ts:214`) still maps `'0'` to `undefined` — this is **defect 38**,
   which stays open. `statusKey`, added by defect 19's fix, is the non-lossy field; anything that needs to emit or
   distinguish a response key must read it. Cross-reference defect 38.
 - **`transformResponse`'s object cache can give a `$ref`'d response the wrong `statusKey`.** The cache is keyed on
-  `openApiObjectId` (`packages/core/src/transform/transform-endpoint.ts:193-194`, with the `.set` at `:212`), so if
+  `openApiObjectId` (`packages/core/src/transform/transform-endpoint.ts:201-194`, with the `.set` at `:212`), so if
   one `#/components/responses/X` is referenced from two different status keys, the first key wins for the shared
   target — `endpoint.responses[1].$ref.statusKey` would read `'400'` for a response reached under `'default'`.
   Pre-existing, not introduced by defect 19's fix: `statusCode` has always aliased identically, for the same reason.

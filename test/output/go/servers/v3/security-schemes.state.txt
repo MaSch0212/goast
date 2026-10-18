@@ -1,0 +1,24 @@
+{
+  go: {
+    models: {},
+    servers: {
+      'service-1': {
+        __source__: 'tag:service-1',
+        registerFunction: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'RegisterService1Routes',
+          packageName: 'api',
+          typeArguments: []
+        },
+        serviceInterface: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Service1Service',
+          packageName: 'api',
+          typeArguments: []
+        }
+      }
+    }
+  }
+}

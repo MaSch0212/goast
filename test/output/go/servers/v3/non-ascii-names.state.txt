@@ -1,0 +1,368 @@
+{
+  go: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Größe',
+        fields: {
+          value: {
+            name: 'Value',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'float64',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'GrE',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Ελληνικά/properties/value',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Кириллица',
+        fields: {
+          value: {
+            name: 'Value',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Model3',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Кириллица/properties/value',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/café',
+        fields: {
+          value: {
+            name: 'Value',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Cafe',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/café/properties/value',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/emoji🎉Name',
+        fields: {
+          value: {
+            name: 'Value',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'EmojiName',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/emoji🎉Name/properties/value',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/ObjectWithNonAsciiProperties',
+        fields: {
+          'größe': {
+            name: 'GrE',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'float64',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          'naïve': {
+            name: 'NaVe',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'bool',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          },
+          '日本語': {
+            name: 'Field',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'ObjectWithNonASCIIProperties',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/ObjectWithNonAsciiProperties/properties/größe',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'float64',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/ObjectWithNonAsciiProperties/properties/日本語',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Größe/properties/value',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'float64',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/ObjectWithNonAsciiProperties/properties/naïve',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'bool',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Überprüfung',
+        fields: {
+          value: {
+            name: 'Value',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'bool',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'BerprFung',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Überprüfung/properties/value',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'bool',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Ångström',
+        fields: {
+          value: {
+            name: 'Value',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'float64',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'NgstrM',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Ångström/properties/value',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'float64',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/日本語',
+        fields: {
+          value: {
+            name: 'Value',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Model',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/日本語/properties/value',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/non-ascii-names.yml#/components/schemas/Ελληνικά',
+        fields: {
+          value: {
+            name: 'Value',
+            type: GoPointer {
+              inject: {},
+              type: GoReference {
+                importPath: null,
+                inject: {},
+                name: 'string',
+                packageName: null,
+                typeArguments: []
+              }
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Model2',
+          packageName: 'api',
+          typeArguments: []
+        }
+      }
+    },
+    servers: {}
+  }
+}

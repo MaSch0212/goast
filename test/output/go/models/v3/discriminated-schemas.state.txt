@@ -1,0 +1,247 @@
+{
+  go: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/discriminated-schemas.yml#/components/schemas/Pet',
+        fields: {
+          name: {
+            name: 'Name',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          petType: {
+            name: 'PetType',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Pet',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/discriminated-schemas.yml#/components/schemas/Dog/allOf/1',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/discriminated-schemas.yml#/components/schemas/Dog/allOf/1/properties/packSize',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'int32',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/discriminated-schemas.yml#/components/schemas/Pet/properties/name',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/discriminated-schemas.yml#/components/schemas/Pet/properties/petType',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/discriminated-schemas.yml#/components/schemas/Dog',
+        fields: {
+          name: {
+            name: 'Name',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          packSize: {
+            name: 'PackSize',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'int32',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          petType: {
+            name: 'PetType',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Dog',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/discriminated-schemas.yml#/components/schemas/Pet',
+        fields: {
+          name: {
+            name: 'Name',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          petType: {
+            name: 'PetType',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Pet',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/discriminated-schemas.yml#/components/schemas/Cat',
+        fields: {
+          huntingSkill: {
+            name: 'HuntingSkill',
+            type: GoReference {
+              importPath: 'example.com/generated/api',
+              inject: {},
+              name: 'Schema9',
+              packageName: 'api',
+              typeArguments: []
+            }
+          },
+          name: {
+            name: 'Name',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          petType: {
+            name: 'PetType',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Cat',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/discriminated-schemas.yml#/components/schemas/Pet',
+        fields: {
+          name: {
+            name: 'Name',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          },
+          petType: {
+            name: 'PetType',
+            type: GoReference {
+              importPath: null,
+              inject: {},
+              name: 'string',
+              packageName: null,
+              typeArguments: []
+            }
+          }
+        },
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Pet',
+          packageName: 'api',
+          typeArguments: []
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/discriminated-schemas.yml#/components/schemas/Cat/allOf/1',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'any',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/discriminated-schemas.yml#/components/schemas/Cat/allOf/1/properties/huntingSkill',
+        fields: undefined,
+        type: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'Schema9',
+          packageName: 'api',
+          typeArguments: []
+        }
+      }
+    }
+  }
+}

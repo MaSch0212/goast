@@ -1,0 +1,85 @@
+{
+  go: {
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/get/parameters/0/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/put/parameters/0/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/delete/parameters/0/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/patch/parameters/0/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/sub-items/{subId}/get/parameters/0/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/sub-items/{subId}/get/parameters/1/schema',
+        type: GoReference {
+          importPath: null,
+          inject: {},
+          name: 'string',
+          packageName: null,
+          typeArguments: []
+        }
+      }
+    },
+    servers: {
+      'service-1': {
+        __source__: 'tag:Naming',
+        registerFunction: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'RegisterNamingRoutes',
+          packageName: 'api',
+          typeArguments: []
+        },
+        serviceInterface: GoReference {
+          importPath: 'example.com/generated/api',
+          inject: {},
+          name: 'NamingService',
+          packageName: 'api',
+          typeArguments: []
+        }
+      }
+    }
+  }
+}

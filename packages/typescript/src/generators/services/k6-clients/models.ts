@@ -14,6 +14,11 @@ import type { TypeScriptFileBuilder } from '../../../file-builder.ts';
 import type { TypeScriptModelsGeneratorOutput } from '../../models/index.ts';
 import type { getReferenceFactories } from './refs.ts';
 
+/**
+ * The configuration of the `TypeScriptK6ClientsGenerator`. It extends the common TypeScript generator configuration
+ * with the language, response type, naming, directory and index file settings of the generated k6 clients.
+ * @see TypeScriptK6ClientsGenerator
+ */
 export type TypeScriptK6ClientsGeneratorConfig = TypeScriptGeneratorConfig & {
   /**
    * The language of the generated clients.
@@ -99,7 +104,7 @@ export type TypeScriptK6ClientsGeneratorConfig = TypeScriptGeneratorConfig & {
 
   /**
    * The index file where all clients should be exported. The path is relative to the output directory. If nullish, no index file will be generated.
-   * @default 'clients.ts'
+   * @default 'clients.js'
    */
   clientsIndexFile: Nullable<string>;
 
@@ -122,6 +127,11 @@ export type TypeScriptK6ClientsGeneratorConfig = TypeScriptGeneratorConfig & {
   async: boolean;
 };
 
+/**
+ * The default configuration of the `TypeScriptK6ClientsGenerator`. The provider uses these values for every option that
+ * is not set in its configuration.
+ * @see TypeScriptK6ClientsGeneratorConfig
+ */
 export const defaultTypeScriptK6ClientsGeneratorConfig: DefaultGenerationProviderConfig<TypeScriptK6ClientsGeneratorConfig> =
   {
     ...defaultTypeScriptGeneratorConfig,
@@ -150,35 +160,89 @@ export const defaultTypeScriptK6ClientsGeneratorConfig: DefaultGenerationProvide
     async: true,
   };
 
+/**
+ * The input of the `TypeScriptK6ClientsGenerator`. It is the output of the models generator, which the clients use to
+ * reference the request and response model types.
+ * @see TypeScriptModelsGeneratorOutput
+ */
 export type TypeScriptK6ClientsGeneratorInput = TypeScriptModelsGeneratorOutput;
 
+/**
+ * The output of the `TypeScriptK6ClientsGenerator`. It is published under the `typescript` key for subsequent
+ * generators.
+ * @see TypeScriptK6ClientGeneratorOutput
+ */
 export type TypeScriptK6ClientsGeneratorOutput = {
+  /**
+   * The TypeScript-specific results of the k6 clients generator.
+   */
   typescript: {
+    /**
+     * The clients, keyed by the ID of their service (`ApiService['id']`).
+     */
     k6Clients: {
+      /**
+       * The client and response models that were generated for one service.
+       */
       [serviceId: string]: TypeScriptK6ClientGeneratorOutput;
     };
+    /**
+     * The paths of the index files. A value is `null` when its index file is disabled by the configuration.
+     */
     indexFiles: {
+      /**
+       * The path to the index file that exports the client classes.
+       */
       k6Clients: Nullable<string>;
+      /**
+       * The path to the index file that exports the response model types.
+       */
       k6ResponseModels: Nullable<string>;
     };
   };
 };
 
+/**
+ * The output of the `TypeScriptK6ClientGenerator` for one service: the exported client class and its file, plus the
+ * response model types of its endpoints.
+ * @see TypeScriptExportOutput
+ */
 export type TypeScriptK6ClientGeneratorOutput = TypeScriptExportOutput & {
+  /**
+   * The response model types of the service, keyed by the ID of their endpoint (`ApiEndpoint['id']`).
+   */
   responseModels: {
+    /**
+     * The exported response model type and the file it was written to.
+     */
     [operationId: string]: TypeScriptExportOutput;
   };
 };
 
+/**
+ * The context passed to the `TypeScriptK6ClientsGenerator` methods. It extends the services generator context with the
+ * reference factories of the generated clients.
+ * @see TypeScriptK6ClientGeneratorContext
+ */
 export type TypeScriptK6ClientsGeneratorContext = OpenApiServicesGenerationProviderContext<
   TypeScriptK6ClientsGeneratorInput,
   TypeScriptK6ClientsGeneratorOutput,
   TypeScriptK6ClientsGeneratorConfig,
   TypeScriptK6ClientGeneratorOutput
 > & {
+  /**
+   * The factories that create references to the utilities, as returned by `getReferenceFactories`.
+   */
   refs: ReturnType<typeof getReferenceFactories>;
 };
 
+/**
+ * The context passed to `TypeScriptK6ClientGenerator.generate` for a single service.
+ * @see TypeScriptK6ClientsGeneratorContext
+ */
 export type TypeScriptK6ClientGeneratorContext = TypeScriptK6ClientsGeneratorContext & {
+  /**
+   * The API service whose client is generated.
+   */
   readonly service: ApiService;
 };

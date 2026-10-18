@@ -27,14 +27,41 @@ type Context = TypeScriptAngularServiceGeneratorContext;
 type Output = TypeScriptAngularServiceGeneratorOutput;
 type Builder = TypeScriptFileBuilder;
 
+/**
+ * Generates the Angular service class and the response models of a single OpenAPI service. Implement it to replace the
+ * default service generation.
+ * @template TOutput The type of the result that is returned for the service.
+ */
 export interface TypeScriptAngularServiceGenerator<TOutput extends Output = Output> {
+  /**
+   * Generates the response models and the service class of the service in the context.
+   * @param ctx The context of the service to generate, including its configuration and the generated models.
+   * @returns The result of the service, or a promise that resolves to it.
+   */
   generate(ctx: Context): MaybePromise<TOutput>;
 }
 
+/**
+ * The default Angular service generator. It writes the response models of an OpenAPI service and the Angular service
+ * class with one method per endpoint.
+ *
+ * The response models are written to `{outputDir}/{responseModelsDir}`, one file per service. Each endpoint gets a
+ * `{Method}ApiResponse` type that lists its possible responses. The service class is written to
+ * `{outputDir}/{servicesDir}`, one file per service, together with a `{Method}_Params` type for each endpoint that has
+ * parameters or a request body.
+ *
+ * The result contains the file path and class name of the service, and the response models keyed by endpoint ID. The
+ * services generator publishes it as `typescript.services[serviceId]`.
+ */
 export class DefaultTypeScriptAngularServiceGenerator
   extends TypeScriptFileGenerator<Context, Output>
   implements TypeScriptAngularServiceGenerator
 {
+  /**
+   * Generates the response models and the service class of the service in the context.
+   * @param ctx The context of the service to generate, including its configuration and the generated models.
+   * @returns The result of the service, including its file path, class name and response models.
+   */
   public generate(ctx: Context): MaybePromise<Output> {
     const responseModels = this.generateResponseModels(ctx);
 

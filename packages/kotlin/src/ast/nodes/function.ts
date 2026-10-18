@@ -54,30 +54,118 @@ type Options<TBuilder extends SourceBuilder, TInjects extends string = never> = 
   }
 >;
 
+/**
+ * Represents a Kotlin function declaration, such as `fun String.greet(name: String): String = "Hello, $name"`.
+ *
+ * Written in this order: the doc comment, annotations, the modifiers, `fun`, the generics, the receiver type followed
+ * by a dot, the name, the parameters, the return type, then the body. The modifiers are written in the order access
+ * modifier, `inline`, `infix`, `tailrec`, `suspend`, `open`, `override`, `abstract`, `operator`. A body is omitted for
+ * abstract functions and for functions in an interface that have no body.
+ *
+ * @template TBuilder The type of the source builder the function is written to.
+ * @template TInjects Additional names of custom injection points (`before*` and `after*`) accepted by this node.
+ * @see ktFunction
+ */
 export class KtFunction<TBuilder extends SourceBuilder, TInjects extends string = never> extends KtNode<
   TBuilder,
   TInjects | Injects
 > {
+  /**
+   * The name of the function, written verbatim after the receiver type, if there is one.
+   */
   public name: string;
+  /**
+   * The type parameters written in angle brackets after `fun`, such as `<T>`. Plain strings are written as-is, while
+   * described parameters also add a `@param` tag to the doc comment.
+   */
   public generics: (KtGenericParameter<TBuilder> | BasicAppendValue<TBuilder>)[];
+  /**
+   * The parameters written in parentheses after the name. Parameters with a description add a `@param` tag to the doc
+   * comment.
+   */
   public parameters: (KtParameter<TBuilder> | BasicAppendValue<TBuilder>)[];
+  /**
+   * The KDoc comment written above the function, or `null` to omit it. Descriptions of generic parameters and function
+   * parameters are merged into it as `@param` tags.
+   */
   public doc: KtDoc<TBuilder> | null;
+  /**
+   * The return type written after `:`, or `null` to omit it.
+   */
   public returnType: KtType<TBuilder> | null;
+  /**
+   * The statements written inside the braces, or the expression written after `=` when `singleExpression` is set.
+   * `null` writes empty braces. Nothing is written for abstract functions and for interface functions without a body.
+   */
   public body: AppendValue<TBuilder> | null;
+  /**
+   * The visibility modifier written before `fun`, or `null` to omit it.
+   */
   public accessModifier: KtAccessModifier | null;
+  /**
+   * The annotations written above the function, each on its own line.
+   */
   public annotations: KtAnnotation<TBuilder>[];
+  /**
+   * The receiver type written before the name, followed by a dot, such as `String` for `String.greet`. `null` omits it.
+   */
   public receiverType: KtType<TBuilder> | null;
+  /**
+   * The annotations written on the same line directly before the receiver type, such as `@Fancy` in
+   * `fun @Fancy String.foo()`. Only written when `receiverType` is set.
+   */
   public receiverAnnotations: KtAnnotation<TBuilder>[];
+  /**
+   * Whether the body is written as a single expression after `=` instead of a block in braces. Only applies when a body
+   * is set.
+   * @default false
+   */
   public singleExpression: boolean;
+  /**
+   * Whether the function is written with the `open` modifier, which allows subclasses to override it.
+   * @default false
+   */
   public open: boolean;
+  /**
+   * Whether the function is written with the `inline` modifier.
+   * @default false
+   */
   public inline: boolean;
+  /**
+   * Whether the function is written with the `infix` modifier, which allows calls in infix form.
+   * @default false
+   */
   public infix: boolean;
+  /**
+   * Whether the function is written with the `tailrec` modifier, which turns recursive calls into loops.
+   * @default false
+   */
   public tailrec: boolean;
+  /**
+   * Whether the function is written with the `suspend` modifier, which makes it a coroutine function.
+   * @default false
+   */
   public suspend: boolean;
+  /**
+   * Whether the function is written with the `operator` modifier, which allows calls through operator conventions.
+   * @default false
+   */
   public operator: boolean;
+  /**
+   * Whether the function is written with the `override` modifier, which overrides a member of a supertype.
+   * @default false
+   */
   public override: boolean;
+  /**
+   * Whether the function is written with the `abstract` modifier. Abstract functions are written without a body.
+   * @default false
+   */
   public abstract: boolean;
 
+  /**
+   * Initializes a new instance of the KtFunction class.
+   * @param options The options to use for this instance.
+   */
   constructor(options: Options<TBuilder, TInjects>) {
     super(options);
     this.name = options.name;
@@ -173,6 +261,23 @@ const createFunction = <TBuilder extends SourceBuilder>(
   options?: Prettify<Omit<Options<TBuilder>, 'name'>>,
 ): KtFunction<TBuilder> => new KtFunction<TBuilder>({ ...options, name });
 
+/**
+ * Factory for creating function nodes. The `write` function writes one or more function nodes to a builder.
+ *
+ * @param name The name of the function.
+ * @param options The settings of the function. See `KtFunction` for the available properties.
+ * @example
+ * ```ts
+ * ktFunction('greet', {
+ *   parameters: [ktParameter('name', 'String')],
+ *   returnType: 'String',
+ *   body: '"Hello, $name"',
+ *   singleExpression: true,
+ * });
+ * // Emits:
+ * // fun greet(name: String): String = "Hello, $name"
+ * ```
+ */
 export const ktFunction: typeof createFunction & { write: typeof writeKtNodes } = Object.assign(createFunction, {
   write: writeKtNodes,
 });

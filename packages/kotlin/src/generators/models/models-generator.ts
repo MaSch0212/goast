@@ -22,6 +22,16 @@ type Config = KotlinModelsGeneratorConfig;
 type SchemaOutput = KotlinModelGeneratorOutput;
 type Context = KotlinModelsGeneratorContext;
 
+/**
+ * Generates a Kotlin model for each schema of the document and publishes the results under `kotlin.models`.
+ *
+ * Each schema is passed to the `KotlinModelGenerator` created by the model generator factory. A schema that gets its
+ * own declaration is written to `{outputDir}/{packagePath}/{TypeName}.kt`, where `packagePath` is the model package
+ * (`packageName` followed by `packageSuffix`) with the dots replaced by slashes. Other schemas get no file.
+ * The result of every schema is stored under `kotlin.models`, keyed by the schema ID. No index file is generated.
+ * @see KotlinModelsGeneratorConfig
+ * @see DefaultKotlinModelGenerator
+ */
 export class KotlinModelsGenerator extends OpenApiSchemasGenerationProviderBase<
   Input,
   Output,
@@ -31,6 +41,11 @@ export class KotlinModelsGenerator extends OpenApiSchemasGenerationProviderBase<
 > {
   private readonly _modelGeneratorFactory: Factory<KotlinModelGenerator, []>;
 
+  /**
+   * Initializes a new instance of the KotlinModelsGenerator class.
+   * @param modelGeneratorFactory Creates the generator used for each schema. Defaults to a
+   * `DefaultKotlinModelGenerator`.
+   */
   constructor(modelGeneratorFactory?: Factory<KotlinModelGenerator, []>) {
     super();
     this._modelGeneratorFactory = modelGeneratorFactory ?? Factory.fromValue(new DefaultKotlinModelGenerator());

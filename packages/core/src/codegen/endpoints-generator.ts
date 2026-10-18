@@ -10,16 +10,41 @@ import type {
   OpenApiGeneratorOutput,
 } from './types.ts';
 
+/**
+ * The context that is passed to the methods of `OpenApiEndpointsGenerationProviderBase`.
+ * @template TInput The type of the merged output of the providers that ran before.
+ * @template TOutput The type of the output produced by the provider.
+ * @template TConfig The type of the provider-specific configuration.
+ * @template TEndpointOutput The type of the result produced for each endpoint.
+ */
 export type OpenApiEndpointsGenerationProviderContext<
   TInput extends OpenApiGeneratorInput,
   TOutput extends OpenApiGeneratorOutput,
   TConfig extends AnyConfig,
   TEndpointOutput extends OpenApiGeneratorOutput,
 > = OpenApiGenerationProviderContext<TInput, TConfig> & {
+  /**
+   * The results that have been generated so far, keyed by the ID of their endpoint.
+   */
   existingEndpointResults: Map<string, TEndpointOutput>;
+  /**
+   * The output of the provider. It is created by `initResult` and returned after all endpoints have been generated.
+   */
   output: TOutput;
 };
 
+/**
+ * Base class for generation providers that produce one result per API endpoint.
+ * Results are cached per endpoint, so each endpoint is generated only once. Subclasses implement `initResult`,
+ * `generateEndpoint` and `addEndpointResult`, and can override `generateAdditionalFiles` to produce output after all
+ * endpoints have been processed.
+ * @template TInput The type of the merged output of the providers that ran before.
+ * @template TOutput The type of the output produced by the provider.
+ * @template TConfig The type of the provider-specific configuration.
+ * @template TEndpointOutput The type of the result produced for each endpoint.
+ * @template TContext The type of the context that is passed to the provider methods.
+ * @see OpenApiGenerationProviderBase
+ */
 export abstract class OpenApiEndpointsGenerationProviderBase<
   TInput extends OpenApiGeneratorInput,
   TOutput extends OpenApiGeneratorOutput,
@@ -49,6 +74,13 @@ export abstract class OpenApiEndpointsGenerationProviderBase<
     return ctx.output;
   }
 
+  /**
+   * Gets the result for an endpoint. The result is generated on the first call and returned from the cache afterwards.
+   * In test mode, the source location of the endpoint is stored in the result.
+   * @param ctx The context of the provider.
+   * @param endpoint The endpoint to get the result for.
+   * @returns The result for the endpoint.
+   */
   public async getEndpointResult(ctx: TContext, endpoint: ApiEndpoint): Promise<TEndpointOutput> {
     const existingResult = ctx.existingEndpointResults.get(endpoint.id);
     if (existingResult) return existingResult;

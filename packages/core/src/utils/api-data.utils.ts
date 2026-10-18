@@ -8,6 +8,15 @@ type ApiDataWithBasePath = ApiData & {
   [DOCUMENTS_BASE_PATH]?: string;
 };
 
+/**
+ * Gets a display name for the source location of a component in the form `<relative file path>#<source path>`. The
+ * file path is relative to the common base path of all documents in `data`, which is computed on first use and cached
+ * on `data`.
+ * @template T The OpenAPI type of the component.
+ * @param data The API data that contains the documents of the component.
+ * @param component The component to get the display name for.
+ * @returns The display name of the component's source location.
+ */
 export function getSourceDisplayName<T>(data: ApiData, component: ApiComponent<T>): string {
   let basePath: string | undefined = (data as ApiDataWithBasePath)[DOCUMENTS_BASE_PATH];
   if (basePath === undefined) {

@@ -8,7 +8,7 @@
  */
 import { CSHARP_TARGET_FRAMEWORK } from '@goast/test-harness';
 
-export { CASE_LINE_PREFIX, parseCaseLines } from '../kotlin-clients/build.ts';
+export { CASE_LINE_PREFIX, parseCaseLines } from '../case-lines.ts';
 
 /** One generated C# client tree this phase drives against the reference server. */
 export type DriverUnit = {
