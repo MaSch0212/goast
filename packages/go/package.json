@@ -1,6 +1,6 @@
 {
   "name": "@goast/go",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Provides gOAst generators for generating Go code from OpenAPI specifications.",
   "bugs": {
     "url": "https://github.com/MaSch0212/goast/issues"
