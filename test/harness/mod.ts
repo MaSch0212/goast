@@ -1,4 +1,5 @@
 export * from './compile/mod.ts';
+export * from './csharp/mod.ts';
 export * from './declutter.ts';
 export * from './docker.ts';
 export * from './fs.ts';

@@ -13,6 +13,7 @@ import { profiles } from '../output-tests/profiles.ts';
 import { compileRootDir } from './paths.ts';
 import { runGo } from './runners/go.ts';
 import { runHostTsc } from './runners/host-tsc.ts';
+import { runCSharp } from './runners/csharp.ts';
 import { runKotlin } from './runners/kotlin.ts';
 import { runTsc } from './runners/tsc.ts';
 
@@ -81,6 +82,19 @@ const GO_PROFILES = ['models', 'servers', 'clients'] as const;
  */
 const MINIMUM_UNITS = 700;
 
+/**
+ * Every C# profile in the corpus, all compiled in one `dotnet build`. Empty until the C# generators
+ * and their `profiles.ts` entries exist; listed explicitly for the same reason as {@link KOTLIN_PROFILES}.
+ */
+const CSHARP_PROFILES = [
+  'models',
+  'models-mutable',
+  'controllers',
+  'fastendpoints',
+  'minimal-apis',
+  'http-clients',
+] as const satisfies readonly string[];
+
 const specs = enabled ? await discoverSpecs() : [];
 const units = enabled ? await discoverCompileUnits(profiles, specs) : [];
 
@@ -95,6 +109,9 @@ const containerTsUnitsByProfile = new Map(
 );
 const kotlinUnits = units.filter(
   (u) => u.language === 'kotlin' && (KOTLIN_PROFILES as readonly string[]).includes(u.profile),
+);
+const csharpUnits = units.filter(
+  (u) => u.language === 'csharp' && (CSHARP_PROFILES as readonly string[]).includes(u.profile),
 );
 const goUnitsByProfile = new Map(
   GO_PROFILES.map((profile) => [profile, units.filter((u) => u.language === 'go' && u.profile === profile)]),
@@ -120,7 +137,7 @@ if (enabled) {
   /**
    * Every runner defends per-unit vacuity; nothing defended the unit list itself.
    *
-   * These three tests are registered, not module-level assertions, so a mismatch is reported as a
+   * These tests are registered, not module-level assertions, so a mismatch is reported as a
    * named failure alongside the units rather than as a discovery error that aborts the whole file.
    */
   describe('unit discovery', () => {
@@ -133,6 +150,7 @@ if (enabled) {
         hostTsUnits,
         ...containerTsUnitsByProfile.values(),
         kotlinUnits,
+        csharpUnits,
         ...goUnitsByProfile.values(),
       ].flat();
       const groupedIds = new Set(grouped.map((u) => u.id));
@@ -149,9 +167,13 @@ if (enabled) {
       const counts = new Map<string, number>();
       for (const unit of units) counts.set(unit.profile, (counts.get(unit.profile) ?? 0) + 1);
 
-      const empty = [...HOST_TS_PROFILES, ...CONTAINER_TS_PROFILES, ...KOTLIN_PROFILES, ...GO_PROFILES].filter(
-        (profile) => (counts.get(profile) ?? 0) === 0,
-      );
+      const empty = [
+        ...HOST_TS_PROFILES,
+        ...CONTAINER_TS_PROFILES,
+        ...KOTLIN_PROFILES,
+        ...CSHARP_PROFILES,
+        ...GO_PROFILES,
+      ].filter((profile) => (counts.get(profile) ?? 0) === 0);
       expect(empty).toEqual([]);
     });
   });
@@ -194,6 +216,20 @@ if (enabled) {
     });
 
     for (const unit of kotlinUnits) {
+      it(unit.id, async () => {
+        await verifyUnit(unit, results);
+      });
+    }
+  });
+
+  describe('csharp (dotnet)', () => {
+    let results: Map<string, Diagnostic[]> | undefined;
+
+    it('compiles every C# unit', async () => {
+      results = await runCSharp(csharpUnits);
+    });
+
+    for (const unit of csharpUnits) {
       it(unit.id, async () => {
         await verifyUnit(unit, results);
       });

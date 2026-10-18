@@ -7,6 +7,7 @@
 [![@goast/typescript NPM Version](https://img.shields.io/npm/v/%40goast%2Ftypescript?logo=npm&label=%40goast%2Ftypescript)](https://www.npmjs.com/package/@goast/typescript)
 [![@goast/go NPM Version](https://img.shields.io/npm/v/%40goast%2Fgo?logo=npm&label=%40goast%2Fgo)](https://www.npmjs.com/package/@goast/go)
 [![@goast/kotlin NPM Version](https://img.shields.io/npm/v/%40goast%2Fkotlin?logo=npm&label=%40goast%2Fkotlin)](https://www.npmjs.com/package/@goast/kotlin)
+[![@goast/csharp NPM Version](https://img.shields.io/npm/v/%40goast%2Fcsharp?logo=npm&label=%40goast%2Fcsharp)](https://www.npmjs.com/package/@goast/csharp)
 
 **gOAst** stands for **g**enerative **O**pen **A**PI **s**pecification **t**ransformer, a tool designed to transform
 OpenAPI specifications into various forms with flexibility and extensibility at its core.
@@ -144,6 +145,7 @@ generator.useType(MyTypeScriptModelsGenerator, {/* Options (Optional) */});
 | @goast/typescript | TypeScript generators for OpenAPI specifications                 | [NPM](https://www.npmjs.com/package/@goast/typescript) - [README](./packages/typescript/README.md) |
 | @goast/go         | Go generators for OpenAPI specifications                         | [NPM](https://www.npmjs.com/package/@goast/go) - [README](./packages/go/README.md)                 |
 | @goast/kotlin     | Kotlin generators for OpenAPI specifications                     | [NPM](https://www.npmjs.com/package/@goast/kotlin) - [README](./packages/kotlin/README.md)         |
+| @goast/csharp     | C# generators for OpenAPI specifications                         | [NPM](https://www.npmjs.com/package/@goast/csharp) - [README](./packages/csharp/README.md)         |
 
 ## Documentation 📖
 
@@ -192,9 +194,9 @@ To set up the project for local development, follow these steps:
 ### Other Scripts
 
 - `pnpm build` - Builds all packages.
-- `pnpm build:<core|typescript|kotlin|go>` - Builds the specified package.
+- `pnpm build:<core|typescript|kotlin|go|csharp>` - Builds the specified package.
 - `pnpm test` - Runs the test suite (see [`test/README.md`](./test/README.md) for the tiers).
-- `pnpm test:<core|typescript|kotlin|go>` - Runs the unit tests for the specified package.
+- `pnpm test:<core|typescript|kotlin|go|csharp>` - Runs the unit tests for the specified package.
 
 ## License 🔑
 

@@ -1,0 +1,183 @@
+{
+  csharp: {
+    controllers: {
+      'service-1': {
+        __source__: 'tag:Naming',
+        controller: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'NamingControllerBase',
+          namespace: 'OpenApi.Generated.Controllers',
+          nullable: false
+        },
+        results: {
+          'endpoint-1': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'GetItemsResult',
+            namespace: 'OpenApi.Generated.Controllers',
+            nullable: false
+          },
+          'endpoint-10': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'GetResult',
+            namespace: 'OpenApi.Generated.Controllers',
+            nullable: false
+          },
+          'endpoint-11': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'GetABCDEResult',
+            namespace: 'OpenApi.Generated.Controllers',
+            nullable: false
+          },
+          'endpoint-12': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'GetWithSummaryResult',
+            namespace: 'OpenApi.Generated.Controllers',
+            nullable: false
+          },
+          'endpoint-2': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'PostItemsResult',
+            namespace: 'OpenApi.Generated.Controllers',
+            nullable: false
+          },
+          'endpoint-3': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'OptionsItemsResult',
+            namespace: 'OpenApi.Generated.Controllers',
+            nullable: false
+          },
+          'endpoint-4': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'HeadItemsResult',
+            namespace: 'OpenApi.Generated.Controllers',
+            nullable: false
+          },
+          'endpoint-5': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'GetItemsIdResult',
+            namespace: 'OpenApi.Generated.Controllers',
+            nullable: false
+          },
+          'endpoint-6': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'PutItemsIdResult',
+            namespace: 'OpenApi.Generated.Controllers',
+            nullable: false
+          },
+          'endpoint-7': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'DeleteItemsIdResult',
+            namespace: 'OpenApi.Generated.Controllers',
+            nullable: false
+          },
+          'endpoint-8': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'PatchItemsIdResult',
+            namespace: 'OpenApi.Generated.Controllers',
+            nullable: false
+          },
+          'endpoint-9': CsReference {
+            arrayOf: null,
+            generics: [],
+            inject: {},
+            name: 'GetItemsIdSubItemsSubIdResult',
+            namespace: 'OpenApi.Generated.Controllers',
+            nullable: false
+          }
+        }
+      }
+    },
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/get/parameters/0/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/put/parameters/0/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/delete/parameters/0/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/patch/parameters/0/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/sub-items/{subId}/get/parameters/0/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/operation-naming.yml#/paths//items/{id}/sub-items/{subId}/get/parameters/1/schema',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      }
+    }
+  }
+}

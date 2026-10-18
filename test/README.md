@@ -13,12 +13,12 @@ required for tier 3 and for every other tier-4 target (the four Kotlin ones, the
 
 ## Tiers
 
-| #   | Tier        | Question                                              | Command                                                                                      | Status                                                                                                                                                                                                                                                                           |
-| --- | ----------- | ----------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Unit        | Does this function do what it says?                   | `pnpm test`                                                                                  | active                                                                                                                                                                                                                                                                           |
-| 2   | Output      | Did the generated text change?                        | `pnpm test:output`                                                                           | active                                                                                                                                                                                                                                                                           |
-| 3   | Compile     | Is the generated code valid in its language?          | `pnpm test:compile`                                                                          | active                                                                                                                                                                                                                                                                           |
-| 4   | Integration | Does the generated code behave correctly on the wire? | `pnpm test:integration` / `:kotlin` / `:controllers` / `:angular` / `:k6` / `:stubs` / `:go` | client direction: fetch-clients, angular-services, okhttp3-clients, spring-reactive-web-clients (`k6-clients` cannot be driven at all — see "The k6 leg" — and records a target-level load failure instead); server direction: spring-controllers, easy-network-stub, go-servers |
+| #   | Tier        | Question                                              | Command                                                                                                                      | Status                                                                                                                                                                                                                                                                                                                                               |
+| --- | ----------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Unit        | Does this function do what it says?                   | `pnpm test`                                                                                                                  | active                                                                                                                                                                                                                                                                                                                                               |
+| 2   | Output      | Did the generated text change?                        | `pnpm test:output`                                                                                                           | active                                                                                                                                                                                                                                                                                                                                               |
+| 3   | Compile     | Is the generated code valid in its language?          | `pnpm test:compile`                                                                                                          | active                                                                                                                                                                                                                                                                                                                                               |
+| 4   | Integration | Does the generated code behave correctly on the wire? | `pnpm test:integration` / `:kotlin` / `:csharp` / `:csharp-servers` / `:controllers` / `:angular` / `:k6` / `:stubs` / `:go` | client direction: fetch-clients, angular-services, okhttp3-clients, spring-reactive-web-clients, csharp http-clients (`k6-clients` cannot be driven at all — see "The k6 leg" — and records a target-level load failure instead); server direction: spring-controllers, easy-network-stub, go-servers, csharp controllers/minimal-apis/fastendpoints |
 
 ## Tier 1: unit tests
 
@@ -730,6 +730,19 @@ A few things about the Kotlin leg are easy to get wrong reading only the wire ar
   Reactor `Mono`/`Flux`) are never imported by the generated code itself, only by the driver that calls it — see
   `test/docker/kotlin/warmup/build.gradle.kts`.
 
+### The C# leg
+
+`test/integration/csharp-clients/` drives `csharp/http-clients` (wire artifacts under `test/wire/csharp/http-clients/`)
+from inside the `csharp` image via `pnpm test:integration:csharp[:check]`, the same way the Kotlin leg runs `gradle run`.
+`synthesizeDriverBuild` writes one `Microsoft.NET.Sdk.Web` console project (and the offline `nuget.config` tier 3 uses)
+compiling the committed `test/output/csharp/http-clients/integration/kitchen-sink/` tree together with the handwritten
+`drivers/CSharpDriver.cs`; the container then runs `dotnet run` against the reference server on `host.docker.internal`.
+Three conventions of the driver are easy to misread: void operations (`Task`) report `{ "status": n }` from a
+`DelegatingHandler` that records the last response status, because the generated method gives a caller no other way to
+see it; non-2xx cases catch the operation's _typed_ exception (`GetWidgetBadRequestException`, ...) and report its decoded
+`Body`; and the `Authorization`/`x-api-key` headers are attached with `DefaultRequestHeaders`, since the generated
+client takes a plain `HttpClient` and models no security scheme.
+
 ### The server direction
 
 **Phase 6b adds the other direction: four `spring-controllers` units, behind the same Docker guard.** Everything above
@@ -1190,9 +1203,9 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 ```
 
-`publish` pushes `@goast/core`, `@goast/kotlin`, `@goast/typescript` and `@goast/go` to npm and creates a git tag per
+`publish` pushes `@goast/core`, `@goast/kotlin`, `@goast/typescript`, `@goast/go` and `@goast/csharp` to npm and creates a git tag per
 package, one after another. A run on `main` can be partway through that sequence when a newer push supersedes it;
-cancelling it mid-flight would leave the four packages at different published versions with no way to roll back. That
+cancelling it mid-flight would leave the packages at different published versions with no way to roll back. That
 is the one case worth protecting, and `github.ref` is what identifies it — a pull request's `ref` is
 `refs/pull/<n>/merge` and never matches, so PRs cancel as they always did, and so now do pushes to `testing-next`, which
 publish nothing and have nothing mid-flight worth keeping.
@@ -1312,7 +1325,7 @@ test/
   output/             # committed tier 2 snapshots (see "Snapshot forms" above)
   compile-tests/      # tier 3: driver (compile.test.ts), paths.ts, per-language runners, orphans test
   compile/            # committed tier 3 diagnostics (see "Tier 3: compile gate" above)
-  docker/             # image contexts: kotlin/ and node/ (tier 3 compilers, reused by tier 4), k6/ (tier 4 only)
+  docker/             # image contexts: kotlin/, csharp/ and node/ (tier 3 compilers, reused by tier 4), k6/ (tier 4 only)
   cases/              # the tier-4 case table (cases.ts, casesFor, types.ts) — the shared source of truth
   integration/        # tier-4 tests: the oracle-agreement proof, targets.ts (WIRE_TARGETS), and one driver
                       # per target — fetch-clients/ (no Docker) and kotlin-clients/ (build.ts synthesizes the
@@ -1327,7 +1340,9 @@ test/
                       # normalizes k6's error, and the target records a load failure instead of cases;
                       # easy-network-stub/ is the other server direction, where the generated stubs are
                       # the API (build.ts compiles and then serves, driver/adapter.ts bridges the library
-                      # to node:http, driver/stubs.ts holds the registrations, boot.test.ts gates them)
+                      # to node:http, driver/stubs.ts holds the registrations, boot.test.ts gates them);
+                      # csharp-clients/ compiles the committed http-clients tree with drivers/CSharpDriver.cs
+                      # in the csharp image and runs it with dotnet run against the reference server
   integration-tests/  # tier-4 orphan sweep, over every WIRE_TARGETS entry (see "Tier 4: integration" above)
   wire/               # committed tier-4 deviation artifacts, one profile subdirectory per WIRE_TARGETS entry
 ```

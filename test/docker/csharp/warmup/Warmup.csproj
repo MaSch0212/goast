@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <!--
+    Restored at image build time into NUGET_PACKAGES so that every later build runs offline.
+    The package versions below MUST match test/harness/csharp/dependencies.ts (CSHARP_PACKAGES);
+    test/harness/csharp/dependencies.test.ts fails when they drift.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FastEndpoints" Version="8.3.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.13" />
+  </ItemGroup>
+
+</Project>

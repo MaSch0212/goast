@@ -1,0 +1,84 @@
+{
+  csharp: {
+    fastEndpoints: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/root-ref.yml#/components/schemas/RefsRoot',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'RefsRoot',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/root-ref.yml#/',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/root-ref.yml#/',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/root-ref.yml#/components/schemas/RefsComponents',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'RefsComponents',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/root-ref.yml#/components',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/root-ref.yml#/components',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/root-ref.yml#/components',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      }
+    }
+  }
+}

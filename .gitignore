@@ -33,3 +33,4 @@ playground.ts
 # build output
 dist
 packages/*/LICENSE
+obj/

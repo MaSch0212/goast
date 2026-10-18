@@ -1,0 +1,605 @@
+{
+  csharp: {
+    controllers: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchA',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfContainingOneOf/allOf/1/properties/extra',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfContainingAllOf',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'OneOfContainingAllOf',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfContainingAllOf/oneOf/0',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Schema12',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchA',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchB',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfContainingAllOf/oneOf/1',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AnyOfContainingAllOf',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'AnyOfContainingAllOf',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AnyOfContainingAllOf/anyOf/0',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchA',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchB',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA/properties/a',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AnyOfContainingAllOf/anyOf/1',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-21': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfOfAllOf',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'AllOfOfAllOf',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-22': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfOfAllOf/allOf/0',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-23': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchA',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-24': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchB',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-25': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfOfAllOf/allOf/1',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-26': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfOfAllOf/allOf/1/properties/top',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-27': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfOfOneOf',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'OneOfOfOneOf',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-28': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfOfOneOf/oneOf/0',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Schema28',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-29': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchA',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchB',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-30': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchB',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-31': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/OneOfOfOneOf/oneOf/1',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-32': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'Schema33',
+              namespace: 'OpenApi.Generated.Models',
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyList',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-33': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Schema33',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-34': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/0',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Schema34',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-35': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/0/properties/kind',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-36': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/0/properties/text',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-37': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/1',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Schema37',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-38': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/1/properties/kind',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-39': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/ArrayOfOneOf/items/oneOf/1/properties/number',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'int',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB/properties/b',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'int',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-40': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/MapOfOneOf',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: false
+            },
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'JsonElement',
+              namespace: 'System.Text.Json',
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyDictionary',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-41': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/MapOfOneOf/additionalProperties',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: false
+        }
+      },
+      'schema-42': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/MapOfOneOf/additionalProperties/oneOf/0',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-43': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/MapOfOneOf/additionalProperties/oneOf/1',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'int',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-44': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'PropertyOfNestedComposition',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-45': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'PropertyOfNestedCompositionValue',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-46': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/0',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-47': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/0/oneOf/0',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Schema47',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-48': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/0/oneOf/0/properties/x',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-49': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/0/oneOf/1',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'Schema49',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfContainingOneOf',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'AllOfContainingOneOf',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-50': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/0/oneOf/1/properties/y',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'int',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-51': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/1',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-52': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/PropertyOfNestedComposition/properties/value/allOf/1/properties/extra',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfContainingOneOf/allOf/0',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchA',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchA',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/NestedBranchB',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'NestedBranchB',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3/nested-composition.yml#/components/schemas/AllOfContainingOneOf/allOf/1',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      }
+    }
+  }
+}

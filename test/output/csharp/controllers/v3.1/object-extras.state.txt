@@ -1,0 +1,261 @@
+{
+  csharp: {
+    controllers: {},
+    models: {
+      'schema-1': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/PatternPropertiesObject',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'PatternPropertiesObject',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-10': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/DependentSchemasObject/properties/creditCard',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-11': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/DependentSchemasObject/properties/billingAddress',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-12': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/DependentRequiredObject',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'DependentRequiredObject',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-13': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/DependentRequiredObject/properties/creditCard',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-14': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/DependentRequiredObject/properties/billingAddress',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-15': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/PropertyNamesObject',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'PropertyNamesObject',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-16': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/OpenObject',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: false
+            },
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'JsonElement',
+              namespace: 'System.Text.Json',
+              nullable: true
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyDictionary',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-17': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/ClosedObject',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'ClosedObject',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-18': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/MapOfRef',
+        type: CsReference {
+          arrayOf: null,
+          generics: [
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: false
+            },
+            CsReference {
+              arrayOf: null,
+              generics: [],
+              inject: {},
+              name: 'string',
+              namespace: null,
+              nullable: false
+            }
+          ],
+          inject: {},
+          name: 'IReadOnlyDictionary',
+          namespace: 'System.Collections.Generic',
+          nullable: false
+        }
+      },
+      'schema-19': {
+        __source__: '<root>/test/specs/v3.1/simple-schemas.yml#/components/schemas/MyString',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-2': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/PatternPropertiesObject/patternProperties/^str_',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-20': {
+        __source__: '<root>/test/specs/v3.1/simple-schemas.yml#/components/schemas/MyString',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-3': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/PatternPropertiesObject/patternProperties/count',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'int',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-4': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/PatternAndAdditional',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'PatternAndAdditional',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-5': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/PatternAndAdditional/patternProperties/^str_',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-6': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/UnevaluatedPropertiesObject',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'UnevaluatedPropertiesObject',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      },
+      'schema-7': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/UnevaluatedPropertiesObject/allOf/0',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'JsonElement',
+          namespace: 'System.Text.Json',
+          nullable: true
+        }
+      },
+      'schema-8': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/UnevaluatedPropertiesObject/allOf/0/properties/a',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'string',
+          namespace: null,
+          nullable: false
+        }
+      },
+      'schema-9': {
+        __source__: '<root>/test/specs/v3.1/object-extras.yml#/components/schemas/DependentSchemasObject',
+        type: CsReference {
+          arrayOf: null,
+          generics: [],
+          inject: {},
+          name: 'DependentSchemasObject',
+          namespace: 'OpenApi.Generated.Models',
+          nullable: false
+        }
+      }
+    }
+  }
+}
