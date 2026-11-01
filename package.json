@@ -71,7 +71,7 @@
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^26.6.5",
     "fs-extra": "^11.3.3",
-    "oxfmt": "^0.73.0",
+    "oxfmt": "^0.75.0",
     "oxlint": "^1.88.0",
     "typescript": "^7.0.2",
     "vitest": "^5.0.4",
