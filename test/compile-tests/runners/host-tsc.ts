@@ -44,6 +44,7 @@ const COMPILER_OPTIONS = {
   types: [],
   experimentalDecorators: true,
   emitDecoratorMetadata: true,
+  erasableSyntaxOnly: true,
 };
 
 /**

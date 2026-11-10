@@ -37,13 +37,13 @@ interface ParameterOptions {
  * Base class for a parameter
  */
 abstract class Parameter {
-  constructor(
-    public name: string,
-    public value: any,
-    public options: ParameterOptions,
-    defaultStyle: string,
-    defaultExplode: boolean,
-  ) {
+  public name: string;
+  public value: any;
+  public options: ParameterOptions;
+
+  constructor(name: string, value: any, options: ParameterOptions, defaultStyle: string, defaultExplode: boolean) {
+    this.name = name;
+    this.value = value;
     this.options = options || {};
     if (this.options.style === null || this.options.style === undefined) {
       this.options.style = defaultStyle;
@@ -224,12 +224,15 @@ export class RequestBuilder {
   private _header = new Map<string, HeaderParameter>();
   _bodyContent: any | null;
   _bodyContentType?: string;
+  public rootUrl: string;
+  public operationPath: string;
+  public method: string;
 
-  constructor(
-    public rootUrl: string,
-    public operationPath: string,
-    public method: string,
-  ) {}
+  constructor(rootUrl: string, operationPath: string, method: string) {
+    this.rootUrl = rootUrl;
+    this.operationPath = operationPath;
+    this.method = method;
+  }
 
   /**
    * Sets a path parameter

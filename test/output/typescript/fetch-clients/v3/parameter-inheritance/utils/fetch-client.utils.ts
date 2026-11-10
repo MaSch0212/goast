@@ -17,8 +17,11 @@ export class UrlBuilder {
   private path: string = '';
   private pathParams: Record<string, string> = {};
   private queryParams: Record<string, string> = {};
+  private readonly baseUrl?: string;
 
-  constructor(private readonly baseUrl?: string) {}
+  constructor(baseUrl?: string) {
+    this.baseUrl = baseUrl;
+  }
 
   public withPath(path: string) {
     this.path += path.startsWith('/') ? path : '/' + path;

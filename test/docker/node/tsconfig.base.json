@@ -11,6 +11,7 @@
     "typeRoots": ["/opt/goast/node_modules/@types"],
     "types": ["k6"],
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "erasableSyntaxOnly": true
   }
 }
