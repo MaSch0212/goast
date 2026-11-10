@@ -104,10 +104,10 @@ export class EasyNetworkStubWrapper {
     return this._requests;
   }
 
-  constructor(
-    public readonly wrappedStub: EasyNetworkStub,
-    options?: Partial<EasyNetworkStubWrapperOptions>,
-  ) {
+  public readonly wrappedStub: EasyNetworkStub;
+
+  constructor(wrappedStub: EasyNetworkStub, options?: Partial<EasyNetworkStubWrapperOptions>) {
+    this.wrappedStub = wrappedStub;
     this.options = {
       delay: options?.delay ?? 0,
       logRequests: options?.logRequests ?? false,
