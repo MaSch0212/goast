@@ -319,7 +319,7 @@ export class DefaultTypeScriptModelGenerator
 
     if (!options?.skipSchemas && this.shouldGenerateTypeDeclaration(ctx, schema)) {
       if (schema.id === ctx.schema.id) {
-        return null;
+        return ts.reference(this.getDeclarationTypeName(ctx, schema), null);
       }
       return ts.reference(this.getDeclarationTypeName(ctx, schema), this.getFilePath(ctx, schema), {
         importType: 'type-import',

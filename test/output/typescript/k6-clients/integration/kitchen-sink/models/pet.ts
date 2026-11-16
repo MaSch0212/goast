@@ -12,6 +12,6 @@ export type Pet = {
     createdAt?: string;
     photo?: string;
     owner?: Owner;
-    friend?: never;
+    friend?: Pet;
     toys?: (Toy)[];
   };

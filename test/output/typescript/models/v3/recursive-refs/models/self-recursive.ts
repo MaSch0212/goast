@@ -1,4 +1,4 @@
 export type SelfRecursive = {
     name?: string;
-    child?: never;
+    child?: SelfRecursive;
   };

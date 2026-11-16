@@ -1,4 +1,4 @@
 export type RecursiveRequired = {
     name?: string;
-    parent: never;
+    parent: RecursiveRequired;
   };
