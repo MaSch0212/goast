@@ -1,5 +1,5 @@
 export type RecursiveThroughArray = {
     items?: ({
-        nested?: never;
+        nested?: RecursiveThroughArray;
       })[];
   };

@@ -74,6 +74,31 @@ function nullSchema(): ApiSchema {
 }
 
 describe('DefaultTypeScriptModelGenerator', () => {
+  describe('getType for a self-referencing schema', () => {
+    class SelfRefGenerator extends TestableGenerator {
+      protected override shouldGenerateTypeDeclaration(): boolean {
+        return true;
+      }
+      protected override getDeclarationTypeName(): string {
+        return 'TreeNode';
+      }
+      protected override getFilePath(): string {
+        return 'models/tree-node.ts';
+      }
+    }
+    const selfSchema = { id: 'tree-node', kind: 'object', enum: undefined, $ref: undefined } as unknown as ApiSchema;
+    const ctx: any = { schema: selfSchema, config: {} };
+
+    it('renders a local reference to the declared type instead of never', () => {
+      expect(new SelfRefGenerator().callGetType(ctx, selfSchema)).toBe('TreeNode');
+    });
+
+    it('renders the declared type as array item', () => {
+      const array = { id: 'array', kind: 'array', items: selfSchema, enum: undefined, $ref: undefined } as any;
+      expect(new SelfRefGenerator().callGetArrayType(ctx, array)).toBe('(TreeNode)[]');
+    });
+  });
+
   describe('getCombinedType', () => {
     const generator = () => new TestableGenerator();
     const ctx: any = { schema: { id: 'parent-schema' }, config: {} };

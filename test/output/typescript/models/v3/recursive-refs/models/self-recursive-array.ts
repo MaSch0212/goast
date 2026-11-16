@@ -1,3 +1,3 @@
 export type SelfRecursiveArray = {
-    children?: (unknown)[];
+    children?: (SelfRecursiveArray)[];
   };
